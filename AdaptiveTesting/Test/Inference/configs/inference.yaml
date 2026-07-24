@@ -1,0 +1,40 @@
+# Inference / sweep configuration.
+
+# Global default sample cap per benchmark (seeded). null => full split.
+max_samples: 2000
+sample_seed: 1234
+
+# Engine backend: vllm | hf | mock
+# - vllm: production (Linux/CUDA)
+# - hf:   transformers fallback for archs vLLM cannot load
+# - mock: deterministic, no weights (local smoke tests / CI)
+backend: vllm
+
+# vLLM engine knobs (no quantization).
+vllm:
+  gpu_memory_utilization: 0.30   # fraction per model process; co-locate several per B200
+  enable_prefix_caching: true
+  max_num_seqs: 256
+  max_num_batched_tokens: 8192
+  dtype: bfloat16
+  swap_space_gb: 4
+
+# Generation params for open-ended benchmarks (greedy by default).
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1234
+
+# Durable-writer cadence (see README 4.4).
+writer:
+  fsync_every_rows: 50
+  fsync_every_seconds: 5
+
+# Per-benchmark overrides (optional). Keys are benchmark names from the registry.
+# Example:
+#   squad_v2: {max_samples: 2000, max_tokens: 64}
+overrides:
+  squad_v2: {max_tokens: 64}
+  svamp: {max_tokens: 256}
+  mathdial: {max_tokens: 512}
