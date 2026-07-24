@@ -85,3 +85,16 @@ main/
 
 # LitSearch rerank pools: built locally, hosted on HF (allenai/litsearch-rerank-pools)
 src/olmo_eval/evals/tasks/data/litsearch_rerank_pools.jsonl
+
+# AdaptiveTesting inference sweep: runtime outputs + normalized dataset caches
+AdaptiveTesting/Outputs/
+AdaptiveTesting/Inputs/MCQ/Benchmarks/
+AdaptiveTesting/Inputs/Open/Benchmarks/
+
+# macOS archive cruft + large local bundles (results live in S3, not git)
+AdaptiveTesting/**/__MACOSX/
+AdaptiveTesting/Inputs/Open/LLM-Judge/aws_judge_handoff.zip
+AdaptiveTesting/Inputs/Open/LLM-Judge/*.tar
+
+# Local secrets (never commit)
+.apienv
