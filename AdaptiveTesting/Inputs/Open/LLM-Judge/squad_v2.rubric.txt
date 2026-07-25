@@ -1,0 +1,6 @@
+[Does the answer match the reference, and correctly abstain when the question is unanswerable?]
+Score 1: Wrong answer, or asserts an answer when the question is unanswerable.
+Score 2: Largely incorrect or fails to abstain appropriately.
+Score 3: Partially correct or imprecise relative to the reference.
+Score 4: Correct answer (or correct abstention) with minor wording differences.
+Score 5: Exactly matches the reference answer, or correctly says there is no answer when unanswerable.

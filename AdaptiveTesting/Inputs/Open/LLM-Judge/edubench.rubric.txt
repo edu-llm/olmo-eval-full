@@ -1,0 +1,6 @@
+[Does the response correctly and helpfully address the educational task?]
+Score 1: Fails the task; incorrect or irrelevant.
+Score 2: Attempts the task but is largely incorrect or unhelpful.
+Score 3: Partially addresses the task with notable gaps or errors.
+Score 4: Correctly addresses the task with minor issues.
+Score 5: Fully and accurately addresses the task in an appropriate, well-structured way.

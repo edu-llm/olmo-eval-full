@@ -1,0 +1,6 @@
+[Is the tutoring response pedagogically effective and correct?]
+Score 1: Incorrect content and poor pedagogy; would confuse or mislead the student.
+Score 2: Mostly unhelpful; either factually wrong or gives away the answer without teaching.
+Score 3: Partially helpful; some correct guidance but misses the student's actual need or has errors.
+Score 4: Correct and pedagogically sound; guides the student with only minor issues.
+Score 5: Correct, adaptive, and genuinely instructive; scaffolds the student's understanding toward the answer.
