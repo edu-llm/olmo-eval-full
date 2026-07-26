@@ -1,0 +1,38 @@
+# Config for the parallel, benchmark-by-benchmark sweep.
+#
+# Several worker processes hold a model resident on the SAME GPU at once, so
+# each engine gets a small slice of memory. With the default 6 workers this is
+# 6 x 0.14 = 0.84 of one B200 (~154 GB of 183 GB), leaving headroom.
+# A 7B model in bf16 is ~14 GB of weights, so ~25 GB per worker is comfortable.
+#
+# The Prometheus judge does NOT run inside these workers - open-ended judging is
+# a separate single-judge pass (judge_all.py) after generation.
+
+max_samples: 2000
+sample_seed: 1234
+
+backend: vllm
+
+vllm:
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.14   # per co-located worker; scale with WORKERS
+  enable_prefix_caching: true
+  max_num_seqs: 128
+  max_num_batched_tokens: 4096
+  dtype: bfloat16
+  swap_space_gb: 2
+
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1234
+
+writer:
+  fsync_every_rows: 50
+  fsync_every_seconds: 5
+
+overrides:
+  squad_v2: {max_tokens: 64}
+  svamp: {max_tokens: 256}
+  mathdial: {max_tokens: 512}

@@ -1,0 +1,33 @@
+# Inference config tuned for ONE dedicated B200 GPU on the shared ms-135m node.
+# Pinned via CUDA_VISIBLE_DEVICES so it never touches the training GPUs (0,1).
+# gpu_memory_utilization leaves headroom for the resident Prometheus judge to
+# co-reside with the model engine on the single visible GPU (0.45 + 0.45).
+
+max_samples: 2000
+sample_seed: 1234
+
+backend: vllm
+
+vllm:
+  tensor_parallel_size: 1        # single GPU only
+  gpu_memory_utilization: 0.45   # model engine; judge takes another ~0.45
+  enable_prefix_caching: true
+  max_num_seqs: 256
+  max_num_batched_tokens: 8192
+  dtype: bfloat16
+  swap_space_gb: 4
+
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1234
+
+writer:
+  fsync_every_rows: 50
+  fsync_every_seconds: 5
+
+overrides:
+  squad_v2: {max_tokens: 64}
+  svamp: {max_tokens: 256}
+  mathdial: {max_tokens: 512}

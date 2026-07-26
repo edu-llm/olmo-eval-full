@@ -1,0 +1,38 @@
+{
+  "jobDefinitionName": "adaptive-inference",
+  "type": "container",
+  "platformCapabilities": ["EC2"],
+  "containerProperties": {
+    "image": "056956104102.dkr.ecr.us-east-1.amazonaws.com/adaptive-inference:latest",
+    "vcpus": 24,
+    "memory": 240000,
+    "resourceRequirements": [
+      { "type": "GPU", "value": "1" }
+    ],
+    "environment": [
+      { "name": "S3_BUCKET", "value": "s3://edullm-adaptive-inference-056956104102" },
+      { "name": "NUM_SHARDS", "value": "100" },
+      { "name": "BENCHMARKS", "value": "all" },
+      { "name": "BACKEND", "value": "vllm" },
+      { "name": "MAX_SAMPLES", "value": "2000" },
+      { "name": "HF_HOME", "value": "/cache/hf" }
+    ],
+    "secrets": [
+      { "name": "HF_TOKEN", "valueFrom": "arn:aws:secretsmanager:us-east-1:056956104102:secret:hf-token" }
+    ],
+    "mountPoints": [
+      { "sourceVolume": "nvme", "containerPath": "/cache", "readOnly": false }
+    ],
+    "volumes": [
+      { "name": "nvme", "host": { "sourcePath": "/opt/dlami/nvme" } }
+    ]
+  },
+  "retryStrategy": { "attempts": 3 },
+  "timeout": { "attemptDurationSeconds": 86400 },
+  "_notes": [
+    "P6-B200 is provisioned via EC2 Capacity Blocks; attach the CE to the reservation.",
+    "For co-location run multiple array tasks per instance (8 GPUs) or launch",
+    "multiple engine processes per GPU via CUDA_VISIBLE_DEVICES + gpu_memory_utilization.",
+    "Set NUM_SHARDS = number of models for strict benchmark-first fleet ordering."
+  ]
+}
