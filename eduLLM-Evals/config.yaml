@@ -25,6 +25,10 @@ run:
   unmapped_criteria: judge
 
 judge:
+  # Scoring backend: "prometheus" (default, the LLM judge below) or "ifeval_verifier"
+  # (deterministic code verifier for IFEval — no LLM/endpoint used, ignores base_url/
+  # model). Set to ifeval_verifier only for an IFEval run; see data/IFEval/README.md.
+  backend: prometheus
   # Prometheus 2 7B served by vLLM on an MIT-cluster GPU node, reached through
   # an SSH tunnel -> appears at localhost:8000. Only the MODEL runs on the
   # cluster; this pipeline stays local. See scripts/cluster/:

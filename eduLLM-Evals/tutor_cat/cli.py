@@ -11,6 +11,7 @@ import yaml
 
 from .dataio import load_bank, summarize
 from .engine import RunConfig, run_evaluation
+from .ifeval_verifier import IFEvalVerifier
 from .judge import OpenAICompatibleJudge, RESULT_PASS_THRESHOLD_DEFAULT
 from .tutors import build_tutor
 
@@ -80,17 +81,27 @@ def cmd_run(args: argparse.Namespace) -> int:
         return 1
 
     jcfg = cfg["judge"]
-    judge = OpenAICompatibleJudge(
-        base_url=jcfg["base_url"],
-        model=jcfg["model"],
-        api_key_env=jcfg.get("api_key_env", "JUDGE_API_KEY"),
-        temperature=jcfg.get("temperature", 0.0),
-        max_tokens=jcfg.get("max_tokens", 512),
-        seed=jcfg.get("seed", 42),
-        result_pass_threshold=jcfg.get(
-            "result_pass_threshold", RESULT_PASS_THRESHOLD_DEFAULT
-        ),
-    )
+    backend = jcfg.get("backend", "prometheus")
+    if backend == "ifeval_verifier":
+        # Deterministic code verifier for IFEval; no LLM/endpoint needed. Used only when
+        # the bank is IFEval (single-axis run) — see data/IFEval/README.md.
+        judge = IFEvalVerifier(seed=jcfg.get("seed", 42))
+    elif backend == "prometheus":
+        judge = OpenAICompatibleJudge(
+            base_url=jcfg["base_url"],
+            model=jcfg["model"],
+            api_key_env=jcfg.get("api_key_env", "JUDGE_API_KEY"),
+            temperature=jcfg.get("temperature", 0.0),
+            max_tokens=jcfg.get("max_tokens", 512),
+            seed=jcfg.get("seed", 42),
+            result_pass_threshold=jcfg.get(
+                "result_pass_threshold", RESULT_PASS_THRESHOLD_DEFAULT
+            ),
+        )
+    else:
+        print(f"unknown judge.backend '{backend}' (expected 'prometheus' or "
+              f"'ifeval_verifier')", file=sys.stderr)
+        return 1
 
     specs = cfg["tutors"]
     if args.tutor != "all":

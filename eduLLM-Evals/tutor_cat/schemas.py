@@ -61,6 +61,10 @@ class Rubric:
     source: str = ""
     status: str = "approved"
     version: str = "1.0"
+    # Optional deterministic-verifier spec (e.g. IFEval: {"instruction_id", "kwargs"}).
+    # None for judge-scored benchmarks; carried through so a non-LLM scoring backend can
+    # reproduce the check at grading time. See tutor_cat/ifeval_verifier.py.
+    verifier: dict[str, Any] | None = None
 
     @classmethod
     def from_json(cls, obj: dict[str, Any]) -> "Rubric":
@@ -83,6 +87,7 @@ class Rubric:
             source=obj.get("source", ""),
             status=obj.get("status", "approved"),
             version=obj.get("version", "1.0"),
+            verifier=obj.get("verifier"),
         )
 
 
