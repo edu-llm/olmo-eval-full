@@ -92,8 +92,26 @@ Usage
     # also write a calibrated rubric COPY (new file, never overwrites final):
     python scripts/calibrate_mirt.py --estimate-latent-corr --write-params
 
+    # skill-collapse decision instrument: merge content+diagnosis into ONE latent
+    # dim (fit-time, in-memory Q transform ONLY) and get a 3-way uni/collapsed/full
+    # comparison in ONE run (loglik, #params, AIC, BIC + winners):
+    python scripts/calibrate_mirt.py --collapse content,diagnosis --estimate-latent-corr
+
     # show the plan without fitting:
     python scripts/calibrate_mirt.py --dry-run
+
+Skill-collapse decision instrument
+----------------------------------
+The content<->diagnosis collinearity question is answered by three numbers read
+side by side. ``--collapse content,diagnosis`` fits the collapsed 2-dim model
+ALONGSIDE the full 3-dim model (both share the unidimensional baseline), so a
+SINGLE run reports unidimensional vs collapsed-2-dim vs full-3-dim (loglik, k,
+AIC, BIC) and names the AIC/BIC winner. The collapse is a pure in-memory Q-matrix
+transform (logical OR of the merged skills' columns per item); it NEVER edits
+``data/rubrics_qmatrix_final.jsonl`` or the skill definitions. The full 3-dim run
+(``--collapse`` OFF) still drives the CSV / --write-params output and yields the
+3x3 latent correlation whose content<->diagnosis off-diagonal is the key
+diagnostic.
 """
 
 from __future__ import annotations
@@ -184,6 +202,73 @@ def align_q_rows(
         aligned.append(c)
     Q = np.array(rows, dtype=int) if rows else np.zeros((0, N_SKILLS), dtype=int)
     return Q, aligned, missing
+
+
+def collapse_q_matrix(
+    Q: np.ndarray, collapse_skills, skills: list[str] | None = None
+) -> tuple[np.ndarray, list[str], dict]:
+    """Merge the named skills' Q columns into ONE combined latent dimension.
+
+    This is a FIT-TIME, in-memory transform ONLY -- it never touches the rubric
+    bank or the skill definitions on disk. The merged column is the logical OR of
+    the 1s across the merged skills for each item (an item that loaded on ANY of
+    the merged skills loads on the combined dimension). The latent dimension count
+    is reduced by ``k - 1`` where ``k`` = number of skills merged.
+
+    Column order in the returned matrix preserves the original ``skills`` order,
+    with the merged skills replaced by a single combined column placed at the
+    position of the FIRST merged skill (so a ``content,diagnosis`` collapse of the
+    ``(content, diagnosis, scaffolding)`` layout yields columns
+    ``[content+diagnosis, scaffolding]``).
+
+    Returns (Q_collapsed, collapsed_labels, info). ``info`` records the merged
+    skills, their original indices, the new labels, and the collapsed dim count.
+    """
+    if skills is None:
+        skills = list(SKILLS)
+    skills = list(skills)
+    name_to_idx = {s: i for i, s in enumerate(skills)}
+
+    requested = [s.strip() for s in collapse_skills if str(s).strip()]
+    unknown = [s for s in requested if s not in name_to_idx]
+    if unknown:
+        raise CalibrationError(
+            f"--collapse names unknown skill(s) {unknown}; valid skills are {skills}."
+        )
+    merge_idx = sorted({name_to_idx[s] for s in requested})
+    if len(merge_idx) < 2:
+        raise CalibrationError(
+            "--collapse needs >= 2 distinct skills to merge "
+            f"(got {requested!r} -> {[skills[i] for i in merge_idx]})."
+        )
+
+    merge_set = set(merge_idx)
+    first = min(merge_idx)
+    new_cols: list[np.ndarray] = []
+    labels: list[str] = []
+    for i, s in enumerate(skills):
+        if i in merge_set:
+            if i == first:
+                merged = (Q[:, merge_idx].sum(axis=1) > 0).astype(int)
+                new_cols.append(merged)
+                labels.append("+".join(skills[m] for m in merge_idx))
+            # subsequent merged columns are folded into the combined column above
+        else:
+            new_cols.append(Q[:, i].astype(int))
+            labels.append(s)
+
+    if new_cols:
+        Q_collapsed = np.stack(new_cols, axis=1)
+    else:  # pragma: no cover - defensive; requires an empty skills list
+        Q_collapsed = np.zeros((Q.shape[0], 0), dtype=int)
+
+    info = {
+        "merged_skills": [skills[m] for m in merge_idx],
+        "merged_indices": merge_idx,
+        "collapsed_labels": labels,
+        "n_dims": int(Q_collapsed.shape[1]),
+    }
+    return Q_collapsed, labels, info
 
 
 # ---------------------------------------------------------------------------
@@ -558,6 +643,59 @@ def write_csv(frame: pd.DataFrame, out_dir: Path) -> Path:
     return path
 
 
+def _collapse_manifest(
+    collapsed, collapse_info, multi, n_obs, multi_aic, multi_bic, uni, uni_aic, uni_bic
+) -> dict | None:
+    """The collapsed-model block for the manifest (a clean 3-way comparison).
+
+    ``None`` when ``--collapse`` was not given, so the default (non-collapsed) run
+    is byte-for-byte unchanged except for this explicit null field.
+    """
+    if collapsed is None or collapse_info is None:
+        return None
+    coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], n_obs)
+    return {
+        "requested": True,
+        "merged_skills": collapse_info["merged_skills"],
+        "collapsed_labels": collapse_info.get("labels", collapse_info["collapsed_labels"]),
+        "n_dims": collapse_info["n_dims"],
+        "collapsed_model": {
+            "n_dims": collapsed["n_dims"],
+            "loglik": collapsed["loglik"],
+            "n_params": collapsed["n_params"],
+            "aic": coll_aic,
+            "bic": coll_bic,
+        },
+        "three_way": {
+            "unidim": {"n_dims": 1, "loglik": uni["loglik"],
+                       "n_params": uni["n_params"], "aic": uni_aic, "bic": uni_bic},
+            "collapsed": {"n_dims": collapsed["n_dims"], "loglik": collapsed["loglik"],
+                          "n_params": collapsed["n_params"], "aic": coll_aic, "bic": coll_bic},
+            "full": {"n_dims": multi["n_dims"], "loglik": multi["loglik"],
+                     "n_params": multi["n_params"], "aic": multi_aic, "bic": multi_bic},
+        },
+        "collapsed_beats_full_aic": bool(coll_aic < multi_aic),
+        "collapsed_beats_full_bic": bool(coll_bic < multi_bic),
+        "delta_aic_full_minus_collapsed": float(multi_aic - coll_aic),
+        "delta_bic_full_minus_collapsed": float(multi_bic - coll_bic),
+        "aic_winner": min(
+            {"unidim": uni_aic, "collapsed": coll_aic, "full": multi_aic}.items(),
+            key=lambda kv: kv[1],
+        )[0],
+        "bic_winner": min(
+            {"unidim": uni_bic, "collapsed": coll_bic, "full": multi_bic}.items(),
+            key=lambda kv: kv[1],
+        )[0],
+        "collapsed_latent_correlation": (
+            np.round(np.asarray(collapsed["R"]), 6).tolist()
+            if collapsed.get("R") is not None
+            and collapsed["n_dims"] > 1
+            and not np.allclose(collapsed["R"], np.eye(collapsed["n_dims"]))
+            else None
+        ),
+    }
+
+
 def write_manifest(
     out_dir: Path,
     args: argparse.Namespace,
@@ -570,6 +708,8 @@ def write_manifest(
     efa: dict,
     matrix_prov: dict,
     identifiable: bool,
+    collapsed: dict | None = None,
+    collapse_info: dict | None = None,
 ) -> Path:
     path = out_dir / CALIBRATION_MANIFEST_NAME
     multi_aic, multi_bic = aic_bic(multi["loglik"], multi["n_params"], n_obs)
@@ -632,6 +772,8 @@ def write_manifest(
             "delta_bic_uni_minus_multi": float(uni_bic - multi_bic),
             "bic_sample_size_convention": "n_observed_cells",
         },
+        "collapse": _collapse_manifest(collapsed, collapse_info, multi, n_obs,
+                                       multi_aic, multi_bic, uni, uni_aic, uni_bic),
         "latent_correlation": (
             np.round(np.asarray(latent_corr), 6).tolist() if latent_corr is not None else None
         ),
@@ -727,6 +869,13 @@ def main() -> int:
     p.add_argument("--estimate-latent-corr", action="store_true",
                    help="estimate the 3x3 latent correlation from the posterior "
                         "(default: fixed identity).")
+    p.add_argument("--collapse", type=str, default=None, metavar="SKILL,SKILL[,...]",
+                   help="comma-separated skill names to MERGE into a single latent "
+                        "dimension (fit-time, in-memory Q-matrix transform ONLY; the "
+                        "rubric bank is never touched). E.g. --collapse content,diagnosis "
+                        "fits a collapsed 2-dim model (content+diagnosis merged via "
+                        "logical-OR of the Q columns, scaffolding separate) ALONGSIDE the "
+                        "full 3-dim model for a 3-way uni/collapsed/full comparison.")
     p.add_argument("--ridge", type=float, default=1e-3,
                    help="L2 ridge on loadings in the M-step for stability (default 1e-3).")
     p.add_argument("--max-iter", type=int, default=200, help="max EM iterations.")
@@ -749,6 +898,19 @@ def main() -> int:
     args = p.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
+
+    collapse_skills: list[str] | None = None
+    if args.collapse:
+        collapse_skills = [s.strip() for s in args.collapse.split(",") if s.strip()]
+        unknown = [s for s in collapse_skills if s not in SKILLS]
+        if unknown:
+            print(f"ERROR: --collapse names unknown skill(s) {unknown}; "
+                  f"valid skills are {list(SKILLS)}.", file=sys.stderr)
+            return 2
+        if len(set(collapse_skills)) < 2:
+            print("ERROR: --collapse needs >= 2 distinct skills to merge.",
+                  file=sys.stderr)
+            return 2
 
     try:
         mat = cp.load_matrix(args.matrix)
@@ -811,6 +973,20 @@ def main() -> int:
     multi = fit_m2pl_em(Y, M, Q, args.grid, estimate_corr=args.estimate_latent_corr,
                         ridge=args.ridge, max_iter=args.max_iter, tol=args.tol)
 
+    # Optional collapsed model: a FIT-TIME, in-memory Q-matrix transform that merges
+    # the requested skills into ONE latent dimension. Runs on the SAME data + all the
+    # same machinery (mask/quadrature/latent-corr/AIC/BIC) as the full model.
+    collapsed = None
+    collapse_info = None
+    if collapse_skills is not None:
+        Q_collapsed, collapsed_labels, collapse_info = collapse_q_matrix(Q, collapse_skills)
+        print(f"fitting COLLAPSED M2PL ({collapse_info['n_dims']} dims; "
+              f"merged {'+'.join(collapse_info['merged_skills'])}) ...")
+        collapsed = fit_m2pl_em(Y, M, Q_collapsed, args.grid,
+                                estimate_corr=args.estimate_latent_corr,
+                                ridge=args.ridge, max_iter=args.max_iter, tol=args.tol)
+        collapse_info["labels"] = collapsed_labels
+
     A, b = multi["A"], multi["b"]
     latent_corr = multi["R"] if args.estimate_latent_corr else None
 
@@ -821,13 +997,31 @@ def main() -> int:
     uni_aic, uni_bic = aic_bic(uni["loglik"], uni["n_params"], n_obs)
 
     print("\n" + "=" * 72)
-    print("uni vs multi")
+    print("uni vs multi" if collapsed is None else "uni vs collapsed vs multi")
     print("=" * 72)
-    print(f"unidim  : loglik={uni['loglik']:.2f}  k={uni['n_params']}  "
+    print(f"unidim    : loglik={uni['loglik']:.2f}  k={uni['n_params']}  "
           f"AIC={uni_aic:.2f}  BIC={uni_bic:.2f}")
-    print(f"multi   : loglik={multi['loglik']:.2f}  k={multi['n_params']}  "
-          f"AIC={multi_aic:.2f}  BIC={multi_bic:.2f}")
+    if collapsed is not None:
+        coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], n_obs)
+        label = "+".join(collapse_info["merged_skills"])
+        print(f"collapsed : loglik={collapsed['loglik']:.2f}  k={collapsed['n_params']}  "
+              f"AIC={coll_aic:.2f}  BIC={coll_bic:.2f}  "
+              f"({collapse_info['n_dims']}-dim, merged {label})")
+    print(f"multi     : loglik={multi['loglik']:.2f}  k={multi['n_params']}  "
+          f"AIC={multi_aic:.2f}  BIC={multi_bic:.2f}  ({multi['n_dims']}-dim, full)")
     print(f"multi beats uni : AIC={multi_aic < uni_aic}  BIC={multi_bic < uni_bic}")
+    if collapsed is not None:
+        coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], n_obs)
+        # Winner by each criterion across the 3 candidate models.
+        cand_aic = {"unidim": uni_aic, "collapsed": coll_aic, "full-3-dim": multi_aic}
+        cand_bic = {"unidim": uni_bic, "collapsed": coll_bic, "full-3-dim": multi_bic}
+        best_aic = min(cand_aic, key=cand_aic.get)
+        best_bic = min(cand_bic, key=cand_bic.get)
+        print(f"collapsed beats full : AIC={coll_aic < multi_aic}  "
+              f"BIC={coll_bic < multi_bic}  "
+              f"(delta_AIC full-collapsed={multi_aic - coll_aic:+.2f}, "
+              f"delta_BIC={multi_bic - coll_bic:+.2f})")
+        print(f"AIC winner : {best_aic}   BIC winner : {best_bic}")
     if latent_corr is not None:
         print("latent correlation (content, diagnosis, scaffolding):")
         for row in np.round(latent_corr, 3):
@@ -849,7 +1043,7 @@ def main() -> int:
     matrix_prov = cp._matrix_manifest_prov(args.matrix)
     manifest_path = write_manifest(
         args.out_dir, args, diag, multi, uni, n_obs, latent_corr, crosscheck, efa,
-        matrix_prov, identifiable,
+        matrix_prov, identifiable, collapsed=collapsed, collapse_info=collapse_info,
     )
     print(f"\nwrote calibration CSV -> {csv_path}")
     print(f"wrote calibration manifest -> {manifest_path}")

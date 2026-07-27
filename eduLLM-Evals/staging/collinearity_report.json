@@ -1,0 +1,156 @@
+{
+  "generated_at": "2026-07-27T18:29:29.265319+00:00",
+  "structural": {
+    "n_criteria": 6462,
+    "marginals": {
+      "content": 4524,
+      "diagnosis": 2372,
+      "scaffolding": 1136
+    },
+    "combos": {
+      "content_only": 2096,
+      "content_diagnosis": 1724,
+      "content_scaffolding": 485,
+      "content_diagnosis_scaffolding": 219,
+      "diagnosis_only": 399,
+      "diagnosis_scaffolding": 30,
+      "scaffolding_only": 402,
+      "none": 1107
+    },
+    "co_occurrence": {
+      "content_diagnosis": 1943,
+      "content_scaffolding": 704,
+      "diagnosis_scaffolding": 249
+    },
+    "P_content_given_diagnosis": 0.8191,
+    "P_diagnosis_given_content": 0.4295,
+    "diagnosis_without_content": 429,
+    "diagnosis_without_content_frac_of_diagnosis": 0.1809
+  },
+  "causal_attribution_heuristic": {
+    "note": "HEURISTIC keyword classification over free-text q_rationale; directional, not exact. Precedence specific>broad_rule>ack_affect. Audit per-item labels in the CSV.",
+    "tally": {
+      "all_diagnosis": {
+        "specific": 2181,
+        "broad_rule": 1,
+        "ack_affect": 81,
+        "unclassified": 109
+      },
+      "content_and_diagnosis": {
+        "specific": 1807,
+        "broad_rule": 1,
+        "ack_affect": 32,
+        "unclassified": 103
+      },
+      "diagnosis_without_content": {
+        "specific": 374,
+        "broad_rule": 0,
+        "ack_affect": 49,
+        "unclassified": 6
+      }
+    },
+    "content_and_diagnosis_total": 1943,
+    "overlap_dissolve_if_specific_only": {
+      "count": 33,
+      "frac_of_content_and_diagnosis": 0.017,
+      "definition": "content+diagnosis items whose diagnosis is broad_rule or ack_affect"
+    },
+    "estimated_genuine_specific_overlap": {
+      "count": 1807,
+      "frac_of_content_and_diagnosis": 0.93
+    }
+  },
+  "empirical_directional_only": {
+    "CAVEAT": "N~=20 biased small-model subsample; partial matrix. DIRECTIONAL ONLY. Structural overlap != empirical collinearity. Powered read = full-data M2PL latent corr + EFA + AIC/BIC (scripts/calibrate_mirt.py).",
+    "n_models_rows": 82,
+    "n_criteria_cols": 6462,
+    "group_pass_rates": {
+      "content_loaded": {
+        "n_items_present": 4524,
+        "pass_rate": 0.0358,
+        "n_obs_cells": 92564
+      },
+      "diagnosis_loaded": {
+        "n_items_present": 2372,
+        "pass_rate": 0.0437,
+        "n_obs_cells": 48417
+      },
+      "scaffolding_loaded": {
+        "n_items_present": 1136,
+        "pass_rate": 0.1481,
+        "n_obs_cells": 23126
+      },
+      "content_only": {
+        "n_items_present": 2096,
+        "pass_rate": 0.0399,
+        "n_obs_cells": 42997
+      },
+      "diagnosis_only": {
+        "n_items_present": 399,
+        "pass_rate": 0.0908,
+        "n_obs_cells": 8137
+      },
+      "content_primary": {
+        "n_items_present": 2843,
+        "pass_rate": 0.0356,
+        "n_obs_cells": 58268
+      },
+      "diagnosis_primary": {
+        "n_items_present": 1714,
+        "pass_rate": 0.0515,
+        "n_obs_cells": 34984
+      }
+    },
+    "per_model_passrate_correlation": {
+      "content_loaded_vs_diagnosis_loaded": {
+        "n_models_used": 30,
+        "min_items_per_group": 3,
+        "mean_passrate_a": 0.0251,
+        "mean_passrate_b": 0.0306,
+        "pearson_r": 0.9938,
+        "spearman_r": 0.9909
+      },
+      "content_only_vs_diagnosis_only": {
+        "n_models_used": 25,
+        "min_items_per_group": 3,
+        "mean_passrate_a": 0.0335,
+        "mean_passrate_b": 0.077,
+        "pearson_r": 0.9665,
+        "spearman_r": 0.9602
+      }
+    },
+    "item_level_pass_pattern_correlation": {
+      "content_primary_x_diagnosis_primary": {
+        "n_pairs_total": 4872902,
+        "n_pairs_evaluated": 20000,
+        "n_pairs_usable": 2010,
+        "mean_phi": 0.1734,
+        "median_phi": -0.05,
+        "mean_tetrachoric_approx": 0.5426,
+        "median_overlap_n": 20
+      },
+      "within_content_primary": {
+        "n_pairs_total": 4039903,
+        "n_pairs_evaluated": 20000,
+        "n_pairs_usable": 1494,
+        "mean_phi": 0.163,
+        "median_phi": -0.0526,
+        "mean_tetrachoric_approx": 0.5226,
+        "median_overlap_n": 20
+      },
+      "within_diagnosis_primary": {
+        "n_pairs_total": 1468041,
+        "n_pairs_evaluated": 20000,
+        "n_pairs_usable": 2971,
+        "mean_phi": 0.2242,
+        "median_phi": 0.2287,
+        "mean_tetrachoric_approx": 0.5922,
+        "median_overlap_n": 20
+      }
+    }
+  },
+  "provenance": {
+    "script": "scripts/analyze_collinearity.py",
+    "argv": []
+  }
+}

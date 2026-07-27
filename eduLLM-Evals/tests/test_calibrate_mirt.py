@@ -222,6 +222,62 @@ def test_estimate_latent_corr_recovers_positive():
     assert abs(float(np.mean(off)) - 0.4) < 0.25
 
 
+# --- skill collapse (content+diagnosis merge) -----------------------------
+
+
+def test_collapse_q_matrix_or_and_reduced_dims():
+    """--collapse merges skills' Q columns via logical OR and reduces the latent
+    dimension by (k-1); the fit then runs on the collapsed mask with all the usual
+    machinery and returns finite loglik/AIC/BIC."""
+    df, Q, A_true, b_true, items, _ = _simulate(n_persons=220, corr=0.3, seed=21)
+    q_by = {items[j]: Q[j] for j in range(len(items))}
+    Y, M, Qa, aligned, _, _ = cm.prepare_block(df, q_by)
+
+    ci = list(SKILLS).index("content")
+    di = list(SKILLS).index("diagnosis")
+    si = list(SKILLS).index("scaffolding")
+
+    Qc, labels, info = cm.collapse_q_matrix(Qa, ["content", "diagnosis"])
+
+    # Dimension reduced by k-1 = 1 (3 -> 2).
+    assert Qc.shape[1] == Qa.shape[1] - 1
+    assert info["n_dims"] == Qa.shape[1] - 1 == 2
+    assert Qc.shape[0] == Qa.shape[0]
+
+    # Merged column is the logical OR of the content & diagnosis columns, placed at
+    # the first merged position; scaffolding preserved as the second column.
+    expected_merged = ((Qa[:, ci] + Qa[:, di]) > 0).astype(int)
+    assert np.array_equal(Qc[:, 0], expected_merged)
+    assert set(np.unique(Qc[:, 0])) <= {0, 1}
+    assert np.array_equal(Qc[:, 1], Qa[:, si])
+    assert labels == ["content+diagnosis", "scaffolding"]
+    assert info["merged_skills"] == ["content", "diagnosis"]
+
+    # The fit runs on the collapsed mask + returns finite loglik/AIC/BIC.
+    res = cm.fit_m2pl_em(Y, M, Qc, nodes_per_dim=5, estimate_corr=True,
+                         ridge=1e-3, max_iter=120, tol=1e-3)
+    assert res["n_dims"] == 2
+    # Confirmatory mask still exact: 0 loadings wherever the collapsed q == 0.
+    assert np.all(res["A"][Qc == 0] == 0.0)
+    assert np.all(np.isfinite(res["A"])) and np.all(np.isfinite(res["b"]))
+
+    n_obs = int(M.sum())
+    aic, bic = cm.aic_bic(res["loglik"], res["n_params"], n_obs)
+    assert np.isfinite(res["loglik"])
+    assert np.isfinite(aic) and np.isfinite(bic)
+    # Collapsed latent corr is a proper 2x2 correlation matrix.
+    assert res["R"].shape == (2, 2)
+    assert np.allclose(np.diag(res["R"]), 1.0, atol=1e-6)
+
+
+def test_collapse_q_matrix_validation():
+    _, Q, *_ = _simulate(n_persons=20, corr=0.0, seed=1)
+    with pytest.raises(cm.CalibrationError):
+        cm.collapse_q_matrix(Q, ["content", "nonexistent"])
+    with pytest.raises(cm.CalibrationError):
+        cm.collapse_q_matrix(Q, ["content"])  # need >= 2 distinct skills
+
+
 # --- selection: zero-variance + missing-Q dropping ------------------------
 
 
