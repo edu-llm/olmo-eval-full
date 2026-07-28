@@ -595,8 +595,8 @@ y = 2\arctan(x + C) - x
 \].
 - Primary skill: `content`
 - Criticality: `critical`
-- Grade (P/F): F
-- Notes: doesn't add a note accounting for student's confusion
+- Grade (P/F): P
+- Notes: ___
 
 #### tb_0003_c07
 
@@ -618,31 +618,17 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c09
 
-- Criterion: The response must identify and explain the first error in the student's solution: \(\frac{du}{dx} = \frac{dy}{dx}\) is incorrect.
+- Criterion: The response must provide explanations to answer the student's question, i.e. you made 3 errors in you solution, \(\frac{du}{dx} = \frac{dy}{dx}\), \[
+\int \frac{du}{\cos(u)} = \sin(u)
+\], and \(\int dx = Cx\), these incorrect steps lead to your incorrect final answer [\( y = \arcsin(Cx) - x \)].
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): P
-- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
+- Notes: ____
 
 #### tb_0003_c10
 
-- Criterion: The response must identify and explain the second error: \(\int \frac{du}{\cos(u)} = \sin(u)\) is incorrect.
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): P
-- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
-
-#### tb_0003_c11
-
-- Criterion: The response must identify and explain the third error: \(\int dx = Cx\) is incorrect (which, together with the other errors, leads to the incorrect final answer \(y = \arcsin(Cx) - x\)).
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): P
-- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
-
-#### tb_0003_c12
-
-- Criterion: The response should follow tutoring presentation conventions: use clear Markdown structure (e.g., headings, bullets, or sections) where it aids clarity; render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
+- Criterion: The response should be formatted by using headings, bold text, and correct LaTeX.
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -842,21 +828,13 @@ The thermal energy generated is equal to the loss in mechanical energy ($\Delta 
 
 #### tb_0336_c03
 
-- Criterion: The response must identify that the student made an arithmetic error in part c) by equating $\frac{1}{5}$ to $\frac{5}{35}$, when it should be $\frac{7}{35}$.
+- Criterion: The response must identify that the student made an arithmetic error in part c) by equating $\frac{1}{5}$ to $\frac{5}{35}$, when it should be $\frac{7}{35}$. If done correctly, the answer should have been $\frac{1}{7}MR^2\omega_0^2$, not $\frac{3}{35}MR^2\omega_0^2$.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): F
-- Notes: derived from original compound tb_0336_c03 human grade during curation regrade (no tutor engaged part c)
+- Notes: doesn't mention any errors in part c
 
 #### tb_0336_c04
-
-- Criterion: The response must state that, done correctly, the answer for part c) should have been $\frac{1}{7}MR^2\omega_0^2$, not $\frac{3}{35}MR^2\omega_0^2$.
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): F
-- Notes: derived from original compound tb_0336_c03 human grade during curation regrade (no tutor engaged part c)
-
-#### tb_0336_c05
 
 - Criterion: The response can explicitly note that the error of using the wrong moment of inertia leads to an incorrect result for both parts a) and b), since the result carry forward.
 - Primary skill: `diagnosis`
@@ -864,7 +842,7 @@ The thermal energy generated is equal to the loss in mechanical energy ($\Delta 
 - Grade (P/F): F
 - Notes: doesn't mention the error carrying forward
 
-#### tb_0336_c06
+#### tb_0336_c05
 
 - Criterion: The response must explain that using conservation of angular momentum with the correct moment of inertial for a cylinder ($\frac{1}{2}MR^2$), you find that the linear velocity after the cylinder stops rolling is $v=\frac{1}{3}R\omega_0$.
 - Primary skill: `content`
@@ -872,7 +850,7 @@ The thermal energy generated is equal to the loss in mechanical energy ($\Delta 
 - Grade (P/F): P
 - Notes: ____
 
-#### tb_0336_c07
+#### tb_0336_c06
 
 - Criterion: The response must explain that you need to use angular acceleration  $\alpha=\frac{\tau}{I_{CM}}$ (not linear acceleration $a$) when considering angular velocity so that the kinematics equation becomes $\omega=\omega_0+\alpha t$.
 - Primary skill: `content`
@@ -880,15 +858,15 @@ The thermal energy generated is equal to the loss in mechanical energy ($\Delta 
 - Grade (P/F): F
 - Notes: Not clearly identified
 
-#### tb_0336_c08
+#### tb_0336_c07
 
 - Criterion: The response must explain that using the correct moment of inertia, the angular acceleration is $-\frac{2\mu_kg}{R}$, leading to a time interval of $t=\frac{R\omega_0}{3\mu_kg}$.
 - Primary skill: `content`
 - Criticality: `critical`
-- Grade (P/F): F
-- Notes: does calculate value but without significant explanation
+- Grade (P/F): P
+- Notes: 
 
-#### tb_0336_c09
+#### tb_0336_c08
 
 - Criterion: The response must explicitly acknowledge the student's expressed confusion in part b).
 - Primary skill: `diagnosis`
@@ -896,9 +874,17 @@ The thermal energy generated is equal to the loss in mechanical energy ($\Delta 
 - Grade (P/F): F
 - Notes: doesn't acknowledge confusions
 
+#### tb_0336_c09
+
+- Criterion: The response should be written in the second person from the perspective of a teacher or tutor addressing their student.
+- Primary skill: ``
+- Criticality: `not_critical`
+- Grade (P/F): P
+- Notes: ____
+
 #### tb_0336_c10
 
-- Criterion: The response should follow tutoring presentation conventions: address the student in the second person (conversational tutor voice); use clear Markdown structure (e.g., headings, bullets, or sections) where it aids clarity; render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
+- Criterion: The response should use Markdown (sections, bullets, etc.) to demarcate separate ideas, and should use LaTeX to render all mathematical expressions. 
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -1041,21 +1027,13 @@ Because the residual is positive, the elk weighed about **8.13 kg more than pred
 
 #### tb_0340_c08
 
-- Criterion: The response must acknowledge the student's stated uncertainty about the sign and validate their correct instinct that the elk weighed more than predicted, rather than confirming the student's incorrect 'predicted - actual' framing.
+- Criterion: The response must include a validation for the student's question: "That means the prediction was 8.14 kg more than the actual weight, right?" similar to: "Totally! But does that align with what we are actually trying to do in the problem?"
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): F
-- Notes: derived from original compound tb_0340_c08 during curation regrade (validate; reworded criterion)
+- Notes: ____
 
 #### tb_0340_c09
-
-- Criterion: The response must redirect the student toward the actual goal of the problem (e.g., prompting them to consider what the residual means in context rather than stopping at the arithmetic).
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): F
-- Notes: derived; redirect/scaffolding move (prompt vs tell)
-
-#### tb_0340_c10
 
 - Criterion: The response should include an analogy for thinking about finding residual weight similar to finding the difference between a cookie recipe's expected yield and how many cookies are actually baked.
 - Primary skill: `scaffolding`
@@ -1063,9 +1041,9 @@ Because the residual is positive, the elk weighed about **8.13 kg more than pred
 - Grade (P/F): F
 - Notes: ____
 
-#### tb_0340_c11
+#### tb_0340_c10
 
-- Criterion: The response should follow tutoring presentation conventions: address the student in the second person (conversational tutor voice). (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
+- Criterion: The response should be written  from the perspective of the teacher with the use of "you" and "we."
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P

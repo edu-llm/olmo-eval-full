@@ -251,9 +251,7 @@ $$y = 2\arctan(x + C) - x$$
 
 #### tb_0003_c01
 
-- Criterion: The response must identify that some methods, like substitution (i.e. let u=x+y), variables separation (i.e. f(y)dy=g(x)dx), and take antiderivative (i.e. \[
-\int f(y) \, dy = \int g(x) \, dx
-\]) should be used to solve the differential equation.
+- Criterion: The response must identify that some methods, like substitution (i.e. let $u = x+y$), variables separation (i.e. $f(y)\,dy = g(x)\,dx$), and take antiderivative (i.e. $\int f(y) \, dy = \int g(x) \, dx$) should be used to solve the differential equation.
 - Primary skill: `content`
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -261,9 +259,7 @@ $$y = 2\arctan(x + C) - x$$
 
 #### tb_0003_c02
 
-- Criterion: The response must provide the correct answer to the question, i.e. the correct answer is \[ 
-y = 2\arctan(x + C) - x 
-\].
+- Criterion: The response must provide the correct answer to the question, i.e. the correct answer is $y = 2\arctan(x + C) - x$.
 - Primary skill: `content`
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -271,7 +267,7 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c03
 
-- Criterion: The response must identify that the student's solution [let u=x+y, \(\frac{du}{dx} = \frac{dy}{dx}\)] is incorrect.
+- Criterion: The response must identify that the student's solution [let $u = x+y$, $\frac{du}{dx} = \frac{dy}{dx}$] is incorrect.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): P
@@ -279,7 +275,7 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c04
 
-- Criterion: The response must correct the error [let u=x+y, \(\frac{du}{dx} = \frac{dy}{dx}\)], i.e. since u=x+y, take derivative respect to x, \(\frac{du}{dx} = \frac{d(x+y)}{dx} = 1 + \frac{dy}{dx}\).
+- Criterion: The response must correct the error [let $u = x+y$, $\frac{du}{dx} = \frac{dy}{dx}$], i.e. since $u = x+y$, take derivative respect to $x$, $\frac{du}{dx} = \frac{d(x+y)}{dx} = 1 + \frac{dy}{dx}$.
 - Primary skill: `diagnosis`
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -287,9 +283,7 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c05
 
-- Criterion: The response must identify that the antiderivative \[
-\int \frac{du}{\cos(u)} = \sin(u)
-\] is incorrect.
+- Criterion: The response must identify that the antiderivative $\int \frac{du}{\cos(u)} = \sin(u)$ is incorrect.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): P
@@ -297,11 +291,7 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c06
 
-- Criterion: The response must correct error of the antiderivative, i.e. \[
-\int \frac{du}{\cos(u)} = \ln \left| \sec(u) + \tan(u) \right| + C
-\], and the student probably got wrong by using \[ 
-\int \cos(u) \, \mathrm{d}u = \sin(u) + C 
-\].
+- Criterion: The response must correct error of the antiderivative, i.e. $\int \frac{du}{\cos(u)} = \ln \left| \sec(u) + \tan(u) \right| + C$, and the student probably got wrong by using $\int \cos(u) \, \mathrm{d}u = \sin(u) + C$.
 - Primary skill: `content`
 - Criticality: `critical`
 - Grade (P/F): P
@@ -309,7 +299,7 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c07
 
-- Criterion: The response must identify that the antiderivative \(\int dx = Cx\) is incorrect.
+- Criterion: The response must identify that the antiderivative $\int dx = Cx$ is incorrect.
 - Primary skill: `diagnosis`
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -317,9 +307,7 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c08
 
-- Criterion: The response must correct error of the antiderivative, i.e. \[ 
-\text{int } dx = x + C 
-\], .
+- Criterion: The response must correct error of the antiderivative, i.e. $\int dx = x + C$.
 - Primary skill: `content`
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -327,35 +315,21 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c09
 
-- Criterion: The response must identify and explain the first error in the student's solution: \(\frac{du}{dx} = \frac{dy}{dx}\) is incorrect.
+- Criterion: The response must provide explanations to answer the student's question, i.e. you made 3 errors in you solution, $\frac{du}{dx} = \frac{dy}{dx}$, $\int \frac{du}{\cos(u)} = \sin(u)$, and $\int dx = Cx$, these incorrect steps lead to your incorrect final answer [$y = \arcsin(Cx) - x$].
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): P
-- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
+- Notes: The tutor says the student made 2 solutions, not 3. This may still be accurate depending on how you want to count errors. Either way, it does answer the student's question.
 
 #### tb_0003_c10
 
-- Criterion: The response must identify and explain the second error: \(\int \frac{du}{\cos(u)} = \sin(u)\) is incorrect.
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): P
-- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
-
-#### tb_0003_c11
-
-- Criterion: The response must identify and explain the third error: \(\int dx = Cx\) is incorrect (which, together with the other errors, leads to the incorrect final answer \(y = \arcsin(Cx) - x\)).
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): P
-- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
-
-#### tb_0003_c12
-
-- Criterion: The response should follow tutoring presentation conventions: use clear Markdown structure (e.g., headings, bullets, or sections) where it aids clarity; render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
+- Criterion: The response should be formatted by using headings, bold text, and correct LaTeX.
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P
 - Notes: ____
+
+---
 
 ## grader_04_item_02
 
@@ -581,21 +555,13 @@ Your **method** was sound throughout — just remember to use the correct moment
 
 #### tb_0336_c03
 
-- Criterion: The response must identify that the student made an arithmetic error in part c) by equating $\frac{1}{5}$ to $\frac{5}{35}$, when it should be $\frac{7}{35}$.
+- Criterion: The response must identify that the student made an arithmetic error in part c) by equating $\frac{1}{5}$ to $\frac{5}{35}$, when it should be $\frac{7}{35}$. If done correctly, the answer should have been $\frac{1}{7}MR^2\omega_0^2$, not $\frac{3}{35}MR^2\omega_0^2$.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): F
-- Notes: derived from original compound tb_0336_c03 human grade during curation regrade (no tutor engaged part c)
+- Notes: No error is explicitly mentioned in Part C.
 
 #### tb_0336_c04
-
-- Criterion: The response must state that, done correctly, the answer for part c) should have been $\frac{1}{7}MR^2\omega_0^2$, not $\frac{3}{35}MR^2\omega_0^2$.
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): F
-- Notes: derived from original compound tb_0336_c03 human grade during curation regrade (no tutor engaged part c)
-
-#### tb_0336_c05
 
 - Criterion: The response can explicitly note that the error of using the wrong moment of inertia leads to an incorrect result for both parts a) and b), since the result carry forward.
 - Primary skill: `diagnosis`
@@ -603,31 +569,31 @@ Your **method** was sound throughout — just remember to use the correct moment
 - Grade (P/F): F
 - Notes: Not explicitly noted.
 
-#### tb_0336_c06
+#### tb_0336_c05
 
-- Criterion: The response must explain that using conservation of angular momentum with the correct moment of inertial for a cylinder ($\frac{1}{2}MR^2$), you find that the linear velocity after the cylinder stops rolling is $v=\frac{1}{3}R\omega_0$.
+- Criterion: The response must explain that using conservation of angular momentum with the correct moment of inertial for a cylinder ($\frac{1}{2}MR^2$), you find that the linear velocity after the cylinder stops rolling is $v = \frac{1}{3}R\omega_0$.
 - Primary skill: `content`
 - Criticality: `critical`
 - Grade (P/F): P
 - Notes: ____
 
-#### tb_0336_c07
+#### tb_0336_c06
 
-- Criterion: The response must explain that you need to use angular acceleration  $\alpha=\frac{\tau}{I_{CM}}$ (not linear acceleration $a$) when considering angular velocity so that the kinematics equation becomes $\omega=\omega_0+\alpha t$.
+- Criterion: The response must explain that you need to use angular acceleration $\alpha = \frac{\tau}{I_{CM}}$ (not linear acceleration $a$) when considering angular velocity so that the kinematics equation becomes $\omega = \omega_0 + \alpha t$.
 - Primary skill: `content`
 - Criticality: `critical`
 - Grade (P/F): F
 - Notes: While the response uses angular acceleration, it does not explicitly explain that you need angular and not linear (maybe assuming student can infer that).
 
-#### tb_0336_c08
+#### tb_0336_c07
 
-- Criterion: The response must explain that using the correct moment of inertia, the angular acceleration is $-\frac{2\mu_kg}{R}$, leading to a time interval of $t=\frac{R\omega_0}{3\mu_kg}$.
+- Criterion: The response must explain that using the correct moment of inertia, the angular acceleration is $-\frac{2\mu_k g}{R}$, leading to a time interval of $t = \frac{R\omega_0}{3\mu_k g}$.
 - Primary skill: `content`
 - Criticality: `critical`
 - Grade (P/F): P
 - Notes: The calculation is shown, but the explanation could probably be more comprehensive.
 
-#### tb_0336_c09
+#### tb_0336_c08
 
 - Criterion: The response must explicitly acknowledge the student's expressed confusion in part b).
 - Primary skill: `diagnosis`
@@ -635,13 +601,23 @@ Your **method** was sound throughout — just remember to use the correct moment
 - Grade (P/F): P
 - Notes: Addressed, but personally not extremely well, could be better.
 
-#### tb_0336_c10
+#### tb_0336_c09
 
-- Criterion: The response should follow tutoring presentation conventions: address the student in the second person (conversational tutor voice); use clear Markdown structure (e.g., headings, bullets, or sections) where it aids clarity; render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
+- Criterion: The response should be written in the second person from the perspective of a teacher or tutor addressing their student.
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P
 - Notes: ____
+
+#### tb_0336_c10
+
+- Criterion: The response should use Markdown (sections, bullets, etc.) to demarcate separate ideas, and should use LaTeX to render all mathematical expressions.
+- Primary skill: ``
+- Criticality: `not_critical`
+- Grade (P/F): P
+- Notes: ____
+
+---
 
 ## grader_04_item_03
 

@@ -348,21 +348,13 @@ In this case, this specific male tule elk weighs **$8.13\text{ kg}$ more** than 
 
 #### tb_0340_c08
 
-- Criterion: The response must acknowledge the student's stated uncertainty about the sign and validate their correct instinct that the elk weighed more than predicted, rather than confirming the student's incorrect 'predicted - actual' framing.
+- Criterion: The response must include a validation for the student's question: "That means the prediction was 8.14 kg more than the actual weight, right?" similar to: "Totally! But does that align with what we are actually trying to do in the problem?"
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): F
-- Notes: derived from original compound tb_0340_c08 during curation regrade (validate; reworded criterion)
+- Notes: It doesn't address the student's error by asking this follow up question; it just goes into the correct formula
 
 #### tb_0340_c09
-
-- Criterion: The response must redirect the student toward the actual goal of the problem (e.g., prompting them to consider what the residual means in context rather than stopping at the arithmetic).
-- Primary skill: `diagnosis`
-- Criticality: `critical`
-- Grade (P/F): F
-- Notes: derived; redirect/scaffolding move (prompt vs tell)
-
-#### tb_0340_c10
 
 - Criterion: The response should include an analogy for thinking about finding residual weight similar to finding the difference between a cookie recipe's expected yield and how many cookies are actually baked.
 - Primary skill: `scaffolding`
@@ -370,9 +362,9 @@ In this case, this specific male tule elk weighs **$8.13\text{ kg}$ more** than 
 - Grade (P/F): F
 - Notes: ____
 
-#### tb_0340_c11
+#### tb_0340_c10
 
-- Criterion: The response should follow tutoring presentation conventions: address the student in the second person (conversational tutor voice). (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
+- Criterion: The response should be written  from the perspective of the teacher with the use of "you" and "we."
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P
