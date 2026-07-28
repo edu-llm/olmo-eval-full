@@ -20,7 +20,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 rows = [r for r in csv.DictReader(open("staging/curated/audit_rubric_quality.csv", encoding="utf-8"))
         if r["rigid_verbatim"] == "1"]
 curated = {j["criterion_id"]: j for j in
-           (json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"))}
+           (json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"))}
 spec = json.load(open("curation/pilot_edits.json", encoding="utf-8"))
 op_by_id = {o["id"]: o["op"] for o in spec["ops"]}
 

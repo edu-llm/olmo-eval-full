@@ -1,0 +1,617 @@
+{
+  "generated_at": "2026-07-28T16:55:37.853417+00:00",
+  "headline_caveat": "DIRECTIONAL ONLY. Graded data = 1/4 judge run on OLD pre-curation criteria (staging/response_matrix.csv), mapped by OLD Q-matrix data/rubrics_qmatrix_final.jsonl. N~=28 biased small-model subsample. The curated one-per-scenario presentation criterion was NOT graded; presentation is a PROXY from OLD all-zero-Q org/format + persona orphans (affect excluded). No AIC/BIC adjudication. Definitive test = full curated-criteria matrix (see memo pre-registration).",
+  "matrix": {
+    "n_models": 82,
+    "n_criteria": 6462,
+    "fill_rate": 0.2493
+  },
+  "item_set_sizes": {
+    "content_loaded": 4524,
+    "diagnosis_loaded": 2372,
+    "scaffolding_loaded": 1136,
+    "content_only": 2096,
+    "diagnosis_only": 399,
+    "scaffolding_only": 402,
+    "content_diagnosis": 1724,
+    "content_primary": 2843,
+    "diagnosis_primary": 1714,
+    "presentation_org_only": 299,
+    "presentation_persona_only": 129,
+    "presentation_proxy": 428,
+    "affect_all_zero": 476
+  },
+  "item_set_gradeable": {
+    "content_loaded": 4524,
+    "diagnosis_loaded": 2372,
+    "scaffolding_loaded": 1136,
+    "content_only": 2096,
+    "diagnosis_only": 399,
+    "scaffolding_only": 402,
+    "content_diagnosis": 1724,
+    "content_primary": 2843,
+    "diagnosis_primary": 1714,
+    "presentation_org_only": 299,
+    "presentation_persona_only": 129,
+    "presentation_proxy": 428,
+    "affect_all_zero": 476
+  },
+  "H1_presentation": {
+    "reliability_variance": {
+      "per_model_spread": {
+        "presentation_proxy": {
+          "n_items_total": 428,
+          "n_items_gradeable": 428,
+          "n_models_used": 25,
+          "mean_passrate": 0.182,
+          "std_passrate": 0.1425,
+          "min_passrate": 0.0,
+          "max_passrate": 0.4602,
+          "spread_flag": "has_spread"
+        },
+        "presentation_org_only": {
+          "n_items_total": 299,
+          "n_items_gradeable": 299,
+          "n_models_used": 25,
+          "mean_passrate": 0.1784,
+          "std_passrate": 0.1482,
+          "min_passrate": 0.0,
+          "max_passrate": 0.5169,
+          "spread_flag": "has_spread"
+        },
+        "presentation_persona_only": {
+          "n_items_total": 129,
+          "n_items_gradeable": 129,
+          "n_models_used": 23,
+          "mean_passrate": 0.2033,
+          "std_passrate": 0.1625,
+          "min_passrate": 0.0,
+          "max_passrate": 0.6279,
+          "spread_flag": "has_spread"
+        },
+        "affect_all_zero": {
+          "n_items_total": 476,
+          "n_items_gradeable": 476,
+          "n_models_used": 25,
+          "mean_passrate": 0.1368,
+          "std_passrate": 0.1397,
+          "min_passrate": 0.0,
+          "max_passrate": 0.4538,
+          "spread_flag": "has_spread"
+        }
+      },
+      "internal_coherence_inter_item": {
+        "presentation_proxy": {
+          "n_pairs_total": 91378,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 27677,
+          "mean_phi": 0.1192,
+          "median_phi": 0.1147,
+          "mean_tetrachoric_approx": 0.3372,
+          "median_overlap_n": 20
+        },
+        "presentation_org_only": {
+          "n_pairs_total": 44551,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 25967,
+          "mean_phi": 0.1384,
+          "median_phi": 0.14,
+          "mean_tetrachoric_approx": 0.3792,
+          "median_overlap_n": 20
+        },
+        "content_primary": {
+          "n_pairs_total": 4039903,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 3020,
+          "mean_phi": 0.1553,
+          "median_phi": -0.0526,
+          "mean_tetrachoric_approx": 0.5031,
+          "median_overlap_n": 20
+        },
+        "diagnosis_primary": {
+          "n_pairs_total": 1468041,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 5798,
+          "mean_phi": 0.2204,
+          "median_phi": 0.2129,
+          "mean_tetrachoric_approx": 0.5904,
+          "median_overlap_n": 20
+        },
+        "scaffolding_loaded": {
+          "n_pairs_total": 644680,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 6574,
+          "mean_phi": 0.0584,
+          "median_phi": 0.0335,
+          "mean_tetrachoric_approx": 0.1371,
+          "median_overlap_n": 20
+        }
+      }
+    },
+    "separability": {
+      "group_score_pearson": {
+        "content_primary__diagnosis_primary": 0.974,
+        "content_primary__scaffolding_loaded": 0.5068,
+        "content_primary__presentation_proxy": 0.7629,
+        "diagnosis_primary__scaffolding_loaded": 0.474,
+        "diagnosis_primary__presentation_proxy": 0.7473,
+        "scaffolding_loaded__presentation_proxy": 0.2563
+      },
+      "group_score_spearman": {
+        "content_primary__diagnosis_primary": 0.978,
+        "content_primary__scaffolding_loaded": 0.3044,
+        "content_primary__presentation_proxy": 0.9231,
+        "diagnosis_primary__scaffolding_loaded": 0.4161,
+        "diagnosis_primary__presentation_proxy": 0.9312,
+        "scaffolding_loaded__presentation_proxy": 0.1521
+      },
+      "group_score_pair_n": {
+        "content_primary__diagnosis_primary": 26,
+        "content_primary__scaffolding_loaded": 25,
+        "content_primary__presentation_proxy": 25,
+        "diagnosis_primary__scaffolding_loaded": 27,
+        "diagnosis_primary__presentation_proxy": 25,
+        "scaffolding_loaded__presentation_proxy": 25
+      },
+      "presentation_cross_item_corr": {
+        "presentation_x_content_primary": {
+          "n_pairs_total": 1216804,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 8881,
+          "mean_phi": 0.1053,
+          "median_phi": 0.0306,
+          "mean_tetrachoric_approx": 0.369,
+          "median_overlap_n": 20
+        },
+        "presentation_x_diagnosis_primary": {
+          "n_pairs_total": 733592,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 12870,
+          "mean_phi": 0.1257,
+          "median_phi": 0.0808,
+          "mean_tetrachoric_approx": 0.3966,
+          "median_overlap_n": 20
+        },
+        "presentation_x_scaffolding_loaded": {
+          "n_pairs_total": 486208,
+          "n_pairs_evaluated": 40000,
+          "n_pairs_usable": 13541,
+          "mean_phi": 0.0177,
+          "median_phi": -0.0526,
+          "mean_tetrachoric_approx": 0.1087,
+          "median_overlap_n": 20
+        }
+      },
+      "group_score_efa": {
+        "2_factor": {
+          "n_factors": 2,
+          "eigenvalues": [
+            2.9166,
+            0.7864,
+            0.2751,
+            0.0219
+          ],
+          "n_eigen_ge_1": 1,
+          "loadings_varimax": {
+            "content_primary": [
+              -0.905,
+              -0.366
+            ],
+            "diagnosis_primary": [
+              -0.917,
+              -0.297
+            ],
+            "scaffolding_loaded": [
+              -0.196,
+              -0.971
+            ],
+            "presentation_proxy": [
+              -0.916,
+              -0.023
+            ]
+          },
+          "dominant_factor": {
+            "content_primary": 0,
+            "diagnosis_primary": 0,
+            "scaffolding_loaded": 1,
+            "presentation_proxy": 0
+          }
+        },
+        "3_factor": {
+          "n_factors": 3,
+          "eigenvalues": [
+            2.9166,
+            0.7864,
+            0.2751,
+            0.0219
+          ],
+          "n_eigen_ge_1": 1,
+          "loadings_varimax": {
+            "content_primary": [
+              -0.861,
+              -0.292,
+              -0.402
+            ],
+            "diagnosis_primary": [
+              -0.899,
+              -0.209,
+              -0.373
+            ],
+            "scaffolding_loaded": [
+              -0.222,
+              -0.971,
+              -0.083
+            ],
+            "presentation_proxy": [
+              -0.44,
+              -0.086,
+              -0.894
+            ]
+          },
+          "dominant_factor": {
+            "content_primary": 0,
+            "diagnosis_primary": 0,
+            "scaffolding_loaded": 1,
+            "presentation_proxy": 2
+          }
+        },
+        "n_models_listwise": 25
+      }
+    }
+  },
+  "H2_content_explanation_diagnosis": {
+    "group_score_efa": {
+      "2_factor": {
+        "n_factors": 2,
+        "eigenvalues": [
+          3.8367,
+          0.796,
+          0.3214,
+          0.0351,
+          0.0108
+        ],
+        "n_eigen_ge_1": 1,
+        "loadings_varimax": {
+          "content_only": [
+            -0.92,
+            0.351
+          ],
+          "content_diagnosis": [
+            -0.91,
+            0.305
+          ],
+          "diagnosis_only": [
+            -0.953,
+            0.254
+          ],
+          "scaffolding_loaded": [
+            -0.21,
+            0.967
+          ],
+          "presentation_proxy": [
+            -0.889,
+            0.003
+          ]
+        },
+        "dominant_factor": {
+          "content_only": 0,
+          "content_diagnosis": 0,
+          "diagnosis_only": 0,
+          "scaffolding_loaded": 1,
+          "presentation_proxy": 0
+        }
+      },
+      "3_factor": {
+        "n_factors": 3,
+        "eigenvalues": [
+          3.8367,
+          0.796,
+          0.3214,
+          0.0351,
+          0.0108
+        ],
+        "n_eigen_ge_1": 1,
+        "loadings_varimax": {
+          "content_only": [
+            -0.832,
+            0.307,
+            -0.434
+          ],
+          "content_diagnosis": [
+            -0.925,
+            0.223,
+            -0.29
+          ],
+          "diagnosis_only": [
+            -0.88,
+            0.198,
+            -0.421
+          ],
+          "scaffolding_loaded": [
+            -0.226,
+            0.97,
+            -0.082
+          ],
+          "presentation_proxy": [
+            -0.448,
+            0.084,
+            -0.89
+          ]
+        },
+        "dominant_factor": {
+          "content_only": 0,
+          "content_diagnosis": 0,
+          "diagnosis_only": 0,
+          "scaffolding_loaded": 1,
+          "presentation_proxy": 2
+        }
+      },
+      "4_factor": {
+        "n_factors": 4,
+        "eigenvalues": [
+          3.8367,
+          0.796,
+          0.3214,
+          0.0351,
+          0.0108
+        ],
+        "n_eigen_ge_1": 1,
+        "loadings_varimax": {
+          "content_only": [
+            -0.829,
+            0.303,
+            -0.429,
+            0.193
+          ],
+          "content_diagnosis": [
+            -0.926,
+            0.224,
+            -0.293,
+            -0.047
+          ],
+          "diagnosis_only": [
+            -0.88,
+            0.199,
+            -0.423,
+            -0.022
+          ],
+          "scaffolding_loaded": [
+            -0.226,
+            0.971,
+            -0.082,
+            0.01
+          ],
+          "presentation_proxy": [
+            -0.448,
+            0.084,
+            -0.89,
+            0.011
+          ]
+        },
+        "dominant_factor": {
+          "content_only": 0,
+          "content_diagnosis": 0,
+          "diagnosis_only": 0,
+          "scaffolding_loaded": 1,
+          "presentation_proxy": 2
+        }
+      },
+      "n_models_listwise": 25,
+      "group_score_pearson": {
+        "content_only__content_diagnosis": 0.9523,
+        "content_only__diagnosis_only": 0.9665,
+        "content_only__scaffolding_loaded": 0.5186,
+        "content_only__presentation_proxy": 0.7805,
+        "content_diagnosis__diagnosis_only": 0.9794,
+        "content_diagnosis__scaffolding_loaded": 0.4507,
+        "content_diagnosis__presentation_proxy": 0.6945,
+        "diagnosis_only__scaffolding_loaded": 0.4271,
+        "diagnosis_only__presentation_proxy": 0.7858,
+        "scaffolding_loaded__presentation_proxy": 0.2563
+      }
+    },
+    "item_cross_corr": {
+      "content_primary_x_diagnosis_primary": {
+        "n_pairs_total": 4872902,
+        "n_pairs_evaluated": 40000,
+        "n_pairs_usable": 4102,
+        "mean_phi": 0.179,
+        "median_phi": 0.0187,
+        "mean_tetrachoric_approx": 0.5439,
+        "median_overlap_n": 20
+      },
+      "within_content_primary": {
+        "n_pairs_total": 4039903,
+        "n_pairs_evaluated": 40000,
+        "n_pairs_usable": 2973,
+        "mean_phi": 0.145,
+        "median_phi": -0.0526,
+        "mean_tetrachoric_approx": 0.5187,
+        "median_overlap_n": 20
+      },
+      "within_diagnosis_primary": {
+        "n_pairs_total": 1468041,
+        "n_pairs_evaluated": 40000,
+        "n_pairs_usable": 5736,
+        "mean_phi": 0.2208,
+        "median_phi": 0.2157,
+        "mean_tetrachoric_approx": 0.5858,
+        "median_overlap_n": 20
+      },
+      "diagnosis_only_x_content_only": {
+        "n_pairs_total": 836304,
+        "n_pairs_evaluated": 40000,
+        "n_pairs_usable": 5815,
+        "mean_phi": 0.1688,
+        "median_phi": 0.1048,
+        "mean_tetrachoric_approx": 0.4958,
+        "median_overlap_n": 20
+      }
+    },
+    "diagnosis_only_vs_content_only_permodel": {
+      "n_models": 25,
+      "pearson_r": 0.9665
+    }
+  },
+  "confirmatory_mirt_latent_corr_directional": {
+    "CAVEAT": "N~=28 -> multidim M2PL NOT identifiable; these latent correlations are a directional structure read ONLY.",
+    "current_3d_content_diagnosis_scaffolding": {
+      "available": true,
+      "labels": [
+        "content",
+        "diagnosis",
+        "scaffolding"
+      ],
+      "n_items_fit": 1800,
+      "n_persons_fit": 28,
+      "q_pattern_counts": {
+        "001": 282,
+        "010": 207,
+        "011": 14,
+        "100": 596,
+        "101": 118,
+        "110": 531,
+        "111": 52
+      },
+      "latent_correlation_matrix": [
+        [
+          1.0,
+          0.9094,
+          -0.1651
+        ],
+        [
+          0.9094,
+          1.0,
+          -0.1232
+        ],
+        [
+          -0.1651,
+          -0.1232,
+          1.0
+        ]
+      ],
+      "offdiag": {
+        "content__diagnosis": 0.9094,
+        "content__scaffolding": -0.1651,
+        "diagnosis__scaffolding": -0.1232
+      },
+      "converged": true,
+      "n_iter": 17,
+      "loglik": -9055.08,
+      "n_params": 4370
+    },
+    "full_4d_add_presentation": {
+      "available": true,
+      "labels": [
+        "content",
+        "diagnosis",
+        "scaffolding",
+        "presentation"
+      ],
+      "n_items_fit": 2160,
+      "n_persons_fit": 28,
+      "q_pattern_counts": {
+        "0001": 360,
+        "0010": 282,
+        "0100": 207,
+        "0110": 14,
+        "1000": 596,
+        "1010": 118,
+        "1100": 531,
+        "1110": 52
+      },
+      "latent_correlation_matrix": [
+        [
+          1.0,
+          0.9014,
+          -0.1389,
+          0.8126
+        ],
+        [
+          0.9014,
+          1.0,
+          -0.0962,
+          0.7492
+        ],
+        [
+          -0.1389,
+          -0.0962,
+          1.0,
+          -0.1474
+        ],
+        [
+          0.8126,
+          0.7492,
+          -0.1474,
+          1.0
+        ]
+      ],
+      "offdiag": {
+        "content__diagnosis": 0.9014,
+        "content__scaffolding": -0.1389,
+        "content__presentation": 0.8126,
+        "diagnosis__scaffolding": -0.0962,
+        "diagnosis__presentation": 0.7492,
+        "scaffolding__presentation": -0.1474
+      },
+      "converged": true,
+      "n_iter": 17,
+      "loglik": -11752.26,
+      "n_params": 5093
+    },
+    "alt_3d_replace_diagnosis": {
+      "available": true,
+      "labels": [
+        "content+diagnosis",
+        "scaffolding",
+        "presentation"
+      ],
+      "n_items_fit": 2160,
+      "n_persons_fit": 28,
+      "q_pattern_counts": {
+        "001": 360,
+        "010": 282,
+        "100": 1334,
+        "110": 184
+      },
+      "latent_correlation_matrix": [
+        [
+          1.0,
+          -0.2574,
+          0.698
+        ],
+        [
+          -0.2574,
+          1.0,
+          -0.0615
+        ],
+        [
+          0.698,
+          -0.0615,
+          1.0
+        ]
+      ],
+      "offdiag": {
+        "content+diagnosis__scaffolding": -0.2574,
+        "content+diagnosis__presentation": 0.698,
+        "scaffolding__presentation": -0.0615
+      },
+      "converged": true,
+      "n_iter": 26,
+      "loglik": -11852.04,
+      "n_params": 4507
+    }
+  },
+  "params": {
+    "min_items": 3,
+    "min_overlap": 10,
+    "max_pairs": 40000,
+    "grid": 5,
+    "max_iter": 80,
+    "seed": 20260728
+  },
+  "provenance": {
+    "script": "scripts/investigate_skill_options.py",
+    "argv": []
+  }
+}

@@ -1,8 +1,8 @@
 """Apply a curation edit-spec to a CLONE of the rubric bank.
 
-NEVER mutates the source files. Reads data/rubrics_qmatrix_final.jsonl +
-data/scenarios.jsonl, applies curation/pilot_edits.json, and writes curated
-clones under data/curated/ plus a human-readable change report under curation/.
+NEVER mutates the source files. Reads data/TutorBench/rubrics_qmatrix_final.jsonl +
+data/TutorBench/scenarios.jsonl, applies curation/pilot_edits.json, and writes curated
+clones under data/TutorBench/curated/ plus a human-readable change report under curation/.
 
 Supported ops (see curation/pilot_edits.json meta.calibration_baseline):
   * split            -- replace one criterion with N atomic children. Children
@@ -27,8 +27,8 @@ Every produced/edited record carries a `curation` provenance block.
 Usage:
     python scripts/apply_curation.py
     python scripts/apply_curation.py --spec curation/pilot_edits.json \
-        --rubrics data/rubrics_qmatrix_final.jsonl \
-        --scenarios data/scenarios.jsonl --out-dir data/curated
+        --rubrics data/TutorBench/rubrics_qmatrix_final.jsonl \
+        --scenarios data/TutorBench/scenarios.jsonl --out-dir data/TutorBench/curated
 """
 from __future__ import annotations
 
@@ -210,9 +210,9 @@ def make_standard_format(scenario_id: str, aspects: list[str], removed_ids: list
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", default="curation/pilot_edits.json")
-    ap.add_argument("--rubrics", default="data/rubrics_qmatrix_final.jsonl")
-    ap.add_argument("--scenarios", default="data/scenarios.jsonl")
-    ap.add_argument("--out-dir", default="data/curated")
+    ap.add_argument("--rubrics", default="data/TutorBench/rubrics_qmatrix_final.jsonl")
+    ap.add_argument("--scenarios", default="data/TutorBench/scenarios.jsonl")
+    ap.add_argument("--out-dir", default="data/TutorBench/curated")
     ap.add_argument("--report-dir", default="curation")
     ap.add_argument("--ensure-presentation", action=argparse.BooleanOptionalAction, default=True,
                     help="append one optional style_surface presentation criterion to any "

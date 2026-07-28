@@ -9,7 +9,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 CSV = "staging/curated/audit_rubric_quality.csv"
 curated = {j["criterion_id"]: j for j in
-           (json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"))}
+           (json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"))}
 rows = list(csv.DictReader(open(CSV, encoding="utf-8")))
 
 def qm(cid):

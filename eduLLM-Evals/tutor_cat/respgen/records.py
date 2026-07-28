@@ -47,12 +47,14 @@ def build_record(
     output: str,
     issue: bool = False,
     issue_description: str = "",
+    benchmark: str = BENCHMARK,
 ) -> dict[str, Any]:
-    """Assemble one Model Output row with the exact PRD Title-Case keys."""
+    """Assemble one Model Output row with the exact PRD Title-Case keys. The
+    `benchmark` label defaults to TutorBench for the single-benchmark path."""
     if not issue and not issue_description:
         issue_description = "N/A"  # schema: "<desc> if there was an issue, N/A otherwise"
     return {
-        "Benchmark": BENCHMARK,
+        "Benchmark": benchmark or BENCHMARK,
         "Scenario": scenario_id,
         "Model": model_id,
         "Model Revision": model_revision or "",
@@ -80,6 +82,7 @@ def error_record(
     gen_params: dict[str, Any] | None = None,
     max_model_len: int | None = None,
     description: str = "",
+    benchmark: str = BENCHMARK,
 ) -> dict[str, Any]:
     """A failure cell (load error, generation error) so the matrix still has an
     entry for this (model, scenario). Issue=1, Finish Reason='error', empty Output."""
@@ -99,4 +102,5 @@ def error_record(
         output="",
         issue=True,
         issue_description=description,
+        benchmark=benchmark,
     )

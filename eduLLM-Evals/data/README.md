@@ -1,5 +1,13 @@
 # Data drop point
 
+> **Generating open-model responses over these benchmarks?** The candidate banks
+> here (IFEval, InFoBench, TutorEval, WildBench, Bridge, plus TutorBench) are wired
+> into the multi-benchmark response generator via [`benchmarks.yaml`](../benchmarks.yaml):
+> `tutor-cat generate --benchmarks benchmarks.yaml` loads each model once and answers
+> every enabled benchmark. See the "Generating open-model responses" section of the
+> [top-level README](../README.md) for flags, per-benchmark system prompts, and the
+> output layout. (Grading is per-benchmark and separate.)
+
 ## ⚠️ Use the curated bank
 
 The **finalized rubric bank** lives in `data/curated/`:

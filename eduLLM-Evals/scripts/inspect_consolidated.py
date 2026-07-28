@@ -7,8 +7,8 @@ from collections import Counter
 sys.stdout.reconfigure(encoding="utf-8")
 
 src = {j["criterion_id"]: j for j in
-       (json.loads(l) for l in open("data/rubrics_qmatrix_final.jsonl", encoding="utf-8"))}
-cur = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+       (json.loads(l) for l in open("data/TutorBench/rubrics_qmatrix_final.jsonl", encoding="utf-8"))}
+cur = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
 
 cons = [c for c in cur if (c.get("curation", {}) or {}).get("op") == "format_consolidated"]
 print(f"consolidated presentation criteria: {len(cons)}")

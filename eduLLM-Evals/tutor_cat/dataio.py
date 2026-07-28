@@ -1,4 +1,4 @@
-"""Load and validate the preprocessed dataset (data/scenarios.jsonl, data/rubrics.jsonl)."""
+"""Load and validate the preprocessed dataset (data/TutorBench/scenarios.jsonl, data/TutorBench/rubrics.jsonl)."""
 
 from __future__ import annotations
 

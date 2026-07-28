@@ -19,7 +19,7 @@ FORMAT_ORPHAN_RE = re.compile(
 )
 
 curated = {j["criterion_id"]: j for j in
-           (json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"))}
+           (json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"))}
 spec = json.load(open("curation/pilot_edits.json", encoding="utf-8"))
 std_text = spec["meta"]["standard_format_criterion"]
 

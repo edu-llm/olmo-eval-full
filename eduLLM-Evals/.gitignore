@@ -45,16 +45,19 @@ dryrun/
 smoke_runs/
 
 # Data: the benchmark dataset IS tracked (needed on every machine that runs
-# the pipeline); ignore only ad-hoc/derived jsonl dropped here later.
+# the pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root.
+# (This glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
+# data/IFEval/ are tracked automatically.)
 data/*.jsonl
-!data/scenarios.jsonl
-!data/rubrics_qmatrix.jsonl
-!data/rubrics_calibrated.jsonl
-!data/rubrics_qmatrix_final.jsonl
+# TutorBench bank now lives under data/TutorBench/ (source + curated).
+!data/TutorBench/scenarios.jsonl
+!data/TutorBench/rubrics_qmatrix.jsonl
+!data/TutorBench/rubrics_calibrated.jsonl
+!data/TutorBench/rubrics_qmatrix_final.jsonl
 # Curated bank (curation_v1) IS the finalized rubric + scenario schema — track it.
-!data/curated/
-!data/curated/rubrics_qmatrix_curated.jsonl
-!data/curated/scenarios_curated.jsonl
+!data/TutorBench/curated/
+!data/TutorBench/curated/rubrics_qmatrix_curated.jsonl
+!data/TutorBench/curated/scenarios_curated.jsonl
 
 # Curation intermediates: per-agent/batch op files + review dumps are scratch;
 # the merged master spec (curation/pilot_edits.json) and reports ARE tracked.

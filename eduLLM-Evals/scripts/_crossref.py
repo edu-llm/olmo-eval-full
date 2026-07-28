@@ -54,7 +54,7 @@ print("Sample B changed but NOT (unchanged/renumbered):", sorted(b_inter))
 
 # Added criteria falling into sample scenarios (candidates to add to human sets)
 added = set(sets["added_curated"])
-cur = {json.loads(l)["criterion_id"]: json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")}
+cur = {json.loads(l)["criterion_id"]: json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")}
 added_scen = {cid: cur[cid]["scenario_id"] for cid in added}
 a_added = [cid for cid,scen in added_scen.items() if scen in sample_a_scen]
 b_added = [cid for cid,scen in added_scen.items() if scen in sample_b_scen]

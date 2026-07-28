@@ -6,8 +6,8 @@ metadata (objectivity, explicitness, primary_skill, criticality, criterion text)
 plus a small hash-based jitter to break ties. Both a and b are scaled into
 [0, 1] per team decision (2026-07-22).
 
-Reads  data/rubrics_qmatrix.jsonl
-Writes data/rubrics_calibrated.jsonl   (original fields + discrimination,
+Reads  data/TutorBench/rubrics_qmatrix.jsonl
+Writes data/TutorBench/rubrics_calibrated.jsonl   (original fields + discrimination,
                                         difficulty, calibration_version)
 
 Usage:  python scripts/estimate_placeholder_params.py
@@ -22,8 +22,8 @@ from pathlib import Path
 SKILLS = ("content", "diagnosis", "scaffolding")
 CALIBRATION_VERSION = "heuristic-v0-placeholder"
 
-SRC = Path("data/rubrics_qmatrix.jsonl")
-DST = Path("data/rubrics_calibrated.jsonl")
+SRC = Path("data/TutorBench/rubrics_qmatrix.jsonl")
+DST = Path("data/TutorBench/rubrics_calibrated.jsonl")
 
 # Words suggesting a harder, multi-part, or reasoning-heavy criterion.
 _HARD_WORDS = ("justify", "explain why", "derive", "prove", "misconception",

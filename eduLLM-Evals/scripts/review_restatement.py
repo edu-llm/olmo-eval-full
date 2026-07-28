@@ -23,9 +23,9 @@ RESTATE = re.compile(
 )
 WITHHOLD = re.compile(r"\b(must not|should not|shouldn't|do not|don't|without)\b", re.I)
 
-rubrics = [json.loads(l) for l in open("data/rubrics_qmatrix_final.jsonl", encoding="utf-8")]
+rubrics = [json.loads(l) for l in open("data/TutorBench/rubrics_qmatrix_final.jsonl", encoding="utf-8")]
 scen = {s["scenario_id"]: s for s in
-        (json.loads(l) for l in open("data/scenarios.jsonl", encoding="utf-8"))}
+        (json.loads(l) for l in open("data/TutorBench/scenarios.jsonl", encoding="utf-8"))}
 
 hits = [r for r in rubrics if RESTATE.search(r.get("criterion", "") or "")]
 withheld = [r for r in hits if WITHHOLD.search(r.get("criterion", "") or "")]

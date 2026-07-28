@@ -1,4 +1,4 @@
-"""Apply adjudicated Q-matrix corrections to ``data/rubrics_qmatrix_final.jsonl``.
+"""Apply adjudicated Q-matrix corrections to ``data/TutorBench/rubrics_qmatrix_final.jsonl``.
 
 Two independent, separately versioned correction passes are applied:
 
@@ -270,7 +270,7 @@ def render_report(human_log: list[dict], rule_log: list[dict], meta: dict) -> st
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--rubrics", type=Path, default=ROOT / "data/rubrics_qmatrix_final.jsonl")
+    parser.add_argument("--rubrics", type=Path, default=ROOT / "data/TutorBench/rubrics_qmatrix_final.jsonl")
     parser.add_argument("--adjudications", type=Path,
                         default=ROOT / "qmatrix_human_review/adjudications.csv")
     parser.add_argument("--manifest", type=Path,

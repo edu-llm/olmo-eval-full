@@ -24,6 +24,11 @@ class Scenario:
     source: str = ""
     split: str = ""
     version: str = "1.0"
+    # Canonical benchmark label (e.g. "TutorBench", "IFEval"), stamped by the
+    # multi-benchmark loader from benchmarks.yaml — NOT from `source`, which is a
+    # HuggingFace URL for the candidate banks. Drives per-benchmark system prompts
+    # and the output shard / "Benchmark" row label. Empty => treated as TutorBench.
+    benchmark: str = ""
 
     @classmethod
     def from_json(cls, obj: dict[str, Any]) -> "Scenario":
@@ -40,6 +45,7 @@ class Scenario:
             source=obj.get("source", ""),
             split=obj.get("split", ""),
             version=obj.get("version", "1.0"),
+            benchmark=obj.get("benchmark", ""),
         )
 
 

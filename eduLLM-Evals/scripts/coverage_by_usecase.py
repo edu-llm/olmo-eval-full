@@ -9,9 +9,9 @@ from collections import defaultdict, Counter
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-cur = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+cur = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
 scen = {s["scenario_id"]: s for s in
-        (json.loads(l) for l in open("data/curated/scenarios_curated.jsonl", encoding="utf-8"))}
+        (json.loads(l) for l in open("data/TutorBench/curated/scenarios_curated.jsonl", encoding="utf-8"))}
 
 # Tightened detectors: match plurals, answer-specific withhold wording, and
 # explaining/error-identifying criteria regardless of exact skill tag.

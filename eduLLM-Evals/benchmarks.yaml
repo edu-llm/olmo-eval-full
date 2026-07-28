@@ -1,0 +1,41 @@
+# Benchmark registry for the multi-benchmark response-generation run
+# (`tutor-cat generate --benchmarks benchmarks.yaml`).
+#
+# Each entry declares one benchmark whose scenarios the open-weight fleet answers
+# in a SINGLE model load. The whole point: loading a model dominates the wall
+# clock, so instead of one `generate` run per benchmark (reload the model every
+# time), the fleet loads each model once and answers every enabled benchmark.
+#
+# Fields per entry:
+#   name       required. The canonical benchmark label. This is BOTH the output
+#              shard directory (runs/responses/<name>/<model>.jsonl) AND the
+#              "Benchmark" value written into every row. `source` in the data is a
+#              HuggingFace URL, not a clean label, so the name lives here instead.
+#   scenarios  required. Path (relative to this repo root) to the benchmark's
+#              scenarios.jsonl. Only text-modality scenarios are generated.
+#   enabled    optional, default true. The persistent on/off default for a
+#              benchmark. `--only A,B` on the command line overrides this and runs
+#              exactly the named subset regardless of `enabled`.
+#
+# Grading is per-benchmark and separate (different rubrics / skill axes /
+# verifiers); this file only governs response GENERATION, which is skill-agnostic.
+
+benchmarks:
+  - name: TutorBench
+    scenarios: data/TutorBench/scenarios.jsonl
+    enabled: true
+  - name: IFEval
+    scenarios: data/IFEval/scenarios.jsonl
+    enabled: true
+  - name: InFoBench
+    scenarios: data/InFoBench/scenarios.jsonl
+    enabled: true
+  - name: TutorEval
+    scenarios: data/TutorEval/scenarios.jsonl
+    enabled: true
+  - name: WildBench
+    scenarios: data/WildBench/scenarios.jsonl
+    enabled: true
+  - name: Bridge
+    scenarios: data/Bridge/scenarios.jsonl
+    enabled: true

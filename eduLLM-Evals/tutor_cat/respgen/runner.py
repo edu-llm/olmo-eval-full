@@ -35,17 +35,38 @@ _LOAD_ATTEMPTS = 3
 _LOAD_RETRY_DELAY = 5.0
 
 
-def load_scenarios(path: str | Path, limit: int | None = None) -> list:
-    """Load scenarios.jsonl as Scenario objects (text modality only). Reuses the
-    project's _load_jsonl + Scenario.from_json rather than reparsing."""
+def load_scenarios(
+    path: str | Path, limit: int | None = None, benchmark: str = "TutorBench"
+) -> list:
+    """Load scenarios.jsonl as Scenario objects (text modality only), stamping the
+    canonical `benchmark` label on each. Reuses the project's _load_jsonl +
+    Scenario.from_json rather than reparsing. The label is authoritative and
+    overrides any `benchmark` already in the row."""
     from ..dataio import _load_jsonl
     from ..schemas import Scenario
 
     rows = _load_jsonl(Path(path))
-    scenarios = [
-        Scenario.from_json(o) for o in rows if o.get("modality", "text") == "text"
-    ]
+    scenarios = []
+    for o in rows:
+        if o.get("modality", "text") != "text":
+            continue
+        scn = Scenario.from_json(o)
+        scn.benchmark = benchmark
+        scenarios.append(scn)
     return scenarios[:limit] if limit else scenarios
+
+
+def load_all_scenarios(
+    benchmarks: list[tuple[str, str]], limit: int | None = None
+) -> list:
+    """Load and concatenate the scenarios of several benchmarks into one combined
+    list, each Scenario tagged with its benchmark. `benchmarks` is a list of
+    (name, scenarios_path) pairs. `limit` caps scenarios PER benchmark (smoke
+    test), so a small --limit still exercises every enabled benchmark."""
+    combined: list = []
+    for name, path in benchmarks:
+        combined.extend(load_scenarios(path, limit=limit, benchmark=name))
+    return combined
 
 
 def _resolve_revision(model_id: str, override: str | None) -> str:
@@ -273,6 +294,49 @@ def _effective_latency(latency_s: float | None, elapsed: float, n: int) -> float
     return round(elapsed / n, 4) if n > 0 else None
 
 
+def _scenario_benchmark(scenario) -> str:
+    """Canonical benchmark label for a scenario; empty => TutorBench (the
+    single-benchmark default), so a plain --scenarios run still shards correctly."""
+    return getattr(scenario, "benchmark", "") or R.BENCHMARK
+
+
+class _ShardRouter:
+    """Route rows to one ShardWriter per benchmark (``out_dir/<benchmark>/<model>``),
+    opening each lazily so a benchmark that is fully complete on resume gets no
+    empty file. Also tracks each shard's out_dir-relative path for S3 upload."""
+
+    def __init__(self, out_dir: str | Path, model_id: str, truncate: bool):
+        self._out_dir = Path(out_dir)
+        self._model_id = model_id
+        self._truncate = truncate
+        self._writers: dict[str, ShardWriter] = {}
+
+    def path(self, benchmark: str) -> Path:
+        return shard_path(self._out_dir, self._model_id, benchmark=benchmark)
+
+    def write(self, benchmark: str, rec: dict[str, Any]) -> None:
+        w = self._writers.get(benchmark)
+        if w is None:
+            w = ShardWriter(self.path(benchmark), truncate=self._truncate)
+            self._writers[benchmark] = w
+        w.write(rec)
+
+    def close(self) -> None:
+        for w in self._writers.values():
+            w.close()
+
+    def upload(self, s3_uri: str | None) -> dict[str, str]:
+        """Upload each opened shard, keying by ``<benchmark>/<model>.jsonl`` so
+        per-benchmark shards never collide under one S3 prefix."""
+        uploaded: dict[str, str] = {}
+        for benchmark in self._writers:
+            p = self.path(benchmark)
+            dst = maybe_upload(p, s3_uri, rel_path=Path(benchmark) / p.name)
+            if dst:
+                uploaded[benchmark] = dst
+        return uploaded
+
+
 def run_model(
     spec: ModelSpec,
     scenarios: list,
@@ -282,28 +346,35 @@ def run_model(
     resume: bool = True,
     fetch_config: Callable[[str], dict] | None = None,
 ) -> dict[str, Any]:
-    """Generate every outstanding scenario for one model. Returns a summary dict."""
+    """Generate every outstanding scenario for one model — across ALL benchmarks
+    present in `scenarios` in a SINGLE model load — and write one shard per
+    (benchmark, model). Returns a summary dict."""
     resolved = resolve(spec, fetch_config=fetch_config)
-    path = shard_path(out_dir, spec.id)
-    # Resume counts a scenario done only if it has a *valid* row: Issue==0 AND a
-    # real prompt was fed (Prompt Tokens > 1). This retries the 50 hard-failed
-    # shards (Issue==1) AND the 18 truncation-corrupted shards (Prompt Tokens==1,
-    # but Issue==0 so the old resume wrongly skipped them). Invalid/duplicate rows
-    # are compacted out first so the regenerated shard has one clean row/scenario.
+    benchmarks = sorted({_scenario_benchmark(s) for s in scenarios})
+
+    # Resume, per benchmark shard. A scenario is done only with a *valid* row
+    # (Issue==0 AND a real prompt reached the model, Prompt Tokens > 1); hard
+    # failures and the truncation-bug rows are retried. Scenario ids are globally
+    # unique across benchmarks, so one done-set covers them all; each benchmark's
+    # invalid/duplicate rows are compacted out of its own shard first.
+    done: set[str] = set()
     if resume:
-        done, valid_rows, had_invalid = scan_shard(path)
-        if had_invalid:
-            rewrite_shard(path, valid_rows)
-    else:
-        done = set()
+        for b in benchmarks:
+            p = shard_path(out_dir, spec.id, benchmark=b)
+            b_done, valid_rows, had_invalid = scan_shard(p)
+            if had_invalid:
+                rewrite_shard(p, valid_rows)
+            done |= b_done
+
     todo = [s for s in scenarios if s.scenario_id not in done]
     if not todo:
-        return {"model": spec.id, "status": "already_complete", "written": 0, "shard": str(path)}
+        return {"model": spec.id, "status": "already_complete", "written": 0,
+                "benchmarks": benchmarks}
 
-    # truncate=not resume: a --no-resume regeneration overwrites the shard instead
-    # of appending a second set of rows on top (which would duplicate every cell).
-    # On resume the shard was already compacted to valid_rows above, so append.
-    writer = ShardWriter(path, truncate=not resume)
+    # truncate=not resume: a --no-resume regeneration overwrites each shard instead
+    # of appending a second set of rows. On resume the shards were already
+    # compacted to valid_rows above, so append.
+    router = _ShardRouter(out_dir, spec.id, truncate=not resume)
 
     # --- load (+ smoke test); a failure marks every outstanding cell as Issue ---
     backend = None
@@ -311,19 +382,21 @@ def run_model(
         backend, revision, tokenizer = _load_backend(resolved)
     except Exception as e:  # noqa: BLE001 - any load failure is isolated to this model
         for s in todo:
-            writer.write(
+            router.write(
+                _scenario_benchmark(s),
                 R.error_record(
                     scenario_id=s.scenario_id,
                     model_id=spec.id,
                     max_model_len=resolved.max_model_len,
                     description=f"load failed: {e!r}",
-                )
+                    benchmark=_scenario_benchmark(s),
+                ),
             )
-        writer.close()
+        router.close()
         _free_backend(backend)
-        uploaded = maybe_upload(path, s3_uri)
+        uploaded = router.upload(s3_uri)
         return {"model": spec.id, "status": "load_failed", "error": repr(e),
-                "written": len(todo), "shard": str(path), "s3": uploaded}
+                "written": len(todo), "benchmarks": benchmarks, "s3": uploaded}
 
     # --- render + tokenize + fit all prompts, then batch-generate ---
     rendered, applied, prompt_tokens, truncated, gen_budgets = [], [], [], [], []
@@ -358,7 +431,9 @@ def run_model(
     elapsed = time.time() - t0
 
     written = 0
+    per_benchmark: dict[str, int] = {}
     for i, s in enumerate(todo):
+        benchmark = _scenario_benchmark(s)
         # the effective (per-scenario) budget the model actually ran with
         gp = R.generation_params(
             spec.temperature, spec.top_p, gen_budgets[i], spec.repetition_penalty, spec.seed
@@ -372,6 +447,7 @@ def run_model(
                 gen_params=gp,
                 max_model_len=resolved.max_model_len,
                 description=f"generation failed: {gen_error}",
+                benchmark=benchmark,
             )
         else:
             g = results[i]
@@ -389,17 +465,20 @@ def run_model(
                 truncated=truncated[i],
                 latency_s=_effective_latency(g.latency_s, elapsed, len(todo)),
                 output=g.text,
+                benchmark=benchmark,
             )
-        writer.write(rec)
+        router.write(benchmark, rec)
         written += 1
-    writer.close()
+        per_benchmark[benchmark] = per_benchmark.get(benchmark, 0) + 1
+    router.close()
     _free_backend(backend)  # reclaim GPU memory before this process exits / next model
-    uploaded = maybe_upload(path, s3_uri)
+    uploaded = router.upload(s3_uri)
     return {
         "model": spec.id,
         "status": "ok" if results is not None else "generation_failed",
         "written": written,
-        "shard": str(path),
+        "benchmarks": benchmarks,
+        "written_by_benchmark": per_benchmark,
         "s3": uploaded,
         "elapsed_s": round(elapsed, 2),
         "throughput_scenarios_per_s": round(written / elapsed, 3) if elapsed > 0 else None,
@@ -425,10 +504,17 @@ def dry_run(
             f"thinking={r.enable_thinking}{tok}"
         )
     lines.append("\n=== sample prompts ===")
-    for s in scenarios[:n]:
+    # Show up to n prompts PER benchmark so the per-benchmark system-prompt
+    # selection (e.g. IFEval omits the system turn) is visible at a glance.
+    shown: dict[str, int] = {}
+    for s in scenarios:
+        benchmark = _scenario_benchmark(s)
+        if shown.get(benchmark, 0) >= n:
+            continue
+        shown[benchmark] = shown.get(benchmark, 0) + 1
         msgs = P.build_chat_messages(s)
         roles = [m["role"] for m in msgs]
-        lines.append(f"\n-- {s.scenario_id} [{s.use_case}] roles={roles}")
+        lines.append(f"\n-- [{benchmark}] {s.scenario_id} ({s.use_case}) roles={roles}")
         for m in msgs:
             preview = " ".join(m["content"].split())[:200]
             lines.append(f"   [{m['role']}] {preview}")

@@ -19,8 +19,8 @@ SPEC.loader.exec_module(hjv)
 
 
 def _load_inputs():
-    scenarios = hjv.load_jsonl(ROOT / "data" / "scenarios.jsonl")
-    rubrics = hjv.load_jsonl(ROOT / "data" / "rubrics_qmatrix_final.jsonl")
+    scenarios = hjv.load_jsonl(ROOT / "data" / "TutorBench" / "scenarios.jsonl")
+    rubrics = hjv.load_jsonl(ROOT / "data" / "TutorBench" / "rubrics_qmatrix_final.jsonl")
     return scenarios, rubrics
 
 

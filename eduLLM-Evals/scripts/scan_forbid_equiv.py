@@ -6,7 +6,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-curated = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+curated = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
 
 # "forbid an equivalent" / "mandatory verbatim" markers. Exclude withhold (must not / without saying).
 FORBID = re.compile(

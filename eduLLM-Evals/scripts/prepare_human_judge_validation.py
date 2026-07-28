@@ -490,8 +490,8 @@ def main(argv: list[str] | None = None) -> int:
 
     _load_env()
     cfg = load_config(args.config)
-    scenarios_path = cfg.get("data", {}).get("scenarios", "data/scenarios.jsonl")
-    rubrics_path = cfg.get("data", {}).get("rubrics", "data/rubrics_qmatrix_final.jsonl")
+    scenarios_path = cfg.get("data", {}).get("scenarios", "data/TutorBench/scenarios.jsonl")
+    rubrics_path = cfg.get("data", {}).get("rubrics", "data/TutorBench/rubrics_qmatrix_final.jsonl")
     cache_dir = cfg.get("cache_dir", "cache")
 
     scenario_rows = load_jsonl(scenarios_path)

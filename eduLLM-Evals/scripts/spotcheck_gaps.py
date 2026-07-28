@@ -1,9 +1,9 @@
 import json, sys
 sys.stdout.reconfigure(encoding="utf-8")
 cur = {}
-for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"):
+for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8"):
     c = json.loads(l); cur.setdefault(c["scenario_id"], []).append(c)
-scen = {s["scenario_id"]: s for s in (json.loads(l) for l in open("data/curated/scenarios_curated.jsonl", encoding="utf-8"))}
+scen = {s["scenario_id"]: s for s in (json.loads(l) for l in open("data/TutorBench/curated/scenarios_curated.jsonl", encoding="utf-8"))}
 
 checks = {
     "hint_scaffold MISSING (hint_generation)": ["tb_0499", "tb_0518", "tb_0520"],

@@ -2,8 +2,8 @@ import json, sys, csv, os
 from collections import Counter, defaultdict
 sys.stdout.reconfigure(encoding="utf-8")
 
-src = [json.loads(l) for l in open("data/rubrics_qmatrix_final.jsonl", encoding="utf-8")]
-cur = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+src = [json.loads(l) for l in open("data/TutorBench/rubrics_qmatrix_final.jsonl", encoding="utf-8")]
+cur = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
 src_by_id = {r["criterion_id"]: r for r in src}
 
 # Build maps from original source id -> curated records

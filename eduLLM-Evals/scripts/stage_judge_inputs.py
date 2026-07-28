@@ -94,8 +94,8 @@ from tutor_cat.dataio import load_bank  # noqa: E402
 
 DEFAULT_MANIFEST = ROOT / "tutorbench-responses" / "_response_manifest.json"
 DEFAULT_RESPONSES_DIR = ROOT / "tutorbench-responses"
-DEFAULT_SCENARIOS = ROOT / "data" / "scenarios.jsonl"
-DEFAULT_RUBRICS = ROOT / "data" / "rubrics_qmatrix_final.jsonl"
+DEFAULT_SCENARIOS = ROOT / "data" / "TutorBench" / "scenarios.jsonl"
+DEFAULT_RUBRICS = ROOT / "data" / "TutorBench" / "rubrics_qmatrix_final.jsonl"
 DEFAULT_OUT = ROOT / "staging" / "judge_inputs.jsonl"
 DEFAULT_OUT_MANIFEST = ROOT / "staging" / "judge_inputs_manifest.json"
 

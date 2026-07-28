@@ -1,7 +1,7 @@
 """Rubric-quality audit: quantify three human-flagged failure modes in the
 TutorBench-derived criterion bank.
 
-READ-ONLY. Never mutates data/rubrics_qmatrix_final.jsonl. Emits a report under
+READ-ONLY. Never mutates data/TutorBench/rubrics_qmatrix_final.jsonl. Emits a report under
 staging/ (audit_rubric_quality.csv + .json) and prints a summary.
 
 The three flagged issues (from human grader packet review):
@@ -30,7 +30,7 @@ Every flag is a HEURISTIC. The CSV dumps per-criterion flags for hand audit.
 
 Usage:
     python scripts/audit_rubric_quality.py
-    python scripts/audit_rubric_quality.py --rubrics data/rubrics_qmatrix_final.jsonl --out-dir staging
+    python scripts/audit_rubric_quality.py --rubrics data/TutorBench/rubrics_qmatrix_final.jsonl --out-dir staging
 """
 from __future__ import annotations
 
@@ -206,7 +206,7 @@ def is_prescribed_wording(text: str) -> tuple[bool, list[str]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--rubrics", default="data/rubrics_qmatrix_final.jsonl")
+    ap.add_argument("--rubrics", default="data/TutorBench/rubrics_qmatrix_final.jsonl")
     ap.add_argument("--out-dir", default="staging")
     args = ap.parse_args()
 

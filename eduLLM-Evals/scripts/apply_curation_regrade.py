@@ -29,7 +29,7 @@ import pathlib
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent
 PACKETS = ROOT / "grader_packets"
-CURATED = ROOT / "data" / "curated" / "rubrics_qmatrix_curated.jsonl"
+CURATED = ROOT / "data" / "TutorBench" / "curated" / "rubrics_qmatrix_curated.jsonl"
 
 AFFECTED_SCENARIOS = ("tb_0003", "tb_0336", "tb_0340")
 

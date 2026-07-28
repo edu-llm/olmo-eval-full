@@ -6,8 +6,8 @@ from collections import defaultdict
 sys.stdout.reconfigure(encoding="utf-8")
 
 src = {j["criterion_id"]: j for j in
-       (json.loads(l) for l in open("data/rubrics_qmatrix_final.jsonl", encoding="utf-8"))}
-cur = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+       (json.loads(l) for l in open("data/TutorBench/rubrics_qmatrix_final.jsonl", encoding="utf-8"))}
+cur = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
 
 # group split children by parent
 splits = defaultdict(list)

@@ -21,8 +21,13 @@ def sanitize_model_id(model_id: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]", "_", model_id)
 
 
-def shard_path(out_dir: str | Path, model_id: str) -> Path:
-    return Path(out_dir) / f"{sanitize_model_id(model_id)}.jsonl"
+def shard_path(out_dir: str | Path, model_id: str, benchmark: str | None = None) -> Path:
+    """One JSONL shard per (benchmark, model). With `benchmark` set the shard
+    lives under a per-benchmark subdir (``out_dir/<benchmark>/<model>.jsonl``) so
+    each benchmark's rows stay in their own file for per-benchmark grading; with
+    it None the historical flat ``out_dir/<model>.jsonl`` layout is kept."""
+    base = Path(out_dir) / benchmark if benchmark else Path(out_dir)
+    return base / f"{sanitize_model_id(model_id)}.jsonl"
 
 
 def _iter_rows(path: str | Path) -> Iterator[dict[str, Any]]:

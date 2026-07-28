@@ -4,8 +4,8 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-rubrics = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
-scenarios = [json.loads(l) for l in open("data/curated/scenarios_curated.jsonl", encoding="utf-8")]
+rubrics = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+scenarios = [json.loads(l) for l in open("data/TutorBench/curated/scenarios_curated.jsonl", encoding="utf-8")]
 
 by_id = {}
 dupes = []

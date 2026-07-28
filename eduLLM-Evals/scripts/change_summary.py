@@ -5,8 +5,8 @@ from collections import Counter
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-src = [json.loads(l) for l in open("data/rubrics_qmatrix_final.jsonl", encoding="utf-8")]
-cur = [json.loads(l) for l in open("data/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
+src = [json.loads(l) for l in open("data/TutorBench/rubrics_qmatrix_final.jsonl", encoding="utf-8")]
+cur = [json.loads(l) for l in open("data/TutorBench/curated/rubrics_qmatrix_curated.jsonl", encoding="utf-8")]
 src_ids = {r["criterion_id"] for r in src}
 
 op = Counter((c.get("curation", {}) or {}).get("op", "unchanged") for c in cur)

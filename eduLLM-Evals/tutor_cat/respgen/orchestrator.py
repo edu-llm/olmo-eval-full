@@ -90,24 +90,25 @@ def _select_gpu_ids(
 def _run_one_process(
     spec: ModelSpec,
     gpu_id: int,
-    scenarios_path: str,
+    benchmarks: list[tuple[str, str]],
     out_dir: str,
     s3_uri: str | None,
     resume: bool,
     limit: int | None,
     result_q: "mp.Queue",
 ) -> None:
-    """Process target: pin to one GPU, run EXACTLY ONE model, put its summary on
-    the queue. Because this process exits after one model, the OS reclaims all of
-    its GPU memory — the between-models leak can't accumulate across models."""
+    """Process target: pin to one GPU, load ONE model, answer every benchmark in
+    `benchmarks` (a list of (name, scenarios_path) pairs) in that single load, put
+    its summary on the queue. Because this process exits after one model, the OS
+    reclaims all of its GPU memory — the between-models leak can't accumulate."""
     import os
 
     # Pin THIS process to one GPU before importing torch/vllm (import reads it).
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-    from .runner import load_scenarios, run_model
+    from .runner import load_all_scenarios, run_model
 
     try:
-        scenarios = load_scenarios(scenarios_path, limit=limit)
+        scenarios = load_all_scenarios(benchmarks, limit=limit)
         res = run_model(spec, scenarios, out_dir, s3_uri=s3_uri, resume=resume)
     except Exception as e:  # noqa: BLE001 - never let one model kill the fleet
         res = {"model": spec.id, "status": "worker_error", "error": repr(e)}
@@ -118,7 +119,7 @@ def _spawn_one(
     ctx,
     spec: ModelSpec,
     gpu_id: int,
-    scenarios_path: str,
+    benchmarks: list[tuple[str, str]],
     out_dir: str,
     s3_uri: str | None,
     resume: bool,
@@ -135,7 +136,7 @@ def _spawn_one(
     result_q: "mp.Queue" = ctx.Queue()
     p = ctx.Process(
         target=_run_one_process,
-        args=(spec, gpu_id, scenarios_path, out_dir, s3_uri, resume, limit, result_q),
+        args=(spec, gpu_id, benchmarks, out_dir, s3_uri, resume, limit, result_q),
     )
     p.start()
     res: dict[str, Any] | None = None
@@ -160,9 +161,27 @@ def _spawn_one(
     return res
 
 
+def _as_benchmarks(scenarios: "str | Path | list") -> list[tuple[str, str]]:
+    """Normalize the fleet's scenario source to a list of (name, path) pairs.
+
+    A bare path is the single-benchmark shortcut (labeled TutorBench, matching the
+    default --scenarios behavior). A list may hold (name, path) pairs or objects
+    with .name/.scenarios (BenchmarkSpec), and is normalized to plain tuples so it
+    pickles trivially across the spawn boundary."""
+    if isinstance(scenarios, (str, Path)):
+        return [("TutorBench", str(scenarios))]
+    out: list[tuple[str, str]] = []
+    for b in scenarios:
+        if hasattr(b, "name") and hasattr(b, "scenarios"):
+            out.append((b.name, str(b.scenarios)))
+        else:
+            out.append((b[0], str(b[1])))
+    return out
+
+
 def run_fleet(
     specs: list[ModelSpec],
-    scenarios_path: str | Path,
+    scenarios: "str | Path | list",
     out_dir: str | Path,
     *,
     s3_uri: str | None = None,
@@ -173,8 +192,12 @@ def run_fleet(
     count_devices: Callable[[], int | None] = _cuda_device_count,
     run_one: Callable[[ModelSpec, int], dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Distribute `specs` across GPUs, running each model in its own fresh process.
-    Blocks until all models are done; returns one summary dict per model.
+    """Distribute `specs` across GPUs, running each model in its own fresh process
+    and answering every benchmark in a single model load. Blocks until all models
+    are done; returns one summary dict per model.
+
+    `scenarios` is either a single scenarios path (the TutorBench shortcut) or a
+    list of (name, path) pairs / BenchmarkSpecs — the multi-benchmark set.
 
     `gpu_ids` pins to explicit physical device indices (e.g. `[8]` = GPU 8 only);
     otherwise `gpus` (or all detected) devices 0..n-1 are used. Raises ValueError
@@ -182,6 +205,7 @@ def run_fleet(
 
     `run_one(spec, gpu_id) -> dict` is injectable for offline testing; the default
     spawns a fresh process per model via `_spawn_one`."""
+    benchmarks = _as_benchmarks(scenarios)
     ids = _select_gpu_ids(gpu_ids, gpus, len(specs))
     _validate_gpu_ids(ids, count_devices())
     ctx = mp.get_context("spawn")  # required for CUDA + clean env inheritance
@@ -189,7 +213,7 @@ def run_fleet(
     if run_one is None:
         def run_one(spec: ModelSpec, gpu_id: int) -> dict[str, Any]:
             return _spawn_one(
-                ctx, spec, gpu_id, str(scenarios_path), str(out_dir),
+                ctx, spec, gpu_id, benchmarks, str(out_dir),
                 s3_uri, resume, limit,
             )
 
