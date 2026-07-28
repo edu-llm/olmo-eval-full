@@ -26,7 +26,7 @@ import httpx
 
 from .schemas import JudgeVerdict, Rubric, Scenario
 
-PROMPT_VERSION = "judge-v2"  # Prometheus 2 native absolute grading (1-5 [RESULT])
+PROMPT_VERSION = "judge-v3"  # Prometheus 2 absolute grading + bank-wide grading policy
 
 # Graded judges (e.g. Prometheus 2) reply with a 1-5 "[RESULT] <n>" score even
 # when asked for pass/fail; map score >= this threshold to a pass. Overridable
@@ -41,6 +41,26 @@ _SYSTEM_PROMPT = (
     "You are a fair judge assistant tasked with providing clear, objective "
     "feedback based on specific criteria, ensuring each assessment reflects the "
     "absolute standards set for performance."
+)
+
+# Bank-wide grading policy (curation_v1). Mirrors the canonical frozen judge's
+# EVIDENCE_DECISION_POLICY item 7 (aws_judge_handoff/scripts/run_judge_validation.py,
+# judge-validation-v3) and curation/grading_notes.md, so the local smoke path
+# grades with the same semantic-equivalence rules as the canonical judge.
+_GRADING_POLICY = (
+    "Grading policy (applies to every criterion):\n"
+    "- Grade on meaning, not exact wording. Equivalent phrasing, synonyms, "
+    "mathematically equivalent notation or work, different ordering of independent "
+    "points, and rounding / significant-figure differences are acceptable when "
+    "actually expressed and correct — unless the criterion explicitly requires an "
+    "exact form or phrase.\n"
+    "- Criteria that say to \"state\"/\"say\" that <fact> require the fact or "
+    "answer, not a verbatim string.\n"
+    "- When a criterion asks to identify that something is incorrect, accept "
+    "either an explicit \"incorrect/wrong\" label or an equivalent correction "
+    "that unambiguously conveys the same.\n"
+    "- \"Must not …\" (withhold) criteria are satisfied when the response avoids "
+    "the prohibited content."
 )
 
 # One binary criterion rendered as a 1-5 rubric. With the default threshold of 4,
@@ -84,7 +104,7 @@ def build_messages(scenario: Scenario, rubric: Rubric, response: str) -> list[di
         rubric=_SCORE_RUBRIC.format(criterion=rubric.criterion),
     )
     return [
-        {"role": "system", "content": _SYSTEM_PROMPT},
+        {"role": "system", "content": f"{_SYSTEM_PROMPT}\n\n{_GRADING_POLICY}"},
         {"role": "user", "content": user},
     ]
 

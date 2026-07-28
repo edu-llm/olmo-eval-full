@@ -1,0 +1,3664 @@
+{
+  "meta": {
+    "policy_version": "curation_v1",
+    "source_rubrics": "data/rubrics_qmatrix_final.jsonl",
+    "source_scenarios": "data/scenarios.jsonl",
+    "calibration_baseline": {
+      "q1_split_granularity": "atomic splits at natural conceptual boundaries (not maximally fine)",
+      "q2_rigid_content": "split rule vs computation AND soften wording to accept semantic equivalents",
+      "q3_misscoped_restatement": "rescope to conditional (only if response re-derives), set not_critical, mark OPTIONAL with judge guidance that it may be left blank/N-A",
+      "q4_surface_orphans": "consolidate format/persona orphans into ONE reusable standard criterion",
+      "q5_verbatim_negation": "soften: accept explicit 'incorrect' label OR an equivalent correction",
+      "q6_withhold_falsepos": "withhold-answer criteria that quote the answer are correctly scoped: KEEP as single criterion",
+      "q7_child_metadata": "renumber scenario criteria sequentially; copy parent criticality/q_mapping/difficulty/discrimination to children (override only when it does not make sense)",
+      "q8_scope": "pilot = 12 triple-flagged + ~12 critical non-atomic (+3 rescope demos), for review before scaling"
+    },
+    "judge_note_softened": "All rewritten criteria accept SEMANTICALLY EQUIVALENT responses; do not fail a response solely for different wording, ordering, or notation as long as the required idea/quantity is present.",
+    "standard_format_criterion": "The response should follow tutoring presentation conventions: address the student in the second person, use Markdown structure (e.g., headings/bullets) where it aids clarity, and render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)"
+  },
+  "ops": [
+    {
+      "id": "tb_0052_c02",
+      "op": "split",
+      "note": "triple-flagged; bundle of equation + explanation",
+      "children": [
+        {
+          "text": "The response must present the neutralization equation for benzoic acid with NaOH (e.g., C₆H₅COOH + NaOH → C₆H₅COONa + H₂O), or an equivalent correct representation."
+        },
+        {
+          "text": "The response must explain that the strong base (NaOH) drives the neutralization to completion."
+        }
+      ]
+    },
+    {
+      "id": "tb_0104_c03",
+      "op": "split",
+      "note": "triple-flagged; entire Henderson–Hasselbalch worked solution crammed into one P/F",
+      "children": [
+        {
+          "text": "The response must set up the base/acid ratio correctly ([base]/[acid] = 0.150/0.250 = 0.600)."
+        },
+        {
+          "text": "The response must apply the Henderson–Hasselbalch equation, pH = pKa + log([base]/[acid])."
+        },
+        {
+          "text": "The response must arrive at the correct pH (pH ≈ 4.54), accepting minor rounding."
+        }
+      ]
+    },
+    {
+      "id": "tb_0234_c05",
+      "op": "split",
+      "note": "triple-flagged; Q1 approved 2-way split",
+      "children": [
+        {
+          "text": "The response must explain that a relative maximum occurs where H'(t) transitions from positive to negative (a value below the critical point gives a positive H'(t), a value above gives a negative H'(t))."
+        },
+        {
+          "text": "The response must explain that a relative minimum occurs with the inverse sign pattern (H'(t) transitions from negative to positive)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0296_c01",
+      "op": "split",
+      "note": "triple-flagged; Bayes statement + component labeling + substitution/compute",
+      "children": [
+        {
+          "text": "The response must state Bayes' theorem, P(D|T) = P(T|D)·P(D) / P(T), or an equivalent formulation."
+        },
+        {
+          "text": "The response must identify the components of the formula (prior P(D), likelihood P(T|D), evidence P(T))."
+        },
+        {
+          "text": "The response must substitute the given test parameters into the formula and compute the posterior probability."
+        }
+      ]
+    },
+    {
+      "id": "tb_0405_c04",
+      "op": "split",
+      "note": "triple-flagged; detect wrong x^2 + downstream wrong x (Q5 soften applied via wording)",
+      "children": [
+        {
+          "text": "The response must identify that the student's value for x² (0.045) is incorrect."
+        },
+        {
+          "text": "The response must note that this led to an incorrect value of x (x = 0.21)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0533_c06",
+      "op": "keep",
+      "note": "triple-flagged, but WITHHOLD criterion (quotes the LTP formula only to forbid revealing it). Q6: keep as single criterion."
+    },
+    {
+      "id": "tb_0535_c04",
+      "op": "split",
+      "note": "triple-flagged; bundles a prohibition (don't reveal) AND a positive requirement (pose a guiding question) – split those two distinct gradeable things",
+      "children": [
+        {
+          "text": "The response must not directly instruct the student to compute P(R) or state the Law of Total Probability formula."
+        },
+        {
+          "text": "The response must instead prompt the student with a guiding question that moves them toward the approach."
+        }
+      ]
+    },
+    {
+      "id": "tb_0555_c03",
+      "op": "split",
+      "note": "triple-flagged; identify term types + no-closed-form conclusion + suggest alternative",
+      "children": [
+        {
+          "text": "The response must point out that the equation mixes trigonometric, exponential, and polynomial terms."
+        },
+        {
+          "text": "The response must convey that such an equation is unlikely to have a closed-form solution."
+        },
+        {
+          "text": "The response must suggest an alternative approach, such as graphing or a numerical method."
+        }
+      ]
+    },
+    {
+      "id": "tb_0557_c08",
+      "op": "keep",
+      "note": "triple-flagged, but WITHHOLD (critical_negative) criterion that quotes the correct code only to forbid revealing it. Q6: keep as single criterion."
+    },
+    {
+      "id": "tb_0615_c03",
+      "op": "split",
+      "note": "triple-flagged; hint bundling two techniques",
+      "children": [
+        {
+          "text": "The response must hint that Part (a) can be approached with integration by parts (∫u dv = uv − ∫v du)."
+        },
+        {
+          "text": "The response must also point the student toward u-substitution as a complementary technique."
+        }
+      ]
+    },
+    {
+      "id": "tb_0636_c04",
+      "op": "keep",
+      "note": "triple-flagged, but WITHHOLD criterion (quotes the next algebraic step only to forbid revealing it). Q6: keep as single criterion."
+    },
+    {
+      "id": "tb_0641_c09",
+      "op": "keep",
+      "note": "triple-flagged, but WITHHOLD (critical_negative) criterion that quotes the next steps only to forbid revealing them. Q6: keep as single criterion."
+    },
+    {
+      "id": "tb_0004_c02",
+      "op": "split",
+      "note": "critical non-atomic; 3 unit conversions + final mole computation",
+      "children": [
+        {
+          "text": "The response must convert the given quantities to PV=nRT units (pressure to atm, 950 mL → 0.950 L, 25°C → 298 K)."
+        },
+        {
+          "text": "The response must compute n(O₂) ≈ 3.74×10⁻² mol using R = 0.08206 L·atm·mol⁻¹·K⁻¹."
+        }
+      ]
+    },
+    {
+      "id": "tb_0005_c03",
+      "op": "split",
+      "note": "critical non-atomic; definition + simplification",
+      "children": [
+        {
+          "text": "The response must state the definition tan(θ) = sin(θ)/cos(θ)."
+        },
+        {
+          "text": "The response must show the step-by-step simplification proving the two formulas are equivalent."
+        }
+      ]
+    },
+    {
+      "id": "tb_0010_c01",
+      "op": "split",
+      "note": "critical non-atomic; identify missing knowledge + state formula",
+      "children": [
+        {
+          "text": "The response must identify the addition rule for mutually exclusive events as the key missing background knowledge."
+        },
+        {
+          "text": "The response must state the rule: P(A or B) = P(A) + P(B) when the events cannot occur simultaneously."
+        }
+      ]
+    },
+    {
+      "id": "tb_0011_c01",
+      "op": "split",
+      "note": "critical non-atomic; identify distinction + explain it is root of confusion",
+      "children": [
+        {
+          "text": "The response must identify the core conceptual distinction between an 'experimental unit' and a 'matching/blocking unit'."
+        },
+        {
+          "text": "The response must explain that this distinction is the root of the student's confusion."
+        }
+      ]
+    },
+    {
+      "id": "tb_0011_c03",
+      "op": "split",
+      "note": "critical non-atomic; define term + apply to the 72 people",
+      "children": [
+        {
+          "text": "The response must define 'experimental unit' as the smallest entity to which a treatment is independently applied."
+        },
+        {
+          "text": "The response must explain why each of the 72 individuals is an experimental unit (treatment applied independently to each)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0014_c02",
+      "op": "split",
+      "note": "critical non-atomic; two-step activation mechanism",
+      "children": [
+        {
+          "text": "The response must describe step (a): allosteric release of the autoinhibitory tail when Kinase Z binds Protein Y."
+        },
+        {
+          "text": "The response must describe step (b): phosphorylation of Thr 183 in Z's activation loop by the helper kinase CK-α."
+        }
+      ]
+    },
+    {
+      "id": "tb_0019_c01",
+      "op": "split",
+      "note": "critical non-atomic; validity claim + n/N justification + hypergeometric rationale",
+      "children": [
+        {
+          "text": "The response must identify that X ~ Binomial(n = 10, p = 0.35) is a valid approximation."
+        },
+        {
+          "text": "The response must justify this using the condition n/N < 0.10 (with N = 120)."
+        },
+        {
+          "text": "The response must note that the exact distribution is hypergeometric (sampling without replacement) and explain why the binomial approximation is acceptable."
+        }
+      ]
+    },
+    {
+      "id": "tb_0019_c03",
+      "op": "split",
+      "note": "critical non-atomic; complement identity + two probability computations (soften: drop 'failure to show in full' language)",
+      "children": [
+        {
+          "text": "The response must use the complement identity P(X≥2) = 1 − P(X=0) − P(X=1)."
+        },
+        {
+          "text": "The response must compute P(X=0)."
+        },
+        {
+          "text": "The response must compute P(X=1)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0019_c04",
+      "op": "split",
+      "note": "critical non-atomic; apply binomial pmf for k=0 and k=1 (soften: drop 'omitting ... leads to failure')",
+      "children": [
+        {
+          "text": "The response must apply the binomial pmf P(X=k) = C(n,k) p^k (1−p)^(n−k) for k = 0, showing the terms."
+        },
+        {
+          "text": "The response must apply the binomial pmf for k = 1, showing the terms."
+        }
+      ]
+    },
+    {
+      "id": "tb_0019_c08",
+      "op": "soften",
+      "note": "critical, rigid mega-criterion (absolute 'any switch ... causes failure'). Soften per Q5 spirit; keep as one presentation check.",
+      "text": "The response should use consistent notation for variables and probabilities (e.g., X, p, n, P(X≥2)) and include appropriate units in its final interpretation. Minor informal restatements are acceptable as long as the meaning remains unambiguous."
+    },
+    {
+      "id": "tb_0020_c07",
+      "op": "split",
+      "note": "critical non-atomic; final-ratio match + two per-gene segregation facts",
+      "children": [
+        {
+          "text": "The response must show that the offspring color ratio produced by the genetic model matches the ratio in the original question."
+        },
+        {
+          "text": "The response must note the 1:2:1 segregation at gene A (black : gray : brown)."
+        },
+        {
+          "text": "The response must note the 3:1 segregation at gene B (pigmented : white)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0021_c03",
+      "op": "split",
+      "note": "critical non-atomic; example + what the example must illustrate",
+      "children": [
+        {
+          "text": "The response must provide a relatable example (e.g., 'AABC') showing how skipping prevents incorrect repeated swaps."
+        },
+        {
+          "text": "The example must illustrate that, without skipping two letters after a swap, the same letter could be swapped multiple times."
+        }
+      ]
+    },
+    {
+      "id": "tb_0001_c02",
+      "op": "rescope_optional",
+      "note": "Q3 demo: formula restatement not responsive to the conceptual follow-up turn",
+      "text": "If the response re-derives the ionization from scratch, it must include the pH→[H⁺] conversion formula ([H⁺] = 10^(−pH)).",
+      "judge_guidance": "OPTIONAL. Only applies if the response chooses to re-derive the calculation. If the response answers the follow-up conceptually without re-deriving, mark this criterion N/A (leave blank) — do NOT fail it."
+    },
+    {
+      "id": "tb_0001_c07",
+      "op": "rescope_optional",
+      "note": "Q3 demo",
+      "text": "If the response re-derives the percent ionization, it must include the percent-ionization formula (e.g., % ionization = [H⁺]/[HA]ᵢₙᵢₜᵢₐₗ × 100).",
+      "judge_guidance": "OPTIONAL. Only applies if the response re-computes percent ionization. If it does not re-derive, mark N/A (leave blank) — do NOT fail it."
+    },
+    {
+      "id": "tb_0001_c08",
+      "op": "rescope_optional",
+      "note": "Q3 demo",
+      "text": "If the response re-derives Ka, it must include the Ka expression (Ka = [H⁺][A⁻]/[HA]).",
+      "judge_guidance": "OPTIONAL. Only applies if the response re-computes Ka. If it does not re-derive, mark N/A (leave blank) — do NOT fail it."
+    },
+    {
+      "id": "tb_0019_c02",
+      "op": "soften",
+      "note": "tranche_1A absolute_failure; drop 'Any missing label ... leads to failure' tail, keep the declaration requirement",
+      "text": "The response must declare the random variable as \\( X \\sim \\text{Binomial}(n = 10, p = 0.35) \\) using formal notation and define both \\( n = 10 \\) (sample size) and \\( p = 0.35 \\) (proportion working over 40 hours) in context."
+    },
+    {
+      "id": "tb_0019_c05",
+      "op": "soften",
+      "note": "tranche_1A absolute_failure; drop 'Failure to name ... results in failure' tail",
+      "text": "The response must state that the binomial distribution is an approximation to the hypergeometric distribution because \\( n \\ll N \\)."
+    },
+    {
+      "id": "tb_0171_c08",
+      "op": "soften",
+      "note": "tranche_1A absolute_failure on a format orphan; remove automatic-failure language (will be absorbed by format-consolidation)",
+      "text": "The model response should be easily readable and clearly formatted, using bullet points, headers, tables, graphs, and mathematical expressions where they aid clarity."
+    },
+    {
+      "id": "tb_0444_c01",
+      "op": "soften",
+      "note": "tranche_1A absolute_failure; replace 'automatic fail' with graded language",
+      "text": "The response must correctly identify that a t-test (Welch's t-test) is required due to unknown population variances and different sample standard deviations; using a z-test without justification does not satisfy this criterion."
+    },
+    {
+      "id": "tb_0499_c11",
+      "op": "soften",
+      "note": "tranche_1A absolute_failure on a format orphan; remove automatic-failure language (will be absorbed by format-consolidation)",
+      "text": "The model response should be formatted using bullet points, headers, tables, graphs, and mathematical equations where they aid clarity."
+    },
+    {
+      "id": "tb_0011_c08",
+      "op": "soften",
+      "note": "tranche_1A reference_leak; remove 'similar to the Golden Response', keep the described pedagogical ordering generically",
+      "text": "The response must present the explanation in a pedagogically effective logical order that gradually builds understanding for a confused student (e.g., clarify the distinction first, then define/explain the roles, then refute the misconception with an example, then summarize)."
+    },
+    {
+      "id": "tb_0187_c01",
+      "op": "soften",
+      "note": "tranche_1A prescribed_wording; drop the 'similar to: \"...\"' scripted phrasing, keep the acknowledgement requirement",
+      "text": "The response must acknowledge that the student expressed confusion about how the treatments are actually assigned to each twin."
+    },
+    {
+      "id": "tb_0340_c08",
+      "op": "split",
+      "note": "tranche_1A prescribed_wording + bundled validate/redirect (diagnosis+scaffolding); user approved split",
+      "children": [
+        {
+          "text": "The response must acknowledge and validate the student's restatement that the prediction was 8.14 kg more than the actual weight (confirming the interpretation is correct).",
+          "q_mapping": {
+            "content": 0,
+            "diagnosis": 1,
+            "scaffolding": 0
+          }
+        },
+        {
+          "text": "The response must redirect the student toward the actual goal of the problem (e.g., prompting them to consider what the residual means in context rather than stopping at the arithmetic).",
+          "q_mapping": {
+            "content": 0,
+            "diagnosis": 0,
+            "scaffolding": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_0507_c04",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-reveal formula/plot); Q6 KEEP as single prohibition (non_atomic false-positive)"
+    },
+    {
+      "id": "tb_0513_c05",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-solve/state); Q6 KEEP"
+    },
+    {
+      "id": "tb_0530_c01",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-reveal final answer); Q6 KEEP"
+    },
+    {
+      "id": "tb_0534_c04",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-provide next step); Q6 KEEP"
+    },
+    {
+      "id": "tb_0558_c08",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-provide corrected code); Q6 KEEP"
+    },
+    {
+      "id": "tb_0560_c09",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-solve fully); Q6 KEEP"
+    },
+    {
+      "id": "tb_0584_c08",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-point-out parallel/series sets); Q6 KEEP"
+    },
+    {
+      "id": "tb_0596_c06",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-reveal pH answer); Q6 KEEP"
+    },
+    {
+      "id": "tb_0616_c01",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-reveal answer/mechanism); Q6 KEEP"
+    },
+    {
+      "id": "tb_0630_c07",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-provide next-step calcs); Q6 KEEP"
+    },
+    {
+      "id": "tb_0651_c04",
+      "op": "keep",
+      "note": "tranche_1B critical_negative withhold (must-not-calculate/state probability); Q6 KEEP"
+    },
+    {
+      "id": "tb_0003_c09",
+      "op": "split",
+      "note": "tranche_1C critical non_atomic; 3 distinct calculus errors bundled",
+      "children": [
+        {
+          "text": "The response must identify and explain the first error in the student's solution: \\(\\frac{du}{dx} = \\frac{dy}{dx}\\) is incorrect."
+        },
+        {
+          "text": "The response must identify and explain the second error: \\(\\int \\frac{du}{\\cos(u)} = \\sin(u)\\) is incorrect."
+        },
+        {
+          "text": "The response must identify and explain the third error: \\(\\int dx = Cx\\) is incorrect (which, together with the other errors, leads to the incorrect final answer \\(y = \\arcsin(Cx) - x\\))."
+        }
+      ]
+    },
+    {
+      "id": "tb_0013_c03",
+      "op": "split",
+      "note": "tranche_1C critical non_atomic; state rule AND provide computation",
+      "children": [
+        {
+          "text": "The response must state the multiplication rule for conditional independence: P(A and B | C) = P(A | C) × P(B | C)."
+        },
+        {
+          "text": "The response must provide the calculation showing 0.92 × 0.88 = 0.8096."
+        }
+      ]
+    },
+    {
+      "id": "tb_0015_c07",
+      "op": "split",
+      "note": "tranche_1C critical non_atomic; identify+correct, no sibling correction",
+      "children": [
+        {
+          "text": "The response must acknowledge that the student's original value for the net torque is incorrect."
+        },
+        {
+          "text": "The response must explain the correction: the friction torque should be subtracted, not added, giving \\(\\tau_{net} = \\tau_1 - \\tau_2\\)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0028_c06",
+      "op": "split",
+      "note": "tranche_1C critical non_atomic; identify+correct, no sibling correction",
+      "children": [
+        {
+          "text": "The response must identify that the student inverted the order of the substances in the mass ratio."
+        },
+        {
+          "text": "The response must state the correct ratio: (amount of Pb-206 formed) / (U-238 remaining) = 7."
+        }
+      ]
+    },
+    {
+      "id": "tb_0028_c09",
+      "op": "split",
+      "note": "tranche_1C critical non_atomic; identify+correct, no sibling correction",
+      "children": [
+        {
+          "text": "The response must identify that the student reported the age (1.43×10^10 years) rather than the requested value of P."
+        },
+        {
+          "text": "The response must state that the correct value is P = 143."
+        }
+      ]
+    },
+    {
+      "id": "tb_0030_c07",
+      "op": "split",
+      "note": "tranche_1C critical non_atomic; two distinct misconceptions bundled",
+      "children": [
+        {
+          "text": "The response must acknowledge the student's misconception that the regression equation should yield exact values for each case.",
+          "q_mapping": {
+            "content": 1,
+            "diagnosis": 1,
+            "scaffolding": 0
+          }
+        },
+        {
+          "text": "The response must acknowledge the student's misconception that predicted values should preserve the sample mean.",
+          "q_mapping": {
+            "content": 1,
+            "diagnosis": 1,
+            "scaffolding": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "tb_0001_c04",
+      "op": "keep",
+      "note": "tranche_1C critical non_atomic FALSE-POSITIVE (single explanation); KEEP"
+    },
+    {
+      "id": "tb_0002_c03",
+      "op": "keep",
+      "note": "tranche_1C FP (one electronegativity ordering fact); KEEP"
+    },
+    {
+      "id": "tb_0006_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (identify one error; c03 explains why – already atomized); KEEP"
+    },
+    {
+      "id": "tb_0006_c03",
+      "op": "keep",
+      "note": "tranche_1C FP (explain why the error; pairs with c02); KEEP"
+    },
+    {
+      "id": "tb_0007_c05",
+      "op": "keep",
+      "note": "tranche_1C FP (one zero-product property); KEEP"
+    },
+    {
+      "id": "tb_0008_c04",
+      "op": "keep",
+      "note": "tranche_1C FP (one r_eff explanation); KEEP"
+    },
+    {
+      "id": "tb_0009_c01",
+      "op": "keep",
+      "note": "tranche_1C FP (opposes->subtract, one linked point); KEEP"
+    },
+    {
+      "id": "tb_0013_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one conditional-independence explanation); KEEP"
+    },
+    {
+      "id": "tb_0015_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one elaboration); KEEP"
+    },
+    {
+      "id": "tb_0017_c05",
+      "op": "keep",
+      "note": "tranche_1C FP (fast pre-equilibrium->reversible->double arrow, one chain); KEEP"
+    },
+    {
+      "id": "tb_0017_c08",
+      "op": "keep",
+      "note": "tranche_1C FP (identify-only, no correction); KEEP"
+    },
+    {
+      "id": "tb_0017_c18",
+      "op": "keep",
+      "note": "tranche_1C FP (one fact about k2/rate-determining step); KEEP"
+    },
+    {
+      "id": "tb_0020_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one incomplete-dominance deduction); KEEP"
+    },
+    {
+      "id": "tb_0021_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one point about i+=2 loop control); KEEP"
+    },
+    {
+      "id": "tb_0022_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one point: both methods give 40s); KEEP"
+    },
+    {
+      "id": "tb_0022_c04",
+      "op": "keep",
+      "note": "tranche_1C identify+correct but sibling c07 states the correction; KEEP as identify"
+    },
+    {
+      "id": "tb_0022_c07",
+      "op": "keep",
+      "note": "tranche_1C FP (one clarification: end must be 16x); KEEP"
+    },
+    {
+      "id": "tb_0027_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one X-linked recessive inheritance rule); KEEP"
+    },
+    {
+      "id": "tb_0027_c03",
+      "op": "keep",
+      "note": "tranche_1C FP (one applied pedigree explanation); KEEP"
+    },
+    {
+      "id": "tb_0028_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one missing-background concept, long); KEEP"
+    },
+    {
+      "id": "tb_0028_c07",
+      "op": "keep",
+      "note": "tranche_1C FP (one explanation, overlaps c02/c06); KEEP"
+    },
+    {
+      "id": "tb_0032_c01",
+      "op": "keep",
+      "note": "tranche_1C FP (one equivalence-point definition); KEEP"
+    },
+    {
+      "id": "tb_0034_c03",
+      "op": "keep",
+      "note": "tranche_1C FP (one correction of the m-formula); KEEP"
+    },
+    {
+      "id": "tb_0034_c04",
+      "op": "keep",
+      "note": "tranche_1C FP (one correction of the b-formula); KEEP"
+    },
+    {
+      "id": "tb_0034_c05",
+      "op": "keep",
+      "note": "tranche_1C FP (one derivation point: minimize SSR); KEEP"
+    },
+    {
+      "id": "tb_0034_c07",
+      "op": "keep",
+      "note": "tranche_1C FP (one caveat: local linear approximation); KEEP"
+    },
+    {
+      "id": "tb_0034_c08",
+      "op": "keep",
+      "note": "tranche_1C multi-error but siblings c03/c04 already cover m and b errors; KEEP as completeness check"
+    },
+    {
+      "id": "tb_0037_c03",
+      "op": "keep",
+      "note": "tranche_1C FP (one magnetic-field cancellation reasoning); KEEP"
+    },
+    {
+      "id": "tb_0039_c02",
+      "op": "keep",
+      "note": "tranche_1C FP (one fact: halogens are Group 17 list); KEEP"
+    },
+    {
+      "id": "tb_0040_c03",
+      "op": "split",
+      "note": "batch2; two distinct heat-loss mechanisms",
+      "children": [
+        {
+          "text": "The response must identify and explain convection as a key heat-loss mechanism for the hanging orb."
+        },
+        {
+          "text": "The response must identify and explain radiation as a key heat-loss mechanism for the hanging orb."
+        }
+      ]
+    },
+    {
+      "id": "tb_0042_c03",
+      "op": "split",
+      "note": "batch2; observation + rule",
+      "children": [
+        {
+          "text": "The response must identify that H's oxidation number decreases from +1 in CH_3OH to 0 in H_2."
+        },
+        {
+          "text": "The response must state that a decrease in oxidation number corresponds to reduction."
+        }
+      ]
+    },
+    {
+      "id": "tb_0045_c09",
+      "op": "split",
+      "note": "batch2; two distinct lagging-strand facts",
+      "children": [
+        {
+          "text": "The response must explain that the lagging strand has one primer per Okazaki fragment."
+        },
+        {
+          "text": "The response must explain that the polymerase must keep hopping 'backwards' as each new template segment is exposed."
+        }
+      ]
+    },
+    {
+      "id": "tb_0052_c03",
+      "op": "split",
+      "note": "batch2; classification + explanation",
+      "children": [
+        {
+          "text": "The response must state that this is a stoichiometric calculation and that ICE tables are not needed."
+        },
+        {
+          "text": "The response must explain why ICE tables are not needed for this problem."
+        }
+      ]
+    },
+    {
+      "id": "tb_0056_c02",
+      "op": "split",
+      "note": "batch2; identify+correct (no sibling correction)",
+      "children": [
+        {
+          "text": "The response must identify the student's incorrect reasoning of adding the terms instead of subtracting."
+        },
+        {
+          "text": "The response must correct this by explaining that the terms should be subtracted."
+        }
+      ]
+    },
+    {
+      "id": "tb_0059_c03",
+      "op": "split",
+      "note": "batch2; identify+correct (no sibling correction)",
+      "children": [
+        {
+          "text": "The response must identify the student's error in believing that the presence of NaOH always results in a basic solution."
+        },
+        {
+          "text": "The response must correct this by explaining why a solution containing NaOH is not necessarily basic."
+        }
+      ]
+    },
+    {
+      "id": "tb_0079_c02",
+      "op": "split",
+      "note": "batch2; two distinct errors identified (corrections live in siblings c05/c07/c09)",
+      "children": [
+        {
+          "text": "The response must identify the first error: the circle equation is wrong; with a y-axis point (0, b) it should be x^2 + y^2 - 2by = 0."
+        },
+        {
+          "text": "The response must identify the second error: the student differentiated without applying the chain rule, giving the incorrect 2x + 2y - b\\frac{dy}{dx} = 0."
+        }
+      ]
+    },
+    {
+      "id": "tb_0141_c03",
+      "op": "split",
+      "note": "batch2; identify+explain distinct",
+      "children": [
+        {
+          "text": "The response must identify that the student's code returns -3 for [-5,-2] because it performs truncation rather than rounding."
+        },
+        {
+          "text": "The response must explain that this is incorrect because standard rounding of -3.5 should give -4 (rounding away from zero / IEEE-754)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0142_c05",
+      "op": "split",
+      "note": "batch2; identify error + provide correction",
+      "children": [
+        {
+          "text": "The response must identify the error in the student's original calculation."
+        },
+        {
+          "text": "The response must provide the fully corrected formula: \\(\\mu = \\left( \\frac{v^2}{r} - g \\tan\\theta \\right)\\left( \\frac{\\cos\\theta}{g} \\right)\\)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0168_c02",
+      "op": "split",
+      "note": "batch2; two distinct definitions",
+      "children": [
+        {
+          "text": "The response must define slope (how much Y changes for each unit change in X)."
+        },
+        {
+          "text": "The response must define the intercept (b = \\bar{Y} - a\\bar{x}, chosen so the line best fits the data)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0042_c01",
+      "op": "keep",
+      "note": "batch2 FP; one oxidation-state fact"
+    },
+    {
+      "id": "tb_0044_c04",
+      "op": "keep",
+      "note": "batch2 FP; one point (why direct comparison insufficient)"
+    },
+    {
+      "id": "tb_0049_c01",
+      "op": "keep",
+      "note": "batch2 FP; one diagnosis"
+    },
+    {
+      "id": "tb_0049_c04",
+      "op": "keep",
+      "note": "batch2 FP; define+why one concept"
+    },
+    {
+      "id": "tb_0050_c03",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (why both masses needed)"
+    },
+    {
+      "id": "tb_0052_c09",
+      "op": "keep",
+      "note": "batch2 FP; one point"
+    },
+    {
+      "id": "tb_0055_c06",
+      "op": "keep",
+      "note": "batch2; single estimation heuristic (mechanically-linked steps)"
+    },
+    {
+      "id": "tb_0062_c04",
+      "op": "keep",
+      "note": "batch2 FP; one conceptual point (effective point != CoM)"
+    },
+    {
+      "id": "tb_0064_c03",
+      "op": "keep",
+      "note": "batch2 FP; one computation (NPV) + explain"
+    },
+    {
+      "id": "tb_0066_c06",
+      "op": "keep",
+      "note": "batch2; identify+explain same concept (CAP theorem)"
+    },
+    {
+      "id": "tb_0067_c03",
+      "op": "keep",
+      "note": "batch2 FP; one point (sign consistency)"
+    },
+    {
+      "id": "tb_0068_c02",
+      "op": "keep",
+      "note": "batch2 FP; explain+state one formula"
+    },
+    {
+      "id": "tb_0072_c02",
+      "op": "keep",
+      "note": "batch2 FP; one point"
+    },
+    {
+      "id": "tb_0072_c03",
+      "op": "keep",
+      "note": "batch2 FP; one metaphor requirement"
+    },
+    {
+      "id": "tb_0072_c09",
+      "op": "keep",
+      "note": "batch2; single sequencing/logical-order criterion"
+    },
+    {
+      "id": "tb_0077_c02",
+      "op": "keep",
+      "note": "batch2 FP; one step-by-step trace"
+    },
+    {
+      "id": "tb_0077_c03",
+      "op": "keep",
+      "note": "batch2; explanation-with-example, one deliverable"
+    },
+    {
+      "id": "tb_0077_c05",
+      "op": "keep",
+      "note": "batch2; one requirement (cover >=2 edge cases)"
+    },
+    {
+      "id": "tb_0078_c08",
+      "op": "keep",
+      "note": "batch2 FP; one point"
+    },
+    {
+      "id": "tb_0079_c03",
+      "op": "keep",
+      "note": "batch2; sequencing/'correct all' criterion (corrections in c05/c07/c09)"
+    },
+    {
+      "id": "tb_0079_c05",
+      "op": "keep",
+      "note": "batch2 FP; one correction (circle eqn)"
+    },
+    {
+      "id": "tb_0079_c07",
+      "op": "keep",
+      "note": "batch2 FP; one correction (differentiation)"
+    },
+    {
+      "id": "tb_0079_c09",
+      "op": "keep",
+      "note": "batch2 FP; one correction (final answer)"
+    },
+    {
+      "id": "tb_0080_c10",
+      "op": "keep",
+      "note": "batch2; one encapsulation guideline"
+    },
+    {
+      "id": "tb_0081_c05",
+      "op": "keep",
+      "note": "batch2 FP; one clarification"
+    },
+    {
+      "id": "tb_0087_c01",
+      "op": "keep",
+      "note": "batch2 FP; one energy-conservation explanation"
+    },
+    {
+      "id": "tb_0088_c08",
+      "op": "keep",
+      "note": "batch2 FP; one requirement (nicks->DSB)"
+    },
+    {
+      "id": "tb_0089_c02",
+      "op": "keep",
+      "note": "batch2; one chain-rule justification (linked)"
+    },
+    {
+      "id": "tb_0089_c07",
+      "op": "keep",
+      "note": "batch2; one point (two methods available) + attempt both"
+    },
+    {
+      "id": "tb_0092_c04",
+      "op": "keep",
+      "note": "batch2 FP; one washer-method setup explanation"
+    },
+    {
+      "id": "tb_0092_c06",
+      "op": "keep",
+      "note": "batch2 FP; one integral-evaluation explanation"
+    },
+    {
+      "id": "tb_0096_c01",
+      "op": "keep",
+      "note": "batch2 FP; one TypeError explanation"
+    },
+    {
+      "id": "tb_0098_c08",
+      "op": "keep",
+      "note": "batch2; single logical-order criterion"
+    },
+    {
+      "id": "tb_0098_c10",
+      "op": "keep",
+      "note": "batch2; correct-the-hypothesis single act"
+    },
+    {
+      "id": "tb_0100_c01",
+      "op": "keep",
+      "note": "batch2 FP; one point (critical points interior)"
+    },
+    {
+      "id": "tb_0101_c02",
+      "op": "keep",
+      "note": "batch2 FP; one comparative explanation"
+    },
+    {
+      "id": "tb_0101_c06",
+      "op": "keep",
+      "note": "batch2; single sequencing criterion"
+    },
+    {
+      "id": "tb_0104_c02",
+      "op": "keep",
+      "note": "batch2 FP; one point (intuition correct)"
+    },
+    {
+      "id": "tb_0104_c13",
+      "op": "keep",
+      "note": "batch2 FP; one point"
+    },
+    {
+      "id": "tb_0104_c15",
+      "op": "keep",
+      "note": "batch2 FP; one point"
+    },
+    {
+      "id": "tb_0105_c07",
+      "op": "keep",
+      "note": "batch2 FP; one point (types match)"
+    },
+    {
+      "id": "tb_0107_c05",
+      "op": "keep",
+      "note": "batch2; single 'well structured/logical order' criterion"
+    },
+    {
+      "id": "tb_0111_c07",
+      "op": "keep",
+      "note": "batch2; identify+state same missing-background (signaling)"
+    },
+    {
+      "id": "tb_0112_c04",
+      "op": "keep",
+      "note": "batch2; correct-the-misconception single act"
+    },
+    {
+      "id": "tb_0112_c05",
+      "op": "keep",
+      "note": "batch2; identify+explain same topic (hyperconjugation)"
+    },
+    {
+      "id": "tb_0115_c02",
+      "op": "keep",
+      "note": "batch2 FP; one explanation with example"
+    },
+    {
+      "id": "tb_0115_c04",
+      "op": "keep",
+      "note": "batch2 FP; one explanation with example"
+    },
+    {
+      "id": "tb_0117_c05",
+      "op": "keep",
+      "note": "batch2 FP; one point (t-distribution condition)"
+    },
+    {
+      "id": "tb_0118_c03",
+      "op": "keep",
+      "note": "batch2 FP; one explanation with worked list"
+    },
+    {
+      "id": "tb_0118_c07",
+      "op": "keep",
+      "note": "batch2; identify+explain same background"
+    },
+    {
+      "id": "tb_0120_c11",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (sign already in formula)"
+    },
+    {
+      "id": "tb_0121_c06",
+      "op": "keep",
+      "note": "batch2 FP; explain+provide one formula"
+    },
+    {
+      "id": "tb_0122_c06",
+      "op": "keep",
+      "note": "batch2; one redox-pair conceptual explanation"
+    },
+    {
+      "id": "tb_0122_c08",
+      "op": "keep",
+      "note": "batch2 FP; identify-only (no correction)"
+    },
+    {
+      "id": "tb_0122_c10",
+      "op": "keep",
+      "note": "batch2 FP; one conditional explanation"
+    },
+    {
+      "id": "tb_0125_c03",
+      "op": "keep",
+      "note": "batch2 FP; one computation (joint FP prob)"
+    },
+    {
+      "id": "tb_0125_c06",
+      "op": "keep",
+      "note": "batch2; single logical-order criterion"
+    },
+    {
+      "id": "tb_0126_c04",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (standardization)"
+    },
+    {
+      "id": "tb_0127_c21",
+      "op": "keep",
+      "note": "batch2 FP; one conclusion requirement"
+    },
+    {
+      "id": "tb_0128_c03",
+      "op": "keep",
+      "note": "batch2 FP; one conceptual link"
+    },
+    {
+      "id": "tb_0133_c01",
+      "op": "keep",
+      "note": "batch2; one energy-conservation concept"
+    },
+    {
+      "id": "tb_0133_c02",
+      "op": "keep",
+      "note": "batch2; one explanation (why mass of water given)"
+    },
+    {
+      "id": "tb_0134_c03",
+      "op": "keep",
+      "note": "batch2; correct = state rule, one act"
+    },
+    {
+      "id": "tb_0135_c02",
+      "op": "keep",
+      "note": "batch2 FP; one missing-background (radians)"
+    },
+    {
+      "id": "tb_0135_c04",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (calculator mode)"
+    },
+    {
+      "id": "tb_0135_c05",
+      "op": "keep",
+      "note": "batch2 FP; one instruction (radian mode)"
+    },
+    {
+      "id": "tb_0135_c06",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (calculator one-step)"
+    },
+    {
+      "id": "tb_0136_c01",
+      "op": "keep",
+      "note": "batch2 FP; one missing-background"
+    },
+    {
+      "id": "tb_0138_c06",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (what problem asks)"
+    },
+    {
+      "id": "tb_0138_c07",
+      "op": "keep",
+      "note": "batch2 FP; one missing-background (smoothness)"
+    },
+    {
+      "id": "tb_0140_c02",
+      "op": "keep",
+      "note": "batch2 FP; one missing-background (Vieta's)"
+    },
+    {
+      "id": "tb_0141_c05",
+      "op": "keep",
+      "note": "batch2 FP; one step-by-step trace"
+    },
+    {
+      "id": "tb_0144_c05",
+      "op": "keep",
+      "note": "batch2; one solubility-contrast explanation"
+    },
+    {
+      "id": "tb_0150_c01",
+      "op": "keep",
+      "note": "batch2 FP; one acknowledgment"
+    },
+    {
+      "id": "tb_0151_c01",
+      "op": "keep",
+      "note": "batch2 FP; one recognition"
+    },
+    {
+      "id": "tb_0152_c05",
+      "op": "keep",
+      "note": "batch2 FP; one computation + explain"
+    },
+    {
+      "id": "tb_0153_c22",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (force balance)"
+    },
+    {
+      "id": "tb_0154_c04",
+      "op": "keep",
+      "note": "batch2; identify+explain same confusion"
+    },
+    {
+      "id": "tb_0155_c05",
+      "op": "keep",
+      "note": "batch2; correct single misconception"
+    },
+    {
+      "id": "tb_0157_c03",
+      "op": "keep",
+      "note": "batch2; single sequencing/clarification criterion"
+    },
+    {
+      "id": "tb_0160_c03",
+      "op": "keep",
+      "note": "batch2 FP; one point (indeterminate form)"
+    },
+    {
+      "id": "tb_0164_c05",
+      "op": "keep",
+      "note": "batch2; one worked proof"
+    },
+    {
+      "id": "tb_0166_c02",
+      "op": "keep",
+      "note": "batch2 FP; one missing-background (approximation)"
+    },
+    {
+      "id": "tb_0166_c14",
+      "op": "keep",
+      "note": "batch2; one ICE calculation task"
+    },
+    {
+      "id": "tb_0167_c02",
+      "op": "keep",
+      "note": "batch2 FP; one multistep explanation"
+    },
+    {
+      "id": "tb_0168_c03",
+      "op": "keep",
+      "note": "batch2 FP; one point (line passes through means)"
+    },
+    {
+      "id": "tb_0169_c01",
+      "op": "keep",
+      "note": "batch2; identify+explain same concept (energy balance)"
+    },
+    {
+      "id": "tb_0169_c13",
+      "op": "keep",
+      "note": "batch2 FP; one acknowledgment"
+    },
+    {
+      "id": "tb_0169_c14",
+      "op": "keep",
+      "note": "batch2 FP; one formula"
+    },
+    {
+      "id": "tb_0171_c02",
+      "op": "keep",
+      "note": "batch2 FP; one explanation (independence of h and theta)"
+    },
+    {
+      "id": "tb_0171_c05",
+      "op": "keep",
+      "note": "agent1; single corrective act (point out g should not be included); indicating source of confusion is same diagnosis act"
+    },
+    {
+      "id": "tb_0173_c08",
+      "op": "keep",
+      "note": "agent1; one explanation with a because-chain (mechanically linked)"
+    },
+    {
+      "id": "tb_0176_c05",
+      "op": "split",
+      "note": "agent1; two independent facts: (a) braking introduces tangential force + F_total formula, (b) minimum friction coefficient condition",
+      "children": [
+        {
+          "text": "The model must answer the student's question about what would change if the car starts to brake by explaining that braking introduces a new (tangential) braking force into the problem, which results in a total applied force given by $F_{total}=\\sqrt{F_{radial}^2+F_{tangential}^2}$."
+        },
+        {
+          "text": "The model must explain that, once the car starts to brake, the minimum friction coefficient must now be sufficient to produce a friction force that is greater or equal than the resulting force from the combination of braking and the centripetal force."
+        }
+      ]
+    },
+    {
+      "id": "tb_0177_c03",
+      "op": "split",
+      "note": "agent1; two distinct facts: (a) shape of titration curve, (b) half-equivalence point definition and pH=pKa",
+      "children": [
+        {
+          "text": "The response must mention that a typical titration curve of a weak acid with a strong base shows a gradual increase in pH as the base is added, followed by a sharp rise at the equivalence point."
+        },
+        {
+          "text": "The response must mention that the half-equivalence point is where half of the acid has been neutralized, and pH = pKa."
+        }
+      ]
+    },
+    {
+      "id": "tb_0178_c04",
+      "op": "keep",
+      "note": "agent1; withhold/prohibition (must not state aerogels are IR-transparent); Q6 KEEP"
+    },
+    {
+      "id": "tb_0178_c05",
+      "op": "keep",
+      "note": "agent1; withhold-answer prohibition (must not state which orb ends up hotter); Q6 KEEP"
+    },
+    {
+      "id": "tb_0180_c01",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same single confusion (expected value with infinite paths)"
+    },
+    {
+      "id": "tb_0181_c07",
+      "op": "keep",
+      "note": "agent1; single formula statement/derivation for Kb (mechanically-linked chain)"
+    },
+    {
+      "id": "tb_0182_c03",
+      "op": "keep",
+      "note": "agent1; single worked computation yielding pH 4.52"
+    },
+    {
+      "id": "tb_0182_c05",
+      "op": "keep",
+      "note": "agent1; one concept (ratio fine-tunes pH) illustrated across three cases"
+    },
+    {
+      "id": "tb_0182_c08",
+      "op": "keep",
+      "note": "agent1; define pKa from Ka with a single worked example"
+    },
+    {
+      "id": "tb_0182_c09",
+      "op": "keep",
+      "note": "agent1; single concept (pKa/Ka are standard reference constants)"
+    },
+    {
+      "id": "tb_0183_c01",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same single thing (single-responsibility principle)"
+    },
+    {
+      "id": "tb_0186_c02",
+      "op": "keep",
+      "note": "agent1; single diagnostic identification of one missing-background concept"
+    },
+    {
+      "id": "tb_0188_c07",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same single thing (Aufbau exception)"
+    },
+    {
+      "id": "tb_0189_c03",
+      "op": "keep",
+      "note": "agent1; single corrective act (affirm student's config is correct)"
+    },
+    {
+      "id": "tb_0189_c05",
+      "op": "keep",
+      "note": "agent1; state AND explain the same single thing (Madelung rule)"
+    },
+    {
+      "id": "tb_0189_c06",
+      "op": "keep",
+      "note": "agent1; single concept (Pauli exclusion principle)"
+    },
+    {
+      "id": "tb_0189_c08",
+      "op": "keep",
+      "note": "agent1; one explanation (why f-orbitals present in lead), supporting facts mechanically linked"
+    },
+    {
+      "id": "tb_0195_c06",
+      "op": "keep",
+      "note": "agent1; single deliverable (corrected code snippet and its resulting output 4)"
+    },
+    {
+      "id": "tb_0196_c03",
+      "op": "keep",
+      "note": "agent1; identify-only (error + show the wrong calc); correction lives in sibling c04"
+    },
+    {
+      "id": "tb_0197_c05",
+      "op": "keep",
+      "note": "agent1; single fact (df = 9 if t-distribution used)"
+    },
+    {
+      "id": "tb_0201_c06",
+      "op": "keep",
+      "note": "agent1; user override -> KEEP (overview 'depends on'; siblings elaborate each factor)"
+    },
+    {
+      "id": "tb_0204_c05",
+      "op": "keep",
+      "note": "agent1; single explanation (need a new string per change)"
+    },
+    {
+      "id": "tb_0209_c05",
+      "op": "keep",
+      "note": "agent1; single step explanation (factor out 0.01)"
+    },
+    {
+      "id": "tb_0211_c04",
+      "op": "keep",
+      "note": "agent1; identify-only of one error; correction lives in sibling c05"
+    },
+    {
+      "id": "tb_0212_c05",
+      "op": "keep",
+      "note": "agent1; single mechanically-linked reasoning (strongest bond -> least likely to donate H+)"
+    },
+    {
+      "id": "tb_0212_c06",
+      "op": "keep",
+      "note": "agent1; single mechanically-linked reasoning (least H+ donation -> highest pH)"
+    },
+    {
+      "id": "tb_0214_c05",
+      "op": "keep",
+      "note": "agent1; single conclusion (friction points up the ramp)"
+    },
+    {
+      "id": "tb_0219_c02",
+      "op": "keep",
+      "note": "agent1; single explanation (method is void, no return expected)"
+    },
+    {
+      "id": "tb_0220_c02",
+      "op": "keep",
+      "note": "agent1; single multi-step worked computation (convert to molarity then apply H-H)"
+    },
+    {
+      "id": "tb_0222_c03",
+      "op": "keep",
+      "note": "agent1; single corrective statement (used torque on block when it should be on disc)"
+    },
+    {
+      "id": "tb_0224_c03",
+      "op": "keep",
+      "note": "agent1; single identify act (one misconception: marking cells visited globally)"
+    },
+    {
+      "id": "tb_0225_c03",
+      "op": "keep",
+      "note": "agent1; single statement (0.0005 correct for sample size 3)"
+    },
+    {
+      "id": "tb_0225_c07",
+      "op": "keep",
+      "note": "agent1; single step (first find P(X>2100))"
+    },
+    {
+      "id": "tb_0226_c13",
+      "op": "keep",
+      "note": "agent1; single fact (use log property to group terms)"
+    },
+    {
+      "id": "tb_0226_c18",
+      "op": "keep",
+      "note": "AMBIGUOUS agent1; identify missing background naming two topics (log properties; Maclaurin series); kept as one diagnostic identification since both are elaborated by siblings, but could split per topic"
+    },
+    {
+      "id": "tb_0231_c08",
+      "op": "keep",
+      "note": "agent1; single act (acknowledge confusion by stating first-order -> one constant); mechanically linked"
+    },
+    {
+      "id": "tb_0233_c05",
+      "op": "keep",
+      "note": "agent1; single worked computation step (original U amount N0=9.1N)"
+    },
+    {
+      "id": "tb_0233_c07",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same error (7 is a mass ratio not atom ratio); correct atom ratio lives in sibling c04"
+    },
+    {
+      "id": "tb_0234_c04",
+      "op": "keep",
+      "note": "agent1; sequencing/ordering criterion (first why 2nd derivative, then how to classify); content in siblings c05/c06"
+    },
+    {
+      "id": "tb_0236_c07",
+      "op": "keep",
+      "note": "agent1; single identify act (missing background on limit definition of e)"
+    },
+    {
+      "id": "tb_0240_c04",
+      "op": "keep",
+      "note": "agent1; single concept (center-of-mass shift) with example"
+    },
+    {
+      "id": "tb_0240_c05",
+      "op": "keep",
+      "note": "agent1; single energy-budget statement (heat splits into three linked parts)"
+    },
+    {
+      "id": "tb_0241_c03",
+      "op": "keep",
+      "note": "agent1; correction-only (Na+ is +1); identify of error lives in sibling c02"
+    },
+    {
+      "id": "tb_0242_c04",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same single thing (Chain Rule and its extra term)"
+    },
+    {
+      "id": "tb_0243_c11",
+      "op": "keep",
+      "note": "agent1; single fact (pH7 value not directly plugged into calculations)"
+    },
+    {
+      "id": "tb_0243_c14",
+      "op": "keep",
+      "note": "agent1; single quality/clarity requirement"
+    },
+    {
+      "id": "tb_0244_c04",
+      "op": "keep",
+      "note": "agent1; single explanation (distributive property multiplies both terms)"
+    },
+    {
+      "id": "tb_0244_c07",
+      "op": "keep",
+      "note": "agent1; single worked derivation (surface-area equation and its derivative)"
+    },
+    {
+      "id": "tb_0245_c03",
+      "op": "keep",
+      "note": "agent1; single fact (obstacles value 2 passable at step 3)"
+    },
+    {
+      "id": "tb_0245_c07",
+      "op": "keep",
+      "note": "agent1; single fact (cells open at step 3 and forward)"
+    },
+    {
+      "id": "tb_0245_c11",
+      "op": "keep",
+      "note": "agent1; single fact (memoization avoids recomputing same state)"
+    },
+    {
+      "id": "tb_0245_c13",
+      "op": "keep",
+      "note": "agent1; single mechanically-linked explanation (3D state space -> memo over 3 dims)"
+    },
+    {
+      "id": "tb_0248_c01",
+      "op": "keep",
+      "note": "agent1; single diagnosis (missing background on total-distance calc)"
+    },
+    {
+      "id": "tb_0254_c03",
+      "op": "keep",
+      "note": "agent1; explain work=change in PE and affirm same understanding correct (one concept)"
+    },
+    {
+      "id": "tb_0254_c04",
+      "op": "split",
+      "note": "agent1; two independent purposes of z: (1) radius/volume via pi(0.4z)^2, (2) travel distance via (10-z)",
+      "children": [
+        {
+          "text": "The response must explain that z in π(0.4z)² determines the radius/volume of water at that height."
+        },
+        {
+          "text": "The response must explain that (10-z) determines the distance that water needs to travel."
+        }
+      ]
+    },
+    {
+      "id": "tb_0258_c04",
+      "op": "keep",
+      "note": "agent1; single worked argument (comparison test with g(x) showing divergence)"
+    },
+    {
+      "id": "tb_0263_c02",
+      "op": "split",
+      "note": "agent1; identify+correct pair (rule 3); no sibling states this correction",
+      "children": [
+        {
+          "text": "The response must identify that the student's assertion that the time complexity is O(RxCx4) is incorrect."
+        },
+        {
+          "text": "The response must explain that despite 4 recursive calls per cell, each cell is visited exactly once due to the visited array mechanism, making the actual complexity O(RxC)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0263_c03",
+      "op": "split",
+      "note": "agent1; identify+correct pair (rule 3); no sibling states this correction",
+      "children": [
+        {
+          "text": "The response must identify that the student's claim that a 1000x1000 all-land map would require 1,000,000 recursive levels is incorrect."
+        },
+        {
+          "text": "The response must explain that the maximum recursion depth equals the longest connected path which is bounded by approximately R+C-1 (roughly 1999 for a 1000x1000 grid), not the total number of cells (RxC=1,000,000)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0265_c03",
+      "op": "keep",
+      "note": "agent1; sequencing/ordering criterion (first...then...then...finally)"
+    },
+    {
+      "id": "tb_0268_c12",
+      "op": "keep",
+      "note": "agent1; single synthesis/conclusion from three linked evidences (X-linked recessive); evidences in siblings"
+    },
+    {
+      "id": "tb_0269_c01",
+      "op": "keep",
+      "note": "agent1; single requirement (name the mistaken idea, with OR alternative)"
+    },
+    {
+      "id": "tb_0269_c02",
+      "op": "keep",
+      "note": "agent1; single worked computation (oxidation state via charge balance)"
+    },
+    {
+      "id": "tb_0269_c04",
+      "op": "keep",
+      "note": "agent1; single novelty requirement (fresh device; must-not-reuse is same concept)"
+    },
+    {
+      "id": "tb_0271_c03",
+      "op": "split",
+      "note": "agent1; four distinct independently-gradeable bugs (rule 4); not covered by siblings",
+      "children": [
+        {
+          "text": "The response must identify and explain the bug that the array dimensions should be [m+1][n+1] not [m][n]."
+        },
+        {
+          "text": "The response must identify and explain the bug that dp[0][0] should equal true, not a character comparison."
+        },
+        {
+          "text": "The response must identify and explain the bug that character access should use charAt(i-1) not charAt(i) when at dp[i][j]."
+        },
+        {
+          "text": "The response must identify and explain the bug that the second if statement overwrites the first result instead of combining with the OR operator."
+        }
+      ]
+    },
+    {
+      "id": "tb_0273_c09",
+      "op": "keep",
+      "note": "agent1; single mechanically-linked statement (Q<Ka -> equilibrium restores Ka)"
+    },
+    {
+      "id": "tb_0276_c01",
+      "op": "keep",
+      "note": "agent1; identify AND explain one mechanistic chain (Akt->FOXO export)"
+    },
+    {
+      "id": "tb_0276_c05",
+      "op": "split",
+      "note": "AMBIGUOUS agent1; three independent mechanisms by which Apetamin-G amplifies the pathway (GHR mRNA; leucine; B vitamins), each separately satisfiable; but could be read as one 'amplifies because...' claim",
+      "children": [
+        {
+          "text": "The response must state that Apetamin-G amplifies the pathway because extrahepatic GHR mRNA yields more GH receptors and more IGF-1 per pulse."
+        },
+        {
+          "text": "The response must state that Apetamin-G amplifies the pathway because leucine directly stimulates mTORC1."
+        },
+        {
+          "text": "The response must state that Apetamin-G amplifies the pathway because B vitamins supply cofactors for ATP production and amino acid metabolism."
+        }
+      ]
+    },
+    {
+      "id": "tb_0277_c03",
+      "op": "split",
+      "note": "agent1; two distinct solubility rules applied to two distinct compounds (nitrates->Cu(NO3)2; sulfates->BaSO4)",
+      "children": [
+        {
+          "text": "The response needs to explain the solubility rules by stating that nitrates are generally (but not always) soluble, therefore Cu(NO₃)₂ must be soluble."
+        },
+        {
+          "text": "The response needs to explain the solubility rules by stating that sulfates are generally soluble except for CaSO₄, BaSO₄, and PbSO₄; therefore, BaSO₄ is an exception and is insoluble."
+        }
+      ]
+    },
+    {
+      "id": "tb_0278_c02",
+      "op": "keep",
+      "note": "agent1; identify missing background + define the paired redox concept (oxidation/reduction) as one unit"
+    },
+    {
+      "id": "tb_0278_c08",
+      "op": "keep",
+      "note": "agent1; single identify act (error: multiplying cell potential by 2)"
+    },
+    {
+      "id": "tb_0282_c02",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same single concept (leftward motion != negative position)"
+    },
+    {
+      "id": "tb_0282_c04",
+      "op": "keep",
+      "note": "agent1; single worked argument (factorization -> x(t)>=0)"
+    },
+    {
+      "id": "tb_0282_c05",
+      "op": "keep",
+      "note": "agent1; single computation with alternative methods (OR)"
+    },
+    {
+      "id": "tb_0282_c08",
+      "op": "keep",
+      "note": "agent1; sequencing/ordering criterion (conceptual, then proof, then calculations)"
+    },
+    {
+      "id": "tb_0283_c05",
+      "op": "keep",
+      "note": "agent1; identify missing OOP background + explain the one contrast (abstract methods vs functions)"
+    },
+    {
+      "id": "tb_0284_c01",
+      "op": "keep",
+      "note": "agent1; address one misconception (dx/dy meaning); acknowledge is coupled to same point"
+    },
+    {
+      "id": "tb_0285_c02",
+      "op": "keep",
+      "note": "agent1; single explanation (apply Law of Total Probability here)"
+    },
+    {
+      "id": "tb_0285_c08",
+      "op": "keep",
+      "note": "agent1; single corrective explanation (how LoTP is used vs simple addition)"
+    },
+    {
+      "id": "tb_0289_c01",
+      "op": "keep",
+      "note": "agent1; identify AND explain why the same error is wrong (sqrt(x^2+y^2)!=x+y)"
+    },
+    {
+      "id": "tb_0289_c03",
+      "op": "keep",
+      "note": "agent1; single worked computation (trig substitution to intermediate form)"
+    },
+    {
+      "id": "tb_0289_c06",
+      "op": "keep",
+      "note": "agent1; single act (direct apology/acknowledgement of prior error)"
+    },
+    {
+      "id": "tb_0289_c08",
+      "op": "keep",
+      "note": "agent1; sequencing/ordering criterion (5-step pedagogical order)"
+    },
+    {
+      "id": "tb_0290_c02",
+      "op": "keep",
+      "note": "agent1; single mechanically-linked explanation (unknown sigma -> t-test -> extra uncertainty)"
+    },
+    {
+      "id": "tb_0291_c04",
+      "op": "keep",
+      "note": "agent1; single worked unit conversion computation (-> 0.502 g CO2)"
+    },
+    {
+      "id": "tb_0292_c04",
+      "op": "keep",
+      "note": "agent1; single explanation (energy comes from within the system)"
+    },
+    {
+      "id": "tb_0294_c01",
+      "op": "keep",
+      "note": "agent1; sequencing/ordering criterion (geometric distribution first, then cancellation issue)"
+    },
+    {
+      "id": "tb_0294_c05",
+      "op": "keep",
+      "note": "agent1; one definition (characteristics of geometric distribution) applied to the problem"
+    },
+    {
+      "id": "tb_0294_c07",
+      "op": "split",
+      "note": "agent1; identify+correct pair (rule 3): identify SD=1 wrong, state true SD=11.99; no sibling gives the value",
+      "children": [
+        {
+          "text": "The response must identify that the student is wrong in claiming that the standard deviation is 1."
+        },
+        {
+          "text": "The response must report that the true standard deviation for this problem is 11.99."
+        }
+      ]
+    },
+    {
+      "id": "tb_0298_c03",
+      "op": "keep",
+      "note": "agent1; single conceptual contrast (regression best-fit vs population parameters)"
+    },
+    {
+      "id": "tb_0299_c06",
+      "op": "keep",
+      "note": "agent1; identify AND explain the same single concept (when to use t vs z)"
+    },
+    {
+      "id": "tb_0299_c09",
+      "op": "keep",
+      "note": "agent1; single notational correction (expression needs a +/- symbol)"
+    },
+    {
+      "id": "tb_0300_c02",
+      "op": "keep",
+      "note": "agent1; single derivation with an alternative method (Vis viva) via OR"
+    },
+    {
+      "id": "tb_0300_c03",
+      "op": "keep",
+      "note": "agent1; single mechanically-linked explanation (condition unmet -> not elliptical -> premise invalid)"
+    },
+    {
+      "id": "tb_0300_c04",
+      "op": "keep",
+      "note": "agent1; user override -> KEEP (minimal single correction)"
+    },
+    {
+      "id": "tb_0301_c01",
+      "op": "keep",
+      "note": "agent1; identify missing background + explain the one distinction (allele vs genotype equations); each equation elaborated in siblings"
+    },
+    {
+      "id": "tb_0303_c02",
+      "op": "keep",
+      "note": "agent1; single fact (factor common terms on 0/0)"
+    },
+    {
+      "id": "tb_0303_c05",
+      "op": "keep",
+      "note": "agent1; single fact (cancel common (x+5) term)"
+    },
+    {
+      "id": "tb_0303_c07",
+      "op": "keep",
+      "note": "agent1; single conceptual point (0/0 does not mean limit DNE)"
+    },
+    {
+      "id": "tb_0304_c03",
+      "op": "keep",
+      "note": "agent1; single explanation (one mechanism: accessible chromatin + epigenetic markers)"
+    },
+    {
+      "id": "tb_0305_c03",
+      "op": "keep",
+      "note": "agent1; single explanation (estradiol is a lipid-soluble hormone binding ER)"
+    },
+    {
+      "id": "tb_0307_c10",
+      "op": "keep",
+      "note": "agent1; single reasoning chain (zero-order test using the data)"
+    },
+    {
+      "id": "tb_0312_c03",
+      "op": "keep",
+      "note": "agent1; bundled identify+correct but sibling c02 covers identify and c06/c07 cover correction; keep to avoid duplication"
+    },
+    {
+      "id": "tb_0314_c03",
+      "op": "keep",
+      "note": "agent1; single worked computation (re-derive correct first derivative)"
+    },
+    {
+      "id": "tb_0316_c07",
+      "op": "keep",
+      "note": "agent1; single explanation addressing one student comment (integrate molecular genetics)"
+    },
+    {
+      "id": "tb_0321_c09",
+      "op": "keep",
+      "note": "agent1; single ground-state orbital-filling diagram for chlorine"
+    },
+    {
+      "id": "tb_0325_c01",
+      "op": "keep",
+      "note": "AMBIGUOUS agent1; explicit AND joins a conceptual 'why averaging averages is wrong' + a step-by-step both-approaches computation; kept as one unified worked numerical example but could split concept vs computation"
+    },
+    {
+      "id": "tb_0325_c02",
+      "op": "keep",
+      "note": "agent2; explain array-literal meaning + indexing illustrated with example; one array-structure concept"
+    },
+    {
+      "id": "tb_0325_c05",
+      "op": "keep",
+      "note": "agent2; AMBIGUOUS: diagnose-why-flawed + suggest-correct-approach, but sibling c01 already supplies the correct approach -> KEEP as identify-focused"
+    },
+    {
+      "id": "tb_0326_c02",
+      "op": "keep",
+      "note": "agent2; single corrective act: confirm inner radius should be zero"
+    },
+    {
+      "id": "tb_0326_c05",
+      "op": "keep",
+      "note": "agent2; single explanation of why inner radius = 0"
+    },
+    {
+      "id": "tb_0328_c04",
+      "op": "keep",
+      "note": "agent2; single derivation with logical order (magnitude then sign convention)"
+    },
+    {
+      "id": "tb_0329_c01",
+      "op": "keep",
+      "note": "agent2; identify missing background knowledge = one test procedure; steps are the content, not separable requirements"
+    },
+    {
+      "id": "tb_0329_c07",
+      "op": "keep",
+      "note": "agent2; logical-order sequencing of the test steps -> KEEP"
+    },
+    {
+      "id": "tb_0334_c01",
+      "op": "keep",
+      "note": "agent2; single worked substitution/computation for the minimum area"
+    },
+    {
+      "id": "tb_0335_c01",
+      "op": "keep",
+      "note": "agent2; state private-method-resolution rule and its direct refutation (mechanically linked); refutation also covered by siblings c02/c03/c06"
+    },
+    {
+      "id": "tb_0336_c03",
+      "op": "split",
+      "note": "agent2; AMBIGUOUS: identify arithmetic slip + state corrected final answer (substantive standalone value not in any sibling)",
+      "children": [
+        {
+          "text": "The response must identify that the student made an arithmetic error in part c) by equating $\\frac{1}{5}$ to $\\frac{5}{35}$, when it should be $\\frac{7}{35}$."
+        },
+        {
+          "text": "The response must state that, done correctly, the answer for part c) should have been $\\frac{1}{7}MR^2\\omega_0^2$, not $\\frac{3}{35}MR^2\\omega_0^2$."
+        }
+      ]
+    },
+    {
+      "id": "tb_0336_c06",
+      "op": "keep",
+      "note": "agent2; single concept: use angular acceleration in kinematics equation (contrast is one idea)"
+    },
+    {
+      "id": "tb_0338_c01",
+      "op": "keep",
+      "note": "agent2; identify error + label its type = one diagnostic concept"
+    },
+    {
+      "id": "tb_0338_c02",
+      "op": "keep",
+      "note": "agent2; identify error + label its type = one diagnostic concept"
+    },
+    {
+      "id": "tb_0338_c04",
+      "op": "keep",
+      "note": "agent2; identify error + label its type = one diagnostic concept"
+    },
+    {
+      "id": "tb_0338_c05",
+      "op": "keep",
+      "note": "agent2; identify error + label its type = one diagnostic concept"
+    },
+    {
+      "id": "tb_0338_c06",
+      "op": "keep",
+      "note": "agent2; identify error + label its type = one diagnostic concept"
+    },
+    {
+      "id": "tb_0338_c08",
+      "op": "keep",
+      "note": "agent2; single cause->effect explanation (uninitialized array raises runtime exception)"
+    },
+    {
+      "id": "tb_0342_c02",
+      "op": "keep",
+      "note": "agent2; single corrective: correct ME formula stated, reject wrong one (two sides of one concept)"
+    },
+    {
+      "id": "tb_0343_c09",
+      "op": "keep",
+      "note": "agent2; single worked explanation: describe scenarios then add (mechanically linked)"
+    },
+    {
+      "id": "tb_0344_c06",
+      "op": "split",
+      "note": "agent2; explicit bundle of 3 distinct student errors not covered by siblings",
+      "children": [
+        {
+          "text": "The response must identify that the student's final probability (5929/22500) is incorrect."
+        },
+        {
+          "text": "The response must identify that the student used an incorrect probability for Bob playing paper (1/15 instead of 1/5)."
+        },
+        {
+          "text": "The response must identify that the student undercounted the valid game-winning sequences by stating that there are two."
+        }
+      ]
+    },
+    {
+      "id": "tb_0347_c03",
+      "op": "keep",
+      "note": "agent2; single error identification illustrated with an example"
+    },
+    {
+      "id": "tb_0350_c03",
+      "op": "keep",
+      "note": "agent2; state normal-force formula + its justification (define X and explain why)"
+    },
+    {
+      "id": "tb_0350_c07",
+      "op": "keep",
+      "note": "agent2; one concept: which friction coefficient is correct (mu_s right, mu_k wrong)"
+    },
+    {
+      "id": "tb_0352_c06",
+      "op": "keep",
+      "note": "agent2; single worked substitution of the cosine series"
+    },
+    {
+      "id": "tb_0354_c14",
+      "op": "keep",
+      "note": "agent2; single conceptual instruction (use accelerating frame with pseudo-force)"
+    },
+    {
+      "id": "tb_0356_c01",
+      "op": "keep",
+      "note": "agent2; identify omission of f(0) and explain the same thing"
+    },
+    {
+      "id": "tb_0356_c02",
+      "op": "keep",
+      "note": "agent2; single corrective of one backwards assumption"
+    },
+    {
+      "id": "tb_0356_c03",
+      "op": "keep",
+      "note": "agent2; correct one misinterpretation; demonstration of correct terms also covered by sibling c05"
+    },
+    {
+      "id": "tb_0357_c03",
+      "op": "keep",
+      "note": "agent2; identify formula error + specify the same incorrect formula = one concept"
+    },
+    {
+      "id": "tb_0357_c07",
+      "op": "keep",
+      "note": "agent2; AMBIGUOUS: bundles chi-square formula + df=17 + one-tailed, but df (sib c18) and one-tailed (sib c12) already have their own siblings -> KEEP to avoid duplicating siblings"
+    },
+    {
+      "id": "tb_0357_c12",
+      "op": "keep",
+      "note": "agent2; single concept: correct one-tailed hypothesis setup motivated by the question wording"
+    },
+    {
+      "id": "tb_0357_c13",
+      "op": "keep",
+      "note": "agent2; single concept: use chi-square test for variance"
+    },
+    {
+      "id": "tb_0359_c03",
+      "op": "keep",
+      "note": "agent2; single concept: equal-variance assumption required for the test performed"
+    },
+    {
+      "id": "tb_0362_c06",
+      "op": "keep",
+      "note": "agent2; single identification of one wrong conclusion"
+    },
+    {
+      "id": "tb_0363_c03",
+      "op": "keep",
+      "note": "agent2; single concept: state corrected hypotheses"
+    },
+    {
+      "id": "tb_0363_c05",
+      "op": "keep",
+      "note": "agent2; single error identification (SE formula incorrect)"
+    },
+    {
+      "id": "tb_0363_c06",
+      "op": "keep",
+      "note": "agent2; z-stat and p-value wrong = mechanically-linked chain, one concept"
+    },
+    {
+      "id": "tb_0363_c08",
+      "op": "keep",
+      "note": "agent2; single worked hypothesis-testing walkthrough to the correct decision"
+    },
+    {
+      "id": "tb_0363_c15",
+      "op": "keep",
+      "note": "agent2; single mechanically-linked conclusion (p>0.05 -> fail to reject)"
+    },
+    {
+      "id": "tb_0364_c06",
+      "op": "keep",
+      "note": "agent2; single logic-error identification"
+    },
+    {
+      "id": "tb_0364_c09",
+      "op": "keep",
+      "note": "agent2; single explanation of one logic error"
+    },
+    {
+      "id": "tb_0367_c07",
+      "op": "keep",
+      "note": "agent2; single concept: correct phrasing of the 95% confidence conclusion"
+    },
+    {
+      "id": "tb_0368_c01",
+      "op": "keep",
+      "note": "agent2; single corrective: alpha=0.21 inappropriate, use 0.05 (tightly-coupled correction)"
+    },
+    {
+      "id": "tb_0368_c02",
+      "op": "keep",
+      "note": "agent2; single corrective: reversed decision rule + the correct rule (tightly coupled)"
+    },
+    {
+      "id": "tb_0368_c03",
+      "op": "split",
+      "note": "agent2; user override -> SPLIT (test name vs conditions are independently satisfiable)",
+      "children": [
+        {
+          "text": "The response must note that the student omitted the test name (a two-sample t-test)."
+        },
+        {
+          "text": "The response must note that the student omitted the required conditions/assumptions (independence, normality/CLT) that should be checked for a valid two-sample t-test."
+        }
+      ]
+    },
+    {
+      "id": "tb_0369_c17",
+      "op": "keep",
+      "note": "agent2; enumerate the three properties as an overview; each elaborated by siblings c19/c20/c21"
+    },
+    {
+      "id": "tb_0370_c09",
+      "op": "keep",
+      "note": "agent2; single concept: state d/dx(A)=0 for minimum area"
+    },
+    {
+      "id": "tb_0371_c02",
+      "op": "keep",
+      "note": "agent2; single diagnosis of what the student is unsure about"
+    },
+    {
+      "id": "tb_0371_c04",
+      "op": "keep",
+      "note": "agent2; single hint (begin at start codon)"
+    },
+    {
+      "id": "tb_0371_c05",
+      "op": "keep",
+      "note": "agent2; single hint (end at stop codon)"
+    },
+    {
+      "id": "tb_0371_c07",
+      "op": "keep",
+      "note": "agent2; single hint (timing of codon changes)"
+    },
+    {
+      "id": "tb_0372_c01",
+      "op": "keep",
+      "note": "agent2; single corrective: correct molar mass of CH4"
+    },
+    {
+      "id": "tb_0373_c08",
+      "op": "keep",
+      "note": "agent2; single concept: definition of postfix operator"
+    },
+    {
+      "id": "tb_0374_c07",
+      "op": "keep",
+      "note": "agent2; single concept: correct conclusion wording (reject H0)"
+    },
+    {
+      "id": "tb_0374_c08",
+      "op": "split",
+      "note": "agent2; user override -> SPLIT (two distinct df computations)",
+      "children": [
+        {
+          "text": "The response must provide the correct d.f. for the equal-variances case: \\(\\text{df} = n_1 + n_2 - 2 = 98\\)."
+        },
+        {
+          "text": "The response must state that for unequal variances the Welch–Satterthwaite formula should be used to compute the d.f."
+        }
+      ]
+    },
+    {
+      "id": "tb_0376_c02",
+      "op": "keep",
+      "note": "agent2; single acknowledgment of one correct step"
+    },
+    {
+      "id": "tb_0376_c18",
+      "op": "keep",
+      "note": "agent2; single concept: exclude gravity for horizontal spring"
+    },
+    {
+      "id": "tb_0377_c01",
+      "op": "keep",
+      "note": "agent2; single corrective about the pKa=pH relationship (state Y + identify the X error)"
+    },
+    {
+      "id": "tb_0378_c13",
+      "op": "keep",
+      "note": "agent2; single worked derivation to identify Reactant X = ethyne"
+    },
+    {
+      "id": "tb_0379_c02",
+      "op": "keep",
+      "note": "agent2; single error/concept about start codon"
+    },
+    {
+      "id": "tb_0379_c05",
+      "op": "keep",
+      "note": "agent2; identify duplicate-removal error + explain the same thing"
+    },
+    {
+      "id": "tb_0379_c06",
+      "op": "keep",
+      "note": "agent2; identify post-stop-codon inclusion error + explain the same thing"
+    },
+    {
+      "id": "tb_0379_c07",
+      "op": "keep",
+      "note": "agent2; single: provide + justify the correct sequence"
+    },
+    {
+      "id": "tb_0381_c03",
+      "op": "keep",
+      "note": "agent2; single mechanically-linked concept (reversible -> double arrow)"
+    },
+    {
+      "id": "tb_0381_c06",
+      "op": "keep",
+      "note": "agent2; single conceptual-error identification (two phrasings of one misconception)"
+    },
+    {
+      "id": "tb_0382_c07",
+      "op": "keep",
+      "note": "agent2; identify 'avoiding the point' as incorrect + explain why (same thing)"
+    },
+    {
+      "id": "tb_0382_c08",
+      "op": "keep",
+      "note": "agent2; single tone/persona check"
+    },
+    {
+      "id": "tb_0384_c01",
+      "op": "keep",
+      "note": "agent2; single error identification"
+    },
+    {
+      "id": "tb_0384_c06",
+      "op": "split",
+      "note": "agent2; two distinct, independently-gradeable acknowledgments (sex determination correct; Punnett-square familiarity)",
+      "children": [
+        {
+          "text": "The model must acknowledge that the student correctly noted that the father's contribution of either an X or Y chromosome determines the sex of the child."
+        },
+        {
+          "text": "The model should acknowledge that the student is familiar with the Punnett square as a tool to explore inheritance patterns."
+        }
+      ]
+    },
+    {
+      "id": "tb_0386_c04",
+      "op": "keep",
+      "note": "agent2; identify + correct one misconception via a single explanation"
+    },
+    {
+      "id": "tb_0388_c02",
+      "op": "keep",
+      "note": "agent2; identify error + explain the same misconception"
+    },
+    {
+      "id": "tb_0388_c04",
+      "op": "keep",
+      "note": "agent2; single concept: reasoning-check reminder (v < 15 m/s)"
+    },
+    {
+      "id": "tb_0390_c01",
+      "op": "keep",
+      "note": "agent2; state correction + explain why (same thing)"
+    },
+    {
+      "id": "tb_0390_c03",
+      "op": "keep",
+      "note": "agent2; single deliverable: one corrected code snippet"
+    },
+    {
+      "id": "tb_0390_c06",
+      "op": "keep",
+      "note": "agent2; single deliverable: a test case/example"
+    },
+    {
+      "id": "tb_0391_c03",
+      "op": "keep",
+      "note": "agent2; single mechanically-linked reasoning about net upward force"
+    },
+    {
+      "id": "tb_0394_c04",
+      "op": "keep",
+      "note": "agent2; single acknowledgment"
+    },
+    {
+      "id": "tb_0394_c06",
+      "op": "keep",
+      "note": "agent2; single error identification"
+    },
+    {
+      "id": "tb_0394_c07",
+      "op": "keep",
+      "note": "agent2; single corrective statement"
+    },
+    {
+      "id": "tb_0397_c01",
+      "op": "keep",
+      "note": "agent2; logical-order sequencing then single derivation -> KEEP"
+    },
+    {
+      "id": "tb_0397_c02",
+      "op": "keep",
+      "note": "agent2; identify error + explain the same thing"
+    },
+    {
+      "id": "tb_0397_c03",
+      "op": "keep",
+      "note": "agent2; identify error + state the same principle"
+    },
+    {
+      "id": "tb_0397_c05",
+      "op": "keep",
+      "note": "agent2; single computation (max spring PE)"
+    },
+    {
+      "id": "tb_0398_c02",
+      "op": "keep",
+      "note": "agent2; identify + correct the same mole-calculation error"
+    },
+    {
+      "id": "tb_0398_c06",
+      "op": "keep",
+      "note": "agent2; single concept: molarity units mol/L"
+    },
+    {
+      "id": "tb_0399_c09",
+      "op": "keep",
+      "note": "agent2; single concept: significance of the negative sign"
+    },
+    {
+      "id": "tb_0399_c10",
+      "op": "keep",
+      "note": "agent2; single concept: 3 sig figs"
+    },
+    {
+      "id": "tb_0399_c11",
+      "op": "keep",
+      "note": "agent2; single concept: rounding rule"
+    },
+    {
+      "id": "tb_0401_c03",
+      "op": "keep",
+      "note": "agent2; single hint (one method: conservation of energy)"
+    },
+    {
+      "id": "tb_0403_c02",
+      "op": "keep",
+      "note": "agent2; identify error + classify the same thing"
+    },
+    {
+      "id": "tb_0403_c06",
+      "op": "keep",
+      "note": "agent2; single concept: use absolute value for total distance"
+    },
+    {
+      "id": "tb_0403_c10",
+      "op": "keep",
+      "note": "agent2; identify error + classify the same thing"
+    },
+    {
+      "id": "tb_0407_c11",
+      "op": "keep",
+      "note": "agent2; single concept: answer should not include theta"
+    },
+    {
+      "id": "tb_0407_c20",
+      "op": "keep",
+      "note": "agent2; single concept: student assumed all given values must be used"
+    },
+    {
+      "id": "tb_0408_c03",
+      "op": "keep",
+      "note": "agent2; single concept: should have solved for total distance"
+    },
+    {
+      "id": "tb_0408_c05",
+      "op": "keep",
+      "note": "agent2; single concept: find where velocity = 0"
+    },
+    {
+      "id": "tb_0409_c01",
+      "op": "keep",
+      "note": "agent2; identify conceptual error + explain why the same thing"
+    },
+    {
+      "id": "tb_0411_c08",
+      "op": "keep",
+      "note": "agent2; single concept: how nextValue() works"
+    },
+    {
+      "id": "tb_0411_c09",
+      "op": "keep",
+      "note": "agent2; single deliverable: correct code example"
+    },
+    {
+      "id": "tb_0412_c01",
+      "op": "keep",
+      "note": "agent2; single corrective: wrong claim + the correct condition (tightly coupled)"
+    },
+    {
+      "id": "tb_0413_c01",
+      "op": "keep",
+      "note": "agent2; one concept: series is geometric-with-sign-alternation + why AST insufficient"
+    },
+    {
+      "id": "tb_0413_c02",
+      "op": "keep",
+      "note": "agent2; state the convergence criterion (verbal+symbolic) and note omission = one corrective concept"
+    },
+    {
+      "id": "tb_0413_c03",
+      "op": "keep",
+      "note": "agent2; single worked example (compute first three terms of p=12)"
+    },
+    {
+      "id": "tb_0413_c04",
+      "op": "split",
+      "note": "agent2; explicit bundle of 3 distinct diagnostic requirements ('all three must be addressed')",
+      "children": [
+        {
+          "text": "The model must point out the student's error in not checking the absolute value criterion for geometric convergence."
+        },
+        {
+          "text": "The model must point out the student's error in not checking that the limit of the terms is zero for all p."
+        },
+        {
+          "text": "The model must clarify that if $|p/6| \\geq 1$, not only does the AST fail, but the nth term test also proves divergence."
+        }
+      ]
+    },
+    {
+      "id": "tb_0413_c06",
+      "op": "keep",
+      "note": "agent2; single scaffolding requirement: metacognitive learning tip"
+    },
+    {
+      "id": "tb_0414_c03",
+      "op": "split",
+      "note": "agent2; AMBIGUOUS: two distinct required conversions (volume, temperature), each mapping to a separate sibling identification (c01/c02)",
+      "children": [
+        {
+          "text": "The model must explain that because the student is using a gas constant R = 62.36 L⋅mmHg⋅K⁻¹⋅mol⁻¹ they must convert the volume from mL to liters."
+        },
+        {
+          "text": "The model must explain that because the student is using a gas constant R = 62.36 L⋅mmHg⋅K⁻¹⋅mol⁻¹ they must convert the temperature from degrees Celsius to Kelvins."
+        }
+      ]
+    },
+    {
+      "id": "tb_0415_c05",
+      "op": "keep",
+      "note": "agent2; logical-order sequence of cascade events -> KEEP"
+    },
+    {
+      "id": "tb_0417_c10",
+      "op": "keep",
+      "note": "agent2; single principle + one worked variance-combination calculation"
+    },
+    {
+      "id": "tb_0419_c02",
+      "op": "keep",
+      "note": "agent3; single corrective explanation of correct change row + why (one concept)"
+    },
+    {
+      "id": "tb_0419_c04",
+      "op": "keep",
+      "note": "agent3; single diagnostic: which error was the main cause"
+    },
+    {
+      "id": "tb_0419_c07",
+      "op": "keep",
+      "note": "agent3; single statement; mechanically-linked cause"
+    },
+    {
+      "id": "tb_0420_c02",
+      "op": "keep",
+      "note": "agent3; identify+correct but sibling c10 states correction; keep identify"
+    },
+    {
+      "id": "tb_0420_c09",
+      "op": "keep",
+      "note": "agent3; single concept: avoid 'universal solvent' term"
+    },
+    {
+      "id": "tb_0420_c10",
+      "op": "keep",
+      "note": "agent3; single concept: two properties distinct, not 'thermal properties'"
+    },
+    {
+      "id": "tb_0422_c04",
+      "op": "keep",
+      "note": "agent3; mechanically-linked: compare potentials therefore assign electrodes"
+    },
+    {
+      "id": "tb_0422_c10",
+      "op": "keep",
+      "note": "agent3; single computation of e-cell"
+    },
+    {
+      "id": "tb_0422_c13",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0431_c01",
+      "op": "keep",
+      "note": "agent3; identify AND explain same single thing"
+    },
+    {
+      "id": "tb_0431_c03",
+      "op": "keep",
+      "note": "agent3; single worked computation + note it must be added"
+    },
+    {
+      "id": "tb_0431_c05",
+      "op": "keep",
+      "note": "agent3; AMBIGUOUS: identify + multi-part inequality correction (continuity, >=); one topic so lean KEEP"
+    },
+    {
+      "id": "tb_0433_c09",
+      "op": "keep",
+      "note": "agent3; single diagnostic; mechanically-linked 'stemming from'"
+    },
+    {
+      "id": "tb_0434_c06",
+      "op": "keep",
+      "note": "agent3; identify error + names misconception (same thing)"
+    },
+    {
+      "id": "tb_0435_c02",
+      "op": "keep",
+      "note": "agent3; single identify of one conceptual error"
+    },
+    {
+      "id": "tb_0435_c04",
+      "op": "keep",
+      "note": "agent3; single identify of one conceptual error"
+    },
+    {
+      "id": "tb_0438_c09",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0438_c11",
+      "op": "keep",
+      "note": "agent3; single principle expressed as either/or"
+    },
+    {
+      "id": "tb_0439_c03",
+      "op": "keep",
+      "note": "agent3; state result AND justify same single thing"
+    },
+    {
+      "id": "tb_0440_c01",
+      "op": "keep",
+      "note": "agent3; single molar-mass computation"
+    },
+    {
+      "id": "tb_0441_c05",
+      "op": "keep",
+      "note": "agent3; single acknowledgment act; first-A-then-B sequencing"
+    },
+    {
+      "id": "tb_0442_c04",
+      "op": "keep",
+      "note": "agent3; single diagnostic"
+    },
+    {
+      "id": "tb_0444_c02",
+      "op": "keep",
+      "note": "agent3; single df computation (two variants of same)"
+    },
+    {
+      "id": "tb_0444_c04",
+      "op": "keep",
+      "note": "agent3; compute p-value + interpret; mechanically linked single step"
+    },
+    {
+      "id": "tb_0445_c01",
+      "op": "keep",
+      "note": "agent3; identify AND explain same thing"
+    },
+    {
+      "id": "tb_0445_c09",
+      "op": "keep",
+      "note": "agent3; identify + explain how to handle same single issue"
+    },
+    {
+      "id": "tb_0445_c10",
+      "op": "keep",
+      "note": "agent3; single fix + why"
+    },
+    {
+      "id": "tb_0448_c03",
+      "op": "keep",
+      "note": "agent3; single worked example computation + contrast"
+    },
+    {
+      "id": "tb_0448_c05",
+      "op": "keep",
+      "note": "agent3; single corrected method (one artifact)"
+    },
+    {
+      "id": "tb_0451_c01",
+      "op": "keep",
+      "note": "agent3; state + explain same single concept"
+    },
+    {
+      "id": "tb_0451_c02",
+      "op": "keep",
+      "note": "agent3; one concept: removable discontinuity because limit=1"
+    },
+    {
+      "id": "tb_0451_c06",
+      "op": "keep",
+      "note": "agent3; single principle"
+    },
+    {
+      "id": "tb_0453_c01",
+      "op": "keep",
+      "note": "agent3; single acknowledgment"
+    },
+    {
+      "id": "tb_0453_c04",
+      "op": "keep",
+      "note": "agent3; single worked molar-mass computation"
+    },
+    {
+      "id": "tb_0453_c06",
+      "op": "keep",
+      "note": "agent3; single worked moles computation"
+    },
+    {
+      "id": "tb_0453_c07",
+      "op": "keep",
+      "note": "agent3; single diagnostic of one error"
+    },
+    {
+      "id": "tb_0453_c09",
+      "op": "keep",
+      "note": "agent3; explain one principle + illustrate with bullets"
+    },
+    {
+      "id": "tb_0453_c11",
+      "op": "keep",
+      "note": "agent3; single worked q computation"
+    },
+    {
+      "id": "tb_0453_c15",
+      "op": "keep",
+      "note": "agent3; single concept: consistent units"
+    },
+    {
+      "id": "tb_0454_c06",
+      "op": "keep",
+      "note": "agent3; single identify (spelling)"
+    },
+    {
+      "id": "tb_0454_c08",
+      "op": "keep",
+      "note": "agent3; single statement"
+    },
+    {
+      "id": "tb_0454_c09",
+      "op": "keep",
+      "note": "agent3; single correction"
+    },
+    {
+      "id": "tb_0454_c11",
+      "op": "keep",
+      "note": "agent3; single identify (typo)"
+    },
+    {
+      "id": "tb_0454_c12",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0454_c14",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0455_c02",
+      "op": "keep",
+      "note": "agent3; single statement"
+    },
+    {
+      "id": "tb_0455_c03",
+      "op": "keep",
+      "note": "agent3; single statement"
+    },
+    {
+      "id": "tb_0456_c01",
+      "op": "keep",
+      "note": "agent3; single acknowledgment of correct work"
+    },
+    {
+      "id": "tb_0456_c04",
+      "op": "split",
+      "note": "agent3; two distinct errors bundled: wrong n value AND wrong reaction quotient",
+      "children": [
+        {
+          "text": "The response must identify that the student used an incorrect value of n = 1 (instead of 2)."
+        },
+        {
+          "text": "The response must identify that the student used an incorrect reaction quotient expression due to the incorrect balanced equation, and explain that Q should be [Fe²⁺]²[Zn²⁺]/[Fe³⁺]² instead of [Fe²⁺][Zn²⁺]/[Fe³⁺]."
+        }
+      ]
+    },
+    {
+      "id": "tb_0460_c08",
+      "op": "keep",
+      "note": "agent3; single concept: units must match R"
+    },
+    {
+      "id": "tb_0460_c09",
+      "op": "keep",
+      "note": "agent3; single concept + linked computation"
+    },
+    {
+      "id": "tb_0461_c04",
+      "op": "keep",
+      "note": "agent3; AMBIGUOUS: one experiment proposal with design+control components; lean KEEP as single artifact"
+    },
+    {
+      "id": "tb_0461_c09",
+      "op": "keep",
+      "note": "agent3; identify + explain same thing"
+    },
+    {
+      "id": "tb_0462_c04",
+      "op": "split",
+      "note": "agent3; two distinct facts: two separate ATP roles in the Calvin cycle",
+      "children": [
+        {
+          "text": "The response must describe the ATP role of phosphorylation of 3-PGA in the Calvin cycle."
+        },
+        {
+          "text": "The response must describe the ATP-driven regeneration of RuBP in the Calvin cycle."
+        }
+      ]
+    },
+    {
+      "id": "tb_0464_c13",
+      "op": "split",
+      "note": "agent3; three distinct final answers for sub-parts (a), (b), (c)",
+      "children": [
+        {
+          "text": "The response must state that for (a) increasing temperature, the concentration of SO₂ will increase."
+        },
+        {
+          "text": "The response must state that for (b) decreasing pressure, the concentration of SO₂ will increase."
+        },
+        {
+          "text": "The response must state that for (c) adding a catalyst, the concentration of SO₂ will remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "tb_0466_c01",
+      "op": "keep",
+      "note": "agent3; single acknowledgment"
+    },
+    {
+      "id": "tb_0466_c03",
+      "op": "keep",
+      "note": "agent3; single identify + reason"
+    },
+    {
+      "id": "tb_0467_c01",
+      "op": "keep",
+      "note": "agent3; single point"
+    },
+    {
+      "id": "tb_0467_c02",
+      "op": "keep",
+      "note": "agent3; single point"
+    },
+    {
+      "id": "tb_0467_c03",
+      "op": "keep",
+      "note": "agent3; single concept: energy balance = 0"
+    },
+    {
+      "id": "tb_0467_c04",
+      "op": "keep",
+      "note": "agent3; single answer"
+    },
+    {
+      "id": "tb_0468_c03",
+      "op": "keep",
+      "note": "agent3; single explanation; first-A-then-B sequencing"
+    },
+    {
+      "id": "tb_0469_c05",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0471_c06",
+      "op": "keep",
+      "note": "agent3; single equivalent-mass computation"
+    },
+    {
+      "id": "tb_0471_c07",
+      "op": "keep",
+      "note": "agent3; single identify of one error"
+    },
+    {
+      "id": "tb_0471_c08",
+      "op": "keep",
+      "note": "agent3; single instruction + computation"
+    },
+    {
+      "id": "tb_0471_c15",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0473_c02",
+      "op": "keep",
+      "note": "agent3; single concept + linked computation"
+    },
+    {
+      "id": "tb_0474_c01",
+      "op": "keep",
+      "note": "agent3; state-wrong+supply-correct single corrective act; sibling c04 also gives value"
+    },
+    {
+      "id": "tb_0475_c02",
+      "op": "keep",
+      "note": "agent3; single concept + illustrative code"
+    },
+    {
+      "id": "tb_0475_c07",
+      "op": "keep",
+      "note": "agent3; single point"
+    },
+    {
+      "id": "tb_0475_c13",
+      "op": "keep",
+      "note": "agent3; single validation concept"
+    },
+    {
+      "id": "tb_0476_c04",
+      "op": "keep",
+      "note": "agent3; single correction"
+    },
+    {
+      "id": "tb_0479_c01",
+      "op": "keep",
+      "note": "agent3; single explanation of one method (base+recursive+stack)"
+    },
+    {
+      "id": "tb_0480_c05",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0481_c01",
+      "op": "keep",
+      "note": "agent3; identify + explain same thing"
+    },
+    {
+      "id": "tb_0481_c03",
+      "op": "keep",
+      "note": "agent3; mechanically-linked chain: k_eff therefore omega"
+    },
+    {
+      "id": "tb_0481_c04",
+      "op": "keep",
+      "note": "agent3; mechanically-linked: k_eff<=0 therefore k<=VWB/R"
+    },
+    {
+      "id": "tb_0482_c04",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0483_c03",
+      "op": "keep",
+      "note": "agent3; single explanation accept vs fail-to-reject"
+    },
+    {
+      "id": "tb_0483_c09",
+      "op": "keep",
+      "note": "agent3; single statement"
+    },
+    {
+      "id": "tb_0483_c10",
+      "op": "keep",
+      "note": "agent3; single statement"
+    },
+    {
+      "id": "tb_0484_c02",
+      "op": "keep",
+      "note": "agent3; single conceptual error (wrong spring PE formula)"
+    },
+    {
+      "id": "tb_0485_c03",
+      "op": "keep",
+      "note": "agent3; identify + name correct method (single corrective act)"
+    },
+    {
+      "id": "tb_0485_c04",
+      "op": "keep",
+      "note": "agent3; single worked derivation"
+    },
+    {
+      "id": "tb_0488_c01",
+      "op": "keep",
+      "note": "agent3; identify failure + clarify condition (same concept)"
+    },
+    {
+      "id": "tb_0488_c05",
+      "op": "keep",
+      "note": "agent3; identify + specify same concept"
+    },
+    {
+      "id": "tb_0490_c07",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0491_c03",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0491_c06",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0491_c09",
+      "op": "split",
+      "note": "agent3; merged criteria (embedded '10.'): p calculation AND allele contributions",
+      "children": [
+        {
+          "text": "The response must calculate that p = 1 - 0.707 = 0.293 for the R allele frequency in migrants."
+        },
+        {
+          "text": "The response must provide the correct allele contributions from migrants: 117.2 R alleles and 282.8 r alleles from 200 plants."
+        }
+      ]
+    },
+    {
+      "id": "tb_0492_c03",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0493_c06",
+      "op": "keep",
+      "note": "agent3; single concept: state rule and apply to this integral"
+    },
+    {
+      "id": "tb_0493_c07",
+      "op": "keep",
+      "note": "agent3; single concept with OR alternative phrasing"
+    },
+    {
+      "id": "tb_0494_c02",
+      "op": "keep",
+      "note": "agent3; identify + trivial correction; sibling c04 gives full fix"
+    },
+    {
+      "id": "tb_0495_c01",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0495_c07",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0495_c09",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0496_c01",
+      "op": "keep",
+      "note": "agent3; single identify"
+    },
+    {
+      "id": "tb_0496_c03",
+      "op": "keep",
+      "note": "agent3; single concept"
+    },
+    {
+      "id": "tb_0496_c04",
+      "op": "keep",
+      "note": "agent3; single antiderivative computation"
+    },
+    {
+      "id": "tb_0496_c05",
+      "op": "keep",
+      "note": "agent3; final-answer statement; error-explanation duplicates siblings"
+    },
+    {
+      "id": "tb_0497_c06",
+      "op": "keep",
+      "note": "agent3; single supportive acknowledgment act"
+    },
+    {
+      "id": "tb_0499_c02",
+      "op": "keep",
+      "note": "agent3; identify error + correction (single)"
+    },
+    {
+      "id": "tb_0499_c07",
+      "op": "keep",
+      "note": "agent3; single hint/correction"
+    },
+    {
+      "id": "tb_0501_c06",
+      "op": "keep",
+      "note": "agent3; single hint"
+    },
+    {
+      "id": "tb_0509_c04",
+      "op": "keep",
+      "note": "agent3; withhold; Q6 KEEP (must not state correct formula)"
+    },
+    {
+      "id": "tb_0510_c02",
+      "op": "keep",
+      "note": "agent3; withhold; Q6 KEEP (without solving for c)"
+    },
+    {
+      "id": "tb_0510_c09",
+      "op": "keep",
+      "note": "agent4; single reminder (find y-values) with explanatory 'because' clause; one concept"
+    },
+    {
+      "id": "tb_0511_c09",
+      "op": "keep",
+      "note": "agent4; single corrective hint about one misconception (adding acceptance percentages); mechanically linked"
+    },
+    {
+      "id": "tb_0513_c01",
+      "op": "keep",
+      "note": "agent4; single acknowledgment of one correct deduction"
+    },
+    {
+      "id": "tb_0514_c03",
+      "op": "split",
+      "note": "agent4; two conceptually distinct stuck-causes bundled (unbalanced equation vs moles-not-grams)",
+      "children": [
+        {
+          "text": "The response must identify that the student is unable to proceed because they have not correctly balanced the chemical equation."
+        },
+        {
+          "text": "The response must identify that the student is unable to proceed because they have not understood that they must use moles instead of grams for the next steps."
+        }
+      ]
+    },
+    {
+      "id": "tb_0515_c07",
+      "op": "keep",
+      "note": "agent4; single mechanically-linked step (factor out dy/dx and isolate)"
+    },
+    {
+      "id": "tb_0518_c05",
+      "op": "keep",
+      "note": "agent4; single systematic evaluation procedure; sequencing (first A then B)"
+    },
+    {
+      "id": "tb_0518_c10",
+      "op": "keep",
+      "note": "agent4; OR-list of alternative stuck-reasons; single identification satisfiable by any"
+    },
+    {
+      "id": "tb_0521_c03",
+      "op": "keep",
+      "note": "agent4; 'should not' prohibition (jargon without defining); withhold; Q6 KEEP"
+    },
+    {
+      "id": "tb_0521_c07",
+      "op": "keep",
+      "note": "agent4; single sanity-check encouragement"
+    },
+    {
+      "id": "tb_0522_c04",
+      "op": "keep",
+      "note": "agent4; single identification of stuck-point"
+    },
+    {
+      "id": "tb_0522_c05",
+      "op": "keep",
+      "note": "agent4; single acknowledgment of stated confusion"
+    },
+    {
+      "id": "tb_0522_c07",
+      "op": "keep",
+      "note": "agent4; single concept: hint toward binomial distribution via its defining conditions"
+    },
+    {
+      "id": "tb_0524_c03",
+      "op": "keep",
+      "note": "agent4; single hint (chain rule) with withhold clause"
+    },
+    {
+      "id": "tb_0526_c08",
+      "op": "keep",
+      "note": "agent4; single hint (HI concentration not achievable) with example questions"
+    },
+    {
+      "id": "tb_0527_c02",
+      "op": "keep",
+      "note": "agent4; single indication (apply Mendelian inheritance)"
+    },
+    {
+      "id": "tb_0528_c07",
+      "op": "keep",
+      "note": "agent4; single mechanically-linked hint ('since X, then Y')"
+    },
+    {
+      "id": "tb_0529_c03",
+      "op": "keep",
+      "note": "agent4; single scaffolding strategy with guiding questions"
+    },
+    {
+      "id": "tb_0529_c06",
+      "op": "keep",
+      "note": "agent4; acknowledge current work with illustrative 'such as' examples; single act"
+    },
+    {
+      "id": "tb_0533_c08",
+      "op": "keep",
+      "note": "agent4; single hint about determining total probability of a mixture"
+    },
+    {
+      "id": "tb_0537_c03",
+      "op": "keep",
+      "note": "agent4; single concept: guide toward SE formula via a guiding question (question is the means)"
+    },
+    {
+      "id": "tb_0542_c02",
+      "op": "split",
+      "note": "agent4; two distinct acts: acknowledge correct formula vs address method-vs-result confusion",
+      "children": [
+        {
+          "text": "The response must acknowledge that the student arrived at the correct formula."
+        },
+        {
+          "text": "The response must directly address the student's confusion about why the flawed reasoning is still incorrect (e.g., by explaining that a correct formula can sometimes result from an incorrect method)."
+        }
+      ]
+    },
+    {
+      "id": "tb_0542_c04",
+      "op": "keep",
+      "note": "agent4; single follow-up hint (direction of net force)"
+    },
+    {
+      "id": "tb_0543_c03",
+      "op": "keep",
+      "note": "agent4; single guide (check solubility rules) with withhold clause"
+    },
+    {
+      "id": "tb_0544_c02",
+      "op": "keep",
+      "note": "agent4; acknowledge student's coherent correct reasoning chain; mechanically-linked chain"
+    },
+    {
+      "id": "tb_0544_c07",
+      "op": "keep",
+      "note": "agent4; single hint (methylation impacts nearby genes)"
+    },
+    {
+      "id": "tb_0545_c01",
+      "op": "keep",
+      "note": "agent4; single instruction (convert grams to moles) with withhold clause"
+    },
+    {
+      "id": "tb_0545_c02",
+      "op": "keep",
+      "note": "agent4; single indication (compare reactants in moles)"
+    },
+    {
+      "id": "tb_0545_c03",
+      "op": "keep",
+      "note": "agent4; single statement (equation gives mole ratio) with withhold clause"
+    },
+    {
+      "id": "tb_0546_c02",
+      "op": "keep",
+      "note": "agent4; single hint (override advance())"
+    },
+    {
+      "id": "tb_0546_c03",
+      "op": "keep",
+      "note": "agent4; single hint (use super() to init current)"
+    },
+    {
+      "id": "tb_0548_c02",
+      "op": "keep",
+      "note": "agent4; single identification (must call parent constructor via super())"
+    },
+    {
+      "id": "tb_0548_c03",
+      "op": "keep",
+      "note": "agent4; single hint about advance() and mirroring; mechanically linked"
+    },
+    {
+      "id": "tb_0549_c02",
+      "op": "split",
+      "note": "agent4; acknowledge two distinct correct works on different sub-problems (P1 velocity vs P2 integral setup)",
+      "children": [
+        {
+          "text": "The response must acknowledge the student's correct calculation of P1's velocity."
+        },
+        {
+          "text": "The response must acknowledge the student's correct setup of the absolute value integral for P2's distance."
+        }
+      ]
+    },
+    {
+      "id": "tb_0552_c02",
+      "op": "split",
+      "note": "agent4; two distinct misreadings bundled (both children blue-eyed vs ignoring ordered wording)",
+      "children": [
+        {
+          "text": "The response must state that the student mis-read the question by treating both children as blue-eyed."
+        },
+        {
+          "text": "The response must state that the student mis-read the question by ignoring the ordered wording \"first ... then ...\"."
+        }
+      ]
+    },
+    {
+      "id": "tb_0552_c03",
+      "op": "keep",
+      "note": "agent4; AMBIGUOUS: bundles two distinct concepts (independence + ordered pair) but siblings c04/c05 already address both; lean KEEP"
+    },
+    {
+      "id": "tb_0552_c04",
+      "op": "keep",
+      "note": "agent4; single hint (multiply independent probabilities) with withhold"
+    },
+    {
+      "id": "tb_0552_c05",
+      "op": "keep",
+      "note": "agent4; single attention-drawing to ordering cues"
+    },
+    {
+      "id": "tb_0553_c01",
+      "op": "keep",
+      "note": "agent4; 'and/or' single acknowledgment (either suffices)"
+    },
+    {
+      "id": "tb_0555_c05",
+      "op": "keep",
+      "note": "agent4; single hint (position function contains an integral)"
+    },
+    {
+      "id": "tb_0559_c09",
+      "op": "keep",
+      "note": "agent4; single hint (use calculus for minimum width)"
+    },
+    {
+      "id": "tb_0565_c04",
+      "op": "split",
+      "note": "agent4; acknowledge three distinct correct-work items (express SA/V in r; setup volume derivative; determined chain rule)",
+      "children": [
+        {
+          "text": "The model must acknowledge that the student is correctly using related rates by expressing surface area and volume in terms of radius."
+        },
+        {
+          "text": "The model must acknowledge that the student correctly set up the derivative of the volume formula to find the volume's rate of change."
+        },
+        {
+          "text": "The model must acknowledge that the student determined that the chain rule must be applied."
+        }
+      ]
+    },
+    {
+      "id": "tb_0565_c06",
+      "op": "keep",
+      "note": "agent4; single hint (composite functions -> chain rule); mechanically linked"
+    },
+    {
+      "id": "tb_0565_c08",
+      "op": "keep",
+      "note": "agent4; single hint (need dr/dt to find rate of change)"
+    },
+    {
+      "id": "tb_0566_c03",
+      "op": "keep",
+      "note": "agent4; single hint (consider Normal Force)"
+    },
+    {
+      "id": "tb_0570_c03",
+      "op": "keep",
+      "note": "agent4; single hint (properties of glutamic acid)"
+    },
+    {
+      "id": "tb_0570_c04",
+      "op": "keep",
+      "note": "agent4; single hint (properties of valine)"
+    },
+    {
+      "id": "tb_0573_c06",
+      "op": "keep",
+      "note": "agent4; single hint (food non-negative implies 0 minimum); mechanically linked"
+    },
+    {
+      "id": "tb_0574_c01",
+      "op": "keep",
+      "note": "agent4; single computation acknowledged (used kinematic equation to compute t1=4.95s); mechanically linked"
+    },
+    {
+      "id": "tb_0575_c02",
+      "op": "keep",
+      "note": "agent4; single note (two cases of one thing: heights match or not)"
+    },
+    {
+      "id": "tb_0578_c02",
+      "op": "keep",
+      "note": "agent4; single acknowledgment with prohibition (do not affirm wrong y-intercept); withhold"
+    },
+    {
+      "id": "tb_0582_c05",
+      "op": "keep",
+      "note": "agent4; single statement (currentFood >= 0)"
+    },
+    {
+      "id": "tb_0583_c02",
+      "op": "keep",
+      "note": "agent4; acknowledge student's coherent reasoning chain as correct; single acknowledgment"
+    },
+    {
+      "id": "tb_0584_c04",
+      "op": "keep",
+      "note": "agent4; single acknowledgment (series+parallel combination needed)"
+    },
+    {
+      "id": "tb_0591_c02",
+      "op": "keep",
+      "note": "agent4; single acknowledgment (correctly identified need for Bayes' theorem)"
+    },
+    {
+      "id": "tb_0591_c07",
+      "op": "keep",
+      "note": "agent4; single indication (law of total probability may need restating)"
+    },
+    {
+      "id": "tb_0593_c02",
+      "op": "keep",
+      "note": "agent4; single identification (unsure whether currentNum should be incremented)"
+    },
+    {
+      "id": "tb_0593_c06",
+      "op": "keep",
+      "note": "agent4; single acknowledgment of confusion"
+    },
+    {
+      "id": "tb_0593_c08",
+      "op": "keep",
+      "note": "agent4; single hint (when loop should end)"
+    },
+    {
+      "id": "tb_0593_c11",
+      "op": "keep",
+      "note": "agent4; single hint (how currentNum changes in recursion)"
+    },
+    {
+      "id": "tb_0594_c03",
+      "op": "keep",
+      "note": "agent4; single strategic hint (gather 'a' terms, factor, isolate); mechanically-linked procedure"
+    },
+    {
+      "id": "tb_0600_c02",
+      "op": "split",
+      "note": "agent4; AMBIGUOUS: identify bundles two distinct misconceptions; sibling c06 partly addresses (b), so borderline; best-guess SPLIT",
+      "children": [
+        {
+          "text": "The response must identify that the student is stuck due to a misunderstanding that all species' concentrations are needed for Kc."
+        },
+        {
+          "text": "The response must identify that the student is stuck due to a misunderstanding that stoichiometric coefficients translate to exponents, not multipliers."
+        }
+      ]
+    },
+    {
+      "id": "tb_0600_c06",
+      "op": "keep",
+      "note": "agent4; single corrective act (multiplying by 2 vs squaring = coefficients become exponents)"
+    },
+    {
+      "id": "tb_0605_c03",
+      "op": "keep",
+      "note": "agent4; single hint (no need for Hardy-Weinberg since genotypes given); mechanically linked"
+    },
+    {
+      "id": "tb_0607_c04",
+      "op": "keep",
+      "note": "agent4; single indication (incorporate a conservation principle)"
+    },
+    {
+      "id": "tb_0609_c01",
+      "op": "split",
+      "note": "agent4; acknowledge two distinct correct items (purpose of reagents vs correct intermediate molecule)",
+      "children": [
+        {
+          "text": "The response must acknowledge the student correctly identified the purpose of the reagents."
+        },
+        {
+          "text": "The response must acknowledge the student correctly identified the correct intermediate molecule, 3-nitrotoluene."
+        }
+      ]
+    },
+    {
+      "id": "tb_0610_c03",
+      "op": "keep",
+      "note": "agent4; single hint (birth order not needed)"
+    },
+    {
+      "id": "tb_0615_c04",
+      "op": "keep",
+      "note": "agent4; single hint (convert integration limits to u-values)"
+    },
+    {
+      "id": "tb_0616_c02",
+      "op": "split",
+      "note": "agent4; acknowledge two distinct correct ideas ((a) light triggers opening; (b) low CO2 keeps open)",
+      "children": [
+        {
+          "text": "The response must acknowledge the correct idea that continuous light triggers stomatal opening."
+        },
+        {
+          "text": "The response must acknowledge the correct idea that low internal CO2 usually keeps stomata open."
+        }
+      ]
+    },
+    {
+      "id": "tb_0616_c04",
+      "op": "keep",
+      "note": "agent4; single prompt (which internal water-stress signal overrides light)"
+    },
+    {
+      "id": "tb_0617_c02",
+      "op": "keep",
+      "note": "agent4; single hint (check original problem for correct masses)"
+    },
+    {
+      "id": "tb_0617_c03",
+      "op": "keep",
+      "note": "agent4; single hint (try balancing equation again)"
+    },
+    {
+      "id": "tb_0617_c06",
+      "op": "keep",
+      "note": "agent4; single hint (compare molar ratios for limiting reactant)"
+    },
+    {
+      "id": "tb_0617_c07",
+      "op": "keep",
+      "note": "agent4; single hint (compare water molar ratio to limiting reactant moles)"
+    },
+    {
+      "id": "tb_0618_c01",
+      "op": "keep",
+      "note": "agent4; acknowledge current work with illustrative 'such as' examples; single act"
+    },
+    {
+      "id": "tb_0618_c07",
+      "op": "keep",
+      "note": "agent4; single hint (condition for problem fully solved)"
+    },
+    {
+      "id": "tb_0618_c09",
+      "op": "keep",
+      "note": "agent4; single hint (what values must be combined)"
+    },
+    {
+      "id": "tb_0619_c08",
+      "op": "keep",
+      "note": "agent4; single corrective explanation (how to choose the limit)"
+    },
+    {
+      "id": "tb_0620_c06",
+      "op": "keep",
+      "note": "agent4; single hint (changes needed for builder object)"
+    },
+    {
+      "id": "tb_0623_c01",
+      "op": "keep",
+      "note": "agent4; 'and/or' single identification (either suffices)"
+    },
+    {
+      "id": "tb_0623_c03",
+      "op": "keep",
+      "note": "agent4; single guiding hint (which compounds separate into ions)"
+    },
+    {
+      "id": "tb_0626_c11",
+      "op": "keep",
+      "note": "agent4; single acknowledgment of one bundled expressed confusion"
+    },
+    {
+      "id": "tb_0626_c15",
+      "op": "keep",
+      "note": "agent4; single worked step-by-step trace; do not shred"
+    },
+    {
+      "id": "tb_0627_c03",
+      "op": "keep",
+      "note": "agent4; single concept (same-sign addition can't flip sign)"
+    },
+    {
+      "id": "tb_0628_c07",
+      "op": "keep",
+      "note": "agent4; single hint (continue vs avoid trap location)"
+    },
+    {
+      "id": "tb_0630_c02",
+      "op": "keep",
+      "note": "agent4; single identification with clarifying parenthetical; identify+explain same thing"
+    },
+    {
+      "id": "tb_0631_c04",
+      "op": "keep",
+      "note": "agent4; single hint (conditions for recursion to continue)"
+    },
+    {
+      "id": "tb_0634_c01",
+      "op": "keep",
+      "note": "agent4; acknowledge correct work with illustrative 'such as' examples; single act"
+    },
+    {
+      "id": "tb_0637_c03",
+      "op": "keep",
+      "note": "agent4; single identification with reason ('since 4 bits...'); mechanically linked"
+    },
+    {
+      "id": "tb_0638_c03",
+      "op": "keep",
+      "note": "agent4; single hint (balancing inside/outside of integral)"
+    },
+    {
+      "id": "tb_0642_c06",
+      "op": "keep",
+      "note": "agent4; single reasonableness check; mechanically linked"
+    },
+    {
+      "id": "tb_0643_c03",
+      "op": "keep",
+      "note": "agent4; single hint (one guiding question toward log base choice)"
+    },
+    {
+      "id": "tb_0645_c01",
+      "op": "keep",
+      "note": "agent4; identify AND explain the SAME thing (correct portions); KEEP"
+    },
+    {
+      "id": "tb_0645_c03",
+      "op": "keep",
+      "note": "agent4; single indication (improve measurement accuracy)"
+    },
+    {
+      "id": "tb_0646_c08",
+      "op": "keep",
+      "note": "agent4; single identification of one error (false pressure force)"
+    },
+    {
+      "id": "tb_0647_c04",
+      "op": "keep",
+      "note": "agent4; single guidance toward answer via clarifying linked definitions"
+    },
+    {
+      "id": "tb_0648_c05",
+      "op": "keep",
+      "note": "agent4; single hint (apply integration by parts twice) with withhold; one technique"
+    },
+    {
+      "id": "tb_0648_c09",
+      "op": "keep",
+      "note": "agent4; single reassurance (acknowledge + validate same emotion)"
+    },
+    {
+      "id": "tb_0650_c01",
+      "op": "keep",
+      "note": "agent4; single acknowledgment (frictionless angle exists)"
+    },
+    {
+      "id": "tb_0650_c05",
+      "op": "keep",
+      "note": "agent4; single concept (centripetal force must be in plane of circle)"
+    },
+    {
+      "id": "tb_0650_c06",
+      "op": "keep",
+      "note": "agent4; AMBIGUOUS: single hint attempt bundling trig-function + centripetal-direction errors (with withhold); lean KEEP as one corrective hint"
+    },
+    {
+      "id": "tb_0652_c02",
+      "op": "keep",
+      "note": "agent4; single prompt (reconsider whether flavors count as chocolate)"
+    },
+    {
+      "id": "tb_0652_c03",
+      "op": "keep",
+      "note": "agent4; mechanically-linked chain (toppings/no-customization therefore no sundae)"
+    },
+    {
+      "id": "tb_0656_c02",
+      "op": "keep",
+      "note": "agent4; single identification (which reactant is limiting for molar enthalpy)"
+    },
+    {
+      "id": "tb_0658_c06",
+      "op": "keep",
+      "note": "agent4; single hint (looping Meal objects needs getter); mechanically linked"
+    },
+    {
+      "id": "tb_0658_c07",
+      "op": "keep",
+      "note": "agent4; single visual example with print-one-then-loop sequencing"
+    },
+    {
+      "id": "tb_0659_c05",
+      "op": "keep",
+      "note": "agent4; prohibition/withhold (do not reveal n or Q); Q6 KEEP"
+    }
+  ]
+}

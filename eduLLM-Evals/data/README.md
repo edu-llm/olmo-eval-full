@@ -1,12 +1,32 @@
 # Data drop point
 
-Place the preprocessed TutorBench files here:
+## ⚠️ Use the curated bank
 
-- `scenarios.jsonl` — one Scenario Schema object per line
-- `rubrics.jsonl` — one Rubric Schema object per line (must include the
-  calibrated `discrimination` map, `difficulty`, and `q_mapping`)
+The **finalized rubric bank** lives in `data/curated/`:
 
-Then check them with:
+- **`data/curated/rubrics_qmatrix_curated.jsonl`** — the criterion bank to grade against
+- **`data/curated/scenarios_curated.jsonl`** — scenarios (renumbered `criterion_ids`)
+
+The top-level `rubrics_qmatrix_final.jsonl` / `scenarios.jsonl` are the **untouched
+TutorBench source**, kept for provenance only. The curated versions apply the
+`curation_v1` fixes (atomized bundled criteria, softened rigid wording, consolidated/
+normalized presentation criteria, conditional criteria marked optional). See
+`curation/CHANGES.md` for a before→after summary and `curation/grading_notes.md` for
+the bank-wide grading rules the judge must apply.
+
+Note: curation edits the **criteria only** — it does not touch IRT/calibration params.
+Grade with the curated bank first; (re-)derive IRT params on the frozen criterion set
+afterward (split children currently carry copied placeholder params).
+
+## Schemas
+
+- `scenarios.jsonl` / `scenarios_curated.jsonl` — one Scenario Schema object per line
+- `rubrics_*.jsonl` — one Rubric Schema object per line (includes the calibrated
+  `discrimination` map, `difficulty`, `q_mapping`; curated records also carry a
+  `curation` provenance block and, for presentation criteria, `optional` +
+  `dimension: style_surface` + `judge_guidance`)
+
+Check them with:
 
 ```
 tutor-cat validate --config config.yaml

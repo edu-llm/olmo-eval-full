@@ -51,6 +51,14 @@ data/*.jsonl
 !data/rubrics_qmatrix.jsonl
 !data/rubrics_calibrated.jsonl
 !data/rubrics_qmatrix_final.jsonl
+# Curated bank (curation_v1) IS the finalized rubric + scenario schema — track it.
+!data/curated/
+!data/curated/rubrics_qmatrix_curated.jsonl
+!data/curated/scenarios_curated.jsonl
+
+# Curation intermediates: per-agent/batch op files + review dumps are scratch;
+# the merged master spec (curation/pilot_edits.json) and reports ARE tracked.
+curation/tranche/
 
 # AWS key pairs must never be committed
 *.pem
