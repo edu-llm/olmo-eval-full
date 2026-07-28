@@ -1,0 +1,58 @@
+{"source_id": "2570448_42", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "4297343_78", "native_split": "train", "error_type": "Student unresponsive", "reason": "no_clear_mistake"}
+{"source_id": "2949283_58", "native_split": "train", "error_type": "The student did not make a mistake. Rather, he was telling the tutor that he now understands.", "reason": "no_clear_mistake"}
+{"source_id": "6163970_92", "native_split": "train", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2950026_44", "native_split": "train", "error_type": "student stopped responding", "reason": "no_clear_mistake"}
+{"source_id": "4054193_63", "native_split": "train", "error_type": "Student did not make a mistake, but also does not seem to be answering", "reason": "no_clear_mistake"}
+{"source_id": "2879242_61", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2927785_18", "native_split": "train", "error_type": "student is not wrong", "reason": "no_clear_mistake"}
+{"source_id": "6404710_15", "native_split": "train", "error_type": "no error", "reason": "no_clear_mistake"}
+{"source_id": "6207818_58", "native_split": "train", "error_type": "End session", "reason": "no_clear_mistake"}
+{"source_id": "2948958_72", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "6263315_123", "native_split": "train", "error_type": "Ending session", "reason": "no_clear_mistake"}
+{"source_id": "6303165_12", "native_split": "train", "error_type": "Student answered question", "reason": "no_clear_mistake"}
+{"source_id": "6207818_58", "native_split": "train", "error_type": "no error", "reason": "no_clear_mistake"}
+{"source_id": "2963794_65", "native_split": "train", "error_type": "Student did not make a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2961262_40", "native_split": "train", "error_type": "Student did not make a mistake", "reason": "no_clear_mistake"}
+{"source_id": "2939739_66", "native_split": "train", "error_type": "student is ending the session", "reason": "no_clear_mistake"}
+{"source_id": "4012844_44", "native_split": "train", "error_type": "Student ready to end session.", "reason": "no_clear_mistake"}
+{"source_id": "4111720_8", "native_split": "train", "error_type": "The student did not make a mistake. The student just said that he wasn't at the computer.", "reason": "no_clear_mistake"}
+{"source_id": "2963643_58", "native_split": "train", "error_type": "Student is correct\n", "reason": "no_clear_mistake"}
+{"source_id": "4111720_63", "native_split": "train", "error_type": "No mistake, student is just ending the session.", "reason": "no_clear_mistake"}
+{"source_id": "4288819_9", "native_split": "train", "error_type": "The student did not make an error.", "reason": "no_clear_mistake"}
+{"source_id": "4274213_164", "native_split": "train", "error_type": "End session.", "reason": "no_clear_mistake"}
+{"source_id": "6303295_3", "native_split": "train", "error_type": "End session", "reason": "no_clear_mistake"}
+{"source_id": "6348265_61", "native_split": "train", "error_type": "Correct Answer", "reason": "no_clear_mistake"}
+{"source_id": "2945235_65", "native_split": "train", "error_type": "It seems like the student is reluctant to answer and wants to ends the session. Does not seem like the student made mistake though.", "reason": "no_clear_mistake"}
+{"source_id": "4014122_28", "native_split": "train", "error_type": "The student did not make a mistake in this given segment.", "reason": "no_clear_mistake"}
+{"source_id": "4017173_67", "native_split": "train", "error_type": "diagnose", "reason": "empty_student_turn"}
+{"source_id": "2989406_98", "native_split": "train", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2951129_14", "native_split": "train", "error_type": "Answered in another language", "reason": "no_clear_mistake"}
+{"source_id": "6263315_123", "native_split": "train", "error_type": "Student did not make a mistake or have a misconception.", "reason": "no_clear_mistake"}
+{"source_id": "2950026_38", "native_split": "train", "error_type": "student stops responding", "reason": "no_clear_mistake"}
+{"source_id": "4145096_55", "native_split": "train", "error_type": "The student has not made a mistake yet - in fact, I am pretty sure it was the tutor who made the mistake. The tutor said \"the exponent would be 10^4\", when I'm pretty sure the exponent is just 4. Maybe that's why the student only \"kinda\" gets it.", "reason": "no_clear_mistake"}
+{"source_id": "3981486_67", "native_split": "validation", "error_type": "The student did not make a mistake and the tutor did not indicate that the student had made a mistake. Maybe the word \"effort\" was mistakenly flagged as the tutor indicating  the student had made a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "3981486_67", "native_split": "validation", "error_type": "No mistake!", "reason": "no_clear_mistake"}
+{"source_id": "4177924_72", "native_split": "validation", "error_type": "Student ending session\n", "reason": "no_clear_mistake"}
+{"source_id": "2928305_68", "native_split": "validation", "error_type": "End session\n", "reason": "no_clear_mistake"}
+{"source_id": "6136272_5", "native_split": "test", "error_type": "The student didn't make a mistake. I don't know whether the tutor is acknowledging the student's response as a mistake because sometimes the tutor would give +3 points for a correct answer and +1 for an incorrect answer. I'm not sure if that's for all tutors or only some tutors.", "reason": "no_clear_mistake"}
+{"source_id": "4294482_89", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2898733_18", "native_split": "test", "error_type": "unrelated to content, but student answered question", "reason": "no_clear_mistake"}
+{"source_id": "6136357_63", "native_split": "test", "error_type": "End session", "reason": "no_clear_mistake"}
+{"source_id": "2927785_18", "native_split": "test", "error_type": "The tutor is incorrect and the student has the correct response.", "reason": "no_clear_mistake"}
+{"source_id": "6166381_36", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2915943_61", "native_split": "test", "error_type": "I don't see that the student made an error", "reason": "no_clear_mistake"}
+{"source_id": "6329091_31", "native_split": "test", "error_type": "The student did not make an error.", "reason": "no_clear_mistake"}
+{"source_id": "4296295_38", "native_split": "test", "error_type": "The tutor made a slight mistake in his explanation. He says \"We need to subtract 24 from 15\" which means 15 - 24 but then asks for 24 - 15. This could have confused the student.", "reason": "no_clear_mistake"}
+{"source_id": "6377795_12", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "2915943_61", "native_split": "test", "error_type": "Student did not make a mistake. Possible that the student did make a mistake earlier and the tutor was explaining why the student's answer was incorrect.", "reason": "no_clear_mistake"}
+{"source_id": "6165898_51", "native_split": "test", "error_type": "tutor didn't ask for answer", "reason": "no_clear_mistake"}
+{"source_id": "6166250_45", "native_split": "test", "error_type": "Student needs to go", "reason": "no_clear_mistake"}
+{"source_id": "2894872_74", "native_split": "test", "error_type": "The student did not make an error", "reason": "no_clear_mistake"}
+{"source_id": "2928616_51", "native_split": "test", "error_type": "The student did not make a mistake, and I don't think the tutor indicated that the student made a mistake. I think the \"Great effort\" was mistakenly flagged as the tutor indicating that the student made a mistake.", "reason": "no_clear_mistake"}
+{"source_id": "6207147_26", "native_split": "test", "error_type": "I think the student did get the correct answer. I don't know for sure based on the context.", "reason": "no_clear_mistake"}
+{"source_id": "2939739_66", "native_split": "test", "error_type": "End session", "reason": "no_clear_mistake"}
+{"source_id": "4294762_110", "native_split": "test", "error_type": "Student answered question ", "reason": "no_clear_mistake"}
+{"source_id": "2979999_58", "native_split": "test", "error_type": "Student understands\n", "reason": "no_clear_mistake"}
+{"source_id": "4111720_63", "native_split": "test", "error_type": "The student did not make a mistake. The student was telling the tutor that there was nothing more the tutor could help with today.", "reason": "no_clear_mistake"}
+{"source_id": "4017173_67", "native_split": "test", "error_type": "careless", "reason": "empty_student_turn"}
