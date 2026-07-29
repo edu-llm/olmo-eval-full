@@ -110,6 +110,85 @@ InFoBench Rubric Schema: - one binary criterion per decomposed_question; multi-l
   } - provenance; "synthetic" = generated (not calibrated), swappable later
 }
 
+Bridge Scenario Schema: - source: https://huggingface.co/datasets/rose-e-wang/bridge (642 scenarios / 13211 criteria)
+{
+  "scenario_id": "bridge_0000", - bridge_<zero-based 4-digit index>
+  "source_id": "4110653_19", - Bridge "c_id" = the CONVERSATION key. NON-UNIQUE by design:
+                              - Bridge re-annotates the same conversation by several experts and
+                              - each annotation is kept as its own scenario. Repeats share a
+                              - stimulus and criterion set, differing only in reference_solution,
+                              - so group/hold out on this at calibration (local dependence).
+  "use_case": "mistake_remediation", - note respgen keys its system prompt on the BENCHMARK name
+                                     - ("Bridge"), which wins over use_case
+  "subject": "mathematics", - Bridge is math-only (every lesson_topic is a TEKS math code)
+  "grade_band": "1-3", - derived from the lesson_topic grade prefix; "1-3" / "4-5" / "6-12"
+  "topic_domain": "geometry_spatial", - derived math strand, first keyword match on lesson_topic;
+                                      - one of geometry_spatial / fractions / place_value_number /
+                                      - measurement_conversion / data_graphing / algebra_expressions /
+                                      - proportional_reasoning / operations_arithmetic
+  "modality": "text",
+  "prompt": "4 m", - c_h[-1].text, the student's final turn (often terse; it is a real transcript)
+  "conversation_context": [{"role": "tutor", "content": "Sounds great."}], - c_h[:-1]; roles are
+                                                                          - student/tutor
+  "reference_solution": "Hm, not quite...", - c_r_ = THIS row's expert-revised reply (the gold key)
+  "novice_response": "That's incorrect...", - c_r = the original novice tutor reply; provenance only
+  "criterion_ids": ["bridge_0000_c01", "bridge_0000_c02"], - a SUBSET of the 39-criterion bank, so
+                                                           - suffixes are intentionally NON-CONTIGUOUS
+  "error_type": "guess", - this row's expert label `e`; one of guess / right-idea / diagnose /
+                         - careless / imprecise / misinterpret
+  "error_types": ["careless", "guess"], - every label any annotator gave this conversation
+                                        - (provenance: records that experts disagreed)
+  "error_module": "guess", - the CANONICAL module driving criteria; resolved once per conversation
+                           - (first annotation wins) so repeats never get contradictory criteria
+  "visible_mistake": true, - false (91 scenarios) when the final student turn is a bare
+                           - acknowledgment AND no digit appears anywhere: nothing to remediate, so
+                           - D1/D2 are unpassable. KEPT but flagged -- filter on this at calibration.
+  "expert_strategy": "explain_concept", - z_what; provenance
+  "expert_intention": "clarify_misunderstanding", - z_why; provenance
+  "lesson_topic": "3.6D.Decomposing Figures", - TEKS code; drives grade_band + topic_domain
+  "native_split": "train", - the HF split; `split` below is the pipeline role
+  "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
+  "split": "calibration",
+  "version": "3.0"
+}
+
+Bridge Rubric Schema: - HAND-AUTHORED (Bridge ships no per-response criteria); 39-criterion bank
+                      - assembled in 4 tiers: 16 core + 1 error-type + 1 topic + 1 grade module
+{
+  "criterion_id": "bridge_0000_c01",
+  "scenario_id": "bridge_0000",
+  "criterion": "The response correctly identifies the specific error the student made.",
+  "expected_evidence": [], - Bridge ships none
+  "scoring_type": "binary", - no polytomous
+  "score_anchors": null,
+  "criterion_code": "D1", - stable code -> stable id suffix, so _c01 is D1 on EVERY scenario
+  "applicability": "core", - which tier attached it: "core" | "error_type:<module>" |
+                           - "topic_domain:<domain>" | "grade_band:<band>". Survives into
+                           - calibration for grouping/diagnostics.
+  "primary_skill": "diagnosis",
+  "q_mapping": {
+    "diagnosis": 1,
+    "strategy": 0,
+    "math": 0,
+    "communication": 0,
+    "affective": 0
+  }, - MIRT skill mapping over Bridge's OWN 5-skill axis (not content/diagnosis/scaffolding).
+     - Multi-hot: cross-loaded criteria sum to 2. Every skill has >=2 pure single-loading
+     - criteria, enforced in validate(), or its dimension is not separably identified.
+  "q_rationale": "Locating the student's actual error is a pure diagnosis act.",
+  "criticality": "critical", - 7 of each scenario's criteria are critical, by construction
+  "objectivity": "objective",
+  "explicitness": "explicit", - D1/P1/A1 only: the Bridge system prompt in respgen names them
+                              - almost verbatim, so expect those three near ceiling. All other
+                              - criteria are "implicit" (the scenario prompt asks for nothing).
+  "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
+  "status": "approved",
+  "version": "3.0"
+} - NOTE: no difficulty / discrimination / irt_params. Bridge ships PARAMETER-FREE; those are
+  - calibrated from real judge responses rather than synthesized. Rubric.from_json hard-requires
+  - difficulty+discrimination, so loading this bank through dataio.load_bank needs them supplied
+  - first (from a fit, or a deliberate assign_irt_params.py placeholder pass).
+
 Judge Result Schema:
 {
   "run_id": "run_20260721_001",
