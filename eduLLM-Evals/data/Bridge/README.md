@@ -190,9 +190,20 @@ Each rubric also carries `criterion_code` (D1, G2, …) and `applicability` (the
 attached it, e.g. `core` or `error_type:guess`), so the conditional structure survives into
 calibration for grouping and diagnostics.
 
-`use_case` is `mistake_remediation`; the response generator has no dedicated system prompt
-for it, so it falls back to the `adaptive_explanation` prompt, which preserves the
-multi-turn context.
+`use_case` is `mistake_remediation`, but the response generator keys its system prompt on
+the **benchmark name** first, and `SYSTEM_PROMPTS_BY_BENCHMARK["Bridge"]`
+([`tutor_cat/respgen/prompts.py`](../../tutor_cat/respgen/prompts.py)) supplies a dedicated
+one, so the `use_case` path never fires. The multi-turn context is preserved either way.
+
+> **⚠️ The Bridge system prompt overlaps three criteria.** It instructs the model to
+> "Identify the specific error", "guid[e] them toward the right approach rather than simply
+> giving away the answer", and "Keep a supportive, encouraging tone" — which is close to a
+> verbatim statement of **D1**, **P1** and **A1**. Two consequences: those three are likely
+> to sit near ceiling (every model is told to do exactly that), and their
+> **D1, P1 and A1 are therefore marked `explicitness: "explicit"`** (1,926 criterion
+> instances); every other criterion stays `implicit`, since the scenario prompt — a student
+> turn like `"4 m"` — asks for nothing. Check those three against pilot pass rates before
+> reading anything into their difficulty; D1 and P1 are both `critical`.
 
 ## Known limitations
 

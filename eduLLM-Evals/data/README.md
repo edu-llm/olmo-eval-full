@@ -54,6 +54,7 @@ them is a separate, still-open decision.
 | `IFEval/` | instruction-following (deterministic verifier) | candidate — **instruction-following only, no content-quality signal**; keep only if that dimension is wanted |
 | `InFoBench/` | instruction-following (judge-scored) | candidate — same instruction-following-vs-content question as IFEval |
 | `TutorEval/` | science-tutoring, offline skeleton | candidate — **not engine-loadable** (ships no per-criterion skill labels); needs a q-matrix source first |
+| `Bridge/` | elementary/middle-school **math mistake-remediation**, 642 real tutor–student conversations | candidate — the only bank whose rubric is **hand-authored** (Bridge ships no per-response criteria), on a 5-skill axis; math-only, so θ is math-tutoring ability, not general |
 
 Each folder's own `README.md` carries the same status note plus the specifics. (`WildBench/`
 and `AP_IB/` are also present as separate on-disk artifacts; their inclusion status isn't

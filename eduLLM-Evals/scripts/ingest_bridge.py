@@ -147,7 +147,20 @@ ACKNOWLEDGMENTS = {
     "idk", "i dont know", "yes sir", "no sir", "yup", "mhm", "k",
 }
 
-EXPLICITNESS = "implicit"   # Bridge issues no explicit per-response instruction
+# `explicitness` asks whether the tutor was actually TOLD to do this. Bridge scenario
+# prompts are student turns ("4 m"), so they never ask for anything -- but the benchmark
+# system prompt does. SYSTEM_PROMPTS_BY_BENCHMARK["Bridge"] in tutor_cat/respgen/prompts.py
+# reads:
+#     "Identify the specific error, then help the student correct it by guiding them
+#      toward the right approach rather than simply giving away the answer. Keep a
+#      supportive, encouraging tone."
+# which restates D1, P1 and A1 almost verbatim. Those three are therefore `explicit`;
+# every other criterion is an unstated pedagogical expectation.
+#
+# NOTE the measurement consequence: every model is instructed to do exactly what D1/P1/A1
+# check, so expect them near ceiling and treat their difficulty with suspicion -- D1 and P1
+# are both `critical`. Confirm against pilot pass rates before reading anything into them.
+EXPLICIT_CODES = {"D1", "P1", "A1"}
 
 # A criterion entry: (code, primary_skill, [skills marked 1], criticality, objectivity,
 #                     criterion text, q_rationale)
@@ -664,7 +677,7 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
                 "q_rationale": rationale,
                 "criticality": criticality,
                 "objectivity": objectivity,
-                "explicitness": EXPLICITNESS,
+                "explicitness": "explicit" if code in EXPLICIT_CODES else "implicit",
                 "source": SOURCE_URL,
                 "status": "approved",
                 "version": VERSION,
@@ -748,6 +761,9 @@ def validate(scenarios: list[dict], rubrics: list[dict]) -> list[str]:
             errs.append(f"{r['criterion_id']}: primary_skill {r['primary_skill']!r} not a skill")
         elif q.get(r["primary_skill"]) != 1:
             errs.append(f"{r['criterion_id']}: primary_skill not marked in q_mapping")
+        want_expl = "explicit" if r["criterion_code"] in EXPLICIT_CODES else "implicit"
+        if r["explicitness"] != want_expl:
+            errs.append(f"{r['criterion_id']}: explicitness {r['explicitness']!r} != {want_expl!r}")
 
     # Every skill needs pure (single-loading) anchors or its dimension is not separably
     # identified; two distinct criterion texts is the minimum this bank commits to.
