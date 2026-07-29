@@ -632,7 +632,7 @@ y = 2\arctan(x + C) - x
 - Criterion: The response must identify that the student's solution [let u=x+y, \(\frac{du}{dx} = \frac{dy}{dx}\)] is incorrect.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
-- Grade (P/F): P
+- Grade (P/F): F
 - Notes: ____
 
 #### tb_0003_c04
@@ -685,17 +685,31 @@ y = 2\arctan(x + C) - x
 
 #### tb_0003_c09
 
-- Criterion: The response must provide explanations to answer the student's question, i.e. you made 3 errors in you solution, \(\frac{du}{dx} = \frac{dy}{dx}\), \[
-\int \frac{du}{\cos(u)} = \sin(u)
-\], and \(\int dx = Cx\), these incorrect steps lead to your incorrect final answer [\( y = \arcsin(Cx) - x \)].
+- Criterion: The response must identify and explain the first error in the student's solution: \(\frac{du}{dx} = \frac{dy}{dx}\) is incorrect.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
-- Grade (P/F): P
-- Notes: ____
+- Grade (P/F): F
+- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
 
 #### tb_0003_c10
 
-- Criterion: The response should be formatted by using headings, bold text, and correct LaTeX.
+- Criterion: The response must identify and explain the second error: \(\int \frac{du}{\cos(u)} = \sin(u)\) is incorrect.
+- Primary skill: `diagnosis`
+- Criticality: `critical`
+- Grade (P/F): F
+- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
+
+#### tb_0003_c11
+
+- Criterion: The response must identify and explain the third error: \(\int dx = Cx\) is incorrect (which, together with the other errors, leads to the incorrect final answer \(y = \arcsin(Cx) - x\)).
+- Primary skill: `diagnosis`
+- Criticality: `critical`
+- Grade (P/F): P
+- Notes: derived from original compound tb_0003_c09 human grade during curation regrade
+
+#### tb_0003_c12
+
+- Criterion: The response should follow tutoring presentation conventions: use clear Markdown structure (e.g., headings, bullets, or sections) where it aids clarity; render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P
@@ -851,13 +865,21 @@ So a positive residual = the real data point sits *above* the regression line. ð
 
 #### tb_0340_c08
 
-- Criterion: The response must include a validation for the student's question: "That means the prediction was 8.14 kg more than the actual weight, right?" similar to: "Totally! But does that align with what we are actually trying to do in the problem?"
+- Criterion: The response must acknowledge the student's stated uncertainty about the sign and validate their correct instinct that the elk weighed more than predicted, rather than confirming the student's incorrect 'predicted - actual' framing.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): P
-- Notes: ____
+- Notes: derived from original compound tb_0340_c08 during curation regrade (validate; reworded criterion)
 
 #### tb_0340_c09
+
+- Criterion: The response must redirect the student toward the actual goal of the problem (e.g., prompting them to consider what the residual means in context rather than stopping at the arithmetic).
+- Primary skill: `diagnosis`
+- Criticality: `critical`
+- Grade (P/F): F
+- Notes: derived; redirect/scaffolding move (prompt vs tell)
+
+#### tb_0340_c10
 
 - Criterion: The response should include an analogy for thinking about finding residual weight similar to finding the difference between a cookie recipe's expected yield and how many cookies are actually baked.
 - Primary skill: `scaffolding`
@@ -865,9 +887,9 @@ So a positive residual = the real data point sits *above* the regression line. ð
 - Grade (P/F): F
 - Notes: ____
 
-#### tb_0340_c10
+#### tb_0340_c11
 
-- Criterion: The response should be written  from the perspective of the teacher with the use of "you" and "we."
+- Criterion: The response should follow tutoring presentation conventions: address the student in the second person (conversational tutor voice). (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P

@@ -133,14 +133,38 @@ def cmd_plot(args: argparse.Namespace) -> int:
     return 0
 
 
+def _resolve_benchmarks(args: argparse.Namespace) -> list[tuple[str, str]] | None:
+    """Resolve the (name, scenarios_path) set to generate over.
+
+    --benchmarks points at the registry (benchmarks.yaml), optionally narrowed by
+    --only A,B. Without --benchmarks it's the single-benchmark shortcut over
+    --scenarios (labeled TutorBench), preserving the historical default. Returns
+    None (after printing why) on a bad selection so the caller can exit non-zero."""
+    from .respgen.benchmarks import load_benchmarks, select_benchmarks
+
+    only = [x.strip() for x in args.only.split(",") if x.strip()] if args.only else None
+    if not args.benchmarks:
+        if only:
+            print("--only requires --benchmarks <registry.yaml>", file=sys.stderr)
+            return None
+        return [("TutorBench", args.scenarios)]
+    try:
+        chosen = select_benchmarks(load_benchmarks(args.benchmarks), only=only)
+    except (ValueError, OSError) as e:
+        print(f"generate: {e}", file=sys.stderr)
+        return None
+    return [(b.name, b.scenarios) for b in chosen]
+
+
 def cmd_generate(args: argparse.Namespace) -> int:
-    """Run open-weight models over TutorBench scenarios (vLLM/HF on GPU).
+    """Run open-weight models over one or more benchmarks (vLLM/HF on GPU), loading
+    each model ONCE and answering every selected benchmark in that load.
 
     respgen imports are deferred to here so `validate`/`run`/`plot` work without
     the heavy [gen] deps. --dry-run stays fully offline (no torch/vllm, no Hub)."""
     _load_env()  # HF_TOKEN from .env for gated models (never committed/pushed)
     from .respgen.manifest import load_manifest
-    from .respgen.runner import dry_run, load_scenarios
+    from .respgen.runner import dry_run, load_all_scenarios
 
     specs = load_manifest(args.models)
     if args.model:
@@ -149,9 +173,14 @@ def cmd_generate(args: argparse.Namespace) -> int:
             print(f"unknown model id '{args.model}' (not in {args.models})", file=sys.stderr)
             return 1
 
+    benchmarks = _resolve_benchmarks(args)
+    if benchmarks is None:
+        return 1
+    print(f"generate: benchmarks = {', '.join(n for n, _ in benchmarks)}", file=sys.stderr)
+
     if args.dry_run:
         n = args.limit or 5
-        scenarios = load_scenarios(args.scenarios, limit=n)
+        scenarios = load_all_scenarios(benchmarks, limit=n)
         # no-network config fetch => max_model_len falls back to the cap
         print(dry_run(specs, scenarios, fetch_config=lambda _id: {}, n=n))
         return 0
@@ -173,7 +202,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
     try:
         results = run_fleet(
             specs,
-            args.scenarios,
+            benchmarks,
             args.out_dir,
             s3_uri=args.s3_uri,
             resume=not args.no_resume,
@@ -226,12 +255,23 @@ def main(argv: list[str] | None = None) -> int:
     p_plot.set_defaults(fn=cmd_plot)
 
     p_gen = sub.add_parser(
-        "generate", help="run open-weight models over TutorBench scenarios (AWS/vLLM)"
+        "generate",
+        help="run open-weight models over one or more benchmarks, one model load "
+             "answering all of them (AWS/vLLM)",
     )
     p_gen.add_argument("--models", default="models.yaml", help="model manifest YAML")
-    p_gen.add_argument("--scenarios", default="data/scenarios.jsonl")
+    p_gen.add_argument("--benchmarks", default=None,
+                       help="benchmark registry YAML (e.g. benchmarks.yaml); each "
+                            "model is loaded once and answers every selected benchmark")
+    p_gen.add_argument("--only", default=None,
+                       help="comma-separated benchmark names to run from --benchmarks "
+                            "(e.g. 'IFEval,Bridge'); overrides each entry's enabled flag")
+    p_gen.add_argument("--scenarios", default="data/TutorBench/scenarios.jsonl",
+                       help="single-benchmark shortcut (labeled TutorBench) when "
+                            "--benchmarks is not given")
     p_gen.add_argument("--out-dir", default="runs/responses",
-                       help="one JSONL shard per model is written here")
+                       help="one JSONL shard per (benchmark, model) is written under "
+                            "<out-dir>/<benchmark>/<model>.jsonl")
     p_gen.add_argument("--s3-uri", default=None,
                        help="s3://bucket/prefix to upload each finished shard (instance IAM)")
     p_gen.add_argument("--gpus", type=int, default=None,

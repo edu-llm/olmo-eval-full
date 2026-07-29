@@ -221,9 +221,9 @@ def _resolve_data_paths(scenarios: Path | None, rubrics: Path | None) -> tuple[P
                 cfg = yaml.safe_load(f) or {}
         data = cfg.get("data", {})
         if scenarios is None:
-            scenarios = ROOT / data.get("scenarios", "data/scenarios.jsonl")
+            scenarios = ROOT / data.get("scenarios", "data/TutorBench/scenarios.jsonl")
         if rubrics is None:
-            rubrics = ROOT / data.get("rubrics", "data/rubrics_qmatrix_final.jsonl")
+            rubrics = ROOT / data.get("rubrics", "data/TutorBench/rubrics_qmatrix_final.jsonl")
     return Path(scenarios), Path(rubrics)
 
 

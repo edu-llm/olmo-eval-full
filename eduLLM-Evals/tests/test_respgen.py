@@ -689,3 +689,225 @@ def test_parse_s3_uri():
     assert parse_s3_uri("s3://bucket") == ("bucket", "")
     with pytest.raises(ValueError):
         parse_s3_uri("https://example.com/x")
+
+
+# --- multi-benchmark: registry parsing + selection -------------------------
+
+from tutor_cat.respgen.benchmarks import (
+    BenchmarkSpec,
+    load_benchmarks,
+    select_benchmarks,
+)
+
+
+def test_load_benchmarks_parses_entries(tmp_path):
+    p = tmp_path / "b.yaml"
+    p.write_text(
+        "benchmarks:\n"
+        "  - name: TutorBench\n    scenarios: data/scenarios.jsonl\n"
+        "  - name: IFEval\n    scenarios: data/IFEval/scenarios.jsonl\n    enabled: false\n",
+        encoding="utf-8",
+    )
+    specs = load_benchmarks(p)
+    assert [s.name for s in specs] == ["TutorBench", "IFEval"]
+    assert specs[0].enabled is True and specs[1].enabled is False
+
+
+def test_load_benchmarks_rejects_duplicate_and_malformed(tmp_path):
+    dup = tmp_path / "dup.yaml"
+    dup.write_text(
+        "benchmarks:\n  - name: A\n    scenarios: a\n  - name: A\n    scenarios: b\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="duplicate"):
+        load_benchmarks(dup)
+
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("benchmarks:\n  - name: A\n", encoding="utf-8")  # no scenarios
+    with pytest.raises(ValueError, match="scenarios"):
+        load_benchmarks(bad)
+
+
+def test_select_benchmarks_only_wins_over_enabled():
+    specs = [
+        BenchmarkSpec("TutorBench", "a", enabled=True),
+        BenchmarkSpec("IFEval", "b", enabled=False),
+        BenchmarkSpec("Bridge", "c", enabled=True),
+    ]
+    # --only runs exactly the named subset, in order, regardless of `enabled`
+    chosen = select_benchmarks(specs, only=["IFEval", "Bridge"])
+    assert [s.name for s in chosen] == ["IFEval", "Bridge"]
+    # no --only => every enabled spec
+    assert [s.name for s in select_benchmarks(specs)] == ["TutorBench", "Bridge"]
+
+
+def test_select_benchmarks_unknown_name_fails_fast():
+    specs = [BenchmarkSpec("TutorBench", "a")]
+    with pytest.raises(ValueError, match="unknown benchmark 'Nope'"):
+        select_benchmarks(specs, only=["Nope"])
+
+
+def test_shipped_benchmarks_yaml_loads():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent  # tutor_cat/
+    specs = load_benchmarks(root / "benchmarks.yaml")
+    names = {s.name for s in specs}
+    assert {"TutorBench", "IFEval", "InFoBench", "TutorEval", "WildBench", "Bridge"} <= names
+
+
+# --- multi-benchmark: per-benchmark system prompts -------------------------
+
+def _bscn(benchmark, sid="s1", prompt="PROMPT", use_case="", context=None):
+    return Scenario(
+        scenario_id=sid,
+        prompt=prompt,
+        criterion_ids=["c1"],
+        use_case=use_case,
+        conversation_context=context or [],
+        benchmark=benchmark,
+    )
+
+
+def test_ifeval_and_infobench_omit_the_system_turn():
+    for bench in ("IFEval", "InFoBench"):
+        msgs = P.build_chat_messages(_bscn(bench, use_case="instruction_following"))
+        assert [m["role"] for m in msgs] == ["user"]  # no system turn at all
+        assert msgs[0]["content"] == "PROMPT"
+
+
+def test_fixed_benchmark_system_prompts_selected():
+    for bench in ("TutorEval", "WildBench", "Bridge"):
+        msgs = P.build_chat_messages(_bscn(bench, use_case="anything"))
+        assert msgs[0]["role"] == "system"
+        assert msgs[0]["content"] == P.SYSTEM_PROMPTS_BY_BENCHMARK[bench]
+
+
+def test_tutorbench_benchmark_still_uses_use_case_prompt():
+    # explicit TutorBench label + empty label both fall through to use_case
+    for bench in ("TutorBench", ""):
+        msgs = P.build_chat_messages(_bscn(bench, use_case="feedback",
+                                           context=[{"role": "student", "content": "X"}]))
+        assert msgs[0]["content"] == P.SYSTEM_PROMPTS["feedback"]
+
+
+def test_bridge_multi_turn_context_preserved_and_alternating():
+    scn = _bscn("Bridge", use_case="mistake_remediation",
+                context=[{"role": "tutor", "content": "T0"},
+                         {"role": "student", "content": "S0"}])
+    msgs = P.build_chat_messages(scn)
+    roles = [m["role"] for m in msgs]
+    assert roles[0] == "system"
+    assert all(roles[i] != roles[i + 1] for i in range(len(roles) - 1)), roles
+
+
+# --- multi-benchmark: benchmark-tagged records -----------------------------
+
+def test_build_record_benchmark_defaults_and_overrides():
+    rec = R.build_record(
+        scenario_id="ife_1", model_id="a/b", model_revision="r",
+        chat_template_applied=False, rendered_prompt="P",
+        gen_params=R.generation_params(0.0, 1.0, 4096, 1.1, 0),
+        max_model_len=4096, prompt_tokens=10, output_tokens=20,
+        finish_reason="stop", truncated=False, latency_s=1.0, output="O",
+        benchmark="IFEval",
+    )
+    assert rec["Benchmark"] == "IFEval"
+    err = R.error_record(scenario_id="x", model_id="a/b", description="boom",
+                         benchmark="Bridge")
+    assert err["Benchmark"] == "Bridge" and err["Issue"] == 1
+
+
+# --- multi-benchmark: shard path + loader ----------------------------------
+
+def test_shard_path_per_benchmark_subdir(tmp_path):
+    p = shard.shard_path(tmp_path, "meta-llama/Llama-3.2-1B", benchmark="IFEval")
+    assert p.parent.name == "IFEval"
+    assert p.name == "meta-llama_Llama-3.2-1B.jsonl"
+
+
+def test_load_all_scenarios_tags_and_limits(tmp_path):
+    a = tmp_path / "a.jsonl"
+    b = tmp_path / "b.jsonl"
+    a.write_text(
+        json.dumps({"scenario_id": "a1", "prompt": "P", "criterion_ids": ["c"]}) + "\n"
+        + json.dumps({"scenario_id": "a2", "prompt": "P", "criterion_ids": ["c"]}) + "\n",
+        encoding="utf-8",
+    )
+    b.write_text(
+        json.dumps({"scenario_id": "b1", "prompt": "P", "criterion_ids": ["c"]}) + "\n",
+        encoding="utf-8",
+    )
+    scns = runner.load_all_scenarios([("A", str(a)), ("B", str(b))], limit=1)
+    # limit is PER benchmark, and each scenario is stamped with its benchmark
+    assert [(s.scenario_id, s.benchmark) for s in scns] == [("a1", "A"), ("b1", "B")]
+
+
+# --- multi-benchmark: run_model routes to per-benchmark shards --------------
+
+def test_run_model_routes_rows_and_resumes_per_benchmark(tmp_path, monkeypatch):
+    scns = [
+        _bscn("TutorBench", sid="tb_1", use_case="adaptive_explanation"),
+        _bscn("IFEval", sid="ife_1", use_case="instruction_following"),
+    ]
+
+    def fake_generate(prompts, params, max_tokens_per_prompt=None):
+        return [runner.GenResult(text=f"OUT{i}", output_tokens=2, finish_reason="stop")
+                for i in range(len(prompts))]
+
+    fake = _FakeBackend("TOK")
+    fake.generate = fake_generate
+    monkeypatch.setattr(runner, "_load_backend",
+                        lambda resolved: (fake, "rev", _CharTok()))
+
+    res = runner.run_model(ModelSpec(id="org/base"), scns, tmp_path,
+                           resume=False, fetch_config=lambda _id: {})
+    assert res["status"] == "ok" and res["written"] == 2
+    assert res["written_by_benchmark"] == {"TutorBench": 1, "IFEval": 1}
+
+    tb = shard.shard_path(tmp_path, "org/base", benchmark="TutorBench")
+    ife = shard.shard_path(tmp_path, "org/base", benchmark="IFEval")
+    tb_rows = list(shard._iter_rows(tb))
+    ife_rows = list(shard._iter_rows(ife))
+    assert [r["Scenario"] for r in tb_rows] == ["tb_1"]
+    assert tb_rows[0]["Benchmark"] == "TutorBench"
+    assert [r["Scenario"] for r in ife_rows] == ["ife_1"]
+    assert ife_rows[0]["Benchmark"] == "IFEval"
+
+    # resume: nothing left to do across either per-benchmark shard
+    res2 = runner.run_model(ModelSpec(id="org/base"), scns, tmp_path,
+                            resume=True, fetch_config=lambda _id: {})
+    assert res2["status"] == "already_complete" and res2["written"] == 0
+
+
+def test_run_model_load_failure_writes_error_rows_per_benchmark(tmp_path, monkeypatch):
+    scns = [
+        _bscn("TutorBench", sid="tb_1", use_case="adaptive_explanation"),
+        _bscn("Bridge", sid="bridge_1", use_case="mistake_remediation"),
+    ]
+
+    def boom(resolved):
+        raise RuntimeError("load exploded")
+
+    monkeypatch.setattr(runner, "_load_backend", boom)
+    res = runner.run_model(ModelSpec(id="org/base"), scns, tmp_path,
+                           resume=False, fetch_config=lambda _id: {})
+    assert res["status"] == "load_failed" and res["written"] == 2
+    for bench in ("TutorBench", "Bridge"):
+        rows = list(shard._iter_rows(shard.shard_path(tmp_path, "org/base", benchmark=bench)))
+        assert len(rows) == 1 and rows[0]["Issue"] == 1
+        assert rows[0]["Benchmark"] == bench
+
+
+# --- multi-benchmark: fleet scenario-source normalization -------------------
+
+def test_as_benchmarks_normalizes_str_and_specs():
+    from tutor_cat.respgen.orchestrator import _as_benchmarks
+
+    # bare path -> single TutorBench benchmark (the --scenarios shortcut)
+    assert _as_benchmarks("data/scenarios.jsonl") == [("TutorBench", "data/scenarios.jsonl")]
+    # list of (name, path) tuples passes through
+    assert _as_benchmarks([("IFEval", "x"), ("Bridge", "y")]) == [("IFEval", "x"), ("Bridge", "y")]
+    # BenchmarkSpec objects are flattened to plain tuples (pickle-friendly)
+    specs = [BenchmarkSpec("A", "p1"), BenchmarkSpec("B", "p2")]
+    assert _as_benchmarks(specs) == [("A", "p1"), ("B", "p2")]

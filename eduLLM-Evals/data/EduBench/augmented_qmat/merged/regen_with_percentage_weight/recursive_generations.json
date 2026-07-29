@@ -1,0 +1,155 @@
+[
+  {
+    "generation": 1,
+    "status": "generation_done",
+    "n": 9,
+    "merges": [
+      {
+        "a": "EC",
+        "b": "AG",
+        "weight": {
+          "exact": "8/9",
+          "value": 0.8888888888888888
+        }
+      }
+    ]
+  },
+  {
+    "generation": 2,
+    "status": "tie",
+    "n": 8,
+    "detail": {
+      "status": "tie",
+      "candidates": [
+        {
+          "a": "Q&A",
+          "b": "TMG",
+          "weight": {
+            "exact": "6/7",
+            "value": 0.8571428571428571
+          },
+          "desc_a": "Problem Solving: The ability of an AI system to accurately solve questions posed by students across various subjects and difficulty levels.",
+          "desc_b": "Teaching Material Generation: Automatically generating educational content such as slides, teaching plans, and lecture notes. This includes content structuring and supplementing with relevant external materials like images or references."
+        },
+        {
+          "a": "QG",
+          "b": "TMG",
+          "weight": {
+            "exact": "6/7",
+            "value": 0.8571428571428571
+          },
+          "desc_a": "Question Generation: Generating questions based on specified topics, difficulty levels, and knowledge scopes. This includes both single-topic and multi-topic (comprehensive) question generation. Advanced requirements involve generating explanations and formatting full exams. Evaluation focuses on question quality, relevance, and structural coherence.",
+          "desc_b": "Teaching Material Generation: Automatically generating educational content such as slides, teaching plans, and lecture notes. This includes content structuring and supplementing with relevant external materials like images or references."
+        }
+      ],
+      "key": "Q&A~TMG|QG~TMG",
+      "partial_merges": []
+    }
+  },
+  {
+    "generation": 2,
+    "status": "resolved_tie",
+    "n": 8,
+    "tie_key": "Q&A~TMG|QG~TMG",
+    "vote_tally": {
+      "B (QG)": 3,
+      "A (Q&A)": 0
+    },
+    "winner": "QG",
+    "result": {
+      "status": "generation_done",
+      "n": 8,
+      "merges": [
+        {
+          "a": "QG",
+          "b": "TMG",
+          "weight": {
+            "exact": "6/7",
+            "value": 0.8571428571428571
+          },
+          "tie_resolved_among": [
+            "Q&A~TMG",
+            "QG~TMG"
+          ]
+        }
+      ],
+      "new_partition": [
+        [
+          "answering_questions"
+        ],
+        [
+          "idea_provision"
+        ],
+        [
+          "learning_support"
+        ],
+        [
+          "mental_health"
+        ],
+        [
+          "personalized_content_creation"
+        ],
+        [
+          "error_correction",
+          "grading"
+        ],
+        [
+          "question_generation",
+          "material_generation"
+        ]
+      ]
+    }
+  },
+  {
+    "generation": 3,
+    "status": "generation_done",
+    "n": 7,
+    "merges": [
+      {
+        "a": "Q&A",
+        "b": "QG+TMG",
+        "weight": {
+          "exact": "6/7",
+          "value": 0.8571428571428571
+        }
+      }
+    ]
+  },
+  {
+    "generation": 4,
+    "status": "generation_done",
+    "n": 6,
+    "merges": [
+      {
+        "a": "IP",
+        "b": "Q&A+QG+TMG",
+        "weight": {
+          "exact": "8/9",
+          "value": 0.8888888888888888
+        }
+      }
+    ]
+  },
+  {
+    "generation": 5,
+    "status": "generation_done",
+    "n": 5,
+    "merges": [
+      {
+        "a": "EC+AG",
+        "b": "Q&A+IP+QG+TMG",
+        "weight": {
+          "exact": "4/5",
+          "value": 0.8
+        }
+      }
+    ]
+  },
+  {
+    "status": "base_case_b",
+    "n": 4
+  },
+  {
+    "note": "re-derived from scratch after removing the 'max one merge per generation' cap (auto-apply all non-conflicting edges at the current top weight, same conflict rule as count mode -- shares a node, not just an equal value). Every generation in this run had exactly one edge at its top weight (gen 2's tie was a genuine node conflict for TMG regardless of the cap), so the final partition is UNCHANGED: n=4, {PLS, ES, PCC, Q&A+EC+IP+QG+AG+TMG}."
+  }
+]

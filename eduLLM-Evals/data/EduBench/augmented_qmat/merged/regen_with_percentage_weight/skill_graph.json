@@ -1,0 +1,164 @@
+{
+  "source": "data/EduBench/rubrics.jsonl",
+  "built_by": "scripts/build_edubench_skill_graph.py",
+  "directed": false,
+  "q_mapping_mode": "row",
+  "excluded_metrics": [],
+  "n_scenarios": 9163,
+  "n_rubric_rows": 91431,
+  "n_metrics": 12,
+  "n_criterion_texts": 19,
+  "group_key": "metric",
+  "skills": [
+    "answering_questions+error_correction+idea_provision+question_generation+grading+material_generation",
+    "learning_support",
+    "mental_health",
+    "personalized_content_creation"
+  ],
+  "summary": {
+    "n_nodes": 4,
+    "n_edges": 6,
+    "n_possible_edges": 6,
+    "complete": true,
+    "weight_min": 4,
+    "weight_max": 7,
+    "weight_sum": 29
+  },
+  "nodes": [
+    {
+      "id": "answering_questions+error_correction+idea_provision+question_generation+grading+material_generation",
+      "label": "Q&A+EC+IP+QG+AG+TMG",
+      "display": "Question Answering + Error Correction + Idea Provision + Question Generation + Automatic Grading + Teaching Material Generation",
+      "weight": 11,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "RPR",
+        "EICP",
+        "CSI",
+        "MGP",
+        "HOTS"
+      ]
+    },
+    {
+      "id": "learning_support",
+      "label": "PLS",
+      "display": "Personalized Learning Support",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "PAS",
+        "HOTS"
+      ]
+    },
+    {
+      "id": "mental_health",
+      "label": "ES",
+      "display": "Emotional Support",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "MGP",
+        "PAS"
+      ]
+    },
+    {
+      "id": "personalized_content_creation",
+      "label": "PCC",
+      "display": "Personalized Content Creation",
+      "weight": 8,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "CSI",
+        "PAS"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "answering_questions+error_correction+idea_provision+question_generation+grading+material_generation",
+      "target": "learning_support",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "answering_questions+error_correction+idea_provision+question_generation+grading+material_generation",
+      "target": "mental_health",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "MGP"
+      ]
+    },
+    {
+      "source": "answering_questions+error_correction+idea_provision+question_generation+grading+material_generation",
+      "target": "personalized_content_creation",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "mental_health",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "PAS"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "personalized_content_creation",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "PAS"
+      ]
+    },
+    {
+      "source": "mental_health",
+      "target": "personalized_content_creation",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "PAS"
+      ]
+    }
+  ]
+}

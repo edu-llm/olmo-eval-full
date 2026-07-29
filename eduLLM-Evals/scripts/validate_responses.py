@@ -7,7 +7,7 @@ JSON artifacts plus a printed summary:
 * ``tutorbench-responses/_validation_report.json`` -- the full, per-file detail
   (record counts, Finish Reason breakdown, Issue/Truncated/empty-Output counts,
   intra-file duplicate ``Scenario`` detection, and per-model scenario coverage
-  vs ``data/scenarios.jsonl``).
+  vs ``data/TutorBench/scenarios.jsonl``).
 * ``tutorbench-responses/_response_manifest.json`` -- the machine-readable
   ``usable_models`` / ``dead_models`` lists (plus a model -> filename map)
   consumed by ``scripts/stage_judge_inputs.py``.
@@ -38,7 +38,7 @@ Usage
     python scripts/validate_responses.py
     # optional overrides:
     python scripts/validate_responses.py --responses-dir tutorbench-responses `
-        --scenarios data/scenarios.jsonl
+        --scenarios data/TutorBench/scenarios.jsonl
 
 Pure standard library. Deterministic. No network.
 """
@@ -55,7 +55,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_RESPONSES_DIR = ROOT / "tutorbench-responses"
-DEFAULT_SCENARIOS = ROOT / "data" / "scenarios.jsonl"
+DEFAULT_SCENARIOS = ROOT / "data" / "TutorBench" / "scenarios.jsonl"
 DEFAULT_MANIFEST = DEFAULT_RESPONSES_DIR / "_response_manifest.json"
 DEFAULT_REPORT = DEFAULT_RESPONSES_DIR / "_validation_report.json"
 

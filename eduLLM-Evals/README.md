@@ -19,7 +19,7 @@ rule is met.
 | Schemas + validation | `tutor_cat/schemas.py`, `tutor_cat/dataio.py` |
 | Tutor adapters (GPT-5.5 / Opus 4.8 / Gemini 3.5 Flash) + response cache | `tutor_cat/tutors.py` |
 | SE-over-time plots (CAT vs baseline) | `tutor_cat/plotting.py` |
-| Open-model response generation (vLLM/HF on GPU, sharded + resumable) | `tutor_cat/respgen/`, `tutor-cat generate` |
+| Open-model response generation (vLLM/HF on GPU, multi-benchmark in one model load, sharded + resumable) | `tutor_cat/respgen/`, `tutor-cat generate`, `benchmarks.yaml` |
 
 ## Quickstart on a new machine (fresh clone)
 
@@ -116,11 +116,24 @@ Each run writes `runs/<run_id>/` with: `manifest.json` (seeds, config echo),
 ## Generating open-model responses (AWS P6 / 8×B200)
 
 `tutor-cat generate` runs the **100 open-weight "common person" models** in
-`models.yaml` over all 662 TutorBench scenarios and writes one JSONL shard per
-model (the PRD Model Output schema). Those 100 checkpoints are the rows of the
-MIRT response matrix; a wide, diverse roster is what powers item calibration.
-This is a separate stage from the CAT/judge pipeline above — it only produces
-the response matrix.
+`models.yaml` over one or more benchmarks and writes the PRD Model Output schema
+to per-benchmark shards. Those 100 checkpoints are the rows of the MIRT response
+matrix; a wide, diverse roster is what powers item calibration. This is a
+separate stage from the CAT/judge pipeline above — it only produces responses;
+grading is per-benchmark and separate.
+
+**Multi-benchmark in one model load.** Loading a model dominates the wall clock,
+not answering questions. So instead of one `generate` run per benchmark (which
+reloads every model each time), the fleet loads each model **once** and answers
+**every selected benchmark** in that single load. Which benchmarks run is data,
+declared in [`benchmarks.yaml`](benchmarks.yaml) (each entry = a `name`, a
+`scenarios` path, and an `enabled` default) and narrowable per launch with
+`--only`. Default (no `--benchmarks`) stays the single TutorBench run over
+`--scenarios`, so the historical behavior is unchanged.
+
+Per-benchmark **system prompts** are faithful to each original harness (see the
+table below and each `data/<benchmark>/README.md`). Grading itself is skill-axis
+specific and out of scope for generation.
 
 The GPU deps have no Windows wheels, so this stage runs on the Linux GPU box; the
 pure logic (prompt building, manifest/registry, output schema) is importable and
@@ -130,15 +143,35 @@ tested anywhere. Pull the repo on the box and:
 pip install -e ".[gen]"
 export HF_TOKEN=<token>            # for gated repos (meta-llama, gemma). Never committed.
 
-# smoke: 2 scenarios on one GPU, one model
-tutor-cat generate --model Qwen/Qwen2.5-0.5B-Instruct --limit 2 --gpus 1
+# smoke: 2 scenarios PER benchmark, one GPU, one model, offline preview first
+tutor-cat generate --benchmarks benchmarks.yaml --dry-run --limit 2
+tutor-cat generate --benchmarks benchmarks.yaml --model Qwen/Qwen2.5-0.5B-Instruct --limit 2 --gpus 1
 
-# full run: all models across all GPUs, upload each shard to S3 (instance IAM)
-tutor-cat generate --s3-uri s3://<bucket>/tutorbench-responses
+# full multi-benchmark run: all models, every enabled benchmark, one load each
+tutor-cat generate --benchmarks benchmarks.yaml --s3-uri s3://<bucket>/responses
 
-# pin the whole run to one specific GPU (e.g. device 8), leaving the rest free
-tutor-cat generate --gpu-ids 8 --s3-uri s3://<bucket>/tutorbench-responses
+# only a subset of benchmarks (overrides each entry's `enabled`)
+tutor-cat generate --benchmarks benchmarks.yaml --only IFEval,Bridge --gpu-ids 8
+
+# single-benchmark TutorBench (historical default; no --benchmarks needed)
+tutor-cat generate --s3-uri s3://<bucket>/responses
 ```
+
+Output layout: one shard per `(benchmark, model)` at
+`runs/responses/<benchmark>/<sanitized_model_id>.jsonl`, each row tagged with its
+`Benchmark`. On S3 the same nesting is preserved (`<prefix>/<benchmark>/<model>.jsonl`)
+so per-benchmark shards never collide under one prefix.
+
+### Per-benchmark system prompts (normalization)
+
+| Benchmark | System prompt | Notes |
+|-----------|---------------|-------|
+| TutorBench | per `use_case` (adaptive_explanation / feedback / hint_generation) | unchanged; multi-turn context coalesced to alternate roles |
+| IFEval | **none** | instruction-following; the prompt is the complete instruction. A persona would corrupt the deterministic verifier. |
+| InFoBench | **none** | instruction-following; `input` context is already folded into the prompt at ingest |
+| TutorEval | science-tutor | open-book chapter is embedded in the prompt; the question sits at the prompt tail, so length truncation trims chapter head and keeps the question |
+| WildBench | generic helpful-assistant | open chat; `use_case` is a content tag, not a pedagogical mode |
+| Bridge | math mistake-remediation | genuine multi-turn tutor/student dialogue, preserved and coalesced |
 
 Design notes:
 
@@ -148,8 +181,10 @@ Design notes:
   fleet to specific physical devices (each worker gets `CUDA_VISIBLE_DEVICES=<id>`,
   so it cannot touch any other GPU); `--gpu-ids 8` runs the entire roster on GPU 8
   alone.
-- **Resumable**: one shard per model, keyed by `Scenario` id. Re-running skips
-  completed cells, so an interrupted run just continues (`--no-resume` to force).
+- **Resumable**: one shard per `(benchmark, model)`, keyed by `Scenario` id (ids
+  are globally unique across benchmarks). Re-running skips completed cells, so an
+  interrupted run just continues, and `--only` re-runs only touch their
+  benchmarks' shards (`--no-resume` to force a clean regen).
 - **Backends**: vLLM by default; a transformers fallback (`hf_fallback`) serves
   the architectures vLLM can't — SSM (mamba-2.8b), OpenELM, gemma-3, and GPT-Neo
   (`GPTNeoForCausalLM`). `registry.py` derives the backend, chat-template flag,
@@ -189,7 +224,8 @@ tutor-cat generate --model Qwen/Qwen2.5-0.5B-Instruct --limit 2 --gpu-ids 8
 
 # 5. full run, pinned to that GPU, surviving laptop disconnect
 tmux new -s respgen
-tutor-cat generate --gpu-ids 8 --out-dir runs/responses
+tutor-cat generate --benchmarks benchmarks.yaml --gpu-ids 8 --out-dir runs/responses
+#   (omit --benchmarks for the single-benchmark TutorBench run)
 #   detach: Ctrl-b then d    |    reattach later: tmux attach -t respgen
 
 # 6. pull the shards back to your laptop (no S3, no extra spend)
@@ -204,11 +240,13 @@ fast with the valid range (`this node has 8 GPU(s), valid indices 0..7`) instead
 of crashing each worker mid-load. `--gpu-ids 8` only works if the node actually
 has ≥9 GPUs.
 
-**Interrupted?** Re-run the exact same command — shards are resumable (completed
-scenarios are skipped), so it continues where it stopped. `--no-resume` forces a
-clean regen. If the node runs Slurm rather than bare SSH, wrap step 5 in an
-sbatch script that requests one GPU (see `scripts/cluster/serve_prometheus.sbatch`
-for the pattern) and run `tutor-cat generate` in the job body.
+**Interrupted?** Re-run the exact same command — per-`(benchmark, model)` shards
+are resumable (completed scenarios are skipped), so it continues where a
+preemption stopped. `--no-resume` forces a clean regen. On the **MIT cluster** (or
+any Slurm node), wrap step 5 in an sbatch script that requests one GPU (see
+`scripts/cluster/serve_prometheus.sbatch` for the pattern) and put
+`tutor-cat generate --benchmarks benchmarks.yaml --gpu-ids 0 ...` in the job body;
+because it resumes, a job that hits its time limit just picks up on requeue.
 
 #### Helper scripts: run on one shared GPU without disturbing neighbors
 
@@ -216,16 +254,25 @@ When the P6 box is shared and only one GPU is yours, use the pinned launchers in
 `scripts/aws/` (default: **GPU index 2**):
 
 ```bash
-bash scripts/aws/setup_respgen.sh          # one-time: venv + pip install -e ".[gen]" (no GPU touched)
+bash scripts/aws/setup_respgen.sh                 # one-time: venv + pip install -e ".[gen]" (no GPU touched)
 source .venv/bin/activate && export HF_TOKEN=<token>
-bash scripts/aws/run_respgen_gpu2.sh       # all 100 models on GPU 2 only; S3_URI=s3://… to upload
+
+# single-benchmark TutorBench on GPU 2 only
+bash scripts/aws/run_respgen_gpu2.sh
+
+# multi-benchmark: every enabled benchmark in one model load, uploading to S3
+BENCHMARKS=benchmarks.yaml S3_URI=s3://<bucket>/responses bash scripts/aws/run_respgen_gpu2.sh
+
+# a subset of benchmarks
+BENCHMARKS=benchmarks.yaml ONLY=IFEval,Bridge bash scripts/aws/run_respgen_gpu2.sh
 ```
 
 `run_respgen_gpu2.sh` runs `tutor-cat generate --gpu-ids 2`, so every worker gets
-`CUDA_VISIBLE_DEVICES=2` and cannot see any other GPU. It **pre-flight refuses to
-start if GPU 2 already has a compute process**, so it never disturbs an existing
-job — free the GPU or set `GPU=<free index>` instead of killing anything. Change
-the target with `GPU=<n> bash scripts/aws/run_respgen_gpu2.sh`.
+`CUDA_VISIBLE_DEVICES=2` and cannot see any other GPU. Env passthrough: `BENCHMARKS`
+adds `--benchmarks`, `ONLY` adds `--only`, `S3_URI` adds `--s3-uri`, `OUT_DIR`
+sets the shard dir, and `GPU` overrides the pinned index. It **pre-flight refuses
+to start if GPU 2 already has a compute process**, so it never disturbs an
+existing job — free the GPU or set `GPU=<free index>` instead of killing anything.
 
 ## Tests (offline, no API keys needed)
 

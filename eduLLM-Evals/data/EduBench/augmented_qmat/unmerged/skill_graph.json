@@ -1,0 +1,603 @@
+{
+  "source": "data/EduBench/rubrics.jsonl",
+  "built_by": "scripts/build_edubench_skill_graph.py",
+  "directed": false,
+  "q_mapping_mode": "row",
+  "excluded_metrics": [],
+  "n_scenarios": 9163,
+  "n_rubric_rows": 67823,
+  "n_metrics": 12,
+  "n_criterion_texts": 27,
+  "group_key": "metric",
+  "skills": [
+    "answering_questions",
+    "error_correction",
+    "idea_provision",
+    "learning_support",
+    "mental_health",
+    "question_generation",
+    "grading",
+    "material_generation",
+    "personalized_content_creation"
+  ],
+  "summary": {
+    "n_nodes": 9,
+    "n_edges": 36,
+    "n_possible_edges": 36,
+    "complete": true,
+    "weight_min": 1,
+    "weight_max": 8,
+    "weight_sum": 177
+  },
+  "nodes": [
+    {
+      "id": "answering_questions",
+      "label": "Q&A",
+      "display": "Question Answering",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI"
+      ]
+    },
+    {
+      "id": "error_correction",
+      "label": "EC",
+      "display": "Error Correction",
+      "weight": 9,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "RPR",
+        "EICP",
+        "CSI",
+        "MGP"
+      ]
+    },
+    {
+      "id": "idea_provision",
+      "label": "IP",
+      "display": "Idea Provision",
+      "weight": 9,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI",
+        "HOTS"
+      ]
+    },
+    {
+      "id": "learning_support",
+      "label": "PLS",
+      "display": "Personalized Learning Support",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "PAS",
+        "HOTS"
+      ]
+    },
+    {
+      "id": "mental_health",
+      "label": "ES",
+      "display": "Emotional Support",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "MGP",
+        "PAS"
+      ]
+    },
+    {
+      "id": "question_generation",
+      "label": "QG",
+      "display": "Question Generation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI",
+        "HOTS"
+      ]
+    },
+    {
+      "id": "grading",
+      "label": "AG",
+      "display": "Automatic Grading",
+      "weight": 9,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "EICP",
+        "CSI",
+        "MGP"
+      ]
+    },
+    {
+      "id": "material_generation",
+      "label": "TMG",
+      "display": "Teaching Material Generation",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI",
+        "HOTS"
+      ]
+    },
+    {
+      "id": "personalized_content_creation",
+      "label": "PCC",
+      "display": "Personalized Content Creation",
+      "weight": 8,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "CSI",
+        "PAS"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "answering_questions",
+      "target": "error_correction",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "idea_provision",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "learning_support",
+      "weight": 3,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "mental_health",
+      "weight": 2,
+      "metrics": [
+        "IFTC",
+        "RTC"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "question_generation",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "grading",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "material_generation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "answering_questions",
+      "target": "personalized_content_creation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "idea_provision",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "learning_support",
+      "weight": 3,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "mental_health",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "MGP"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "question_generation",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "grading",
+      "weight": 8,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "EICP",
+        "CSI",
+        "MGP"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "material_generation",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "error_correction",
+      "target": "personalized_content_creation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "idea_provision",
+      "target": "learning_support",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "idea_provision",
+      "target": "mental_health",
+      "weight": 3,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI"
+      ]
+    },
+    {
+      "source": "idea_provision",
+      "target": "question_generation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "idea_provision",
+      "target": "grading",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "RPR",
+        "CSI"
+      ]
+    },
+    {
+      "source": "idea_provision",
+      "target": "material_generation",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "idea_provision",
+      "target": "personalized_content_creation",
+      "weight": 7,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "mental_health",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "PAS"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "question_generation",
+      "weight": 3,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "grading",
+      "weight": 3,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "material_generation",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "learning_support",
+      "target": "personalized_content_creation",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "SEI",
+        "PAS"
+      ]
+    },
+    {
+      "source": "mental_health",
+      "target": "question_generation",
+      "weight": 1,
+      "metrics": [
+        "IFTC"
+      ]
+    },
+    {
+      "source": "mental_health",
+      "target": "grading",
+      "weight": 3,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "MGP"
+      ]
+    },
+    {
+      "source": "mental_health",
+      "target": "material_generation",
+      "weight": 2,
+      "metrics": [
+        "IFTC",
+        "RTC"
+      ]
+    },
+    {
+      "source": "mental_health",
+      "target": "personalized_content_creation",
+      "weight": 4,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "SEI",
+        "PAS"
+      ]
+    },
+    {
+      "source": "question_generation",
+      "target": "grading",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "question_generation",
+      "target": "material_generation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI",
+        "HOTS"
+      ]
+    },
+    {
+      "source": "question_generation",
+      "target": "personalized_content_creation",
+      "weight": 5,
+      "metrics": [
+        "IFTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "grading",
+      "target": "material_generation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "grading",
+      "target": "personalized_content_creation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    },
+    {
+      "source": "material_generation",
+      "target": "personalized_content_creation",
+      "weight": 6,
+      "metrics": [
+        "IFTC",
+        "RTC",
+        "CRSC",
+        "BFA",
+        "DKA",
+        "CSI"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "answering_questions+error_correction+idea_provision+grading": {
+    "label": "Q&A+EC+IP+AG",
+    "display": "Question Answering + Error Correction + Idea Provision + Automatic Grading",
+    "members": [
+      "answering_questions",
+      "error_correction",
+      "idea_provision",
+      "grading"
+    ]
+  },
+  "learning_support": {
+    "label": "PLS",
+    "display": "Personalized Learning Support",
+    "members": [
+      "learning_support"
+    ]
+  },
+  "mental_health": {
+    "label": "ES",
+    "display": "Emotional Support",
+    "members": [
+      "mental_health"
+    ]
+  },
+  "question_generation+material_generation": {
+    "label": "QG+TMG",
+    "display": "Question Generation + Teaching Material Generation",
+    "members": [
+      "question_generation",
+      "material_generation"
+    ]
+  },
+  "personalized_content_creation": {
+    "label": "PCC",
+    "display": "Personalized Content Creation",
+    "members": [
+      "personalized_content_creation"
+    ]
+  }
+}

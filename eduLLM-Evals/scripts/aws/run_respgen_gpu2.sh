@@ -1,23 +1,31 @@
 #!/usr/bin/env bash
-# Launch the TutorBench response-generation job on the AWS P6 node, PINNED TO
-# GPU INDEX 2 ONLY. All 100 models run sequentially on that one B200; no other
-# GPU is ever touched (each worker gets CUDA_VISIBLE_DEVICES=2), so jobs on the
-# other GPUs are left completely alone.
+# Launch the response-generation job on the AWS P6 node, PINNED TO GPU INDEX 2
+# ONLY. All 100 models run sequentially on that one B200; no other GPU is ever
+# touched (each worker gets CUDA_VISIBLE_DEVICES=2), so jobs on the other GPUs
+# are left completely alone.
+#
+# Multi-benchmark: with BENCHMARKS set, each model is loaded ONCE and answers
+# every selected benchmark in that load (model load dominates the wall clock, so
+# this is far cheaper than one run per benchmark). Without it, the historical
+# single-benchmark TutorBench run over --scenarios is used.
 #
 # Prereqs (see scripts/aws/setup_respgen.sh):
 #   source .venv/bin/activate
 #   export HF_TOKEN=<token>
 # Optional:
-#   export S3_URI=s3://<bucket>/<prefix>     # periodic per-model upload (instance IAM)
+#   export S3_URI=s3://<bucket>/<prefix>     # periodic per-shard upload (instance IAM)
 #   export OUT_DIR=runs/responses            # local shard dir (default)
 #   export GPU=2                             # override the pinned index if ever needed
+#   export BENCHMARKS=benchmarks.yaml        # run every enabled benchmark in one load
+#   export ONLY=IFEval,Bridge                # narrow BENCHMARKS to a subset (needs BENCHMARKS)
 #
 # Run it (recommended inside tmux so a laptop disconnect doesn't kill it):
 #   tmux new -s respgen
-#   bash scripts/aws/run_respgen_gpu2.sh
+#   BENCHMARKS=benchmarks.yaml bash scripts/aws/run_respgen_gpu2.sh
 #
-# Resumable: re-running skips scenarios already in each shard. Nothing here
-# provisions AWS resources or spends beyond the P6 box you already pay for.
+# Resumable: re-running skips scenarios already in each (benchmark, model) shard,
+# so it continues where a preemption stopped. Nothing here provisions AWS
+# resources or spends beyond the P6 box you already pay for.
 
 set -euo pipefail
 
@@ -47,10 +55,13 @@ if (( BUSY > 0 )); then
   exit 1
 fi
 
-echo "== launching response generation on GPU index $GPU (100 models, 662 scenarios) =="
+echo "== launching response generation on GPU index $GPU (100 models) =="
 echo "   out_dir=$OUT_DIR  s3=${S3_URI:-<none>}  resume=on"
+echo "   benchmarks=${BENCHMARKS:-<TutorBench (single)>}  only=${ONLY:-<all enabled>}"
 
 ARGS=(generate --gpu-ids "$GPU" --out-dir "$OUT_DIR")
 [[ -n "${S3_URI:-}" ]] && ARGS+=(--s3-uri "$S3_URI")
+[[ -n "${BENCHMARKS:-}" ]] && ARGS+=(--benchmarks "$BENCHMARKS")
+[[ -n "${ONLY:-}" ]] && ARGS+=(--only "$ONLY")
 
 exec tutor-cat "${ARGS[@]}"

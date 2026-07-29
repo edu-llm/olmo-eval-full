@@ -44,6 +44,41 @@ SYSTEM_PROMPTS: dict[str, str] = {
 
 _DEFAULT_USE_CASE = "adaptive_explanation"
 
+# --- per-benchmark system prompts (multi-benchmark generation) --------------
+# When a scenario carries a `benchmark` label, the system prompt is chosen by
+# benchmark FIRST (below), then by TutorBench use_case (above). Empty/"TutorBench"
+# => the use_case behavior, so single-benchmark TutorBench runs are unchanged.
+#
+# Faithful to each original harness (see each data/*/README.md):
+#   * IFEval / InFoBench: instruction-following. The original harness feeds the
+#     prompt with NO system prompt (the prompt is the complete instruction); a
+#     tutor persona would change behavior and corrupt IFEval's deterministic
+#     verifier. => None (system message omitted entirely).
+#   * TutorEval: science tutoring; the chapter is already embedded in the prompt
+#     for open-book items, so the system prompt only sets the tutor role.
+#   * WildBench: open-ended chat across many task types (use_case is a content
+#     tag, not a pedagogical mode) => a generic helpful-assistant prompt.
+#   * Bridge: math mistake-remediation over a multi-turn tutor/student dialogue.
+_NO_SYSTEM_BENCHMARKS = {"IFEval", "InFoBench"}
+
+SYSTEM_PROMPTS_BY_BENCHMARK: dict[str, str] = {
+    "TutorEval": (
+        "You are an expert science tutor helping a student. Answer the student's "
+        "question accurately and clearly. If reference material is provided, ground "
+        "your answer in it; otherwise rely on your own knowledge."
+    ),
+    "WildBench": (
+        "You are a helpful assistant. Respond to the user's request as helpfully, "
+        "accurately, and thoroughly as you can."
+    ),
+    "Bridge": (
+        "You are an AI math tutor. The student has just made a mistake in the "
+        "conversation. Identify the specific error, then help the student correct it "
+        "by guiding them toward the right approach rather than simply giving away the "
+        "answer. Keep a supportive, encouraging tone."
+    ),
+}
+
 # Dataset context roles -> chat-template roles (same map as tutors._ROLE_MAP).
 _ROLE_MAP = {
     "student": "user",
@@ -66,6 +101,22 @@ _BASE_ROLE_LABEL = {"user": "Student", "assistant": "Tutor", "system": "System"}
 
 def system_prompt_for(use_case: str) -> str:
     return SYSTEM_PROMPTS.get(use_case, SYSTEM_PROMPTS[_DEFAULT_USE_CASE])
+
+
+def system_prompt_for_scenario(scenario: "Scenario") -> str | None:
+    """The system prompt for a scenario, keyed by benchmark first then use_case.
+
+    Returns None for instruction-following benchmarks whose original harness uses
+    no system prompt (IFEval/InFoBench) — the caller then omits the system turn.
+    Empty/"TutorBench" benchmark falls through to the use_case prompt, so the
+    single-benchmark TutorBench path is unchanged."""
+    benchmark = getattr(scenario, "benchmark", "") or ""
+    if benchmark in _NO_SYSTEM_BENCHMARKS:
+        return None
+    if benchmark in SYSTEM_PROMPTS_BY_BENCHMARK:
+        return SYSTEM_PROMPTS_BY_BENCHMARK[benchmark]
+    use_case = getattr(scenario, "use_case", "") or _DEFAULT_USE_CASE
+    return system_prompt_for(use_case)
 
 
 def _separator(use_case: str, role: str) -> str:
@@ -92,15 +143,18 @@ def _coalesce(messages: list[dict[str, str]], use_case: str) -> list[dict[str, s
 
 
 def build_chat_messages(scenario: "Scenario") -> list[dict[str, str]]:
-    """[system, ...role-mapped context, user(prompt)], coalesced to alternate.
+    """[system?, ...role-mapped context, user(prompt)], coalesced to alternate.
 
-    feedback / hint_generation collapse to exactly [system, user]; adaptive_
-    explanation stays [system, user, assistant, user].
+    The system turn is chosen by benchmark then use_case, and is OMITTED for the
+    instruction-following benchmarks whose original harness uses none (IFEval /
+    InFoBench). For TutorBench: feedback / hint_generation collapse to exactly
+    [system, user]; adaptive_explanation stays [system, user, assistant, user].
     """
     use_case = getattr(scenario, "use_case", "") or _DEFAULT_USE_CASE
-    messages: list[dict[str, str]] = [
-        {"role": "system", "content": system_prompt_for(use_case)}
-    ]
+    system = system_prompt_for_scenario(scenario)
+    messages: list[dict[str, str]] = []
+    if system is not None:
+        messages.append({"role": "system", "content": system})
     for turn in getattr(scenario, "conversation_context", None) or []:
         role = _ROLE_MAP.get(turn.get("role", "user"), "user")
         messages.append({"role": role, "content": turn.get("content", "")})

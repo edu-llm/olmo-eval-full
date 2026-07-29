@@ -480,8 +480,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--review-dir", type=Path, default=ROOT / "qmatrix_human_review")
     parser.add_argument("--manifest", type=Path, default=None)
-    parser.add_argument("--rubrics", type=Path, default=ROOT / "data/rubrics_qmatrix_final.jsonl")
-    parser.add_argument("--scenarios", type=Path, default=ROOT / "data/scenarios.jsonl")
+    parser.add_argument("--rubrics", type=Path, default=ROOT / "data/TutorBench/rubrics_qmatrix_final.jsonl")
+    parser.add_argument("--scenarios", type=Path, default=ROOT / "data/TutorBench/scenarios.jsonl")
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args(argv)
 

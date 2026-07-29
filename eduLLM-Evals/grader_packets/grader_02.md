@@ -763,13 +763,21 @@ So the corrected answers are:
 
 #### tb_0336_c03
 
-- Criterion: The response must identify that the student made an arithmetic error in part c) by equating $\frac{1}{5}$ to $\frac{5}{35}$, when it should be $\frac{7}{35}$. If done correctly, the answer should have been $\frac{1}{7}MR^2\omega_0^2$, not $\frac{3}{35}MR^2\omega_0^2$.
+- Criterion: The response must identify that the student made an arithmetic error in part c) by equating $\frac{1}{5}$ to $\frac{5}{35}$, when it should be $\frac{7}{35}$.
 - Primary skill: `diagnosis`
 - Criticality: `critical`
 - Grade (P/F): F
-- Notes: ____
+- Notes: derived from original compound tb_0336_c03 human grade during curation regrade (no tutor engaged part c)
 
 #### tb_0336_c04
+
+- Criterion: The response must state that, done correctly, the answer for part c) should have been $\frac{1}{7}MR^2\omega_0^2$, not $\frac{3}{35}MR^2\omega_0^2$.
+- Primary skill: `diagnosis`
+- Criticality: `critical`
+- Grade (P/F): F
+- Notes: derived from original compound tb_0336_c03 human grade during curation regrade (no tutor engaged part c)
+
+#### tb_0336_c05
 
 - Criterion: The response can explicitly note that the error of using the wrong moment of inertia leads to an incorrect result for both parts a) and b), since the result carry forward.
 - Primary skill: `diagnosis`
@@ -777,7 +785,7 @@ So the corrected answers are:
 - Grade (P/F): F
 - Notes: ____
 
-#### tb_0336_c05
+#### tb_0336_c06
 
 - Criterion: The response must explain that using conservation of angular momentum with the correct moment of inertial for a cylinder ($\frac{1}{2}MR^2$), you find that the linear velocity after the cylinder stops rolling is $v=\frac{1}{3}R\omega_0$.
 - Primary skill: `content`
@@ -785,7 +793,7 @@ So the corrected answers are:
 - Grade (P/F): P
 - Notes: ____
 
-#### tb_0336_c06
+#### tb_0336_c07
 
 - Criterion: The response must explain that you need to use angular acceleration  $\alpha=\frac{\tau}{I_{CM}}$ (not linear acceleration $a$) when considering angular velocity so that the kinematics equation becomes $\omega=\omega_0+\alpha t$.
 - Primary skill: `content`
@@ -793,7 +801,7 @@ So the corrected answers are:
 - Grade (P/F): P
 - Notes: ____
 
-#### tb_0336_c07
+#### tb_0336_c08
 
 - Criterion: The response must explain that using the correct moment of inertia, the angular acceleration is $-\frac{2\mu_kg}{R}$, leading to a time interval of $t=\frac{R\omega_0}{3\mu_kg}$.
 - Primary skill: `content`
@@ -801,7 +809,7 @@ So the corrected answers are:
 - Grade (P/F): P
 - Notes: ____
 
-#### tb_0336_c08
+#### tb_0336_c09
 
 - Criterion: The response must explicitly acknowledge the student's expressed confusion in part b).
 - Primary skill: `diagnosis`
@@ -809,17 +817,9 @@ So the corrected answers are:
 - Grade (P/F): F
 - Notes: ____
 
-#### tb_0336_c09
-
-- Criterion: The response should be written in the second person from the perspective of a teacher or tutor addressing their student.
-- Primary skill: ``
-- Criticality: `not_critical`
-- Grade (P/F): P
-- Notes: ____
-
 #### tb_0336_c10
 
-- Criterion: The response should use Markdown (sections, bullets, etc.) to demarcate separate ideas, and should use LaTeX to render all mathematical expressions. 
+- Criterion: The response should follow tutoring presentation conventions: address the student in the second person (conversational tutor voice); use clear Markdown structure (e.g., headings, bullets, or sections) where it aids clarity; render mathematical expressions in LaTeX. (Style/presentation only; not a content, diagnosis, or scaffolding skill.)
 - Primary skill: ``
 - Criticality: `not_critical`
 - Grade (P/F): P

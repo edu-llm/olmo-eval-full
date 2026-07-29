@@ -78,7 +78,7 @@ import numpy as np
 # Paths and run constants
 # ---------------------------------------------------------------------------
 
-DATA_DIR = Path("data")
+DATA_DIR = Path("data") / "TutorBench"
 DEFAULT_INPUT = DATA_DIR / "rubrics_qmatrix_final.jsonl"
 LOG_DIR = Path("qmatrix_irt_logs")
 

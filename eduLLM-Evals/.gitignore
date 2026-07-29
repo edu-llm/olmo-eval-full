@@ -45,12 +45,31 @@ dryrun/
 smoke_runs/
 
 # Data: the benchmark dataset IS tracked (needed on every machine that runs
-# the pipeline); ignore only ad-hoc/derived jsonl dropped here later.
+# the pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root.
+# (This glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
+# data/IFEval/ are tracked automatically.)
 data/*.jsonl
-!data/scenarios.jsonl
-!data/rubrics_qmatrix.jsonl
-!data/rubrics_calibrated.jsonl
-!data/rubrics_qmatrix_final.jsonl
+# TutorBench bank now lives under data/TutorBench/ (source + curated).
+!data/TutorBench/scenarios.jsonl
+!data/TutorBench/rubrics_qmatrix.jsonl
+!data/TutorBench/rubrics_calibrated.jsonl
+!data/TutorBench/rubrics_qmatrix_final.jsonl
+# Curated bank (curation_v1) IS the finalized rubric + scenario schema — track it.
+!data/TutorBench/curated/
+!data/TutorBench/curated/rubrics_qmatrix_curated.jsonl
+!data/TutorBench/curated/scenarios_curated.jsonl
+
+# Curation intermediates: per-agent/batch op files + review dumps are scratch;
+# the merged master spec (curation/pilot_edits.json) and reports ARE tracked.
+curation/tranche/
+
+# EduBench: candidate-bank scenario/rubric artifacts (HF-derived, reproducible via
+# scripts/ingest_edubench.py / scripts/build_edubench_merged.py) -- never tracked,
+# regardless of nesting depth (unmerged/, merged/, merged/<variant>/, given_qmat/, ...).
+data/EduBench/**/scenarios.json
+data/EduBench/**/scenarios.jsonl
+data/EduBench/**/rubrics.json
+data/EduBench/**/rubrics.jsonl
 
 # AWS key pairs must never be committed
 *.pem
