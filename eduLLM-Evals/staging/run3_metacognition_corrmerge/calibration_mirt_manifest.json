@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T16:48:37.145072+00:00",
+  "generated_at": "2026-07-29T17:16:01.061287+00:00",
   "note": "CONFIRMATORY MULTIDIMENSIONAL 2PL (M2PL) fit, pure numpy/scipy, Bock-Aitkin EM over a Gauss-Hermite grid. Loadings masked by the 3-skill Q-matrix (a_k free iff q_k==1, else exactly 0).",
   "method": "confirmatory-m2pl-mml-em",
   "skills_order": [
@@ -14,7 +14,7 @@
   "em": {
     "max_iter": 200,
     "tol": 0.0001,
-    "multi_n_iter": 27,
+    "multi_n_iter": 28,
     "multi_converged": true,
     "uni_n_iter": 17,
     "uni_converged": true
@@ -2009,11 +2009,10 @@
       "tb_0662_c06"
     ],
     "dropped_all_pass_criteria": [],
-    "dropped_missing_qrow": 613,
+    "dropped_missing_qrow": 612,
     "dropped_missing_qrow_criteria": [
       "tb_0002_c01",
       "tb_0002_c09",
-      "tb_0004_c08",
       "tb_0005_c07",
       "tb_0005_c08",
       "tb_0006_c07",
@@ -2625,100 +2624,100 @@
       "tb_0661_c05",
       "tb_0662_c09"
     ],
-    "n_items_fit": 3347,
+    "n_items_fit": 3348,
     "n_persons_fit": 82,
     "q_pattern_counts": {
-      "100": 1206,
-      "110": 1112,
-      "101": 283,
-      "010": 291,
-      "011": 19,
-      "001": 312,
-      "111": 124
+      "100": 2597,
+      "110": 422,
+      "001": 1,
+      "010": 309,
+      "101": 12,
+      "011": 3,
+      "111": 4
     }
   },
-  "n_items_fit": 3347,
+  "n_items_fit": 3348,
   "n_persons_fit": 82,
-  "n_observed_cells": 268936,
+  "n_observed_cells": 269018,
   "dropped_zero_variance": 1976,
   "dropped_all_fail": 1976,
   "dropped_all_pass": 0,
-  "dropped_missing_qrow": 613,
+  "dropped_missing_qrow": 612,
   "comparison": {
     "multi": {
       "n_dims": 3,
-      "loglik": -58438.26452712138,
-      "n_params": 8359,
-      "aic": 133594.52905424277,
-      "bic": 221382.65885836346
+      "loglik": -58465.353822089164,
+      "n_params": 7144,
+      "aic": 131218.70764417833,
+      "bic": 206248.80747428388
     },
     "uni": {
       "n_dims": 1,
-      "loglik": -59501.63599927609,
-      "n_params": 6694,
-      "aic": 132391.2719985522,
-      "bic": 202693.19099709077
+      "loglik": -59504.14258245081,
+      "n_params": 6696,
+      "aic": 132400.28516490164,
+      "bic": 202725.2499552693
     },
-    "multi_beats_uni_aic": false,
+    "multi_beats_uni_aic": true,
     "multi_beats_uni_bic": false,
-    "delta_aic_uni_minus_multi": -1203.2570556905703,
-    "delta_bic_uni_minus_multi": -18689.467861272686,
+    "delta_aic_uni_minus_multi": 1181.5775207233091,
+    "delta_bic_uni_minus_multi": -3523.5575190145755,
     "bic_sample_size_convention": "n_observed_cells"
   },
   "collapse": {
     "requested": true,
     "merged_skills": [
       "content",
-      "diagnosis"
+      "scaffolding"
     ],
     "collapsed_labels": [
-      "content+diagnosis",
-      "scaffolding"
+      "content+scaffolding",
+      "diagnosis"
     ],
     "n_dims": 2,
     "collapsed_model": {
       "n_dims": 2,
-      "loglik": -58479.92734449964,
-      "n_params": 7121,
-      "aic": 131201.8546889993,
-      "bic": 205988.22534758807
+      "loglik": -58473.03580436635,
+      "n_params": 7126,
+      "aic": 131198.0716087327,
+      "bic": 206039.12583456305
     },
     "three_way": {
       "unidim": {
         "n_dims": 1,
-        "loglik": -59501.63599927609,
-        "n_params": 6694,
-        "aic": 132391.2719985522,
-        "bic": 202693.19099709077
+        "loglik": -59504.14258245081,
+        "n_params": 6696,
+        "aic": 132400.28516490164,
+        "bic": 202725.2499552693
       },
       "collapsed": {
         "n_dims": 2,
-        "loglik": -58479.92734449964,
-        "n_params": 7121,
-        "aic": 131201.8546889993,
-        "bic": 205988.22534758807
+        "loglik": -58473.03580436635,
+        "n_params": 7126,
+        "aic": 131198.0716087327,
+        "bic": 206039.12583456305
       },
       "full": {
         "n_dims": 3,
-        "loglik": -58438.26452712138,
-        "n_params": 8359,
-        "aic": 133594.52905424277,
-        "bic": 221382.65885836346
+        "loglik": -58465.353822089164,
+        "n_params": 7144,
+        "aic": 131218.70764417833,
+        "bic": 206248.80747428388
       }
     },
     "collapsed_beats_full_aic": true,
     "collapsed_beats_full_bic": true,
-    "delta_aic_full_minus_collapsed": 2392.674365243467,
-    "delta_bic_full_minus_collapsed": 15394.433510775387,
+    "delta_aic_full_minus_collapsed": 20.636035445641028,
+    "delta_bic_full_minus_collapsed": 209.6816397208313,
     "aic_winner": "collapsed",
     "bic_winner": "unidim",
     "collapsed_latent_correlation": [
       [
         1.0,
-        -0.417549
+        -0.417546
       ],
       [
-        -0.417549,
+        -0.417546,
         1.0
       ]
     ]
@@ -2726,17 +2725,17 @@
   "latent_correlation": [
     [
       1.0,
-      0.946103,
-      -0.169957
+      -0.417546,
+      0.999
     ],
     [
-      0.946103,
+      -0.417546,
       1.0,
-      -0.180923
+      -0.417546
     ],
     [
-      -0.169957,
-      -0.180923,
+      0.999,
+      -0.417546,
       1.0
     ]
   ],
@@ -2746,7 +2745,7 @@
   },
   "efa": {
     "available": false,
-    "reason": "factor_analyzer not installed"
+    "reason": "not requested (pass --efa)"
   },
   "identifiability": {
     "min_persons_identifiable": 150,
@@ -2763,13 +2762,14 @@
     "script": "scripts/calibrate_mirt.py",
     "argv": [
       "--rubrics",
-      "data/curated/rubrics_qmatrix_curated.jsonl",
+      "data\\experimental\\rubrics_qmatrix_collapse_metacognition.jsonl",
       "--collapse",
-      "content,diagnosis",
+      "content,scaffolding",
       "--estimate-latent-corr",
       "--grid",
       "7",
-      "--efa"
+      "--out-dir",
+      "staging\\run3_metacognition_corrmerge"
     ]
   }
 }

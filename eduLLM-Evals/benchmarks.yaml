@@ -39,3 +39,6 @@ benchmarks:
   - name: Bridge
     scenarios: data/Bridge/scenarios.jsonl
     enabled: true
+  - name: BiGGen
+    scenarios: data/BiGGen/scenarios.jsonl
+    enabled: true

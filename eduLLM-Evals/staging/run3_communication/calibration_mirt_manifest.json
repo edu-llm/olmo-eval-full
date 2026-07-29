@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T16:48:37.145072+00:00",
+  "generated_at": "2026-07-29T17:17:37.430899+00:00",
   "note": "CONFIRMATORY MULTIDIMENSIONAL 2PL (M2PL) fit, pure numpy/scipy, Bock-Aitkin EM over a Gauss-Hermite grid. Loadings masked by the 3-skill Q-matrix (a_k free iff q_k==1, else exactly 0).",
   "method": "confirmatory-m2pl-mml-em",
   "skills_order": [
@@ -14,9 +14,9 @@
   "em": {
     "max_iter": 200,
     "tol": 0.0001,
-    "multi_n_iter": 27,
+    "multi_n_iter": 16,
     "multi_converged": true,
-    "uni_n_iter": 17,
+    "uni_n_iter": 16,
     "uni_converged": true
   },
   "block": {
@@ -2009,7 +2009,7 @@
       "tb_0662_c06"
     ],
     "dropped_all_pass_criteria": [],
-    "dropped_missing_qrow": 613,
+    "dropped_missing_qrow": 595,
     "dropped_missing_qrow_criteria": [
       "tb_0002_c01",
       "tb_0002_c09",
@@ -2025,7 +2025,6 @@
       "tb_0009_c08",
       "tb_0011_c11",
       "tb_0012_c01",
-      "tb_0012_c06",
       "tb_0015_c01",
       "tb_0015_c09",
       "tb_0017_c01",
@@ -2039,7 +2038,6 @@
       "tb_0028_c12",
       "tb_0029_c06",
       "tb_0033_c05",
-      "tb_0034_c10",
       "tb_0035_c05",
       "tb_0036_c04",
       "tb_0036_c06",
@@ -2051,7 +2049,6 @@
       "tb_0041_c08",
       "tb_0042_c08",
       "tb_0042_c09",
-      "tb_0043_c07",
       "tb_0044_c07",
       "tb_0047_c01",
       "tb_0047_c11",
@@ -2130,7 +2127,6 @@
       "tb_0121_c08",
       "tb_0122_c01",
       "tb_0122_c12",
-      "tb_0125_c07",
       "tb_0127_c01",
       "tb_0127_c22",
       "tb_0128_c07",
@@ -2138,7 +2134,6 @@
       "tb_0131_c06",
       "tb_0131_c07",
       "tb_0131_c11",
-      "tb_0132_c12",
       "tb_0133_c09",
       "tb_0133_c10",
       "tb_0134_c02",
@@ -2155,7 +2150,6 @@
       "tb_0147_c02",
       "tb_0148_c01",
       "tb_0148_c04",
-      "tb_0150_c09",
       "tb_0152_c01",
       "tb_0152_c08",
       "tb_0152_c09",
@@ -2177,7 +2171,6 @@
       "tb_0168_c10",
       "tb_0169_c15",
       "tb_0170_c08",
-      "tb_0170_c09",
       "tb_0171_c08",
       "tb_0173_c06",
       "tb_0174_c09",
@@ -2233,7 +2226,6 @@
       "tb_0228_c01",
       "tb_0229_c08",
       "tb_0230_c02",
-      "tb_0231_c11",
       "tb_0232_c07",
       "tb_0235_c02",
       "tb_0235_c04",
@@ -2250,7 +2242,6 @@
       "tb_0244_c01",
       "tb_0245_c16",
       "tb_0246_c05",
-      "tb_0248_c06",
       "tb_0249_c02",
       "tb_0249_c04",
       "tb_0250_c04",
@@ -2273,7 +2264,6 @@
       "tb_0262_c07",
       "tb_0263_c08",
       "tb_0264_c09",
-      "tb_0266_c02",
       "tb_0266_c05",
       "tb_0267_c17",
       "tb_0268_c03",
@@ -2294,7 +2284,6 @@
       "tb_0283_c01",
       "tb_0283_c09",
       "tb_0283_c10",
-      "tb_0285_c11",
       "tb_0286_c01",
       "tb_0287_c01",
       "tb_0288_c01",
@@ -2325,7 +2314,6 @@
       "tb_0315_c05",
       "tb_0317_c01",
       "tb_0317_c06",
-      "tb_0317_c08",
       "tb_0318_c01",
       "tb_0318_c11",
       "tb_0319_c01",
@@ -2368,7 +2356,6 @@
       "tb_0360_c06",
       "tb_0360_c07",
       "tb_0363_c09",
-      "tb_0367_c09",
       "tb_0369_c16",
       "tb_0371_c17",
       "tb_0371_c18",
@@ -2385,7 +2372,6 @@
       "tb_0384_c08",
       "tb_0385_c09",
       "tb_0386_c06",
-      "tb_0387_c06",
       "tb_0388_c05",
       "tb_0389_c09",
       "tb_0390_c07",
@@ -2512,7 +2498,6 @@
       "tb_0543_c06",
       "tb_0544_c01",
       "tb_0544_c04",
-      "tb_0545_c06",
       "tb_0546_c05",
       "tb_0546_c09",
       "tb_0547_c08",
@@ -2575,15 +2560,12 @@
       "tb_0608_c08",
       "tb_0610_c09",
       "tb_0611_c08",
-      "tb_0611_c09",
       "tb_0613_c06",
-      "tb_0615_c10",
       "tb_0616_c08",
       "tb_0617_c01",
       "tb_0618_c12",
       "tb_0619_c05",
       "tb_0620_c10",
-      "tb_0621_c05",
       "tb_0621_c06",
       "tb_0622_c10",
       "tb_0622_c12",
@@ -2625,100 +2607,100 @@
       "tb_0661_c05",
       "tb_0662_c09"
     ],
-    "n_items_fit": 3347,
+    "n_items_fit": 3365,
     "n_persons_fit": 82,
     "q_pattern_counts": {
-      "100": 1206,
-      "110": 1112,
-      "101": 283,
-      "010": 291,
-      "011": 19,
-      "001": 312,
-      "111": 124
+      "100": 2608,
+      "110": 423,
+      "011": 2,
+      "001": 18,
+      "010": 310,
+      "111": 3,
+      "101": 1
     }
   },
-  "n_items_fit": 3347,
+  "n_items_fit": 3365,
   "n_persons_fit": 82,
-  "n_observed_cells": 268936,
+  "n_observed_cells": 270386,
   "dropped_zero_variance": 1976,
   "dropped_all_fail": 1976,
   "dropped_all_pass": 0,
-  "dropped_missing_qrow": 613,
+  "dropped_missing_qrow": 595,
   "comparison": {
     "multi": {
       "n_dims": 3,
-      "loglik": -58438.26452712138,
-      "n_params": 8359,
-      "aic": 133594.52905424277,
-      "bic": 221382.65885836346
+      "loglik": -58987.43274222469,
+      "n_params": 7165,
+      "aic": 132304.86548444937,
+      "bic": 207591.86137578718
     },
     "uni": {
       "n_dims": 1,
-      "loglik": -59501.63599927609,
-      "n_params": 6694,
-      "aic": 132391.2719985522,
-      "bic": 202693.19099709077
+      "loglik": -60024.72692078492,
+      "n_params": 6730,
+      "aic": 133509.45384156983,
+      "bic": 204225.6411896094
     },
-    "multi_beats_uni_aic": false,
+    "multi_beats_uni_aic": true,
     "multi_beats_uni_bic": false,
-    "delta_aic_uni_minus_multi": -1203.2570556905703,
-    "delta_bic_uni_minus_multi": -18689.467861272686,
+    "delta_aic_uni_minus_multi": 1204.5883571204613,
+    "delta_bic_uni_minus_multi": -3366.2201861777867,
     "bic_sample_size_convention": "n_observed_cells"
   },
   "collapse": {
     "requested": true,
     "merged_skills": [
-      "content",
-      "diagnosis"
+      "diagnosis",
+      "scaffolding"
     ],
     "collapsed_labels": [
-      "content+diagnosis",
-      "scaffolding"
+      "content",
+      "diagnosis+scaffolding"
     ],
     "n_dims": 2,
     "collapsed_model": {
       "n_dims": 2,
-      "loglik": -58479.92734449964,
-      "n_params": 7121,
-      "aic": 131201.8546889993,
-      "bic": 205988.22534758807
+      "loglik": -59179.85423907944,
+      "n_params": 7158,
+      "aic": 132675.70847815886,
+      "bic": 207889.15112857003
     },
     "three_way": {
       "unidim": {
         "n_dims": 1,
-        "loglik": -59501.63599927609,
-        "n_params": 6694,
-        "aic": 132391.2719985522,
-        "bic": 202693.19099709077
+        "loglik": -60024.72692078492,
+        "n_params": 6730,
+        "aic": 133509.45384156983,
+        "bic": 204225.6411896094
       },
       "collapsed": {
         "n_dims": 2,
-        "loglik": -58479.92734449964,
-        "n_params": 7121,
-        "aic": 131201.8546889993,
-        "bic": 205988.22534758807
+        "loglik": -59179.85423907944,
+        "n_params": 7158,
+        "aic": 132675.70847815886,
+        "bic": 207889.15112857003
       },
       "full": {
         "n_dims": 3,
-        "loglik": -58438.26452712138,
-        "n_params": 8359,
-        "aic": 133594.52905424277,
-        "bic": 221382.65885836346
+        "loglik": -58987.43274222469,
+        "n_params": 7165,
+        "aic": 132304.86548444937,
+        "bic": 207591.86137578718
       }
     },
-    "collapsed_beats_full_aic": true,
-    "collapsed_beats_full_bic": true,
-    "delta_aic_full_minus_collapsed": 2392.674365243467,
-    "delta_bic_full_minus_collapsed": 15394.433510775387,
-    "aic_winner": "collapsed",
+    "collapsed_beats_full_aic": false,
+    "collapsed_beats_full_bic": false,
+    "delta_aic_full_minus_collapsed": -370.84299370949157,
+    "delta_bic_full_minus_collapsed": -297.28975278284634,
+    "aic_winner": "full",
     "bic_winner": "unidim",
     "collapsed_latent_correlation": [
       [
         1.0,
-        -0.417549
+        -0.418163
       ],
       [
-        -0.417549,
+        -0.418163,
         1.0
       ]
     ]
@@ -2726,17 +2708,17 @@
   "latent_correlation": [
     [
       1.0,
-      0.946103,
-      -0.169957
+      -0.417548,
+      0.999
     ],
     [
-      0.946103,
+      -0.417548,
       1.0,
-      -0.180923
+      -0.417548
     ],
     [
-      -0.169957,
-      -0.180923,
+      0.999,
+      -0.417548,
       1.0
     ]
   ],
@@ -2763,13 +2745,15 @@
     "script": "scripts/calibrate_mirt.py",
     "argv": [
       "--rubrics",
-      "data/curated/rubrics_qmatrix_curated.jsonl",
+      "data\\experimental\\rubrics_qmatrix_collapse_communication.jsonl",
       "--collapse",
-      "content,diagnosis",
+      "diagnosis,scaffolding",
       "--estimate-latent-corr",
       "--grid",
       "7",
-      "--efa"
+      "--efa",
+      "--out-dir",
+      "staging\\run3_communication"
     ]
   }
 }
