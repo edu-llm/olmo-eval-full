@@ -10,14 +10,14 @@ If the tutors do not differ, nothing below can be read as a property of the crit
 
 | model | mean pass rate |
 |---|---|
-| `openai-group/gpt-4.1-nano` | 0.729 |
-| `openai-group/gpt-5.4-nano` | 0.687 |
-| `llama3-3-70b` | 0.674 |
-| `qwen3-32b` | 0.687 |
-| `openai-group/gpt-4o` | 0.676 |
-| `mistral-large-3` | 0.712 |
-| `openai-group/gpt-5.5` | 0.780 |
-| `claude-group/claude-opus-4-8` | 0.752 |
+| `openai-group/gpt-4.1-nano` | 0.732 |
+| `openai-group/gpt-5.4-nano` | 0.690 |
+| `llama3-3-70b` | 0.686 |
+| `qwen3-32b` | 0.708 |
+| `openai-group/gpt-4o` | 0.678 |
+| `mistral-large-3` | 0.733 |
+| `openai-group/gpt-5.5` | 0.776 |
+| `claude-group/claude-opus-4-8` | 0.763 |
 
 
 ## Q1 — are D1 / P1 / A1 at ceiling?
@@ -27,16 +27,16 @@ The system prompt names these three almost verbatim.
 
 | code | pass rate | discrimination | criticality |
 |---|---|---|---|
-| **D1** | 0.218 | 0.499 | critical |
-| **P1** | 0.594 | 0.629 | critical |
-| **A1** | 0.914 | 0.091 | standard |
+| **D1** | 0.222 | 0.486 | critical |
+| **P1** | 0.618 | 0.594 | critical |
+| **A1** | 0.803 | 0.030 | standard |
 
 
 ## Q2 — do the 19 negative-form criteria vacuously pass?
 
 
-- negative-form (13 codes): mean pass rate **0.817**
-- positive-form (26 codes): mean pass rate **0.595**
+- negative-form (14 codes): mean pass rate **0.831**
+- positive-form (25 codes): mean pass rate **0.608**
 
 
 ## Q3 — redundancy within a skill family
@@ -48,40 +48,40 @@ Phi correlation between sibling criteria on the same responses. Above ~0.7 they 
 
 | pair | phi | n |
 |---|---|---|
-| A2 – A4 | +0.369 | 790 |
-| A1 – A4 | +0.323 | 790 |
-| A1 – A2 | +0.270 | 790 |
-| A1 – A3 | +0.128 | 790 |
-| A2 – A3 | +0.088 | 790 |
-| A3 – A4 | +0.071 | 790 |
+| A3 – A4 | +0.754 | 790 |
+| A1 – A3 | +0.099 | 790 |
+| A1 – A4 | +0.089 | 790 |
+| A2 – A3 | -0.020 | 790 |
+| A2 – A4 | -0.026 | 790 |
+| A1 – A2 | -0.061 | 790 |
 
 **strategy**
 
 | pair | phi | n |
 |---|---|---|
-| P1 – P2 | +0.561 | 790 |
-| P2 – P4 | +0.499 | 790 |
-| P1 – P4 | +0.382 | 790 |
-| P1 – P3 | +0.174 | 790 |
-| P2 – P3 | +0.001 | 790 |
-| P3 – P4 | -0.021 | 790 |
+| P2 – P4 | +0.542 | 790 |
+| P1 – P2 | +0.516 | 790 |
+| P1 – P4 | +0.359 | 790 |
+| P1 – P3 | +0.234 | 790 |
+| P3 – P4 | +0.021 | 790 |
+| P2 – P3 | -0.012 | 790 |
 
 **math**
 
 | pair | phi | n |
 |---|---|---|
-| M1 – M4 | +0.379 | 790 |
-| M3 – M5 | +0.332 | 790 |
-| M4 – M5 | +0.281 | 790 |
-| M1 – M5 | +0.175 | 790 |
-| M3 – M4 | +0.155 | 790 |
-| M1 – M3 | +0.063 | 790 |
+| M3 – M5 | +0.363 | 790 |
+| M1 – M4 | +0.335 | 790 |
+| M4 – M5 | +0.294 | 790 |
+| M3 – M4 | +0.178 | 790 |
+| M1 – M5 | +0.134 | 790 |
+| M1 – M3 | +0.025 | 790 |
 
 **communication**
 
 | pair | phi | n |
 |---|---|---|
-| C1 – C3 | +0.188 | 790 |
+| C1 – C3 | +0.103 | 790 |
 
 
 ## Dead weight — criteria carrying little or no information
@@ -91,13 +91,15 @@ Pass rate above 0.95 or below 0.05 means almost no variance to measure; discrimi
 
 | code | pass rate | disc | flags |
 |---|---|---|---|
-| A3 | 0.996 | 0.011 | CEILING no-disc |
-| A1 | 0.914 | 0.091 | no-disc |
-| I2 | 0.896 | -0.080 | no-disc |
-| P3 | 0.881 | 0.007 | no-disc |
-| S1 | 0.863 | 0.092 | no-disc |
-| D5 | 0.596 | 0.093 | no-disc |
-| F1 | 0.143 | 0.029 | no-disc |
+| A3 | 0.995 | 0.072 | CEILING no-disc |
+| A4 | 0.991 | 0.059 | CEILING no-disc |
+| C1 | 0.982 | 0.148 | CEILING |
+| Y3 | 0.976 | 0.067 | CEILING no-disc |
+| G1 | 0.943 | 0.098 | no-disc |
+| P3 | 0.878 | 0.030 | no-disc |
+| S1 | 0.855 | 0.095 | no-disc |
+| A1 | 0.803 | 0.030 | no-disc |
+| D5 | 0.592 | 0.082 | no-disc |
 
 
 ## All criteria
@@ -105,42 +107,42 @@ Pass rate above 0.95 or below 0.05 means almost no variance to measure; discrimi
 
 | code | pass rate | disc | crit | form | explicitness |
 |---|---|---|---|---|---|
-| A3 | 0.996 | 0.011 | critical | pos | implicit |
-| C1 | 0.947 | 0.252 | standard | pos | implicit |
-| M4 | 0.942 | 0.257 | critical | neg | implicit |
-| A4 | 0.941 | 0.235 | standard | pos | implicit |
-| N1 | 0.938 | 0.102 | standard | neg | implicit |
-| M1 | 0.937 | 0.156 | critical | pos | implicit |
-| G1 | 0.927 | 0.115 | critical | neg | implicit |
-| B1 | 0.927 | 0.255 | standard | neg | implicit |
-| Y2 | 0.918 | 0.307 | standard | pos | implicit |
-| A1 | 0.914 | 0.091 | standard | pos | explicit |
-| I1 | 0.906 | 0.331 | critical | neg | implicit |
-| I2 | 0.896 | -0.080 | standard | neg | implicit |
-| P3 | 0.881 | 0.007 | standard | pos | implicit |
-| D4 | 0.873 | 0.181 | standard | neg | implicit |
-| S1 | 0.863 | 0.092 | critical | neg | implicit |
-| G2 | 0.854 | 0.368 | standard | pos | implicit |
-| A2 | 0.847 | 0.371 | standard | pos | implicit |
-| M5 | 0.844 | 0.421 | standard | neg | implicit |
-| U1 | 0.818 | 0.591 | standard | neg | implicit |
-| P4 | 0.763 | 0.486 | standard | neg | implicit |
-| X1 | 0.756 | 0.536 | standard | pos | implicit |
-| Y3 | 0.636 | 0.628 | standard | pos | implicit |
-| Y1 | 0.630 | 0.256 | standard | pos | implicit |
-| D5 | 0.596 | 0.093 | standard | pos | implicit |
-| P1 | 0.594 | 0.629 | critical | pos | explicit |
-| V2 | 0.561 | 0.483 | standard | pos | implicit |
-| C3 | 0.538 | 0.747 | standard | pos | implicit |
-| S2 | 0.524 | 0.423 | standard | pos | implicit |
-| R1 | 0.521 | 0.532 | critical | neg | implicit |
-| P2 | 0.501 | 0.759 | standard | pos | implicit |
-| M3 | 0.441 | 0.731 | standard | pos | implicit |
-| D2 | 0.405 | 0.748 | critical | neg | implicit |
-| R2 | 0.339 | 0.486 | standard | pos | implicit |
-| V1 | 0.323 | 0.292 | standard | pos | implicit |
-| O1 | 0.239 | 0.458 | standard | pos | implicit |
-| D1 | 0.218 | 0.499 | critical | pos | explicit |
-| F1 | 0.143 | 0.029 | standard | pos | implicit |
-| Z1 | 0.109 | 0.274 | standard | pos | implicit |
-| D3 | 0.099 | 0.575 | critical | pos | implicit |
+| A3 | 0.995 | 0.072 | critical | pos | implicit |
+| A4 | 0.991 | 0.059 | standard | neg | implicit |
+| C1 | 0.982 | 0.148 | standard | pos | implicit |
+| Y3 | 0.976 | 0.067 | standard | pos | implicit |
+| G1 | 0.943 | 0.098 | critical | neg | implicit |
+| M1 | 0.942 | 0.159 | critical | pos | implicit |
+| N1 | 0.938 | 0.212 | standard | neg | implicit |
+| M4 | 0.937 | 0.273 | critical | neg | implicit |
+| A2 | 0.930 | 0.281 | standard | pos | implicit |
+| I1 | 0.927 | 0.375 | critical | neg | implicit |
+| Y2 | 0.923 | 0.284 | standard | pos | implicit |
+| B1 | 0.917 | 0.343 | standard | neg | implicit |
+| I2 | 0.906 | 0.115 | standard | neg | implicit |
+| P3 | 0.878 | 0.030 | standard | pos | implicit |
+| S1 | 0.855 | 0.095 | critical | neg | implicit |
+| D4 | 0.854 | 0.242 | standard | neg | implicit |
+| M5 | 0.847 | 0.445 | standard | neg | implicit |
+| G2 | 0.833 | 0.444 | standard | pos | implicit |
+| X1 | 0.822 | 0.511 | standard | pos | implicit |
+| U1 | 0.807 | 0.540 | standard | neg | implicit |
+| A1 | 0.803 | 0.030 | standard | pos | explicit |
+| P4 | 0.753 | 0.511 | standard | neg | implicit |
+| P1 | 0.618 | 0.594 | critical | pos | explicit |
+| Y1 | 0.615 | 0.336 | standard | pos | implicit |
+| D5 | 0.592 | 0.082 | standard | pos | implicit |
+| V2 | 0.591 | 0.581 | standard | pos | implicit |
+| R1 | 0.545 | 0.477 | critical | neg | implicit |
+| C3 | 0.527 | 0.737 | standard | pos | implicit |
+| S2 | 0.524 | 0.366 | standard | pos | implicit |
+| P2 | 0.494 | 0.773 | standard | pos | implicit |
+| M3 | 0.441 | 0.750 | standard | pos | implicit |
+| D2 | 0.409 | 0.771 | critical | neg | implicit |
+| V1 | 0.409 | 0.416 | standard | pos | implicit |
+| R2 | 0.388 | 0.496 | standard | pos | implicit |
+| O1 | 0.257 | 0.517 | standard | pos | implicit |
+| D1 | 0.222 | 0.486 | critical | pos | explicit |
+| F1 | 0.179 | 0.132 | standard | pos | implicit |
+| D3 | 0.141 | 0.582 | critical | pos | implicit |
+| Z1 | 0.109 | 0.283 | standard | pos | implicit |

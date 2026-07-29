@@ -476,8 +476,117 @@ def stage_analyze() -> None:
     print("\n".join(L[:14]))
 
 
+# ---------------------------------------------------------------------------
+# gold -- do Bridge's OWN expert replies pass our criteria?
+# ---------------------------------------------------------------------------
+
+GOLD_DIR = HERE / "gold"
+
+
+def stage_gold() -> None:
+    """Grade each scenario's expert-revised reply as if a tutor had written it.
+
+    The experts are, by construction, competent tutoring. A criterion that the expert
+    reply fails is far more likely to be a bad criterion than a bad expert -- this is
+    the strongest validity check available without human raters.
+
+    Judged twice. `with_ref` matches how the 8 tutors were graded (reference visible as
+    background) but here the reference IS the response, so the judge sees the same text
+    twice and may be lenient. `no_ref` hides it, which is the honest blind read. The gap
+    between the two measures how much showing the reference inflates judgments at all.
+    """
+    cli = client()
+    scen = sampled_scenarios()
+    _, rub = load_bank()
+    jobs = []
+    for mode in ("with_ref", "no_ref"):
+        (GOLD_DIR / mode).mkdir(parents=True, exist_ok=True)
+        for s in scen:
+            p = GOLD_DIR / mode / f"{s['scenario_id']}.json"
+            if not p.exists() and (s["reference_solution"] or "").strip():
+                jobs.append((mode, s, p))
+    print(f"gold: {len(jobs)} calls pending ({len(scen)} scenarios x 2 conditions)")
+    if not jobs:
+        return
+
+    def run(job):
+        mode, s, p = job
+        crits = sorted(rub[s["scenario_id"]], key=lambda c: c["criterion_id"])
+        shown = dict(s) if mode == "with_ref" else {**s, "reference_solution": ""}
+        for _ in range(3):
+            try:
+                r = cli.chat.completions.create(
+                    model=JUDGE_MODEL, max_tokens=3000,
+                    messages=[{"role": "system", "content": JUDGE_SYSTEM},
+                              {"role": "user", "content": judge_prompt(
+                                  shown, crits, s["reference_solution"])}])
+                v = parse_verdicts(r.choices[0].message.content or "", len(crits))
+                if v:
+                    p.write_text(json.dumps({
+                        "mode": mode, "scenario_id": s["scenario_id"],
+                        "verdicts": {c["criterion_code"]: y for c, y in zip(crits, v)},
+                    }), encoding="utf-8")
+                    return 1
+            except Exception:
+                pass
+        return 0
+
+    with ThreadPoolExecutor(WORKERS) as ex:
+        ok = list(ex.map(run, jobs))
+    print(f"  graded {sum(ok)}/{len(jobs)}")
+
+
+def stage_gold_report() -> None:
+    """Compare expert pass rates against the 8 tutors, per criterion."""
+    _, rub = load_bank()
+    meta = {}
+    for rows in rub.values():
+        for r in rows:
+            meta.setdefault(r["criterion_code"], r)
+
+    def collect(root: Path, pattern="*.json") -> dict[str, list[int]]:
+        out: dict[str, list[int]] = defaultdict(list)
+        for p in sorted(root.rglob(pattern)):
+            j = json.loads(p.read_text(encoding="utf-8"))
+            for code, v in j["verdicts"].items():
+                out[code].append(1 if v == "pass" else 0)
+        return out
+
+    models = collect(JUDGE_DIR)
+    gold_w = collect(GOLD_DIR / "with_ref")
+    gold_n = collect(GOLD_DIR / "no_ref")
+    if not gold_n:
+        raise SystemExit("no gold judgments -- run the gold stage first")
+
+    def rate(d, c):
+        v = d.get(c) or []
+        return sum(v) / len(v) if v else None
+
+    rows = []
+    for c in sorted(models):
+        m, gw, gn = rate(models, c), rate(gold_w, c), rate(gold_n, c)
+        if None in (m, gn):
+            continue
+        rows.append((c, m, gw, gn, gn - m))
+    rows.sort(key=lambda r: r[4])
+
+    print(f"{'code':<5}{'models':>9}{'expert(ref)':>13}{'expert(blind)':>15}{'blind-models':>14}"
+          f"  {'criticality'}")
+    for c, m, gw, gn, d in rows:
+        flag = "  <-- EXPERTS FAIL IT MORE THAN MODELS" if d < -0.15 else ""
+        print(f"{c:<5}{m:>9.3f}{(gw if gw is not None else float('nan')):>13.3f}"
+              f"{gn:>15.3f}{d:>+14.3f}  {meta[c]['criticality']}{flag}")
+    worse = [r for r in rows if r[4] < -0.15]
+    mm = sum(r[1] for r in rows) / len(rows)
+    gg = sum(r[3] for r in rows) / len(rows)
+    print(f"\n  overall: models {mm:.3f} vs experts(blind) {gg:.3f}  ({gg - mm:+.3f})")
+    print(f"  criteria the experts fail materially more than the models: {len(worse)}"
+          f" -> {[r[0] for r in worse]}")
+
+
 STAGES = {"sample": stage_sample, "generate": stage_generate,
-          "judge": stage_judge, "analyze": stage_analyze}
+          "judge": stage_judge, "analyze": stage_analyze,
+          "gold": stage_gold, "gold_report": stage_gold_report}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in STAGES:

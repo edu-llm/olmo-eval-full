@@ -247,7 +247,58 @@ Three findings overturned the design assumptions:
 | `S1` | 0.863 | 0.092 | `critical` |
 | `D5` | 0.596 | 0.093 | good variance, weak discrimination |
 
-**Tuning stopped after two rounds.** Further wording changes fitted to 100 scenarios would
+### Validation against Bridge's own experts
+
+The strongest check available without human raters: grade each scenario's
+`reference_solution` — what a **real expert tutor actually wrote** — as if a model had
+produced it. A criterion the experts fail is far more likely to be a bad criterion than a
+bad expert.
+
+The first run failed that check.
+
+| | mean pass rate |
+|---|---|
+| 8 AI tutors | 0.669 |
+| Human experts | 0.681 |
+
+**A tie.** Expert tutors scored no better than `gpt-4.1-nano`. Six criteria — A1, A2, A4,
+C1, X1, Y3 — were failed *more often by the experts than by the models*, A4 by 0.456.
+
+The cause was measurable: **expert replies have a median length of 83 characters; model
+replies 380 (4.3×)**. Real expert tutoring reads like
+
+> *"Great try! Can you explain how you got 21?"*  ·  *"Let's recheck your answer. Count up
+> the sides again."*
+
+Excellent tutoring — brief, targeted, hands the thinking back. But it never pauses to signal
+psychological safety (A4), perform warmth (A1) or lay out a chain of reasoning (C1), so it
+failed all three. **The rubric was partly rewarding verbosity over teaching.**
+
+Those six were reworded so a terse reply can pass — two of them stated negatively, since
+experts establish safety by simply carrying on helpfully rather than announcing it. Result:
+
+| | before | after |
+|---|---|---|
+| experts − models | +0.012 (tie) | **+0.052 (experts ahead)** |
+| criteria experts fail more | 6 | **3** (X1, I2, A1) |
+| healthy criteria | 28/39 | 27/39 |
+| at ceiling | 1 | 4 |
+
+**This was a deliberate trade: validity over item statistics.** Letting brief answers pass
+made those criteria easier for everyone, so ceiling counts rose. A rubric with sharper
+discrimination that ranks chatty models above human teachers is measuring the wrong thing;
+one point of "healthy criteria" is worth that.
+
+Three criteria still favour models — X1 (−0.322), I2 (−0.240), A1 (−0.233). Some of this
+may be genuine rather than a defect: expert tutors really do drop units (I2) and really do
+sometimes skip encouragement entirely (A1). Left as-is and flagged.
+
+**A methodological side finding:** showing the judge a reference answer inflates its
+verdicts substantially — M3 0.870 → 0.570 and P2 0.980 → 0.740 when the reference is hidden.
+The production judge does show it, so grading there is materially more lenient than a blind
+read would be.
+
+**Tuning stopped after three rounds.** Further wording changes fitted to 100 scenarios would
 start tracking sample noise; the real calibration is the definitive read.
 
 > **⚠️ The rubric separates models only weakly.** Mean pass rates span 0.699 → 0.788 across

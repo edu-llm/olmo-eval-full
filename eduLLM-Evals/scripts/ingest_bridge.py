@@ -224,8 +224,8 @@ CORE_CRITERIA: list[Criterion] = [
      "Tracking the dialogue so far is a strategy decision, and expressing that continuity "
      "is a communication quality."),
     ("C1", "communication", ["communication"], "standard", "subjective",
-     "The response presents its reasoning in a followable order, each step connected to "
-     "the one before, rather than asserting conclusions the student must bridge alone.",
+     "Whatever reasoning the response gives is easy to follow. Offering a single step or "
+     "question, rather than a chain of reasoning, satisfies this.",
      "Clarity and organization are communication qualities."),
     ("C3", "communication", ["communication", "strategy"], "standard", "subjective",
      "The response stays focused on the error and avoids overwhelming the student with "
@@ -233,12 +233,14 @@ CORE_CRITERIA: list[Criterion] = [
      "Concise, focused delivery is a communication quality, and managing how much to "
      "reveal is a scaffolding-strategy decision."),
     ("A1", "affective", ["affective"], "standard", "subjective",
-     "The tone is warm and encouraging rather than merely neutral, clinical, or brusque.",
+     "The response conveys some encouragement to the student. A few words (\"Nice try\", "
+     "\"Good start\") suffice -- elaborate warmth is not required.",
      "The presence of positive affect is an affective quality, distinct from the mere "
-     "absence of harshness."),
+     "absence of harshness. Bridge's own expert tutors encourage in three or four words, "
+     "so length is not evidence of it."),
     ("A2", "affective", ["affective", "communication"], "standard", "subjective",
-     "The response frames the mistake constructively (e.g., acknowledges the student's "
-     "effort) rather than simply labeling it wrong.",
+     "The response treats the mistake as something to work on rather than as a verdict. A "
+     "brief \"not quite, let's check\" does this as well as a longer reassurance.",
      "Constructive framing is an affective stance enacted through how the message is "
      "communicated."),
     # PILOT: 0.996 pass, 0.032 discrimination -- effectively a constant. Kept anyway:
@@ -251,10 +253,11 @@ CORE_CRITERIA: list[Criterion] = [
      "Avoiding harm to the student's confidence is an affective concern; a serious "
      "violation is a critical failure."),
     ("A4", "affective", ["affective"], "standard", "subjective",
-     "The response signals that it is safe to be wrong or unsure, inviting the student to "
-     "keep trying rather than implying they should already know this.",
+     "The response does not imply the student ought to already know this, or that the "
+     "mistake is careless or disappointing. Explicit reassurance is not required.",
      "Establishing psychological safety is an affective goal distinct from tone and from "
-     "how the mistake is framed."),
+     "how the mistake is framed. Stated negatively because expert tutors establish it by "
+     "simply carrying on helpfully, not by announcing it."),
 ]
 
 # ---------------------------------------------------------------------------
@@ -409,9 +412,8 @@ TOPIC_MODULES: dict[str, list[Criterion]] = {
     ],
     "algebra_expressions": [
         ("X1", "math", ["math", "diagnosis"], "standard", "objective",
-         "The response makes the structure explicit -- naming what the unknown stands "
-         "for, or which operation applies first -- rather than only working through the "
-         "arithmetic.",
+         "The response draws attention to the structure -- what the unknown stands for, or "
+         "which operation applies first -- whether by stating it or by asking about it.",
          "Structural reasoning is the mathematical content of this strand and the usual "
          "site of the student's error."),
     ],
@@ -448,8 +450,8 @@ GRADE_MODULES: dict[str, list[Criterion]] = {
     ],
     "6-12": [
         ("Y3", "communication", ["communication", "math"], "standard", "subjective",
-         "The response uses the correct formal mathematical term for the concept at issue "
-         "rather than only an informal description of it.",
+         "The language suits a secondary student: it is neither over-simplified nor "
+         "needlessly technical, and any formal term it uses is used correctly.",
          "Appropriate register at secondary level is a communication quality that depends "
          "on correct use of formal mathematical terms."),
     ],
