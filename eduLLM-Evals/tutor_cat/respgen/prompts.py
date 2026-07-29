@@ -149,6 +149,26 @@ def _coalesce(messages: list[dict[str, str]], use_case: str) -> list[dict[str, s
     return out
 
 
+# Some transcripts open on the tutor's turn, which maps to `assistant` and yields
+# [system, assistant, ...]. AWS Bedrock rejects that outright ("A conversation must
+# start with a user message"), so every Bedrock-routed model fails those scenarios --
+# measured at 71/100 on llama3-3-70b before this existed, and 476 of Bridge's 642
+# scenarios (74%) begin that way. Coalescing alone does not help: it only merges
+# ADJACENT same-role turns and never repairs the leading one.
+# A placeholder opener is inserted rather than dropping the turn, which would silently
+# discard real conversational context the tutor is supposed to have seen.
+_CONVERSATION_OPENER = "(Beginning of the conversation.)"
+
+
+def _ensure_user_first(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Insert a placeholder user turn if the first non-system turn is the assistant."""
+    at = 1 if messages and messages[0]["role"] == "system" else 0
+    if at < len(messages) and messages[at]["role"] == "assistant":
+        messages = list(messages)
+        messages.insert(at, {"role": "user", "content": _CONVERSATION_OPENER})
+    return messages
+
+
 def build_chat_messages(scenario: "Scenario") -> list[dict[str, str]]:
     """[system?, ...role-mapped context, user(prompt)], coalesced to alternate.
 
@@ -166,7 +186,7 @@ def build_chat_messages(scenario: "Scenario") -> list[dict[str, str]]:
         role = _ROLE_MAP.get(turn.get("role", "user"), "user")
         messages.append({"role": role, "content": turn.get("content", "")})
     messages.append({"role": "user", "content": scenario.prompt})
-    return _coalesce(messages, use_case)
+    return _ensure_user_first(_coalesce(messages, use_case))
 
 
 def render_base_prompt(scenario: "Scenario") -> str:
