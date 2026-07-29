@@ -92,3 +92,22 @@ Thumbs.db
 .impeccable
 
 tutorbench-responses/
+
+# TutorEval processing intermediates: only the finalized bank (*_final.{jsonl,json})
+# and the human-reviewed edit sheet (reframe_review.tsv) are tracked. The clean /
+# coverage / reframed stage files are deterministically regenerable scratch and
+# stay local (the scenario copies are ~6MB each).
+data/TutorEval/*_clean.json
+data/TutorEval/*_clean.jsonl
+data/TutorEval/*_coverage.json
+data/TutorEval/*_coverage.jsonl
+data/TutorEval/*_reframed.json
+data/TutorEval/*_reframed.jsonl
+
+# q-matrix labeling scratch: per-run logs/manifests and sample outputs are
+# regenerable and stay local. Only the finalized bank (*_final.{jsonl,json}) is tracked.
+qmatrix_logs/
+data/TutorEval/*_sample.json
+data/TutorEval/*_sample.jsonl
+data/TutorEval/*.sample.json
+data/TutorEval/*.sample.jsonl

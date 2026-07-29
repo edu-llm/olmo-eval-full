@@ -1,16 +1,20 @@
 """
 Synthetic Q-matrix generation for the reformatted TutorBench rubrics.
 
-Each rubric criterion in ``data/rubrics.jsonl`` is labeled with a
-Q-matrix row over three latent tutoring skills -- ``content``, ``diagnosis``,
-``scaffolding`` -- indicating which skills a tutor *must* exercise to
-satisfy that criterion, plus a ``q_rationale`` string. Labels come from Claude following
+Each rubric criterion in the input rubrics file is labeled with a
+Q-matrix row over two latent tutoring skills -- ``conceptual_understanding`` and
+``quantitative_procedural`` -- indicating which skills a tutor
+*must* exercise to satisfy that criterion, plus a ``q_rationale`` string. The same call
+also emits three
+per-criterion IRT metadata fields consumed downstream by ``assign_irt_params.py``:
+``explicitness`` (explicit|implicit), ``objectivity`` (objective|subjective), and
+``criticality`` (critical|not_critical|critical_negative). Labels come from Claude following
 the project's Synthetic Q-Matrix Generation procedure: for every skill it marks ``1`` the
 model must supply evidence from the item, an explanation of why the criterion cannot be met
 without that skill, and a counterfactual describing why a model lacking the skill would
 fail. That reasoning is emitted as JSON (not hidden thinking) so it is fully logged.
 
-The four skill definitions and labeling examples live in this file as a versioned constant
+The two skill definitions and labeling examples live in this file as a versioned constant
 (``PROMPT_VERSION``) and are written into the run log for reproducibility.
 
 Routing (TrueFoundry AI Gateway)
@@ -43,16 +47,22 @@ Usage
     export ANTHROPIC_AUTH_TOKEN="<TrueFoundry user key>"             # sent as Bearer
     unset ANTHROPIC_API_KEY                                          # avoid x-api-key precedence
 
-    python generate_qmatrix.py --sample 50     # validate the prompt first (default model = claude-group/claude-opus-4-8)
+    # default model = claude-group/claude-opus-4-8
+    python generate_qmatrix.py --sample 50     # validate the prompt first
     python generate_qmatrix.py --full          # label all criteria
     python generate_qmatrix.py --retry-failed  # re-label only rows that failed, merge back in
+
+The input rubrics/scenarios and the output path are configurable via ``--rubrics``,
+``--scenarios``, and ``--out`` (defaults preserve the TutorBench layout under ``data/``), so
+the same script labels the TutorEval ``_final`` files without touching the source data.
 
 Outputs
 -------
 - ``data/rubrics_qmatrix.sample.{jsonl,json}`` (``--sample``) or
-  ``data/rubrics_qmatrix.{jsonl,json}`` (``--full``): copies of the rubric
-  records with ``q_mapping`` and ``q_rationale`` filled in. The original ``rubrics.jsonl``
-  is never modified.
+  ``data/rubrics_qmatrix.{jsonl,json}`` (``--full``) by default, or the ``--out`` target and
+  its ``.json`` twin: copies of the rubric records with ``q_mapping`` and ``q_rationale``
+  filled in, plus the ``explicitness`` / ``objectivity`` / ``criticality`` metadata fields.
+  The original input rubrics file is never modified.
 - ``qmatrix_logs/<mode>/``: one ``<criterion_id>.json`` per criterion (request + raw
   response), the exact system prompt, and a ``manifest.json`` run record.
 """
@@ -63,16 +73,18 @@ import argparse
 import collections
 import json
 import threading
+from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Iterable
 
 # ---------------------------------------------------------------------------
 # Paths and run constants
 # ---------------------------------------------------------------------------
 
 DATA_DIR = Path("data")
+# CLI defaults (overridable via --rubrics / --scenarios / --out). Kept so the TutorBench
+# invocation runs unchanged when no path flags are passed.
 RUBRICS_PATH = DATA_DIR / "rubrics.jsonl"
 SCENARIOS_PATH = DATA_DIR / "scenarios.jsonl"
 LOG_DIR = Path("qmatrix_logs")
@@ -84,9 +96,19 @@ DEFAULT_CONCURRENCY = 8
 # v2: dropped `adaptation` -> 3 skills. v3: added model-designated `primary_skill`.
 # v4: sharpened `diagnosis` (broad address-the-error rule; acknowledging confusion is
 # all-zero) + conservative 1-placement policy. Matches "Skill Definitions v2" (v2.1).
-PROMPT_VERSION = "qmatrix-v4-3skill-diagnosis-sharpened"
+# v5: also emit the three IRT metadata fields (explicitness/objectivity/criticality)
+# consumed by assign_irt_params.py; skill axis + placement policy unchanged.
+# v6: standalone-TutorEval skill axis -- replace content/diagnosis/scaffolding with
+# conceptual_understanding / quantitative_procedural / source_grounding; feed the labeler
+# scenario-level open-book signals (book_condition/answer_in_chapter/misleading_question).
+# IRT-metadata block and placement/conservatism policy unchanged.
+# v7: drop `source_grounding` -> 2 skills. Empirical analysis of the 100-item sample showed
+# it is not identifiable as a latent MIRT dimension (no anchor items); grounding is now
+# handled as a scenario-level stratification flag (book_condition) downstream, not in the
+# q-matrix, so the labeler no longer sees the open-book signals.
+PROMPT_VERSION = "qmatrix-v7-tutoreval-standalone-2skill"
 
-SKILLS = ("content", "diagnosis", "scaffolding")
+SKILLS = ("conceptual_understanding", "quantitative_procedural")
 
 
 # ---------------------------------------------------------------------------
@@ -96,11 +118,17 @@ SKILLS = ("content", "diagnosis", "scaffolding")
 QMATRIX_JSON_SCHEMA = {
     "type": "object",
     "properties": {
-        "content": {"type": "integer", "enum": [0, 1]},
-        "diagnosis": {"type": "integer", "enum": [0, 1]},
-        "scaffolding": {"type": "integer", "enum": [0, 1]},
+        "conceptual_understanding": {"type": "integer", "enum": [0, 1]},
+        "quantitative_procedural": {"type": "integer", "enum": [0, 1]},
         # The single most important skill among those marked 1; null iff all are 0.
         "primary_skill": {"type": ["string", "null"], "enum": list(SKILLS) + [None]},
+        # IRT metadata (consumed by assign_irt_params.py).
+        "explicitness": {"type": "string", "enum": ["explicit", "implicit"]},
+        "objectivity": {"type": "string", "enum": ["objective", "subjective"]},
+        "criticality": {
+            "type": "string",
+            "enum": ["critical", "not_critical", "critical_negative"],
+        },
         "justifications": {
             "type": "array",
             "items": {
@@ -117,8 +145,16 @@ QMATRIX_JSON_SCHEMA = {
         },
         "rationale": {"type": "string"},
     },
-    "required": ["content", "diagnosis", "scaffolding", "primary_skill", "justifications",
-                 "rationale"],
+    "required": [
+        "conceptual_understanding",
+        "quantitative_procedural",
+        "primary_skill",
+        "explicitness",
+        "objectivity",
+        "criticality",
+        "justifications",
+        "rationale",
+    ],
     "additionalProperties": False,
 }
 
@@ -132,40 +168,35 @@ OUTPUT_CONFIG = {"format": {"type": "json_schema", "schema": QMATRIX_JSON_SCHEMA
 SYSTEM_PROMPT = """\
 You are an expert in educational measurement labeling a Q-matrix for a multidimensional
 item-response-theory (MIRT) study of AI tutors. You will be shown a tutoring scenario and
-a single rubric criterion used to score a tutor's response. Decide which of three latent
+a single rubric criterion used to score a tutor's response. Decide which of two latent
 tutoring skills a competent tutor MUST exercise in order to satisfy that criterion.
 
-THE THREE SKILLS (mark 1 only if the criterion cannot be satisfied without the skill; default 0)
-- content: Subject-matter correctness -- correct facts, definitions, computations,
-  formulas, or solution steps. Load it whenever the criterion checks that a domain claim is
-  correct, INCLUDING supplying a correct answer, a correct hint, or a correct correction.
-    Positive: "The response correctly computes the second derivative."
-    Negative: a criterion purely about tone/formatting with no domain fact at stake.
-- diagnosis: Reading, or acting on, THIS student's SPECIFIC error, misconception, knowledge
-  gap, or state of understanding from what they said or did.
-    Positive: "The response identifies that the student added the denominators."
-    Positive (broad address-the-error rule): ANY criterion asking the tutor to correct or
-    address THE STUDENT'S error loads diagnosis, even if it does not name the specific
-    misconception (engaging the student's error presupposes reading it).
-    Negative (content only): a GENERIC "provide the correct solution" with no reference to the
-    student's mistake is content, not diagnosis.
-    Negative (all-zero): "acknowledge the student's confusion" -- generic empathy that does
-    NOT engage a specific mistake requires NO skill. Merely acknowledging a feeling is not
-    diagnosis.
-- scaffolding: Pedagogical structuring of the help -- hints instead of answers, withholding
-  the solution, decomposing into steps, guiding questions, or "explain (not just state) why".
-    Positive: "The response gives a hint without revealing the full solution."
-    Negative: "The response states the correct fact" (content, not structuring); an OPTIONAL
-    extra check ("can include ...") is not required scaffolding; correcting an error is not,
-    by itself, scaffolding.
+THE TWO SKILLS (mark 1 only if the criterion cannot be satisfied without the skill; default 0)
+- conceptual_understanding: Qualitative subject-matter correctness -- the criterion checks
+  that a fact, definition, mechanism, cause, "why", or relationship is stated correctly.
+  Load it whenever satisfying the criterion depends on a correct QUALITATIVE domain claim,
+  INCLUDING a bare correctness assertion (e.g. "this is not true", "the statement is false").
+    Positive: "Explains why the two illnesses are distinct despite overlapping symptoms."
+    Positive (bare correctness): "This is not necessarily true" -- asserting the qualitative
+    fact is correct requires knowing the concept.
+    Negative: a criterion purely about tone/formatting with no domain fact at stake; a
+    criterion whose correctness is purely a computation/derivation (that is procedural).
+- quantitative_procedural: Quantitative or procedural correctness -- the criterion checks
+  that a computation, derivation, formula or units application, symbolic manipulation step,
+  or a numeric/code answer is correct.
+    Positive: "Correctly computes the second derivative."
+    Positive: "Applies the ideal-gas law and reports the pressure in the right units."
+    Negative: a purely qualitative "why"/definition claim (that is conceptual); tone or
+    formatting with no computation at stake.
 
 PLACEMENT: default to 0. Be conservative -- missed loadings are recovered later from the
-calibration data (EFA / misfit), whereas spurious 1s hurt dimensional separability. On a
-genuine coin-flip you may lean 1 for scaffolding, but stay strict for content/diagnosis.
+calibration data (EFA / misfit), whereas spurious 1s hurt dimensional separability. Stay
+strict for both conceptual_understanding and quantitative_procedural.
 
-A criterion may load several skills or NONE. All-zero cases include tone/affect/empathy,
-formatting, spelling, and conversational moves (acknowledge confusion, check for
-understanding, offer further help).
+A criterion may load several skills (e.g. conceptual_understanding + quantitative_procedural
+on a step that mixes a "why" with a computation) or NONE. All-zero cases include
+tone/affect/empathy, formatting, spelling, and conversational moves (acknowledge confusion,
+check for understanding, offer further help).
 
 LABELING RULES
 - The criterion metadata (primary_skill, criticality, objectivity, explicitness) is a HINT
@@ -179,16 +210,40 @@ LABELING RULES
   to satisfying this criterion. It MUST be one of the skills you marked 1. If you marked no
   skill 1, set "primary_skill" to null.
 
+CRITERION METADATA (also label these three fields for IRT calibration)
+- explicitness: is the criterion's requirement directly asked for by the student's
+  question/prompt, or is it an expected-but-unstated part of a good response?
+    * "explicit": the student overtly requests it.
+        Positive: student asks "what is the derivative of x^2?" and the criterion is
+        "states that the derivative is 2x".
+    * "implicit": a good tutor is expected to do it even though the student did not ask.
+        Positive: student asks only for the answer, and the criterion is "explains why the
+        step works rather than just stating it".
+- objectivity: can pass/fail be judged unambiguously, or does it require judgment?
+    * "objective": pass/fail follows from facts or computations with no interpretation.
+        Positive: "correctly computes the second derivative".
+    * "subjective": deciding pass/fail needs judgment about style, clarity, or degree.
+        Positive: "explains the concept clearly and at an appropriate level".
+- criticality: how important is this criterion to the student's outcome?
+    * "critical": a must-do; failing it badly harms the student.
+        Positive: "corrects the student's false belief that the two illnesses are identical".
+    * "not_critical": minor or nice-to-have; failing it is a small blemish.
+        Positive: "optionally suggests a further reading".
+    * "critical_negative": a must-NOT-do; the response must AVOID some behavior.
+        Positive: "does not reveal the full solution" (or "does not affirm the false premise").
+
 OUTPUT FORMAT
 Return ONLY a single JSON object -- no prose, no markdown, no code fences -- with exactly
 these keys:
 {
-  "content": 0 or 1,
-  "diagnosis": 0 or 1,
-  "scaffolding": 0 or 1,
+  "conceptual_understanding": 0 or 1,
+  "quantitative_procedural": 0 or 1,
   "primary_skill": "<the one skill marked 1 that matters most, or null if none are marked 1>",
+  "explicitness": "<explicit|implicit>",
+  "objectivity": "<objective|subjective>",
+  "criticality": "<critical|not_critical|critical_negative>",
   "justifications": [
-    {"skill": "<content|diagnosis|scaffolding>",
+    {"skill": "<conceptual_understanding|quantitative_procedural>",
      "evidence": "...", "why_required": "...", "counterfactual": "..."}
   ],
   "rationale": "one concise sentence summarizing the mapping decision"
@@ -245,13 +300,16 @@ def build_user_content(criterion: dict, scenario: dict | None) -> str:
     lines.append("")
     lines.append("CRITERION TO LABEL:")
     lines.append(f'  "{criterion.get("criterion")}"')
-    lines.append(
-        "CRITERION METADATA (hints, not ground truth): "
-        f"primary_skill={criterion.get('primary_skill')}, "
-        f"criticality={criterion.get('criticality')}, "
-        f"objectivity={criterion.get('objectivity')}, "
-        f"explicitness={criterion.get('explicitness')}"
-    )
+
+    # Source-side hints only. Fields that are absent/None (e.g. for TutorEval, which carries
+    # no pre-labeled criterion metadata) are omitted so the model never sees "criticality=None".
+    hints = [
+        f"{field}={criterion.get(field)}"
+        for field in ("primary_skill", "criticality", "objectivity", "explicitness")
+        if criterion.get(field) is not None
+    ]
+    if hints:
+        lines.append("CRITERION METADATA (hints, not ground truth): " + ", ".join(hints))
     return "\n".join(lines)
 
 
@@ -275,7 +333,7 @@ def parse_json_object(text: str) -> dict:
     end = t.rfind("}")
     if start == -1 or end == -1 or end < start:
         raise ValueError("no JSON object found in response text")
-    return json.loads(t[start:end + 1])
+    return json.loads(t[start : end + 1])
 
 
 def validate_label(obj: object) -> dict:
@@ -294,6 +352,15 @@ def validate_label(obj: object) -> dict:
         raise ValueError("'justifications' is not a list")
     if not isinstance(obj.get("rationale"), str) or not obj["rationale"].strip():
         raise ValueError("'rationale' is missing or empty")
+
+    # IRT metadata enums (consumed by assign_irt_params.py).
+    for field, allowed in (
+        ("explicitness", ("explicit", "implicit")),
+        ("objectivity", ("objective", "subjective")),
+        ("criticality", ("critical", "not_critical", "critical_negative")),
+    ):
+        if obj.get(field) not in allowed:
+            raise ValueError(f"{field!r} must be one of {allowed}, got {obj.get(field)!r}")
 
     # primary_skill must be the most-important marked skill (or null iff none are marked).
     active = [s for s in SKILLS if obj[s] == 1]
@@ -366,7 +433,7 @@ def write_item_log(mode: str, criterion_id: str, payload: dict) -> None:
 
 def now_iso() -> str:
     """Return a UTC ISO-8601 timestamp for run manifests."""
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def safe_to_dict(obj):
@@ -401,8 +468,9 @@ def write_json(path: Path, records: list[dict]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def label_one(client, model: str, mode: str, strict_schema: bool,
-              criterion: dict, scenario: dict | None) -> tuple[dict, dict | None]:
+def label_one(
+    client, model: str, mode: str, strict_schema: bool, criterion: dict, scenario: dict | None
+) -> tuple[dict, dict | None]:
     """
     Label a single criterion via one ``/v1/messages`` call.
 
@@ -431,25 +499,39 @@ def label_one(client, model: str, mode: str, strict_schema: bool,
         label = validate_label(parse_json_object(text))
         record["q_mapping"], record["q_rationale"] = label_to_fields(label)
         record["primary_skill"] = label["primary_skill"]  # overwrite TutorBench's value
-        write_item_log(mode, cid, {
-            "criterion_id": cid,
-            "prompt_version": PROMPT_VERSION,
-            "model": model,
-            "strict_schema": strict_schema,
-            "request": {"system": SYSTEM_PROMPT, "user": user_content},
-            "response": safe_to_dict(response),
-        })
+        record["explicitness"] = label["explicitness"]
+        record["objectivity"] = label["objectivity"]
+        record["criticality"] = label["criticality"]
+        write_item_log(
+            mode,
+            cid,
+            {
+                "criterion_id": cid,
+                "prompt_version": PROMPT_VERSION,
+                "model": model,
+                "strict_schema": strict_schema,
+                "request": {"system": SYSTEM_PROMPT, "user": user_content},
+                "response": safe_to_dict(response),
+            },
+        )
         return record, None
     except (anthropic.APIError, ValueError) as e:  # network / server / parse / validation
         record["q_mapping"] = None
         record["q_rationale"] = None
         record["primary_skill"] = None
-        write_item_log(mode, cid, {
-            "criterion_id": cid,
-            "model": model,
-            "error": str(e),
-            "request": {"system": SYSTEM_PROMPT, "user": user_content},
-        })
+        record["explicitness"] = None
+        record["objectivity"] = None
+        record["criticality"] = None
+        write_item_log(
+            mode,
+            cid,
+            {
+                "criterion_id": cid,
+                "model": model,
+                "error": str(e),
+                "request": {"system": SYSTEM_PROMPT, "user": user_content},
+            },
+        )
         return record, {"criterion_id": cid, "error": str(e)}
 
 
@@ -458,8 +540,15 @@ def label_one(client, model: str, mode: str, strict_schema: bool,
 # ---------------------------------------------------------------------------
 
 
-def run_items(client, model: str, mode: str, strict_schema: bool, concurrency: int,
-              items: list[dict], scenarios: dict[str, dict]) -> tuple[list[dict], list[dict]]:
+def run_items(
+    client,
+    model: str,
+    mode: str,
+    strict_schema: bool,
+    concurrency: int,
+    items: list[dict],
+    scenarios: dict[str, dict],
+) -> tuple[list[dict], list[dict]]:
     """Label ``items`` with a bounded thread pool, preserving original order."""
     results: dict[int, dict] = {}
     failures: list[dict] = []
@@ -470,8 +559,10 @@ def run_items(client, model: str, mode: str, strict_schema: bool, concurrency: i
         scenario = scenarios.get(crit["scenario_id"])
         return idx, label_one(client, model, mode, strict_schema, crit, scenario)
 
-    print(f"{mode} mode: labeling {total} criteria with {model} "
-          f"(concurrency={concurrency}, strict_schema={strict_schema}).")
+    print(
+        f"{mode} mode: labeling {total} criteria with {model} "
+        f"(concurrency={concurrency}, strict_schema={strict_schema})."
+    )
 
     done = 0
     with ThreadPoolExecutor(max_workers=concurrency) as pool:
@@ -503,12 +594,31 @@ def stride_sample(items: list[dict], n: int) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 
-def finish(mode: str, model: str, strict_schema: bool, out_records: list[dict],
-           failures: list[dict]) -> None:
-    """Write output files, the run manifest, the system prompt, and print a summary."""
+def resolve_out_path(out_arg: str | Path | None, mode: str) -> Path:
+    """
+    Resolve the output ``.jsonl`` path.
+
+    Honors an explicit ``--out`` value; otherwise falls back to the historical TutorBench
+    layout (``data/rubrics_qmatrix.sample.jsonl`` for ``--sample``, ``data/rubrics_qmatrix.jsonl``
+    otherwise) so runs without path flags are unchanged.
+    """
+    if out_arg is not None:
+        return Path(out_arg)
     stem = "rubrics_qmatrix.sample" if mode == "sample" else "rubrics_qmatrix"
-    jsonl_path = DATA_DIR / f"{stem}.jsonl"
-    json_path = DATA_DIR / f"{stem}.json"
+    return DATA_DIR / f"{stem}.jsonl"
+
+
+def finish(
+    mode: str,
+    model: str,
+    strict_schema: bool,
+    out_records: list[dict],
+    failures: list[dict],
+    out_path: Path,
+) -> None:
+    """Write output files, the run manifest, the system prompt, and print a summary."""
+    jsonl_path = out_path
+    json_path = out_path.with_suffix(".json")
     write_jsonl(jsonl_path, out_records)
     write_json(json_path, out_records)
 
@@ -522,6 +632,11 @@ def finish(mode: str, model: str, strict_schema: bool, out_records: list[dict],
     primary_counts = collections.Counter(r.get("primary_skill") for r in labeled)
     primary_dist = {str(k): v for k, v in primary_counts.items()}
 
+    meta_dist = {
+        field: {str(k): v for k, v in collections.Counter(r.get(field) for r in labeled).items()}
+        for field in ("explicitness", "objectivity", "criticality")
+    }
+
     manifest = {
         "prompt_version": PROMPT_VERSION,
         "model": model,
@@ -533,6 +648,7 @@ def finish(mode: str, model: str, strict_schema: bool, out_records: list[dict],
         "failed": len(failures),
         "per_skill_positive": per_skill,
         "primary_skill_distribution": primary_dist,
+        "metadata_distribution": meta_dist,
         "all_zero_rows": all_zero,
         "failures": failures,
     }
@@ -549,6 +665,10 @@ def finish(mode: str, model: str, strict_schema: bool, out_records: list[dict],
     print("Primary-skill distribution (of labeled):")
     for k in list(SKILLS) + [None]:
         print(f"  {str(k):11s} {primary_counts.get(k, 0):5d}")
+    print("Metadata distributions (of labeled):")
+    for field in ("explicitness", "objectivity", "criticality"):
+        pretty = ", ".join(f"{k}={v}" for k, v in sorted(meta_dist[field].items()))
+        print(f"  {field:12s} {pretty}")
     print(f"Logs + manifest: {log_dir_for(mode)}")
 
     if mode == "sample":
@@ -570,16 +690,16 @@ def retry_failed(client, args, criteria: list[dict], scenarios: dict[str, dict])
     Re-label only the criteria that failed in the existing full output and merge the fresh
     results back in, leaving successful rows untouched.
 
-    Targets are the rows with ``q_mapping is None`` in ``rubrics_qmatrix.jsonl`` (or the
+    Targets are the rows with ``q_mapping is None`` in the resolved ``--out`` file (or the
     explicit ``--ids`` list). Each retried criterion is re-labeled from its *original* record
-    in :data:`RUBRICS_PATH` (not the failed output row), its item log under
+    in the resolved ``--rubrics`` file (not the failed output row), its item log under
     ``qmatrix_logs/full/`` is overwritten, and the merged full record set is rewritten to the
-    output files and manifest via :func:`finish`.
+    same ``--out`` files and manifest via :func:`finish`.
 
     :raises SystemExit: if the full output is missing or an ``--ids`` value is unknown.
     """
     mode = "full"
-    jsonl_path = DATA_DIR / "rubrics_qmatrix.jsonl"
+    jsonl_path = resolve_out_path(args.out, mode)
     if not jsonl_path.exists():
         raise SystemExit(f"{jsonl_path} not found -- run --full first.")
 
@@ -593,7 +713,7 @@ def retry_failed(client, args, criteria: list[dict], scenarios: dict[str, dict])
 
     unknown = [cid for cid in target_ids if cid not in crit_by_id]
     if unknown:
-        raise SystemExit(f"unknown criterion_ids (not in {RUBRICS_PATH}): {unknown}")
+        raise SystemExit(f"unknown criterion_ids (not in {args.rubrics}): {unknown}")
     if not target_ids:
         print("No failed rows to retry -- nothing to do.")
         return
@@ -619,7 +739,7 @@ def retry_failed(client, args, criteria: list[dict], scenarios: dict[str, dict])
         for r in merged
         if r.get("q_mapping") is None
     ]
-    finish(mode, args.model, args.strict_schema, merged, all_failures)
+    finish(mode, args.model, args.strict_schema, merged, all_failures, jsonl_path)
 
 
 # ---------------------------------------------------------------------------
@@ -630,38 +750,80 @@ def retry_failed(client, args, criteria: list[dict], scenarios: dict[str, dict])
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate synthetic Q-matrix labels for the reformatted TutorBench "
-                    "rubrics, routed through the TrueFoundry AI Gateway."
+        "rubrics, routed through the TrueFoundry AI Gateway."
     )
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--sample", type=int, metavar="N",
-                       help="Label N evenly-spaced criteria (prompt validation).")
-    group.add_argument("--full", action="store_true",
-                       help="Label all criteria via a bounded thread pool.")
-    group.add_argument("--retry-failed", action="store_true",
-                       help="Re-label only the rows that failed in the existing full output "
-                            "(q_mapping is null) and merge results back in.")
-    parser.add_argument("--ids", default=None,
-                        help="With --retry-failed: comma-separated criterion_ids to re-label "
-                             "instead of auto-detecting failed rows.")
-    parser.add_argument("--model", default=DEFAULT_MODEL,
-                        help="TrueFoundry catalog slug (default: %(default)s).")
-    parser.add_argument("--base-url", default=None,
-                        help="Gateway base URL (else ANTHROPIC_BASE_URL env). SDK appends "
-                             "/v1/messages, so use the root, e.g. "
-                             "https://tfy.promptlens.trilogy.com.")
-    parser.add_argument("--concurrency", type=int, default=DEFAULT_CONCURRENCY,
-                        help="Max concurrent requests (default: %(default)s).")
-    parser.add_argument("--strict-schema", action="store_true",
-                        help="Send output_config json_schema to enforce the response shape "
-                             "(only on providers/gateways that support it).")
+    group.add_argument(
+        "--sample",
+        type=int,
+        metavar="N",
+        help="Label N evenly-spaced criteria (prompt validation).",
+    )
+    group.add_argument(
+        "--full", action="store_true", help="Label all criteria via a bounded thread pool."
+    )
+    group.add_argument(
+        "--retry-failed",
+        action="store_true",
+        help="Re-label only the rows that failed in the existing full output "
+        "(q_mapping is null) and merge results back in.",
+    )
+    parser.add_argument(
+        "--ids",
+        default=None,
+        help="With --retry-failed: comma-separated criterion_ids to re-label "
+        "instead of auto-detecting failed rows.",
+    )
+    parser.add_argument(
+        "--rubrics",
+        type=Path,
+        default=RUBRICS_PATH,
+        help="Input rubric JSONL (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--scenarios",
+        type=Path,
+        default=SCENARIOS_PATH,
+        help="Input scenarios JSONL (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Output JSONL (a .json twin is written alongside). Default: "
+        "data/rubrics_qmatrix.sample.jsonl for --sample, "
+        "data/rubrics_qmatrix.jsonl for --full/--retry-failed.",
+    )
+    parser.add_argument(
+        "--model", default=DEFAULT_MODEL, help="TrueFoundry catalog slug (default: %(default)s)."
+    )
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help="Gateway base URL (else ANTHROPIC_BASE_URL env). SDK appends "
+        "/v1/messages, so use the root, e.g. "
+        "https://tfy.promptlens.trilogy.com.",
+    )
+    parser.add_argument(
+        "--concurrency",
+        type=int,
+        default=DEFAULT_CONCURRENCY,
+        help="Max concurrent requests (default: %(default)s).",
+    )
+    parser.add_argument(
+        "--strict-schema",
+        action="store_true",
+        help="Send output_config json_schema to enforce the response shape "
+        "(only on providers/gateways that support it).",
+    )
     args = parser.parse_args()
 
     import os
 
     import anthropic
 
-    criteria = read_jsonl(RUBRICS_PATH)
-    scenarios = index_scenarios(read_jsonl(SCENARIOS_PATH))
+    criteria = read_jsonl(args.rubrics)
+    scenarios = index_scenarios(read_jsonl(args.scenarios))
 
     # Explicit per-request timeout (not just the SDK default) so a stalled gateway call fails
     # fast and is retried, instead of a worker thread blocking indefinitely on a held-open
@@ -693,10 +855,11 @@ def main() -> None:
         items = criteria
         mode = "full"
 
+    out_path = resolve_out_path(args.out, mode)
     out_records, failures = run_items(
         client, args.model, mode, args.strict_schema, args.concurrency, items, scenarios
     )
-    finish(mode, args.model, args.strict_schema, out_records, failures)
+    finish(mode, args.model, args.strict_schema, out_records, failures, out_path)
 
 
 if __name__ == "__main__":
