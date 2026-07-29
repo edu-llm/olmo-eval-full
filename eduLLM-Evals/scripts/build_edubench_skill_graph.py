@@ -70,7 +70,7 @@ SCENARIOS = ROOT / "data" / "EduBench" / "scenarios.jsonl"
 OUT_JSON = ROOT / "data" / "EduBench" / "skill_graph.json"
 OUT_PLOT = ROOT / "plots" / "edubench_graphs" / "edubench_skill_graph.png"
 OUT_QMATRIX = ROOT / "data" / "EduBench" / "table7_q_matrix.csv"
-OUT_GROUPED_QMATRIX = ROOT / "data" / "EduBench" / "table7_q_matrix_grouped.csv"
+OUT_GROUPED_QMATRIX = ROOT / "data" / "EduBench" / "manual_groups_qmat.csv"
 
 LABEL = {t["slug"]: t["stem"] for t in TASKS}          # HF filename stem, e.g. "AG", "TMG"
 DISPLAY = {t["slug"]: t["display"] for t in TASKS}
@@ -96,11 +96,11 @@ assert len(set(ACRONYM.values())) == len(SKILLS), f"acronym collision in {ACRONY
 # A user-specified 3-skill distillation of the 9 task types, by request -- not derived from
 # the paper. Every task appears in exactly one group.
 GROUPS = {
-    "student-oriented": ["answering_questions", "idea_provision", "learning_support",
-                         "mental_health"],
+    "academic assistance": ["answering_questions", "idea_provision"],
+    "emotional assistance": ["learning_support", "mental_health"],
     "checking-student-work": ["error_correction", "grading"],
-    "generation": ["question_generation", "material_generation",
-                   "personalized_content_creation"],
+    "content generation": ["question_generation", "material_generation",
+                           "personalized_content_creation"],
 }
 assert sorted(s for g in GROUPS.values() for s in g) == sorted(SKILLS), (
     "GROUPS must cover every skill exactly once")
@@ -337,7 +337,7 @@ def write_qmatrix_csv(path: Path) -> Path:
 def grouped_vote(group: list[str], abbr: str) -> tuple[int, int, int]:
     """(checked, count, threshold) for one (group, metric) cell under strict majority --
     checked iff MORE than half the group's task types carry that metric in Table 7. For
-    even group sizes, exactly half is not enough (2 of 4 fails; needs 3)."""
+    even group sizes, exactly half is not enough (2 of 4 fails; needs 3; 1 of 2 fails)."""
     n = len(group)
     threshold = n // 2 + 1
     count = sum(1 for s in group if s in APPLIES[abbr])
