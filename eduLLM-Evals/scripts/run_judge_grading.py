@@ -14,8 +14,9 @@ NOT reimplement his adapters / normalization / prompt policy here. This script:
      FORBIDDEN field in his case schema (the judge is blinded to tutor identity).
 
   2. ``grade --mode ingest-verdicts`` (PRIMARY): read the verdict JSONL(s) his
-     ``run`` emits, auto-fail ``no_decision``/unscorable cells (y = 0, reason
-     recorded), and assemble the models x criteria pass/fail response matrix in
+     ``run`` emits, map ``no_decision``/unscorable VOIDS to MISSING (y = NaN;
+     ``--no-decision-policy missing`` default, reason still recorded for audit),
+     and assemble the models x criteria pass/fail response matrix in
      the FROZEN order from ``staging/judge_inputs_manifest.json`` (drop-in for the
      MIRT calibration; see ``tutor_cat/mirt.py`` + ``tutor_cat/schemas.py``).
      Provenance (judge model+revision, prompt/normalization/evidence-policy
@@ -417,14 +418,14 @@ def load_done_keys(path: Path) -> dict[CellKey, dict]:
     return index
 
 
-def make_verdict_row(key: CellKey, *, y: int, source: str, verdict: str,
+def make_verdict_row(key: CellKey, *, y: "int | None", source: str, verdict: str,
                      extra: "dict | None" = None) -> dict:
     model, scenario, criterion_id = key
     row: dict[str, Any] = {
         "model": model,
         "scenario": scenario,
         "criterion_id": criterion_id,
-        "y": int(y),
+        "y": (int(y) if y is not None else None),
         "verdict": verdict,
         "source": source,
         "ts": datetime.now(timezone.utc).isoformat(),
@@ -467,13 +468,29 @@ def load_ingest_index(paths: list[Path]) -> tuple[dict[str, dict], dict[str, set
     return by_case, provenance, conflicts
 
 
-def normalize_verdict(row: dict) -> tuple[int, str, str, dict]:
+def normalize_verdict(
+    row: dict, no_decision_policy: str = "missing"
+) -> tuple[int | None, str, str, dict]:
     """Map a teammate verdict row to (y, source, verdict_label, extra).
 
     Per judge-normalization-v3, a cell is pass/fail ONLY when the verdict is
     exactly 'pass'/'fail'; everything else (no_decision, generation_error, or any
-    non pass/fail) is auto-failed to y=0 with the reason recorded. The parser
-    never infers from prose -- we honor that by trusting only the 'verdict' field.
+    non pass/fail) is a VOID. The parser never infers from prose -- we honor that
+    by trusting only the 'verdict'/'status' fields.
+
+    Void handling is controlled by ``no_decision_policy``:
+      * "missing" (DEFAULT): a void returns ``y = None`` -> the cell is MISSING
+        (NaN) in the response matrix. A voided judgment carries no signal about
+        tutor quality, so it must not be scored as a fail. The void is still
+        recorded in ``verdicts.jsonl`` (with the reason) for auditability, but it
+        is excluded from the matrix by ``assemble_matrix``.
+      * "fail" (LEGACY): a void returns ``y = 0`` (auto-fail). Kept only for
+        backwards-compatible reproduction of the old behavior; do NOT use it for
+        MIRT calibration.
+
+    Cells that never appear in the verdict files at all are handled upstream in
+    ``cmd_grade`` (they are skipped and left as matrix holes / NaN), so absent
+    cells are ALSO missing, never fail.
     """
     verdict = str(row.get("verdict", "")).strip().lower()
     status = str(row.get("status", "") or "").strip().lower()
@@ -483,7 +500,7 @@ def normalize_verdict(row: dict) -> tuple[int, str, str, dict]:
         return 1, "ingest", "pass", prov
     if verdict == "fail" and status in ("", "ok"):
         return 0, "ingest", "fail", prov
-    # no_decision / unscorable / generation_error -> auto-fail y=0, record why.
+    # no_decision / unscorable / generation_error / truncation void -> record why.
     reason = verdict or "unscorable"
     if verdict not in ("no_decision", "pass", "fail"):
         reason = f"unscorable_verdict:{verdict or 'blank'}"
@@ -492,7 +509,10 @@ def normalize_verdict(row: dict) -> tuple[int, str, str, dict]:
         prov["status"] = status
     if row.get("error"):
         prov["error"] = str(row["error"])
-    return 0, "ingest_no_decision", "fail", prov
+    if no_decision_policy == "fail":
+        return 0, "ingest_no_decision", "fail", prov
+    # DEFAULT: void -> MISSING (y=None); recorded for audit, excluded from matrix.
+    return None, "ingest_no_decision", "no_decision", prov
 
 
 def cmd_grade(args: argparse.Namespace) -> int:
@@ -556,7 +576,8 @@ def cmd_grade(args: argparse.Namespace) -> int:
     writer = VerdictWriter(verdicts_path)
     stats = {"auto_fail": 0, "ingested_pass_fail": 0, "ingested_no_decision": 0,
              "smoke_judged": 0, "skipped_existing": 0, "ingest_missing": 0,
-             "smoke_failed": 0, "bank_missing": 0}
+             "smoke_failed": 0, "bank_missing": 0,
+             "no_decision_policy": args.no_decision_policy}
 
     smoke_batch: list[tuple[CellKey, Scenario, Rubric, str]] = []
 
@@ -606,7 +627,8 @@ def cmd_grade(args: argparse.Namespace) -> int:
                 if vrow is None:
                     stats["ingest_missing"] += 1
                     continue  # hole; retriable when a later wave/file arrives
-                y, source, verdict_label, extra = normalize_verdict(vrow)
+                y, source, verdict_label, extra = normalize_verdict(
+                    vrow, args.no_decision_policy)
                 writer.write(make_verdict_row(key, y=y, source=source,
                                               verdict=verdict_label, extra=extra))
                 if source == "ingest":
@@ -676,7 +698,11 @@ def assemble_matrix(models: list[str], criterion_ids: list[str],
                     verdicts: dict[CellKey, dict]) -> tuple[np.ndarray, list[list[str]], int]:
     by_mc: dict[tuple[str, str], int] = {}
     for (model, _scenario, criterion_id), row in verdicts.items():
-        by_mc[(model, criterion_id)] = int(row["y"])
+        y = row.get("y")
+        if y is None:
+            # Voided (no_decision) cell recorded for audit -> leave MISSING (NaN).
+            continue
+        by_mc[(model, criterion_id)] = int(y)
     n_rows, n_cols = len(models), len(criterion_ids)
     arr = np.full((n_rows, n_cols), np.nan, dtype=float)
     csv_cells: list[list[str]] = []
@@ -832,7 +858,10 @@ def _print_run_summary(stats: dict, n_holes: int, models: list[str],
     print("=" * 72)
     print(f"auto-fail written    : {stats['auto_fail']}")
     print(f"ingested pass/fail   : {stats['ingested_pass_fail']}")
-    print(f"ingested no_decision : {stats['ingested_no_decision']} (auto-failed y=0)")
+    print(f"ingested no_decision : {stats['ingested_no_decision']} "
+          f"(policy={stats.get('no_decision_policy', 'missing')}: "
+          + ("y=0 fail" if stats.get('no_decision_policy') == "fail"
+             else "y=NaN MISSING, excluded from matrix") + ")")
     if stats["smoke_judged"]:
         print(f"call-judge judged    : {stats['smoke_judged']}")
     if stats["smoke_failed"]:
@@ -880,6 +909,11 @@ def build_parser() -> argparse.ArgumentParser:
                     default="ingest-verdicts")
     pg.add_argument("--ingest-file", nargs="+", default=None,
                     help="teammate verdict JSONL(s) or dir(s) of *.jsonl (ingest-verdicts)")
+    pg.add_argument("--no-decision-policy", choices=["missing", "fail"], default="missing",
+                    help="how to score VOIDED (no_decision/unscorable) judge cells: "
+                         "'missing' (DEFAULT; y=NaN, excluded from the MIRT matrix) or "
+                         "'fail' (y=0, LEGACY behavior -- do not use for calibration). "
+                         "Cells absent from the verdict files are always MISSING.")
     pg.add_argument("--judge-config", type=Path, default=None,
                     help=f"frozen judge block (default: {DEFAULT_JUDGE_CONFIG.name}, "
                          "then config.yaml judge:)")
