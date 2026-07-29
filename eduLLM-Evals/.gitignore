@@ -48,6 +48,9 @@ smoke_runs/
 # the pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root.
 # (This glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
 # data/IFEval/ are tracked automatically.)
+# the pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root.
+# (This glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
+# data/IFEval/ are tracked automatically.)
 data/*.jsonl
 # TutorBench bank now lives under data/TutorBench/ (source + curated).
 !data/TutorBench/scenarios.jsonl
