@@ -73,6 +73,8 @@ data/EduBench/**/scenarios.json
 data/EduBench/**/scenarios.jsonl
 data/EduBench/**/rubrics.json
 data/EduBench/**/rubrics.jsonl
+# Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible) -- never tracked.
+data/EduBench/en_data/
 
 # AWS key pairs must never be committed
 *.pem
