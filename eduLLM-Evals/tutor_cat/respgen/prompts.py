@@ -50,16 +50,19 @@ _DEFAULT_USE_CASE = "adaptive_explanation"
 # => the use_case behavior, so single-benchmark TutorBench runs are unchanged.
 #
 # Faithful to each original harness (see each data/*/README.md):
-#   * IFEval / InFoBench: instruction-following. The original harness feeds the
-#     prompt with NO system prompt (the prompt is the complete instruction); a
-#     tutor persona would change behavior and corrupt IFEval's deterministic
-#     verifier. => None (system message omitted entirely).
+#   * IFEval / InFoBench / EduBench: instruction-following. The original harness
+#     feeds the prompt with NO system prompt (the prompt is the complete, self-
+#     contained instruction — EduBench prompts already embed subject/level/task and
+#     the required output format). A tutor persona would change behavior and, for
+#     IFEval, corrupt its deterministic verifier. => None (system message omitted).
 #   * TutorEval: science tutoring; the chapter is already embedded in the prompt
 #     for open-book items, so the system prompt only sets the tutor role.
 #   * WildBench: open-ended chat across many task types (use_case is a content
 #     tag, not a pedagogical mode) => a generic helpful-assistant prompt.
 #   * Bridge: math mistake-remediation over a multi-turn tutor/student dialogue.
-_NO_SYSTEM_BENCHMARKS = {"IFEval", "InFoBench"}
+#   * BiGGen: every instance ships its OWN native system prompt (Scenario.
+#     system_prompt), so it is used verbatim per row rather than a fixed prompt.
+_NO_SYSTEM_BENCHMARKS = {"IFEval", "InFoBench", "EduBench"}
 
 SYSTEM_PROMPTS_BY_BENCHMARK: dict[str, str] = {
     "TutorEval": (
@@ -106,11 +109,15 @@ def system_prompt_for(use_case: str) -> str:
 def system_prompt_for_scenario(scenario: "Scenario") -> str | None:
     """The system prompt for a scenario, keyed by benchmark first then use_case.
 
-    Returns None for instruction-following benchmarks whose original harness uses
-    no system prompt (IFEval/InFoBench) — the caller then omits the system turn.
+    BiGGen uses the scenario's own native `system_prompt` (per-instance). Returns
+    None for instruction-following benchmarks whose original harness uses no system
+    prompt (IFEval/InFoBench/EduBench) — the caller then omits the system turn.
     Empty/"TutorBench" benchmark falls through to the use_case prompt, so the
     single-benchmark TutorBench path is unchanged."""
     benchmark = getattr(scenario, "benchmark", "") or ""
+    if benchmark == "BiGGen":
+        # Faithful to BiGGen: each instance carries its own native system prompt.
+        return (getattr(scenario, "system_prompt", "") or "") or None
     if benchmark in _NO_SYSTEM_BENCHMARKS:
         return None
     if benchmark in SYSTEM_PROMPTS_BY_BENCHMARK:

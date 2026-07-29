@@ -3,8 +3,8 @@ structure ``[correctness, scaffolding, <candidate>]`` -- a read-only calibration
 probe. GENERALIZATION of ``scripts/build_motivation_qmatrix.py`` (the motivation run
 is just this script with ``--candidate motivation --hit-col hit_affect_motivation``).
 
-This NEVER touches ``data/curated/rubrics_qmatrix_curated.jsonl``. It emits a COPY
-under ``data/experimental/`` whose every record is byte-identical to the curated
+This NEVER touches ``data/TutorBench/curated/rubrics_qmatrix_curated.jsonl``. It emits a COPY
+under ``data/TutorBench/experimental/`` whose every record is byte-identical to the curated
 bank EXCEPT its ``q_mapping``, which is replaced by the candidate mapping.
 
 Candidate skill definition (per criterion)
@@ -52,7 +52,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_CURATED = ROOT / "data" / "curated" / "rubrics_qmatrix_curated.jsonl"
+DEFAULT_CURATED = ROOT / "data" / "TutorBench" / "curated" / "rubrics_qmatrix_curated.jsonl"
 DEFAULT_LABELS = ROOT / "staging" / "run2_orphan" / "orphan_criteria.csv"
 DEFAULT_MATRIX = ROOT / "staging" / "response_matrix.csv"
 
@@ -191,7 +191,7 @@ def main() -> int:
     args = p.parse_args()
 
     out = args.out or (
-        ROOT / "data" / "experimental"
+        ROOT / "data" / "TutorBench" / "experimental"
         / f"rubrics_qmatrix_collapse_{args.candidate}.jsonl"
     )
 

@@ -10,13 +10,15 @@
 
 ## ⚠️ Use the curated bank
 
-The **finalized rubric bank** lives in `data/curated/`:
+The **finalized rubric bank** lives in `data/TutorBench/curated/`:
 
-- **`data/curated/rubrics_qmatrix_curated.jsonl`** — the criterion bank to grade against
-- **`data/curated/scenarios_curated.jsonl`** — scenarios (renumbered `criterion_ids`)
+- **`data/TutorBench/curated/rubrics_qmatrix_curated.jsonl`** — the criterion bank to grade against
+- **`data/TutorBench/curated/scenarios_curated.jsonl`** — scenarios (renumbered `criterion_ids`)
 
-The top-level `rubrics_qmatrix_final.jsonl` / `scenarios.jsonl` are the **untouched
-TutorBench source**, kept for provenance only. The curated versions apply the
+The `data/TutorBench/rubrics_qmatrix_final.jsonl` / `data/TutorBench/scenarios.jsonl`
+files are the **untouched TutorBench source**, kept for provenance only. The
+`data/TutorBench/experimental/` banks are read-only Q-matrix/gating probes derived
+from the curated bank. The curated versions apply the
 `curation_v1` fixes (atomized bundled criteria, softened rigid wording, consolidated/
 normalized presentation criteria, conditional criteria marked optional). See
 `curation/CHANGES.md` for a before→after summary and `curation/grading_notes.md` for

@@ -4,7 +4,7 @@ human-grade packets (grader_packets/grader_0N.csv AND grader_0N.md).
 
 Curation renumbered/split/merged the rubric criteria for three scenarios
 (tb_0003, tb_0336, tb_0340). The NEW numbering lives in
-data/curated/rubrics_qmatrix_curated.jsonl and is authoritative. This script
+data/TutorBench/curated/rubrics_qmatrix_curated.jsonl and is authoritative. This script
 rebuilds ONLY those three scenarios inside the affected packets, replacing the
 criterion rows/blocks with the curated criteria (new ids / text / primary_skill
 / criticality) and filling grade+notes from the deterministic mapping and the

@@ -42,7 +42,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_CSV = ROOT / "run_data (1).csv"
-DEFAULT_CURATED = ROOT / "data" / "curated" / "rubrics_qmatrix_curated.jsonl"
+DEFAULT_CURATED = ROOT / "data" / "TutorBench" / "curated" / "rubrics_qmatrix_curated.jsonl"
 DEFAULT_COHORT_POLICY = (
     ROOT
     / "handoff_extract"

@@ -42,3 +42,6 @@ benchmarks:
   - name: BiGGen
     scenarios: data/BiGGen/scenarios.jsonl
     enabled: true
+  - name: EduBench
+    scenarios: data/EduBench/scenarios.jsonl
+    enabled: true

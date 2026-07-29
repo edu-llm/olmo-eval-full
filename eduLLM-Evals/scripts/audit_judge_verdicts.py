@@ -18,7 +18,7 @@ answers the questions we need before building the MIRT response matrix:
     counts (per-model requires either a ``model`` field on the rows or a
     ``cases_index.jsonl`` to de-blind ``case_id`` -> model).
   * Which CRITERIA SET the verdicts belong to: the curated bank
-    (``data/curated/rubrics_qmatrix_curated.jsonl``) vs the reorganized final
+    (``data/TutorBench/curated/rubrics_qmatrix_curated.jsonl``) vs the reorganized final
     bank (``data/<benchmark>/rubrics_qmatrix_final.jsonl``), reported as a match
     percentage for each plus any unknown criterion_ids.
 
@@ -52,7 +52,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_STAGING = ROOT / "staging"
-DEFAULT_CURATED = ROOT / "data" / "curated" / "rubrics_qmatrix_curated.jsonl"
+DEFAULT_CURATED = ROOT / "data" / "TutorBench" / "curated" / "rubrics_qmatrix_curated.jsonl"
 DEFAULT_OUT_JSON = DEFAULT_STAGING / "audit_judge_verdicts.json"
 DEFAULT_OUT_CSV = DEFAULT_STAGING / "audit_judge_verdicts.csv"
 

@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_BANK = ROOT / "data" / "experimental" / "rubrics_qmatrix_collapse_motivation.jsonl"
+DEFAULT_BANK = ROOT / "data" / "TutorBench" / "experimental" / "rubrics_qmatrix_collapse_motivation.jsonl"
 DEFAULT_MATRIX = ROOT / "staging" / "response_matrix.csv"
 DEFAULT_CSV = ROOT / "staging" / "run2" / "calibration_mirt.csv"
 

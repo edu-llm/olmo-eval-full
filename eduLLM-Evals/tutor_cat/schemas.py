@@ -29,6 +29,10 @@ class Scenario:
     # HuggingFace URL for the candidate banks. Drives per-benchmark system prompts
     # and the output shard / "Benchmark" row label. Empty => treated as TutorBench.
     benchmark: str = ""
+    # Native per-instance system prompt carried by some benchmarks (e.g. BiGGen,
+    # whose harness ships an instance-specific system message). Empty for
+    # benchmarks whose system prompt is chosen by benchmark/use_case instead.
+    system_prompt: str = ""
 
     @classmethod
     def from_json(cls, obj: dict[str, Any]) -> "Scenario":
@@ -46,6 +50,7 @@ class Scenario:
             split=obj.get("split", ""),
             version=obj.get("version", "1.0"),
             benchmark=obj.get("benchmark", ""),
+            system_prompt=obj.get("system_prompt") or "",
         )
 
 

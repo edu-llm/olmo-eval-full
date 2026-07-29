@@ -1,8 +1,8 @@
 """Build an EXPERIMENTAL rubric-bank Q-matrix variant for the candidate 3-skill
 structure ``[correctness, scaffolding, motivation]`` -- a read-only calibration probe.
 
-This NEVER touches ``data/curated/rubrics_qmatrix_curated.jsonl``. It emits a COPY
-under ``data/experimental/`` whose every record is byte-identical to the curated
+This NEVER touches ``data/TutorBench/curated/rubrics_qmatrix_curated.jsonl``. It emits a COPY
+under ``data/TutorBench/experimental/`` whose every record is byte-identical to the curated
 bank EXCEPT its ``q_mapping``, which is replaced by the candidate mapping.
 
 Candidate skill definition (per criterion)
@@ -41,10 +41,10 @@ Usage
 -----
     python scripts/build_motivation_qmatrix.py
     python scripts/build_motivation_qmatrix.py \
-        --curated data/curated/rubrics_qmatrix_curated.jsonl \
+        --curated data/TutorBench/curated/rubrics_qmatrix_curated.jsonl \
         --labels  staging/run2_orphan/orphan_criteria.csv \
         --matrix  staging/response_matrix.csv \
-        --out     data/experimental/rubrics_qmatrix_collapse_motivation.jsonl
+        --out     data/TutorBench/experimental/rubrics_qmatrix_collapse_motivation.jsonl
 """
 
 from __future__ import annotations
@@ -57,10 +57,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-DEFAULT_CURATED = ROOT / "data" / "curated" / "rubrics_qmatrix_curated.jsonl"
+DEFAULT_CURATED = ROOT / "data" / "TutorBench" / "curated" / "rubrics_qmatrix_curated.jsonl"
 DEFAULT_LABELS = ROOT / "staging" / "run2_orphan" / "orphan_criteria.csv"
 DEFAULT_MATRIX = ROOT / "staging" / "response_matrix.csv"
-DEFAULT_OUT = ROOT / "data" / "experimental" / "rubrics_qmatrix_collapse_motivation.jsonl"
+DEFAULT_OUT = ROOT / "data" / "TutorBench" / "experimental" / "rubrics_qmatrix_collapse_motivation.jsonl"
 
 CURATED_NAME = "rubrics_qmatrix_curated.jsonl"
 
