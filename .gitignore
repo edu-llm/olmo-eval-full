@@ -91,10 +91,26 @@ AdaptiveTesting/Outputs/
 AdaptiveTesting/Inputs/MCQ/Benchmarks/
 AdaptiveTesting/Inputs/Open/Benchmarks/
 
+# ATLAS vendor: keep ARC bank + scripts; skip bulky upstream clones
+AdaptiveTesting/Inputs/ATLAS/.git/
+AdaptiveTesting/Inputs/ATLAS/experiments/
+AdaptiveTesting/Inputs/ATLAS/data/data.zip
+AdaptiveTesting/Inputs/ATLAS/gsm8k/
+AdaptiveTesting/Inputs/ATLAS/hellaswag/
+AdaptiveTesting/Inputs/ATLAS/truthfulqa/
+AdaptiveTesting/Inputs/ATLAS/winogrande/
+AdaptiveTesting/Inputs/ATLAS/arc/atlas_arc_random/
+AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/irt_item_parameters_[0-9]*.csv
+AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/irt_person_scores_*.csv
+AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/m2_*.csv
+
 # macOS archive cruft + large local bundles (results live in S3, not git)
 AdaptiveTesting/**/__MACOSX/
 AdaptiveTesting/Inputs/Open/LLM-Judge/aws_judge_handoff.zip
+AdaptiveTesting/Inputs/Open/LLM-Judge/aws_judge_handoff (1).zip
 AdaptiveTesting/Inputs/Open/LLM-Judge/*.tar
+AdaptiveTesting/Test/Inference/*.zip
+AdaptiveTesting/Experiments/**/.mplcache/
 
 # Local secrets (never commit)
 .apienv
