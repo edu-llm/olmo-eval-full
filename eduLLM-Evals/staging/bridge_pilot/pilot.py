@@ -448,6 +448,53 @@ def stage_analyze() -> None:
             for a, b, r, n in pairs:
                 L.append(f"| {a} – {b} | {r:+.3f} | {n} |")
 
+    # --- length bias -------------------------------------------------------------
+    # Bridge's rubric was silently rewarding verbosity: expert replies average 83
+    # characters against the models' 380, and six criteria demanded something a terse
+    # reply cannot produce, so human experts scored no better than gpt-4.1-nano. That
+    # was caught by luck. This makes it a standing check -- any criterion whose pass
+    # rate tracks response length is measuring how much a model wrote, not how well.
+    lengths: dict[tuple, int] = {}
+    for model in TUTORS:
+        d = RESP_DIR / slug(model)
+        for p in d.glob("*.json") if d.exists() else []:
+            j = json.loads(p.read_text(encoding="utf-8"))
+            if j.get("response"):
+                lengths[(j["model"], j["scenario_id"])] = len(j["response"])
+
+    def point_biserial(d: dict[tuple, int]) -> float | None:
+        ks = [k for k in sorted(d) if k in lengths]
+        if len(ks) < 50:
+            return None
+        y = [d[k] for k in ks]
+        x = [lengths[k] for k in ks]
+        if sum(y) in (0, len(y)):
+            return None
+        mx, my = sum(x) / len(x), sum(y) / len(y)
+        num = sum((a - mx) * (b - my) for a, b in zip(x, y))
+        den = (sum((a - mx) ** 2 for a in x) * sum((b - my) ** 2 for b in y)) ** 0.5
+        return num / den if den else None
+
+    if lengths:
+        biased = [(c, r) for c, r in ((c, point_biserial(d)) for c, d in cell.items())
+                  if r is not None]
+        biased.sort(key=lambda t: -t[1])
+        flagged = [t for t in biased if abs(t[1]) >= 0.25]
+        L.append("\n\n## Length bias — is a criterion rewarding words rather than teaching?\n")
+        L.append("Correlation between response length and passing. Positive means longer "
+                 "answers pass more often. Anything beyond ±0.25 is flagged: it is likely "
+                 "measuring verbosity, and a terse expert reply will fail it unfairly.\n")
+        if biased:
+            overall = sum(r for _, r in biased) / len(biased)
+            L.append(f"\n- mean across {len(biased)} criteria: **{overall:+.3f}**")
+            L.append(f"- flagged (|r| ≥ 0.25): **{len(flagged)}**"
+                     + (f" — {', '.join(c for c, _ in flagged)}" if flagged else " — none"))
+            L.append("\n| code | length↔pass | reads as |\n|---|---|---|")
+            for c, r in biased[:6] + biased[-3:]:
+                reads = "rewards length" if r >= 0.25 else (
+                    "rewards brevity" if r <= -0.25 else "roughly neutral")
+                L.append(f"| {c} | {r:+.3f} | {reads} |")
+
     L.append("\n\n## Dead weight — criteria carrying little or no information\n")
     L.append("Pass rate above 0.95 or below 0.05 means almost no variance to measure; "
              "discrimination near zero means the criterion does not track overall quality.\n")

@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 from typing import Protocol
 
+from .chat_shape import ROLE_MAP, normalize
 from .schemas import Scenario
 
 
@@ -24,18 +25,22 @@ class TutorClient(Protocol):
 
 
 # Dataset context roles -> API roles (APIs only accept user/assistant/system).
-_ROLE_MAP = {"student": "user", "tutor": "assistant", "user": "user",
-             "assistant": "assistant", "system": "system"}
+_ROLE_MAP = ROLE_MAP
 
 
 def _messages_for(scenario: Scenario) -> list[dict[str, str]]:
-    """Replay conversation context (if any), then the scenario prompt."""
+    """Replay conversation context (if any), then the scenario prompt.
+
+    Normalised to the transport rules in chat_shape: providers reject a
+    conversation that opens on the assistant (Bedrock) or that repeats a role
+    without alternating (Anthropic), and real transcripts do both.
+    """
     messages = [
         {"role": _ROLE_MAP.get(t.get("role", "user"), "user"), "content": t.get("content", "")}
         for t in scenario.conversation_context
     ]
     messages.append({"role": "user", "content": scenario.prompt})
-    return messages
+    return normalize(messages)
 
 
 def _retry(fn, max_retries: int = 3):

@@ -84,6 +84,27 @@ Phi correlation between sibling criteria on the same responses. Above ~0.7 they 
 | C1 – C3 | +0.103 | 790 |
 
 
+## Length bias — is a criterion rewarding words rather than teaching?
+
+Correlation between response length and passing. Positive means longer answers pass more often. Anything beyond ±0.25 is flagged: it is likely measuring verbosity, and a terse expert reply will fail it unfairly.
+
+
+- mean across 38 criteria: **-0.054**
+- flagged (|r| ≥ 0.25): **8** — V1, C1, B1, Y2, Y1, Y3, D4, S1
+
+| code | length↔pass | reads as |
+|---|---|---|
+| V1 | +0.271 | rewards length |
+| D5 | +0.247 | roughly neutral |
+| V2 | +0.215 | roughly neutral |
+| D3 | +0.210 | roughly neutral |
+| A2 | +0.153 | roughly neutral |
+| A1 | +0.148 | roughly neutral |
+| Y3 | -0.363 | rewards brevity |
+| D4 | -0.387 | rewards brevity |
+| S1 | -0.486 | rewards brevity |
+
+
 ## Dead weight — criteria carrying little or no information
 
 Pass rate above 0.95 or below 0.05 means almost no variance to measure; discrimination near zero means the criterion does not track overall quality.
