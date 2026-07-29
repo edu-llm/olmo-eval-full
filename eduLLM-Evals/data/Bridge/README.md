@@ -63,11 +63,12 @@ grade-band module        lesson_topic grade prefix          1 criterion
 
 ### Tier 1 — core (16)
 
-D1 identifies the error · D2 doesn't invent an error · M1 all math correct · **M4 doesn't
-endorse the student's wrong answer** · **M5 math is relevant to the task** · M3 moves toward
-correct resolution · P1 guides, doesn't tell · P2 move fits situation · P3 keeps student
-involved · P4 coheres with prior turns · C1 clear · C3 focused · A1 warm (not merely
-neutral) · A2 constructive framing · A3 not discouraging · **A4 safe to be wrong**.
+D1 identifies the error · D2 doesn't invent an error · M1 all math correct · M4 doesn't
+endorse the student's wrong answer · M5 math is relevant to the task · M3 moves toward
+correct resolution · P1 guides, doesn't tell · P2 move fits situation · P3 leaves a
+substantive step for the student · P4 coheres with prior turns · C1 reasoning in a
+followable order · C3 focused · A1 warm (not merely neutral) · A2 constructive framing ·
+A3 not discouraging · A4 safe to be wrong.
 
 ### Tier 2 — error-type modules
 
@@ -128,10 +129,11 @@ repo's `optional: true` flag is **not** an N/A mechanism —
 [`run_calibration_judging.py`](../../scripts/run_calibration_judging.py) *drops* optional
 criteria from the run entirely and the judge prompt states "Never invent an N/A outcome"
 (`judge_guidance` is read by no code at all). Every criterion is therefore answerable
-pass/fail for any response. Criteria about content a response need not contain (V2, N1, U1,
-B1, X1, Z1, I2, Y3, D4, G1, R1, S1, I1) are stated in **negative form** — fail on misuse,
-pass on silence — so the empty case has a determinate verdict rather than a forced fail. M1
-states its empty case explicitly.
+pass/fail for any response. Thirteen criteria about content a response need not contain
+(B1, D2, D4, G1, I1, I2, M4, M5, N1, P4, R1, S1, U1) are stated in **negative form** — fail
+on misuse, pass on silence — so the empty case has a determinate verdict rather than a forced
+fail. M1 states its empty case explicitly. This was originally applied to nineteen criteria;
+the pilot below showed negative form inflates pass rates, so six were rewritten.
 
 ## Exclusions
 
@@ -195,15 +197,64 @@ the **benchmark name** first, and `SYSTEM_PROMPTS_BY_BENCHMARK["Bridge"]`
 ([`tutor_cat/respgen/prompts.py`](../../tutor_cat/respgen/prompts.py)) supplies a dedicated
 one, so the `use_case` path never fires. The multi-turn context is preserved either way.
 
-> **⚠️ The Bridge system prompt overlaps three criteria.** It instructs the model to
-> "Identify the specific error", "guid[e] them toward the right approach rather than simply
-> giving away the answer", and "Keep a supportive, encouraging tone" — which is close to a
-> verbatim statement of **D1**, **P1** and **A1**. Two consequences: those three are likely
-> to sit near ceiling (every model is told to do exactly that), and their
-> **D1, P1 and A1 are therefore marked `explicitness: "explicit"`** (1,926 criterion
-> instances); every other criterion stays `implicit`, since the scenario prompt — a student
-> turn like `"4 m"` — asks for nothing. Check those three against pilot pass rates before
-> reading anything into their difficulty; D1 and P1 are both `critical`.
+> **The Bridge system prompt overlaps three criteria.** It instructs the model to "Identify
+> the specific error", "guid[e] them toward the right approach rather than simply giving away
+> the answer", and "Keep a supportive, encouraging tone" — close to a verbatim statement of
+> **D1**, **P1** and **A1**, which are therefore marked `explicitness: "explicit"`; every
+> other criterion stays `implicit`, since the scenario prompt (a student turn like `"4 m"`)
+> asks for nothing. The expectation was that all three would sit at ceiling. The pilot below
+> shows only A1 does — being *told* to identify the error turns out not to mean models do it.
+
+## Pilot validation
+
+The criterion wording was tuned against a real judging run rather than by argument.
+**8 tutors spanning `gpt-4.1-nano` → `claude-opus-4-8` × 100 stratified scenarios = 790
+graded responses / ~16,200 criterion judgments**, using the production Bridge system prompt
+and `gpt-5.5` as judge. Harness and full report: `staging/bridge_pilot/`.
+
+`discrimination` below is the corrected item–total correlation (how well a criterion tracks
+overall response quality, self excluded). Healthy = pass rate between 0.05 and 0.95 with
+discrimination ≥ 0.20; outside that a criterion carries little information for calibration.
+
+| | baseline | after tuning |
+|---|---|---|
+| at ceiling (pass ≥ 0.95) | 8 | **1** |
+| at floor (pass ≤ 0.05) | 0 | **0** |
+| no discrimination (< 0.10) | 4 | 6 |
+| strong (discrimination ≥ 0.30) | 17 | **21** |
+| **healthy overall** | 23 / 39 | **28 / 39** |
+
+Three findings overturned the design assumptions:
+
+1. **D1 and P1 are among the best items, not freebies.** Despite the system prompt naming
+   them, D1 passes only 0.218 (discrimination 0.499) and P1 0.594 (0.629). Only **A1** is
+   the dead weight that was predicted (0.914 / 0.091).
+2. **Negative wording did inflate pass rates** — 0.866 mean vs 0.646 for positive-form
+   criteria. Six codes were rewritten toward a positive, specific demand; negative-form
+   codes went 19 → 13.
+3. **The sibling criteria are NOT redundant.** Highest within-family correlation is P2–P4 at
+   phi 0.538; C1–C3 is 0.079. A1–A4 top out at 0.347. Nothing approaches the 0.7 threshold,
+   so the four affective / four strategy / four math criteria measure distinct things.
+
+### Criteria still carrying little information
+
+| code | pass rate | disc | note |
+|---|---|---|---|
+| `A3` | 0.996 | 0.011 | **kept deliberately** — a tutor demeaning a child *is* a critical failure, so this stays as a safety tripwire. Exclude it from an IRT fit rather than delete the only check on it. |
+| `P3` | 0.881 | 0.007 | two rewrites failed to move it; overlaps P1 conceptually |
+| `F1` | 0.143 | 0.029 | variance recovered after an overcorrection, but discrimination did not |
+| `A1` | 0.914 | 0.091 | named verbatim by the system prompt |
+| `S1` | 0.863 | 0.092 | `critical` |
+| `D5` | 0.596 | 0.093 | good variance, weak discrimination |
+
+**Tuning stopped after two rounds.** Further wording changes fitted to 100 scenarios would
+start tracking sample noise; the real calibration is the definitive read.
+
+> **⚠️ The rubric separates models only weakly.** Mean pass rates span 0.699 → 0.788 across
+> the 8 tutors, and the ordering is partly scrambled (`gpt-4.1-nano` outscored `gpt-4o`).
+> Frontier models do land on top, but a 9-point spread is thin. Removing or fixing the
+> remaining low-information criteria should widen it, since they contribute pass marks
+> almost uniformly.
 
 ## Known limitations
 

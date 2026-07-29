@@ -92,10 +92,15 @@ WHY NO "OPTIONAL" CRITERIA: criteria whose applicability depends on what the CAN
 writes cannot be resolved here -- the response does not exist at ingest time. The repo's
 `optional: true` flag is not an N/A mechanism: run_calibration_judging.py drops optional
 criteria from the run entirely, and the judge prompt forbids an N/A verdict. So every
-criterion below is worded to be answerable pass/fail for ANY response. Criteria about
-content a response need not contain are stated in NEGATIVE form (fail on misuse, pass on
-silence) so the empty case has a determinate verdict, and M1 states its empty case
-explicitly.
+criterion below is worded to be answerable pass/fail for ANY response, and M1 states its
+empty case explicitly.
+
+Thirteen criteria about content a response need not contain are stated in NEGATIVE form
+(fail on misuse, pass on silence) so the empty case has a determinate verdict. That was
+originally applied to nineteen; a pilot judging run measured negative-form criteria passing
+at 0.866 against 0.646 for positive-form ones, so six were rewritten toward a positive,
+specific demand. See the Pilot validation section of data/Bridge/README.md -- the pass rate
+and discrimination of every criterion there is measured, not assumed.
 
 Criterion ids use a STABLE suffix per code (see CODE_INDEX): a given suffix always
 denotes the same criterion across scenarios. Because each scenario draws a subset of the
@@ -209,8 +214,8 @@ CORE_CRITERIA: list[Criterion] = [
      "misconception versus a brief nudge for a slip).",
      "Selecting a remediation move that fits the situation is a strategy judgment."),
     ("P3", "strategy", ["strategy", "affective"], "standard", "subjective",
-     "The response keeps the student actively involved in reaching the answer and does not "
-     "take over the entire solution.",
+     "The response leaves at least one substantive step for the student to complete "
+     "themselves rather than carrying the solution through to its conclusion.",
      "Preserving productive struggle is a scaffolding strategy, and sustaining the "
      "student's sense of ownership is an affective goal."),
     ("P4", "strategy", ["strategy", "communication"], "standard", "subjective",
@@ -219,7 +224,8 @@ CORE_CRITERIA: list[Criterion] = [
      "Tracking the dialogue so far is a strategy decision, and expressing that continuity "
      "is a communication quality."),
     ("C1", "communication", ["communication"], "standard", "subjective",
-     "The explanation is clear and well-organized, so the student can follow it.",
+     "The response presents its reasoning in a followable order, each step connected to "
+     "the one before, rather than asserting conclusions the student must bridge alone.",
      "Clarity and organization are communication qualities."),
     ("C3", "communication", ["communication", "strategy"], "standard", "subjective",
      "The response stays focused on the error and avoids overwhelming the student with "
@@ -235,6 +241,10 @@ CORE_CRITERIA: list[Criterion] = [
      "effort) rather than simply labeling it wrong.",
      "Constructive framing is an affective stance enacted through how the message is "
      "communicated."),
+    # PILOT: 0.996 pass, 0.032 discrimination -- effectively a constant. Kept anyway:
+    # it is a genuine safety tripwire (a tutor that demeans a child IS a critical
+    # failure), not a measurement item. Exclude it from an IRT fit rather than delete
+    # the only check on it. See data/Bridge/README.md.
     ("A3", "affective", ["affective"], "critical", "subjective",
      "The response avoids discouraging or judgmental language that could undermine the "
      "student's confidence.",
@@ -272,8 +282,8 @@ ERROR_MODULES: dict[str, list[Criterion]] = {
          "Any claim about why the student went wrong must be diagnostically and "
          "mathematically accurate; a response making no such claim does not misstate one."),
         ("D5", "strategy", ["strategy", "communication"], "standard", "subjective",
-         "The response leaves the student with something to do or think about, rather than "
-         "closing the exchange with an explanation alone.",
+         "The response ends by asking the student to produce something specific -- an "
+         "answer, a next step, or an explanation in their own words.",
          "Handing the next step back to the student is a scaffolding move realized through "
          "how the turn is closed."),
     ],
@@ -364,15 +374,15 @@ TOPIC_MODULES: dict[str, list[Criterion]] = {
          "Choosing to make the spatial idea visible is a scaffolding decision realized "
          "through how the explanation is expressed."),
         ("V2", "math", ["math", "communication"], "standard", "objective",
-         "The response does not misuse geometric or measurement vocabulary, figure names, "
-         "attributes, or units.",
+         "The response names the relevant figure, attribute or unit precisely (e.g. \"the "
+         "base\", \"square centimetres\") rather than vague reference like \"this side\".",
          "Correct technical vocabulary is mathematical content conveyed through "
          "communication."),
     ],
     "fractions": [
         ("F1", "math", ["math", "diagnosis"], "standard", "objective",
-         "The response does not treat the parts of a fraction or mixed number as bare whole "
-         "numbers; where it matters, it attends to the referent whole.",
+         "The response treats the fraction or mixed number as a quantity -- referring to its "
+         "size, or to what it is a part of -- and not only as two numbers to manipulate.",
          "The whole/part referent is the mathematical crux of this strand and the usual "
          "site of the student's error."),
     ],
@@ -399,16 +409,15 @@ TOPIC_MODULES: dict[str, list[Criterion]] = {
     ],
     "algebra_expressions": [
         ("X1", "math", ["math", "diagnosis"], "standard", "objective",
-         "The response does not misrepresent the structure of the expression or "
-         "relationship (such as what the unknown stands for, or the order in which "
-         "operations apply).",
+         "The response makes the structure explicit -- naming what the unknown stands "
+         "for, or which operation applies first -- rather than only working through the "
+         "arithmetic.",
          "Structural reasoning is the mathematical content of this strand and the usual "
          "site of the student's error."),
     ],
     "proportional_reasoning": [
         ("Z1", "math", ["math", "diagnosis"], "standard", "objective",
-         "The response does not confuse which two quantities are being compared or how they "
-         "relate per unit.",
+         "The response identifies which two quantities the rate or ratio compares.",
          "Identifying the compared quantities is the mathematical crux of proportional "
          "reasoning and the usual site of the student's error."),
     ],
@@ -439,8 +448,8 @@ GRADE_MODULES: dict[str, list[Criterion]] = {
     ],
     "6-12": [
         ("Y3", "communication", ["communication", "math"], "standard", "subjective",
-         "The register suits a secondary student, and the response does not use formal "
-         "mathematical terms incorrectly.",
+         "The response uses the correct formal mathematical term for the concept at issue "
+         "rather than only an informal description of it.",
          "Appropriate register at secondary level is a communication quality that depends "
          "on correct use of formal mathematical terms."),
     ],
