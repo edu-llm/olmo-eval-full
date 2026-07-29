@@ -77,15 +77,9 @@ curation/tranche/
 # scripts/ingest_edubench.py / scripts/build_edubench_merged.py) -- never tracked,
 # regardless of nesting depth (unmerged/, merged/, merged/<variant>/, given_qmat/, ...).
 data/EduBench/**/scenarios.json
+data/EduBench/**/scenarios.jsonl
 data/EduBench/**/rubrics.json
-data/EduBench/augmented_qmat/merged/rubrics.jsonl
-data/EduBench/augmented_qmat/merged/**/rubrics.jsonl
-
-data/EduBench/given_qmat/rubrics.jsonl
-data/EduBench/augmented_qmat/merged/scenarios.jsonl
-data/EduBench/augmented_qmat/merged/**/scenarios.jsonl
-
-data/EduBench/given_qmat/scenarios.jsonl
+data/EduBench/**/rubrics.jsonl
 # Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible) -- never tracked.
 data/EduBench/en_data/
 
