@@ -16,24 +16,28 @@ at tutor_cat/verifiers/ifeval/. Each `instruction_id` maps to a checker class ex
   * preserves the verifier's inputs in a `verifier` provenance dict
     {"instruction_id", "kwargs"} so the IFEvalVerifier can reproduce the check at scoring
     time (Rubric.from_json carries this through as an optional field);
-  * builds a single-hot `q_mapping` over IFEval's **9 instruction categories**
-    (the `instruction_id` prefix), exactly like WildBench derives one skill from
-    `primary_tag`.
+  * builds a multi-hot `q_mapping` over a **6-skill latent-ability axis**
+    (format_structure, counting, lexical, case_punct, position, semantic_language) via
+    the INSTRUCTION_SKILLS table below. IFEval's surface 9-category taxonomy is one-hot
+    by construction (each id has exactly one category), which makes *within-item* MIRT
+    impossible; the latent axis instead names the underlying abilities a response must
+    exercise, so ids that tap several of them cross-load (e.g. "N bullet points" =
+    format_structure + counting) and ~48% of criteria become multi-skill.
 
 The synthetic MIRT `difficulty`/`discrimination`/`irt_params` are appended afterwards by
-scripts/assign_irt_params.py over the 9-category axis, so re-running this script strips
-them -- always re-run the assign step after a rebuild:
+scripts/assign_irt_params.py over this axis, so re-running this script strips them --
+always re-run the assign step after a rebuild:
 
     PYTHONPATH=. python scripts/ingest_ifeval.py
     python scripts/assign_irt_params.py \
         --input data/IFEval/rubrics.jsonl \
-        --skills keywords,detectable_format,length_constraints,change_case,startend,punctuation,combination,detectable_content,language \
+        --skills format_structure,counting,lexical,case_punct,position,semantic_language \
         --log-dir data/IFEval/irt_logs --no-backup
 
 Mapping (IFEval field -> schema field):
     key                         -> source_id       (join key back to HuggingFace)
     prompt                      -> prompt
-    instruction_id_list[i]      -> verifier.instruction_id + q_mapping category
+    instruction_id_list[i]      -> verifier.instruction_id + q_mapping skills (INSTRUCTION_SKILLS)
     kwargs[i]                   -> verifier.kwargs (nulls stripped)
     build_description(**kwargs) -> criterion
 
@@ -66,13 +70,49 @@ VERSION = "1.0"
 
 REGISTRY = instructions_registry.INSTRUCTION_DICT
 
-# IFEval's 9 instruction categories = the `instruction_id` prefix (before ':'). This is
-# the fixed q-matrix column order; downstream MIRT code indexes skills positionally, so
-# it must not be reordered in place. Every id's prefix must be one of these.
+# Latent-ability axis (6 skills). This is the fixed q-matrix column order; downstream MIRT
+# code indexes skills positionally, so it must not be reordered in place.
+#   format_structure  - producing a required output shape (json, title, sections, bullets, wrapping)
+#   counting          - satisfying an explicit numeric constraint (N words/sentences/sections/...)
+#   lexical           - controlling presence/absence/frequency of specific words or letters
+#   case_punct        - character-level orthographic control (capitalization, lowercase, commas)
+#   position          - constraints tied to *where* in the output (start/end, nth paragraph, P.S.)
+#   semantic_language - meaning/language requirements (respond in language X, verbatim, placeholders)
 SKILLS = [
-    "keywords", "detectable_format", "length_constraints", "change_case",
-    "startend", "punctuation", "combination", "detectable_content", "language",
+    "format_structure", "counting", "lexical", "case_punct", "position", "semantic_language",
 ]
+
+# Per-instruction latent-skill map: each of IFEval's 25 distinct `instruction_id`s -> the
+# ability/abilities it exercises. Deterministic at id granularity (every criterion with the
+# same id gets the same vector), so no per-criterion LLM inference/verification is needed.
+# The first skill listed is the criterion's `primary_skill` (its most-defining ability).
+INSTRUCTION_SKILLS: dict[str, list[str]] = {
+    "keywords:existence": ["lexical"],
+    "keywords:forbidden_words": ["lexical"],
+    "keywords:frequency": ["lexical", "counting"],
+    "keywords:letter_frequency": ["lexical", "counting"],
+    "detectable_format:json_format": ["format_structure"],
+    "detectable_format:title": ["format_structure"],
+    "detectable_format:multiple_sections": ["format_structure", "counting"],
+    "detectable_format:number_bullet_lists": ["format_structure", "counting"],
+    "detectable_format:number_highlighted_sections": ["format_structure", "counting"],
+    "detectable_format:constrained_response": ["format_structure", "semantic_language"],
+    "length_constraints:number_words": ["counting"],
+    "length_constraints:number_sentences": ["counting"],
+    "length_constraints:number_paragraphs": ["counting", "format_structure"],
+    "length_constraints:nth_paragraph_first_word": ["position", "counting", "format_structure"],
+    "change_case:english_capital": ["case_punct"],
+    "change_case:english_lowercase": ["case_punct"],
+    "change_case:capital_word_frequency": ["case_punct", "counting"],
+    "punctuation:no_comma": ["case_punct"],
+    "startend:quotation": ["format_structure", "position"],
+    "startend:end_checker": ["position", "semantic_language"],
+    "combination:two_responses": ["format_structure"],
+    "combination:repeat_prompt": ["position", "semantic_language"],
+    "detectable_content:postscript": ["position", "format_structure"],
+    "detectable_content:number_placeholders": ["counting", "semantic_language"],
+    "language:response_language": ["semantic_language"],
+}
 
 # Placeholder metadata (IFEval has no native equivalent; feed only synthetic IRT).
 CRITICALITY = "critical"
@@ -97,14 +137,10 @@ def scenario_id(index: int) -> str:
     return f"ife_{index:04d}"
 
 
-def category_of(instruction_id: str) -> str:
-    """IFEval category = the id prefix before ':'."""
-    return instruction_id.split(":", 1)[0]
-
-
-def q_mapping(category: str) -> dict[str, int]:
-    """Single-hot over the 9 categories (each instruction has exactly one)."""
-    return {skill: int(skill == category) for skill in SKILLS}
+def q_mapping(instruction_id: str) -> dict[str, int]:
+    """Multi-hot over the 6 latent skills, from the instruction's INSTRUCTION_SKILLS row."""
+    active = INSTRUCTION_SKILLS[instruction_id]
+    return {skill: int(skill in active) for skill in SKILLS}
 
 
 def clean_kwargs(kw: dict) -> dict:
@@ -165,9 +201,9 @@ def build() -> tuple[list[dict], list[dict]]:
         for cid, iid, kw in zip(criterion_ids, ids, kwargs_list):
             if iid not in REGISTRY:
                 raise SystemExit(f"{cid}: instruction_id {iid!r} not in verifier registry")
-            category = category_of(iid)
-            if category not in SKILLS:
-                raise SystemExit(f"{cid}: category {category!r} (from {iid!r}) not in axis")
+            if iid not in INSTRUCTION_SKILLS:
+                raise SystemExit(f"{cid}: instruction_id {iid!r} not in INSTRUCTION_SKILLS map")
+            skills = INSTRUCTION_SKILLS[iid]
             kwargs = clean_kwargs(kw)
             rubrics.append({
                 "criterion_id": cid,
@@ -178,9 +214,9 @@ def build() -> tuple[list[dict], list[dict]]:
                 "score_anchors": None,
                 # Verifier inputs -- reproduce the deterministic check at scoring time.
                 "verifier": {"instruction_id": iid, "kwargs": kwargs},
-                "primary_skill": category,
-                "q_mapping": q_mapping(category),
-                "q_rationale": f"IFEval instruction category '{category}' (from id '{iid}')",
+                "primary_skill": skills[0],
+                "q_mapping": q_mapping(iid),
+                "q_rationale": f"IFEval latent-skill mapping for '{iid}' -> {skills}",
                 # Placeholders (uniform); feed only the synthetic IRT step.
                 "criticality": CRITICALITY,
                 "objectivity": OBJECTIVITY,
@@ -239,14 +275,14 @@ def validate(scenarios: list[dict], rubrics: list[dict]) -> list[str]:
             errs.append(f"{r['criterion_id']}: verifier.instruction_id not in registry")
         elif not isinstance(v.get("kwargs"), dict):
             errs.append(f"{r['criterion_id']}: verifier.kwargs must be a dict")
-        # q-matrix: keys == the fixed axis, single-hot, primary marked.
+        # q-matrix: keys == the fixed axis, multi-hot (>=1 skill), primary is an active skill.
         q = r["q_mapping"]
         if list(q.keys()) != SKILLS:
             errs.append(f"{r['criterion_id']}: q_mapping keys/order != axis")
-        if set(q.values()) - {0, 1} or sum(q.values()) != 1:
-            errs.append(f"{r['criterion_id']}: q_mapping must be single-hot")
+        if set(q.values()) - {0, 1} or sum(q.values()) < 1:
+            errs.append(f"{r['criterion_id']}: q_mapping must be multi-hot (>=1 skill)")
         if r["primary_skill"] not in SKILLS or q.get(r["primary_skill"]) != 1:
-            errs.append(f"{r['criterion_id']}: primary_skill not the marked category")
+            errs.append(f"{r['criterion_id']}: primary_skill not an active skill")
 
     return errs
 
@@ -279,13 +315,17 @@ def main() -> None:
     write("scenarios", scenarios)
     write("rubrics", rubrics)
 
-    # q-matrix column loads (criteria per category) + multiplicity.
-    loads = Counter(r["primary_skill"] for r in rubrics)
+    # q-matrix column loads (criteria touching each skill) + cross-loading + multiplicity.
+    loads = Counter(s for r in rubrics for s in SKILLS if r["q_mapping"][s])
+    n_active = Counter(sum(r["q_mapping"].values()) for r in rubrics)
+    multi = sum(v for k, v in n_active.items() if k > 1)
     mult = Counter(len(s["criterion_ids"]) for s in scenarios)
-    print("\nq_mapping loads (criteria per IFEval category):")
+    print("\nq_mapping loads (criteria touching each latent skill):")
     for skill in SKILLS:
         print(f"  {skill:<20} {loads.get(skill, 0):>4}")
-    print(f"\ninstructions per prompt: {dict(sorted(mult.items()))}")
+    print(f"\nskills-per-criterion: {dict(sorted(n_active.items()))}  "
+          f"(multi-skill: {multi}/{len(rubrics)} = {100 * multi / len(rubrics):.0f}%)")
+    print(f"instructions per prompt: {dict(sorted(mult.items()))}")
     print("difficulty/discrimination/irt_params: appended by assign_irt_params.py (synthetic).")
 
 
