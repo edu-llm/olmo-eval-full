@@ -100,14 +100,57 @@ compare to `atlas_transfer_published/results/`. All 60 rows reproduce bit-exactl
 (max abs difference 0.0), which covers considerably more than the single OLMo-2 row
 pinned in `test_matches_reference_atlas_numbers`.
 
+### 2e. Real model, both paths (verified on Apple Silicon / MPS)
+
+`Qwen/Qwen2.5-0.5B` over ARC-Challenge, `se_stop=0.2`:
+
+| | Online CAT | Offline full run |
+|---|---|---|
+| θ | −2.3425050 | −2.3425050 |
+| SE | 0.1957224 | 0.1957224 |
+| items sent to the model | **18** | 1,172 |
+| p-IRT accuracy | 0.4914 | 0.4914 |
+| scoring wall clock | 6.3 s | 131 s |
+
+The two paths agree to every decimal, which is the expected result rather than a
+coincidence: both drive the same deterministic Fisher-information selection over
+the same per-item correctness (`test_online_matches_offline_and_queries_small_subset`
+asserts exactly this). An earlier note here predicted "close but not identical";
+that was wrong. The online path reached the same θ from 18 items instead of 1,172.
+
+The offline run also gives the model's true score, so the floor effect is now
+confirmed on a real model rather than just on mock: **actual accuracy 0.293**
+against **p-IRT 0.491**, a 0.199 overestimate. Qwen2.5-0.5B sits just above
+four-choice chance, and the 3PL guessing floor cannot follow it down. θ = −2.34 is
+sensible, well under the −1.12 to −1.15 band the Qwen2.5-3B/7B models occupy in
+`atlas_transfer_published/results/`.
+
+**Running a real model on macOS.** The `hf` provider works fine on MPS; what blocks
+the CLI is `AsyncEvalRunner`'s GPU planner calling `torch.cuda.device_count()`
+(`runners/asynq/runner.py:1031`) while `hf` is flagged `requires_local_gpu`. Drive
+the provider directly to bypass the planner:
+
+```python
+from olmo_eval.evals.external import get_external_eval
+from olmo_eval.inference.providers.huggingface import HuggingFaceProvider
+
+prov = HuggingFaceProvider("Qwen/Qwen2.5-0.5B")          # auto-selects MPS
+ev = get_external_eval("atlas_arc")
+res = await ev.execute(provider=prov, args={"se_stop": 0.2}, output_dir=None)
+```
+
+For the offline task, format each instance with `task.format_request`, batch through
+`await provider.alogprobs(...)`, wrap the outputs in `Response`, then call
+`task.compute_metrics(responses)`.
+
 **Still unverified**, with the reasons:
 ```bash
-# Real local model: blocked on macOS. The async runner's GPU planner calls
-# torch.cuda.device_count() (runners/asynq/runner.py:1031) and the hf provider is
-# flagged requires_local_gpu, so MPS is not recognised. Needs a CUDA host.
+# CLI path for a local model: needs a CUDA host (GPU planner, as above).
 uv run olmo-eval run -m <small-model> -t atlas_arc_challenge -o limit=50
 
-# Online eval: needs a persistent vLLM server.
+# run-external: cli/run_external.py:234 overrides provider kind unconditionally and
+# -p only accepts vllm|vllm_server|litellm, so mock/hf cannot be selected here.
+# Fine on a GPU host where vllm_server is the right choice.
 uv run olmo-eval run-external -m <small-model> -e atlas_arc -a max_items=40
 
 # Beaker: -c/--cluster is required, and --dry-run still needs BEAKER_TOKEN because
@@ -117,8 +160,6 @@ uv run olmo-eval beaker launch -m <model> -t atlas_arc_challenge -c h100 \
 uv run olmo-eval beaker launch -m <model> -E atlas_arc -c h100 \
   -w ai2/oe-data -B ai2/oe-base --dry-run
 ```
-Cross-check once a GPU host is available: online θ for a model should be close (not
-identical) to the offline θ for the same model.
 
 Caveat on `-o limit=N`: it truncates the instance set, so `ItemBank.restrict()`
 aligns the bank to whatever survived. θ from a limited run is a wiring check, not a

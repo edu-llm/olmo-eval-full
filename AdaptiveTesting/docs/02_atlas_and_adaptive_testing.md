@@ -137,7 +137,8 @@ Three things to be clear about, because earlier drafts of this doc got them wron
 
 The compression has a concrete cause. 7 of the 60 held-out models score **below
 four-choice chance** (0.171–0.242), and the bank predicts 0.411–0.521 for exactly
-those models. A 3PL bank cannot represent sub-chance accuracy: the pseudo-guessing
+those models. A live run reproduces it: `Qwen/Qwen2.5-0.5B` scores **0.293** on the
+full benchmark and p-IRT reconstructs **0.491** (see doc 04 §2e). A 3PL bank cannot represent sub-chance accuracy: the pseudo-guessing
 parameter floors every prediction, and this bank's `g` is high (mean 0.264, p90
 0.763). Sub-chance results are what 0-shot log-likelihood over choice continuations
 produces on weak models, since length and fluency bias pushes them below chance
