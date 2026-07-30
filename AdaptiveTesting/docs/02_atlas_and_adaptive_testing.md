@@ -110,10 +110,43 @@ at `eduLLM-Evals/tutor_cat/mcq_irt/` (`matrix.py`, `calibrate.py`, `ability.py`,
 ### Validation status (important caveat)
 
 The published ATLAS ARC bank was fit on **25-shot Open-LLM-Leaderboard** labels;
-our MCQ CSVs are **0-shot log-likelihood**. Transfer of the *published* bank to
-our models is only moderate (`atlas_recalibrate_0p5_7b` reports r≈0.59 at SE 0.2–0.3).
-The recalibration experiment exists precisely to fix this scoring mismatch. Takeaway
-for planning: **calibrate on responses produced the same way we score at eval time.**
+our MCQ CSVs are **0-shot log-likelihood**. Held-out transfer over the same 60
+models, recomputed from each experiment's own `results/*.csv`:
+
+| Bank | SE stop | r | p-IRT MAE | mean items |
+|---|---|---|---|---|
+| Published (`arc/`) | 0.2 | **0.830** | 0.147 | 21.1 |
+| Published (`arc/`) | 0.3 | **0.738** | 0.172 | 9.9 |
+| Recalibrated 0.5–7B (`arc_0p5_7b/`) | 0.2 | 0.589 | 0.147 | 12.5 |
+| Recalibrated 0.5–7B (`arc_0p5_7b/`) | 0.3 | 0.585 | 0.150 | 8.3 |
+
+Three things to be clear about, because earlier drafts of this doc got them wrong:
+
+1. **The published bank transfers better than the recalibrated one** (r 0.74–0.83
+   vs 0.59). The r≈0.59 figure belongs to `atlas_recalibrate_0p5_7b`, not to the
+   published bank.
+2. **The recalibration did not address the scoring mismatch.** Its README shows it
+   re-fit on `data/gaussian_sampled_arc_response_matrix_train_with_scores_0p5_7b.csv`,
+   which is ATLAS's own 25-shot matrix filtered to models with heuristic size in
+   [0.5, 7]B. It varied the calibration **population**, not the scoring method, and
+   correlation dropped. A true scoring-parity recalibration has not been run.
+3. **p-IRT accuracy is not usable as an absolute number yet.** Predicting the
+   constant mean accuracy for every model gives MAE 0.084; p-IRT gives 0.147–0.172.
+   Predicted accuracy is also range-compressed (sd 0.043–0.054 against an actual sd
+   of 0.099). The θ *ranking* is sound; the reconstructed accuracy *level* is not.
+
+The compression has a concrete cause. 7 of the 60 held-out models score **below
+four-choice chance** (0.171–0.242), and the bank predicts 0.411–0.521 for exactly
+those models. A 3PL bank cannot represent sub-chance accuracy: the pseudo-guessing
+parameter floors every prediction, and this bank's `g` is high (mean 0.264, p90
+0.763). Sub-chance results are what 0-shot log-likelihood over choice continuations
+produces on weak models, since length and fluency bias pushes them below chance
+rather than toward it; 25-shot leaderboard responses rarely go there, so `g` was
+never fit against that regime.
+
+Takeaway for planning: **calibrate on responses produced the same way we score at
+eval time**, and treat sub-chance behavior as a first-class requirement of whichever
+scoring is chosen.
 
 ---
 
@@ -137,6 +170,15 @@ atlas_idx,question_id,question
 `Instance.metadata["id"]`. This CSV was built from leaderboard example order — it
 is the artifact that makes ARC alignable today. **Equivalent maps do not yet exist
 for the other benchmarks.**
+
+**Effective bank coverage is smaller than the file suggests.** The ARC params CSV
+has 839 rows, but `load_bank()` drops items with non-positive discrimination, and
+189 of them have `a1 <= 0` (an anti-discriminating fit, where stronger models do
+*worse* on the item). That leaves **650 usable items**, against 1,172 questions in
+the ARC-Challenge test split, so the CAT sees about 55% of the benchmark. The
+bridge itself has 1,172 rows but only 1,170 distinct `question_id`s, so two ids are
+duplicated; `ItemBank` keys positions by id, so a duplicate silently resolves to
+one position.
 
 **Per-model MCQ response CSV** — `Inputs/Open/LLM-Judge/mcq/<benchmark>/<model>.csv`:
 

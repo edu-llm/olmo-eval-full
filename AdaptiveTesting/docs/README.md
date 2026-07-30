@@ -5,8 +5,9 @@ CAT)** into the **olmo-eval** suite so that a model launched on Beaker can be ru
 through an ATLAS eval and reported by ability (θ) + p-IRT accuracy instead of (or
 alongside) full-benchmark accuracy.
 
-These docs are a map + assessment for planning, not an implementation. Read them
-in order:
+Docs 01–03 are the map and assessment written while scoping the work; doc 04
+records the implementation that followed, which is **built and verified end to end
+for ARC-Challenge**. Read them in order:
 
 | Doc | What it covers |
 |---|---|
@@ -14,6 +15,12 @@ in order:
 | [`02_atlas_and_adaptive_testing.md`](02_atlas_and_adaptive_testing.md) | What ATLAS is (3PL IRT + Fisher-info CAT + p-IRT), the vendored ATLAS repo, the teammate's calibration/validation experiments already in `AdaptiveTesting/`, the standalone inference harness, and all the data schemas + the item↔question_id bridge. |
 | [`03_integration_assessment.md`](03_integration_assessment.md) | How hard the integration is, the exact seams to hook into, a recommended bare-bones first cut, alternatives, and the open risks. Feeds the plan. |
 | [`04_implementation_and_phase3_handoff.md`](04_implementation_and_phase3_handoff.md) | **What is actually built (Phases 0–2), the exact commands to test/verify it, and the Phase 3 pickup guide** (multi-benchmark id-bridges + banks + `atlas` suite, generative-scoring caveat, scoring-parity recalibration). Start here to run or extend the integration. |
+
+Two caveats worth knowing before you rely on the output, both detailed in doc 02
+§2: only ARC has a calibrated bank and an id bridge, and p-IRT accuracy is not yet
+reportable as an absolute number (it loses to a constant baseline, because the
+25-shot bank cannot represent the sub-chance scores 0-shot scoring produces). The
+θ ranking is the sound output today.
 
 ## One-paragraph summary
 

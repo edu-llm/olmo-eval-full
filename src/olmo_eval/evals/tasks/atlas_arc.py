@@ -20,7 +20,6 @@ from collections.abc import Sequence
 
 from olmo_eval.adaptive import TableResponder, load_bank, run_cat
 from olmo_eval.adaptive.cat import DEFAULT_MAX_ITEMS, DEFAULT_MIN_ITEMS, DEFAULT_SE_STOP
-from olmo_eval.common.metrics import LogprobMCAccuracyMetric
 from olmo_eval.common.types import Response
 from olmo_eval.evals.tasks.arc import ARCChallenge
 from olmo_eval.evals.tasks.common import register
@@ -32,9 +31,15 @@ logger = logging.getLogger(__name__)
 class AtlasARCChallenge(ARCChallenge):
     """ARC-Challenge with an appended ATLAS adaptive-testing report.
 
-    Inherits ARC-Challenge instances, formatting, and log-likelihood scoring
-    unchanged; the native ARC ``question_id`` is preserved in
-    ``Instance.metadata["id"]`` and used to join responses to the 3PL bank.
+    Inherits ARC-Challenge instances, formatting, and scoring unchanged; the
+    native ARC ``question_id`` is preserved in ``Instance.metadata["id"]`` and
+    used to join responses to the 3PL bank.
+
+    Per-item correctness comes from the task's configured primary metric, so
+    scoring variants (for example ``LogprobUncondMCAccuracyMetric`` for PMI
+    normalization) flow through to the CAT. The bank must have been calibrated
+    on responses scored the same way, or item parameters will not transfer --
+    see ``AdaptiveTesting/docs/02_atlas_and_adaptive_testing.md`` section 2.
     """
 
     # ATLAS knobs (bank directory defaults to the vendored ARC bank / env var).
@@ -46,8 +51,16 @@ class AtlasARCChallenge(ARCChallenge):
     def compute_metrics(self, responses: Sequence[Response]) -> dict[str, dict[str, float]]:
         result = super().compute_metrics(responses)
 
-        instance_metric = LogprobMCAccuracyMetric()
+        instance_metric = self.config.get_primary_metric()
+        if instance_metric is None:
+            logger.warning(
+                "no resolvable primary metric; skipping adaptive report. Set "
+                "TaskConfig.primary_metric when the task defines several metrics."
+            )
+            return result
+
         scores: dict[str, int] = {}
+        non_binary = 0
         for response in responses:
             qid = response.instance.metadata.get("id")
             if qid is None:
@@ -55,7 +68,21 @@ class AtlasARCChallenge(ARCChallenge):
             score = instance_metric.compute_instance(response)
             if score is None:
                 continue
+            # IRT models a binary correct/incorrect cell; a continuous metric
+            # (bpb, perplexity) would silently truncate into a meaningless code.
+            if score not in (0.0, 1.0):
+                non_binary += 1
+                continue
             scores[qid] = int(score)
+
+        if non_binary:
+            logger.warning(
+                "%s produced %d non-binary per-item scores; ATLAS needs 0/1 "
+                "correctness, skipping adaptive report",
+                type(instance_metric).__name__,
+                non_binary,
+            )
+            return result
 
         bank_dir = self.atlas_bank_dir or os.environ.get("OLMO_EVAL_ATLAS_BANK_DIR")
         try:

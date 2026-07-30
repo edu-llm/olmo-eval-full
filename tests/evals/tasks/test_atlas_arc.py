@@ -4,6 +4,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from olmo_eval.common.metrics import (
+    BPBMetricInstanceAvg,
+    LogprobMCAccuracyMetric,
+    LogprobPerCharMCAccuracyMetric,
+    Metric,
+)
 from olmo_eval.common.types import Instance, LMOutput, LMRequest, RequestType, Response
 from olmo_eval.evals.tasks.atlas_arc import AtlasARCChallenge
 from olmo_eval.evals.tasks.common import get_task
@@ -80,3 +86,67 @@ def test_compute_metrics_no_bank_overlap_is_graceful(tmp_path: Path) -> None:
     result = task.compute_metrics(responses)
     assert "accuracy" in result
     assert "atlas_theta" not in result
+
+
+def test_uses_configured_primary_metric(tmp_path: Path) -> None:
+    """Per-item correctness must follow the task's configured metric.
+
+    The CAT previously hardcoded LogprobMCAccuracyMetric, so a task configured
+    with a normalized scorer would silently be scored as raw log-likelihood.
+    Here the per-char metric flips the winner relative to raw logprob, so the
+    resulting ability estimate must differ.
+    """
+    bank_dir = _write_bank(tmp_path, n=12)
+
+    def build(metrics: tuple[Metric, ...]) -> dict[str, dict[str, float]]:
+        task = get_task("atlas_arc_challenge")
+        assert isinstance(task, AtlasARCChallenge)
+        task.atlas_bank_dir = str(bank_dir)
+        task.atlas_se_stop = 0.0
+        task.atlas_min_items = 8
+        task.atlas_max_items = 12
+        task.config.metrics = metrics
+        # A long-but-slightly-worse gold continuation wins on summed logprob and
+        # loses per character, so the two metrics disagree on every item.
+        responses = [_long_gold_response(f"q{i}") for i in range(12)]
+        return task.compute_metrics(responses)
+
+    raw = build((LogprobMCAccuracyMetric(),))
+    per_char = build((LogprobPerCharMCAccuracyMetric(),))
+
+    assert raw["atlas_theta"]["atlas"] != per_char["atlas_theta"]["atlas"]
+
+
+def test_non_binary_metric_skips_adaptive_report(tmp_path: Path) -> None:
+    """A continuous metric must not be truncated into a fake 0/1 IRT cell."""
+    bank_dir = _write_bank(tmp_path, n=12)
+    task = get_task("atlas_arc_challenge")
+    assert isinstance(task, AtlasARCChallenge)
+    task.atlas_bank_dir = str(bank_dir)
+    task.config.metrics = (BPBMetricInstanceAvg(),)
+
+    responses = [_mc_response(f"q{i}", correct=(i % 2 == 0)) for i in range(12)]
+    result = task.compute_metrics(responses)
+    assert "atlas_theta" not in result
+
+
+def _long_gold_response(qid: str) -> Response:
+    """Gold (index 0) wins on summed logprob but loses per character.
+
+    Gold is short (-2.0 over 1 char); the distractor is long (-3.0 over 10
+    chars, so -0.3 per char). Summed logprob scores this correct, per-char
+    scores it incorrect.
+    """
+    return Response(
+        instance=Instance(
+            question="q?",
+            choices=("a", "bbbbbbbbbb"),
+            gold_answer="A",
+            metadata={"id": qid, "gold_idx": 0, "num_choices": 2},
+        ),
+        request=LMRequest(request_type=RequestType.LOGLIKELIHOOD),
+        outputs=[
+            LMOutput(text="a", logprobs=[{"token": "a", "logprob": -2.0}]),
+            LMOutput(text="bbbbbbbbbb", logprobs=[{"token": "b", "logprob": -3.0}]),
+        ],
+    )
