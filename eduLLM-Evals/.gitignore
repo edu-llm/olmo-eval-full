@@ -168,3 +168,30 @@ staging/run4_*/
 staging/run5_*/
 # Experimental q-matrix scratch (large, derived)
 data/TutorBench/experimental/
+
+# ---------------------------------------------------------------------------
+# staging/ = scratch (multi-GB total): derived response matrices, supplement
+# extractions (supp_v2/, ~600MB), k-fold param dumps (kfold_full/), ad-hoc
+# fitters, per-run console logs, and the big fitted-item CSV
+# (calibration_mirt_full2skill.csv). None of it is a deliverable and it is all
+# regenerable from runs, so ignore the whole tree. The shareable CAT +
+# calibration deliverables (figures, summary tables, metrics, manifest) are
+# copied into reports/ (tracked) instead. Added 2026-07-30.
+# ---------------------------------------------------------------------------
+staging/
+
+# Additional heavy/generated categories (robust, depth-agnostic):
+# raw model-output dumps, judge run-data, and all archives are never tracked.
+tutorbench-responses*/
+run_data*.jsonl
+run_data*.csv
+*.tar.gz
+*.zip
+
+# ---------------------------------------------------------------------------
+# reports/ = TRACKED deliverables (CAT figures + summary tables). The global
+# `*.png` rule above (and any broad ignore) must NOT swallow these, so
+# re-include the whole reports/ tree explicitly. Added 2026-07-30.
+# ---------------------------------------------------------------------------
+!reports/
+!reports/**
