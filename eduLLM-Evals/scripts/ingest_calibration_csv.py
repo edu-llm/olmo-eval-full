@@ -100,18 +100,21 @@ def _coerce_id_key(hex_value: str) -> bytes:
 # ---------------------------------------------------------------------------
 
 
-def load_curated(path: Path) -> tuple[list[str], dict[str, str]]:
-    """Nonoptional curated criterion_ids (bank file order) + criterion->scenario map.
+def load_curated(path: Path, include_optional: bool = False) -> tuple[list[str], dict[str, str]]:
+    """Curated criterion_ids (bank file order) + criterion->scenario map.
 
-    Matches the ``optional is not True`` selection in run_calibration_judging.py
-    (6,180 of the 6,845 curated rows for this study). The column order is the file
-    order; ``criterion_scenario`` maps each column to its scenario_id.
+    By default matches the ``optional is not True`` selection in
+    run_calibration_judging.py (6,180 of the 6,845 curated rows for this study).
+    With ``include_optional=True`` ALL curated rows become columns (6,845 total),
+    so the optional style_surface "presentation" criteria are present as matrix
+    columns. The column order is the file order; ``criterion_scenario`` maps each
+    column to its scenario_id.
     """
     columns: list[str] = []
     criterion_scenario: dict[str, str] = {}
     seen: set[str] = set()
     for _, record in _read_jsonl(path):
-        if record.get("optional") is True:
+        if not include_optional and record.get("optional") is True:
             continue
         cid = str(record.get("criterion_id") or "").strip()
         if not cid or cid in seen:
@@ -120,6 +123,20 @@ def load_curated(path: Path) -> tuple[list[str], dict[str, str]]:
         columns.append(cid)
         criterion_scenario[cid] = str(record.get("scenario_id") or "").strip()
     return columns, criterion_scenario
+
+
+def load_curated_meta(path: Path) -> dict[str, dict]:
+    """criterion_id -> {optional: bool, dimension: str|None} for category reporting."""
+    meta: dict[str, dict] = {}
+    for _, record in _read_jsonl(path):
+        cid = str(record.get("criterion_id") or "").strip()
+        if not cid or cid in meta:
+            continue
+        meta[cid] = {
+            "optional": record.get("optional") is True,
+            "dimension": record.get("dimension"),
+        }
+    return meta
 
 
 def load_curated_columns(path: Path) -> list[str]:
@@ -331,6 +348,8 @@ class IngestResult:
     policy_missing_cells: int
     policy_auto_fail_cells: int
     applied_csv_cells: int
+    # source label -> criterion_ids that source populated with a definitive verdict
+    source_populated_columns: dict[str, list[str]] = field(default_factory=dict)
 
 
 def build_matrix(
@@ -446,19 +465,24 @@ def _order_models(present: set[str], cohort_models: list[str], cohort_only: bool
 
 
 def ingest_jsonl(
-    path: Path,
+    paths: Path | list[Path],
     columns: list[str],
     *,
     cohort_only: bool,
     cohort_models: list[str],
 ) -> tuple[CsvVerdicts, IngestResult, set[str]]:
-    """Stream a fully de-blinded verdicts JSONL (``tutor_model`` per row) -> matrix.
+    """Stream one or more fully de-blinded verdicts JSONL files -> unified matrix.
 
-    Reads line-by-line (never loads the whole file). ``tutor_model`` is the row key,
+    Reads line-by-line (never loads a whole file). ``tutor_model`` is the row key,
     so no mapping artifact is needed. Applies the frozen cell rules: pass->1, fail->0,
-    no_decision->NaN, absent->NaN. When a (model, criterion) appears more than once a
-    definitive pass/fail beats no_decision and the last definitive verdict wins.
+    no_decision->NaN, absent->NaN. When a (model, criterion) appears more than once --
+    within or ACROSS the input files -- a definitive pass/fail beats no_decision and
+    the last definitive verdict wins. Per-source populated-column sets are tracked for
+    provenance reporting (which file contributed which criterion columns).
     """
+    if isinstance(paths, Path):
+        paths = [paths]
+
     col_set = set(columns)
     verdict_counter: Counter[str] = Counter()
     total_rows = 0
@@ -469,54 +493,60 @@ def ingest_jsonl(
     nd_records: list[dict[str, str]] = []
     cell_verdict: dict[tuple[str, str], str] = {}
     n_conflicts = 0
+    # per-source (by file stem) set of in-bank criterion columns given a definitive verdict
+    source_cols: dict[str, set[str]] = {p.stem: set() for p in paths}
 
-    with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if not line:
-                continue
-            row = json.loads(line)
-            total_rows += 1
-            model = str(row.get("tutor_model") or "")
-            criterion_id = str(row.get("criterion_id") or "")
-            verdict = str(row.get("verdict") or "").strip()
-            scenario_id = str(row.get("scenario_id") or "")
-            response_id = str(row.get("response_id") or "")
-            decision_source = row.get("decision_source")
+    for path in paths:
+        src_label = path.stem
+        with path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                total_rows += 1
+                model = str(row.get("tutor_model") or "")
+                criterion_id = str(row.get("criterion_id") or "")
+                verdict = str(row.get("verdict") or "").strip()
+                scenario_id = str(row.get("scenario_id") or "")
+                response_id = str(row.get("response_id") or "")
+                decision_source = row.get("decision_source")
 
-            verdict_counter[verdict] += 1
-            if response_id:
-                distinct_rids.add(response_id)
-            if model:
-                present_models.add(model)
-            if scenario_id:
-                present_scenarios.add(scenario_id)
+                verdict_counter[verdict] += 1
+                if response_id:
+                    distinct_rids.add(response_id)
+                if model:
+                    present_models.add(model)
+                if scenario_id:
+                    present_scenarios.add(scenario_id)
 
-            if criterion_id not in col_set:
-                off_bank.add(criterion_id)
-                continue
-            if verdict == "no_decision":
-                nd_records.append(
-                    {
-                        "verdict": verdict,
-                        "scenario_id": scenario_id,
-                        "criterion_id": criterion_id,
-                        "decision_source": str(decision_source or ""),
-                    }
-                )
-            key = (model, criterion_id)
-            prev = cell_verdict.get(key)
-            cur_def = verdict in ("pass", "fail")
-            if prev is None:
-                cell_verdict[key] = verdict
-            else:
-                prev_def = prev in ("pass", "fail")
-                if cur_def and prev_def:
-                    if prev != verdict:
-                        n_conflicts += 1
-                    cell_verdict[key] = verdict  # last definitive wins
-                elif cur_def and not prev_def:
+                if criterion_id not in col_set:
+                    off_bank.add(criterion_id)
+                    continue
+                if verdict == "no_decision":
+                    nd_records.append(
+                        {
+                            "verdict": verdict,
+                            "scenario_id": scenario_id,
+                            "criterion_id": criterion_id,
+                            "decision_source": str(decision_source or ""),
+                        }
+                    )
+                if verdict in ("pass", "fail"):
+                    source_cols[src_label].add(criterion_id)
+                key = (model, criterion_id)
+                prev = cell_verdict.get(key)
+                cur_def = verdict in ("pass", "fail")
+                if prev is None:
                     cell_verdict[key] = verdict
+                else:
+                    prev_def = prev in ("pass", "fail")
+                    if cur_def and prev_def:
+                        if prev != verdict:
+                            n_conflicts += 1
+                        cell_verdict[key] = verdict  # last definitive wins
+                    elif cur_def and not prev_def:
+                        cell_verdict[key] = verdict
 
     models = _order_models(present_models, cohort_models, cohort_only)
     model_set = set(models)
@@ -556,6 +586,7 @@ def ingest_jsonl(
         policy_missing_cells=0,
         policy_auto_fail_cells=0,
         applied_csv_cells=applied,
+        source_populated_columns={k: sorted(v) for k, v in source_cols.items()},
     )
     return verdicts, result, present_scenarios
 
@@ -641,6 +672,53 @@ def build_matrix_report(
         "least_covered_models": per_model[:10],
         "responses_dir_files_found": len(files),
         "tutor_model_unmatched_v2_files": unmatched_models,
+    }
+
+
+def build_category_fill(
+    matrix: pd.DataFrame,
+    meta: dict[str, dict],
+    source_populated: dict[str, list[str]],
+) -> dict:
+    """Per-category column-population + source provenance over the built matrix.
+
+    Splits columns into nonoptional / optional-style_surface(presentation) /
+    optional-other, counts how many are populated (>=1 observed cell) vs all-NaN,
+    and attributes populated columns to the source file(s) that supplied a
+    definitive verdict (big-run vs supplement, etc.).
+    """
+    arr = matrix.to_numpy()
+    per_col_obs = (~np.isnan(arr)).sum(axis=0)
+    populated = {c for c, n in zip(matrix.columns, per_col_obs, strict=False) if n > 0}
+
+    cols = list(matrix.columns)
+    nonoptional = [c for c in cols if not meta.get(c, {}).get("optional")]
+    optional = [c for c in cols if meta.get(c, {}).get("optional")]
+    presentation = [c for c in optional if meta.get(c, {}).get("dimension") == "style_surface"]
+    optional_other = [c for c in optional if c not in set(presentation)]
+
+    def _cat(members: list[str]) -> dict:
+        pop = [c for c in members if c in populated]
+        return {"total_columns": len(members), "populated_columns": len(pop),
+                "all_nan_columns": len(members) - len(pop)}
+
+    # provenance: which source populated each column (0 overlap expected here)
+    prov: dict[str, dict] = {}
+    for label, cids in (source_populated or {}).items():
+        cid_set = set(cids)
+        prov[label] = {
+            "populated_columns": len([c for c in cols if c in cid_set]),
+            "nonoptional": len([c for c in nonoptional if c in cid_set]),
+            "presentation_style_surface": len([c for c in presentation if c in cid_set]),
+            "optional_other": len([c for c in optional_other if c in cid_set]),
+        }
+
+    return {
+        "nonoptional": _cat(nonoptional),
+        "optional_presentation_style_surface": _cat(presentation),
+        "optional_other": _cat(optional_other),
+        "populated_columns_total": len(populated),
+        "by_source": prov,
     }
 
 
@@ -845,6 +923,34 @@ def write_audit_md(audit: dict, path: Path) -> None:
     lines += ["", "Top no_decision scenarios:", ""]
     for key, count in list(audit["no_decision"]["no_decision_by_scenario"].items())[:15]:
         lines.append(f"- {key}: {count:,}")
+    cf = audit.get("category_fill")
+    if cf:
+        lines += [
+            "",
+            "## Per-category column fill",
+            "",
+            f"- Nonoptional: {cf['nonoptional']['populated_columns']:,} populated / "
+            f"{cf['nonoptional']['total_columns']:,} "
+            f"({cf['nonoptional']['all_nan_columns']:,} all-NaN)",
+            f"- Optional presentation (style_surface): "
+            f"{cf['optional_presentation_style_surface']['populated_columns']:,} populated / "
+            f"{cf['optional_presentation_style_surface']['total_columns']:,} "
+            f"({cf['optional_presentation_style_surface']['all_nan_columns']:,} all-NaN)",
+            f"- Optional other: {cf['optional_other']['populated_columns']:,} populated / "
+            f"{cf['optional_other']['total_columns']:,}",
+            f"- Populated columns total: {cf['populated_columns_total']:,}",
+            "",
+            "By source file:",
+            "",
+        ]
+        for label, prov in cf.get("by_source", {}).items():
+            lines.append(
+                f"- `{label}`: {prov['populated_columns']:,} populated "
+                f"(nonoptional {prov['nonoptional']:,}, presentation "
+                f"{prov['presentation_style_surface']:,}, optional_other "
+                f"{prov['optional_other']:,})"
+            )
+
     lines += [
         "",
         "## Unresolved / off-bank",
@@ -877,16 +983,17 @@ def run(args: argparse.Namespace) -> int:
     staging: Path = args.out_dir
     staging.mkdir(parents=True, exist_ok=True)
 
-    columns, criterion_scenario = load_curated(args.curated)
+    columns, criterion_scenario = load_curated(args.curated, include_optional=args.include_optional)
     cohort_models = load_cohort_models(args.cohort_policy)
 
     if args.jsonl is not None:
-        source_path = args.jsonl
+        jsonl_paths = list(args.jsonl)
+        source_path = jsonl_paths[0]
         input_mode = "jsonl-deblinded"
-        source_desc = f"jsonl-deblinded:{args.jsonl}"
+        source_desc = "jsonl-deblinded:" + ",".join(str(p) for p in jsonl_paths)
         row_order = "cohort included_models order (present models), then extras"
         verdicts, result, present_scenarios = ingest_jsonl(
-            args.jsonl,
+            jsonl_paths,
             columns,
             cohort_only=args.cohort_only,
             cohort_models=cohort_models,
@@ -921,11 +1028,15 @@ def run(args: argparse.Namespace) -> int:
         responses_dir=args.responses,
     )
 
-    matrix_csv = staging / "response_matrix.csv"
-    matrix_npy = staging / "response_matrix.npy"
-    manifest_path = staging / "response_matrix_manifest.json"
-    audit_json = staging / "ingest_audit.json"
-    audit_md = staging / "ingest_audit.md"
+    category_fill = build_category_fill(
+        result.matrix, load_curated_meta(args.curated), result.source_populated_columns
+    )
+
+    matrix_csv = staging / f"{args.matrix_basename}.csv"
+    matrix_npy = staging / f"{args.matrix_basename}.npy"
+    manifest_path = staging / f"{args.matrix_basename}_manifest.json"
+    audit_json = staging / f"{args.audit_basename}.json"
+    audit_md = staging / f"{args.audit_basename}.md"
 
     write_matrix_csv(result.matrix, matrix_csv)
     write_matrix_npy(result.matrix, matrix_npy)
@@ -943,6 +1054,17 @@ def run(args: argparse.Namespace) -> int:
         row_order=row_order,
         matrix_report=matrix_report,
     )
+    manifest["include_optional"] = bool(args.include_optional)
+    manifest["column_order"] = (
+        "curated bank file order, ALL criteria (incl. optional)"
+        if args.include_optional
+        else manifest["column_order"]
+    )
+    if args.jsonl is not None:
+        manifest["source_files"] = [
+            {"path": str(p), "sha256": _sha256_file(p)} for p in list(args.jsonl)
+        ]
+    manifest["category_fill"] = category_fill
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     audit = build_audit(
@@ -952,6 +1074,7 @@ def run(args: argparse.Namespace) -> int:
         verdicts=verdicts,
         matrix_report=matrix_report,
     )
+    audit["category_fill"] = category_fill
     audit_json.write_text(json.dumps(audit, indent=2), encoding="utf-8")
     write_audit_md(audit, audit_md)
 
@@ -972,6 +1095,20 @@ def run(args: argparse.Namespace) -> int:
         f"scenarios present/curated: {matrix_report['present_scenario_count']}/"
         f"{matrix_report['curated_scenario_count']}"
     )
+    cf = category_fill
+    print(
+        f"category fill      : nonopt {cf['nonoptional']['populated_columns']}/"
+        f"{cf['nonoptional']['total_columns']} pop | presentation(style_surface) "
+        f"{cf['optional_presentation_style_surface']['populated_columns']}/"
+        f"{cf['optional_presentation_style_surface']['total_columns']} | optional_other "
+        f"{cf['optional_other']['populated_columns']}/{cf['optional_other']['total_columns']}"
+    )
+    for label, prov in cf["by_source"].items():
+        print(
+            f"  source {label:<16}: populated {prov['populated_columns']} "
+            f"(nonopt {prov['nonoptional']}, presentation {prov['presentation_style_surface']}, "
+            f"optional_other {prov['optional_other']})"
+        )
     if result.unresolved_response_ids:
         print(f"unresolved rids    : {len(result.unresolved_response_ids)}")
     if matrix_report["tutor_model_unmatched_v2_files"]:
@@ -1014,12 +1151,36 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--cohort-only", action="store_true", help="subset matrix rows to the calibration cohort."
     )
+    p.add_argument(
+        "--include-optional",
+        "--full-bank",
+        dest="include_optional",
+        action="store_true",
+        help="use ALL curated criteria (incl. optional style_surface 'presentation') as "
+        "matrix columns (6,845), not just the 6,180 nonoptional.",
+    )
+    p.add_argument(
+        "--matrix-basename",
+        type=str,
+        default="response_matrix",
+        help="basename for matrix outputs: <name>.csv/.npy/_manifest.json "
+        "(default response_matrix; use response_matrix_full for the combined bank).",
+    )
+    p.add_argument(
+        "--audit-basename",
+        type=str,
+        default="ingest_audit",
+        help="basename for audit outputs: <name>.json/.md (default ingest_audit).",
+    )
 
     source = p.add_mutually_exclusive_group(required=True)
     source.add_argument(
         "--jsonl",
         type=Path,
-        help="(0) fully de-blinded verdicts JSONL (tutor_model per row; no mapping needed).",
+        nargs="+",
+        help="(0) fully de-blinded verdicts JSONL(s) (tutor_model per row; no mapping "
+        "needed). Accepts MULTIPLE files, merged into one matrix (pass/fail beats "
+        "no_decision on any cross-file duplicate).",
     )
     source.add_argument("--case-index", type=Path, help="(a) private case_index.jsonl (PREFERRED).")
     source.add_argument(

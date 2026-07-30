@@ -144,3 +144,27 @@ data/TutorEval/review_queue*.tsv
 data/TutorEval/*.sample*.json
 data/TutorEval/*.sample*.jsonl
 data/TutorEval/rubrics_qmatrix.smoke.jsonl
+
+# ---------------------------------------------------------------------------
+# Calibration supplement + staging artifacts (large / derived; live in S3 or are
+# regenerable from runs -- never push these). Added 2026-07-30.
+# ---------------------------------------------------------------------------
+# Handoff/supplement bundles (tens-to-hundreds of MB)
+qwen_calibration_supplement_*.zip
+qwen-calibration-supp-*.tar.gz
+supplement_v2/
+# Ad-hoc run-data dumps (regenerable from runs)
+run_data_supp*.jsonl
+# Binary response matrices anywhere in the project
+*.npy
+# Staging = scratch: derived matrices, manifests, audits, console logs, run dirs
+staging/response_matrix_*
+staging/*_console.txt
+staging/ingest_*_audit.json
+staging/ingest_*_audit.md
+staging/rubrics_qmatrix_*_full.jsonl
+staging/kfold/
+staging/run4_*/
+staging/run5_*/
+# Experimental q-matrix scratch (large, derived)
+data/TutorBench/experimental/

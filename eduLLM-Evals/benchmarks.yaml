@@ -33,9 +33,12 @@ benchmarks:
   - name: TutorEval
     scenarios: data/TutorEval/scenarios.jsonl
     enabled: true
+  # NOTE: WildBench is intentionally disabled for now — do not run it until further
+  # notice. Leaving the entry here (enabled: false) keeps it registered; flip back to
+  # `enabled: true` (or pass `--only WildBench`) once it's cleared to run again.
   - name: WildBench
     scenarios: data/WildBench/scenarios.jsonl
-    enabled: true
+    enabled: false
   - name: Bridge
     scenarios: data/Bridge/scenarios.jsonl
     enabled: true

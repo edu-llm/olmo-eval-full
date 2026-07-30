@@ -74,6 +74,30 @@ def read_jsonl(path: Path) -> list[dict]:
     return out
 
 
+def load_candidate_ids_from_bank(
+    records: list[dict], dimension: str | None, optional_flag: bool
+) -> set[str]:
+    """criterion_ids selected DIRECTLY from the curated bank (no classifier CSV).
+
+    A criterion is tagged when ``dimension == <dimension>`` (if given) OR, when
+    ``optional_flag`` is set, ``optional is True``. Used for the presentation axis,
+    whose members are the optional ``dimension=='style_surface'`` criteria.
+    """
+    ids: set[str] = set()
+    for rec in records:
+        cid = rec.get("criterion_id")
+        if not cid:
+            continue
+        hit = False
+        if dimension is not None and rec.get("dimension") == dimension:
+            hit = True
+        if optional_flag and rec.get("optional") is True:
+            hit = True
+        if hit:
+            ids.add(cid)
+    return ids
+
+
 def load_candidate_ids(labels_csv: Path, hit_col: str) -> set[str]:
     """criterion_ids the classifier tagged for the candidate (``hit_col``==1)."""
     if not labels_csv.is_file():
@@ -180,15 +204,27 @@ def main() -> int:
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
     p.add_argument("--candidate", required=True,
-                   help="candidate axis name (e.g. metacognition, communication).")
-    p.add_argument("--hit-col", required=True,
+                   help="candidate axis name (e.g. metacognition, communication, presentation).")
+    p.add_argument("--hit-col", default=None,
                    help="classifier CSV column used as the candidate tag "
-                        "(e.g. hit_metacognitive, hit_communication_clarity).")
+                        "(e.g. hit_metacognitive). Mutually exclusive with the "
+                        "--select-* bank-selection flags.")
+    p.add_argument("--select-dimension", default=None,
+                   help="select candidate criteria DIRECTLY from the curated bank where "
+                        "record['dimension']==this (e.g. style_surface for presentation).")
+    p.add_argument("--select-optional", action="store_true",
+                   help="also/instead select candidate criteria where optional is True.")
     p.add_argument("--curated", type=Path, default=DEFAULT_CURATED)
     p.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
     p.add_argument("--matrix", type=Path, default=DEFAULT_MATRIX)
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
+
+    use_bank = args.select_dimension is not None or args.select_optional
+    if bool(args.hit_col) == use_bank:
+        print("ERROR: provide EITHER --hit-col OR --select-dimension/--select-optional.",
+              file=sys.stderr)
+        return 2
 
     out = args.out or (
         ROOT / "data" / "TutorBench" / "experimental"
@@ -200,7 +236,17 @@ def main() -> int:
         return 2
 
     records = read_jsonl(args.curated)
-    candidate_ids = load_candidate_ids(args.labels, args.hit_col)
+    if use_bank:
+        candidate_ids = load_candidate_ids_from_bank(
+            records, args.select_dimension, args.select_optional
+        )
+        tag_desc = (
+            f"bank select: dimension=={args.select_dimension!r}"
+            + (" OR optional==True" if args.select_optional else "")
+        )
+    else:
+        candidate_ids = load_candidate_ids(args.labels, args.hit_col)
+        tag_desc = f"classifier {args.hit_col}==1"
     cols = load_matrix_columns(args.matrix)
 
     out_records, stats = build(records, candidate_ids)
@@ -213,8 +259,8 @@ def main() -> int:
     print(f"  slot repurposing: content<-correctness, diagnosis<-scaffolding, "
           f"scaffolding<-{args.candidate}")
     print("=" * 72)
-    print(f"{args.candidate} tag rule : classifier {args.hit_col}==1 "
-          f"({len(candidate_ids)} tagged criterion_ids in labels CSV)")
+    print(f"{args.candidate} tag rule : {tag_desc} "
+          f"({len(candidate_ids)} tagged criterion_ids)")
     print(f"curated records     : {stats['n_records']}")
     print(f"  correctness=1     : {stats['correctness_1']}")
     print(f"  scaffolding=1     : {stats['scaffolding_1']}")
