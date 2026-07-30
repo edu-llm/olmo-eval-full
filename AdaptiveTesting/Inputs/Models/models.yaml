@@ -12,7 +12,15 @@
 defaults:
   dtype: bfloat16
   trust_remote_code: true
-  max_model_len: 4096
+  # null => resolved per model at load time to min(max_model_len_cap, the window
+  # the checkpoint itself declares in config.json). The old flat 4096 was both
+  # too small (TutorEval prompts reach ~10k tokens, so most were truncated away
+  # before the model saw them) and too large for short-window checkpoints
+  # (GPT-2's 1024 positions, which vLLM refuses outright). Set an explicit value
+  # on an entry to request a smaller window; it is still clamped to what the
+  # checkpoint supports.
+  max_model_len: null
+  max_model_len_cap: 32768    # ceiling for the resolved window (respgen parity)
   tp: 1                       # tensor parallel; 1 for all <=7B (fill the GPU via co-location)
   apply_chat_template: null   # null => derive from id
   scoring_method: loglikelihood

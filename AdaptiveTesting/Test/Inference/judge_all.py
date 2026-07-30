@@ -8,8 +8,8 @@ single GPU's memory.
 Judging is resumable: rows already present in a ``judged.csv`` are skipped.
 
 Examples:
-  python judge_all.py --benchmarks open
-  python judge_all.py --benchmarks squad_v2,mathdial
+  python judge_all.py --benchmarks frq
+  python judge_all.py --benchmarks tutorbench,bridge
 """
 
 from __future__ import annotations
@@ -18,14 +18,14 @@ import argparse
 import sys
 import time
 
-from common import OPEN_OUT_DIR
+from common import OPEN_OUT_DIR, bootstrap_env
 from config import InferenceConfig, JudgeConfig
 from datasets_registry import BENCHMARKS, OPEN_BENCHMARKS
 from judge_prometheus import Judge
 
 
 def resolve(arg: str) -> list[str]:
-    if arg.strip() in {"all", "open"}:
+    if arg.strip() in {"all", "open", "frq"}:
         return list(OPEN_BENCHMARKS)
     out = []
     for tok in arg.split(","):
@@ -51,6 +51,8 @@ def pending(benchmark: str) -> list[tuple[str, str]]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Must precede the first HTTPS connection (TLS trust store + .env HF_TOKEN).
+    bootstrap_env()
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--benchmarks", default="open", help="open | all | comma list")
     ap.add_argument("--judge-config", default=None)

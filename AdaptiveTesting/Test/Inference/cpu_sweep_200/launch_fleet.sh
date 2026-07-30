@@ -17,6 +17,7 @@ ROOT="${ROOT:-}"
 
 echo "# CPU sweep fleet plan: NUM_SHARDS=${NUM_SHARDS}"
 echo "# Set on every machine: same NUM_SHARDS, unique SHARD_INDEX, same S3_URI"
+echo "# Gated models also need HF_TOKEN exported (or in AdaptiveTesting/.env)."
 echo
 
 for i in $(seq 0 $((NUM_SHARDS - 1))); do

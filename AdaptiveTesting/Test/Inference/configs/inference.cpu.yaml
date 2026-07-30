@@ -11,20 +11,20 @@ generation:
   top_p: 1.0
   max_tokens: 512
   seed: 1234
+# FRQ budgets must be stated as `max_new_tokens` (the generic `max_tokens` no
+# longer leaks into FRQ). These are deliberately well below the manifest's 4096:
+# on CPU every extra decoded token costs real wall-clock, and this sweep trades
+# some answer length for finishing at all.
 overrides:
   tutorbench:
-    max_tokens: 768
+    max_new_tokens: 768
   tutoreval:
-    max_tokens: 768
+    max_new_tokens: 768
   bridge:
-    max_tokens: 512
+    max_new_tokens: 512
   wildbench:
-    max_tokens: 1024
+    max_new_tokens: 1024
   biggen:
-    max_tokens: 1024
-  ifeval:
-    max_tokens: 1024
+    max_new_tokens: 1024
   infobench:
-    max_tokens: 1024
-  edubench:
-    max_tokens: 768
+    max_new_tokens: 1024

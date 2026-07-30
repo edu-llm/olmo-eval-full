@@ -10,7 +10,11 @@
 defaults:
   dtype: bfloat16
   trust_remote_code: true
-  max_model_len: 4096
+  # max_model_len intentionally unset: each model resolves to
+  # min(its declared window, max_model_len_cap). A flat 4096 both over-requested
+  # on 1024/2048-position checkpoints (vLLM rejects that at init) and starved
+  # FRQ - TutorEval prompts reach ~10k tokens, collapsing the answer budget to
+  # the 256-token floor even for models supporting 32k+.
   tp: 1
   apply_chat_template: null
   scoring_method: loglikelihood
@@ -46,7 +50,6 @@ models:
   - {id: meta-llama/Llama-3.2-1B-Instruct, params_b: 1.0, family: Llama3.2, arch: transformer}
   - {id: openbmb/MiniCPM-1B-sft-bf16, params_b: 1.0, family: MiniCPM, arch: transformer}
   - {id: openbmb/MiniCPM-S-1B-sft, params_b: 1.0, family: MiniCPM, arch: transformer}
-  - {id: openbmb/cpm-bee-1b, params_b: 1.0, family: CPM-Bee, arch: transformer}
   - {id: rinna/japanese-gpt-1b, params_b: 1.0, family: rinna-GPT, arch: transformer}
   - {id: sapienzanlp/Minerva-1B-base-v1.0, params_b: 1.0, family: Minerva, arch: transformer}
   - {id: tiiuae/Falcon3-1B-Base, params_b: 1.0, family: Falcon3, arch: transformer}
@@ -63,7 +66,6 @@ models:
   - {id: ai-forever/mGPT-1.3B, params_b: 1.3, family: mGPT, arch: transformer}
   - {id: cedille/fr-boris, params_b: 1.3, family: Boris, arch: transformer}
   - {id: croissantllm/CroissantLLMBase, params_b: 1.3, family: CroissantLLM, arch: transformer}
-  - {id: croissantllm/CroissantLLMBase-1.3B, params_b: 1.3, family: CroissantLLM, arch: transformer}
   - {id: croissantllm/CroissantLLMChat-v0.1, params_b: 1.3, family: CroissantLLM, arch: transformer}
   - {id: deepseek-ai/deepseek-coder-1.3b-base, params_b: 1.3, family: DeepSeek-Coder, arch: transformer}
   - {id: deepseek-ai/deepseek-coder-1.3b-instruct, params_b: 1.3, family: DeepSeek-Coder, arch: transformer}
@@ -100,9 +102,10 @@ models:
   - {id: HuggingFaceTB/SmolLM-1.7B-Instruct, params_b: 1.7, family: SmolLM, arch: transformer}
   - {id: HuggingFaceTB/SmolLM2-1.7B, params_b: 1.7, family: SmolLM2, arch: transformer}
   - {id: HuggingFaceTB/SmolLM2-1.7B-Instruct, params_b: 1.7, family: SmolLM2, arch: transformer}
-  - {id: Qwen/Qwen3-1.7B, params_b: 1.7, family: Qwen3, arch: transformer}
-  - {id: Qwen/Qwen3-1.7B-Instruct, params_b: 1.7, family: Qwen3, arch: transformer}
-  - {id: Qwen/Qwen3-1.7B-Instruct-2507, params_b: 1.7, family: Qwen3, arch: transformer}
+  # Upstream ships the bare name as the instruct/thinking hybrid ("-Base" is the
+  # base model), so the marker heuristic would wrongly render it as a base model.
+  # enable_thinking: false or it spends the FRQ budget emitting <think> traces.
+  - {id: Qwen/Qwen3-1.7B, params_b: 1.7, family: Qwen3, arch: transformer, apply_chat_template: true, enable_thinking: false}
   - {id: bigscience/bloom-1b7, params_b: 1.7, family: BLOOM, arch: transformer}
   - {id: facebook/xglm-1.7B, params_b: 1.7, family: XGLM, arch: transformer}
   - {id: line-corporation/japanese-large-lm-1.7b, params_b: 1.7, family: LINE-LM, arch: transformer}
@@ -119,11 +122,8 @@ models:
   - {id: llm-jp/llm-jp-3-1.8b-instruct, params_b: 1.8, family: LLM-JP, arch: transformer}
   # --- 2.0-3.0 B  (Salamandra / transformer examples follow) ---
   - {id: BSC-LT/salamandra-2b, params_b: 2.0, family: Salamandra, arch: transformer}
-  - {id: BSC-LT/salamandra-2b-base, params_b: 2.0, family: Salamandra, arch: transformer}
   - {id: BSC-LT/salamandra-2b-instruct, params_b: 2.0, family: Salamandra, arch: transformer}
   - {id: BSC-LT/salamandra-2b-instruct-af, params_b: 2.0, family: Salamandra, arch: transformer}
-  - {id: IBM/granite-3.3-2b-base, params_b: 2.0, family: Granite, arch: transformer}
-  - {id: IBM/granite-3.3-2b-instruct, params_b: 2.0, family: Granite, arch: transformer}
   - {id: Salesforce/codegen-2B-mono, params_b: 2.0, family: CodeGen, arch: transformer}
   - {id: Salesforce/codegen-2B-multi, params_b: 2.0, family: CodeGen, arch: transformer}
   - {id: google/gemma-2-2b, params_b: 2.0, family: Gemma2, arch: transformer}
@@ -134,7 +134,6 @@ models:
   - {id: ibm-granite/granite-3.2-2b-instruct, params_b: 2.0, family: Granite, arch: transformer}
   - {id: ibm-granite/granite-3.3-2b-base, params_b: 2.0, family: Granite, arch: transformer}
   - {id: ibm-granite/granite-3.3-2b-instruct, params_b: 2.0, family: Granite, arch: transformer}
-  - {id: openbmb/cpm-bee-2b, params_b: 2.0, family: CPM-Bee, arch: transformer}
   - {id: unsloth/gemma-2-2b, params_b: 2.0, family: Gemma2-unsloth, arch: transformer}
   - {id: kakaocorp/kanana-1.5-2.1b-instruct, params_b: 2.1, family: Kanana, arch: transformer}
   - {id: kakaocorp/kanana-nano-2.1b-base, params_b: 2.1, family: Kanana, arch: transformer}
@@ -152,9 +151,10 @@ models:
   - {id: facebook/xglm-2.9B, params_b: 2.9, family: XGLM, arch: transformer}
   # --- 3.0-4.0 B  (Llama3.2-CS / transformer examples follow) ---
   - {id: AZILA/Llama3.2-3B-Instruct-Czech, params_b: 3.0, family: Llama3.2-CS, arch: transformer}
-  - {id: HuggingFaceTB/SmolLM3-3B, params_b: 3.0, family: SmolLM3, arch: transformer}
+  # Same convention as Qwen3: the bare name is the instruct checkpoint and
+  # SmolLM3-3B-Base (below) is the base model.
+  - {id: HuggingFaceTB/SmolLM3-3B, params_b: 3.0, family: SmolLM3, arch: transformer, apply_chat_template: true, enable_thinking: false}
   - {id: HuggingFaceTB/SmolLM3-3B-Base, params_b: 3.0, family: SmolLM3, arch: transformer}
-  - {id: LightOn/lyso-3b, params_b: 3.0, family: Lyso, arch: transformer}
   - {id: LightOn/lyso-3b-chat, params_b: 3.0, family: Lyso, arch: transformer}
   - {id: NousResearch/Hermes-3-Llama-3.2-3B, params_b: 3.0, family: Hermes3, arch: transformer}
   - {id: StabilityAI/stablecode-3b, params_b: 3.0, family: StableCode, arch: transformer}
@@ -187,15 +187,13 @@ models:
   - {id: microsoft/Phi-3-mini-128k-instruct, params_b: 3.8, family: Phi3, arch: transformer}
   - {id: microsoft/Phi-3-mini-4k-instruct, params_b: 3.8, family: Phi3, arch: transformer}
   - {id: microsoft/Phi-3.5-mini-instruct, params_b: 3.8, family: Phi3.5, arch: transformer}
-  - {id: microsoft/Phi-4-mini-flash-reasoning, params_b: 3.8, family: Phi4, arch: transformer}
   - {id: microsoft/Phi-4-mini-instruct, params_b: 3.8, family: Phi4, arch: transformer}
   - {id: unsloth/Phi-3-mini-4k-instruct, params_b: 3.8, family: Phi3-unsloth, arch: transformer}
   - {id: unsloth/Phi-3.5-mini-instruct, params_b: 3.8, family: Phi3.5-unsloth, arch: transformer}
   # --- 4.0-5.0 B  (Qwen1.5 / transformer examples follow) ---
   - {id: Qwen/Qwen1.5-4B, params_b: 4.0, family: Qwen1.5, arch: transformer}
   - {id: Qwen/Qwen1.5-4B-Chat, params_b: 4.0, family: Qwen1.5, arch: transformer}
-  - {id: Qwen/Qwen3-4B, params_b: 4.0, family: Qwen3, arch: transformer}
-  - {id: Qwen/Qwen3-4B-Instruct, params_b: 4.0, family: Qwen3, arch: transformer}
+  - {id: Qwen/Qwen3-4B, params_b: 4.0, family: Qwen3, arch: transformer, apply_chat_template: true, enable_thinking: false}
   - {id: nvidia/Llama-3.1-Minitron-4B-Depth-Base, params_b: 4.0, family: Minitron, arch: transformer}
   - {id: nvidia/Llama-3.1-Minitron-4B-Width-Base, params_b: 4.0, family: Minitron, arch: transformer}
   - {id: nvidia/Minitron-4B-Base, params_b: 4.0, family: Minitron, arch: transformer}
@@ -205,7 +203,6 @@ models:
   - {id: speakleash/Bielik-4.5B-v3.0-Instruct, params_b: 4.5, family: Bielik, arch: transformer}
   # --- 5.0-6.0 B  (Camel / transformer examples follow) ---
   - {id: Writer/camel-5b-hf, params_b: 5.0, family: Camel, arch: transformer}
-  - {id: openbmb/cpm-bee-5b, params_b: 5.0, family: CPM-Bee, arch: transformer}
   - {id: EleutherAI/polyglot-ko-5.8b, params_b: 5.8, family: Polyglot-KO, arch: transformer}
   - {id: beomi/KoAlpaca-Polyglot-5.8B, params_b: 5.8, family: KoAlpaca, arch: transformer}
   - {id: nlpai-lab/KULLM-Polyglot-5.8B-v2, params_b: 5.8, family: KULLM, arch: transformer}
@@ -213,7 +210,6 @@ models:
   - {id: 01-ai/Yi-1.5-6B, params_b: 6.0, family: Yi1.5, arch: transformer}
   - {id: KoboldAI/GPT-J-6B-Janeway, params_b: 6.0, family: Janeway, arch: transformer}
   - {id: NbAiLab/nb-gpt-j-6B, params_b: 6.0, family: NB-GPT-J, arch: transformer}
-  - {id: THUDM/chatglm-6b, params_b: 6.0, family: ChatGLM, arch: transformer}
   - {id: kakaobrain/kogpt, params_b: 6.0, family: KoGPT, arch: transformer}
   - {id: togethercomputer/GPT-JT-6B-v1, params_b: 6.0, family: GPT-JT, arch: transformer}
   - {id: ise-uiuc/Magicoder-S-DS-6.7B, params_b: 6.7, family: Magicoder, arch: transformer}

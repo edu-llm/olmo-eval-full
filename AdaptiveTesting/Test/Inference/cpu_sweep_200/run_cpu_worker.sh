@@ -12,7 +12,8 @@
 #   PROBE_QUESTIONS     default 100
 #   PROBE_MAX_SECONDS   default 900  (skip model if 100Q takes >15min on CPU)
 #   MODELS_YAML         default AdaptiveTesting/Inputs/Models/models_200.yaml
-#   HF_TOKEN            for gated models (Llama/Mistral/Gemma/Pedagogy)
+#   HF_TOKEN            for gated models (Llama/Mistral/Gemma/Pedagogy);
+#                       falls back to ${ROOT}/.hf_token, then AdaptiveTesting/.env
 #   ROOT                working root (code + outputs + hf cache)
 set -uo pipefail
 
@@ -40,6 +41,16 @@ export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
 export TOKENIZERS_PARALLELISM=false
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-$(nproc)}"
 export MKL_NUM_THREADS="${MKL_NUM_THREADS:-${OMP_NUM_THREADS}}"
+
+# Gated-model token. bootstrap_cpu.sh writes it to ${ROOT}/.hf_token but exports
+# it only in its own shell, so pick it back up here. run_benchmark.py separately
+# reads AdaptiveTesting/.env; this covers hosts that have no .env.
+if [[ -z "${HF_TOKEN:-}" && -r "${ROOT}/.hf_token" ]]; then
+  HF_TOKEN="$(tr -d '\r\n' < "${ROOT}/.hf_token")"
+fi
+if [[ -n "${HF_TOKEN:-}" ]]; then
+  export HF_TOKEN HUGGING_FACE_HUB_TOKEN="${HF_TOKEN}"
+fi
 
 LOGDIR="${ROOT}/logs/cpu_sweep_shard${SHARD_INDEX}"
 mkdir -p "${LOGDIR}" "${HF_HOME}"
@@ -84,6 +95,11 @@ trap cleanup EXIT
 log "shard=${SHARD_INDEX}/${NUM_SHARDS} models_yaml=${MODELS_YAML}"
 log "benchmarks=${BENCHMARKS} max_samples=${MAX_SAMPLES}"
 log "probe=${PROBE_QUESTIONS}Q / ${PROBE_MAX_SECONDS}s  FORCE_CPU=1"
+if [[ -n "${HF_TOKEN:-}" ]]; then
+  log "HF token loaded (len ${#HF_TOKEN})"
+else
+  log "WARN: no HF_TOKEN; gated models will 401 and be skipped"
+fi
 
 cd "${CODE}"
 "${VENV_PY}" run_benchmark.py \

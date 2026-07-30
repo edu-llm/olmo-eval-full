@@ -25,7 +25,9 @@ def existing_ids(path: Path, id_field: str = "question_id") -> set[str]:
     if not path.exists():
         return set()
     ids: set[str] = set()
-    with open(path, newline="") as f:
+    # Explicit UTF-8: prompts/outputs carry arbitrary Unicode (math symbols, CJK),
+    # and the platform default (cp1252 on Windows) raises on write/read.
+    with open(path, newline="", encoding="utf-8") as f:
         if path.suffix == ".jsonl":
             for line in f:
                 line = line.strip()
@@ -86,7 +88,9 @@ class CsvResultWriter(_BaseWriter):
         super().__init__(path, **kw)
         self.fieldnames = fieldnames
         is_new = not path.exists() or path.stat().st_size == 0
-        self._fh = open(path, "a", newline="", buffering=1)  # noqa: SIM115 (long-lived handle)
+        self._fh = open(  # noqa: SIM115 (long-lived handle)
+            path, "a", newline="", buffering=1, encoding="utf-8"
+        )
         self._writer = csv.DictWriter(self._fh, fieldnames=fieldnames, extrasaction="ignore")
         if is_new:
             self._writer.writeheader()
@@ -102,7 +106,7 @@ class JsonlResultWriter(_BaseWriter):
 
     def __init__(self, path: Path, **kw):
         super().__init__(path, **kw)
-        self._fh = open(path, "a", buffering=1)  # noqa: SIM115 (long-lived handle)
+        self._fh = open(path, "a", buffering=1, encoding="utf-8")  # noqa: SIM115
 
     def write_row(self, obj: dict) -> None:
         self._fh.write(json.dumps(obj, ensure_ascii=False) + "\n")

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Parallel prefetch + normalize all CPU-sweep benchmarks into local JSONL caches."""
+"""Parallel prefetch + normalize the MCQ benchmarks into local JSONL caches.
+
+Only MCQ benchmarks are fetched: FRQ items come from the local eduLLM-Evals
+scenario banks, so there is nothing to download for them.
+"""
 
 from __future__ import annotations
 
@@ -14,7 +18,7 @@ INF = os.path.dirname(HERE)
 if INF not in sys.path:
     sys.path.insert(0, INF)
 
-from datasets_registry import CPU_SWEEP_BENCHMARKS, load_benchmark  # noqa: E402
+from datasets_registry import MCQ_BENCHMARKS, load_benchmark  # noqa: E402
 
 
 def _one(name: str, max_samples: int | None, seed: int) -> tuple[str, int | str]:
@@ -29,11 +33,11 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--max-samples", type=int, default=None)
     ap.add_argument("--seed", type=int, default=1234)
-    ap.add_argument("--workers", type=int, default=min(8, len(CPU_SWEEP_BENCHMARKS)))
+    ap.add_argument("--workers", type=int, default=min(8, len(MCQ_BENCHMARKS)))
     ap.add_argument(
         "--benchmarks",
-        default=",".join(CPU_SWEEP_BENCHMARKS),
-        help="comma list (default: full cpu_sweep suite)",
+        default=",".join(MCQ_BENCHMARKS),
+        help="comma list (default: all MCQ benchmarks; FRQ banks are local)",
     )
     args = ap.parse_args()
     names = [b.strip() for b in args.benchmarks.split(",") if b.strip()]

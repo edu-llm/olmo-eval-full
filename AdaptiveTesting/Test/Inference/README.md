@@ -221,7 +221,8 @@ Stored as `AdaptiveTesting/Inputs/Models/models.yaml`. Each entry: HF id, param 
 defaults:
   dtype: bfloat16
   trust_remote_code: true
-  max_model_len: 4096
+  max_model_len: null         # per model: min(max_model_len_cap, the checkpoint's own window)
+  max_model_len_cap: 32768    # ceiling for that resolved window
   tp: 1                       # tensor parallel; 1 for all <=7B (fill the GPU via co-location instead)
   apply_chat_template: false  # base models -> raw prompt; instruct entries override to true (A4)
   scoring_method: loglikelihood  # SAME method for ALL models for comparability (A3)
@@ -380,7 +381,9 @@ models:
 - **Tensor parallelism** stays `tp=1` for all ≤7B models; instead of one big model per GPU we **co-locate many models per GPU** (see §6.4).
 - **dtype:** bf16 default, fp16 fallback for older archs. **No quantization.**
 - **Determinism:** `temperature=0` / greedy for MCQ and for reproducible open-ended runs (configurable per benchmark).
-- **Backend fallback:** models unsupported by the pinned vLLM version route to an HF-`transformers` generation/scoring path or are skipped-with-log (**A5**); a boot-time capability probe test-loads all 100.
+- **Backend fallback:** `engine.build_engine()` owns every load. Known-unsupported architectures route straight to HF-`transformers` (`hf_fallback`); otherwise each construction is retried 3× (5s apart, for transient Hub 429s) and must pass a smoke generation (`"Say OK."`, must be non-empty), and a vLLM engine that still won't start **falls back to transformers** rather than losing the model (**A5**). The backend each model actually ran on is logged per model and rolled up at the end of the run, with a loud `ALERT` for any `vllm -> hf` degradation.
+- **Context window:** `max_model_len` is resolved per model as `min(manifest request or cap, the window the checkpoint declares in config.json)`. This keeps long FRQ prompts (TutorEval reaches ~10k tokens) intact while never exceeding what a short-window checkpoint like GPT-2 (1024) supports.
+- **Memory reclamation:** `Engine.close()` tears down vLLM's tensor-parallel state, drops references, and empties the CUDA cache. With models resident in one long-lived process, skipping this makes *later* models OOM at engine init.
 - **Prompt formatting:** per-model `apply_chat_template` decides raw vs chat-templated prompts; the same setting is used for both MCQ log-likelihood scoring and open-ended generation so results are internally consistent (**A4**).
 
 ### 6.1 MCQ scoring (`mcq_scoring.py`)
@@ -392,9 +395,9 @@ models:
 
 Output: append one row per question with `result = correct|wrong` (plus `scoring_method` for traceability).
 
-### 6.2 Open-ended generation (`open_generate.py`)
+### 6.2 Open-ended generation (`frq_generate.py`)
 
-- Greedy or low-temp generation with a per-benchmark `max_tokens` and stop sequences.
+- Greedy or low-temp generation. The budget is the manifest's `max_new_tokens` (4096), fit per item to `min(max_new_tokens, max_model_len - prompt_tokens)` with at least `MIN_GEN=256` reserved to answer. `configs/*.yaml`'s generic `generation.max_tokens` is **not** an FRQ budget; set `max_new_tokens` (globally or per benchmark) to change it deliberately.
 - Persist full `response` to `.responses.jsonl` **before** judging (so a judge failure never loses generations).
 
 ### 6.3 Prometheus judge (`judge_prometheus.py`)
@@ -478,6 +481,7 @@ for benchmark in BENCHMARKS:                      # outer PHASE (fleet-synchroni
 - Core: `vllm` (existing extra), `transformers`, `datasets`, `torch`, `huggingface_hub`.
 - Judge: `prometheus-eval` + Prometheus weights.
 - Download helpers: `gitpython`/`requests` (SVAMP); everything else via `datasets`/`huggingface_hub`.
+- Env bootstrap: `truststore` + `python-dotenv` (see §12b). Both optional at runtime — `common.bootstrap_env()` degrades silently — but the sweep cannot reach the Hub from a TLS-intercepting network without `truststore`.
 - AWS: `boto3`, AWS CLI (in image).
 - Keep these in the AWS image / an `inference` optional-extra; avoid disturbing the main `olmo-eval` dependency set unless we decide to upstream.
 
@@ -530,6 +534,7 @@ The plan above is now implemented. Modules (all under `Test/Inference/`):
 | `judge_prometheus.py` | Prometheus absolute grading → `pass`/`fail` + reasoning + raw score |
 | `run_benchmark.py` | driver: resident model, benchmark ordering, sharding, resume |
 | `aggregate.py` | derived `_summary/summary.csv` |
+| `smoke_test.py` | end-to-end pipeline check: N random models × MCQ + FRQ items, with timings and an error report (see `SMOKE_TEST.md`) |
 | `orchestrate.sh` | local `smoke` / `mcq` / `open` / `all` driver |
 | `aws/` | `Dockerfile`, `entrypoint.sh` (array-shard + S3 sync), `submit_batch.py`, `batch_job_def.json` |
 
@@ -539,6 +544,18 @@ The plan above is now implemented. Modules (all under `Test/Inference/`):
 
 ```bash
 ./orchestrate.sh smoke      # mock backend + synthetic data, exercises the full pipeline
+```
+
+**End-to-end check on a new machine** — samples models from the roster and reports
+model outputs, response-level errors, and download/load/inference timings.
+Writes only to `Outputs/_smoke/<run-id>/`, so it never creates `.done` markers
+that a real sweep would skip. Full instructions in
+[`SMOKE_TEST.md`](SMOKE_TEST.md):
+
+```bash
+python smoke_test.py --dry-run                    # preflight + plan only
+python smoke_test.py --backend mock --synthetic   # offline, no weights
+python smoke_test.py --max-params-b 1.5           # 5 real models, ~12 GB
 ```
 
 **Real run (GPU):**
@@ -553,6 +570,43 @@ Key flags: `--benchmarks all|mcq|open|<list>`, `--models <ids>`, `--shard-index/
 `--backend vllm|hf|mock`, `--max-samples N`, `--resident-all` (co-located benchmark-outer order),
 `--no-judge`. Backends route automatically (`hf_fallback` models → HF). Everything resumes from the
 per-(benchmark, model) files + `.done` markers.
+
+---
+
+## 12b. Environment & credentials (`.env`)
+
+`run_benchmark.py` and `judge_all.py` call `common.bootstrap_env()` as the first
+statement of `main()`. It does two things, both before the first HTTPS connection
+(every `huggingface_hub` / `vllm` / `datasets` import in this package is lazy, so
+`main()` is early enough):
+
+1. `truststore.inject_into_ssl()` — verify TLS against the **OS certificate store**. On a
+   corporate network that TLS-intercepts with a private root CA, Python's bundled `certifi`
+   list doesn't have that CA and *every* Hub read fails with `CERTIFICATE_VERIFY_FAILED`.
+   Symptom without this: `models_registry.declared_context_window` silently falls back to the
+   static `KNOWN_CONTEXT_WINDOWS` table for all models (a single `warning: cannot reach the
+   HuggingFace Hub …` line), and weight downloads fail outright.
+2. `load_dotenv()` — read `.env` so a token that lives in a file, not an exported shell
+   variable, is actually used.
+
+Both packages are optional; if either is missing the call degrades to the previous behavior
+instead of raising.
+
+**Setup (manual, once):** copy `AdaptiveTesting/.env.example` → `AdaptiveTesting/.env` and fill
+it in. That is the same path `aws/put_hf_secret.sh` reads when uploading the token to Secrets
+Manager. `.env` is gitignored. A `.env` in `Test/Inference/` also works and takes precedence.
+
+| Variable | Why |
+| --- | --- |
+| `HF_TOKEN` | **Required** for gated repos (Llama / Gemma / Mistral / Pedagogy). Without it those ids 401 and the registry skips them. Mirrored to the legacy `HUGGING_FACE_HUB_TOKEN` automatically. |
+| `HF_HOME` | Model + dataset cache root — point at a big disk. Workers set it to `<ROOT>/hf-cache` (`aws/run_parallel.sh`, `cpu_sweep_200/run_cpu_worker.sh`). |
+| `HF_HUB_ENABLE_HF_TRANSFER` | `1` enables the parallel Rust downloader (needs `hf_transfer`). Exported by both worker scripts. |
+| `EDULLM_EVALS_ROOT` | Only when the sibling `eduLLM-Evals` checkout is not beside this repo (FRQ scenario banks). |
+
+Already-exported values always win over `.env`, so the AWS path (token pulled from Secrets
+Manager by `aws/run_parallel.sh` / `node_run_sweep.sh`, or from `${ROOT}/.hf_token` by
+`cpu_sweep_200/run_cpu_worker.sh`) is unaffected. No script ever prints the token value —
+only its length.
 
 ---
 

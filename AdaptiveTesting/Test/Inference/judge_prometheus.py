@@ -1,9 +1,16 @@
-"""Prometheus LLM-judge for open-ended responses.
+"""Prometheus LLM-judge for FRQ responses.
 
-Reads a model's ``responses.jsonl`` and writes ``judged.csv`` with a single
-``result`` (pass/fail) column plus ``reasoning`` (feedback) and the raw 1-5
-``score``. The judge model is loaded once (resident) and reused across all
-(benchmark, model) pairs.
+Reads a model's ``responses.jsonl`` - written in the Model Output schema by
+``frq_generate`` - and writes ``judged.csv`` with a single ``result`` (pass/fail)
+column plus ``reasoning`` (feedback) and the raw 1-5 ``score``. The judge model is
+loaded once (resident) and reused across all (benchmark, model) pairs.
+
+Two schema notes:
+  * response rows use the Title-Case Model Output keys (``Scenario``, ``Output``,
+    ``Issue``, ...); rows with ``Issue == 1`` are failure cells with no text and
+    are skipped rather than judged as empty answers;
+  * the reference answer is not stored in the response row (it is judge-only), so
+    it is looked up from the FRQ scenario bank by scenario id.
 """
 
 from __future__ import annotations
@@ -14,6 +21,7 @@ import re
 from common import open_judged_path, open_responses_path
 from config import JudgeConfig, WriterConfig
 from engine import Engine, GenParams
+from frq_scenarios import FRQBankNotFound, load_frq_scenarios
 from models_registry import ModelSpec
 from results_writer import CsvResultWriter, existing_ids
 
@@ -48,7 +56,6 @@ ABS_PROMPT = (
 )
 
 _RESULT_RE = re.compile(r"\[RESULT\]\s*([1-5])")
-_NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
 
 
 class Judge:
@@ -62,6 +69,10 @@ class Judge:
             params_b=7.0,
             apply_chat_template=True,
             trust_remote_code=True,
+            # Explicit: the judge's window is unrelated to the FRQ prompt budget,
+            # and pinning it keeps judging behaviour (and its GPU footprint)
+            # exactly as before the manifest moved to auto-resolved windows.
+            max_model_len=4096,
         )
         self.engine = Engine(judge_spec, backend=backend or cfg.backend)
 
@@ -90,23 +101,32 @@ class Judge:
         done = existing_ids(out_path)
 
         records = []
-        with open(resp_path) as f:
+        with open(resp_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:
                     continue
-                rec = json.loads(line)
-                if rec["question_id"] not in done:
+                try:
+                    rec = json.loads(line)
+                except json.JSONDecodeError:
+                    continue  # torn last line from an interrupted append
+                if rec.get("Issue", 0) == 1:
+                    continue  # failure cell: no text to judge
+                sid = rec.get("Scenario")
+                if isinstance(sid, str) and sid not in done:
                     records.append(rec)
         if not records:
             return 0
 
+        # References live in the scenario bank, not in the response row.
+        refs = _bank_references(benchmark)
         rubric = self._rubric(rubric_key)
         prompts = [
             ABS_PROMPT.format(
-                instruction=r.get("prompt", ""),
-                response=r.get("response", ""),
-                reference=r.get("reference", "") or "[no reference provided]",
+                instruction=_instruction_for(r, refs),
+                response=r.get("Output", ""),
+                reference=refs.get(r["Scenario"], {}).get("reference")
+                or "[no reference provided]",
                 rubric=rubric,
             )
             for r in records
@@ -125,18 +145,16 @@ class Judge:
                 score, reasoning = _parse_feedback(fb)
                 passed = score is not None and score >= self.cfg.pass_threshold
                 result = "pass" if passed else "fail"
-                em = _hybrid_exact_match(benchmark, rec)
-                fam = _hybrid_final_answer(benchmark, rec)
                 w.write_row(
                     {
-                        "question_id": rec["question_id"],
+                        "question_id": rec["Scenario"],
                         "model": model_id,
                         "benchmark": benchmark,
                         "result": result,
                         "reasoning": reasoning,
                         "score": score if score is not None else "",
-                        "exact_match": "" if em is None else int(em),
-                        "final_answer_match": "" if fam is None else int(fam),
+                        "exact_match": "",
+                        "final_answer_match": "",
                     }
                 )
                 written += 1
@@ -157,38 +175,39 @@ def _parse_feedback(text: str) -> tuple[int | None, str]:
 
 
 # --------------------------------------------------------------------------
-# Hybrid grounding for benchmarks with exact gold answers
+# Reference / instruction lookup from the FRQ scenario bank
 # --------------------------------------------------------------------------
 
-
-def _normalize(s: str) -> str:
-    return re.sub(r"[^a-z0-9]", "", s.lower())
+_BANK_CACHE: dict[str, dict[str, dict]] = {}
 
 
-def _hybrid_exact_match(benchmark: str, rec: dict) -> bool | None:
-    if benchmark != "squad_v2":
-        return None
-    resp = rec.get("response", "")
-    meta = rec.get("meta", {}) or {}
-    if meta.get("unanswerable"):
-        return "no answer" in resp.lower() or "noanswer" in _normalize(resp)
-    golds = meta.get("all_answers") or ([rec["reference"]] if rec.get("reference") else [])
-    norm_resp = _normalize(resp)
-    return any(_normalize(g) and _normalize(g) in norm_resp for g in golds)
+def _bank_references(benchmark: str) -> dict[str, dict]:
+    """scenario_id -> {prompt, reference} for one FRQ benchmark, loaded once.
 
-
-def _hybrid_final_answer(benchmark: str, rec: dict) -> bool | None:
-    if benchmark != "svamp":
-        return None
-    ref = rec.get("reference", "")
-    nums = _NUM_RE.findall(rec.get("response", ""))
-    ref_nums = _NUM_RE.findall(str(ref))
-    if not nums or not ref_nums:
-        return False
+    The Model Output row deliberately stores no reference (it is judge-only), so
+    the bank is the source. Returns {} if the bank is unavailable, in which case
+    the judge falls back to the rendered prompt and no reference.
+    """
+    if benchmark in _BANK_CACHE:
+        return _BANK_CACHE[benchmark]
+    table: dict[str, dict] = {}
     try:
-        return abs(float(nums[-1]) - float(ref_nums[-1])) < 1e-4
-    except ValueError:
-        return False
+        for s in load_frq_scenarios(benchmark):
+            table[s.scenario_id] = {"prompt": s.prompt, "reference": s.reference_solution}
+    except (FRQBankNotFound, KeyError):
+        table = {}
+    _BANK_CACHE[benchmark] = table
+    return table
+
+
+def _instruction_for(rec: dict, refs: dict[str, dict]) -> str:
+    """The instruction shown to the judge: the scenario's own prompt when we have
+    the bank (clean, no tutor system prompt or template tokens), else the rendered
+    prompt that actually reached the model."""
+    entry = refs.get(rec.get("Scenario", ""))
+    if entry and entry.get("prompt"):
+        return entry["prompt"]
+    return rec.get("Rendered Prompt", "")
 
 
 _FALLBACK_RUBRIC = """[Is the response correct, helpful, and appropriate for the instruction?]

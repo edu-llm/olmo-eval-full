@@ -1,12 +1,18 @@
 """Benchmark registry + normalization loaders.
 
-Every loader converts a raw dataset into a list of :class:`common.Question`.
-For MCQ the ``prompt`` is the scoring context and ``options`` are the
-*continuation strings* to be ranked by log-likelihood (``gold_index`` marks the
-correct one). For open-ended the ``prompt`` is the full model input and
-``reference`` is the gold answer / key points (may be empty).
+Two item sources, by benchmark type:
 
-Normalized items are cached as JSONL under ``Inputs/{MCQ,Open}/Benchmarks``.
+  * **MCQ** - loaded from HuggingFace and normalized to :class:`common.Question`,
+    where ``prompt`` is the scoring context and ``options`` are the *continuation
+    strings* ranked by log-likelihood (``gold_index`` marks the correct one).
+    Normalized items are cached as JSONL under ``Inputs/MCQ/Benchmarks``.
+  * **FRQ / open-ended** - loaded from the local eduLLM-Evals ``scenarios.jsonl``
+    banks (see :mod:`frq_scenarios`), NOT from HuggingFace. Those banks are the
+    only source carrying ``use_case`` / ``conversation_context`` / native
+    ``system_prompt``, which faithful tutor-prompt construction requires.
+
+Use :func:`load_items` to load either type; :func:`load_benchmark` is the
+MCQ-only normalizer (kept for the prefetch/caching path).
 """
 
 from __future__ import annotations
@@ -21,11 +27,11 @@ from typing import Any
 
 from common import (
     MCQ_BENCH_DIR,
-    OPEN_BENCH_DIR,
     BenchType,
     Question,
     ensure_dirs,
 )
+from frq_scenarios import FRQ_BANKS, Scenario, load_frq_scenarios
 
 # ---------------------------------------------------------------------------
 # helpers
@@ -40,7 +46,7 @@ def _load_hf(path: str, name: str | None = None, split: str = "test", **kw):
     return load_dataset(path, split=split, **kw)
 
 
-def _cap(items: list[Question], max_samples: int | None, seed: int) -> list[Question]:
+def _cap(items: list, max_samples: int | None, seed: int) -> list:
     if max_samples is None or len(items) <= max_samples:
         return items
     rng = random.Random(seed)
@@ -61,12 +67,8 @@ def _qa_prompt(stem: str) -> str:
     return f"Question: {stem.strip()}\nAnswer:"
 
 
-def _letter_choices(texts: list[str]) -> list[str]:
-    return [f"{chr(ord('A') + i)}. {t}" for i, t in enumerate(texts)]
-
-
 # ---------------------------------------------------------------------------
-# MCQ loaders
+# MCQ loaders (PedagogyBench, PIQA, SocialQA)
 # ---------------------------------------------------------------------------
 
 
@@ -80,112 +82,19 @@ def _mcq_from_choices(stem: str, texts: list[str], gold_index: int, qid: str) ->
     )
 
 
-def load_openbookqa(max_samples, seed):
-    ds = _load_hf("allenai/openbookqa", "main", split="test")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        labels = row["choices"]["label"]
-        texts = row["choices"]["text"]
-        key = row["answerKey"]
-        if key not in labels:
-            continue
-        gold = labels.index(key)
-        qid = row.get("id") or f"obqa_{i:05d}"
-        out.append(_mcq_from_choices(row["question_stem"], texts, gold, qid))
-    return _cap(out, max_samples, seed)
-
-
-def load_sciq(max_samples, seed):
-    ds = _load_hf("allenai/sciq", split="test")
-    rng = random.Random(seed)
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        correct = row["correct_answer"]
-        texts = [correct, row["distractor1"], row["distractor2"], row["distractor3"]]
-        order = list(range(4))
-        rng.shuffle(order)
-        shuffled = [texts[j] for j in order]
-        gold = order.index(0)
-        out.append(_mcq_from_choices(row["question"], shuffled, gold, f"sciq_{i:05d}"))
-    return _cap(out, max_samples, seed)
-
-
-def load_piqa(max_samples, seed):
-    # Script-based loading was removed in datasets v5; use the auto-converted
-    # parquet branch instead.
-    ds = _load_hf("ybisk/piqa", split="validation", revision="refs/convert/parquet")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        texts = [row["sol1"], row["sol2"]]
-        gold = int(row["label"])
-        out.append(_mcq_from_choices(row["goal"], texts, gold, f"piqa_{i:05d}"))
-    return _cap(out, max_samples, seed)
-
-
-def load_mathqa(max_samples, seed):
-    ds = _load_hf("allenai/math_qa", split="test", revision="refs/convert/parquet")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        texts = _parse_mathqa_options(row["options"])
-        if not texts:
-            continue
-        key = str(row["correct"]).strip().lower()
-        gold = ord(key) - ord("a")
-        if gold < 0 or gold >= len(texts):
-            continue
-        out.append(_mcq_from_choices(row["Problem"], texts, gold, f"mathqa_{i:05d}"))
-    return _cap(out, max_samples, seed)
-
-
-def _parse_mathqa_options(raw: str) -> list[str]:
-    """Parse ``"a ) 10 , b ) 12 , c ) 14 ..."`` into a list of option texts."""
-    import re
-
-    parts = re.split(r"\b([a-e])\s*\)", raw)
-    # parts = ['', 'a', ' 10 , ', 'b', ' 12 , ', ...]
-    texts: list[str] = []
-    it = iter(parts[1:])
-    for _label, text in zip(it, it, strict=False):
-        texts.append(text.strip().rstrip(",").strip())
-    return texts
-
-
-def load_educationq(max_samples, seed):
-    """MMLU-Pro stratified by category up to ``max_samples``."""
-    ds = _load_hf("TIGER-Lab/MMLU-Pro", split="test")
-    by_cat: dict[str, list[Question]] = {}
-    for i, row in enumerate(ds):
-        texts = row["options"]
-        gold = row.get("answer_index")
-        if gold is None:
-            key = str(row["answer"]).strip().upper()
-            gold = ord(key) - ord("A")
-        if gold < 0 or gold >= len(texts):
-            continue
-        q = _mcq_from_choices(row["question"], texts, gold, f"eduq_{i:05d}")
-        q.meta["category"] = row.get("category", "unknown")
-        by_cat.setdefault(q.meta["category"], []).append(q)
-    return _stratified_sample(by_cat, max_samples, seed)
-
-
-def _stratified_sample(
-    by_group: dict[str, list[Question]], max_samples: int | None, seed: int
-) -> list[Question]:
-    all_items = [q for items in by_group.values() for q in items]
-    if max_samples is None or len(all_items) <= max_samples:
-        return all_items
-    rng = random.Random(seed)
-    groups = sorted(by_group.keys())
-    per = max(1, max_samples // len(groups))
-    picked: list[Question] = []
-    for g in groups:
-        items = list(by_group[g])
-        rng.shuffle(items)
-        picked.extend(items[:per])
-    if len(picked) > max_samples:
-        rng.shuffle(picked)
-        picked = picked[:max_samples]
-    return picked
+def _resolve_gold(answer: Any, texts: list) -> int | None:
+    """Resolve a gold answer that may be a letter, an index, or the option text."""
+    s = str(answer).strip()
+    if len(s) == 1 and s.upper().isalpha():
+        idx = ord(s.upper()) - ord("A")
+        return idx if 0 <= idx < len(texts) else None
+    if s.isdigit():
+        idx = int(s)
+        return idx if 0 <= idx < len(texts) else None
+    for i, t in enumerate(texts):
+        if str(t).strip() == s:
+            return i
+    return None
 
 
 def load_pedagogy(max_samples, seed):
@@ -219,160 +128,20 @@ def load_pedagogy(max_samples, seed):
     return _cap(out, max_samples, seed)
 
 
-def _resolve_gold(answer: Any, texts: list) -> int | None:
-    """Resolve a gold answer that may be a letter, an index, or the option text."""
-    s = str(answer).strip()
-    if len(s) == 1 and s.upper().isalpha():
-        idx = ord(s.upper()) - ord("A")
-        return idx if 0 <= idx < len(texts) else None
-    if s.isdigit():
-        idx = int(s)
-        return idx if 0 <= idx < len(texts) else None
-    for i, t in enumerate(texts):
-        if str(t).strip() == s:
-            return i
-    return None
-
-
-# ---------------------------------------------------------------------------
-# Open-ended loaders
-# ---------------------------------------------------------------------------
-
-
-def _open(qid: str, prompt: str, reference: str = "", meta: dict | None = None) -> Question:
-    return Question(qid=qid, prompt=prompt, reference=reference, meta=meta or {})
-
-
-def load_squad_v2(max_samples, seed):
-    ds = _load_hf("rajpurkar/squad_v2", split="validation")
+def load_piqa(max_samples, seed):
+    # Script-based loading was removed in datasets v5; use the auto-converted
+    # parquet branch instead.
+    ds = _load_hf("ybisk/piqa", split="validation", revision="refs/convert/parquet")
     out: list[Question] = []
     for i, row in enumerate(ds):
-        answers = row["answers"]["text"]
-        ref = answers[0] if answers else "[no answer]"
-        prompt = (
-            f"Context: {row['context']}\n\nQuestion: {row['question']}\n"
-            "If the question cannot be answered from the context, reply 'no answer'.\nAnswer:"
-        )
-        out.append(
-            _open(
-                row.get("id") or f"squad_{i:05d}",
-                prompt,
-                ref,
-                {"unanswerable": len(answers) == 0, "all_answers": answers},
-            )
-        )
-    return _cap(out, max_samples, seed)
-
-
-def load_svamp(max_samples, seed):
-    ds = _load_hf("ChilleD/SVAMP", split="test")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        body = _first_col(row, ["Body", "body"]) or ""
-        question = _first_col(row, ["Question", "question"]) or ""
-        answer = _first_col(row, ["Answer", "answer"])
-        equation = _first_col(row, ["Equation", "equation"]) or ""
-        prompt = (
-            f"{body} {question}".strip() + "\nSolve the problem and give the final numeric answer."
-        )
-        out.append(
-            _open(
-                row.get("ID") or f"svamp_{i:05d}",
-                prompt,
-                str(answer),
-                {"equation": equation},
-            )
-        )
-    return _cap(out, max_samples, seed)
-
-
-def load_mathdial(max_samples, seed):
-    ds = _load_hf("eth-nlped/mathdial", split="test")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        conv = _first_col(row, ["conversation", "dialog", "dialogue"]) or ""
-        conv_text = _serialize_conversation(conv)
-        question = _first_col(row, ["question", "problem"]) or ""
-        gt = _first_col(row, ["ground_truth", "answer"]) or ""
-        wrong = _first_col(row, ["student_incorrect_solution", "student_solution"]) or ""
-        prompt = (
-            f"Math problem: {question}\n"
-            f"Student's (incorrect) attempt: {wrong}\n"
-            f"Tutoring conversation so far:\n{conv_text}\n"
-            "As the tutor, write your next response."
-        )
-        out.append(_open(f"mathdial_{i:05d}", prompt, str(gt), {}))
-    return _cap(out, max_samples, seed)
-
-
-def _serialize_conversation(conv: Any) -> str:
-    if isinstance(conv, str):
-        return conv
-    if isinstance(conv, list):
-        lines = []
-        for turn in conv:
-            if isinstance(turn, dict):
-                role = turn.get("role") or turn.get("speaker") or ""
-                text = turn.get("content") or turn.get("text") or ""
-                lines.append(f"{role}: {text}".strip())
-            else:
-                lines.append(str(turn))
-        return "\n".join(lines)
-    return str(conv)
-
-
-def load_tutoreval(max_samples, seed):
-    ds = _load_hf("princeton-nlp/TutorEval", split="train")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        question = _first_col(row, ["question", "prompt"]) or ""
-        context = _first_col(row, ["chapter", "context", "textbook"]) or ""
-        key_points = _first_col(row, ["key_points", "keypoints", "reference", "answer"]) or ""
-        if isinstance(key_points, list):
-            key_points = "\n".join(f"- {k}" for k in key_points)
-        prompt = (f"Textbook context: {context}\n\n" if context else "") + f"Question: {question}"
-        out.append(_open(f"tutoreval_{i:05d}", prompt, str(key_points), {}))
-    return _cap(out, max_samples, seed)
-
-
-def load_tutorbench(max_samples, seed):
-    ds = _load_hf("tutorbench/tutorbench", split="train")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        prompt = _first_col(row, ["PROMPT", "prompt", "question", "conversation", "input"])
-        if isinstance(prompt, list):
-            prompt = _serialize_conversation(prompt)
-        follow_up = _first_col(row, ["FOLLOW_UP_PROMPT"])
-        if prompt is not None and follow_up:
-            prompt = f"{prompt}\n\nFollow-up: {follow_up}"
-        ref = (
-            _first_col(
-                row,
-                ["RUBRICS", "UC1_INITIAL_EXPLANATION", "reference", "answer", "rubric", "solution"],
-            )
-            or ""
-        )
-        if prompt is None:
-            continue
-        out.append(_open(f"tutorbench_{i:05d}", str(prompt), str(ref), {}))
-    return _cap(out, max_samples, seed)
-
-
-def load_edubench(max_samples, seed):
-    ds = _load_hf("DirectionAI/EduBench", split="test")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        prompt = _first_col(row, ["prompt", "question", "instruction", "input", "query"])
-        ref = _first_col(row, ["reference", "answer", "output", "response"]) or ""
-        subtask = _first_col(row, ["task", "scenario", "type", "category"]) or "default"
-        if prompt is None:
-            continue
-        out.append(_open(f"edubench_{i:05d}", str(prompt), str(ref), {"subtask": str(subtask)}))
+        texts = [row["sol1"], row["sol2"]]
+        gold = int(row["label"])
+        out.append(_mcq_from_choices(row["goal"], texts, gold, f"piqa_{i:05d}"))
     return _cap(out, max_samples, seed)
 
 
 def load_socialiqa(max_samples, seed):
-    """Social IQa / SocialQA — 3-way MCQ social commonsense."""
+    """Social IQa / SocialQA - 3-way MCQ social commonsense."""
     ds = _load_hf("allenai/social_i_qa", split="validation", revision="refs/convert/parquet")
     out: list[Question] = []
     for i, row in enumerate(ds):
@@ -384,107 +153,6 @@ def load_socialiqa(max_samples, seed):
         if label < 0 or label >= len(texts):
             continue
         out.append(_mcq_from_choices(stem, texts, label, f"socialiqa_{i:05d}"))
-    return _cap(out, max_samples, seed)
-
-
-def load_bridge(max_samples, seed):
-    """Bridge tutoring remediation — next tutor turn (open). Uses validation split."""
-    ds = _load_hf("rose-e-wang/bridge", split="validation")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        hist = row.get("c_h") or []
-        if not hist:
-            continue
-        last = hist[-1] if isinstance(hist, list) else hist
-        student = ""
-        if isinstance(last, dict):
-            student = str(last.get("text") or last.get("content") or "")
-        else:
-            student = str(last)
-        if not student.strip():
-            continue
-        ctx = _serialize_conversation(hist[:-1] if isinstance(hist, list) and len(hist) > 1 else [])
-        prompt = (
-            (f"Conversation so far:\n{ctx}\n\n" if ctx else "")
-            + f"Student: {student.strip()}\n\nWrite the tutor's next remediation turn:"
-        )
-        ref_parts = row.get("c_r_") or row.get("c_r") or []
-        if isinstance(ref_parts, list):
-            ref = " ".join(
-                str(p.get("text") if isinstance(p, dict) else p) for p in ref_parts
-            ).strip()
-        else:
-            ref = str(ref_parts)
-        qid = str(row.get("c_id") or f"bridge_{i:05d}")
-        out.append(_open(qid, prompt, ref, {"lesson_topic": row.get("lesson_topic")}))
-    return _cap(out, max_samples, seed)
-
-
-def load_biggen(max_samples, seed):
-    ds = _load_hf("prometheus-eval/BiGGen-Bench", split="test")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        prompt = _first_col(row, ["input", "prompt", "instruction", "question"])
-        ref = _first_col(row, ["reference_answer", "reference", "answer"]) or ""
-        if prompt is None:
-            continue
-        out.append(
-            _open(
-                f"biggen_{i:05d}",
-                str(prompt),
-                str(ref),
-                {"capability": row.get("capability"), "task": row.get("task")},
-            )
-        )
-    return _cap(out, max_samples, seed)
-
-
-def load_ifeval(max_samples, seed):
-    ds = _load_hf("google/IFEval", split="train")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        prompt = row.get("prompt")
-        if not prompt:
-            continue
-        key = row.get("key", i)
-        out.append(
-            _open(
-                f"ifeval_{key}",
-                str(prompt),
-                reference="",
-                meta={
-                    "instruction_id_list": row.get("instruction_id_list"),
-                    "kwargs": row.get("kwargs"),
-                },
-            )
-        )
-    return _cap(out, max_samples, seed)
-
-
-def load_infobench(max_samples, seed):
-    ds = _load_hf("kqsong/InFoBench", split="train")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        prompt = _first_col(row, ["input", "prompt", "instruction", "query"])
-        if prompt is None:
-            continue
-        ref = _first_col(row, ["output", "reference", "answer"]) or ""
-        qid = str(row.get("id") or row.get("instruction_id") or f"infobench_{i:05d}")
-        out.append(_open(qid, str(prompt), str(ref), {"category": row.get("category")}))
-    return _cap(out, max_samples, seed)
-
-
-def load_wildbench(max_samples, seed):
-    ds = _load_hf("allenai/WildBench", "v2", split="test")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        conv = row.get("conversation_input") or row.get("conversation") or row.get("messages")
-        prompt = _serialize_conversation(conv) if conv else _first_col(row, ["prompt", "instruction"])
-        if not prompt:
-            continue
-        ref = _first_col(row, ["reference", "answer", "checklist"]) or ""
-        qid = str(row.get("session_id") or row.get("id") or f"wildbench_{i:05d}")
-        out.append(_open(qid, str(prompt), str(ref), {"primary_tag": row.get("primary_tag")}))
     return _cap(out, max_samples, seed)
 
 
@@ -509,14 +177,26 @@ def load_synth_mcq(max_samples, seed):
 
 
 def load_synth_open(max_samples, seed):
+    """Offline FRQ items as Scenarios, so the full tutor-prompt path (system turn,
+    conversation context, coalescing) is exercised without network or weights."""
     n = max_samples or 8
-    out: list[Question] = []
+    use_cases = ["adaptive_explanation", "feedback", "hint_generation"]
+    out: list[Scenario] = []
     for i in range(n):
+        uc = use_cases[i % len(use_cases)]
+        ctx = (
+            [{"role": "student", "content": f"I tried concept {i} and got stuck."}]
+            if uc != "adaptive_explanation"
+            else []
+        )
         out.append(
-            _open(
-                f"synth_open_{i:03d}",
-                f"Explain educational concept number {i} to a student.",
-                reference=f"A correct explanation of concept {i}.",
+            Scenario(
+                scenario_id=f"synth_open_{i:03d}",
+                prompt=f"Explain educational concept number {i} to a student.",
+                use_case=uc,
+                conversation_context=ctx,
+                reference_solution=f"A correct explanation of concept {i}.",
+                benchmark="TutorBench",
             )
         )
     return out
@@ -531,51 +211,33 @@ def load_synth_open(max_samples, seed):
 class BenchmarkSpec:
     name: str
     type: BenchType
-    loader: Callable[[int | None, int], list[Question]]
+    # MCQ benchmarks carry an HF loader. FRQ benchmarks load from a local
+    # scenarios.jsonl bank instead, so `loader` is None for them.
+    loader: Callable[[int | None, int], list] | None = None
     rubric_key: str = "default"
 
 
+def _frq_spec(key: str) -> BenchmarkSpec:
+    bank = FRQ_BANKS[key]
+    return BenchmarkSpec(key, BenchType.OPEN, None, bank.rubric_key)
+
+
 BENCHMARKS: dict[str, BenchmarkSpec] = {
-    # MCQ
-    "openbookqa": BenchmarkSpec("openbookqa", BenchType.MCQ, load_openbookqa),
+    # --- MCQ (HuggingFace; cached to Inputs/MCQ/Benchmarks) ---
     "pedagogy": BenchmarkSpec("pedagogy", BenchType.MCQ, load_pedagogy),
-    "sciq": BenchmarkSpec("sciq", BenchType.MCQ, load_sciq),
     "piqa": BenchmarkSpec("piqa", BenchType.MCQ, load_piqa),
-    "educationq": BenchmarkSpec("educationq", BenchType.MCQ, load_educationq),
-    "mathqa": BenchmarkSpec("mathqa", BenchType.MCQ, load_mathqa),
     "socialiqa": BenchmarkSpec("socialiqa", BenchType.MCQ, load_socialiqa),
-    # Open-ended
-    "tutorbench": BenchmarkSpec("tutorbench", BenchType.OPEN, load_tutorbench, "tutorbench"),
-    "tutoreval": BenchmarkSpec("tutoreval", BenchType.OPEN, load_tutoreval, "tutoreval"),
-    "edubench": BenchmarkSpec("edubench", BenchType.OPEN, load_edubench, "edubench"),
-    "bridge": BenchmarkSpec("bridge", BenchType.OPEN, load_bridge, "default"),
-    "biggen": BenchmarkSpec("biggen", BenchType.OPEN, load_biggen, "default"),
-    "ifeval": BenchmarkSpec("ifeval", BenchType.OPEN, load_ifeval, "default"),
-    "infobench": BenchmarkSpec("infobench", BenchType.OPEN, load_infobench, "default"),
-    "wildbench": BenchmarkSpec("wildbench", BenchType.OPEN, load_wildbench, "default"),
-    "squad_v2": BenchmarkSpec("squad_v2", BenchType.OPEN, load_squad_v2, "squad_v2"),
-    "svamp": BenchmarkSpec("svamp", BenchType.OPEN, load_svamp, "svamp"),
-    "mathdial": BenchmarkSpec("mathdial", BenchType.OPEN, load_mathdial, "mathdial"),
-    # Synthetic (offline testing only; excluded from the "all"/"mcq"/"open" groups)
+    # --- FRQ / open-ended (local eduLLM-Evals scenario banks) ---
+    "tutorbench": _frq_spec("tutorbench"),
+    "tutoreval": _frq_spec("tutoreval"),
+    "bridge": _frq_spec("bridge"),
+    "biggen": _frq_spec("biggen"),
+    "infobench": _frq_spec("infobench"),
+    "wildbench": _frq_spec("wildbench"),
+    # --- Synthetic (offline testing only; excluded from the groups below) ---
     "synth_mcq": BenchmarkSpec("synth_mcq", BenchType.MCQ, load_synth_mcq),
     "synth_open": BenchmarkSpec("synth_open", BenchType.OPEN, load_synth_open),
 }
-
-# Named suite for the 200-model CPU response sweep (MCQ correctness + open responses).
-CPU_SWEEP_BENCHMARKS = [
-    "openbookqa",
-    "socialiqa",
-    "piqa",
-    "pedagogy",
-    "bridge",
-    "edubench",
-    "biggen",
-    "ifeval",
-    "infobench",
-    "tutorbench",
-    "tutoreval",
-    "wildbench",
-]
 
 _SYNTHETIC = {"synth_mcq", "synth_open"}
 
@@ -587,11 +249,22 @@ OPEN_BENCHMARKS = [
 ]
 ALL_BENCHMARKS = MCQ_BENCHMARKS + OPEN_BENCHMARKS
 
+# The full pre-calibration suite (3 MCQ + 6 FRQ).
+CPU_SWEEP_BENCHMARKS = list(ALL_BENCHMARKS)
 
-def _cache_path(name: str, spec: BenchmarkSpec, max_samples: int | None, seed: int) -> Path:
-    base = MCQ_BENCH_DIR if spec.type == BenchType.MCQ else OPEN_BENCH_DIR
+
+def is_frq(name: str) -> bool:
+    return BENCHMARKS[name].type == BenchType.OPEN
+
+
+# ---------------------------------------------------------------------------
+# loading
+# ---------------------------------------------------------------------------
+
+
+def _cache_path(name: str, max_samples: int | None, seed: int) -> Path:
     tag = "all" if max_samples is None else str(max_samples)
-    return base / f"{name}.n{tag}.s{seed}.jsonl"
+    return MCQ_BENCH_DIR / f"{name}.n{tag}.s{seed}.jsonl"
 
 
 def _serialize(q: Question) -> str:
@@ -626,20 +299,48 @@ def load_benchmark(
     seed: int = 1234,
     use_cache: bool = True,
 ) -> list[Question]:
-    """Load + normalize (+ cache) a benchmark's questions."""
+    """Load + normalize (+ cache) an MCQ benchmark's questions from HuggingFace."""
     if name not in BENCHMARKS:
         raise KeyError(f"Unknown benchmark '{name}'. Known: {sorted(BENCHMARKS)}")
     spec = BENCHMARKS[name]
-    cache = _cache_path(name, spec, max_samples, seed)
+    if spec.loader is None:
+        raise ValueError(
+            f"'{name}' is an FRQ benchmark loaded from a local scenarios.jsonl bank; "
+            f"use load_items() / frq_scenarios.load_frq_scenarios()"
+        )
+    cache = _cache_path(name, max_samples, seed)
     if use_cache and cache.exists():
-        with open(cache) as f:
+        with open(cache, encoding="utf-8") as f:
             return [_deserialize(line) for line in f if line.strip()]
     questions = spec.loader(max_samples, seed)
+    # Synthetic FRQ items are Scenarios, not Questions - never cached.
+    if name in _SYNTHETIC and spec.type == BenchType.OPEN:
+        return questions
     ensure_dirs(cache.parent)
-    with open(cache, "w") as f:
+    with open(cache, "w", encoding="utf-8") as f:
         for q in questions:
             f.write(_serialize(q) + "\n")
     return questions
+
+
+def load_items(
+    name: str,
+    max_samples: int | None,
+    seed: int = 1234,
+    use_cache: bool = True,
+) -> list:
+    """Load a benchmark's items regardless of type.
+
+    MCQ -> list[Question] (HuggingFace, cached). FRQ -> list[Scenario] (local
+    eduLLM-Evals bank). Raises frq_scenarios.FRQBankNotFound when an FRQ bank is
+    missing, which the driver surfaces as a loud ALERT.
+    """
+    if name not in BENCHMARKS:
+        raise KeyError(f"Unknown benchmark '{name}'. Known: {sorted(BENCHMARKS)}")
+    spec = BENCHMARKS[name]
+    if spec.type == BenchType.OPEN and spec.loader is None:
+        return load_frq_scenarios(name, max_samples, seed)
+    return load_benchmark(name, max_samples, seed, use_cache=use_cache)
 
 
 def _main() -> None:
@@ -650,14 +351,13 @@ def _main() -> None:
     ap.add_argument("--no-cache", action="store_true")
     args = ap.parse_args()
     if not args.benchmark:
-        print("MCQ:", ", ".join(MCQ_BENCHMARKS))
-        print("Open:", ", ".join(OPEN_BENCHMARKS))
+        print("MCQ :", ", ".join(MCQ_BENCHMARKS))
+        print("FRQ :", ", ".join(OPEN_BENCHMARKS))
         return
-    qs = load_benchmark(args.benchmark, args.max_samples, args.seed, use_cache=not args.no_cache)
-    print(f"{args.benchmark}: {len(qs)} questions")
-    if qs:
-        q = qs[0]
-        print("first:", json.dumps(_deserialize(_serialize(q)).__dict__, ensure_ascii=False)[:400])
+    items = load_items(args.benchmark, args.max_samples, args.seed, use_cache=not args.no_cache)
+    print(f"{args.benchmark}: {len(items)} items")
+    if items:
+        print("first:", json.dumps(items[0].__dict__, ensure_ascii=False, default=str)[:400])
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ ROOT=/opt/adaptive-cpu bash bootstrap_cpu.sh
 source /opt/adaptive-cpu/venv/bin/activate
 export VENV_PY=/opt/adaptive-cpu/venv/bin/python
 export ROOT=/opt/adaptive-cpu
-export HF_TOKEN=…   # gated models + pedagogy
+export HF_TOKEN=…   # gated models + pedagogy; or put it in AdaptiveTesting/.env
 
 # 1) parallel dataset prefetch (all hosts can do this; safe / resumeable)
 cd /opt/adaptive-cpu/code/AdaptiveTesting/Test/Inference

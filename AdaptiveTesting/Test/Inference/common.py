@@ -15,6 +15,13 @@ from pathlib import Path
 INFERENCE_DIR = Path(__file__).resolve().parent
 ADAPTIVE_ROOT = INFERENCE_DIR.parent.parent
 
+# FRQ items come from the sibling eduLLM-Evals repo's scenario banks (they carry
+# use_case / conversation_context / native system_prompt, which HF loaders drop).
+# Override with EDULLM_EVALS_ROOT when the two repos aren't side by side.
+EDULLM_ROOT = Path(
+    os.environ.get("EDULLM_EVALS_ROOT") or (ADAPTIVE_ROOT.parent / "eduLLM-Evals")
+).resolve()
+
 INPUTS_DIR = ADAPTIVE_ROOT / "Inputs"
 MODELS_YAML = INPUTS_DIR / "Models" / "models.yaml"
 MCQ_BENCH_DIR = INPUTS_DIR / "MCQ" / "Benchmarks"
@@ -28,6 +35,63 @@ MANIFEST_DIR = OUTPUTS_DIR / "_manifests"
 SUMMARY_DIR = OUTPUTS_DIR / "_summary"
 
 CONFIG_DIR = INFERENCE_DIR / "configs"
+
+# ---------------------------------------------------------------------------
+# Environment bootstrap
+# ---------------------------------------------------------------------------
+
+# aws/put_hf_secret.sh already reads HF_TOKEN from AdaptiveTesting/.env, so that
+# is the canonical location; a .env beside the entry points wins if both exist.
+_ENV_FILES = (INFERENCE_DIR / ".env", ADAPTIVE_ROOT / ".env")
+
+_bootstrapped = False
+
+
+def bootstrap_env() -> None:
+    """Install the OS trust store and load ``.env``. Call first in ``main()``.
+
+    Two failures this prevents:
+
+    * corporate networks TLS-intercept with a company root CA that Python's
+      bundled certifi list doesn't know, so every Hub read dies with
+      ``CERTIFICATE_VERIFY_FAILED`` - context windows silently degrade to
+      ``models_registry.KNOWN_CONTEXT_WINDOWS`` and weight downloads fail;
+    * an ``HF_TOKEN`` that lives only in ``.env`` is never seen, so gated repos
+      401 even with a valid key.
+
+    Ordering matters: ``inject_into_ssl()`` patches ``ssl.SSLContext``, which
+    only affects sockets opened afterwards. Every ``huggingface_hub`` / ``vllm``
+    / ``datasets`` import in this package is lazy (inside functions), so calling
+    this at the top of ``main()`` still precedes the first HTTPS connection.
+
+    Both packages are optional; a missing one degrades to prior behavior.
+    """
+    global _bootstrapped
+    if _bootstrapped:
+        return
+    _bootstrapped = True
+
+    try:
+        import truststore
+
+        truststore.inject_into_ssl()
+    except ImportError:
+        pass
+
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    # override=False (the default) throughout: an already-exported value - the
+    # Secrets Manager token in aws/run_parallel.sh - must beat a stale local file.
+    load_dotenv()
+    for path in _ENV_FILES:
+        if path.is_file():
+            load_dotenv(path)
+    # huggingface_hub < 0.19 and some downstream libs only read the legacy name.
+    token = os.environ.get("HF_TOKEN")
+    if token and not os.environ.get("HUGGING_FACE_HUB_TOKEN"):
+        os.environ["HUGGING_FACE_HUB_TOKEN"] = token
 
 
 class BenchType(StrEnum):

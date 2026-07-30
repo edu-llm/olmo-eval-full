@@ -36,9 +36,9 @@ MAX_SAMPLES="${MAX_SAMPLES:-2000}"
 SKIP_JUDGE="${SKIP_JUDGE:-0}"
 DRY_RUN="${DRY_RUN:-0}"
 
-# MCQ suite for the parallel GPU sweep (arc/hellaswag/boolq/winogrande removed).
-MCQ_BENCHMARKS="${MCQ_BENCHMARKS:-openbookqa,sciq,piqa,socialiqa,mathqa,educationq,pedagogy}"
-OPEN_BENCHMARKS="${OPEN_BENCHMARKS:-squad_v2,svamp,mathdial,tutoreval,tutorbench,edubench}"
+# Pre-calibration suite: 3 MCQ (HuggingFace) + 6 FRQ (local eduLLM-Evals banks).
+MCQ_BENCHMARKS="${MCQ_BENCHMARKS:-pedagogy,piqa,socialiqa}"
+OPEN_BENCHMARKS="${OPEN_BENCHMARKS:-tutorbench,tutoreval,bridge,biggen,infobench,wildbench}"
 
 CFG="${CODE}/configs/inference.parallel.yaml"
 JCFG="${CODE}/configs/judge.yaml"
@@ -102,19 +102,26 @@ cd "${CODE}"
 ALL_BENCH="${MCQ_BENCHMARKS},${OPEN_BENCHMARKS}"
 
 # Warm the normalized-dataset cache once, single-process. Without this the
-# workers would race to download and write the same cache files.
+# workers would race to download and write the same MCQ cache files. FRQ items
+# come from local banks, so this doubles as a bank-presence check.
 log "warming dataset cache (single process)"
 python - "$ALL_BENCH" "$MAX_SAMPLES" <<'PY' 2>&1 | tee -a "${LOGDIR}/warm.log"
 import sys
-from datasets_registry import load_benchmark
+
+# Not going through run_benchmark.main(), so bootstrap the trust store here too.
+from common import bootstrap_env
+
+bootstrap_env()
+
+from datasets_registry import load_items  # noqa: E402 - must follow bootstrap_env
 
 names = [b for b in sys.argv[1].split(",") if b]
 cap = int(sys.argv[2])
 usable = []
 for b in names:
     try:
-        qs = load_benchmark(b, cap, 1234, use_cache=True)
-        print(f"  [warm ok] {b}: {len(qs)} items", flush=True)
+        items = load_items(b, cap, 1234, use_cache=True)
+        print(f"  [warm ok] {b}: {len(items)} items", flush=True)
         usable.append(b)
     except Exception as exc:
         print(f"  [warm FAIL] {b}: {type(exc).__name__}: {exc}", flush=True)
