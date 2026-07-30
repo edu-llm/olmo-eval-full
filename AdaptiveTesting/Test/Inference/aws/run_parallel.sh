@@ -36,9 +36,8 @@ MAX_SAMPLES="${MAX_SAMPLES:-2000}"
 SKIP_JUDGE="${SKIP_JUDGE:-0}"
 DRY_RUN="${DRY_RUN:-0}"
 
-# Initial benchmark list minus the four already covered by the MCQ job
-# (arc_easy, arc_challenge, openbookqa, sciq), plus pedagogy.
-MCQ_BENCHMARKS="${MCQ_BENCHMARKS:-hellaswag,piqa,boolq,winogrande,mathqa,educationq,pedagogy}"
+# MCQ suite for the parallel GPU sweep (arc/hellaswag/boolq/winogrande removed).
+MCQ_BENCHMARKS="${MCQ_BENCHMARKS:-openbookqa,sciq,piqa,socialiqa,mathqa,educationq,pedagogy}"
 OPEN_BENCHMARKS="${OPEN_BENCHMARKS:-squad_v2,svamp,mathdial,tutoreval,tutorbench,edubench}"
 
 CFG="${CODE}/configs/inference.parallel.yaml"

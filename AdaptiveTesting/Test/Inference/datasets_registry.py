@@ -80,24 +80,6 @@ def _mcq_from_choices(stem: str, texts: list[str], gold_index: int, qid: str) ->
     )
 
 
-def load_arc(config: str):
-    def _loader(max_samples, seed):
-        ds = _load_hf("allenai/ai2_arc", config, split="test")
-        out: list[Question] = []
-        for i, row in enumerate(ds):
-            labels = row["choices"]["label"]
-            texts = row["choices"]["text"]
-            key = row["answerKey"]
-            if key not in labels:
-                continue
-            gold = labels.index(key)
-            qid = row.get("id") or f"{config}_{i:05d}"
-            out.append(_mcq_from_choices(row["question"], texts, gold, qid))
-        return _cap(out, max_samples, seed)
-
-    return _loader
-
-
 def load_openbookqa(max_samples, seed):
     ds = _load_hf("allenai/openbookqa", "main", split="test")
     out: list[Question] = []
@@ -128,29 +110,6 @@ def load_sciq(max_samples, seed):
     return _cap(out, max_samples, seed)
 
 
-def load_hellaswag(max_samples, seed):
-    ds = _load_hf("Rowan/hellaswag", split="validation")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        if row["label"] == "":
-            continue
-        ctx = row.get("ctx") or (row.get("ctx_a", "") + " " + row.get("ctx_b", "")).strip()
-        endings = row["endings"]
-        gold = int(row["label"])
-        qid = row.get("ind")
-        qid = f"hellaswag_{qid}" if qid is not None else f"hellaswag_{i:05d}"
-        out.append(
-            Question(
-                qid=qid,
-                prompt=ctx,
-                options=[" " + e.strip() for e in endings],
-                gold_index=gold,
-                meta={"stem": ctx, "choices_text": endings, "style": "cloze"},
-            )
-        )
-    return _cap(out, max_samples, seed)
-
-
 def load_piqa(max_samples, seed):
     # Script-based loading was removed in datasets v5; use the auto-converted
     # parquet branch instead.
@@ -160,42 +119,6 @@ def load_piqa(max_samples, seed):
         texts = [row["sol1"], row["sol2"]]
         gold = int(row["label"])
         out.append(_mcq_from_choices(row["goal"], texts, gold, f"piqa_{i:05d}"))
-    return _cap(out, max_samples, seed)
-
-
-def load_boolq(max_samples, seed):
-    ds = _load_hf("google/boolq", split="validation")
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        stem = f"{row['passage']}\n\n{row['question']}?"
-        texts = ["no", "yes"]
-        gold = int(bool(row["answer"]))
-        q = _mcq_from_choices(stem, texts, gold, f"boolq_{i:05d}")
-        out.append(q)
-    return _cap(out, max_samples, seed)
-
-
-def load_winogrande(max_samples, seed):
-    ds = _load_hf("allenai/winogrande", "winogrande_xl", split="validation", trust_remote_code=True)
-    out: list[Question] = []
-    for i, row in enumerate(ds):
-        sent = row["sentence"]
-        if "_" not in sent:
-            continue
-        idx = sent.index("_")
-        prefix = sent[:idx]
-        suffix = sent[idx + 1 :]
-        opts = [row["option1"], row["option2"]]
-        gold = int(row["answer"]) - 1
-        out.append(
-            Question(
-                qid=f"winogrande_{i:05d}",
-                prompt=prefix.rstrip(),
-                options=[" " + o.strip() + suffix for o in opts],
-                gold_index=gold,
-                meta={"stem": sent, "choices_text": opts, "style": "cloze"},
-            )
-        )
     return _cap(out, max_samples, seed)
 
 
@@ -448,6 +371,123 @@ def load_edubench(max_samples, seed):
     return _cap(out, max_samples, seed)
 
 
+def load_socialiqa(max_samples, seed):
+    """Social IQa / SocialQA — 3-way MCQ social commonsense."""
+    ds = _load_hf("allenai/social_i_qa", split="validation", revision="refs/convert/parquet")
+    out: list[Question] = []
+    for i, row in enumerate(ds):
+        stem = f"{row.get('context', '').strip()}\n\n{row.get('question', '').strip()}"
+        texts = [row.get("answerA", ""), row.get("answerB", ""), row.get("answerC", "")]
+        if not all(texts) or not stem.strip():
+            continue
+        label = int(str(row.get("label", "1"))) - 1
+        if label < 0 or label >= len(texts):
+            continue
+        out.append(_mcq_from_choices(stem, texts, label, f"socialiqa_{i:05d}"))
+    return _cap(out, max_samples, seed)
+
+
+def load_bridge(max_samples, seed):
+    """Bridge tutoring remediation — next tutor turn (open). Uses validation split."""
+    ds = _load_hf("rose-e-wang/bridge", split="validation")
+    out: list[Question] = []
+    for i, row in enumerate(ds):
+        hist = row.get("c_h") or []
+        if not hist:
+            continue
+        last = hist[-1] if isinstance(hist, list) else hist
+        student = ""
+        if isinstance(last, dict):
+            student = str(last.get("text") or last.get("content") or "")
+        else:
+            student = str(last)
+        if not student.strip():
+            continue
+        ctx = _serialize_conversation(hist[:-1] if isinstance(hist, list) and len(hist) > 1 else [])
+        prompt = (
+            (f"Conversation so far:\n{ctx}\n\n" if ctx else "")
+            + f"Student: {student.strip()}\n\nWrite the tutor's next remediation turn:"
+        )
+        ref_parts = row.get("c_r_") or row.get("c_r") or []
+        if isinstance(ref_parts, list):
+            ref = " ".join(
+                str(p.get("text") if isinstance(p, dict) else p) for p in ref_parts
+            ).strip()
+        else:
+            ref = str(ref_parts)
+        qid = str(row.get("c_id") or f"bridge_{i:05d}")
+        out.append(_open(qid, prompt, ref, {"lesson_topic": row.get("lesson_topic")}))
+    return _cap(out, max_samples, seed)
+
+
+def load_biggen(max_samples, seed):
+    ds = _load_hf("prometheus-eval/BiGGen-Bench", split="test")
+    out: list[Question] = []
+    for i, row in enumerate(ds):
+        prompt = _first_col(row, ["input", "prompt", "instruction", "question"])
+        ref = _first_col(row, ["reference_answer", "reference", "answer"]) or ""
+        if prompt is None:
+            continue
+        out.append(
+            _open(
+                f"biggen_{i:05d}",
+                str(prompt),
+                str(ref),
+                {"capability": row.get("capability"), "task": row.get("task")},
+            )
+        )
+    return _cap(out, max_samples, seed)
+
+
+def load_ifeval(max_samples, seed):
+    ds = _load_hf("google/IFEval", split="train")
+    out: list[Question] = []
+    for i, row in enumerate(ds):
+        prompt = row.get("prompt")
+        if not prompt:
+            continue
+        key = row.get("key", i)
+        out.append(
+            _open(
+                f"ifeval_{key}",
+                str(prompt),
+                reference="",
+                meta={
+                    "instruction_id_list": row.get("instruction_id_list"),
+                    "kwargs": row.get("kwargs"),
+                },
+            )
+        )
+    return _cap(out, max_samples, seed)
+
+
+def load_infobench(max_samples, seed):
+    ds = _load_hf("kqsong/InFoBench", split="train")
+    out: list[Question] = []
+    for i, row in enumerate(ds):
+        prompt = _first_col(row, ["input", "prompt", "instruction", "query"])
+        if prompt is None:
+            continue
+        ref = _first_col(row, ["output", "reference", "answer"]) or ""
+        qid = str(row.get("id") or row.get("instruction_id") or f"infobench_{i:05d}")
+        out.append(_open(qid, str(prompt), str(ref), {"category": row.get("category")}))
+    return _cap(out, max_samples, seed)
+
+
+def load_wildbench(max_samples, seed):
+    ds = _load_hf("allenai/WildBench", "v2", split="test")
+    out: list[Question] = []
+    for i, row in enumerate(ds):
+        conv = row.get("conversation_input") or row.get("conversation") or row.get("messages")
+        prompt = _serialize_conversation(conv) if conv else _first_col(row, ["prompt", "instruction"])
+        if not prompt:
+            continue
+        ref = _first_col(row, ["reference", "answer", "checklist"]) or ""
+        qid = str(row.get("session_id") or row.get("id") or f"wildbench_{i:05d}")
+        out.append(_open(qid, str(prompt), str(ref), {"primary_tag": row.get("primary_tag")}))
+    return _cap(out, max_samples, seed)
+
+
 # ---------------------------------------------------------------------------
 # synthetic loaders (offline smoke tests / CI; no network, no weights)
 # ---------------------------------------------------------------------------
@@ -497,21 +537,22 @@ class BenchmarkSpec:
 
 BENCHMARKS: dict[str, BenchmarkSpec] = {
     # MCQ
-    "arc_easy": BenchmarkSpec("arc_easy", BenchType.MCQ, load_arc("ARC-Easy")),
-    "arc_challenge": BenchmarkSpec("arc_challenge", BenchType.MCQ, load_arc("ARC-Challenge")),
     "openbookqa": BenchmarkSpec("openbookqa", BenchType.MCQ, load_openbookqa),
     "pedagogy": BenchmarkSpec("pedagogy", BenchType.MCQ, load_pedagogy),
     "sciq": BenchmarkSpec("sciq", BenchType.MCQ, load_sciq),
-    "hellaswag": BenchmarkSpec("hellaswag", BenchType.MCQ, load_hellaswag),
     "piqa": BenchmarkSpec("piqa", BenchType.MCQ, load_piqa),
-    "boolq": BenchmarkSpec("boolq", BenchType.MCQ, load_boolq),
-    "winogrande": BenchmarkSpec("winogrande", BenchType.MCQ, load_winogrande),
     "educationq": BenchmarkSpec("educationq", BenchType.MCQ, load_educationq),
     "mathqa": BenchmarkSpec("mathqa", BenchType.MCQ, load_mathqa),
+    "socialiqa": BenchmarkSpec("socialiqa", BenchType.MCQ, load_socialiqa),
     # Open-ended
     "tutorbench": BenchmarkSpec("tutorbench", BenchType.OPEN, load_tutorbench, "tutorbench"),
     "tutoreval": BenchmarkSpec("tutoreval", BenchType.OPEN, load_tutoreval, "tutoreval"),
     "edubench": BenchmarkSpec("edubench", BenchType.OPEN, load_edubench, "edubench"),
+    "bridge": BenchmarkSpec("bridge", BenchType.OPEN, load_bridge, "default"),
+    "biggen": BenchmarkSpec("biggen", BenchType.OPEN, load_biggen, "default"),
+    "ifeval": BenchmarkSpec("ifeval", BenchType.OPEN, load_ifeval, "default"),
+    "infobench": BenchmarkSpec("infobench", BenchType.OPEN, load_infobench, "default"),
+    "wildbench": BenchmarkSpec("wildbench", BenchType.OPEN, load_wildbench, "default"),
     "squad_v2": BenchmarkSpec("squad_v2", BenchType.OPEN, load_squad_v2, "squad_v2"),
     "svamp": BenchmarkSpec("svamp", BenchType.OPEN, load_svamp, "svamp"),
     "mathdial": BenchmarkSpec("mathdial", BenchType.OPEN, load_mathdial, "mathdial"),
@@ -519,6 +560,22 @@ BENCHMARKS: dict[str, BenchmarkSpec] = {
     "synth_mcq": BenchmarkSpec("synth_mcq", BenchType.MCQ, load_synth_mcq),
     "synth_open": BenchmarkSpec("synth_open", BenchType.OPEN, load_synth_open),
 }
+
+# Named suite for the 200-model CPU response sweep (MCQ correctness + open responses).
+CPU_SWEEP_BENCHMARKS = [
+    "openbookqa",
+    "socialiqa",
+    "piqa",
+    "pedagogy",
+    "bridge",
+    "edubench",
+    "biggen",
+    "ifeval",
+    "infobench",
+    "tutorbench",
+    "tutoreval",
+    "wildbench",
+]
 
 _SYNTHETIC = {"synth_mcq", "synth_open"}
 

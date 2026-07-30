@@ -1,0 +1,14 @@
+# CPU-only inference sweep (no vLLM / CUDA).
+torch>=2.2.0
+transformers>=4.44.0
+accelerate>=0.33.0
+datasets>=2.20.0
+huggingface_hub>=0.24.0
+hf_transfer>=0.1.6
+pyyaml>=6.0
+numpy>=1.26
+sentencepiece>=0.2.0
+protobuf>=4.25
+tqdm>=4.66
+boto3>=1.34
+awscli>=1.32

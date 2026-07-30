@@ -79,17 +79,31 @@ class Engine:
         self._tok = self._llm.get_tokenizer()
 
     def _init_hf(self) -> None:
+        import os
+
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         self._tok = AutoTokenizer.from_pretrained(
             self.spec.id, trust_remote_code=self.spec.trust_remote_code
         )
+        # FORCE_CPU=1 / device_map=cpu for multi-machine CPU sweeps; otherwise auto.
+        force_cpu = os.environ.get("FORCE_CPU", "").strip() in {"1", "true", "yes"}
+        device_map = "cpu" if force_cpu else "auto"
+        if force_cpu:
+            dtype = torch.float32
+        elif self.spec.dtype == "bfloat16" and torch.cuda.is_available():
+            dtype = torch.bfloat16
+        elif torch.cuda.is_available():
+            dtype = torch.float16
+        else:
+            dtype = torch.float32
         self._hf_model = AutoModelForCausalLM.from_pretrained(
             self.spec.id,
             trust_remote_code=self.spec.trust_remote_code,
-            torch_dtype=torch.bfloat16 if self.spec.dtype == "bfloat16" else torch.float16,
-            device_map="auto",
+            torch_dtype=dtype,
+            device_map=device_map,
+            low_cpu_mem_usage=True,
         )
         self._hf_model.eval()
 
