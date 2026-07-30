@@ -5,6 +5,13 @@ Idempotent & reversible: on first run each canonical parquet is backed up to
 cleaned result to the canonical filename, so it can be re-run safely.
 
 Fixes applied:
+  #1  MathJax "{eq}...{/eq}" custom delimiters (WebInstruct-Verified leftovers) are
+      swapped for standard "$...$" across question / ground_truth / reference_answer /
+      prompt.
+  #8  U+FFFD ("replacement char") corruption is context-recovered where confident
+      (backslash-before-LaTeX-command, possessive apostrophes, inter-word dashes,
+      "= �17" minus signs, and the self-described "�ã" square-root). Any row whose
+      question or ground_truth still contains U+FFFD afterwards is DROPPED.
   #2  Thousands-separator commas in verifiable ground_truth/reference_answer are
       removed (e.g. "64,000" -> "64000"). A smart matcher removes ONLY grouping
       commas (digit , exactly-3-digits , boundary), so multi-value list answers
@@ -49,6 +56,36 @@ THOUSANDS = re.compile(r"(?<=\d),(?=\d{3}(?:\D|$))")
 EMPTY_BOXED = re.compile(r"\\boxed\{\s*\}")
 # #7 unit-scale error: microscopic "blood" object measured in metres.
 BLOOD_UNIT = re.compile(r"200\s*m(eters)?\b")
+
+# #8 U+FFFD ("replacement char") recovery. Rules applied in order; any row still
+# containing U+FFFD afterwards is undecipherable and gets dropped.
+FFFD = "\ufffd"
+POSSESSIVE = re.compile(r"([A-Za-z])\ufffd+(?=(?:s|t|re|ll|ve|d|m)\b)")   # world�s -> world's
+DASH_BETWEEN = re.compile(r"(?<=[A-Za-z])\ufffd(?=[a-z])")               # Ion�dipole -> Ion-dipole
+LATEX_BS = re.compile(r"\ufffd[ ]?([A-Za-z{])")                          # �frac / � left -> \frac / \left
+MINUS_FFFD = re.compile(r"(?<=[\s=(+\-*/])\ufffd(?=\d)")                 # = �17 -> = -17
+
+
+def fix_eq(text):
+    """#1: swap MathJax {eq}...{/eq} custom delimiters for standard $...$."""
+    if text is None:
+        return text
+    return text.replace("{eq}", "$").replace("{/eq}", "$")
+
+
+def recover_fffd(text):
+    if text is None or FFFD not in text:
+        return text
+    text = POSSESSIVE.sub(r"\1'", text)
+    text = text.replace("\ufffd\u00e3", "\u221a")  # "�ã" -> √
+    text = DASH_BETWEEN.sub("-", text)
+    text = LATEX_BS.sub(lambda m: "\\" + m.group(1), text)
+    text = MINUS_FFFD.sub("-", text)
+    return text
+
+
+def clean_text(text):
+    return recover_fffd(fix_eq(text))
 SHORT_TIER = re.compile(r"^(\s*)(Essential|Important|Optional|Pitfall):")
 PLACEHOLDERS = {"None", "NULL"}
 COMMA_NOTE = " Do not output commas."
@@ -82,7 +119,8 @@ def clean_file(kind, fname, log):
     schema = src.schema_arrow
 
     st = {"rows_in": 0, "rows_out": 0, "dropped_placeholder": 0, "dropped_empty_boxed": 0,
-          "dropped_unit_error": 0, "gt_comma_fixed": 0, "prompt_comma_added": 0,
+          "dropped_unit_error": 0, "eq_fixed_rows": 0, "fffd_recovered_rows": 0,
+          "dropped_fffd": 0, "gt_comma_fixed": 0, "prompt_comma_added": 0,
           "rubric_prefix_fixed": 0}
 
     tmp = canonical + ".tmp"
@@ -112,6 +150,34 @@ def clean_file(kind, fname, log):
                 st["dropped_unit_error"] += 1
                 gidx += 1
                 continue
+
+            # --- #1 {eq} delimiter swap + #8 U+FFFD recovery (all text fields) ---
+            q0, gt0, ra0 = ei.get("question"), gt, ei.get("reference_answer")
+            had_fffd = FFFD in (q0 or "") or FFFD in (gt0 or "") or FFFD in (ra0 or "")
+            if "{eq}" in (q0 or "") or "{/eq}" in (q0 or ""):
+                st["eq_fixed_rows"] += 1
+            q1, gt1, ra1 = clean_text(q0), clean_text(gt0), clean_text(ra0)
+            if q1 != q0:
+                ei["question"] = q1
+            if gt1 != gt0:
+                rm["ground_truth"] = gt1
+                gt = gt1
+            if ra1 != ra0:
+                ei["reference_answer"] = ra1
+            new_prompt, pchanged = [], False
+            for msg in r["prompt"]:
+                c1 = clean_text(msg["content"])
+                if c1 != msg["content"]:
+                    pchanged = True
+                new_prompt.append({"content": c1, "role": msg["role"]})
+            if pchanged:
+                r["prompt"] = new_prompt
+            if FFFD in (q1 or "") or FFFD in (gt1 or ""):
+                st["dropped_fffd"] += 1   # undecipherable residue -> drop row
+                gidx += 1
+                continue
+            if had_fffd:
+                st["fffd_recovered_rows"] += 1
 
             # --- #2 thousands-comma removal (verifiable exact-match only; smart parser
             #        keeps list separators intact, so multi-value answers are safe) ---
