@@ -9,6 +9,8 @@ Runtime inference dumps stay under `AdaptiveTesting/Outputs/` (gitignored).
 | Local ARC diagnostic | [`local_diagnostic_arc/`](local_diagnostic_arc/) | Same-matrix 2PL/3PL CAT vs full score |
 | ATLAS transfer (published) | [`atlas_transfer_published/`](atlas_transfer_published/) | Published ATLAS 3PL → our held-out models |
 | ATLAS recalibrate 0.5–7B | [`atlas_recalibrate_0p5_7b/`](atlas_recalibrate_0p5_7b/) | Recalibrated bank on small models only |
+| OpenLM GPQA 3PL | [`openlm_gpqa_atlas_3pl/`](openlm_gpqa_atlas_3pl/) | OpenLM GPQA → ATLAS-style 3PL CAT/p-IRT |
+| OpenLM multi-bench 3PL | [`openlm_atlas_3pl/`](openlm_atlas_3pl/) | ifeval/math/musr/bbh 3PL diagnostics |
 
 ## Held-out transfer, side by side
 
