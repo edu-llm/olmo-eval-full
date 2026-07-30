@@ -1,0 +1,22 @@
+{
+  "verifiable": {
+    "rows_in": 414746,
+    "rows_out": 414651,
+    "dropped_placeholder": 87,
+    "dropped_empty_boxed": 8,
+    "dropped_unit_error": 0,
+    "gt_comma_fixed": 10387,
+    "prompt_comma_added": 10387,
+    "rubric_prefix_fixed": 0
+  },
+  "open-ended": {
+    "rows_in": 475759,
+    "rows_out": 475671,
+    "dropped_placeholder": 85,
+    "dropped_empty_boxed": 1,
+    "dropped_unit_error": 2,
+    "gt_comma_fixed": 0,
+    "prompt_comma_added": 0,
+    "rubric_prefix_fixed": 217690
+  }
+}

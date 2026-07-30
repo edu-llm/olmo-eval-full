@@ -85,6 +85,13 @@ data/EduBench/**/rubrics.jsonl
 # Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible) -- never tracked.
 data/EduBench/en_data/
 
+# Dr. SCI: large HF-derived parquet + generated scenario/rubric/CSV artifacts
+# (multiple GBs; scenario/rubric jsonl regenerable via scripts/build_dr_sci_scenarios.py).
+# Never tracked, regardless of nesting.
+data/dr-sci/*.parquet
+data/dr-sci/*.jsonl
+data/dr-sci/*.csv
+
 # AWS key pairs must never be committed
 *.pem
 
