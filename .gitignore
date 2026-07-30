@@ -83,6 +83,24 @@ logs/
 # Eval output
 main/
 
+# HELM Classic downloaded response CSVs + caches/logs
+HELM/*/
+HELM/.cache/
+HELM/download_full.log
+!HELM/README.md
+!HELM/download_classic_responses.py
+
+# OpenLM Leaderboard per-question response CSVs (~26GB); re-download via script
+AdaptiveTesting/Inputs/OpenLM/ifeval/
+AdaptiveTesting/Inputs/OpenLM/bbh/
+AdaptiveTesting/Inputs/OpenLM/gpqa/
+AdaptiveTesting/Inputs/OpenLM/math/
+AdaptiveTesting/Inputs/OpenLM/musr/
+AdaptiveTesting/Inputs/OpenLM/logs/
+AdaptiveTesting/Inputs/OpenLM/__pycache__/
+AdaptiveTesting/Experiments/openlm_*/**/.mplcache/
+AdaptiveTesting/Experiments/openlm_*/**/run_all.pid
+
 # LitSearch rerank pools: built locally, hosted on HF (allenai/litsearch-rerank-pools)
 src/olmo_eval/evals/tasks/data/litsearch_rerank_pools.jsonl
 
