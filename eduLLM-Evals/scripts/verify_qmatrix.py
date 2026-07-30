@@ -403,21 +403,24 @@ def input_path_for(mode: str, override: str | None) -> Path:
     return DATA_DIR / f"{stem}.jsonl"
 
 
-def build_blind_inputs(gen_records: list[dict]) -> tuple[list[dict], dict[int, str], list[dict]]:
+def build_blind_inputs(gen_records: list[dict], rubrics_path: Path, scenarios_path: Path
+                       ) -> tuple[list[dict], dict[int, str], list[dict]]:
     """
     Split generation records into verifiable/unverifiable and render the blind user message.
 
     The blind input is built from the ORIGINAL ``rubrics.jsonl`` (identical to what the
     generator saw), not from the generation output -- the output overwrote ``primary_skill``
-    with the model's own choice, which would leak the generator's answer to a verifier.
+    with the model's own choice, which would leak the generator's answer to a verifier. The
+    rubrics/scenarios sources must therefore match the bank the generator ran on (TutorBench
+    by default; pass ``--rubrics``/``--scenarios`` for the TutorEval ``_final`` files).
 
     :returns: ``(labeled, user_contents, skipped, scenarios)`` -- ``labeled`` are records with a
         non-null generator ``q_mapping``; ``user_contents`` maps their index -> blind message;
         ``skipped`` are records the generator failed to label (recorded as unverifiable);
         ``scenarios`` is the ``scenario_id`` -> scenario index (reused by the review queue).
     """
-    orig_by_id = {r["criterion_id"]: r for r in gq.read_jsonl(RUBRICS_PATH)}
-    scenarios = gq.index_scenarios(gq.read_jsonl(SCENARIOS_PATH))
+    orig_by_id = {r["criterion_id"]: r for r in gq.read_jsonl(rubrics_path)}
+    scenarios = gq.index_scenarios(gq.read_jsonl(scenarios_path))
 
     labeled: list[dict] = []
     skipped: list[dict] = []
@@ -692,7 +695,7 @@ def write_review_tsv(path: Path, queue: list[dict], verifier_names: list[str]) -
 def finish(mode: str, verifiers_desc: list[dict], verifier_names: list[str],
            gen_records: list[dict], labeled: list[dict], blocks: list[dict],
            skipped: list[dict], scenarios: dict[str, dict], strict_schema: bool,
-           report_only: bool) -> None:
+           report_only: bool, out_dir: Path) -> None:
     """Write verified output, review queue, manifest, and print a summary."""
     # Verified output: every input record, with a verification block on the labeled ones.
     block_by_id = {rec["criterion_id"]: blk for rec, blk in zip(labeled, blocks)}
@@ -707,14 +710,15 @@ def finish(mode: str, verifiers_desc: list[dict], verifier_names: list[str],
         verified.append(out)
 
     suffix = ".sample" if mode == "sample" else ""
-    verified_jsonl = DATA_DIR / f"rubrics_qmatrix_verified{suffix}.jsonl"
-    verified_json = DATA_DIR / f"rubrics_qmatrix_verified{suffix}.json"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    verified_jsonl = out_dir / f"rubrics_qmatrix_verified{suffix}.jsonl"
+    verified_json = out_dir / f"rubrics_qmatrix_verified{suffix}.json"
     gq.write_jsonl(verified_jsonl, verified)
     gq.write_json(verified_json, verified)
 
     queue = build_review_queue(labeled, blocks, scenarios)
-    review_jsonl = DATA_DIR / f"review_queue{suffix}.jsonl"
-    review_tsv = DATA_DIR / f"review_queue{suffix}.tsv"
+    review_jsonl = out_dir / f"review_queue{suffix}.jsonl"
+    review_tsv = out_dir / f"review_queue{suffix}.tsv"
     gq.write_jsonl(review_jsonl, queue)
     write_review_tsv(review_tsv, queue, verifier_names)
 
@@ -863,6 +867,17 @@ def main() -> None:
                              f"Default: {DEFAULT_VERIFIERS}")
     parser.add_argument("--input", default=None,
                         help="Override the generation-output file to verify.")
+    parser.add_argument("--rubrics", type=Path, default=RUBRICS_PATH,
+                        help="Original rubric JSONL the generator ran on, used to rebuild the "
+                             "blind input (default: %(default)s). Pass the TutorEval "
+                             "rubrics_final.jsonl when verifying the TutorEval bank.")
+    parser.add_argument("--scenarios", type=Path, default=SCENARIOS_PATH,
+                        help="Scenario JSONL joined by scenario_id for verifier context "
+                             "(default: %(default)s). Pass the TutorEval scenarios_final.jsonl "
+                             "when verifying the TutorEval bank.")
+    parser.add_argument("--out-dir", type=Path, default=DATA_DIR,
+                        help="Directory for verified output + review queue "
+                             "(default: %(default)s).")
     parser.add_argument("--base-url", default=None,
                         help="Gateway root (else ANTHROPIC_BASE_URL). Anthropic uses it as-is; "
                              "the OpenAI client appends /v1.")
@@ -887,7 +902,9 @@ def main() -> None:
         parser.error(f"generation output not found: {input_path} (run generate_qmatrix.py first)")
 
     gen_records = gq.read_jsonl(input_path)
-    labeled, user_contents, skipped, scenarios = build_blind_inputs(gen_records)
+    labeled, user_contents, skipped, scenarios = build_blind_inputs(
+        gen_records, args.rubrics, args.scenarios
+    )
 
     if not args.report_only:
         base_url_root, key = _resolve_gateway(parser, args)
@@ -926,7 +943,7 @@ def main() -> None:
         blocks.append(aggregate(rec, entries))
 
     finish(mode, verifiers_desc, verifier_names, gen_records, labeled, blocks, skipped,
-           scenarios, args.strict_schema, args.report_only)
+           scenarios, args.strict_schema, args.report_only, args.out_dir)
 
 
 if __name__ == "__main__":

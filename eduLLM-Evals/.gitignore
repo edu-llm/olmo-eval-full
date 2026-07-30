@@ -129,3 +129,18 @@ data/TutorEval/*_sample.json
 data/TutorEval/*_sample.jsonl
 data/TutorEval/*.sample.json
 data/TutorEval/*.sample.jsonl
+
+# q-matrix verification run outputs: per-run logs + the verified/review-queue files are
+# regenerable (rerun scripts/verify_qmatrix.py). Only rubrics_qmatrix_final.{jsonl,json}
+# (written by scripts/promote_qmatrix_verified.py) is the tracked deliverable.
+qmatrix_verify_logs/
+data/TutorEval/rubrics_qmatrix.json
+data/TutorEval/rubrics_qmatrix.jsonl
+data/TutorEval/rubrics_qmatrix_verified.json
+data/TutorEval/rubrics_qmatrix_verified.jsonl
+data/TutorEval/review_queue.jsonl
+data/TutorEval/review_queue*.tsv
+# ad-hoc local samples (smoke test, sample2 robustness draw) -- regenerable scratch
+data/TutorEval/*.sample*.json
+data/TutorEval/*.sample*.jsonl
+data/TutorEval/rubrics_qmatrix.smoke.jsonl
