@@ -1,0 +1,470 @@
+{
+  "generated_at": "2026-07-31T15:25:40.750988+00:00",
+  "skills": 3,
+  "dims": [
+    "correctness",
+    "scaffolding",
+    "presentation"
+  ],
+  "config": {
+    "bank": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\run6_presentation\\calibration_mirt.csv",
+    "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full.csv",
+    "kfold_dir": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\kfold_full_3skill",
+    "curated": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\data\\TutorBench\\curated\\rubrics_qmatrix_curated.jsonl",
+    "grid": 7,
+    "se_target": 0.3,
+    "min_items": 1,
+    "max_items": 100,
+    "seed": 20260730,
+    "compare": true
+  },
+  "policy": {
+    "pbis_filter": true,
+    "min_point_biserial": 0.05,
+    "min_items_per_skill": 10,
+    "content_balance": true,
+    "exposure_top_n": 5,
+    "deterministic_tiebreak": true
+  },
+  "bank": {
+    "n_bank_raw": 4156,
+    "n_excluded_flagged": 60,
+    "n_excluded_removed_from_bank": 60,
+    "excluded_present_ids_sample": [
+      "tb_0043_c01",
+      "tb_0050_c09",
+      "tb_0069_c12",
+      "tb_0082_c09",
+      "tb_0097_c06",
+      "tb_0102_c01",
+      "tb_0112_c02",
+      "tb_0130_c05",
+      "tb_0133_c07",
+      "tb_0185_c02"
+    ],
+    "n_eligible": 3821,
+    "pbis_filter": {
+      "min_point_biserial": 0.05,
+      "n_all_pass": 0,
+      "n_all_fail": 0,
+      "n_low_point_biserial": 275,
+      "n_kept": 3821,
+      "n_bank_in": 4096
+    },
+    "items_kept_ref": 4156,
+    "items_total_ref": 6845,
+    "bank_health": {
+      "correctness": "healthy (cross-fold a r=0.77)",
+      "scaffolding": "needs refit (cross-fold a r=0.49)",
+      "presentation": "stable (cross-fold a r=0.71)"
+    },
+    "a_correctness_median_nonzero": 1.112298,
+    "a_correctness_n_loading": 3023,
+    "a_scaffolding_median_nonzero": 0.740343,
+    "a_scaffolding_n_loading": 306,
+    "a_presentation_median_nonzero": 1.091503,
+    "a_presentation_n_loading": 653
+  },
+  "n_models": 82,
+  "in_sample": {
+    "recovery_r": {
+      "correctness": 0.9392665806396322,
+      "scaffolding": 0.6712745928538617,
+      "presentation": 0.9695500206411314,
+      "overall_stacked": 0.9151948858985719
+    },
+    "cat_items": {
+      "n_models": 82,
+      "correctness": {
+        "mean": 41.54,
+        "median": 31.0,
+        "converged": 50
+      },
+      "scaffolding": {
+        "mean": 46.57142857142857,
+        "median": 33.0,
+        "converged": 35
+      },
+      "presentation": {
+        "mean": 33.06666666666667,
+        "median": 21.0,
+        "converged": 45
+      },
+      "overall": {
+        "mean": 48.91428571428571,
+        "median": 35.0,
+        "converged": 35
+      }
+    },
+    "items_administered_by_skill": {
+      "correctness": {
+        "mean": 44.69512195121951,
+        "median": 49.0,
+        "min": 10.0
+      },
+      "scaffolding": {
+        "mean": 61.01219512195122,
+        "median": 75.0,
+        "min": 10.0
+      },
+      "presentation": {
+        "mean": 14.682926829268293,
+        "median": 11.0,
+        "min": 10.0
+      }
+    },
+    "pirt_mae_cat": 0.037347336051752764,
+    "pirt_mae_full": 0.018157765403423887,
+    "pirt_corr_cat": 0.9594431758127672,
+    "item_exposure": {
+      "total_items_administered": 6412,
+      "exposure_count_by_skill": {
+        "correctness": 3665,
+        "scaffolding": 5003,
+        "presentation": 1204
+      },
+      "exposure_share_by_skill": {
+        "correctness": 0.5715845290081097,
+        "scaffolding": 0.7802557704304429,
+        "presentation": 0.18777292576419213
+      },
+      "bank_loading_share_by_skill": {
+        "correctness": 0.7911541481287621,
+        "scaffolding": 0.08008374771002355,
+        "presentation": 0.17089767076681497
+      }
+    },
+    "item_exposure_population": {
+      "n_models": 82,
+      "n_items_ever_administered": 327,
+      "max_exposure_count": 71,
+      "max_exposure_rate": 0.8658536585365854,
+      "top_exposed_items": [
+        {
+          "criterion_id": "tb_0098_c05",
+          "n_administered": 71,
+          "exposure_rate": 0.8658536585365854
+        },
+        {
+          "criterion_id": "tb_0532_c04",
+          "n_administered": 69,
+          "exposure_rate": 0.8414634146341463
+        },
+        {
+          "criterion_id": "tb_0588_c03",
+          "n_administered": 66,
+          "exposure_rate": 0.8048780487804879
+        },
+        {
+          "criterion_id": "tb_0098_c02",
+          "n_administered": 66,
+          "exposure_rate": 0.8048780487804879
+        },
+        {
+          "criterion_id": "tb_0428_c03",
+          "n_administered": 62,
+          "exposure_rate": 0.7560975609756098
+        },
+        {
+          "criterion_id": "tb_0631_c09",
+          "n_administered": 62,
+          "exposure_rate": 0.7560975609756098
+        },
+        {
+          "criterion_id": "tb_0624_c06",
+          "n_administered": 61,
+          "exposure_rate": 0.7439024390243902
+        },
+        {
+          "criterion_id": "tb_0465_c01",
+          "n_administered": 61,
+          "exposure_rate": 0.7439024390243902
+        },
+        {
+          "criterion_id": "tb_0631_c05",
+          "n_administered": 60,
+          "exposure_rate": 0.7317073170731707
+        },
+        {
+          "criterion_id": "tb_0628_c05",
+          "n_administered": 59,
+          "exposure_rate": 0.7195121951219512
+        },
+        {
+          "criterion_id": "tb_0628_c04",
+          "n_administered": 59,
+          "exposure_rate": 0.7195121951219512
+        },
+        {
+          "criterion_id": "tb_0628_c10",
+          "n_administered": 59,
+          "exposure_rate": 0.7195121951219512
+        },
+        {
+          "criterion_id": "tb_0539_c04",
+          "n_administered": 59,
+          "exposure_rate": 0.7195121951219512
+        },
+        {
+          "criterion_id": "tb_0662_c03",
+          "n_administered": 59,
+          "exposure_rate": 0.7195121951219512
+        },
+        {
+          "criterion_id": "tb_0284_c04",
+          "n_administered": 58,
+          "exposure_rate": 0.7073170731707317
+        }
+      ]
+    }
+  },
+  "out_of_sample": {
+    "recovery_r": {
+      "correctness": 0.9173410856673215,
+      "scaffolding": 0.5644865835368398,
+      "presentation": 0.9085500558868357
+    },
+    "cat_items": {
+      "correctness": {
+        "mean": 35.054054054054056,
+        "median": 28.0,
+        "converged": 74
+      },
+      "scaffolding": {
+        "mean": 39.254901960784316,
+        "median": 28.0,
+        "converged": 51
+      },
+      "presentation": {
+        "mean": 32.57377049180328,
+        "median": 22.0,
+        "converged": 61
+      }
+    },
+    "items_administered_by_skill": {
+      "correctness": {
+        "mean": 39.4390243902439,
+        "median": 37.0,
+        "min": 10.0
+      },
+      "scaffolding": {
+        "mean": 48.048780487804876,
+        "median": 43.0,
+        "min": 10.0
+      },
+      "presentation": {
+        "mean": 13.975609756097562,
+        "median": 10.0,
+        "min": 10.0
+      }
+    },
+    "n_models": 82
+  },
+  "before_legacy": {
+    "in_sample": {
+      "recovery_r": {
+        "correctness": 0.9712712714445368,
+        "scaffolding": 0.8811225036150421,
+        "presentation": 0.9096720345015061,
+        "overall_stacked": 0.9290497404590894
+      },
+      "cat_items": {
+        "n_models": 82,
+        "correctness": {
+          "mean": 25.975609756097562,
+          "median": 23.0,
+          "converged": 82
+        },
+        "scaffolding": {
+          "mean": 16.9390243902439,
+          "median": 12.5,
+          "converged": 82
+        },
+        "presentation": {
+          "mean": 40.0,
+          "median": 37.0,
+          "converged": 30
+        },
+        "overall": {
+          "mean": 48.56666666666667,
+          "median": 42.0,
+          "converged": 30
+        }
+      },
+      "items_administered_by_skill": {
+        "correctness": {
+          "mean": 39.03658536585366,
+          "median": 28.0,
+          "min": 5.0
+        },
+        "scaffolding": {
+          "mean": 38.3780487804878,
+          "median": 38.5,
+          "min": 1.0
+        },
+        "presentation": {
+          "mean": 11.621951219512194,
+          "median": 13.0,
+          "min": 0.0
+        }
+      },
+      "pirt_mae_cat": 0.03205042630063184,
+      "pirt_mae_full": 0.017236077673861584,
+      "pirt_corr_cat": 0.982066616892359,
+      "item_exposure": {
+        "total_items_administered": 6657,
+        "exposure_count_by_skill": {
+          "correctness": 3201,
+          "scaffolding": 3147,
+          "presentation": 953
+        },
+        "exposure_share_by_skill": {
+          "correctness": 0.4808472284812979,
+          "scaffolding": 0.47273546642631814,
+          "presentation": 0.14315757848880878
+        },
+        "bank_loading_share_by_skill": {
+          "correctness": 0.75341796875,
+          "scaffolding": 0.12109375,
+          "presentation": 0.15966796875
+        }
+      },
+      "item_exposure_population": {
+        "n_models": 82,
+        "n_items_ever_administered": 614,
+        "max_exposure_count": 82,
+        "max_exposure_rate": 1.0,
+        "top_exposed_items": [
+          {
+            "criterion_id": "tb_0098_c02",
+            "n_administered": 82,
+            "exposure_rate": 1.0
+          },
+          {
+            "criterion_id": "tb_0327_c09",
+            "n_administered": 70,
+            "exposure_rate": 0.8536585365853658
+          },
+          {
+            "criterion_id": "tb_0082_c05",
+            "n_administered": 67,
+            "exposure_rate": 0.8170731707317073
+          },
+          {
+            "criterion_id": "tb_0098_c05",
+            "n_administered": 64,
+            "exposure_rate": 0.7804878048780488
+          },
+          {
+            "criterion_id": "tb_0082_c13",
+            "n_administered": 55,
+            "exposure_rate": 0.6707317073170732
+          },
+          {
+            "criterion_id": "tb_0610_c01",
+            "n_administered": 50,
+            "exposure_rate": 0.6097560975609756
+          },
+          {
+            "criterion_id": "tb_0573_c15",
+            "n_administered": 48,
+            "exposure_rate": 0.5853658536585366
+          },
+          {
+            "criterion_id": "tb_0576_c08",
+            "n_administered": 48,
+            "exposure_rate": 0.5853658536585366
+          },
+          {
+            "criterion_id": "tb_0475_c17",
+            "n_administered": 47,
+            "exposure_rate": 0.573170731707317
+          },
+          {
+            "criterion_id": "tb_0553_c06",
+            "n_administered": 46,
+            "exposure_rate": 0.5609756097560976
+          },
+          {
+            "criterion_id": "tb_0503_c07",
+            "n_administered": 45,
+            "exposure_rate": 0.5487804878048781
+          },
+          {
+            "criterion_id": "tb_0624_c03",
+            "n_administered": 45,
+            "exposure_rate": 0.5487804878048781
+          },
+          {
+            "criterion_id": "tb_0574_c04",
+            "n_administered": 44,
+            "exposure_rate": 0.5365853658536586
+          },
+          {
+            "criterion_id": "tb_0628_c05",
+            "n_administered": 44,
+            "exposure_rate": 0.5365853658536586
+          },
+          {
+            "criterion_id": "tb_0572_c05",
+            "n_administered": 43,
+            "exposure_rate": 0.524390243902439
+          }
+        ]
+      }
+    },
+    "out_of_sample": {
+      "recovery_r": {
+        "correctness": 0.8872098171412117,
+        "scaffolding": 0.7606028479888906,
+        "presentation": 0.821857784397448
+      },
+      "cat_items": {
+        "correctness": {
+          "mean": 23.653333333333332,
+          "median": 10.0,
+          "converged": 75
+        },
+        "scaffolding": {
+          "mean": 11.926829268292684,
+          "median": 7.0,
+          "converged": 82
+        },
+        "presentation": {
+          "mean": 24.181818181818183,
+          "median": 3.0,
+          "converged": 55
+        }
+      },
+      "items_administered_by_skill": {
+        "correctness": {
+          "mean": 26.085365853658537,
+          "median": 16.5,
+          "min": 3.0
+        },
+        "scaffolding": {
+          "mean": 32.890243902439025,
+          "median": 17.0,
+          "min": 1.0
+        },
+        "presentation": {
+          "mean": 9.109756097560975,
+          "median": 7.0,
+          "min": 0.0
+        }
+      },
+      "n_models": 82
+    }
+  },
+  "figures": {
+    "recovery_scatter_correctness.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\recovery_scatter_correctness.png",
+    "recovery_scatter_scaffolding.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\recovery_scatter_scaffolding.png",
+    "recovery_scatter_presentation.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\recovery_scatter_presentation.png",
+    "cat_length_hist.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\cat_length_hist.png",
+    "se_reduction_curve.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\se_reduction_curve.png",
+    "pirt_calibration.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\pirt_calibration.png",
+    "item_info_by_skill.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\item_info_by_skill.png",
+    "item_exposure_by_skill.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\item_exposure_by_skill.png",
+    "items_administered_by_skill.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\3skill\\figures\\items_administered_by_skill.png"
+  }
+}

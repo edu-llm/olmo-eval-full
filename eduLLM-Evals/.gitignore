@@ -168,6 +168,9 @@ staging/run4_*/
 staging/run5_*/
 # Experimental q-matrix scratch (large, derived)
 data/TutorBench/experimental/
+# Throwaway A/B experiment banks (regenerable; conclusions live in the memos,
+# authoritative bank is data/TutorBench/curated/). Added 2026-07-31.
+data/experimental/
 
 # ---------------------------------------------------------------------------
 # staging/ = scratch (multi-GB total): derived response matrices, supplement

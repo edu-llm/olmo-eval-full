@@ -1,0 +1,12 @@
+# TutorBench 2-skill CAT summary table (policy ON)
+
+| Benchmark | Models | a median | Recovery r | CAT items | pIRT MAE |
+|---|---|---|---|---|---|
+| TutorBench (2-skill, overall) | 82 | corre 1.09 / scaff 0.75 | corre 0.943 / scaff 0.767 | 39.8 (median 43; 65/82 conv.) | 0.0358 |
+|   - correctness | 82 | 1.091 (3012 loading) | 0.943 | 34.1 (median 30; 75/82 conv.) | items-admin mean 34.5 / min 11 |
+|   - scaffolding | 82 | 0.755 (301 loading) | 0.767 | 39.0 (median 42; 65/82 conv.) | items-admin mean 46.9 / min 10 |
+
+## Out-of-sample (k-fold fold-trained params) recovery
+
+- Recovery r (correctness): 0.923
+- Recovery r (scaffolding): 0.644

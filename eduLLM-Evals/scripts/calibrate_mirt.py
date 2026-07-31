@@ -177,6 +177,13 @@ def load_q_matrix(rubrics_path: Path) -> dict[str, np.ndarray]:
         qmap = rec.get("q_mapping")
         if cid is None or not isinstance(qmap, dict):
             continue
+        # Fit-exclusion mask (Gate B): criteria flagged ``exclude_from_fit`` stay IN
+        # the bank but are held OUT of every M2PL fit (reverse-behaving / degenerate
+        # items whose fitted loading is a numeric artifact, not real signal). Dropping
+        # them here keeps them out of the assembled Q so downstream selection excludes
+        # them; honoured by all future fits (incl. the 200-run) without touching math.
+        if rec.get("exclude_from_fit"):
+            continue
         q_by[cid] = np.array([int(qmap.get(s, 0)) for s in SKILLS], dtype=int)
     return q_by
 
