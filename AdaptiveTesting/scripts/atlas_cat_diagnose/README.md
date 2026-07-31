@@ -39,8 +39,10 @@ Optional flags / env:
 | `--max-items` | `40` | CAT cap |
 | `--branch` | `AdaptiveEvals` | git branch the worker clones |
 | `DRY_RUN=1` | off | print `run-instances` only |
-| `INSTANCE_TYPE` | `g6.xlarge` | override (still 1× L4 family recommended) |
-| `S3_OUT` | see script | override results bucket/prefix root |
+| `INSTANCE_TYPE` | `g6.xlarge` | preferred; script falls back to `g5.xlarge` if g6 has no capacity |
+| `SUBNET` | (auto-rotate) | pin one subnet/AZ if you want; otherwise tries all VPC AZs |
+| `S3_OUT_ROOT` | see script | override results bucket/prefix root |
+| `DRY_RUN=1` | off | print plan only |
 
 ## Local wiring test (no GPU / no AWS)
 
