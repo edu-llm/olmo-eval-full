@@ -2,11 +2,11 @@
 
 | Benchmark | Models | a median | Recovery r | CAT items | pIRT MAE |
 |---|---|---|---|---|---|
-| TutorBench (2-skill, overall) | 82 | corre 1.09 / scaff 0.75 | corre 0.943 / scaff 0.767 | 39.8 (median 43; 65/82 conv.) | 0.0358 |
-|   - correctness | 82 | 1.091 (3012 loading) | 0.943 | 34.1 (median 30; 75/82 conv.) | items-admin mean 34.5 / min 11 |
-|   - scaffolding | 82 | 0.755 (301 loading) | 0.767 | 39.0 (median 42; 65/82 conv.) | items-admin mean 46.9 / min 10 |
+| TutorBench (2-skill, overall) | 82 | corre 1.09 / scaff 0.66 | corre 0.964 / scaff 0.864 | 40.7 (median 38; 73/82 conv.) | 0.0302 |
+|   - correctness | 82 | 1.090 (3012 loading) | 0.964 | 27.7 (median 24; 81/82 conv.) | items-admin mean 30.5 / min 15 |
+|   - scaffolding | 82 | 0.663 (260 loading) | 0.864 | 40.5 (median 38; 73/82 conv.) | items-admin mean 40.3 / min 15 |
 
 ## Out-of-sample (k-fold fold-trained params) recovery
 
-- Recovery r (correctness): 0.923
-- Recovery r (scaffolding): 0.644
+- Recovery r (correctness): 0.929
+- Recovery r (scaffolding): 0.669

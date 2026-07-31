@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T15:24:45.364069+00:00",
+  "generated_at": "2026-07-31T17:10:46.139970+00:00",
   "skills": 2,
   "dims": [
     "correctness",
@@ -15,40 +15,29 @@
     "min_items": 1,
     "max_items": 100,
     "seed": 20260730,
-    "compare": true
+    "compare": false
   },
   "policy": {
     "pbis_filter": true,
     "min_point_biserial": 0.05,
-    "min_items_per_skill": 10,
+    "min_items_per_skill": 15,
     "content_balance": true,
     "exposure_top_n": 5,
     "deterministic_tiebreak": true
   },
   "bank": {
-    "n_bank_raw": 3497,
+    "n_bank_raw": 3443,
     "n_excluded_flagged": 60,
-    "n_excluded_removed_from_bank": 59,
-    "excluded_present_ids_sample": [
-      "tb_0043_c01",
-      "tb_0050_c09",
-      "tb_0069_c12",
-      "tb_0082_c09",
-      "tb_0097_c06",
-      "tb_0102_c01",
-      "tb_0112_c02",
-      "tb_0130_c05",
-      "tb_0133_c07",
-      "tb_0185_c02"
-    ],
-    "n_eligible": 3166,
+    "n_excluded_removed_from_bank": 0,
+    "excluded_present_ids_sample": [],
+    "n_eligible": 3171,
     "pbis_filter": {
       "min_point_biserial": 0.05,
       "n_all_pass": 0,
       "n_all_fail": 0,
       "n_low_point_biserial": 272,
-      "n_kept": 3166,
-      "n_bank_in": 3438
+      "n_kept": 3171,
+      "n_bank_in": 3443
     },
     "items_kept_ref": 3497,
     "items_total_ref": 6180,
@@ -56,69 +45,69 @@
       "correctness": "healthy (cross-fold a r=0.80)",
       "scaffolding": "needs refit (cross-fold a r=0.48)"
     },
-    "a_correctness_median_nonzero": 1.0905075,
+    "a_correctness_median_nonzero": 1.089522,
     "a_correctness_n_loading": 3012,
-    "a_scaffolding_median_nonzero": 0.754982,
-    "a_scaffolding_n_loading": 301
+    "a_scaffolding_median_nonzero": 0.6631595,
+    "a_scaffolding_n_loading": 260
   },
   "n_models": 82,
   "in_sample": {
     "recovery_r": {
-      "correctness": 0.9426458317458882,
-      "scaffolding": 0.7674270418742651,
-      "overall_stacked": 0.9048374510174853
+      "correctness": 0.9638191922409964,
+      "scaffolding": 0.8641323290523152,
+      "overall_stacked": 0.9360844344892482
     },
     "cat_items": {
       "n_models": 82,
       "correctness": {
-        "mean": 34.08,
-        "median": 30.0,
-        "converged": 75
+        "mean": 27.74074074074074,
+        "median": 24.0,
+        "converged": 81
       },
       "scaffolding": {
-        "mean": 39.01538461538462,
-        "median": 42.0,
-        "converged": 65
+        "mean": 40.52054794520548,
+        "median": 38.0,
+        "converged": 73
       },
       "overall": {
-        "mean": 39.84615384615385,
-        "median": 43.0,
-        "converged": 65
+        "mean": 40.68493150684932,
+        "median": 38.0,
+        "converged": 73
       }
     },
     "items_administered_by_skill": {
       "correctness": {
-        "mean": 34.451219512195124,
-        "median": 26.0,
-        "min": 11.0
+        "mean": 30.51219512195122,
+        "median": 21.0,
+        "min": 15.0
       },
       "scaffolding": {
-        "mean": 46.9390243902439,
-        "median": 38.5,
-        "min": 10.0
+        "mean": 40.31707317073171,
+        "median": 32.0,
+        "min": 15.0
       }
     },
-    "pirt_mae_cat": 0.03584327166527758,
-    "pirt_mae_full": 0.01931668112099833,
-    "pirt_corr_cat": 0.9459131397069667,
+    "pirt_mae_cat": 0.030150263958877148,
+    "pirt_mae_full": 0.018574923580753466,
+    "pirt_corr_cat": 0.9751960228796807,
     "item_exposure": {
-      "total_items_administered": 4290,
+      "total_items_administered": 3870,
       "exposure_count_by_skill": {
-        "correctness": 2825,
-        "scaffolding": 3849
+        "correctness": 2502,
+        "scaffolding": 3306
       },
       "exposure_share_by_skill": {
-        "correctness": 0.6585081585081585,
-        "scaffolding": 0.8972027972027972
+        "correctness": 0.6465116279069767,
+        "scaffolding": 0.8542635658914729
       },
       "bank_loading_share_by_skill": {
-        "correctness": 0.9513581806696146,
-        "scaffolding": 0.0950726468730259
+        "correctness": 0.9498580889309366,
+        "scaffolding": 0.08199306212551245
       }
     },
     "item_exposure_population": {
       "n_models": 82,
-      "n_items_ever_administered": 244,
+      "n_items_ever_administered": 238,
       "max_exposure_count": 73,
       "max_exposure_rate": 0.8902439024390244,
       "top_exposed_items": [
@@ -129,278 +118,107 @@
         },
         {
           "criterion_id": "tb_0098_c02",
-          "n_administered": 70,
-          "exposure_rate": 0.8536585365853658
+          "n_administered": 71,
+          "exposure_rate": 0.8658536585365854
         },
         {
-          "criterion_id": "tb_0588_c03",
-          "n_administered": 63,
-          "exposure_rate": 0.7682926829268293
+          "criterion_id": "tb_0576_c08",
+          "n_administered": 66,
+          "exposure_rate": 0.8048780487804879
         },
         {
-          "criterion_id": "tb_0428_c03",
+          "criterion_id": "tb_0566_c06",
+          "n_administered": 65,
+          "exposure_rate": 0.7926829268292683
+        },
+        {
+          "criterion_id": "tb_0532_c04",
           "n_administered": 60,
           "exposure_rate": 0.7317073170731707
         },
         {
-          "criterion_id": "tb_0631_c09",
-          "n_administered": 59,
-          "exposure_rate": 0.7195121951219512
+          "criterion_id": "tb_0305_c05",
+          "n_administered": 57,
+          "exposure_rate": 0.6951219512195121
         },
         {
-          "criterion_id": "tb_0532_c04",
-          "n_administered": 58,
-          "exposure_rate": 0.7073170731707317
+          "criterion_id": "tb_0615_c08",
+          "n_administered": 57,
+          "exposure_rate": 0.6951219512195121
         },
         {
-          "criterion_id": "tb_0545_c05",
+          "criterion_id": "tb_0628_c05",
+          "n_administered": 57,
+          "exposure_rate": 0.6951219512195121
+        },
+        {
+          "criterion_id": "tb_0428_c03",
+          "n_administered": 56,
+          "exposure_rate": 0.6829268292682927
+        },
+        {
+          "criterion_id": "tb_0617_c10",
+          "n_administered": 56,
+          "exposure_rate": 0.6829268292682927
+        },
+        {
+          "criterion_id": "tb_0612_c05",
           "n_administered": 56,
           "exposure_rate": 0.6829268292682927
         },
         {
           "criterion_id": "tb_0508_c07",
-          "n_administered": 55,
-          "exposure_rate": 0.6707317073170732
-        },
-        {
-          "criterion_id": "tb_0566_c06",
-          "n_administered": 54,
-          "exposure_rate": 0.6585365853658537
-        },
-        {
-          "criterion_id": "tb_0628_c10",
           "n_administered": 53,
           "exposure_rate": 0.6463414634146342
         },
         {
-          "criterion_id": "tb_0535_c06",
+          "criterion_id": "tb_0656_c08",
+          "n_administered": 53,
+          "exposure_rate": 0.6463414634146342
+        },
+        {
+          "criterion_id": "tb_0571_c06",
           "n_administered": 52,
           "exposure_rate": 0.6341463414634146
         },
         {
-          "criterion_id": "tb_0628_c05",
-          "n_administered": 52,
-          "exposure_rate": 0.6341463414634146
-        },
-        {
-          "criterion_id": "tb_0624_c06",
+          "criterion_id": "tb_0152_c03",
           "n_administered": 51,
           "exposure_rate": 0.6219512195121951
-        },
-        {
-          "criterion_id": "tb_0564_c07",
-          "n_administered": 49,
-          "exposure_rate": 0.5975609756097561
-        },
-        {
-          "criterion_id": "tb_0465_c01",
-          "n_administered": 49,
-          "exposure_rate": 0.5975609756097561
         }
       ]
     }
   },
   "out_of_sample": {
     "recovery_r": {
-      "correctness": 0.9228915064149247,
-      "scaffolding": 0.6435421359501324
+      "correctness": 0.9292715429571103,
+      "scaffolding": 0.6690439587972251
     },
     "cat_items": {
       "correctness": {
-        "mean": 24.463414634146343,
+        "mean": 22.061728395061728,
         "median": 19.0,
-        "converged": 82
+        "converged": 81
       },
       "scaffolding": {
-        "mean": 34.65277777777778,
-        "median": 23.0,
-        "converged": 72
+        "mean": 38.47142857142857,
+        "median": 28.0,
+        "converged": 70
       }
     },
     "items_administered_by_skill": {
       "correctness": {
-        "mean": 30.74390243902439,
-        "median": 22.5,
-        "min": 10.0
+        "mean": 32.829268292682926,
+        "median": 21.0,
+        "min": 15.0
       },
       "scaffolding": {
-        "mean": 39.4390243902439,
-        "median": 24.5,
-        "min": 10.0
+        "mean": 41.292682926829265,
+        "median": 22.5,
+        "min": 15.0
       }
     },
     "n_models": 82
-  },
-  "before_legacy": {
-    "in_sample": {
-      "recovery_r": {
-        "correctness": 0.9601358599992138,
-        "scaffolding": 0.8493100106273982,
-        "overall_stacked": 0.940587907900686
-      },
-      "cat_items": {
-        "n_models": 82,
-        "correctness": {
-          "mean": 20.975609756097562,
-          "median": 20.5,
-          "converged": 82
-        },
-        "scaffolding": {
-          "mean": 12.365853658536585,
-          "median": 11.0,
-          "converged": 82
-        },
-        "overall": {
-          "mean": 24.170731707317074,
-          "median": 26.0,
-          "converged": 82
-        }
-      },
-      "items_administered_by_skill": {
-        "correctness": {
-          "mean": 12.658536585365853,
-          "median": 12.0,
-          "min": 4.0
-        },
-        "scaffolding": {
-          "mean": 14.951219512195122,
-          "median": 10.0,
-          "min": 1.0
-        }
-      },
-      "pirt_mae_cat": 0.035030389943311674,
-      "pirt_mae_full": 0.01768170098003973,
-      "pirt_corr_cat": 0.9348676617342704,
-      "item_exposure": {
-        "total_items_administered": 1982,
-        "exposure_count_by_skill": {
-          "correctness": 1038,
-          "scaffolding": 1226
-        },
-        "exposure_share_by_skill": {
-          "correctness": 0.5237134207870837,
-          "scaffolding": 0.6185671039354188
-        },
-        "bank_loading_share_by_skill": {
-          "correctness": 0.8964514252472368,
-          "scaffolding": 0.1401977894124491
-        }
-      },
-      "item_exposure_population": {
-        "n_models": 82,
-        "n_items_ever_administered": 157,
-        "max_exposure_count": 82,
-        "max_exposure_rate": 1.0,
-        "top_exposed_items": [
-          {
-            "criterion_id": "tb_0098_c02",
-            "n_administered": 82,
-            "exposure_rate": 1.0
-          },
-          {
-            "criterion_id": "tb_0082_c05",
-            "n_administered": 65,
-            "exposure_rate": 0.7926829268292683
-          },
-          {
-            "criterion_id": "tb_0098_c05",
-            "n_administered": 61,
-            "exposure_rate": 0.7439024390243902
-          },
-          {
-            "criterion_id": "tb_0576_c08",
-            "n_administered": 46,
-            "exposure_rate": 0.5609756097560976
-          },
-          {
-            "criterion_id": "tb_0624_c03",
-            "n_administered": 45,
-            "exposure_rate": 0.5487804878048781
-          },
-          {
-            "criterion_id": "tb_0553_c06",
-            "n_administered": 44,
-            "exposure_rate": 0.5365853658536586
-          },
-          {
-            "criterion_id": "tb_0610_c01",
-            "n_administered": 44,
-            "exposure_rate": 0.5365853658536586
-          },
-          {
-            "criterion_id": "tb_0572_c05",
-            "n_administered": 39,
-            "exposure_rate": 0.47560975609756095
-          },
-          {
-            "criterion_id": "tb_0105_c02",
-            "n_administered": 38,
-            "exposure_rate": 0.4634146341463415
-          },
-          {
-            "criterion_id": "tb_0503_c07",
-            "n_administered": 38,
-            "exposure_rate": 0.4634146341463415
-          },
-          {
-            "criterion_id": "tb_0574_c04",
-            "n_administered": 36,
-            "exposure_rate": 0.43902439024390244
-          },
-          {
-            "criterion_id": "tb_0245_c01",
-            "n_administered": 36,
-            "exposure_rate": 0.43902439024390244
-          },
-          {
-            "criterion_id": "tb_0573_c15",
-            "n_administered": 35,
-            "exposure_rate": 0.4268292682926829
-          },
-          {
-            "criterion_id": "tb_0605_c07",
-            "n_administered": 34,
-            "exposure_rate": 0.4146341463414634
-          },
-          {
-            "criterion_id": "tb_0292_c02",
-            "n_administered": 32,
-            "exposure_rate": 0.3902439024390244
-          }
-        ]
-      }
-    },
-    "out_of_sample": {
-      "recovery_r": {
-        "correctness": 0.8510593574904491,
-        "scaffolding": 0.7185534980318391
-      },
-      "cat_items": {
-        "correctness": {
-          "mean": 20.88,
-          "median": 10.0,
-          "converged": 75
-        },
-        "scaffolding": {
-          "mean": 8.048780487804878,
-          "median": 1.0,
-          "converged": 82
-        }
-      },
-      "items_administered_by_skill": {
-        "correctness": {
-          "mean": 12.536585365853659,
-          "median": 10.0,
-          "min": 1.0
-        },
-        "scaffolding": {
-          "mean": 23.378048780487806,
-          "median": 10.0,
-          "min": 1.0
-        }
-      },
-      "n_models": 82
-    }
   },
   "figures": {
     "recovery_scatter_correctness.png": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\reports\\cat_eval_policy\\2skill\\figures\\recovery_scatter_correctness.png",

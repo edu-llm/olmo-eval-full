@@ -883,8 +883,10 @@ def main() -> int:
                         "fits a collapsed 2-dim model (content+diagnosis merged via "
                         "logical-OR of the Q columns, scaffolding separate) ALONGSIDE the "
                         "full 3-dim model for a 3-way uni/collapsed/full comparison.")
-    p.add_argument("--ridge", type=float, default=1e-3,
-                   help="L2 ridge on loadings in the M-step for stability (default 1e-3).")
+    p.add_argument("--ridge", type=float, default=1e-2,
+                   help="L2 ridge on loadings in the M-step for stability (default 1e-2; "
+                        "adopted 2026-07-31 per the Scaffolding Hygiene audit plateau — "
+                        "best OOS scaffolding+correctness recovery, drains extreme-a).")
     p.add_argument("--max-iter", type=int, default=200, help="max EM iterations.")
     p.add_argument("--tol", type=float, default=1e-4,
                    help="EM convergence tol on marginal loglik (default 1e-4).")

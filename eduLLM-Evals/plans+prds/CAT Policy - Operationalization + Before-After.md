@@ -1,5 +1,15 @@
 # CAT Policy — Operationalization + Before/After
 
+> **REGENERATED 2026-07-31 at ridge = 1e-2.** The tracked `reports/cat_eval_policy/{2skill,
+> 3skill}/` outputs now reflect **floor = 15 + ridge = 1e-2** (previously floor = 10 +
+> ridge = 1e-3), resolving the staleness flagged in §4. The policy-ON OOS recovery `r` under
+> the new banks is: 2-skill correctness **0.929** / scaffolding **0.669**; 3-skill
+> correctness **0.934** / scaffolding **0.648** / presentation **0.937** — every axis equal
+> or better than the ridge=1e-3 numbers in §2 (the deceptive-convergence *conclusions* below
+> are unchanged; only the point estimates shifted up with the heavier ridge). See the
+> before/after table in `Pilot Baseline Freeze (2 and 3 skill).md`. The §2/§3 tables below are
+> the original **ridge = 1e-3** floor sweep and are retained for the floor-selection argument.
+
 **Scope:** operationalize a proper computerized-adaptive-testing (CAT) *policy* in the
 unified TutorBench CAT harness (`scripts/cat_eval_tutorbench_multiskill.py`) and re-run
 the evaluation on the **existing 82-model pilot** for both the 2-skill and 3-skill
@@ -163,12 +173,11 @@ weakest of the range.)
   frequently binding for scaffolding (median administered ≈ 74 in 3-skill) and is the real
   driver of long tests.
 
-> **Note on tracked reports.** The headline `reports/cat_eval_policy/{2skill,3skill}/`
-> outputs currently reflect a **floor=10** run (left non-destructive per instruction; the
-> sweep wrote to a scratch dir and was cleaned up). They now differ from the default (15).
-> Regenerate them to match with:
-> `uv run python scripts/cat_eval_tutorbench_multiskill.py --skills 2 --compare` and
-> `... --skills 3 --compare`.
+> **Note on tracked reports (RESOLVED 2026-07-31).** The headline
+> `reports/cat_eval_policy/{2skill,3skill}/` outputs were regenerated at the default
+> **floor=15** and the newly-adopted **ridge=1e-2** banks via
+> `..\.venv\Scripts\python.exe scripts/cat_eval_tutorbench_multiskill.py --skills 2 --compare`
+> and `... --skills 3 --compare`. They no longer reflect the old floor=10 + ridge=1e-3 run.
 
 ---
 
@@ -190,6 +199,43 @@ weakest of the range.)
 
 ---
 
+## 5b. Recovery figure variants (2-skill) — which scatter is the headline
+
+The 2-skill recovery scatter exists in **three variants per axis**, differing only in
+(a) the quadrature-grid density used for the full-response EAP *reference* (x-axis) and
+(b) whether the CAT estimate (y-axis) is in-sample or out-of-sample. **No model is
+re-fit and no item parameters change between variants** — only the EAP integration grid
+density is swapped, and (for OOS) the CAT estimate comes from fold-trained params. All
+figures live in `reports/cat_eval_policy/2skill/figures/`.
+
+| Variant | Reference grid | CAT estimate | correctness (Pearson / Spearman) | scaffolding (Pearson / Spearman) | File |
+|---|---|---|---|---|---|
+| in-sample, coarse | 7-node (quantized) | in-sample | 0.964 / 0.941 | 0.864 / 0.887 | `recovery_scatter_{dim}.png` |
+| in-sample, fine | 41-node | in-sample | 0.934 / 0.953 | 0.910 / 0.925 | `recovery_scatter_{dim}_finegrid.png` |
+| **OOS (k-fold), fine** | 41-node | **out-of-sample** | **0.909 / 0.926** | **0.690 / 0.731** | `oos_recovery_scatter_{dim}.png` |
+
+- **The OOS fine-grid figure is the honest headline.** Correctness lands at Pearson
+  **0.909** / Spearman **0.926** (the previously-reported OOS number, **0.929**, was on the
+  coarse 7-node grid; de-quantizing the reference onto the fine grid shifts it slightly).
+  Scaffolding is much lower (**0.690 / 0.731**), consistent with §5's "scaffolding needs
+  refit" diagnosis — do not read scaffolding as a well-measured axis.
+- **Coarse 7-node in-sample is the quantized, non-headline variant.** Its reference θ is
+  computed on a coarse grid, so x-values collapse into ~7 vertical stripes and clamp at
+  ±3.75. It inflates correctness to 0.964 purely by hiding the low tail; the title now
+  flags it explicitly. It is kept (filename stable) only so existing memo references don't
+  break.
+- **Tail-flattening is the key caveat.** On the fine grid the very-lowest models spread out
+  to ≈ −6, but CAT compresses them toward ≈ −2 (the SE=0.3 stop fires before the extreme
+  low θ is pinned down). This flattens the lower tail and is what pulls Pearson below
+  Spearman. **The ranking (Spearman) is the trustworthy part** — correctness rank recovery
+  stays ≈ 0.93 OOS even though the absolute low-end θ is compressed.
+
+Reproduce: `uv run python scripts/build_recovery_figure_variants.py` (reuses the fine
+41-node EAP reference from `scripts/build_correctness_leaderboard.py`, extended to both
+axes).
+
+---
+
 ## 6. Artifacts
 
 - Harness: `scripts/cat_eval_tutorbench_multiskill.py` (policy knobs, deterministic
@@ -198,7 +244,10 @@ weakest of the range.)
   `cat_per_model_oos.csv`, `cat_summary_table.{md,csv}`, `before_after_by_skill.{md,csv}`,
   `figures/` (recovery scatter per skill, cat_length_hist, se_reduction_curve,
   pirt_calibration, item_info_by_skill, item_exposure_by_skill, items_administered_by_skill).
-  *(Currently a floor=10 run — see the note in §4.)*
+  Recovery figure variants (see §5b): `recovery_scatter_{correctness,scaffolding}.png`
+  (coarse 7-node in-sample, relabelled), `recovery_scatter_{correctness,scaffolding}_finegrid.png`
+  (fine 41-node in-sample), `oos_recovery_scatter_{correctness,scaffolding}.png` (OOS
+  k-fold fine — the headline), built by `scripts/build_recovery_figure_variants.py`.
 - 3-skill: `reports/cat_eval_policy/3skill/` — same set (+ presentation scatter).
 - Floor sweep {10…15}: metrics collected into the §3 tables (scratch run dirs were
   non-destructive and removed; the floor=10 headline reports were not overwritten).
