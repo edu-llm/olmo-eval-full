@@ -258,6 +258,8 @@ def build_case_dict(row: dict, bank) -> "dict | None":
     ``run`` treats our calibration cases identically to the selection-study cases.
     conversation_context is passed through as a SEPARATE list-of-turns field (NOT
     folded into scenario_prompt) exactly as his prepare/case example does.
+    system_prompt is likewise separate: benchmarks that ship a native per-instance
+    system prompt (BiGGen) put task-defining state there, so the grader needs it.
     """
     model = str(row["model"])
     scenario_id = str(row["scenario"])
@@ -274,6 +276,7 @@ def build_case_dict(row: dict, bank) -> "dict | None":
         "use_case": scenario.use_case,
         "subject": scenario.subject,
         "scenario_prompt": scenario.prompt,
+        "system_prompt": scenario.system_prompt,
         "conversation_context": scenario.conversation_context,
         "reference_solution": scenario.reference_solution,
         "candidate_response": str(row.get("response", "")),
