@@ -1,0 +1,26 @@
+# Full 200-roster sweep config: one model per GPU on L40S (48 GB), so give the
+# engine most of the card. Everything else mirrors inference.yaml (full samples,
+# greedy, FRQ keeps the manifest's max_new_tokens budget).
+max_samples: 2000
+sample_seed: 1234
+backend: vllm
+
+vllm:
+  gpu_memory_utilization: 0.90   # single resident model on a 48 GB L40S
+  enable_prefix_caching: true
+  max_num_seqs: 256
+  max_num_batched_tokens: 8192
+  dtype: bfloat16
+  swap_space_gb: 4
+
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1234
+
+writer:
+  fsync_every_rows: 50
+  fsync_every_seconds: 5
+
+overrides: {}

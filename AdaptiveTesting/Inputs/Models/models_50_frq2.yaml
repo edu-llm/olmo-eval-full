@@ -1,0 +1,69 @@
+# 50 unused 0-3B checkpoints, high-confidence for the FRQ sweep.
+#
+# Selection basis: every architecture below already produced complete FRQ output
+# in the full200 run (proven load+generate on the L4 / vLLM 0.19 stack):
+#   Llama, Qwen2/2.5/1.5, OLMo/OLMo2, Gemma/Gemma2, StableLM, Granite3, Phi, MiniCPM, EXAONE.
+# Qwen3 + DeepSeek distills are same-lineage/vLLM-supported (validated by smoke test).
+# Excluded: families that produced NO output in full200 (OPT, BLOOM, GPT-2/openai,
+#   XGLM, CodeGen, MobileLLM, SmolLM-v1-360M cache-fail) and P6-failed families
+#   (phi-2, danube3, tinyllama, mamba, bitnet). None of these 50 are in models_200.yaml.
+# params_b and arch verified from each repo's safetensors + config.json.
+
+defaults:
+  dtype: bfloat16
+  trust_remote_code: true
+  tp: 1
+  apply_chat_template: null
+  scoring_method: loglikelihood
+
+models:
+  - {id: Qwen/Qwen2.5-0.5B, params_b: 0.494, family: Qwen2.5, arch: transformer}
+  - {id: Qwen/Qwen2-0.5B-Instruct, params_b: 0.494, family: Qwen2, arch: transformer}
+  - {id: Qwen/Qwen1.5-0.5B, params_b: 0.62, family: Qwen1.5, arch: transformer}
+  - {id: Qwen/Qwen1.5-0.5B-Chat, params_b: 0.62, family: Qwen1.5, arch: transformer}
+  - {id: Qwen/Qwen2.5-Coder-0.5B, params_b: 0.494, family: Qwen2.5-Coder, arch: transformer}
+  - {id: Qwen/Qwen2.5-Coder-0.5B-Instruct, params_b: 0.494, family: Qwen2.5-Coder, arch: transformer}
+  - {id: Qwen/Qwen2.5-Coder-1.5B, params_b: 1.544, family: Qwen2.5-Coder, arch: transformer}
+  - {id: Qwen/Qwen2.5-Coder-1.5B-Instruct, params_b: 1.544, family: Qwen2.5-Coder, arch: transformer}
+  - {id: Qwen/Qwen2.5-Math-1.5B, params_b: 1.544, family: Qwen2.5-Math, arch: transformer}
+  - {id: Qwen/Qwen2.5-Math-1.5B-Instruct, params_b: 1.544, family: Qwen2.5-Math, arch: transformer}
+  - {id: Qwen/Qwen2.5-Coder-3B, params_b: 3.086, family: Qwen2.5-Coder, arch: transformer}
+  - {id: Qwen/Qwen2.5-Coder-3B-Instruct, params_b: 3.086, family: Qwen2.5-Coder, arch: transformer}
+  - {id: Qwen/Qwen3-0.6B, params_b: 0.752, family: Qwen3, arch: transformer}
+  - {id: Qwen/Qwen3-0.6B-Base, params_b: 0.596, family: Qwen3, arch: transformer}
+  - {id: Qwen/Qwen3-1.7B-Base, params_b: 1.721, family: Qwen3, arch: transformer}
+  - {id: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B, params_b: 1.777, family: DeepSeek-R1-Distill, arch: transformer}
+  - {id: deepseek-ai/deepseek-coder-1.3b-instruct, params_b: 1.346, family: DeepSeek-Coder, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-135M, params_b: 0.135, family: SmolLM2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-135M-Instruct, params_b: 0.135, family: SmolLM2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM-135M, params_b: 0.269, family: SmolLM, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM-135M-Instruct, params_b: 0.135, family: SmolLM, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-1.7B-Instruct-16k, params_b: 1.711, family: SmolLM2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-1.7B-sft-only, params_b: 1.711, family: SmolLM2, arch: transformer}
+  - {id: HuggingFaceTB/smollm-360M-instruct-add-basics, params_b: 0.362, family: SmolLM, arch: transformer}
+  - {id: Felladrin/Llama-160M-Chat-v1, params_b: 0.325, family: Llama-160M, arch: transformer}
+  - {id: princeton-nlp/Sheared-LLaMA-1.3B-Pruned, params_b: 1.345, family: Sheared-LLaMA, arch: transformer}
+  - {id: princeton-nlp/Sheared-LLaMA-2.7B-Pruned, params_b: 2.702, family: Sheared-LLaMA, arch: transformer}
+  - {id: princeton-nlp/Sheared-LLaMA-1.3B-ShareGPT, params_b: 2.691, family: Sheared-LLaMA, arch: transformer}
+  - {id: allenai/OLMo-1B-0724-hf, params_b: 2.56, family: OLMo, arch: transformer}
+  - {id: allenai/OLMo-2-0425-1B-SFT, params_b: 1.485, family: OLMo2, arch: transformer}
+  - {id: allenai/OLMo-2-0425-1B-RLVR1, params_b: 1.485, family: OLMo2, arch: transformer}
+  - {id: google/gemma-2-2b-it, params_b: 2.614, family: Gemma2, arch: transformer, gated: true}
+  - {id: google/gemma-1.1-2b-it, params_b: 2.506, family: Gemma1, arch: transformer, gated: true}
+  - {id: google/gemma-2b-it, params_b: 2.506, family: Gemma1, arch: transformer, gated: true}
+  - {id: google/codegemma-2b, params_b: 2.506, family: CodeGemma, arch: transformer, gated: true}
+  - {id: ibm-granite/granite-3.3-2b-instruct, params_b: 2.534, family: Granite3, arch: transformer}
+  - {id: ibm-granite/granite-3.3-2b-base, params_b: 2.534, family: Granite3, arch: transformer}
+  - {id: ibm-granite/granite-3.2-2b-instruct, params_b: 2.534, family: Granite3, arch: transformer}
+  - {id: ibm-granite/granite-3.0-2b-instruct, params_b: 2.634, family: Granite3, arch: transformer}
+  - {id: stabilityai/stable-code-3b, params_b: 2.795, family: StableCode, arch: transformer}
+  - {id: stabilityai/stable-code-instruct-3b, params_b: 2.795, family: StableCode, arch: transformer}
+  - {id: microsoft/phi-1, params_b: 1.418, family: Phi1, arch: transformer}
+  - {id: LGAI-EXAONE/EXAONE-Deep-2.4B, params_b: 2.405, family: EXAONE, arch: transformer}
+  - {id: openbmb/MiniCPM-2B-dpo-bf16, params_b: 2.725, family: MiniCPM, arch: transformer}
+  - {id: openbmb/MiniCPM-2B-dpo-fp16, params_b: 2.725, family: MiniCPM, arch: transformer}
+  - {id: openbmb/MiniCPM-S-1B-sft, params_b: 1.36, family: MiniCPM, arch: transformer}
+  - {id: openbmb/MiniCPM-2B-128k, params_b: 3.008, family: MiniCPM, arch: transformer}
+  - {id: openbmb/MiniCPM-2B-sft-bf16-llama-format, params_b: 3.008, family: MiniCPM, arch: transformer}
+  - {id: openbmb/MiniCPM-S-1B-sft-llama-format, params_b: 1.473, family: MiniCPM, arch: transformer}
+  - {id: openbmb/MiniCPM5-1B-Base, params_b: 1.081, family: MiniCPM5, arch: transformer}
