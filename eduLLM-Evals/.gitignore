@@ -1,105 +1,36 @@
-# Environment variables
+# ---------------------------------------------------------------------------
+# Secrets / environment
+# ---------------------------------------------------------------------------
 .env
 !.env.example
+*.pem
 
-# Python bytecode and caches
-staging/judge_inputs.jsonl
-tutorbench-responses/
-tutorbench-responses-v2/
-grading/
+# ---------------------------------------------------------------------------
+# Python build + caches
+# ---------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 *.egg-info/
-dist/
 build/
-# Calibration handoff bundle (huge; lives in S3/local, never in git) + extractions
-qwen_calibration_handoff_32k_20260728/
-qwen_calibration_handoff_32k_20260728.zip
-handoff_extract/
-supplement_handoff_build/
-qwen_calibration_supplement_20260729.zip
-# Ad-hoc local data dumps (hundreds of MB; regenerable from runs)
-run_data.jsonl
-run_data (1).csv
-
-# Virtual environments
-venv/
-ENV/
-env/
-.venv
-
-# keep generated runs ignored by default
-runs/
-
-# allow human judge-validation grader packet artifacts
-!runs/judge_validation_v1/
-!runs/judge_validation_v1/grader_packets/
-!runs/judge_validation_v1/grader_packets/*.md
-!runs/judge_validation_v1/grader_packets/*.csv
-!runs/judge_validation_v1/sample_scenarios.jsonl
-!runs/judge_validation_v1/sample_rubrics.jsonl
-
-# Testing and linting caches
+dist/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 
-# Project-specific output directories
-runs/
-cache/
-dryrun/
-smoke_runs/
+# ---------------------------------------------------------------------------
+# Virtual environments
+# ---------------------------------------------------------------------------
+.venv
+venv/
+env/
+ENV/
 
-# Data: the benchmark dataset IS tracked (needed on every machine that runs
-# the pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root.
-# (This glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
-# data/IFEval/ are tracked automatically.)
-# the pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root.
-# (This glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
-# data/IFEval/ are tracked automatically.)
-data/*.jsonl
-# TutorBench bank now lives under data/TutorBench/ (source + curated).
-!data/TutorBench/scenarios.jsonl
-!data/TutorBench/rubrics_qmatrix.jsonl
-!data/TutorBench/rubrics_calibrated.jsonl
-!data/TutorBench/rubrics_qmatrix_final.jsonl
-# Curated bank (curation_v1) IS the finalized rubric + scenario schema — track it.
-!data/TutorBench/curated/
-!data/TutorBench/curated/rubrics_qmatrix_curated.jsonl
-!data/TutorBench/curated/scenarios_curated.jsonl
-
-# Curation intermediates: per-agent/batch op files + review dumps are scratch;
-# the merged master spec (curation/pilot_edits.json) and reports ARE tracked.
-curation/tranche/
-
-# EduBench: candidate-bank scenario/rubric artifacts (HF-derived, reproducible via
-# scripts/ingest_edubench.py / scripts/build_edubench_merged.py) -- never tracked,
-# regardless of nesting depth (unmerged/, merged/, merged/<variant>/, given_qmat/, ...).
-data/EduBench/**/scenarios.json
-data/EduBench/**/scenarios.jsonl
-data/EduBench/**/rubrics.json
-data/EduBench/**/rubrics.jsonl
-# Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible) -- never tracked.
-data/EduBench/en_data/
-
-# Dr. SCI: large HF-derived parquet + generated scenario/rubric/CSV artifacts
-# (multiple GBs; scenario/rubric jsonl regenerable via scripts/build_dr_sci_scenarios.py).
-# Never tracked, regardless of nesting.
-data/dr-sci/*.parquet
-data/dr-sci/*.jsonl
-data/dr-sci/*.csv
-
-# AWS key pairs must never be committed
-*.pem
-
-# Generated plots (ignored by default; the curated set lives in plots/)
-*.png
-!plots/*.png
-
-# IDE and editor files
+# ---------------------------------------------------------------------------
+# IDE / OS cruft
+# ---------------------------------------------------------------------------
 .vscode/
 .idea/
 *.swp
@@ -109,92 +40,124 @@ data/dr-sci/*.csv
 Thumbs.db
 .impeccable
 
-tutorbench-responses/
+# ---------------------------------------------------------------------------
+# Run outputs / scratch directories
+# ---------------------------------------------------------------------------
+runs/
+cache/
+dryrun/
+smoke_runs/
+qmatrix_logs/
+qmatrix_verify_logs/
+curation/tranche/
 
-# TutorEval processing intermediates: only the finalized bank (*_final.{jsonl,json})
-# and the human-reviewed edit sheet (reframe_review.tsv) are tracked. The clean /
-# coverage / reframed stage files are deterministically regenerable scratch and
-# stay local (the scenario copies are ~6MB each).
+# Allow the human judge-validation grader packet artifacts back in.
+!runs/judge_validation_v1/
+!runs/judge_validation_v1/grader_packets/
+!runs/judge_validation_v1/grader_packets/*.md
+!runs/judge_validation_v1/grader_packets/*.csv
+!runs/judge_validation_v1/sample_scenarios.jsonl
+!runs/judge_validation_v1/sample_rubrics.jsonl
+
+# ---------------------------------------------------------------------------
+# staging/ = scratch (multi-GB total): derived response matrices, supplement
+# extractions (~600MB), k-fold param dumps, ad-hoc fitters, per-run console
+# logs, and the big fitted-item CSV. None of it is a deliverable and it is all
+# regenerable from runs. The shareable CAT + calibration deliverables (figures,
+# summary tables, metrics, manifest) are copied into reports/ (tracked).
+# ---------------------------------------------------------------------------
+staging/
+
+# ---------------------------------------------------------------------------
+# Heavy / generated artifacts, depth-agnostic: raw model-output dumps, judge
+# run-data, binary matrices, and all archives. These live in S3 or are
+# regenerable, and are never tracked.
+# ---------------------------------------------------------------------------
+tutorbench-responses*/
+tutorbench-grading*/
+grading/
+run_data*.jsonl
+run_data*.csv
+*.npy
+*.tar.gz
+*.zip
+
+# Calibration handoff / supplement bundles (tens-to-hundreds of MB).
+qwen_calibration_handoff_32k_20260728/
+handoff_extract/
+supplement_handoff_build/
+supplement_v2/
+
+# ---------------------------------------------------------------------------
+# Generated plots (the curated set lives in plots/)
+# ---------------------------------------------------------------------------
+*.png
+!plots/*.png
+
+# ---------------------------------------------------------------------------
+# Data: the benchmark dataset IS tracked (needed on every machine that runs the
+# pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root. This
+# glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
+# data/IFEval/ are tracked automatically.
+# ---------------------------------------------------------------------------
+data/*.jsonl
+
+# Throwaway A/B experiment banks (regenerable; conclusions live in the memos,
+# the authoritative bank is data/TutorBench/curated/).
+data/TutorBench/experimental/
+data/experimental/
+
+# EduBench: candidate-bank scenario/rubric artifacts (HF-derived, reproducible
+# via scripts/ingest_edubench.py / scripts/build_edubench_merged.py) -- never
+# tracked, regardless of nesting depth (unmerged/, merged/, given_qmat/, ...).
+data/EduBench/**/scenarios.json
+data/EduBench/**/scenarios.jsonl
+data/EduBench/**/rubrics.json
+data/EduBench/**/rubrics.jsonl
+# Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible).
+data/EduBench/en_data/
+
+# Dr. SCI: large HF-derived parquet + generated scenario/rubric/CSV artifacts
+# (multiple GBs; jsonl regenerable via scripts/build_dr_sci_scenarios.py).
+data/dr-sci/*.parquet
+data/dr-sci/*.jsonl
+data/dr-sci/*.csv
+
+# TutorEval processing intermediates: only the finalized bank
+# (*_final.{jsonl,json}) and the human-reviewed edit sheet (reframe_review.tsv)
+# are tracked. The clean / coverage / reframed / sample / verification stage
+# files are deterministically regenerable scratch (~6MB each) and stay local.
 data/TutorEval/*_clean.json
 data/TutorEval/*_clean.jsonl
 data/TutorEval/*_coverage.json
 data/TutorEval/*_coverage.jsonl
 data/TutorEval/*_reframed.json
 data/TutorEval/*_reframed.jsonl
-
-# q-matrix labeling scratch: per-run logs/manifests and sample outputs are
-# regenerable and stay local. Only the finalized bank (*_final.{jsonl,json}) is tracked.
-qmatrix_logs/
 data/TutorEval/*_sample.json
 data/TutorEval/*_sample.jsonl
-data/TutorEval/*.sample.json
-data/TutorEval/*.sample.jsonl
-
-# q-matrix verification run outputs: per-run logs + the verified/review-queue files are
-# regenerable (rerun scripts/verify_qmatrix.py). Only rubrics_qmatrix_final.{jsonl,json}
-# (written by scripts/promote_qmatrix_verified.py) is the tracked deliverable.
-qmatrix_verify_logs/
+data/TutorEval/*.sample*.json
+data/TutorEval/*.sample*.jsonl
 data/TutorEval/rubrics_qmatrix.json
 data/TutorEval/rubrics_qmatrix.jsonl
+data/TutorEval/rubrics_qmatrix.smoke.jsonl
 data/TutorEval/rubrics_qmatrix_verified.json
 data/TutorEval/rubrics_qmatrix_verified.jsonl
 data/TutorEval/review_queue.jsonl
 data/TutorEval/review_queue*.tsv
-# ad-hoc local samples (smoke test, sample2 robustness draw) -- regenerable scratch
-data/TutorEval/*.sample*.json
-data/TutorEval/*.sample*.jsonl
-data/TutorEval/rubrics_qmatrix.smoke.jsonl
-
-# ---------------------------------------------------------------------------
-# Calibration supplement + staging artifacts (large / derived; live in S3 or are
-# regenerable from runs -- never push these). Added 2026-07-30.
-# ---------------------------------------------------------------------------
-# Handoff/supplement bundles (tens-to-hundreds of MB)
-qwen_calibration_supplement_*.zip
-qwen-calibration-supp-*.tar.gz
-supplement_v2/
-# Ad-hoc run-data dumps (regenerable from runs)
-run_data_supp*.jsonl
-# Binary response matrices anywhere in the project
-*.npy
-# Staging = scratch: derived matrices, manifests, audits, console logs, run dirs
-staging/response_matrix_*
-staging/*_console.txt
-staging/ingest_*_audit.json
-staging/ingest_*_audit.md
-staging/rubrics_qmatrix_*_full.jsonl
-staging/kfold/
-staging/run4_*/
-staging/run5_*/
-# Experimental q-matrix scratch (large, derived)
-data/TutorBench/experimental/
-# Throwaway A/B experiment banks (regenerable; conclusions live in the memos,
-# authoritative bank is data/TutorBench/curated/). Added 2026-07-31.
-data/experimental/
-
-# ---------------------------------------------------------------------------
-# staging/ = scratch (multi-GB total): derived response matrices, supplement
-# extractions (supp_v2/, ~600MB), k-fold param dumps (kfold_full/), ad-hoc
-# fitters, per-run console logs, and the big fitted-item CSV
-# (calibration_mirt_full2skill.csv). None of it is a deliverable and it is all
-# regenerable from runs, so ignore the whole tree. The shareable CAT +
-# calibration deliverables (figures, summary tables, metrics, manifest) are
-# copied into reports/ (tracked) instead. Added 2026-07-30.
-# ---------------------------------------------------------------------------
-staging/
-
-# Additional heavy/generated categories (robust, depth-agnostic):
-# raw model-output dumps, judge run-data, and all archives are never tracked.
-tutorbench-responses*/
-run_data*.jsonl
-run_data*.csv
-*.tar.gz
-*.zip
 
 # ---------------------------------------------------------------------------
 # reports/ = TRACKED deliverables (CAT figures + summary tables). The global
-# `*.png` rule above (and any broad ignore) must NOT swallow these, so
-# re-include the whole reports/ tree explicitly. Added 2026-07-30.
+# *.png rule above (and any other broad ignore) must NOT swallow these, so
+# re-include the whole reports/ tree explicitly. Keep this block LAST.
 # ---------------------------------------------------------------------------
 !reports/
 !reports/**
+
+# ---------------------------------------------------------------------------
+# regenerated_figures/ = TRACKED reproductions of the CAT recovery + pIRT
+# figures on a dense quadrature grid (continuous ability axis), produced by
+# scripts/regen_cat_figures.py. Same rationale as reports/: re-include past the
+# global *.png rule.
+# ---------------------------------------------------------------------------
+!regenerated_figures/
+!regenerated_figures/**
