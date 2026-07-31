@@ -19,8 +19,12 @@ import numpy as np
 
 # repo_root/src/olmo_eval/adaptive/bank.py -> parents[3] == repo root
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_DEFAULT_ARC_DIR = _REPO_ROOT / "AdaptiveTesting" / "Inputs" / "ATLAS" / "arc"
-_ENV_BANK_DIR = "OLMO_EVAL_ATLAS_BANK_DIR"
+#: Root holding one calibrated-bank subdirectory per ATLAS benchmark.
+ATLAS_INPUTS_DIR = _REPO_ROOT / "AdaptiveTesting" / "Inputs" / "ATLAS"
+_DEFAULT_ARC_DIR = ATLAS_INPUTS_DIR / "arc"
+#: Legacy single-bank override; honored for the ARC-compatible default only.
+ENV_BANK_DIR = "OLMO_EVAL_ATLAS_BANK_DIR"
+_ENV_BANK_DIR = ENV_BANK_DIR  # backwards-compatible alias
 
 
 @dataclass
@@ -63,13 +67,32 @@ class ItemBank:
         )
 
 
-def _resolve_bank_dir(bank_dir: str | os.PathLike[str] | None) -> Path:
+def resolve_bank_dir(
+    bank_dir: str | os.PathLike[str] | None = None,
+    *,
+    subdir: str = "arc",
+    use_env: bool = True,
+) -> Path:
+    """Resolve a bank directory for a benchmark subdir.
+
+    Precedence: explicit ``bank_dir`` > ``$OLMO_EVAL_ATLAS_BANK_DIR`` (only when
+    ``use_env``) > ``AdaptiveTesting/Inputs/ATLAS/<subdir>``. The environment
+    override is a single path, so callers should enable it only for the ARC
+    default to keep the historical behavior and avoid one benchmark's override
+    hijacking another's bank.
+    """
     if bank_dir is not None:
         return Path(bank_dir)
-    env = os.environ.get(_ENV_BANK_DIR)
-    if env:
-        return Path(env)
-    return _DEFAULT_ARC_DIR
+    if use_env:
+        env = os.environ.get(ENV_BANK_DIR)
+        if env:
+            return Path(env)
+    return ATLAS_INPUTS_DIR / subdir
+
+
+def _resolve_bank_dir(bank_dir: str | os.PathLike[str] | None) -> Path:
+    """Backwards-compatible ARC-default resolver (arg > env > vendored ARC)."""
+    return resolve_bank_dir(bank_dir, subdir="arc", use_env=True)
 
 
 def load_bank(
