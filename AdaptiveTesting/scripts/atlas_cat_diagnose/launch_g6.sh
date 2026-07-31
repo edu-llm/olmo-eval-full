@@ -56,17 +56,26 @@ resolve_subnet() {
       --query 'Subnets[0].SubnetId' --output text
 }
 
-# Default subnet used by AdaptiveTesting GPU jobs in us-east-1a (override with SUBNET=).
-SUBNET="${SUBNET:-subnet-0bbe2b7870da13713}"
-if [[ "${DRY_RUN}" != "1" && "${SUBNET}" == "subnet-0bbe2b7870da13713" ]]; then
-  # Refresh from API when spending money, in case infra moved.
-  SUBNET="$(resolve_subnet)"
+# Prefer an explicit SUBNET=; else try these VPC subnets (capacity often uneven by AZ).
+SUBNET_CANDIDATES=(
+  "${SUBNET:-}"
+  subnet-0bbe2b7870da13713  # us-east-1a
+  subnet-0a4235fb98b63930f  # us-east-1b
+  subnet-0fd5ed8accae254dc  # us-east-1c
+  subnet-08792525c62ba31c0  # us-east-1d
+  subnet-01f4bf9a051404a37  # us-east-1f
+)
+# Also try g5.xlarge (A10G) if g6 is capacity-starved region-wide.
+TYPE_CANDIDATES=("${INSTANCE_TYPE}")
+if [[ "${INSTANCE_TYPE}" == "g6.xlarge" ]]; then
+  TYPE_CANDIDATES+=("g5.xlarge")
 fi
+
 NAME="atlas-cat-${RUN_ID}"
 S3_DEST="${S3_OUT_ROOT%/}/${RUN_ID}"
 
-echo "region=${REGION} type=${INSTANCE_TYPE} ami=${AMI}"
-echo "sg=${SG} subnet=${SUBNET} profile=${PROFILE}"
+echo "region=${REGION} ami=${AMI} types=${TYPE_CANDIDATES[*]}"
+echo "sg=${SG} profile=${PROFILE}"
 echo "checkpoint=${CHECKPOINT}"
 echo "results → ${S3_DEST}/"
 echo "dry_run=${DRY_RUN}"
@@ -94,29 +103,45 @@ bash \${ROOT}/code/AdaptiveTesting/scripts/atlas_cat_diagnose/run_worker.sh
 shutdown -h now
 UD
 
-ARGS=(
-  ec2 run-instances
-  --region "${REGION}"
-  --image-id "${AMI}"
-  --instance-type "${INSTANCE_TYPE}"
-  --subnet-id "${SUBNET}"
-  --security-group-ids "${SG}"
-  --iam-instance-profile "Name=${PROFILE}"
-  --instance-initiated-shutdown-behavior terminate
-  --user-data "file://${UD_FILE}"
-  --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=${NAME}},{Key=Project,Value=atlas-cat-diagnose},{Key=RunId,Value=${RUN_ID}}]"
-  --count 1
-  --output text
-  --query "Instances[0].InstanceId"
-)
-
 if [[ "${DRY_RUN}" == "1" ]]; then
-  printf 'DRY_RUN aws'; printf ' %q' "${ARGS[@]}"; printf '\n'
+  echo "DRY_RUN would try types=${TYPE_CANDIDATES[*]} across VPC subnets"
   echo "would write results to ${S3_DEST}/"
+  # Keep a representative command printable for debugging.
+  printf 'DRY_RUN aws ec2 run-instances --instance-type %q --subnet-id %q --user-data file://%q ...\n' \
+    "${TYPE_CANDIDATES[0]}" "${SUBNET_CANDIDATES[1]}" "${UD_FILE}"
   exit 0
 fi
 
-IID="$(aws "${ARGS[@]}")"
-echo "launched ${IID}"
-echo "watch: aws ec2 describe-instances --instance-ids ${IID} --region ${REGION} --query Reservations[0].Instances[0].State.Name"
-echo "results (when _READY appears): aws s3 ls ${S3_DEST}/"
+IID=""
+LAST_ERR=""
+for typ in "${TYPE_CANDIDATES[@]}"; do
+  for subnet in "${SUBNET_CANDIDATES[@]}"; do
+    [[ -n "${subnet}" ]] || continue
+    echo "trying type=${typ} subnet=${subnet} ..."
+    if IID="$(aws ec2 run-instances \
+      --region "${REGION}" \
+      --image-id "${AMI}" \
+      --instance-type "${typ}" \
+      --subnet-id "${subnet}" \
+      --security-group-ids "${SG}" \
+      --iam-instance-profile "Name=${PROFILE}" \
+      --instance-initiated-shutdown-behavior terminate \
+      --block-device-mappings 'DeviceName=/dev/sda1,Ebs={VolumeSize=200,VolumeType=gp3,DeleteOnTermination=true}' \
+      --user-data "file://${UD_FILE}" \
+      --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=${NAME}},{Key=Project,Value=atlas-cat-diagnose},{Key=RunId,Value=${RUN_ID}}]" \
+      --count 1 \
+      --output text \
+      --query "Instances[0].InstanceId" 2>/tmp/atlas_cat_launch.err)"; then
+      echo "launched ${IID} (${typ} / ${subnet})"
+      echo "watch: aws ec2 describe-instances --instance-ids ${IID} --region ${REGION} --query Reservations[0].Instances[0].State.Name"
+      echo "results (when _READY appears): aws s3 ls ${S3_DEST}/"
+      exit 0
+    fi
+    LAST_ERR="$(cat /tmp/atlas_cat_launch.err 2>/dev/null || true)"
+    echo "  failed: ${LAST_ERR}" | head -c 400; echo
+  done
+done
+
+echo "exhausted type/subnet candidates" >&2
+echo "${LAST_ERR}" >&2
+exit 1
