@@ -98,6 +98,13 @@ def build_messages(scenario: Scenario, rubric: Rubric, response: str) -> list[di
             f"[{t.get('role', '?')}] {t.get('content', '')}" for t in scenario.conversation_context
         )
         instruction = f"{scenario.prompt}\n\nPrior conversation context:\n{turns}"
+    # Benchmarks carrying a native per-instance system prompt put task-defining state
+    # there (file contents, tool signatures, required output format, the fact to
+    # withhold), which criteria are written against. Empty for the rest.
+    if scenario.system_prompt:
+        instruction = (
+            f"System prompt given to the model:\n{scenario.system_prompt}\n\n{instruction}"
+        )
     user = _USER_TEMPLATE.format(
         instruction=instruction,
         response=response,

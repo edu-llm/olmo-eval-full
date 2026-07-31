@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-07-31T22:14:38.165158+00:00",
+  "purpose": "Recovery/pIRT figures with a dense-quadrature (continuous) ability axis.",
+  "config": {
+    "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill.jsonl",
+    "matrix": "C:\\Users\\Avane\\UT-Austin\\AlphaIA\\LLM-From-Scratch\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full_nonopt.csv",
+    "grid_kind": "uniform",
+    "nodes_per_dim": 201,
+    "n_nodes": 40401,
+    "range": 6.0,
+    "se_target": 0.3,
+    "min_items": 1,
+    "max_items": 100,
+    "final_estimator": "batch",
+    "mwle_ridge": 1e-06
+  },
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full_nonopt.csv",
+    "expected_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+    "actual_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+    "aligned": true
+  },
+  "mwle_fallback_models": 0,
+  "bank": {
+    "n_items_used": 3443,
+    "n_dims": 2,
+    "dims": [
+      "correctness",
+      "scaffolding"
+    ],
+    "modeled_skills": [
+      "correctness",
+      "scaffolding"
+    ],
+    "slot_map": {
+      "content": "a_correctness (collapsed content+diagnosis)",
+      "diagnosis": "0.0 (collapsed away)",
+      "scaffolding": "a_scaffolding"
+    },
+    "a_correctness_n_loading": 3080,
+    "a_scaffolding_n_loading": 442
+  },
+  "n_models": 82,
+  "recovery_r": {
+    "correctness": 0.9589410669356324,
+    "scaffolding": 0.9211085504471147
+  },
+  "pirt_mae_cat": 0.022319307474076126,
+  "pirt_mae_full": 0.005822918121837987,
+  "axis_continuity": {
+    "correctness": {
+      "n_points": 82,
+      "n_distinct_rounded_3dp": 82,
+      "distinct_fraction": 1.0,
+      "min": -5.614263177779688,
+      "max": 3.7279704518955605
+    },
+    "scaffolding": {
+      "n_points": 82,
+      "n_distinct_rounded_3dp": 82,
+      "distinct_fraction": 1.0,
+      "min": -1.966540908589912,
+      "max": 2.4513435592132677
+    }
+  },
+  "figures": {
+    "recovery_scatter_correctness.png": "regenerated_figures\\batched_EAP\\2_skills\\figures\\recovery_scatter_correctness.png",
+    "recovery_scatter_scaffolding.png": "regenerated_figures\\batched_EAP\\2_skills\\figures\\recovery_scatter_scaffolding.png",
+    "pirt_calibration.png": "regenerated_figures\\batched_EAP\\2_skills\\figures\\pirt_calibration.png"
+  }
+}

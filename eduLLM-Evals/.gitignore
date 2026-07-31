@@ -15,12 +15,17 @@ __pycache__/
 .Python
 *.egg-info/
 build/
-dist/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+full200-results/
+# Calibration handoff bundle (huge; lives in S3/local, never in git) + extractions
+qwen_calibration_handoff_32k_20260728/
+qwen_calibration_handoff_32k_20260728.zip
+handoff_extract/
+supplement_handoff_build/
+qwen_calibration_supplement_20260729.zip
+# Ad-hoc local data dumps (hundreds of MB; regenerable from runs)
+run_data.jsonl
+run_data (1).csv
 
-# ---------------------------------------------------------------------------
 # Virtual environments
 # ---------------------------------------------------------------------------
 .venv

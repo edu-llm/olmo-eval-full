@@ -1,0 +1,83 @@
+{
+  "generated_at": "2026-07-31T22:11:08.058825+00:00",
+  "purpose": "Recovery/pIRT figures with a dense-quadrature (continuous) ability axis.",
+  "config": {
+    "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_3skill.jsonl",
+    "matrix": "C:\\Users\\Avane\\UT-Austin\\AlphaIA\\LLM-From-Scratch\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full.csv",
+    "grid_kind": "uniform",
+    "nodes_per_dim": 61,
+    "n_nodes": 226981,
+    "range": 6.0,
+    "se_target": 0.3,
+    "min_items": 1,
+    "max_items": 100,
+    "final_estimator": "online",
+    "mwle_ridge": 1e-06
+  },
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full.csv",
+    "expected_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "actual_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "aligned": true
+  },
+  "mwle_fallback_models": 0,
+  "bank": {
+    "n_items_used": 4156,
+    "n_dims": 3,
+    "dims": [
+      "correctness",
+      "scaffolding",
+      "presentation"
+    ],
+    "modeled_skills": [
+      "correctness",
+      "scaffolding",
+      "presentation"
+    ],
+    "slot_map": {
+      "content": "a_content (correctness)",
+      "diagnosis": "a_diagnosis (scaffolding)",
+      "scaffolding": "a_scaffolding (presentation)"
+    },
+    "a_correctness_n_loading": 3112,
+    "a_scaffolding_n_loading": 496,
+    "a_presentation_n_loading": 654
+  },
+  "n_models": 82,
+  "recovery_r": {
+    "correctness": 0.9524334652814356,
+    "scaffolding": 0.9470615742270816,
+    "presentation": 0.8846829819292287
+  },
+  "pirt_mae_cat": 0.029174302091251034,
+  "pirt_mae_full": 0.005904203377979945,
+  "axis_continuity": {
+    "correctness": {
+      "n_points": 82,
+      "n_distinct_rounded_3dp": 75,
+      "distinct_fraction": 0.9146341463414634,
+      "min": -5.607486027894274,
+      "max": 3.766983962286964
+    },
+    "scaffolding": {
+      "n_points": 82,
+      "n_distinct_rounded_3dp": 82,
+      "distinct_fraction": 1.0,
+      "min": -1.69463063556008,
+      "max": 2.4823105638463194
+    },
+    "presentation": {
+      "n_points": 82,
+      "n_distinct_rounded_3dp": 80,
+      "distinct_fraction": 0.975609756097561,
+      "min": -4.805000056863316,
+      "max": 2.78534622231017
+    }
+  },
+  "figures": {
+    "recovery_scatter_correctness.png": "regenerated_figures\\3_skills\\figures\\recovery_scatter_correctness.png",
+    "recovery_scatter_scaffolding.png": "regenerated_figures\\3_skills\\figures\\recovery_scatter_scaffolding.png",
+    "recovery_scatter_presentation.png": "regenerated_figures\\3_skills\\figures\\recovery_scatter_presentation.png",
+    "pirt_calibration.png": "regenerated_figures\\3_skills\\figures\\pirt_calibration.png"
+  }
+}
