@@ -49,6 +49,12 @@ Auto-fail cells (tutor Output errored / empty / missing) are never sent to the
 judge; they are scored ``verdict=fail`` (y=0) at ingest with the reason recorded.
 Resume is keyed on (model, scenario, criterion_id) against verdicts.jsonl.
 
+Models whose EVERY cell is auto-fail (zero gradeable cells) are excluded from the
+matrix by default (an all-fail row would bias MIRT); pass ``--keep-dead-models``
+to keep them. The excluded list/count is surfaced in the summary and manifest.
+Matrix columns are identified by (scenario_id, criterion_id), so a criterion_id
+reused across scenarios never collapses two distinct rubrics into one column.
+
 Pure stdlib + numpy + pyyaml + tutor_cat. Deterministic. No network here (the
 network/GPU work is the out-of-band phase 2).
 """
@@ -90,6 +96,14 @@ DEFAULT_RUBRICS_MAP = {
 DEFAULT_RESPONSES_ROOT = ROOT / "runs" / "responses"
 DEFAULT_OUT_ROOT = ROOT / "runs" / "judge"
 
+class CasesValidationError(RuntimeError):
+    """Raised when emitted cases fail the teammate's ``validate_judge_cases``.
+
+    Emit fails fast on this (like the single-benchmark ``build-cases`` path)
+    rather than shipping invalid cases that the GPU ``run`` step would only reject
+    after a job launch."""
+
+
 JUDGE_INPUTS_NAME = "judge_inputs.jsonl"
 JUDGE_INPUTS_MANIFEST_NAME = "judge_inputs_manifest.json"
 CASES_NAME = "cases.jsonl"
@@ -129,10 +143,15 @@ class LiteRubric:
 @dataclass
 class LiteBank:
     """Minimal stand-in for tutor_cat.dataio.ItemBank, exposing only the two
-    attribute dicts ``run_judge_grading.build_case_dict`` reads."""
+    attribute dicts ``run_judge_grading.build_case_dict`` reads.
+
+    ``rubrics`` is keyed by ``(scenario_id, criterion_id)`` rather than by
+    ``criterion_id`` alone: a criterion_id is only unique WITHIN its scenario, so
+    keying by the pair keeps rubric text (and, downstream, matrix columns) from
+    colliding if the same criterion_id is ever reused across scenarios."""
 
     scenarios: dict[str, LiteScenario]
-    rubrics: dict[str, LiteRubric]
+    rubrics: dict[tuple[str, str], LiteRubric]
 
 
 def load_scenarios(path: Path) -> dict[str, LiteScenario]:
@@ -228,16 +247,28 @@ class StagedBenchmark:
     models: list[str]
     criterion_ids: list[str]
     staged_rows: list[dict]
+    # One (scenario_id, criterion_id) per matrix column, parallel to
+    # ``criterion_ids`` (which holds only the criterion_id label per column). The
+    # pair is the true column identity used to assemble the matrix, so columns do
+    # not collide if a criterion_id repeats across scenarios.
+    column_keys: list[tuple[str, str]] = field(default_factory=list)
     total_cells: int = 0
     gradeable_cells: int = 0
     auto_fail_cells: int = 0
     auto_fail_reasons: dict[str, int] = field(default_factory=dict)
     missing_scenarios: int = 0
     malformed_lines: int = 0
+    # Models dropped before the matrix because every one of their cells was
+    # auto-fail (zero gradeable): grading them would inject a full row of y=0.
+    excluded_models: list[str] = field(default_factory=list)
 
 
 def stage_benchmark(
-    benchmark: str, responses_dir: Path, scenarios_path: Path, rubrics_path: Path
+    benchmark: str,
+    responses_dir: Path,
+    scenarios_path: Path,
+    rubrics_path: Path,
+    exclude_dead_models: bool = True,
 ) -> StagedBenchmark:
     scenarios = load_scenarios(scenarios_path)
     rubrics = load_rubrics(rubrics_path)
@@ -254,29 +285,36 @@ def stage_benchmark(
 
     ordered_sids = sorted(criteria_by_scenario)
     ordered_criterion_ids: list[str] = []
+    column_keys: list[tuple[str, str]] = []
     for sid in ordered_sids:
-        ordered_criterion_ids.extend(c.criterion_id for c in criteria_by_scenario[sid])
+        for c in criteria_by_scenario[sid]:
+            ordered_criterion_ids.append(c.criterion_id)
+            column_keys.append((sid, c.criterion_id))
 
+    # Key rubrics by (scenario_id, criterion_id): a criterion_id is unique only
+    # within its scenario, so keying by the pair keeps rubric text from colliding
+    # if the same criterion_id is reused across scenarios.
     bank = LiteBank(
         scenarios=scenarios,
-        rubrics={r.criterion_id: r for r in rubrics},
+        rubrics={(r.scenario_id, r.criterion_id): r for r in rubrics},
     )
 
     shards = discover_shards(responses_dir)
     models = sorted(shards)
 
-    staged_rows: list[dict] = []
-    total = gradeable = auto_fail = 0
+    rows_by_model: dict[str, list[dict]] = {}
+    gradeable_by_model: dict[str, int] = {}
     malformed_lines = 0
-    reasons: dict[str, int] = {}
     for model in models:
         index, _dupes, skipped = sji.load_response_index(shards[model])
         malformed_lines += skipped
+        model_rows: list[dict] = []
+        model_gradeable = 0
         for sid in ordered_sids:
             rec = index.get(sid)
             af, reason, response = sji.classify_cell(rec, False)
             for crit in criteria_by_scenario[sid]:
-                staged_rows.append(
+                model_rows.append(
                     {
                         "model": model,
                         "scenario": sid,
@@ -287,12 +325,30 @@ def stage_benchmark(
                         "auto_fail_reason": reason,
                     }
                 )
-                total += 1
-                if af:
-                    auto_fail += 1
-                    reasons[reason] = reasons.get(reason, 0) + 1
-                else:
-                    gradeable += 1
+                if not af:
+                    model_gradeable += 1
+        rows_by_model[model] = model_rows
+        gradeable_by_model[model] = model_gradeable
+
+    # A model with zero gradeable cells (every response errored/blanked/missing)
+    # would otherwise become a full row of auto-fail y=0, biasing MIRT. Mirrors
+    # validate_responses' usable/dead split (dead = zero gradeable-capable rows).
+    dead_models = [m for m in models if gradeable_by_model.get(m, 0) == 0]
+    excluded_models = dead_models if exclude_dead_models else []
+    kept_models = [m for m in models if m not in set(excluded_models)]
+
+    staged_rows: list[dict] = []
+    total = gradeable = auto_fail = 0
+    reasons: dict[str, int] = {}
+    for model in kept_models:
+        for row in rows_by_model[model]:
+            staged_rows.append(row)
+            total += 1
+            if row["auto_fail"]:
+                auto_fail += 1
+                reasons[row["auto_fail_reason"]] = reasons.get(row["auto_fail_reason"], 0) + 1
+            else:
+                gradeable += 1
 
     return StagedBenchmark(
         benchmark=benchmark,
@@ -300,15 +356,17 @@ def stage_benchmark(
         scenarios_path=scenarios_path,
         rubrics_path=rubrics_path,
         bank=bank,
-        models=models,
+        models=kept_models,
         criterion_ids=ordered_criterion_ids,
         staged_rows=staged_rows,
+        column_keys=column_keys,
         total_cells=total,
         gradeable_cells=gradeable,
         auto_fail_cells=auto_fail,
         auto_fail_reasons=reasons,
         missing_scenarios=missing_scenarios,
         malformed_lines=malformed_lines,
+        excluded_models=excluded_models,
     )
 
 
@@ -332,8 +390,11 @@ def write_staging(out_dir: Path, sb: StagedBenchmark) -> None:
         "auto_fail_reason_counts": sb.auto_fail_reasons,
         "missing_scenarios_for_rubrics": sb.missing_scenarios,
         "malformed_response_lines_skipped": sb.malformed_lines,
+        "n_excluded_models": len(sb.excluded_models),
+        "excluded_models": sb.excluded_models,
         "models": sb.models,
         "criterion_ids": sb.criterion_ids,
+        "column_keys": [list(k) for k in sb.column_keys],
     }
     with (out_dir / JUDGE_INPUTS_MANIFEST_NAME).open("w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
@@ -396,12 +457,20 @@ def emit_cases(
             continue
         cases.append(case)
 
+    # Validate BEFORE writing so invalid cases are never shipped: the single
+    # benchmark build-cases path fails fast here, and so must this driver (the
+    # GPU run step would otherwise only reject them after launching a job).
     runner = rjg._import_teammate_runner()
     if runner is not None and hasattr(runner, "validate_judge_cases"):
         try:
             runner.validate_judge_cases(cases)
-        except Exception as e:  # noqa: BLE001 - surface schema drift, keep going
-            print(f"  ! {sb.benchmark}: cases failed teammate validation: {e}", file=sys.stderr)
+        except Exception as e:
+            raise CasesValidationError(
+                f"{sb.benchmark}: generated cases failed teammate validation: {e}"
+            ) from e
+    else:
+        print(f"  ! {sb.benchmark}: teammate validator unavailable; cases NOT "
+              "cross-validated", file=sys.stderr)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     cases_name = cases_filename(num_shards, shard_index)
@@ -513,7 +582,7 @@ def ingest_benchmark(
         writer.close()
 
     final = rjg.load_done_keys(verdicts_path)
-    arr, csv_cells, n_holes = rjg.assemble_matrix(sb.models, sb.criterion_ids, final)
+    arr, csv_cells, n_holes = rjg.assemble_matrix(sb.models, sb.column_keys, final)
     rjg.write_matrix_csv(out_dir / MATRIX_CSV_NAME, sb.models, sb.criterion_ids, csv_cells)
 
     by_source: dict[str, int] = {}
@@ -542,6 +611,8 @@ def ingest_benchmark(
         "coverage": {"complete": n_holes == 0, "n_holes": n_holes, "n_filled": total - n_holes},
         "models": sb.models,
         "n_criteria": len(sb.criterion_ids),
+        "n_excluded_models": len(sb.excluded_models),
+        "excluded_models": sb.excluded_models,
     }
     with (out_dir / MANIFEST_NAME).open("w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
@@ -551,6 +622,8 @@ def ingest_benchmark(
         "phase": "ingest",
         "n_models": len(sb.models),
         "n_criteria": len(sb.criterion_ids),
+        "n_excluded_models": len(sb.excluded_models),
+        "excluded_models": sb.excluded_models,
         "stats": stats,
         "coverage": manifest["coverage"],
     }
@@ -628,6 +701,11 @@ def main(argv: list[str] | None = None) -> int:
                     help="root of returned verdicts; searched as <root>/<Benchmark>/*.jsonl")
     ap.add_argument("--no-decision-policy", choices=["missing", "fail"], default="missing")
     ap.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
+    ap.add_argument("--keep-dead-models", action="store_true",
+                    help="keep models whose every response errored/blanked (zero "
+                         "gradeable cells) instead of excluding them. Default: exclude, "
+                         "so a dead model does not become a full row of auto-fail y=0 "
+                         "that biases MIRT.")
     args = ap.parse_args(argv)
 
     if args.num_shards < 1:
@@ -687,7 +765,10 @@ def main(argv: list[str] | None = None) -> int:
             roll_up.append({"benchmark": benchmark, "status": "skipped_verifier"})
             continue
 
-        sb = stage_benchmark(benchmark, responses_dir, scenarios_path, rubrics_path)
+        sb = stage_benchmark(
+            benchmark, responses_dir, scenarios_path, rubrics_path,
+            exclude_dead_models=not args.keep_dead_models,
+        )
         if not sb.models:
             print(f"  SKIP: responses dir has no model shards: {_rel(responses_dir)}")
             roll_up.append({"benchmark": benchmark, "status": "skipped_no_shards"})
@@ -696,6 +777,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  models={len(sb.models)}  criteria={len(sb.criterion_ids)}  "
               f"cells={sb.total_cells} (gradeable={sb.gradeable_cells}, "
               f"auto_fail={sb.auto_fail_cells})")
+        if sb.excluded_models:
+            print(f"  excluded {len(sb.excluded_models)} dead model(s) (zero gradeable "
+                  f"cells; would be all-fail rows): {sb.excluded_models[:5]}"
+                  + (" ..." if len(sb.excluded_models) > 5 else ""))
         if sb.missing_scenarios:
             print(f"  note: {sb.missing_scenarios} rubric(s) reference a scenario "
                   "absent from scenarios.jsonl")
@@ -704,9 +789,27 @@ def main(argv: list[str] | None = None) -> int:
                   "response shards (see warnings above)")
 
         if phase == "emit":
-            n_cases, n_af, n_missing = emit_cases(
-                out_dir, sb, args.num_shards, args.shard_index
-            )
+            try:
+                n_cases, n_af, n_missing = emit_cases(
+                    out_dir, sb, args.num_shards, args.shard_index
+                )
+            except CasesValidationError as e:
+                # Fail fast: do not ship invalid cases (mirrors build-cases). The
+                # cases file was NOT written, so the GPU run step is never launched.
+                print(f"  ERROR: {e}", file=sys.stderr)
+                roll_up.append({"benchmark": benchmark, "status": "emit_validation_failed",
+                                "error": str(e)})
+                index = {
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "phase": phase,
+                    "judge": {"name": judge_name, "model": fj.model,
+                              "revision": fj.hf_revision},
+                    "benchmarks": roll_up,
+                }
+                args.out_root.mkdir(parents=True, exist_ok=True)
+                with (args.out_root / INDEX_NAME).open("w", encoding="utf-8") as f:
+                    json.dump(index, f, indent=2, ensure_ascii=False)
+                return 1
             cases_path = out_dir / cases_filename(args.num_shards, args.shard_index)
             shard_note = (f"  (shard {args.shard_index}/{args.num_shards})"
                           if args.num_shards > 1 else "")
@@ -725,6 +828,8 @@ def main(argv: list[str] | None = None) -> int:
                 "shard_index": args.shard_index,
                 "cases_file": _rel(cases_path),
                 "malformed_lines_skipped": sb.malformed_lines,
+                "n_excluded_models": len(sb.excluded_models),
+                "excluded_models": sb.excluded_models,
             })
         else:
             ingest_paths = resolve_ingest_paths(ingest_root, benchmark)
