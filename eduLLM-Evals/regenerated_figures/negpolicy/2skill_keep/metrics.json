@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-08-01T20:21:00.792017+00:00",
+  "driver": "scripts/offline_engine_driver.py",
+  "engine": "tutor_cat.engine.run_evaluation (production, unmodified)",
+  "selection": "tutor_cat.selector.select_next targeting argmax(se)",
+  "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full_nonopt.csv",
+  "matrix_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+  "provenance_aligned": true,
+  "dims": [
+    "correctness",
+    "scaffolding"
+  ],
+  "negatives": {
+    "n_negative_cells": 349,
+    "n_negative_items": 348,
+    "negative_policy": "keep",
+    "n_records_after": 3443
+  },
+  "config": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "unmapped_criteria": "judge",
+    "grid_nodes_per_dim": 61,
+    "range": 8.0
+  },
+  "n_models": 82,
+  "stop_reasons": {
+    "precision_reached": 82
+  },
+  "scenarios_administered": {
+    "mean": 13.414634146341463,
+    "median": 14.0,
+    "max": 21
+  },
+  "criteria_administered": {
+    "mean": 59.5609756097561,
+    "median": 59.0,
+    "max": 94
+  },
+  "precision_reached": 82,
+  "recovery": {
+    "theta_cat": {
+      "correctness": {
+        "slope": 0.5700633864126884,
+        "r": 0.9294456450707855,
+        "gap_worst12": 3.1051484872204576,
+        "n_distinct_x": 67
+      },
+      "scaffolding": {
+        "slope": 0.8366215322993584,
+        "r": 0.9115801114693256,
+        "gap_worst12": 0.15890544219555247,
+        "n_distinct_x": 82
+      }
+    },
+    "theta_batch": {
+      "correctness": {
+        "slope": 0.6894130243184099,
+        "r": 0.9455516090377518,
+        "gap_worst12": 2.3697532120221063,
+        "n_distinct_x": 67
+      },
+      "scaffolding": {
+        "slope": 0.8760222362715878,
+        "r": 0.9057111121397295,
+        "gap_worst12": 0.1045181168076857,
+        "n_distinct_x": 82
+      }
+    },
+    "theta_mwle": {
+      "correctness": {
+        "slope": 0.846351952368767,
+        "r": 0.9603283437459562,
+        "gap_worst12": 1.3459113196715056,
+        "n_distinct_x": 67
+      },
+      "scaffolding": {
+        "slope": 1.0191970222775721,
+        "r": 0.9169677901945408,
+        "gap_worst12": 0.027557540681183545,
+        "n_distinct_x": 82
+      }
+    }
+  }
+}

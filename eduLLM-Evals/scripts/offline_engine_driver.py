@@ -107,12 +107,11 @@ def load_fitted_bank(path: Path, negative_policy: str):
         if list(r["q_modeled"].keys()) != dims:
             raise SystemExit(f"q_modeled keys != discrimination keys at {r['criterion_id']}")
 
-    if len(dims) != len(SKILLS):
+    if not (1 <= len(dims) <= len(SKILLS)):
         raise SystemExit(
-            f"bank models {len(dims)} skills {dims} but tutor_cat.SKILLS has "
-            f"{len(SKILLS)}. The production engine is compiled against a fixed "
-            f"{len(SKILLS)}-dim latent space; a {len(dims)}-dim bank cannot be run "
-            f"through it without changing SKILLS."
+            f"bank models {len(dims)} skills {dims}; the engine supports 1..{len(SKILLS)} "
+            f"latent dimensions. The run passes these skills to RunConfig(skills=...), so "
+            f"any count in range works without touching the core math."
         )
 
     n_neg = sum(1 for r in records
@@ -303,12 +302,13 @@ def main() -> int:
     args.runs_dir.mkdir(parents=True, exist_ok=True)
     cfg = RunConfig(
         seed=args.seed, top_n=args.top_n,
-        max_se={s: args.max_se for s in SKILLS},
+        max_se={s: args.max_se for s in dims},
         min_evals_per_skill=args.min_evals_per_skill,
         max_scenarios=args.max_scenarios,
         output_dir=str(args.runs_dir),
         data_scenarios=str(args.scenarios), data_rubrics=str(args.bank),
         unmapped_criteria=args.unmapped_criteria,
+        skills=tuple(dims),
     )
 
     print(f"running the production engine for {len(models)} models ...")
@@ -329,8 +329,8 @@ def main() -> int:
         idx = np.array([col[c] for c in order], dtype=int)
 
         # production's own online estimate, in modeled-dim order
-        th_online = np.array([final["theta"][s] for s in SKILLS], dtype=float)
-        se_online = np.array([final["se"][s] for s in SKILLS], dtype=float)
+        th_online = np.array([final["theta"][s] for s in dims], dtype=float)
+        se_online = np.array([final["se"][s] for s in dims], dtype=float)
         th_batch = (regen.eap_subset(Y[r], idx, A, b, grid, log_prior)
                     if idx.size else th_online.copy())
         th_mwle, ok = (regen.mwle_subset(Y[r], idx, A, b, th_batch)
@@ -353,7 +353,7 @@ def main() -> int:
             rec[f"theta_batch_{d}"] = float(th_batch[k])
             rec[f"theta_mwle_{d}"] = float(th_mwle[k])
             rec[f"final_se_{d}"] = float(se_online[k])
-            rec[f"scorable_evals_{d}"] = int(final["scorable_evaluations"][SKILLS[k]])
+            rec[f"scorable_evals_{d}"] = int(final["scorable_evaluations"][dims[k]])
         rows.append(rec)
         if not args.keep_run_logs:
             shutil.rmtree(run_dir, ignore_errors=True)

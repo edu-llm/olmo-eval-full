@@ -72,10 +72,16 @@ def standard_errors(U: np.ndarray) -> np.ndarray:
 def initial_state(
     theta_init: list[float] | None = None,
     u_init_diag: list[float] | None = None,
+    n_skills: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """PRD initial conditions: theta_0 = (0,0,0), U_0 = diag(1,1,1). Both configurable."""
-    theta = np.zeros(N_SKILLS) if theta_init is None else np.asarray(theta_init, dtype=float)
-    diag = np.ones(N_SKILLS) if u_init_diag is None else np.asarray(u_init_diag, dtype=float)
-    if theta.shape != (N_SKILLS,) or diag.shape != (N_SKILLS,):
-        raise ValueError("theta_init and u_init_diag must each have length 3")
+    """PRD initial conditions: theta_0 = 0, U_0 = I over ``n_skills`` dimensions.
+
+    ``n_skills`` defaults to the package's ``N_SKILLS`` (3) so the standard run is
+    unchanged; callers modelling a different latent dimensionality pass it explicitly.
+    """
+    n = N_SKILLS if n_skills is None else int(n_skills)
+    theta = np.zeros(n) if theta_init is None else np.asarray(theta_init, dtype=float)
+    diag = np.ones(n) if u_init_diag is None else np.asarray(u_init_diag, dtype=float)
+    if theta.shape != (n,) or diag.shape != (n,):
+        raise ValueError(f"theta_init and u_init_diag must each have length {n}")
     return theta, np.diag(diag)

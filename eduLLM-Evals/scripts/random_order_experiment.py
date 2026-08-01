@@ -142,10 +142,13 @@ def figures(out_dir: Path, dim_names, full, trials, baseline, spread, worst):
         _save(fig, f"recovery_overlay_{dim}.png")
 
         # --- how much does order move each model? ---
+        # clip guards against tiny negative asymmetric errors (~-1e-16) when all
+        # trials for a model land on the identical theta; matplotlib rejects yerr<0.
+        lo_err = np.clip(spread["mean"][:, k] - spread["min"][:, k], 0.0, None)
+        hi_err = np.clip(spread["max"][:, k] - spread["mean"][:, k], 0.0, None)
         fig, ax = plt.subplots(figsize=(5.6, 4.2))
         ax.errorbar(x, spread["mean"][:, k],
-                    yerr=[spread["mean"][:, k] - spread["min"][:, k],
-                          spread["max"][:, k] - spread["mean"][:, k]],
+                    yerr=[lo_err, hi_err],
                     fmt="o", ms=4, lw=0.8, capsize=2, alpha=0.8)
         ax.set_xlabel(f"full-bank EAP ability ({dim})")
         ax.set_ylabel(f"CAT ability across trials ({dim})")
