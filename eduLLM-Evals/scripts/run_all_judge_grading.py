@@ -33,9 +33,10 @@ prepare -> judge -> ingest, run once per benchmark:
          --cases runs/judge/TutorBench/cases.jsonl --judge qwen \
          --output <ingest-root>/TutorBench/canonical_r1.jsonl \
          --backend vllm --prompt-variant canonical --replicate-id r1 --resume \
-         --s3-output-prefix s3://YOUR-BUCKET/edu-tutor-grading/TutorBench/canonical_r1 \
+         --s3-output-prefix <s3-prefix>/TutorBench/canonical_r1 \
          --require-s3-upload
-     The exact per-benchmark command is printed by phase 1.
+     The exact per-benchmark command is printed by phase 1, with the s3 prefix
+     taken from ``--s3-prefix`` / ``$S3_GRADING_PREFIX`` (no bucket is hardcoded).
 
   3. INGEST (local, this script):
        uv run scripts/run_all_judge_grading.py --ingest <ingest-root>
@@ -43,14 +44,30 @@ prepare -> judge -> ingest, run once per benchmark:
               runs/judge/<Benchmark>/manifest.json
               runs/judge/_index.json                  (roll-up)
      ``<ingest-root>`` is searched per benchmark as ``<root>/<Benchmark>/*.jsonl``
-     (falling back to ``<root>/<Benchmark>.jsonl``).
+     (falling back to ``<root>/<Benchmark>.jsonl``). It may be a local path or an
+     ``s3://`` root; an ``s3://`` root is mirrored to a temp dir with ``aws s3
+     sync`` (via the AWS CLI) before ingesting.
+
+S3 DIVISION OF LABOR
+--------------------
+The AWS wrapper (``scripts/aws/run_grading_gpu4.sh``) OWNS the on-node S3
+transfers: it pushes each benchmark's cases file up and pulls each shard's
+verdict file back down into a flat local inbox before ingesting. This driver is
+S3-AWARE but does not duplicate that orchestration:
+  * ``--s3-prefix`` / ``$S3_GRADING_PREFIX`` is the single source of truth for
+    the S3 layout; the printed hand-off command derives ``--s3-output-prefix``
+    from it. Because the wrapper exports ``S3_GRADING_PREFIX``, the driver picks
+    up the same prefix automatically — the two stay consistent with no copy.
+  * ``--ingest`` optionally accepts an ``s3://`` root so a standalone ingest
+    (run without the wrapper) can pull verdicts down itself.
 
 Auto-fail cells (tutor Output errored / empty / missing) are never sent to the
 judge; they are scored ``verdict=fail`` (y=0) at ingest with the reason recorded.
 Resume is keyed on (model, scenario, criterion_id) against verdicts.jsonl.
 
-Pure stdlib + numpy + pyyaml + tutor_cat. Deterministic. No network here (the
-network/GPU work is the out-of-band phase 2).
+Pure stdlib + numpy + pyyaml + tutor_cat. Deterministic. The only optional
+network call is ``--ingest s3://...``, which shells out to the AWS CLI (no boto3
+dependency); the heavy GPU/upload work stays in the out-of-band phase 2.
 """
 
 from __future__ import annotations
@@ -58,7 +75,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -98,6 +118,10 @@ VERDICTS_NAME = "verdicts.jsonl"
 MANIFEST_NAME = "manifest.json"
 MATRIX_CSV_NAME = "response_matrix.csv"
 INDEX_NAME = "_index.json"
+
+# Ultimate fallback for the GPU hand-off S3 prefix. This is a clearly-labeled
+# placeholder, never a real bucket: pass --s3-prefix or set $S3_GRADING_PREFIX.
+S3_PREFIX_PLACEHOLDER = "s3://YOUR-BUCKET/edu-tutor-grading"
 
 
 # =====================================================================
@@ -420,20 +444,23 @@ def handoff_command(
     cases_path: Path,
     judge: str,
     ingest_root: Path,
+    s3_prefix: str,
     num_shards: int = 1,
     shard_index: int = 0,
 ) -> str:
     # Each shard grades its own cases file into a shard-tagged verdict file so all
     # shards can share one benchmark ingest dir (ingest globs <root>/<Benchmark>/*.jsonl).
+    # The s3 output prefix is derived from the caller-supplied --s3-prefix rather
+    # than a hardcoded bucket, and is shard-tagged to match the local output.
     suffix = "" if num_shards <= 1 else f".shard{shard_index}"
     out = ingest_root / benchmark / f"canonical_r1{suffix}.jsonl"
-    s3_prefix = f"s3://YOUR-BUCKET/edu-tutor-grading/{benchmark}/canonical_r1{suffix}"
+    s3_out = f"{s3_prefix.rstrip('/')}/{benchmark}/canonical_r1{suffix}"
     return (
         "python aws_judge_handoff/scripts/run_judge_validation.py run \\\n"
         f"  --cases {_rel(cases_path)} --judge {judge} \\\n"
         f"  --output {_rel(out)} \\\n"
         "  --backend vllm --prompt-variant canonical --replicate-id r1 --resume \\\n"
-        f"  --s3-output-prefix {s3_prefix} \\\n"
+        f"  --s3-output-prefix {s3_out} \\\n"
         "  --require-s3-upload"
     )
 
@@ -567,6 +594,21 @@ def _rel(p: Path) -> str:
         return str(p)
 
 
+def _is_s3_uri(value: str) -> bool:
+    return value.startswith("s3://")
+
+
+def _sync_s3_to_local(s3_uri: str, dest: Path) -> None:
+    """Mirror an ``s3://`` root into a local dir with ``aws s3 sync`` before ingest.
+
+    Uses the AWS CLI via subprocess (no boto3 dependency in the local driver);
+    credentials come from the environment / instance role, never from code."""
+    dest.mkdir(parents=True, exist_ok=True)
+    src = s3_uri.rstrip("/") + "/"
+    print(f"  aws s3 sync {src} -> {_rel(dest)}")
+    subprocess.run(["aws", "s3", "sync", src, str(dest), "--only-show-errors"], check=True)
+
+
 def _select_benchmarks(only: str | None, exclude: str | None) -> list[str]:
     names = list(IN_SCOPE_BENCHMARKS)
     if only:
@@ -624,8 +666,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--shard-index", type=int, default=0,
                     help="0-based index of the shard to emit (0 <= shard-index < num-shards); "
                          "e.g. driven by AWS_BATCH_JOB_ARRAY_INDEX")
-    ap.add_argument("--ingest", type=Path, default=None,
-                    help="root of returned verdicts; searched as <root>/<Benchmark>/*.jsonl")
+    ap.add_argument("--ingest", type=str, default=None,
+                    help="root of returned verdicts; searched as <root>/<Benchmark>/*.jsonl. "
+                         "May be a local path or an s3:// root (mirrored down with "
+                         "aws s3 sync before ingesting).")
+    ap.add_argument("--s3-prefix", default=os.environ.get("S3_GRADING_PREFIX"),
+                    help="base s3:// prefix for the GPU hand-off command "
+                         "(also read from $S3_GRADING_PREFIX). The printed runner "
+                         "command uploads to <prefix>/<Benchmark>/canonical_r1[.shard<i>]. "
+                         f"Placeholder default: {S3_PREFIX_PLACEHOLDER}")
     ap.add_argument("--no-decision-policy", choices=["missing", "fail"], default="missing")
     ap.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
     args = ap.parse_args(argv)
@@ -648,13 +697,29 @@ def main(argv: list[str] | None = None) -> int:
     fj = rjg.load_frozen_judge_config(args.judge_config)
     judge_name = args.judge or fj.judge_name
     phase = "ingest" if args.ingest else "emit"
-    ingest_root = args.ingest if args.ingest else (args.out_root / "_verdicts_inbox")
+    s3_prefix = (args.s3_prefix or S3_PREFIX_PLACEHOLDER).rstrip("/")
+
+    ingest_tmp: tempfile.TemporaryDirectory | None = None
+    if args.ingest:
+        if _is_s3_uri(args.ingest):
+            ingest_tmp = tempfile.TemporaryDirectory(prefix="judge_ingest_s3_")
+            ingest_root = Path(ingest_tmp.name)
+            _sync_s3_to_local(args.ingest, ingest_root)
+        else:
+            ingest_root = Path(args.ingest)
+    else:
+        ingest_root = args.out_root / "_verdicts_inbox"
 
     print("=" * 72)
     print(f"run_all_judge_grading : phase={phase}  judge={judge_name} / {fj.model}")
     if phase == "emit" and args.num_shards > 1:
         print(f"sharding : shard {args.shard_index} of {args.num_shards} "
               "(partitioned by (model, scenario) block)")
+    if phase == "emit":
+        print(f"s3 prefix: {s3_prefix}")
+        if S3_PREFIX_PLACEHOLDER in s3_prefix:
+            print("  WARNING: using the placeholder s3 prefix; pass --s3-prefix or set "
+                  "$S3_GRADING_PREFIX to a real bucket/prefix.", file=sys.stderr)
     print(f"in scope: {', '.join(benchmarks)}")
     print("=" * 72)
 
@@ -714,7 +779,7 @@ def main(argv: list[str] | None = None) -> int:
                   + (f"  (bank_missing={n_missing})" if n_missing else ""))
             print("  GPU hand-off:")
             cmd = handoff_command(benchmark, cases_path, judge_name, ingest_root,
-                                  args.num_shards, args.shard_index)
+                                  s3_prefix, args.num_shards, args.shard_index)
             for line in cmd.splitlines():
                 print(f"    {line}")
             roll_up.append({
@@ -753,6 +818,8 @@ def main(argv: list[str] | None = None) -> int:
     with (args.out_root / INDEX_NAME).open("w", encoding="utf-8") as f:
         json.dump(index, f, indent=2, ensure_ascii=False)
     print(f"\nwrote roll-up -> {_rel(args.out_root / INDEX_NAME)}")
+    if ingest_tmp is not None:
+        ingest_tmp.cleanup()
     return 0
 
 
