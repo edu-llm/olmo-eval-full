@@ -1,0 +1,22 @@
+{
+  "rubrics_path": "/Users/cat/alpha-projects/olmo-eval-full/eduLLM-Evals/data/TutorEval/rubrics_final.jsonl",
+  "n_criteria": 1786,
+  "n_flagged": 1280,
+  "flagged_pct": 71.7,
+  "by_bucket": {
+    "not_a_requirement": 1085,
+    "compound_multipart": 288,
+    "hedging": 81,
+    "observational_verdict": 68,
+    "vague_qualifier": 54,
+    "under_specified": 78,
+    "over_specified": 28,
+    "negation_double": 3
+  },
+  "by_n_buckets": {
+    "1": 951,
+    "2": 258,
+    "3": 66,
+    "4": 5
+  }
+}

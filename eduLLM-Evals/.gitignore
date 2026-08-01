@@ -166,3 +166,12 @@ data/TutorEval/review_queue*.tsv
 # ---------------------------------------------------------------------------
 !regenerated_figures/
 !regenerated_figures/**
+
+
+# Criteria-rewording run artifacts: per-item logs are regenerable and stay local
+# (consistent with the qmatrix_logs handling). The reworded scenario copy (~6MB) is
+# regenerable via scripts/build_final_rubrics.py --reword-sheet; only the human-reviewed
+# sheets (wording_flags.tsv, wording_review.tsv) and the reworded rubric bank are tracked.
+reword_logs/
+data/TutorEval/scenarios_reworded.json
+data/TutorEval/scenarios_reworded.jsonl
