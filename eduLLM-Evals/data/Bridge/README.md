@@ -10,10 +10,11 @@ Built by [`scripts/ingest_bridge.py`](../../scripts/ingest_bridge.py). The recor
 `difficulty` / `discrimination`: those are calibrated from real judge responses, and until
 that fit exists the bank stays parameter-free rather than carrying synthetic stand-ins.
 
-**Current artifact: 289 scenarios · 5,909 criteria · bank of 39 · 20–22 criteria per
+**Current artifact: 239 scenarios · 4,861 criteria · bank of 39 · 20–22 criteria per
 scenario.**
 
-> **⚠️ 353 of the original 642 scenarios were removed — the problem statement is missing.** Bridge
+> **⚠️ 403 of the original 642 scenarios were removed.** 353 because the problem statement
+> is missing, then 50 more because the graded turn has no gradeable error at all. Bridge
 > transcribes live sessions held over a shared whiteboard, and the worksheet was never
 > captured. On 55% of the bank that left transcripts like *"Here comes the question. / Is
 > that your final answer? / yes"* — a tutor asked to diagnose an error without being told
@@ -95,17 +96,17 @@ Seven domains; `data_graphing` was **retired** — see [Retired criteria](#retir
 
 | Domain | Code(s) | Scenarios |
 |--------|---------|-----------|
-| `geometry_spatial` | V1, V2 | 81 |
-| `operations_arithmetic` | O1 | 74 |
-| `place_value_number` | N1 | 55 |
-| `measurement_conversion` | U1 | 27 |
-| `fractions` | F1 | 16 |
-| `proportional_reasoning` | Z1 | 17 |
-| `algebra_expressions` | X1 | 19 |
+| `geometry_spatial` | V1, V2 | 49 |
+| `operations_arithmetic` | O1 | 105 |
+| `place_value_number` | N1 | 44 |
+| `measurement_conversion` | U1 | 19 |
+| `fractions` | F1 | 7 |
+| `proportional_reasoning` | Z1 | 5 |
+| `algebra_expressions` | X1 | 10 |
 
 ### Tier 4 — grade-band module
 
-`Y1` (grades 1-3, 95) · `Y2` (4-5, 156) · `Y3` (6-12, 38). Derived from the TEKS prefix
+`Y1` (grades 1-3, 75) · `Y2` (4-5, 133) · `Y3` (6-12, 31). Derived from the TEKS prefix
 (`3.6B…` → grade 3; `A2.7D…` → secondary).
 
 ## Retired criteria
@@ -122,10 +123,54 @@ or "Line Plots with Fractions". B1 asks whether the response misreads a scale, k
 which is unanswerable when no data display is involved. Dropping the gate lets those rows
 route on their actual content: the two fraction ones now draw `F1`, the other four `O1`.
 
+## Per-item audit — what each turn actually asks
+
+The two cuts above were found by reading items rather than trusting their metadata, so the
+same read was run over the whole bank:
+[`scripts/audit_bridge_items.py`](../../scripts/audit_bridge_items.py) asks `gpt-5.5`, once
+per scenario, what the graded turn actually asks and what the student actually did, then
+judges the stored labels against that. Full results:
+[`staging/bridge_item_audit/report.md`](../../staging/bridge_item_audit/report.md).
+
+**50 scenarios excluded** — the graded turn has no gradeable error. These carried a *clean*
+error label, which is exactly why Bridge's free-text `no_clear_mistake` filter missed them:
+
+```
+[tutor]   Please show your work on the whiteboard using the Pencil Tool
+[student] i well be right back
+[tutor]   Okay, Let me know when you are back?
+[student] "i have to leeve"          ← the turn we graded
+GOLD:     "We understand emergencies happen. I'll see you at your next session."
+```
+
+That one was labelled `error_module: conceptual`. Others answer *"Do you need any help?"* with
+`"no"`, or *"Do you understand?"* with `"a little bit"`, and in one case the student was simply
+right (the expert reply opens *"Correct!"*).
+
+**83 `topic_domain` corrections** ([`topic_overrides.json`](topic_overrides.json)) — the
+`data_graphing` defect at scale. A multi-turn dialogue drills into an arithmetic sub-step and
+that sub-step is the graded turn:
+
+| scenario | `lesson_topic` | what the turn asks | student |
+|---|---|---|---|
+| `bridge_0003` | Areas by Decomposition | `36+42` | `1,512` |
+| `bridge_0085` | Geometric Lines | `2+0+1+1` | `3` |
+| `bridge_0069` | Shapes and Area | `4 × 4` | `12` |
+
+> **The audit's `error_module` disagreements were deliberately NOT acted on.** It contradicted
+> the expert annotation on 142 scenarios, but 54 of those push `right_idea`/`careless` toward
+> `guess` — precisely what the missing whiteboard produces, since the expert *saw* the
+> student's working and a text-only reader cannot. It also disagrees with every annotator in
+> 131 of 142 cases. The experts are better placed here; the label stands.
+
+> **Scope of validation.** One classifier, no human raters. Precision was hand-checked on
+> roughly a dozen items across categories and held; recall is unmeasured, and the 76 scenarios
+> the audit called clean have not been reviewed.
+
 ## Three design rules worth knowing
 
 **1. Conversation-level error gating.** Bridge re-annotates the same conversation by
-different experts, who often disagree about `e` — 104 scenarios sit in a conversation whose
+different experts, who often disagree about `e` — 85 scenarios sit in a conversation whose
 annotators disagreed. Keying the error module on the row's own label gave byte-identical
 stimuli *mutually contradictory critical criteria* (42% of the pre-fix bank). The module is
 now resolved once **per conversation** — the first annotation in split order wins — and every
@@ -141,7 +186,7 @@ discarded labels remain in `error_types` for provenance.
 **2. One scenario per row — `source_id` is deliberately non-unique.** Every surviving row
 becomes its own scenario, so each expert's revision stays a separate item and nothing is
 merged away. The consequence is real and must be handled downstream: 178 scenarios share a
-conversation with at least one other (200 unique conversations across 289 scenarios), and
+conversation with at least one other (163 unique conversations across 239 scenarios), and
 those repeats have an identical stimulus *and* an identical criterion set,
 differing only in `reference_solution`. That is perfect local dependence, and the judge sees
 a different gold key for each copy — so the same item can acquire two difficulties. **Group
@@ -165,10 +210,13 @@ the pilot below showed negative form inflates pass rates, so six were rewritten.
 |--------|---------|-----------------|
 | `missing_problem_statement` | 263 | the question was on the whiteboard, never in the chat |
 | `error_not_diagnosable_from_text` | 90 | a figure is referenced and the error is unreadable without it |
+| `no_error_present` | 20 | the student is correct, acknowledging, or ending the session |
+| `not_mathematics` | 18 | the graded turn is session admin or tool talk |
+| `not_gradeable` | 12 | the error is real but not recoverable from the visible text |
 | `no_clear_mistake` | 56 | `e` is free text ("no mistake" / "end session" / "unresponsive") |
 | `empty_student_turn` | 2 | final student turn has no text |
 
-700 source rows → 411 dropped → **289 scenarios**. All drops are logged to `dropped.jsonl`
+700 source rows → 461 dropped → **239 scenarios**. All drops are logged to `dropped.jsonl`
 with a reason; the two deterministic reasons carry a null `scenario_id` because they fail
 before ids are assigned.
 
@@ -215,7 +263,7 @@ under `not_excluded_yet` in [`visual_exclusions.json`](visual_exclusions.json):
 
 ### `visible_mistake` — flagged, not excluded
 
-**9 scenarios (184 criteria) carry `visible_mistake: false`.** Their final student turn
+**2 scenarios (42 criteria) carry `visible_mistake: false`.** Their final student turn
 is a bare acknowledgment ("yes", "done", "no", …) **and** no digit appears anywhere
 in the conversation, so the transcript is only tutor turns plus an assent:
 
@@ -229,9 +277,9 @@ in the conversation, so the transcript is only tutor turns plus an assent:
 There is no student position to remediate, so D1/D2 (**both `critical`**) are effectively
 unpassable and will read as floor items. They are **kept** so the bank stays complete, and
 flagged so a calibration run can filter or model them explicitly — `[s for s in scenarios if
-s["visible_mistake"]]` gives the 280 with a remediable error.
+s["visible_mistake"]]` gives the 237 with a remediable error.
 
-This group shrank from 91 to 9 with the two cuts, and that overlap is worth
+This group shrank from 91 to 2 across the cuts, and that overlap is worth
 reading: **82 of the original 91 were also flagged as missing their problem statement.**
 The flag was largely detecting a missing-context defect, not an affective one.
 
@@ -390,22 +438,24 @@ start tracking sample noise; the real calibration is the definitive read.
   legitimate alternative remediations, but this has not been validated against Bridge's own
   expert gold replies.
 - **Topic gating is keyword-based** and coarse; `operations_arithmetic` remains a catch-all
-  of 74 scenarios. `lesson_topic` names the **lesson** a session belongs to, not what the
+  of 105 scenarios. `lesson_topic` names the **lesson** a session belongs to, not what the
   graded turn asks, so a "Bar Graphs" lesson can hold a plain subtraction question. This
   is what retired `data_graphing`; the same mismatch may affect other strands and has not
   been audited.
 - **Floor items are retained.** The 9 `visible_mistake: false` scenarios (184 criteria)
   are kept deliberately, but D1/D2 are unpassable on them. Filter on the flag, or expect
   those items to carry no information.
-- **Duplicate stimuli are retained.** 178 scenarios share a conversation with another and,
+- **Duplicate stimuli are retained.** 152 scenarios share a conversation with another and,
   byte-identical apart from `reference_solution`. At temperature 0 a
   tutor returns the same response to each, so these rows are near-copies in the response
   matrix while the judge scores them against different gold keys. Group on `source_id`.
-- **Three strands remain thin.** `fractions` (16), `proportional_reasoning` (17) and
-  `algebra_expressions` (19) each rest on a single criterion (F1, Z1, X1) with few
-  instances. Each instance is still answered by every model, so the per-item difficulty is
-  estimable; what is thin is any claim about the *strand*, which rests on <20 stimuli.
-  `data_graphing` was retired for this reason plus a gating defect (below).
+- **⚠️ Tier 3 may not earn its place.** After the topic corrections,
+  `operations_arithmetic` holds **105 of 239 scenarios (44%)** while `fractions` has 7,
+  `proportional_reasoning` 5 and `algebra_expressions` 10. Each instance is still answered by
+  every model, so per-item difficulties remain estimable; what is not estimable is anything
+  about a *strand* resting on 5 stimuli. The corrections did not cause this — they revealed
+  it. Bridge's graded turns are mostly topic-neutral arithmetic sub-steps, so a topic tier has
+  little to gate on. **Retiring Tier 3 entirely is a live option and has not been decided.**
 - **The pilot statistics predate the cut.** Every pass rate and discrimination below was
   measured on a 100-scenario sample of the 642-scenario bank, and roughly 55% of that
   sample no longer exists. Directionally the numbers should hold or improve — the removed

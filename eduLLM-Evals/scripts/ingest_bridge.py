@@ -49,16 +49,29 @@ EXCLUSIONS (deterministic)
                        "unresponsive" annotations.
   empty_conversation   `c_h` is empty.
   empty_student_turn   the final student turn has no text.
+EXCLUSIONS (audited; ids committed, so the build still takes no API call)
+------------------------------------------------------------------------
+Both files below were produced once by an audit script and are committed rather than
+recomputed. Deleting one undoes exactly that audit's cut and leaves the others standing.
+
+data/Bridge/visual_exclusions.json -- scripts/audit_bridge_visuals.py
   missing_problem_     the math problem itself never appears in the chat. Bridge transcribes
   statement            live sessions held over a shared whiteboard, and the worksheet was
                        never captured, so many rows read "Here comes the question. / Is that
                        your final answer? / yes" -- a tutor is asked to diagnose an error
-                       without being told what was asked. The ids come from
-                       data/Bridge/visual_exclusions.json, so the build stays deterministic;
-                       that file was produced once by scripts/audit_bridge_visuals.py and is
-                       committed rather than recomputed. See its `not_excluded_yet` key for
-                       two related groups (explicit figure pointers, labelled options) that
-                       are still IN the bank pending a separate decision.
+                       without being told what was asked.
+  error_not_           a figure IS referenced and the student's answer is meaningless without
+  diagnosable_         it (a bare option label, "A" / "picture 3"). Kept where the error is
+  from_text            legible anyway: "4 m" answering an area question is a linear unit, and
+                       that is gradeable without seeing the rectangle.
+
+data/Bridge/item_exclusions.json -- scripts/audit_bridge_items.py
+  no_error_present     the student is correct, acknowledging ("a little bit"), asking a
+                       question, or ending the session, so D1/D2 -- both critical, both about
+                       identifying the error -- are unpassable. These carry a CLEAN error
+                       label, which is why the free-text `no_clear_mistake` filter missed them.
+  not_mathematics      the graded turn is session admin or tool talk, not a maths task.
+  not_gradeable        the error exists but is not recoverable from the visible text.
 
 SCENARIO ID STABILITY: ids are assigned over every row that survives the deterministic
 checks, BEFORE the exclusion list is applied, so the ids of surviving scenarios never move
@@ -90,8 +103,19 @@ Kept scenarios receive a VARIABLE criterion set assembled from four tiers:
 
     core                    every scenario                     (16 criteria)
     error-type module       canonical per conversation         (2-3 criteria)
-    topic-domain module     keyed on `lesson_topic` keywords   (1-2 criteria)
+    topic-domain module     `lesson_topic` keywords, then the  (1-2 criteria)
+                            per-scenario override list
     grade-band module       keyed on the `lesson_topic` grade  (1 criterion)
+
+TOPIC GATE CAVEAT: `lesson_topic` names the LESSON a session belongs to, not what the graded
+turn asks, and a multi-turn dialogue routinely drills down into an arithmetic sub-step. A
+lesson titled "Areas by Decomposition" can end on "What is the value of 36+42?", where V1/V2
+("invite a visual representation", "name the figure precisely") are the wrong questions.
+data/Bridge/topic_overrides.json carries the rows where a per-item read found that divergence
+and is applied after the keyword gate. After those corrections `operations_arithmetic` holds
+44% of the bank and three strands sit below 11 scenarios, which is evidence that Bridge's
+graded turns are mostly topic-neutral arithmetic -- see data/Bridge/README.md on whether this
+tier earns its place at all.
 
 CONVERSATION-LEVEL ERROR GATING: Bridge re-annotates the same conversation point by
 different experts, who often disagree about `e`. Keying the error module on the row's own
@@ -144,9 +168,14 @@ from datasets import load_dataset
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "data" / "Bridge"
-# Scenario ids whose problem statement lives only on the session's whiteboard. Committed
-# alongside the bank so this build takes no API call; see the module docstring.
-EXCLUSIONS_PATH = OUT_DIR / "visual_exclusions.json"
+# Audit outputs committed alongside the bank so this build takes no API call. Each file
+# records one audit; see the module docstring for what each found.
+#   visual_exclusions.json  the problem statement lives only on the session whiteboard
+#   item_exclusions.json    the graded turn has no gradeable error at all
+EXCLUSION_PATHS = (OUT_DIR / "visual_exclusions.json", OUT_DIR / "item_exclusions.json")
+# Per-scenario topic_domain corrections. The keyword gate reads `lesson_topic`, which names
+# the lesson rather than the graded turn; these are the rows where that diverged.
+TOPIC_OVERRIDES_PATH = OUT_DIR / "topic_overrides.json"
 
 HF_DATASET = "rose-e-wang/bridge"
 SOURCE_URL = "https://huggingface.co/datasets/rose-e-wang/bridge"
@@ -155,7 +184,10 @@ SPLIT = "calibration"   # pipeline-role label (matches TutorBench/InFoBench), no
 USE_CASE = "mistake_remediation"   # unknown to respgen -> falls back to the adaptive_
                                    # explanation system prompt, which preserves multi-turn
 SUBJECT = "mathematics"
-VERSION = "4.0"   # 4.0 = 353 scenarios excluded (the problem statement was never captured;
+VERSION = "5.0"   # 5.0 = per-item audit: 50 more scenarios excluded (no gradeable error;
+                  #       see item_exclusions.json) and 83 topic_domain corrections
+                  #       (see topic_overrides.json)
+                  # 4.0 = 353 scenarios excluded (the problem statement was never captured;
                   #       see visual_exclusions.json), B1 retired, 7 topic domains
                   # 3.0 = visible_mistake flag, canonical per-conversation error module,
                   #       8 topic domains, 16 core criteria, negative-form wording
@@ -543,20 +575,29 @@ def scenario_id(index: int) -> str:
     return f"bridge_{index:04d}"
 
 
-def load_visual_exclusions() -> dict[str, str]:
-    """Map scenario_id -> drop reason, from the committed exclusion list.
+def load_exclusions() -> dict[str, str]:
+    """Map scenario_id -> drop reason, merged across every committed exclusion list.
 
-    Absent file means no exclusions -- the bank then rebuilds to its pre-exclusion state,
-    which is the intended way to undo the cut. Each entry carries its own reason so the
-    rounds stay distinguishable in dropped.jsonl.
+    An absent file contributes nothing, so deleting one undoes exactly that audit's cut and
+    leaves the others standing. Each entry carries its own reason, so the audits stay
+    distinguishable in dropped.jsonl.
     """
-    if not EXCLUSIONS_PATH.is_file():
+    out: dict[str, str] = {}
+    for path in EXCLUSION_PATHS:
+        if not path.is_file():
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        for row in doc.get("excluded", []):
+            out.setdefault(row["scenario_id"], row.get("reason", "excluded"))
+    return out
+
+
+def load_topic_overrides() -> dict[str, str]:
+    """Map scenario_id -> corrected topic_domain. Absent file means the gate stands as-is."""
+    if not TOPIC_OVERRIDES_PATH.is_file():
         return {}
-    doc = json.loads(EXCLUSIONS_PATH.read_text(encoding="utf-8"))
-    return {
-        row["scenario_id"]: row.get("reason", "visual_exclusion")
-        for row in doc.get("excluded", [])
-    }
+    doc = json.loads(TOPIC_OVERRIDES_PATH.read_text(encoding="utf-8"))
+    return {row["scenario_id"]: row["now"] for row in doc.get("overrides", [])}
 
 
 def join_turns(turns: list[dict] | None) -> str:
@@ -689,7 +730,8 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
 
     scenarios: list[dict] = []
     rubrics: list[dict] = []
-    excluded = load_visual_exclusions()
+    excluded = load_exclusions()
+    topic_overrides = load_topic_overrides()
 
     # Enumerate over EVERY staged row so ids do not shift when the exclusion list changes;
     # excluded rows are skipped after their id is known. See the docstring on id stability.
@@ -707,7 +749,9 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
             continue
         lesson_topic = row.get("lesson_topic")
         band = grade_band(lesson_topic)
-        domain = topic_domain(lesson_topic)
+        # The keyword gate reads lesson_topic (the lesson); the override list carries the
+        # rows where the graded turn asks something else. See TOPIC_OVERRIDES_PATH.
+        domain = topic_overrides.get(sid) or topic_domain(lesson_topic)
         module = module_by_cid[item["c_id"]]
 
         codes = applicable_codes(module, domain, band)

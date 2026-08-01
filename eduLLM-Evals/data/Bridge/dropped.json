@@ -420,11 +420,39 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0004",
+    "source_id": "4054798_68",
+    "native_split": "train",
+    "error_type": "guess",
+    "reason": "no_error_present"
+  },
+  {
+    "scenario_id": "bridge_0005",
+    "source_id": "4055603_103",
+    "native_split": "train",
+    "error_type": "guess",
+    "reason": "not_mathematics"
+  },
+  {
+    "scenario_id": "bridge_0006",
+    "source_id": "2916421_82",
+    "native_split": "train",
+    "error_type": "right-idea",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0007",
     "source_id": "2963055_17",
     "native_split": "train",
     "error_type": "guess",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0008",
+    "source_id": "6172033_30",
+    "native_split": "train",
+    "error_type": "misinterpret",
+    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0010",
@@ -446,6 +474,13 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0013",
+    "source_id": "4015974_13",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0015",
@@ -495,6 +530,13 @@
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0024",
+    "source_id": "6136357_63",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0025",
@@ -567,6 +609,20 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0036",
+    "source_id": "2900622_172",
+    "native_split": "train",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
+  },
+  {
+    "scenario_id": "bridge_0037",
+    "source_id": "2898670_27",
+    "native_split": "train",
+    "error_type": "guess",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0038",
     "source_id": "2949308_17",
     "native_split": "train",
@@ -586,6 +642,13 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0041",
+    "source_id": "2895049_24",
+    "native_split": "train",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0044",
@@ -665,6 +728,13 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
+    "scenario_id": "bridge_0072",
+    "source_id": "2850525_35",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0075",
     "source_id": "2989417_116",
     "native_split": "train",
@@ -735,11 +805,25 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0094",
+    "source_id": "4014122_28",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0095",
     "source_id": "2964109_39",
     "native_split": "train",
     "error_type": "misinterpret",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0096",
+    "source_id": "4055603_31",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0097",
@@ -796,6 +880,13 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0111",
+    "source_id": "4294482_89",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0112",
@@ -887,6 +978,13 @@
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0135",
+    "source_id": "2898670_27",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0136",
@@ -1048,6 +1146,13 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0171",
+    "source_id": "4106600_32",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0172",
@@ -1428,6 +1533,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0264",
+    "source_id": "2950220_90",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0265",
     "source_id": "4273168_71",
     "native_split": "train",
@@ -1449,11 +1561,25 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0270",
+    "source_id": "2951109_58",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0271",
     "source_id": "2963668_44",
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0273",
+    "source_id": "2963551_25",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0274",
@@ -1477,11 +1603,25 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0278",
+    "source_id": "2949283_58",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0279",
     "source_id": "4110589_61",
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0280",
+    "source_id": "4111481_50",
+    "native_split": "train",
+    "error_type": "careless",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0283",
@@ -1496,6 +1636,13 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0287",
+    "source_id": "6163970_92",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0289",
@@ -1524,6 +1671,13 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0295",
+    "source_id": "2916237_15",
+    "native_split": "train",
+    "error_type": "right-idea",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0296",
@@ -1568,6 +1722,13 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
+    "scenario_id": "bridge_0307",
+    "source_id": "2928211_32",
+    "native_split": "train",
+    "error_type": "guess",
+    "reason": "not_gradeable"
+  },
+  {
     "scenario_id": "bridge_0308",
     "source_id": "2950088_75",
     "native_split": "train",
@@ -1594,6 +1755,13 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0313",
+    "source_id": "2928093_30",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0314",
@@ -1741,6 +1909,13 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0344",
+    "source_id": "6187673_16",
+    "native_split": "train",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0345",
@@ -1897,6 +2072,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0383",
+    "source_id": "4288819_9",
+    "native_split": "train",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0384",
     "source_id": "4257656_59",
     "native_split": "train",
@@ -1946,6 +2128,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0391",
+    "source_id": "4106600_32",
+    "native_split": "validation",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0395",
     "source_id": "4055603_15",
     "native_split": "validation",
@@ -1958,6 +2147,13 @@
     "native_split": "validation",
     "error_type": "guess",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0398",
+    "source_id": "4145096_55",
+    "native_split": "validation",
+    "error_type": "right-idea",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0399",
@@ -1974,6 +2170,13 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
+    "scenario_id": "bridge_0402",
+    "source_id": "2962429_51",
+    "native_split": "validation",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
+  },
+  {
     "scenario_id": "bridge_0403",
     "source_id": "4104575_59",
     "native_split": "validation",
@@ -1986,6 +2189,13 @@
     "native_split": "validation",
     "error_type": "guess",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0408",
+    "source_id": "4247191_37",
+    "native_split": "validation",
+    "error_type": "imprecise",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0410",
@@ -2016,6 +2226,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0421",
+    "source_id": "6377795_12",
+    "native_split": "validation",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0423",
     "source_id": "4294755_60",
     "native_split": "validation",
@@ -2028,6 +2245,13 @@
     "native_split": "validation",
     "error_type": "guess",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0425",
+    "source_id": "4113439_21",
+    "native_split": "validation",
+    "error_type": "right-idea",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0428",
@@ -2100,6 +2324,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0445",
+    "source_id": "2570448_42",
+    "native_split": "validation",
+    "error_type": "diagnose",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0446",
     "source_id": "4079053_56",
     "native_split": "validation",
@@ -2133,6 +2364,27 @@
     "native_split": "validation",
     "error_type": "imprecise",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0454",
+    "source_id": "4111720_8",
+    "native_split": "test",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
+  },
+  {
+    "scenario_id": "bridge_0455",
+    "source_id": "2963992_22",
+    "native_split": "test",
+    "error_type": "misinterpret",
+    "reason": "not_gradeable"
+  },
+  {
+    "scenario_id": "bridge_0457",
+    "source_id": "2964076_43",
+    "native_split": "test",
+    "error_type": "right-idea",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0459",
@@ -2170,6 +2422,13 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
+    "scenario_id": "bridge_0465",
+    "source_id": "4247191_37",
+    "native_split": "test",
+    "error_type": "guess",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0466",
     "source_id": "6166109_24",
     "native_split": "test",
@@ -2182,6 +2441,13 @@
     "native_split": "test",
     "error_type": "misinterpret",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0468",
+    "source_id": "2927561_29",
+    "native_split": "test",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0469",
@@ -2266,6 +2532,13 @@
     "native_split": "test",
     "error_type": "diagnose",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0486",
+    "source_id": "2928762_61",
+    "native_split": "test",
+    "error_type": "misinterpret",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0488",
@@ -2380,6 +2653,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0513",
+    "source_id": "6165036_15",
+    "native_split": "test",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
+  },
+  {
     "scenario_id": "bridge_0514",
     "source_id": "6404710_95",
     "native_split": "test",
@@ -2429,6 +2709,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0523",
+    "source_id": "4274213_164",
+    "native_split": "test",
+    "error_type": "diagnose",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0525",
     "source_id": "2927455_68",
     "native_split": "test",
@@ -2448,6 +2735,13 @@
     "native_split": "test",
     "error_type": "guess",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0529",
+    "source_id": "2928499_27",
+    "native_split": "test",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0531",
@@ -2499,6 +2793,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0541",
+    "source_id": "4113439_21",
+    "native_split": "test",
+    "error_type": "diagnose",
+    "reason": "no_error_present"
+  },
+  {
     "scenario_id": "bridge_0544",
     "source_id": "2963710_103",
     "native_split": "test",
@@ -2541,6 +2842,13 @@
     "reason": "missing_problem_statement"
   },
   {
+    "scenario_id": "bridge_0553",
+    "source_id": "4012844_44",
+    "native_split": "test",
+    "error_type": "right-idea",
+    "reason": "not_mathematics"
+  },
+  {
     "scenario_id": "bridge_0554",
     "source_id": "2928284_79",
     "native_split": "test",
@@ -2553,6 +2861,13 @@
     "native_split": "test",
     "error_type": "misinterpret",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0557",
+    "source_id": "4256694_6",
+    "native_split": "test",
+    "error_type": "guess",
+    "reason": "not_mathematics"
   },
   {
     "scenario_id": "bridge_0559",
@@ -2574,6 +2889,13 @@
     "native_split": "test",
     "error_type": "imprecise",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0566",
+    "source_id": "6166071_74",
+    "native_split": "test",
+    "error_type": "imprecise",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0567",
@@ -2744,6 +3066,13 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
+    "scenario_id": "bridge_0605",
+    "source_id": "4079053_56",
+    "native_split": "test",
+    "error_type": "guess",
+    "reason": "not_gradeable"
+  },
+  {
     "scenario_id": "bridge_0606",
     "source_id": "6321463_13",
     "native_split": "test",
@@ -2756,6 +3085,13 @@
     "native_split": "test",
     "error_type": "misinterpret",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0613",
+    "source_id": "2894869_50",
+    "native_split": "test",
+    "error_type": "diagnose",
+    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0614",
@@ -2777,6 +3113,13 @@
     "native_split": "test",
     "error_type": "imprecise",
     "reason": "missing_problem_statement"
+  },
+  {
+    "scenario_id": "bridge_0618",
+    "source_id": "2962429_51",
+    "native_split": "test",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0619",
@@ -2861,6 +3204,13 @@
     "native_split": "test",
     "error_type": "guess",
     "reason": "error_not_diagnosable_from_text"
+  },
+  {
+    "scenario_id": "bridge_0635",
+    "source_id": "2928499_27",
+    "native_split": "test",
+    "error_type": "right-idea",
+    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0637",

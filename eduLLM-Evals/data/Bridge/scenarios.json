@@ -59,7 +59,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0003",
@@ -67,7 +67,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "1,512",
     "conversation_context": [
@@ -105,8 +105,7 @@
       "bridge_0003_c16",
       "bridge_0003_c24",
       "bridge_0003_c25",
-      "bridge_0003_c28",
-      "bridge_0003_c29",
+      "bridge_0003_c36",
       "bridge_0003_c39"
     ],
     "error_type": "careless",
@@ -121,255 +120,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0004",
-    "source_id": "4054798_68",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "a little bit",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Since 16.50 and 12.95 have less than 2 tens, we know that they are both less than 20."
-      },
-      {
-        "role": "tutor",
-        "content": "Hence Marty saved less than his goal in May and July."
-      },
-      {
-        "role": "tutor",
-        "content": "Do you understand what I did?"
-      }
-    ],
-    "reference_solution": "Let's try another problem. Let's say Marty is trying to save more than $40. If he saved $32.45, did he meet his goal?",
-    "novice_response": "Do you mind explaining which part you are not quite understanding?\nPlease reply through the chatbox.",
-    "criterion_ids": [
-      "bridge_0004_c01",
-      "bridge_0004_c02",
-      "bridge_0004_c03",
-      "bridge_0004_c04",
-      "bridge_0004_c05",
-      "bridge_0004_c06",
-      "bridge_0004_c07",
-      "bridge_0004_c08",
-      "bridge_0004_c09",
-      "bridge_0004_c10",
-      "bridge_0004_c11",
-      "bridge_0004_c12",
-      "bridge_0004_c13",
-      "bridge_0004_c14",
-      "bridge_0004_c15",
-      "bridge_0004_c16",
-      "bridge_0004_c20",
-      "bridge_0004_c21",
-      "bridge_0004_c31",
-      "bridge_0004_c38"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": true,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "support_thinking",
-    "lesson_topic": "5.2A.Comparing Decimals",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0005",
-    "source_id": "4055603_103",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "nhw",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Is that your final answer?"
-      },
-      {
-        "role": "student",
-        "content": "no\\\\"
-      },
-      {
-        "role": "tutor",
-        "content": "What is the final answer?"
-      }
-    ],
-    "reference_solution": "Sorry, I don't understand. Could you type it again?",
-    "novice_response": "That's incorrect.",
-    "criterion_ids": [
-      "bridge_0005_c01",
-      "bridge_0005_c02",
-      "bridge_0005_c03",
-      "bridge_0005_c04",
-      "bridge_0005_c05",
-      "bridge_0005_c06",
-      "bridge_0005_c07",
-      "bridge_0005_c08",
-      "bridge_0005_c09",
-      "bridge_0005_c10",
-      "bridge_0005_c11",
-      "bridge_0005_c12",
-      "bridge_0005_c13",
-      "bridge_0005_c14",
-      "bridge_0005_c15",
-      "bridge_0005_c16",
-      "bridge_0005_c20",
-      "bridge_0005_c21",
-      "bridge_0005_c36",
-      "bridge_0005_c37"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "diagnose",
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": false,
-    "expert_strategy": "explain_concept",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.2B.Multiples of Ten",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0006",
-    "source_id": "2916421_82",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "no mam",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Here is your next question."
-      },
-      {
-        "role": "tutor",
-        "content": "Go ahead."
-      },
-      {
-        "role": "tutor",
-        "content": "Is that your final answer?"
-      }
-    ],
-    "reference_solution": "Ok, take your time",
-    "novice_response": "Please recheck your answer.",
-    "criterion_ids": [
-      "bridge_0006_c01",
-      "bridge_0006_c02",
-      "bridge_0006_c03",
-      "bridge_0006_c04",
-      "bridge_0006_c05",
-      "bridge_0006_c06",
-      "bridge_0006_c07",
-      "bridge_0006_c08",
-      "bridge_0006_c09",
-      "bridge_0006_c10",
-      "bridge_0006_c11",
-      "bridge_0006_c12",
-      "bridge_0006_c13",
-      "bridge_0006_c14",
-      "bridge_0006_c15",
-      "bridge_0006_c16",
-      "bridge_0006_c22",
-      "bridge_0006_c23",
-      "bridge_0006_c31",
-      "bridge_0006_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "diagnose",
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": false,
-    "expert_strategy": "provide_hint",
-    "expert_intention": "hint_mistake",
-    "lesson_topic": "5.3K.Decimal Numbers",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0008",
-    "source_id": "6172033_30",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "4  times in",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "You are the best"
-      },
-      {
-        "role": "tutor",
-        "content": "Read the question carefully."
-      },
-      {
-        "role": "tutor",
-        "content": "How many times 27 can go into the 4th fact?"
-      }
-    ],
-    "reference_solution": "Great try, but that is incorrect. We want to know how many times 4 can go into 27.",
-    "novice_response": "That was a very good try.\nThe value of 4 times 4 is equal to 16.\nWe can check the 4th fact the value of 6 times 4 is equal to 24.",
-    "criterion_ids": [
-      "bridge_0008_c01",
-      "bridge_0008_c02",
-      "bridge_0008_c03",
-      "bridge_0008_c04",
-      "bridge_0008_c05",
-      "bridge_0008_c06",
-      "bridge_0008_c07",
-      "bridge_0008_c08",
-      "bridge_0008_c09",
-      "bridge_0008_c10",
-      "bridge_0008_c11",
-      "bridge_0008_c12",
-      "bridge_0008_c13",
-      "bridge_0008_c14",
-      "bridge_0008_c15",
-      "bridge_0008_c16",
-      "bridge_0008_c17",
-      "bridge_0008_c18",
-      "bridge_0008_c19",
-      "bridge_0008_c36",
-      "bridge_0008_c38"
-    ],
-    "error_type": "misinterpret",
-    "error_types": [
-      "misinterpret",
-      "right-idea"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "clarify_misunderstanding",
-    "lesson_topic": "4.4G.Dividing with Remainders",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0009",
@@ -431,68 +182,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0013",
-    "source_id": "4015974_13",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "928",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Go ahead and read the question carefully."
-      },
-      {
-        "role": "student",
-        "content": "ok"
-      },
-      {
-        "role": "tutor",
-        "content": "What are we asked to find in this question?"
-      }
-    ],
-    "reference_solution": "Yeah, that's it. More precisely, they want us to write the expanded notation for 928\nDo you know what expanded notation is?",
-    "novice_response": "Plus 1 point for your good try.\nIn that given question, we want to find the expanded notation for 928.",
-    "criterion_ids": [
-      "bridge_0013_c01",
-      "bridge_0013_c02",
-      "bridge_0013_c03",
-      "bridge_0013_c04",
-      "bridge_0013_c05",
-      "bridge_0013_c06",
-      "bridge_0013_c07",
-      "bridge_0013_c08",
-      "bridge_0013_c09",
-      "bridge_0013_c10",
-      "bridge_0013_c11",
-      "bridge_0013_c12",
-      "bridge_0013_c13",
-      "bridge_0013_c14",
-      "bridge_0013_c15",
-      "bridge_0013_c16",
-      "bridge_0013_c26",
-      "bridge_0013_c27",
-      "bridge_0013_c31",
-      "bridge_0013_c37"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "encourage_student",
-    "expert_intention": "support_thinking",
-    "lesson_topic": "2.2B.Expanded Notation (Review) - 1",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0014",
@@ -553,7 +243,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0022",
@@ -614,7 +304,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0023",
@@ -676,70 +366,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0024",
-    "source_id": "6136357_63",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "i have to leeve",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Please show your work on the whiteboard using the Pencil Tool"
-      },
-      {
-        "role": "student",
-        "content": "i well be right back"
-      },
-      {
-        "role": "tutor",
-        "content": "Okay, Let me know when you are back?"
-      }
-    ],
-    "reference_solution": "We understand emergencies happen. I'll see you at your next session.",
-    "novice_response": "Thank you for your efforts today! Please fill in the feedback form as you leave. See you next time",
-    "criterion_ids": [
-      "bridge_0024_c01",
-      "bridge_0024_c02",
-      "bridge_0024_c03",
-      "bridge_0024_c04",
-      "bridge_0024_c05",
-      "bridge_0024_c06",
-      "bridge_0024_c07",
-      "bridge_0024_c08",
-      "bridge_0024_c09",
-      "bridge_0024_c10",
-      "bridge_0024_c11",
-      "bridge_0024_c12",
-      "bridge_0024_c13",
-      "bridge_0024_c14",
-      "bridge_0024_c15",
-      "bridge_0024_c16",
-      "bridge_0024_c17",
-      "bridge_0024_c18",
-      "bridge_0024_c19",
-      "bridge_0024_c28",
-      "bridge_0024_c29",
-      "bridge_0024_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "encourage_student",
-    "expert_intention": "motivate_student",
-    "lesson_topic": "5.6B.Volume of Rectangular Prisms",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0028",
@@ -801,193 +428,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0036",
-    "source_id": "2900622_172",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "2 equal angles",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Go ahead and give it a shot."
-      },
-      {
-        "role": "student",
-        "content": "done"
-      },
-      {
-        "role": "tutor",
-        "content": "How could you check that your answer is correct?"
-      }
-    ],
-    "reference_solution": "Ah, you're on the right track. A trapezoid could have 2 equal angles, but doesn't have to\nA trapezoid is any quadrilateral that has exactly 1 pair of parallel sides",
-    "novice_response": "Your answer is incorrect.\nRecheck your work.",
-    "criterion_ids": [
-      "bridge_0036_c01",
-      "bridge_0036_c02",
-      "bridge_0036_c03",
-      "bridge_0036_c04",
-      "bridge_0036_c05",
-      "bridge_0036_c06",
-      "bridge_0036_c07",
-      "bridge_0036_c08",
-      "bridge_0036_c09",
-      "bridge_0036_c10",
-      "bridge_0036_c11",
-      "bridge_0036_c12",
-      "bridge_0036_c13",
-      "bridge_0036_c14",
-      "bridge_0036_c15",
-      "bridge_0036_c16",
-      "bridge_0036_c22",
-      "bridge_0036_c23",
-      "bridge_0036_c28",
-      "bridge_0036_c29",
-      "bridge_0036_c37"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "explain_concept",
-    "expert_intention": "clarify_misunderstanding",
-    "lesson_topic": "3.6B.Quadrilaterals (Review) - 1",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0037",
-    "source_id": "2898670_27",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Since Marc had 90 hundreds blocks, we will write a number with 90 in the hundreds place."
-      },
-      {
-        "role": "tutor",
-        "content": "Why can't we have a two-digit number in one place value?"
-      },
-      {
-        "role": "tutor",
-        "content": "Do you need any help to answer this question?"
-      }
-    ],
-    "reference_solution": "Ok, take your time",
-    "novice_response": "It looks like your answer is incorrect.\nNot to worry, I'm here to help you.\nEach place value can only have a value from 0-9.\nIf there is a number greater than that, the value is carried to the next place value.\nWhere do we put commas in large numbers?\nAre you working on this question?",
-    "criterion_ids": [
-      "bridge_0037_c01",
-      "bridge_0037_c02",
-      "bridge_0037_c03",
-      "bridge_0037_c04",
-      "bridge_0037_c05",
-      "bridge_0037_c06",
-      "bridge_0037_c07",
-      "bridge_0037_c08",
-      "bridge_0037_c09",
-      "bridge_0037_c10",
-      "bridge_0037_c11",
-      "bridge_0037_c12",
-      "bridge_0037_c13",
-      "bridge_0037_c14",
-      "bridge_0037_c15",
-      "bridge_0037_c16",
-      "bridge_0037_c20",
-      "bridge_0037_c21",
-      "bridge_0037_c31",
-      "bridge_0037_c38"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "diagnose",
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": true,
-    "expert_strategy": "explain_concept",
-    "expert_intention": "correct_mistake",
-    "lesson_topic": "4.2A.Place Value",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0041",
-    "source_id": "2895049_24",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "so it would be 7 + 5",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Perimeter refers to the boundary of a closed plane figure."
-      },
-      {
-        "role": "tutor",
-        "content": "Or the perimeter is the distance around the object."
-      },
-      {
-        "role": "tutor",
-        "content": "What is the question asking us to do?"
-      }
-    ],
-    "reference_solution": "You're close! That is the distance around the 2 sides. We want to find the distance around all 4.",
-    "novice_response": "That was a good try.\nYou have earned 2 points for your good efforts.\nLet me help you to solve this question.\nFirst, we start by finding all the sides of the garden.\nBecause it is a rectangle, the opposite sides are congruent.\nThat means same length.",
-    "criterion_ids": [
-      "bridge_0041_c01",
-      "bridge_0041_c02",
-      "bridge_0041_c03",
-      "bridge_0041_c04",
-      "bridge_0041_c05",
-      "bridge_0041_c06",
-      "bridge_0041_c07",
-      "bridge_0041_c08",
-      "bridge_0041_c09",
-      "bridge_0041_c10",
-      "bridge_0041_c11",
-      "bridge_0041_c12",
-      "bridge_0041_c13",
-      "bridge_0041_c14",
-      "bridge_0041_c15",
-      "bridge_0041_c16",
-      "bridge_0041_c22",
-      "bridge_0041_c23",
-      "bridge_0041_c28",
-      "bridge_0041_c29",
-      "bridge_0041_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "provide_hint",
-    "expert_intention": "hint_mistake",
-    "lesson_topic": "4.5C.Perimeter",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0042",
@@ -1048,7 +489,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0043",
@@ -1111,7 +552,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0045",
@@ -1172,7 +613,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0051",
@@ -1235,7 +676,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0053",
@@ -1298,7 +739,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0055",
@@ -1360,7 +801,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0057",
@@ -1422,7 +863,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0058",
@@ -1484,7 +925,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0060",
@@ -1545,7 +986,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0061",
@@ -1607,7 +1048,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0062",
@@ -1668,7 +1109,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0063",
@@ -1729,7 +1170,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0065",
@@ -1737,7 +1178,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -1775,7 +1216,7 @@
       "bridge_0065_c16",
       "bridge_0065_c20",
       "bridge_0065_c21",
-      "bridge_0065_c36",
+      "bridge_0065_c31",
       "bridge_0065_c37"
     ],
     "error_type": "guess",
@@ -1790,7 +1231,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0066",
@@ -1853,7 +1294,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0067",
@@ -1861,7 +1302,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "5",
     "conversation_context": [
@@ -1899,7 +1340,7 @@
       "bridge_0067_c16",
       "bridge_0067_c20",
       "bridge_0067_c21",
-      "bridge_0067_c34",
+      "bridge_0067_c36",
       "bridge_0067_c38"
     ],
     "error_type": "guess",
@@ -1914,7 +1355,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0068",
@@ -1922,7 +1363,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "210",
     "conversation_context": [
@@ -1960,7 +1401,7 @@
       "bridge_0068_c16",
       "bridge_0068_c20",
       "bridge_0068_c21",
-      "bridge_0068_c31",
+      "bridge_0068_c36",
       "bridge_0068_c38"
     ],
     "error_type": "guess",
@@ -1975,7 +1416,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0069",
@@ -1983,7 +1424,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "12",
     "conversation_context": [
@@ -2021,8 +1462,7 @@
       "bridge_0069_c16",
       "bridge_0069_c24",
       "bridge_0069_c25",
-      "bridge_0069_c28",
-      "bridge_0069_c29",
+      "bridge_0069_c36",
       "bridge_0069_c37"
     ],
     "error_type": "careless",
@@ -2038,7 +1478,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0070",
@@ -2100,7 +1540,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0071",
@@ -2162,69 +1602,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0072",
-    "source_id": "2850525_35",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "the dimensional area",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "yes"
-      },
-      {
-        "role": "tutor",
-        "content": "Okay!"
-      },
-      {
-        "role": "tutor",
-        "content": "What should he measure?"
-      }
-    ],
-    "reference_solution": "Correct! Do you remember how to do that?",
-    "novice_response": "That was a good try.\nPlus 1 point for you.\nSo, he will measure the area of his garden.\nTherefore, the final answer is the area.\nDo you understand what I did on the board?",
-    "criterion_ids": [
-      "bridge_0072_c01",
-      "bridge_0072_c02",
-      "bridge_0072_c03",
-      "bridge_0072_c04",
-      "bridge_0072_c05",
-      "bridge_0072_c06",
-      "bridge_0072_c07",
-      "bridge_0072_c08",
-      "bridge_0072_c09",
-      "bridge_0072_c10",
-      "bridge_0072_c11",
-      "bridge_0072_c12",
-      "bridge_0072_c13",
-      "bridge_0072_c14",
-      "bridge_0072_c15",
-      "bridge_0072_c16",
-      "bridge_0072_c26",
-      "bridge_0072_c27",
-      "bridge_0072_c28",
-      "bridge_0072_c29",
-      "bridge_0072_c37"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.6C.Concept of Area",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0073",
@@ -2285,7 +1663,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0074",
@@ -2347,7 +1725,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0077",
@@ -2408,7 +1786,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0078",
@@ -2416,7 +1794,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "algebra_expressions",
     "modality": "text",
     "prompt": "99",
     "conversation_context": [
@@ -2454,7 +1832,7 @@
       "bridge_0078_c16",
       "bridge_0078_c20",
       "bridge_0078_c21",
-      "bridge_0078_c36",
+      "bridge_0078_c34",
       "bridge_0078_c38"
     ],
     "error_type": "guess",
@@ -2469,7 +1847,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0082",
@@ -2477,7 +1855,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "10",
     "conversation_context": [
@@ -2515,7 +1893,7 @@
       "bridge_0082_c16",
       "bridge_0082_c20",
       "bridge_0082_c21",
-      "bridge_0082_c35",
+      "bridge_0082_c36",
       "bridge_0082_c39"
     ],
     "error_type": "guess",
@@ -2530,7 +1908,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0085",
@@ -2538,7 +1916,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "3",
     "conversation_context": [
@@ -2576,8 +1954,7 @@
       "bridge_0085_c16",
       "bridge_0085_c24",
       "bridge_0085_c25",
-      "bridge_0085_c28",
-      "bridge_0085_c29",
+      "bridge_0085_c36",
       "bridge_0085_c38"
     ],
     "error_type": "careless",
@@ -2592,7 +1969,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0089",
@@ -2600,7 +1977,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "1,512",
     "conversation_context": [
@@ -2638,8 +2015,7 @@
       "bridge_0089_c16",
       "bridge_0089_c24",
       "bridge_0089_c25",
-      "bridge_0089_c28",
-      "bridge_0089_c29",
+      "bridge_0089_c36",
       "bridge_0089_c39"
     ],
     "error_type": "careless",
@@ -2654,7 +2030,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0090",
@@ -2662,7 +2038,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "40",
     "conversation_context": [
@@ -2700,8 +2076,7 @@
       "bridge_0090_c16",
       "bridge_0090_c20",
       "bridge_0090_c21",
-      "bridge_0090_c28",
-      "bridge_0090_c29",
+      "bridge_0090_c36",
       "bridge_0090_c37"
     ],
     "error_type": "guess",
@@ -2717,7 +2092,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0091",
@@ -2778,7 +2153,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0092",
@@ -2786,7 +2161,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "223",
     "conversation_context": [
@@ -2824,7 +2199,7 @@
       "bridge_0092_c16",
       "bridge_0092_c20",
       "bridge_0092_c21",
-      "bridge_0092_c36",
+      "bridge_0092_c31",
       "bridge_0092_c37"
     ],
     "error_type": "guess",
@@ -2839,7 +2214,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0093",
@@ -2847,7 +2222,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "3",
     "conversation_context": [
@@ -2885,7 +2260,7 @@
       "bridge_0093_c16",
       "bridge_0093_c22",
       "bridge_0093_c23",
-      "bridge_0093_c30",
+      "bridge_0093_c36",
       "bridge_0093_c39"
     ],
     "error_type": "right-idea",
@@ -2901,131 +2276,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0094",
-    "source_id": "4014122_28",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "yes",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "What is the product of 4 times of 1?"
-      },
-      {
-        "role": "tutor",
-        "content": "So, the final answer is 48."
-      },
-      {
-        "role": "tutor",
-        "content": "Does the step make sense?"
-      }
-    ],
-    "reference_solution": "Good! Let's try another problem.\nHow many slices of pizza did his friends eat if there are 9 slices and 3 friends?",
-    "novice_response": "Plus 1 point for your effort, [STUDENT].\nHere comes your next practice question.\nCan you able to give it a try?\nHow many slices of pizza ate each of his friends?",
-    "criterion_ids": [
-      "bridge_0094_c01",
-      "bridge_0094_c02",
-      "bridge_0094_c03",
-      "bridge_0094_c04",
-      "bridge_0094_c05",
-      "bridge_0094_c06",
-      "bridge_0094_c07",
-      "bridge_0094_c08",
-      "bridge_0094_c09",
-      "bridge_0094_c10",
-      "bridge_0094_c11",
-      "bridge_0094_c12",
-      "bridge_0094_c13",
-      "bridge_0094_c14",
-      "bridge_0094_c15",
-      "bridge_0094_c16",
-      "bridge_0094_c17",
-      "bridge_0094_c18",
-      "bridge_0094_c19",
-      "bridge_0094_c36",
-      "bridge_0094_c37"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.5B.Word Problems with Multiplication",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0096",
-    "source_id": "4055603_31",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "90",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "ok"
-      },
-      {
-        "role": "tutor",
-        "content": "Try to figure it out, and I can help you along the way."
-      },
-      {
-        "role": "tutor",
-        "content": "What is the final answer?"
-      }
-    ],
-    "reference_solution": "Good try! 90 is a multiple of 10. Can you provide another example of a number with a multiple of 10?",
-    "novice_response": "That's incorrect.",
-    "criterion_ids": [
-      "bridge_0096_c01",
-      "bridge_0096_c02",
-      "bridge_0096_c03",
-      "bridge_0096_c04",
-      "bridge_0096_c05",
-      "bridge_0096_c06",
-      "bridge_0096_c07",
-      "bridge_0096_c08",
-      "bridge_0096_c09",
-      "bridge_0096_c10",
-      "bridge_0096_c11",
-      "bridge_0096_c12",
-      "bridge_0096_c13",
-      "bridge_0096_c14",
-      "bridge_0096_c15",
-      "bridge_0096_c16",
-      "bridge_0096_c22",
-      "bridge_0096_c23",
-      "bridge_0096_c36",
-      "bridge_0096_c37"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose",
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.2B.Multiples of Ten",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0098",
@@ -3087,7 +2338,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0101",
@@ -3148,7 +2399,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0104",
@@ -3211,7 +2462,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0106",
@@ -3272,7 +2523,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0107",
@@ -3333,7 +2584,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0108",
@@ -3394,69 +2645,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0111",
-    "source_id": "4294482_89",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
-    "modality": "text",
-    "prompt": "can i go",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "When you add 1440 + 1440 + 1440, the answer is 4320."
-      },
-      {
-        "role": "tutor",
-        "content": "You earned 1 point."
-      },
-      {
-        "role": "tutor",
-        "content": "Do you understand the problem?"
-      }
-    ],
-    "reference_solution": "Yes, but remember, to get full credit, you must stay for the entire session.",
-    "novice_response": "Thank you for your efforts today!\nPlease fill in the feedback form as you leave.\nSee you next time\nBye!",
-    "criterion_ids": [
-      "bridge_0111_c01",
-      "bridge_0111_c02",
-      "bridge_0111_c03",
-      "bridge_0111_c04",
-      "bridge_0111_c05",
-      "bridge_0111_c06",
-      "bridge_0111_c07",
-      "bridge_0111_c08",
-      "bridge_0111_c09",
-      "bridge_0111_c10",
-      "bridge_0111_c11",
-      "bridge_0111_c12",
-      "bridge_0111_c13",
-      "bridge_0111_c14",
-      "bridge_0111_c15",
-      "bridge_0111_c16",
-      "bridge_0111_c17",
-      "bridge_0111_c18",
-      "bridge_0111_c19",
-      "bridge_0111_c32",
-      "bridge_0111_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "explain_concept",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "5.7A.Standard Conversions",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0113",
@@ -3518,7 +2707,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0114",
@@ -3579,7 +2768,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0116",
@@ -3587,7 +2776,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "it cant",
     "conversation_context": [
@@ -3626,7 +2815,7 @@
       "bridge_0116_c17",
       "bridge_0116_c18",
       "bridge_0116_c19",
-      "bridge_0116_c32",
+      "bridge_0116_c36",
       "bridge_0116_c38"
     ],
     "error_type": "misinterpret",
@@ -3641,7 +2830,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0123",
@@ -3702,7 +2891,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0125",
@@ -3764,7 +2953,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0127",
@@ -3826,7 +3015,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0128",
@@ -3887,7 +3076,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0131",
@@ -3949,7 +3138,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0132",
@@ -4010,7 +3199,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0133",
@@ -4072,69 +3261,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0135",
-    "source_id": "2898670_27",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Since Marc had 90 hundreds blocks, we will write a number with 90 in the hundreds place."
-      },
-      {
-        "role": "tutor",
-        "content": "Why can't we have a two-digit number in one place value?"
-      },
-      {
-        "role": "tutor",
-        "content": "Do you need any help to answer this question?"
-      }
-    ],
-    "reference_solution": "Let's review place value. What number is in the tens place in the number 4726?",
-    "novice_response": "It looks like your answer is incorrect.\nNot to worry, I'm here to help you.\nEach place value can only have a value from 0-9.\nIf there is a number greater than that, the value is carried to the next place value.\nWhere do we put commas in large numbers?\nAre you working on this question?",
-    "criterion_ids": [
-      "bridge_0135_c01",
-      "bridge_0135_c02",
-      "bridge_0135_c03",
-      "bridge_0135_c04",
-      "bridge_0135_c05",
-      "bridge_0135_c06",
-      "bridge_0135_c07",
-      "bridge_0135_c08",
-      "bridge_0135_c09",
-      "bridge_0135_c10",
-      "bridge_0135_c11",
-      "bridge_0135_c12",
-      "bridge_0135_c13",
-      "bridge_0135_c14",
-      "bridge_0135_c15",
-      "bridge_0135_c16",
-      "bridge_0135_c20",
-      "bridge_0135_c21",
-      "bridge_0135_c31",
-      "bridge_0135_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose",
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": true,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "4.2A.Place Value",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0141",
@@ -4196,7 +3323,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0144",
@@ -4258,7 +3385,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0147",
@@ -4266,7 +3393,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "you turn the 1 into a 2????",
     "conversation_context": [
@@ -4304,7 +3431,7 @@
       "bridge_0147_c16",
       "bridge_0147_c22",
       "bridge_0147_c23",
-      "bridge_0147_c36",
+      "bridge_0147_c31",
       "bridge_0147_c38"
     ],
     "error_type": "right-idea",
@@ -4320,7 +3447,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0152",
@@ -4328,7 +3455,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "12",
     "conversation_context": [
@@ -4366,7 +3493,7 @@
       "bridge_0152_c16",
       "bridge_0152_c22",
       "bridge_0152_c23",
-      "bridge_0152_c34",
+      "bridge_0152_c36",
       "bridge_0152_c37"
     ],
     "error_type": "right-idea",
@@ -4381,7 +3508,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0156",
@@ -4443,7 +3570,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0157",
@@ -4505,7 +3632,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0159",
@@ -4566,7 +3693,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0163",
@@ -4628,7 +3755,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0165",
@@ -4636,7 +3763,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -4674,7 +3801,7 @@
       "bridge_0165_c16",
       "bridge_0165_c20",
       "bridge_0165_c21",
-      "bridge_0165_c36",
+      "bridge_0165_c31",
       "bridge_0165_c37"
     ],
     "error_type": "guess",
@@ -4689,7 +3816,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0166",
@@ -4751,7 +3878,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0167",
@@ -4814,7 +3941,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0170",
@@ -4822,7 +3949,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "590",
     "conversation_context": [
@@ -4860,7 +3987,7 @@
       "bridge_0170_c16",
       "bridge_0170_c20",
       "bridge_0170_c21",
-      "bridge_0170_c31",
+      "bridge_0170_c36",
       "bridge_0170_c37"
     ],
     "error_type": "guess",
@@ -4875,70 +4002,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0171",
-    "source_id": "4106600_32",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "fractions",
-    "modality": "text",
-    "prompt": "yes!!!!!!!",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "I was facing some technical issues."
-      },
-      {
-        "role": "student",
-        "content": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      },
-      {
-        "role": "tutor",
-        "content": "Is your final answer 1/5 < 1/2?"
-      }
-    ],
-    "reference_solution": "Good job! Did you change the fractions to decimals to help you solve this problem?",
-    "novice_response": "That was a good try.\n1 point for trying this question.\nI will explain it to you.",
-    "criterion_ids": [
-      "bridge_0171_c01",
-      "bridge_0171_c02",
-      "bridge_0171_c03",
-      "bridge_0171_c04",
-      "bridge_0171_c05",
-      "bridge_0171_c06",
-      "bridge_0171_c07",
-      "bridge_0171_c08",
-      "bridge_0171_c09",
-      "bridge_0171_c10",
-      "bridge_0171_c11",
-      "bridge_0171_c12",
-      "bridge_0171_c13",
-      "bridge_0171_c14",
-      "bridge_0171_c15",
-      "bridge_0171_c16",
-      "bridge_0171_c17",
-      "bridge_0171_c18",
-      "bridge_0171_c19",
-      "bridge_0171_c30",
-      "bridge_0171_c37"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose",
-      "imprecise"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "encourage_student",
-    "expert_intention": "motivate_student",
-    "lesson_topic": "3.3F.Understanding Equivalent Fractions",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0174",
@@ -4946,7 +4010,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "11664.",
     "conversation_context": [
@@ -4984,7 +4048,7 @@
       "bridge_0174_c16",
       "bridge_0174_c24",
       "bridge_0174_c25",
-      "bridge_0174_c34",
+      "bridge_0174_c36",
       "bridge_0174_c38"
     ],
     "error_type": "careless",
@@ -5000,7 +4064,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0175",
@@ -5008,7 +4072,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "14",
     "conversation_context": [
@@ -5046,8 +4110,7 @@
       "bridge_0175_c16",
       "bridge_0175_c24",
       "bridge_0175_c25",
-      "bridge_0175_c28",
-      "bridge_0175_c29",
+      "bridge_0175_c36",
       "bridge_0175_c37"
     ],
     "error_type": "careless",
@@ -5063,7 +4126,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0176",
@@ -5126,7 +4189,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0177",
@@ -5187,7 +4250,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0179",
@@ -5195,7 +4258,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "0.0833333",
     "conversation_context": [
@@ -5233,7 +4296,7 @@
       "bridge_0179_c16",
       "bridge_0179_c22",
       "bridge_0179_c23",
-      "bridge_0179_c34",
+      "bridge_0179_c36",
       "bridge_0179_c38"
     ],
     "error_type": "right-idea",
@@ -5249,7 +4312,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0180",
@@ -5257,7 +4320,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "5",
     "conversation_context": [
@@ -5295,7 +4358,7 @@
       "bridge_0180_c16",
       "bridge_0180_c20",
       "bridge_0180_c21",
-      "bridge_0180_c32",
+      "bridge_0180_c36",
       "bridge_0180_c38"
     ],
     "error_type": "guess",
@@ -5310,7 +4373,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0181",
@@ -5371,7 +4434,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0182",
@@ -5432,7 +4495,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0189",
@@ -5440,7 +4503,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "you times",
     "conversation_context": [
@@ -5478,7 +4541,7 @@
       "bridge_0189_c16",
       "bridge_0189_c26",
       "bridge_0189_c27",
-      "bridge_0189_c32",
+      "bridge_0189_c36",
       "bridge_0189_c38"
     ],
     "error_type": "imprecise",
@@ -5493,7 +4556,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0196",
@@ -5501,7 +4564,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "8",
     "conversation_context": [
@@ -5539,7 +4602,7 @@
       "bridge_0196_c16",
       "bridge_0196_c24",
       "bridge_0196_c25",
-      "bridge_0196_c30",
+      "bridge_0196_c36",
       "bridge_0196_c38"
     ],
     "error_type": "careless",
@@ -5554,7 +4617,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0200",
@@ -5616,7 +4679,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0202",
@@ -5677,7 +4740,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0203",
@@ -5740,7 +4803,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0205",
@@ -5803,7 +4866,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0207",
@@ -5865,7 +4928,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0208",
@@ -5928,7 +4991,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0209",
@@ -5936,7 +4999,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -5974,7 +5037,7 @@
       "bridge_0209_c16",
       "bridge_0209_c22",
       "bridge_0209_c23",
-      "bridge_0209_c31",
+      "bridge_0209_c36",
       "bridge_0209_c38"
     ],
     "error_type": "right-idea",
@@ -5989,7 +5052,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0212",
@@ -5997,7 +5060,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "7 times 5=35",
     "conversation_context": [
@@ -6035,7 +5098,7 @@
       "bridge_0212_c16",
       "bridge_0212_c22",
       "bridge_0212_c23",
-      "bridge_0212_c31",
+      "bridge_0212_c36",
       "bridge_0212_c38"
     ],
     "error_type": "right-idea",
@@ -6051,7 +5114,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0214",
@@ -6112,7 +5175,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0216",
@@ -6120,7 +5183,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "measurement_conversion",
     "modality": "text",
     "prompt": "44",
     "conversation_context": [
@@ -6159,7 +5222,7 @@
       "bridge_0216_c17",
       "bridge_0216_c18",
       "bridge_0216_c19",
-      "bridge_0216_c36",
+      "bridge_0216_c32",
       "bridge_0216_c37"
     ],
     "error_type": "diagnose",
@@ -6175,7 +5238,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0223",
@@ -6236,7 +5299,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0227",
@@ -6297,7 +5360,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0228",
@@ -6359,7 +5422,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0236",
@@ -6420,7 +5483,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0239",
@@ -6481,7 +5544,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0240",
@@ -6543,7 +5606,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0242",
@@ -6551,7 +5614,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "algebra_expressions",
     "modality": "text",
     "prompt": "9",
     "conversation_context": [
@@ -6589,7 +5652,7 @@
       "bridge_0242_c16",
       "bridge_0242_c20",
       "bridge_0242_c21",
-      "bridge_0242_c35",
+      "bridge_0242_c34",
       "bridge_0242_c39"
     ],
     "error_type": "guess",
@@ -6605,7 +5668,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0243",
@@ -6613,7 +5676,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -6651,7 +5714,7 @@
       "bridge_0243_c16",
       "bridge_0243_c22",
       "bridge_0243_c23",
-      "bridge_0243_c31",
+      "bridge_0243_c36",
       "bridge_0243_c38"
     ],
     "error_type": "right-idea",
@@ -6666,7 +5729,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0245",
@@ -6674,7 +5737,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "measurement_conversion",
     "modality": "text",
     "prompt": "length",
     "conversation_context": [
@@ -6713,8 +5776,7 @@
       "bridge_0245_c17",
       "bridge_0245_c18",
       "bridge_0245_c19",
-      "bridge_0245_c28",
-      "bridge_0245_c29",
+      "bridge_0245_c32",
       "bridge_0245_c37"
     ],
     "error_type": "imprecise",
@@ -6730,7 +5792,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0248",
@@ -6793,7 +5855,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0249",
@@ -6856,7 +5918,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0250",
@@ -6864,7 +5926,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "8",
     "conversation_context": [
@@ -6902,7 +5964,7 @@
       "bridge_0250_c16",
       "bridge_0250_c20",
       "bridge_0250_c21",
-      "bridge_0250_c30",
+      "bridge_0250_c36",
       "bridge_0250_c38"
     ],
     "error_type": "guess",
@@ -6917,7 +5979,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0252",
@@ -6925,7 +5987,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -6963,7 +6025,7 @@
       "bridge_0252_c16",
       "bridge_0252_c22",
       "bridge_0252_c23",
-      "bridge_0252_c34",
+      "bridge_0252_c36",
       "bridge_0252_c38"
     ],
     "error_type": "right-idea",
@@ -6978,7 +6040,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0254",
@@ -6986,7 +6048,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "b",
     "conversation_context": [
@@ -7024,7 +6086,7 @@
       "bridge_0254_c16",
       "bridge_0254_c22",
       "bridge_0254_c23",
-      "bridge_0254_c34",
+      "bridge_0254_c31",
       "bridge_0254_c39"
     ],
     "error_type": "right-idea",
@@ -7039,7 +6101,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0255",
@@ -7102,7 +6164,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0258",
@@ -7110,7 +6172,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "49",
     "conversation_context": [
@@ -7148,8 +6210,7 @@
       "bridge_0258_c16",
       "bridge_0258_c24",
       "bridge_0258_c25",
-      "bridge_0258_c28",
-      "bridge_0258_c29",
+      "bridge_0258_c36",
       "bridge_0258_c38"
     ],
     "error_type": "careless",
@@ -7164,7 +6225,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0259",
@@ -7172,7 +6233,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "10",
     "conversation_context": [
@@ -7210,7 +6271,7 @@
       "bridge_0259_c16",
       "bridge_0259_c20",
       "bridge_0259_c21",
-      "bridge_0259_c35",
+      "bridge_0259_c36",
       "bridge_0259_c39"
     ],
     "error_type": "guess",
@@ -7225,7 +6286,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0262",
@@ -7287,68 +6348,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0264",
-    "source_id": "2950220_90",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
-    "modality": "text",
-    "prompt": "avarage speed",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "We are supposed to find what was his average speed, in miles per hour, for the two days."
-      },
-      {
-        "role": "tutor",
-        "content": "In the first step, we need to determine the unit rate we need to find out."
-      },
-      {
-        "role": "tutor",
-        "content": "What do you need to find out?"
-      }
-    ],
-    "reference_solution": "Correct! We need to find the average speed in miles per hour.",
-    "novice_response": "That's a good try! Plus one point for you.\nWe need to find out miles per hour.\nNext, we need to find the total number of miles driven by Mr. Ruiz and the time taken.\nHow many miles did Mr. Ruiz drive on Saturday?",
-    "criterion_ids": [
-      "bridge_0264_c01",
-      "bridge_0264_c02",
-      "bridge_0264_c03",
-      "bridge_0264_c04",
-      "bridge_0264_c05",
-      "bridge_0264_c06",
-      "bridge_0264_c07",
-      "bridge_0264_c08",
-      "bridge_0264_c09",
-      "bridge_0264_c10",
-      "bridge_0264_c11",
-      "bridge_0264_c12",
-      "bridge_0264_c13",
-      "bridge_0264_c14",
-      "bridge_0264_c15",
-      "bridge_0264_c16",
-      "bridge_0264_c26",
-      "bridge_0264_c27",
-      "bridge_0264_c35",
-      "bridge_0264_c39"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "affirm_correct_answer",
-    "expert_intention": "support_thinking",
-    "lesson_topic": "7.4B.Unit Rates",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0268",
@@ -7356,7 +6356,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "fractions",
     "modality": "text",
     "prompt": "So 5 times 200",
     "conversation_context": [
@@ -7394,7 +6394,7 @@
       "bridge_0268_c16",
       "bridge_0268_c24",
       "bridge_0268_c25",
-      "bridge_0268_c36",
+      "bridge_0268_c30",
       "bridge_0268_c38"
     ],
     "error_type": "careless",
@@ -7409,7 +6409,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0269",
@@ -7473,69 +6473,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0270",
-    "source_id": "2951109_58",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "how long it is",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Let's get started with today's topic."
-      },
-      {
-        "role": "tutor",
-        "content": "Today, we are going to discuss the topic \"Measuring Length.\""
-      },
-      {
-        "role": "tutor",
-        "content": "What is Measuring length?"
-      }
-    ],
-    "reference_solution": "Well done! Measuring length is seeing how long something is.",
-    "novice_response": "That was a good try. Plus 1 point for your try.",
-    "criterion_ids": [
-      "bridge_0270_c01",
-      "bridge_0270_c02",
-      "bridge_0270_c03",
-      "bridge_0270_c04",
-      "bridge_0270_c05",
-      "bridge_0270_c06",
-      "bridge_0270_c07",
-      "bridge_0270_c08",
-      "bridge_0270_c09",
-      "bridge_0270_c10",
-      "bridge_0270_c11",
-      "bridge_0270_c12",
-      "bridge_0270_c13",
-      "bridge_0270_c14",
-      "bridge_0270_c15",
-      "bridge_0270_c16",
-      "bridge_0270_c26",
-      "bridge_0270_c27",
-      "bridge_0270_c28",
-      "bridge_0270_c29",
-      "bridge_0270_c37"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "affirm_correct_answer",
-    "expert_intention": "signal_goal",
-    "lesson_topic": "2.9A.Measuring Length",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0272",
@@ -7597,69 +6535,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0273",
-    "source_id": "2963551_25",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "mmmm they have many sides",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Before we get into the lesson, I want to know your prior knowledge on the topic."
-      },
-      {
-        "role": "student",
-        "content": "I don't have one"
-      },
-      {
-        "role": "tutor",
-        "content": "What is known about Polygons?"
-      }
-    ],
-    "reference_solution": "great job!",
-    "novice_response": "That's a good try.",
-    "criterion_ids": [
-      "bridge_0273_c01",
-      "bridge_0273_c02",
-      "bridge_0273_c03",
-      "bridge_0273_c04",
-      "bridge_0273_c05",
-      "bridge_0273_c06",
-      "bridge_0273_c07",
-      "bridge_0273_c08",
-      "bridge_0273_c09",
-      "bridge_0273_c10",
-      "bridge_0273_c11",
-      "bridge_0273_c12",
-      "bridge_0273_c13",
-      "bridge_0273_c14",
-      "bridge_0273_c15",
-      "bridge_0273_c16",
-      "bridge_0273_c26",
-      "bridge_0273_c27",
-      "bridge_0273_c28",
-      "bridge_0273_c29",
-      "bridge_0273_c38"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "affirm_correct_answer",
-    "expert_intention": "motivate_student",
-    "lesson_topic": "5.5A.Polygons",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0276",
@@ -7667,7 +6543,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "62",
     "conversation_context": [
@@ -7705,8 +6581,7 @@
       "bridge_0276_c16",
       "bridge_0276_c24",
       "bridge_0276_c25",
-      "bridge_0276_c28",
-      "bridge_0276_c29",
+      "bridge_0276_c36",
       "bridge_0276_c38"
     ],
     "error_type": "careless",
@@ -7722,130 +6597,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0278",
-    "source_id": "2949283_58",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "fractions",
-    "modality": "text",
-    "prompt": "seeeeee",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "ohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh  now i get it"
-      },
-      {
-        "role": "tutor",
-        "content": "Based on these models, 1/4 = 2/8."
-      },
-      {
-        "role": "tutor",
-        "content": "Do you understand what I did?"
-      }
-    ],
-    "reference_solution": "Great - let's try another problem. Can you reduce 3/15 to an equivalent fraction?",
-    "novice_response": "+1 point for your effort!",
-    "criterion_ids": [
-      "bridge_0278_c01",
-      "bridge_0278_c02",
-      "bridge_0278_c03",
-      "bridge_0278_c04",
-      "bridge_0278_c05",
-      "bridge_0278_c06",
-      "bridge_0278_c07",
-      "bridge_0278_c08",
-      "bridge_0278_c09",
-      "bridge_0278_c10",
-      "bridge_0278_c11",
-      "bridge_0278_c12",
-      "bridge_0278_c13",
-      "bridge_0278_c14",
-      "bridge_0278_c15",
-      "bridge_0278_c16",
-      "bridge_0278_c26",
-      "bridge_0278_c27",
-      "bridge_0278_c30",
-      "bridge_0278_c37"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "motivate_student",
-    "lesson_topic": "3.3F.Understanding Equivalent Fractions",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0280",
-    "source_id": "4111481_50",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "ok i thought that we turn the whole number more yes  i do",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "in class we say 5 or above give it a shove"
-      },
-      {
-        "role": "tutor",
-        "content": "Therefore 2,458 rounded to the nearest hundred is 2,500."
-      },
-      {
-        "role": "tutor",
-        "content": "Yes, do you understand that part?"
-      }
-    ],
-    "reference_solution": "hi",
-    "novice_response": "That was a good try, if we need to round the given number to nearest thousand place, the answer will be 2000.\nb) If the neighboring digit is five or greater (5 - 9), increase the rounding digit by one.\na) If the neighboring digit is less than five (0 - 4), keep the rounding digit the same.\nThis is called rounding down.",
-    "criterion_ids": [
-      "bridge_0280_c01",
-      "bridge_0280_c02",
-      "bridge_0280_c03",
-      "bridge_0280_c04",
-      "bridge_0280_c05",
-      "bridge_0280_c06",
-      "bridge_0280_c07",
-      "bridge_0280_c08",
-      "bridge_0280_c09",
-      "bridge_0280_c10",
-      "bridge_0280_c11",
-      "bridge_0280_c12",
-      "bridge_0280_c13",
-      "bridge_0280_c14",
-      "bridge_0280_c15",
-      "bridge_0280_c16",
-      "bridge_0280_c26",
-      "bridge_0280_c27",
-      "bridge_0280_c31",
-      "bridge_0280_c38"
-    ],
-    "error_type": "careless",
-    "error_types": [
-      "careless",
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "simplify_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "4.4D.Rounding (Review) - 1",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0281",
@@ -7853,7 +6605,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -7891,7 +6643,7 @@
       "bridge_0281_c16",
       "bridge_0281_c20",
       "bridge_0281_c21",
-      "bridge_0281_c34",
+      "bridge_0281_c36",
       "bridge_0281_c38"
     ],
     "error_type": "guess",
@@ -7906,7 +6658,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0282",
@@ -7967,7 +6719,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0284",
@@ -8028,7 +6780,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0286",
@@ -8036,7 +6788,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "3",
     "conversation_context": [
@@ -8074,7 +6826,7 @@
       "bridge_0286_c16",
       "bridge_0286_c22",
       "bridge_0286_c23",
-      "bridge_0286_c30",
+      "bridge_0286_c36",
       "bridge_0286_c39"
     ],
     "error_type": "misinterpret",
@@ -8090,69 +6842,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0287",
-    "source_id": "6163970_92",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Plus 3 for this."
-      },
-      {
-        "role": "tutor",
-        "content": "You have completed and mastered the lesson \"Prime and Composite Numbers\" and earned 22 points."
-      },
-      {
-        "role": "tutor",
-        "content": "Before we end the session, is there anything else I can help you with?"
-      }
-    ],
-    "reference_solution": "Good job today. Let's recap. What is a prime number?",
-    "novice_response": "Thank you for your efforts today! Please fill in the feedback form as you leave. See you next time",
-    "criterion_ids": [
-      "bridge_0287_c01",
-      "bridge_0287_c02",
-      "bridge_0287_c03",
-      "bridge_0287_c04",
-      "bridge_0287_c05",
-      "bridge_0287_c06",
-      "bridge_0287_c07",
-      "bridge_0287_c08",
-      "bridge_0287_c09",
-      "bridge_0287_c10",
-      "bridge_0287_c11",
-      "bridge_0287_c12",
-      "bridge_0287_c13",
-      "bridge_0287_c14",
-      "bridge_0287_c15",
-      "bridge_0287_c16",
-      "bridge_0287_c17",
-      "bridge_0287_c18",
-      "bridge_0287_c19",
-      "bridge_0287_c31",
-      "bridge_0287_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "4.1G.Prime and Composite Numbers",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0288",
@@ -8213,7 +6903,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0293",
@@ -8221,7 +6911,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "42",
     "conversation_context": [
@@ -8259,8 +6949,7 @@
       "bridge_0293_c16",
       "bridge_0293_c20",
       "bridge_0293_c21",
-      "bridge_0293_c28",
-      "bridge_0293_c29",
+      "bridge_0293_c36",
       "bridge_0293_c39"
     ],
     "error_type": "guess",
@@ -8275,7 +6964,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0294",
@@ -8337,69 +7026,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0295",
-    "source_id": "2916237_15",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "yes",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Explain how you got your answer."
-      },
-      {
-        "role": "student",
-        "content": "wat  i did is that  ther is a 4 on the botem that meens ther shood be a 4 on the top"
-      },
-      {
-        "role": "tutor",
-        "content": "Are you there?"
-      }
-    ],
-    "reference_solution": "ok great start. We only can do that when we know the two sides are equal.",
-    "novice_response": "That was  a good try.",
-    "criterion_ids": [
-      "bridge_0295_c01",
-      "bridge_0295_c02",
-      "bridge_0295_c03",
-      "bridge_0295_c04",
-      "bridge_0295_c05",
-      "bridge_0295_c06",
-      "bridge_0295_c07",
-      "bridge_0295_c08",
-      "bridge_0295_c09",
-      "bridge_0295_c10",
-      "bridge_0295_c11",
-      "bridge_0295_c12",
-      "bridge_0295_c13",
-      "bridge_0295_c14",
-      "bridge_0295_c15",
-      "bridge_0295_c16",
-      "bridge_0295_c22",
-      "bridge_0295_c23",
-      "bridge_0295_c28",
-      "bridge_0295_c29",
-      "bridge_0295_c37"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "provide_hint",
-    "expert_intention": "hint_mistake",
-    "lesson_topic": "3.6E.Shapes and Area",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0297",
@@ -8407,7 +7034,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "0.0833333",
     "conversation_context": [
@@ -8445,7 +7072,7 @@
       "bridge_0297_c16",
       "bridge_0297_c22",
       "bridge_0297_c23",
-      "bridge_0297_c34",
+      "bridge_0297_c36",
       "bridge_0297_c38"
     ],
     "error_type": "guess",
@@ -8461,7 +7088,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0300",
@@ -8522,7 +7149,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0301",
@@ -8585,7 +7212,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0302",
@@ -8646,7 +7273,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0303",
@@ -8708,70 +7335,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0307",
-    "source_id": "2928211_32",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "a spear",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "no i was just clicing stuf"
-      },
-      {
-        "role": "tutor",
-        "content": "Okay, not to worry."
-      },
-      {
-        "role": "tutor",
-        "content": "Which shape is this?"
-      }
-    ],
-    "reference_solution": "Oh you're close. Is this a 2D shape, or 3D shape?",
-    "novice_response": "That is a good effort.",
-    "criterion_ids": [
-      "bridge_0307_c01",
-      "bridge_0307_c02",
-      "bridge_0307_c03",
-      "bridge_0307_c04",
-      "bridge_0307_c05",
-      "bridge_0307_c06",
-      "bridge_0307_c07",
-      "bridge_0307_c08",
-      "bridge_0307_c09",
-      "bridge_0307_c10",
-      "bridge_0307_c11",
-      "bridge_0307_c12",
-      "bridge_0307_c13",
-      "bridge_0307_c14",
-      "bridge_0307_c15",
-      "bridge_0307_c16",
-      "bridge_0307_c26",
-      "bridge_0307_c27",
-      "bridge_0307_c28",
-      "bridge_0307_c29",
-      "bridge_0307_c37"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "guess",
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "hint_mistake",
-    "lesson_topic": "2.8A.2- and 3-Dimensional Shapes",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0310",
@@ -8832,68 +7396,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0313",
-    "source_id": "2928093_30",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "it can be big",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Today, your goal is to master the topic \"Bar Graphs\"."
-      },
-      {
-        "role": "student",
-        "content": "ok"
-      },
-      {
-        "role": "tutor",
-        "content": "What do you know about a graph?"
-      }
-    ],
-    "reference_solution": "Yes, a graph can be big! Anything else?",
-    "novice_response": "That's incorrect.\nNo worries.",
-    "criterion_ids": [
-      "bridge_0313_c01",
-      "bridge_0313_c02",
-      "bridge_0313_c03",
-      "bridge_0313_c04",
-      "bridge_0313_c05",
-      "bridge_0313_c06",
-      "bridge_0313_c07",
-      "bridge_0313_c08",
-      "bridge_0313_c09",
-      "bridge_0313_c10",
-      "bridge_0313_c11",
-      "bridge_0313_c12",
-      "bridge_0313_c13",
-      "bridge_0313_c14",
-      "bridge_0313_c15",
-      "bridge_0313_c16",
-      "bridge_0313_c26",
-      "bridge_0313_c27",
-      "bridge_0313_c36",
-      "bridge_0313_c37"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "affirm_correct_answer",
-    "expert_intention": "support_thinking",
-    "lesson_topic": "3.8A.Bar Graphs",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0320",
@@ -8901,7 +7404,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "measurement_conversion",
     "modality": "text",
     "prompt": "44",
     "conversation_context": [
@@ -8940,7 +7443,7 @@
       "bridge_0320_c17",
       "bridge_0320_c18",
       "bridge_0320_c19",
-      "bridge_0320_c36",
+      "bridge_0320_c32",
       "bridge_0320_c37"
     ],
     "error_type": "guess",
@@ -8956,7 +7459,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0321",
@@ -9018,7 +7521,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0322",
@@ -9079,7 +7582,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0323",
@@ -9087,7 +7590,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "5",
     "conversation_context": [
@@ -9125,7 +7628,7 @@
       "bridge_0323_c16",
       "bridge_0323_c20",
       "bridge_0323_c21",
-      "bridge_0323_c32",
+      "bridge_0323_c36",
       "bridge_0323_c38"
     ],
     "error_type": "guess",
@@ -9140,7 +7643,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0325",
@@ -9202,7 +7705,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0326",
@@ -9264,7 +7767,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0332",
@@ -9328,7 +7831,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0339",
@@ -9390,7 +7893,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0342",
@@ -9452,69 +7955,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0344",
-    "source_id": "6187673_16",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "im done",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "The question asks for a total, so we will need to add."
-      },
-      {
-        "role": "tutor",
-        "content": "Try to recheck your final answer once again."
-      },
-      {
-        "role": "tutor",
-        "content": "What is the value of  6 + 8?"
-      }
-    ],
-    "reference_solution": "What did you get?",
-    "novice_response": "Your answer is incorrect. Please recheck your answer once.\nLet me explain as per your understanding.",
-    "criterion_ids": [
-      "bridge_0344_c01",
-      "bridge_0344_c02",
-      "bridge_0344_c03",
-      "bridge_0344_c04",
-      "bridge_0344_c05",
-      "bridge_0344_c06",
-      "bridge_0344_c07",
-      "bridge_0344_c08",
-      "bridge_0344_c09",
-      "bridge_0344_c10",
-      "bridge_0344_c11",
-      "bridge_0344_c12",
-      "bridge_0344_c13",
-      "bridge_0344_c14",
-      "bridge_0344_c15",
-      "bridge_0344_c16",
-      "bridge_0344_c26",
-      "bridge_0344_c27",
-      "bridge_0344_c31",
-      "bridge_0344_c38"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "diagnose",
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "elaborate_answer",
-    "lesson_topic": "5.3K.Adding and Subtracting Decimal Numbers",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0346",
@@ -9522,7 +7963,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "3x9",
     "conversation_context": [
@@ -9561,7 +8002,7 @@
       "bridge_0346_c17",
       "bridge_0346_c18",
       "bridge_0346_c19",
-      "bridge_0346_c30",
+      "bridge_0346_c36",
       "bridge_0346_c37"
     ],
     "error_type": "diagnose",
@@ -9577,7 +8018,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0347",
@@ -9585,7 +8026,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "3x9",
     "conversation_context": [
@@ -9624,7 +8065,7 @@
       "bridge_0347_c17",
       "bridge_0347_c18",
       "bridge_0347_c19",
-      "bridge_0347_c30",
+      "bridge_0347_c36",
       "bridge_0347_c37"
     ],
     "error_type": "guess",
@@ -9640,7 +8081,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0348",
@@ -9701,7 +8142,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0351",
@@ -9762,7 +8203,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0353",
@@ -9824,7 +8265,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0356",
@@ -9885,7 +8326,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0359",
@@ -9946,7 +8387,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0360",
@@ -9954,7 +8395,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "the Ar is 13",
     "conversation_context": [
@@ -9992,8 +8433,7 @@
       "bridge_0360_c16",
       "bridge_0360_c20",
       "bridge_0360_c21",
-      "bridge_0360_c28",
-      "bridge_0360_c29",
+      "bridge_0360_c36",
       "bridge_0360_c38"
     ],
     "error_type": "guess",
@@ -10008,7 +8448,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0368",
@@ -10016,7 +8456,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "53",
     "conversation_context": [
@@ -10054,7 +8494,7 @@
       "bridge_0368_c16",
       "bridge_0368_c24",
       "bridge_0368_c25",
-      "bridge_0368_c32",
+      "bridge_0368_c36",
       "bridge_0368_c37"
     ],
     "error_type": "careless",
@@ -10069,7 +8509,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0369",
@@ -10132,7 +8572,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0370",
@@ -10140,7 +8580,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "the Ar is 13",
     "conversation_context": [
@@ -10178,8 +8618,7 @@
       "bridge_0370_c16",
       "bridge_0370_c20",
       "bridge_0370_c21",
-      "bridge_0370_c28",
-      "bridge_0370_c29",
+      "bridge_0370_c36",
       "bridge_0370_c38"
     ],
     "error_type": "guess",
@@ -10194,7 +8633,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0374",
@@ -10202,7 +8641,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "3",
     "conversation_context": [
@@ -10240,8 +8679,7 @@
       "bridge_0374_c16",
       "bridge_0374_c24",
       "bridge_0374_c25",
-      "bridge_0374_c28",
-      "bridge_0374_c29",
+      "bridge_0374_c36",
       "bridge_0374_c38"
     ],
     "error_type": "careless",
@@ -10256,7 +8694,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0375",
@@ -10264,7 +8702,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "12",
     "conversation_context": [
@@ -10302,8 +8740,7 @@
       "bridge_0375_c16",
       "bridge_0375_c24",
       "bridge_0375_c25",
-      "bridge_0375_c28",
-      "bridge_0375_c29",
+      "bridge_0375_c36",
       "bridge_0375_c37"
     ],
     "error_type": "guess",
@@ -10319,7 +8756,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0377",
@@ -10380,7 +8817,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0379",
@@ -10443,7 +8880,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0380",
@@ -10505,132 +8942,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0383",
-    "source_id": "4288819_9",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "yes",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "ok"
-      },
-      {
-        "role": "tutor",
-        "content": "Since today is your first tutoring session, I want you to have a chance to practice the virtual classroom and its tools."
-      },
-      {
-        "role": "tutor",
-        "content": "Are you aware of whiteboard tools?"
-      }
-    ],
-    "reference_solution": "Great! Please use your whiteboard to show me the answer to 4 times 5.",
-    "novice_response": "Participation is the KEY ingredient for success in these tutoring sessions. The more effort you show, the more points I can add to your scoreboard.\nSounds Good.\nDid you notice that you just scored a point in the top right corner?\nThese are called participation points!\nThe more you participate in your lessons, share your ideas, and ask questions, the more points you will earn.",
-    "criterion_ids": [
-      "bridge_0383_c01",
-      "bridge_0383_c02",
-      "bridge_0383_c03",
-      "bridge_0383_c04",
-      "bridge_0383_c05",
-      "bridge_0383_c06",
-      "bridge_0383_c07",
-      "bridge_0383_c08",
-      "bridge_0383_c09",
-      "bridge_0383_c10",
-      "bridge_0383_c11",
-      "bridge_0383_c12",
-      "bridge_0383_c13",
-      "bridge_0383_c14",
-      "bridge_0383_c15",
-      "bridge_0383_c16",
-      "bridge_0383_c17",
-      "bridge_0383_c18",
-      "bridge_0383_c19",
-      "bridge_0383_c36",
-      "bridge_0383_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": false,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "4.9A.Bar Graphs",
-    "native_split": "train",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0391",
-    "source_id": "4106600_32",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "fractions",
-    "modality": "text",
-    "prompt": "yes!!!!!!!",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "I was facing some technical issues."
-      },
-      {
-        "role": "student",
-        "content": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      },
-      {
-        "role": "tutor",
-        "content": "Is your final answer 1/5 < 1/2?"
-      }
-    ],
-    "reference_solution": "Great job that is correct!",
-    "novice_response": "That was a good try.\n1 point for trying this question.\nI will explain it to you.",
-    "criterion_ids": [
-      "bridge_0391_c01",
-      "bridge_0391_c02",
-      "bridge_0391_c03",
-      "bridge_0391_c04",
-      "bridge_0391_c05",
-      "bridge_0391_c06",
-      "bridge_0391_c07",
-      "bridge_0391_c08",
-      "bridge_0391_c09",
-      "bridge_0391_c10",
-      "bridge_0391_c11",
-      "bridge_0391_c12",
-      "bridge_0391_c13",
-      "bridge_0391_c14",
-      "bridge_0391_c15",
-      "bridge_0391_c16",
-      "bridge_0391_c17",
-      "bridge_0391_c18",
-      "bridge_0391_c19",
-      "bridge_0391_c30",
-      "bridge_0391_c37"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "diagnose",
-      "imprecise"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "affirm_correct_answer",
-    "expert_intention": "signal_goal",
-    "lesson_topic": "3.3F.Understanding Equivalent Fractions",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0392",
@@ -10691,7 +9003,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0393",
@@ -10699,7 +9011,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "algebra_expressions",
     "modality": "text",
     "prompt": "is it 10.05??",
     "conversation_context": [
@@ -10738,7 +9050,7 @@
       "bridge_0393_c17",
       "bridge_0393_c18",
       "bridge_0393_c19",
-      "bridge_0393_c31",
+      "bridge_0393_c34",
       "bridge_0393_c38"
     ],
     "error_type": "diagnose",
@@ -10754,7 +9066,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0394",
@@ -10815,7 +9127,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0396",
@@ -10879,68 +9191,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0398",
-    "source_id": "4145096_55",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "yea kinda.",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "okay."
-      },
-      {
-        "role": "tutor",
-        "content": "From the farthest right place value all the way up to the right of the 1, there are 4 jumps.  So, the exponent would be 10^4."
-      },
-      {
-        "role": "tutor",
-        "content": "Did you get it?"
-      }
-    ],
-    "reference_solution": "Great - would you mind explaining so I can make sure you understand?",
-    "novice_response": "Do you mind explaining which part you do not quite understanding?",
-    "criterion_ids": [
-      "bridge_0398_c01",
-      "bridge_0398_c02",
-      "bridge_0398_c03",
-      "bridge_0398_c04",
-      "bridge_0398_c05",
-      "bridge_0398_c06",
-      "bridge_0398_c07",
-      "bridge_0398_c08",
-      "bridge_0398_c09",
-      "bridge_0398_c10",
-      "bridge_0398_c11",
-      "bridge_0398_c12",
-      "bridge_0398_c13",
-      "bridge_0398_c14",
-      "bridge_0398_c15",
-      "bridge_0398_c16",
-      "bridge_0398_c22",
-      "bridge_0398_c23",
-      "bridge_0398_c31",
-      "bridge_0398_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "elaborate_answer",
-    "lesson_topic": "5.2A.Place Value",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0401",
@@ -10948,7 +9199,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "6",
     "conversation_context": [
@@ -10986,8 +9237,7 @@
       "bridge_0401_c16",
       "bridge_0401_c20",
       "bridge_0401_c21",
-      "bridge_0401_c28",
-      "bridge_0401_c29",
+      "bridge_0401_c36",
       "bridge_0401_c38"
     ],
     "error_type": "guess",
@@ -11002,68 +9252,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0402",
-    "source_id": "2962429_51",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "algebra_expressions",
-    "modality": "text",
-    "prompt": "no i mean x (x-3) + 5x",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "6-y"
-      },
-      {
-        "role": "student",
-        "content": "?"
-      },
-      {
-        "role": "tutor",
-        "content": "Is this your final answer?"
-      }
-    ],
-    "reference_solution": "In arithmetic, the x means multiplication, but in algebra, the x represents a variable\nSo in this case, the x does not mean multiplication",
-    "novice_response": "That was a good try.\nLet me explain.\nLet me explain it to you.\nThere is no product in t he equation.",
-    "criterion_ids": [
-      "bridge_0402_c01",
-      "bridge_0402_c02",
-      "bridge_0402_c03",
-      "bridge_0402_c04",
-      "bridge_0402_c05",
-      "bridge_0402_c06",
-      "bridge_0402_c07",
-      "bridge_0402_c08",
-      "bridge_0402_c09",
-      "bridge_0402_c10",
-      "bridge_0402_c11",
-      "bridge_0402_c12",
-      "bridge_0402_c13",
-      "bridge_0402_c14",
-      "bridge_0402_c15",
-      "bridge_0402_c16",
-      "bridge_0402_c22",
-      "bridge_0402_c23",
-      "bridge_0402_c34",
-      "bridge_0402_c39"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "explain_concept",
-    "expert_intention": "clarify_misunderstanding",
-    "lesson_topic": "6.7B.Vocabulary of Algebra",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0404",
@@ -11124,7 +9313,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0405",
@@ -11185,7 +9374,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0406",
@@ -11247,69 +9436,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0408",
-    "source_id": "4247191_37",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Do you understand what I did?"
-      },
-      {
-        "role": "student",
-        "content": "a little bit"
-      },
-      {
-        "role": "tutor",
-        "content": "Do you have any questions so far?"
-      }
-    ],
-    "reference_solution": "Ok great, let's try another problem!",
-    "novice_response": "Do you mind explaining which part you are not quite understanding?",
-    "criterion_ids": [
-      "bridge_0408_c01",
-      "bridge_0408_c02",
-      "bridge_0408_c03",
-      "bridge_0408_c04",
-      "bridge_0408_c05",
-      "bridge_0408_c06",
-      "bridge_0408_c07",
-      "bridge_0408_c08",
-      "bridge_0408_c09",
-      "bridge_0408_c10",
-      "bridge_0408_c11",
-      "bridge_0408_c12",
-      "bridge_0408_c13",
-      "bridge_0408_c14",
-      "bridge_0408_c15",
-      "bridge_0408_c16",
-      "bridge_0408_c26",
-      "bridge_0408_c27",
-      "bridge_0408_c35",
-      "bridge_0408_c39"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "guess",
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": false,
-    "expert_strategy": "encourage_student",
-    "expert_intention": "signal_goal",
-    "lesson_topic": "7.RP.2a.Proportional Relationship Graphs (Review) - 1.",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0409",
@@ -11317,7 +9444,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "40",
     "conversation_context": [
@@ -11355,8 +9482,7 @@
       "bridge_0409_c16",
       "bridge_0409_c20",
       "bridge_0409_c21",
-      "bridge_0409_c28",
-      "bridge_0409_c29",
+      "bridge_0409_c36",
       "bridge_0409_c37"
     ],
     "error_type": "misinterpret",
@@ -11372,7 +9498,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0412",
@@ -11434,7 +9560,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0413",
@@ -11496,7 +9622,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0415",
@@ -11559,7 +9685,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0416",
@@ -11567,7 +9693,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "algebra_expressions",
     "modality": "text",
     "prompt": "is it 10.05??",
     "conversation_context": [
@@ -11606,7 +9732,7 @@
       "bridge_0416_c17",
       "bridge_0416_c18",
       "bridge_0416_c19",
-      "bridge_0416_c31",
+      "bridge_0416_c34",
       "bridge_0416_c38"
     ],
     "error_type": "guess",
@@ -11622,7 +9748,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0418",
@@ -11683,7 +9809,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0419",
@@ -11691,7 +9817,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "nhw",
     "conversation_context": [
@@ -11729,7 +9855,7 @@
       "bridge_0419_c16",
       "bridge_0419_c20",
       "bridge_0419_c21",
-      "bridge_0419_c36",
+      "bridge_0419_c31",
       "bridge_0419_c37"
     ],
     "error_type": "diagnose",
@@ -11745,7 +9871,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0420",
@@ -11753,7 +9879,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "algebra_expressions",
     "modality": "text",
     "prompt": "99",
     "conversation_context": [
@@ -11791,7 +9917,7 @@
       "bridge_0420_c16",
       "bridge_0420_c20",
       "bridge_0420_c21",
-      "bridge_0420_c36",
+      "bridge_0420_c34",
       "bridge_0420_c38"
     ],
     "error_type": "guess",
@@ -11806,69 +9932,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0421",
-    "source_id": "6377795_12",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "ya",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "'<' is the lesser than symbol. 7.09 is less than(<) 7.90."
-      },
-      {
-        "role": "tutor",
-        "content": "Did you understand what i did on the whiteboard ?"
-      },
-      {
-        "role": "tutor",
-        "content": "Are you there in the session?"
-      }
-    ],
-    "reference_solution": "Is this statement true or false? 8.05 > 8.50",
-    "novice_response": "Thank you for your efforts today! Please fill in the feedback form as you leave. See you next time",
-    "criterion_ids": [
-      "bridge_0421_c01",
-      "bridge_0421_c02",
-      "bridge_0421_c03",
-      "bridge_0421_c04",
-      "bridge_0421_c05",
-      "bridge_0421_c06",
-      "bridge_0421_c07",
-      "bridge_0421_c08",
-      "bridge_0421_c09",
-      "bridge_0421_c10",
-      "bridge_0421_c11",
-      "bridge_0421_c12",
-      "bridge_0421_c13",
-      "bridge_0421_c14",
-      "bridge_0421_c15",
-      "bridge_0421_c16",
-      "bridge_0421_c17",
-      "bridge_0421_c18",
-      "bridge_0421_c19",
-      "bridge_0421_c31",
-      "bridge_0421_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "5.2B.Comparing Decimal Numbers",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0422",
@@ -11930,70 +9994,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0425",
-    "source_id": "4113439_21",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "ammmmmmmmmm a littal",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "i dont know"
-      },
-      {
-        "role": "tutor",
-        "content": "This image has 4 halves.  If two halves make a whole, 2 wholes do make 4 halves."
-      },
-      {
-        "role": "tutor",
-        "content": "Do you understand?"
-      }
-    ],
-    "reference_solution": "If we have 5 wholes, how many halves is that?",
-    "novice_response": "Do you mind explaining which part you are not quite understanding?",
-    "criterion_ids": [
-      "bridge_0425_c01",
-      "bridge_0425_c02",
-      "bridge_0425_c03",
-      "bridge_0425_c04",
-      "bridge_0425_c05",
-      "bridge_0425_c06",
-      "bridge_0425_c07",
-      "bridge_0425_c08",
-      "bridge_0425_c09",
-      "bridge_0425_c10",
-      "bridge_0425_c11",
-      "bridge_0425_c12",
-      "bridge_0425_c13",
-      "bridge_0425_c14",
-      "bridge_0425_c15",
-      "bridge_0425_c16",
-      "bridge_0425_c22",
-      "bridge_0425_c23",
-      "bridge_0425_c28",
-      "bridge_0425_c29",
-      "bridge_0425_c37"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "diagnose",
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.6C.Unit Squares (Review) - 1",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0426",
@@ -12056,7 +10057,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0427",
@@ -12118,7 +10119,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0429",
@@ -12181,7 +10182,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0433",
@@ -12189,7 +10190,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "893",
     "conversation_context": [
@@ -12227,7 +10228,7 @@
       "bridge_0433_c16",
       "bridge_0433_c20",
       "bridge_0433_c21",
-      "bridge_0433_c36",
+      "bridge_0433_c31",
       "bridge_0433_c38"
     ],
     "error_type": "guess",
@@ -12243,7 +10244,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0435",
@@ -12304,7 +10305,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0436",
@@ -12366,7 +10367,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0438",
@@ -12374,7 +10375,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "geometry_spatial",
     "modality": "text",
     "prompt": "rectangle area = length    width",
     "conversation_context": [
@@ -12413,7 +10414,8 @@
       "bridge_0438_c17",
       "bridge_0438_c18",
       "bridge_0438_c19",
-      "bridge_0438_c36",
+      "bridge_0438_c28",
+      "bridge_0438_c29",
       "bridge_0438_c38"
     ],
     "error_type": "misinterpret",
@@ -12428,7 +10430,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0440",
@@ -12489,7 +10491,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0444",
@@ -12550,69 +10552,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0445",
-    "source_id": "2570448_42",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "proportional_reasoning",
-    "modality": "text",
-    "prompt": "yes",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "The value of 10+4 is 14."
-      },
-      {
-        "role": "tutor",
-        "content": "Therefore, the final answer is 14."
-      },
-      {
-        "role": "tutor",
-        "content": "Do you understand what I did?"
-      }
-    ],
-    "reference_solution": "I would like you to work another problem. What is the value of 10 + 9?",
-    "novice_response": "Plus 2 points for your effort.\nDo you have any questions so far?\nHere is your next question.\nGo ahead and show your work on the whiteboard.\nGreat effort so far! Keep going.\nPlease go through the question carefully.",
-    "criterion_ids": [
-      "bridge_0445_c01",
-      "bridge_0445_c02",
-      "bridge_0445_c03",
-      "bridge_0445_c04",
-      "bridge_0445_c05",
-      "bridge_0445_c06",
-      "bridge_0445_c07",
-      "bridge_0445_c08",
-      "bridge_0445_c09",
-      "bridge_0445_c10",
-      "bridge_0445_c11",
-      "bridge_0445_c12",
-      "bridge_0445_c13",
-      "bridge_0445_c14",
-      "bridge_0445_c15",
-      "bridge_0445_c16",
-      "bridge_0445_c17",
-      "bridge_0445_c18",
-      "bridge_0445_c19",
-      "bridge_0445_c35",
-      "bridge_0445_c38"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "5.4B.Solving with Order of Operations",
-    "native_split": "validation",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0449",
@@ -12620,7 +10560,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "6,210",
     "conversation_context": [
@@ -12658,7 +10598,7 @@
       "bridge_0449_c16",
       "bridge_0449_c22",
       "bridge_0449_c23",
-      "bridge_0449_c32",
+      "bridge_0449_c36",
       "bridge_0449_c38"
     ],
     "error_type": "right-idea",
@@ -12673,7 +10613,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0452",
@@ -12736,7 +10676,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0453",
@@ -12798,131 +10738,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0454",
-    "source_id": "4111720_8",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "algebra_expressions",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "ok"
-      },
-      {
-        "role": "tutor",
-        "content": "Product of quotient and divisor will get missing dividend."
-      },
-      {
-        "role": "tutor",
-        "content": "Are you still at the computer?"
-      }
-    ],
-    "reference_solution": "Let's keep going! I'll show you an example",
-    "novice_response": "That was a good try.",
-    "criterion_ids": [
-      "bridge_0454_c01",
-      "bridge_0454_c02",
-      "bridge_0454_c03",
-      "bridge_0454_c04",
-      "bridge_0454_c05",
-      "bridge_0454_c06",
-      "bridge_0454_c07",
-      "bridge_0454_c08",
-      "bridge_0454_c09",
-      "bridge_0454_c10",
-      "bridge_0454_c11",
-      "bridge_0454_c12",
-      "bridge_0454_c13",
-      "bridge_0454_c14",
-      "bridge_0454_c15",
-      "bridge_0454_c16",
-      "bridge_0454_c17",
-      "bridge_0454_c18",
-      "bridge_0454_c19",
-      "bridge_0454_c34",
-      "bridge_0454_c37"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": false,
-    "expert_strategy": "provide_example",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.5D.Unknown Numbers in Division",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0455",
-    "source_id": "2963992_22",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
-    "modality": "text",
-    "prompt": "the fraction",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "alright"
-      },
-      {
-        "role": "tutor",
-        "content": "There comes our first question."
-      },
-      {
-        "role": "tutor",
-        "content": "What we have to find from this question?"
-      }
-    ],
-    "reference_solution": "Great! Can you be a little more specific?",
-    "novice_response": "Plus one point for your effort.",
-    "criterion_ids": [
-      "bridge_0455_c01",
-      "bridge_0455_c02",
-      "bridge_0455_c03",
-      "bridge_0455_c04",
-      "bridge_0455_c05",
-      "bridge_0455_c06",
-      "bridge_0455_c07",
-      "bridge_0455_c08",
-      "bridge_0455_c09",
-      "bridge_0455_c10",
-      "bridge_0455_c11",
-      "bridge_0455_c12",
-      "bridge_0455_c13",
-      "bridge_0455_c14",
-      "bridge_0455_c15",
-      "bridge_0455_c16",
-      "bridge_0455_c17",
-      "bridge_0455_c18",
-      "bridge_0455_c19",
-      "bridge_0455_c35",
-      "bridge_0455_c39"
-    ],
-    "error_type": "misinterpret",
-    "error_types": [
-      "misinterpret"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "elaborate_answer",
-    "lesson_topic": "6.4D.Understanding Unit Rates",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0456",
@@ -12983,68 +10799,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0457",
-    "source_id": "2964076_43",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "yes",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Next, bring the value 1 down and divide 51 by 17."
-      },
-      {
-        "role": "tutor",
-        "content": "What is the product of 17 and 3?"
-      },
-      {
-        "role": "tutor",
-        "content": "Are you working on it?"
-      }
-    ],
-    "reference_solution": "For this question, since our main focus is leaning how to divide, you can use a calculator for 17 x 3\nCould you give that a try on the calculator?",
-    "novice_response": "Kindly recheck your answer.\nLet me help you with that part.\nSo the product of 17 and 3 is 51.\nNow subtract 51 and 51 to get o.\nSo our final quotient is 563 and remainder is 0.\nAm I making this problem understandable to you?",
-    "criterion_ids": [
-      "bridge_0457_c01",
-      "bridge_0457_c02",
-      "bridge_0457_c03",
-      "bridge_0457_c04",
-      "bridge_0457_c05",
-      "bridge_0457_c06",
-      "bridge_0457_c07",
-      "bridge_0457_c08",
-      "bridge_0457_c09",
-      "bridge_0457_c10",
-      "bridge_0457_c11",
-      "bridge_0457_c12",
-      "bridge_0457_c13",
-      "bridge_0457_c14",
-      "bridge_0457_c15",
-      "bridge_0457_c16",
-      "bridge_0457_c22",
-      "bridge_0457_c23",
-      "bridge_0457_c36",
-      "bridge_0457_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "provide_strategy",
-    "expert_intention": "support_thinking",
-    "lesson_topic": "5.3C.Multi-Digit Division with Two-Digit Divisors",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0458",
@@ -13106,7 +10861,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0464",
@@ -13170,132 +10925,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0465",
-    "source_id": "4247191_37",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Do you understand what I did?"
-      },
-      {
-        "role": "student",
-        "content": "a little bit"
-      },
-      {
-        "role": "tutor",
-        "content": "Do you have any questions so far?"
-      }
-    ],
-    "reference_solution": "Can you tell me what the first step was in the problem we just did?",
-    "novice_response": "Do you mind explaining which part you are not quite understanding?",
-    "criterion_ids": [
-      "bridge_0465_c01",
-      "bridge_0465_c02",
-      "bridge_0465_c03",
-      "bridge_0465_c04",
-      "bridge_0465_c05",
-      "bridge_0465_c06",
-      "bridge_0465_c07",
-      "bridge_0465_c08",
-      "bridge_0465_c09",
-      "bridge_0465_c10",
-      "bridge_0465_c11",
-      "bridge_0465_c12",
-      "bridge_0465_c13",
-      "bridge_0465_c14",
-      "bridge_0465_c15",
-      "bridge_0465_c16",
-      "bridge_0465_c26",
-      "bridge_0465_c27",
-      "bridge_0465_c35",
-      "bridge_0465_c39"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "guess",
-      "imprecise"
-    ],
-    "error_module": "imprecise",
-    "visible_mistake": false,
-    "expert_strategy": "ask_question",
-    "expert_intention": "clarify_misunderstanding",
-    "lesson_topic": "7.RP.2a.Proportional Relationship Graphs (Review) - 1.",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0468",
-    "source_id": "2927561_29",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "place_value_number",
-    "modality": "text",
-    "prompt": "9 cause its 10 and 3 is 1,000 and 5 is 100",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "You can to it!"
-      },
-      {
-        "role": "tutor",
-        "content": "1 is the first smallest digit in the number 3591."
-      },
-      {
-        "role": "tutor",
-        "content": "Which is the next smallest digit in 3591 other than 1?"
-      }
-    ],
-    "reference_solution": "Correct 9 is next, which is after that: 3 or 5?",
-    "novice_response": "NIce try! Plus 1 point for your efforts.\nConsider only the digits, not the place values.",
-    "criterion_ids": [
-      "bridge_0468_c01",
-      "bridge_0468_c02",
-      "bridge_0468_c03",
-      "bridge_0468_c04",
-      "bridge_0468_c05",
-      "bridge_0468_c06",
-      "bridge_0468_c07",
-      "bridge_0468_c08",
-      "bridge_0468_c09",
-      "bridge_0468_c10",
-      "bridge_0468_c11",
-      "bridge_0468_c12",
-      "bridge_0468_c13",
-      "bridge_0468_c14",
-      "bridge_0468_c15",
-      "bridge_0468_c16",
-      "bridge_0468_c17",
-      "bridge_0468_c18",
-      "bridge_0468_c19",
-      "bridge_0468_c31",
-      "bridge_0468_c38"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "imprecise",
-      "misinterpret"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "elaborate_answer",
-    "lesson_topic": "4.3E.Comparing Whole Numbers",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0472",
@@ -13357,7 +10987,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0476",
@@ -13418,7 +11048,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0478",
@@ -13479,7 +11109,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0479",
@@ -13541,7 +11171,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0485",
@@ -13603,69 +11233,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0486",
-    "source_id": "2928762_61",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "ez",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Good going!"
-      },
-      {
-        "role": "tutor",
-        "content": "You are at the right track!"
-      },
-      {
-        "role": "tutor",
-        "content": "What is your question?"
-      }
-    ],
-    "reference_solution": "Great try - can you state your question?",
-    "novice_response": "Please recheck your answer.",
-    "criterion_ids": [
-      "bridge_0486_c01",
-      "bridge_0486_c02",
-      "bridge_0486_c03",
-      "bridge_0486_c04",
-      "bridge_0486_c05",
-      "bridge_0486_c06",
-      "bridge_0486_c07",
-      "bridge_0486_c08",
-      "bridge_0486_c09",
-      "bridge_0486_c10",
-      "bridge_0486_c11",
-      "bridge_0486_c12",
-      "bridge_0486_c13",
-      "bridge_0486_c14",
-      "bridge_0486_c15",
-      "bridge_0486_c16",
-      "bridge_0486_c17",
-      "bridge_0486_c18",
-      "bridge_0486_c19",
-      "bridge_0486_c36",
-      "bridge_0486_c37"
-    ],
-    "error_type": "misinterpret",
-    "error_types": [
-      "misinterpret"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "signal_goal",
-    "lesson_topic": "3.4A.Adding Whole Numbers",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0487",
@@ -13726,7 +11294,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0489",
@@ -13734,7 +11302,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "520",
     "conversation_context": [
@@ -13772,7 +11340,7 @@
       "bridge_0489_c16",
       "bridge_0489_c24",
       "bridge_0489_c25",
-      "bridge_0489_c32",
+      "bridge_0489_c36",
       "bridge_0489_c38"
     ],
     "error_type": "careless",
@@ -13787,7 +11355,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0492",
@@ -13850,7 +11418,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0496",
@@ -13912,7 +11480,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0500",
@@ -13973,7 +11541,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0503",
@@ -14036,7 +11604,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0504",
@@ -14044,7 +11612,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "fractions",
     "modality": "text",
     "prompt": "2.3",
     "conversation_context": [
@@ -14082,7 +11650,7 @@
       "bridge_0504_c16",
       "bridge_0504_c20",
       "bridge_0504_c21",
-      "bridge_0504_c35",
+      "bridge_0504_c30",
       "bridge_0504_c39"
     ],
     "error_type": "guess",
@@ -14097,7 +11665,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0508",
@@ -14158,7 +11726,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0509",
@@ -14166,7 +11734,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "30",
     "conversation_context": [
@@ -14204,8 +11772,7 @@
       "bridge_0509_c16",
       "bridge_0509_c24",
       "bridge_0509_c25",
-      "bridge_0509_c28",
-      "bridge_0509_c29",
+      "bridge_0509_c36",
       "bridge_0509_c38"
     ],
     "error_type": "careless",
@@ -14220,7 +11787,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0512",
@@ -14282,70 +11849,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0513",
-    "source_id": "6165036_15",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "Finding the area",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "A rectangular prism can be defined as a 3-dimensional solid shape that has six faces that are rectangles."
-      },
-      {
-        "role": "tutor",
-        "content": "Here's our first question."
-      },
-      {
-        "role": "tutor",
-        "content": "What are we asked to find?"
-      }
-    ],
-    "reference_solution": "Oh you're close. Think back to what we talked about earlier. Is there a 3-dimensional word for area?",
-    "novice_response": "That was a good try.\nWe are asked to find the volume of the given object.\nYou earned a point for your participation.\nWe have to find the length, width, and height of the object.\nKeep doing.\nWhat is the length of the object?",
-    "criterion_ids": [
-      "bridge_0513_c01",
-      "bridge_0513_c02",
-      "bridge_0513_c03",
-      "bridge_0513_c04",
-      "bridge_0513_c05",
-      "bridge_0513_c06",
-      "bridge_0513_c07",
-      "bridge_0513_c08",
-      "bridge_0513_c09",
-      "bridge_0513_c10",
-      "bridge_0513_c11",
-      "bridge_0513_c12",
-      "bridge_0513_c13",
-      "bridge_0513_c14",
-      "bridge_0513_c15",
-      "bridge_0513_c16",
-      "bridge_0513_c22",
-      "bridge_0513_c23",
-      "bridge_0513_c28",
-      "bridge_0513_c29",
-      "bridge_0513_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "diagnose",
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "encourage_student",
-    "expert_intention": "hint_mistake",
-    "lesson_topic": "5.4G.Volume of Rectangular Prisms (Review) - 1",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0517",
@@ -14406,7 +11910,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0520",
@@ -14468,69 +11972,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0523",
-    "source_id": "4274213_164",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "fractions",
-    "modality": "text",
-    "prompt": "yes please bye thx i learned",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Find the final answer and write it on the board to earn 2 more points."
-      },
-      {
-        "role": "student",
-        "content": "i got to get offf and go"
-      },
-      {
-        "role": "tutor",
-        "content": "Do you want me to end the session?"
-      }
-    ],
-    "reference_solution": "We understand there are sometimes emergencies. You only earn full credit, when you stay the entire time. I will have to mark you absent.",
-    "novice_response": "Okay, thanks for all your efforts in today's session.\nPlease fill in the feedback as you leave.\nBye.",
-    "criterion_ids": [
-      "bridge_0523_c01",
-      "bridge_0523_c02",
-      "bridge_0523_c03",
-      "bridge_0523_c04",
-      "bridge_0523_c05",
-      "bridge_0523_c06",
-      "bridge_0523_c07",
-      "bridge_0523_c08",
-      "bridge_0523_c09",
-      "bridge_0523_c10",
-      "bridge_0523_c11",
-      "bridge_0523_c12",
-      "bridge_0523_c13",
-      "bridge_0523_c14",
-      "bridge_0523_c15",
-      "bridge_0523_c16",
-      "bridge_0523_c17",
-      "bridge_0523_c18",
-      "bridge_0523_c19",
-      "bridge_0523_c30",
-      "bridge_0523_c39"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "encourage_student",
-    "expert_intention": "motivate_student",
-    "lesson_topic": "6.2E.Divide Two Fractions",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0524",
@@ -14538,7 +11980,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "893",
     "conversation_context": [
@@ -14576,7 +12018,7 @@
       "bridge_0524_c16",
       "bridge_0524_c20",
       "bridge_0524_c21",
-      "bridge_0524_c36",
+      "bridge_0524_c31",
       "bridge_0524_c38"
     ],
     "error_type": "misinterpret",
@@ -14592,7 +12034,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0526",
@@ -14600,7 +12042,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "50",
     "conversation_context": [
@@ -14638,7 +12080,7 @@
       "bridge_0526_c16",
       "bridge_0526_c24",
       "bridge_0526_c25",
-      "bridge_0526_c34",
+      "bridge_0526_c36",
       "bridge_0526_c38"
     ],
     "error_type": "careless",
@@ -14653,68 +12095,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0529",
-    "source_id": "2928499_27",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "2,000",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "its 1,715"
-      },
-      {
-        "role": "student",
-        "content": "thanks"
-      },
-      {
-        "role": "tutor",
-        "content": "What is the approximate value?"
-      }
-    ],
-    "reference_solution": "Great try! You rounded to the incorrect place value - let's round to the hundreds.",
-    "novice_response": "That was a good try.\nThe tens place value is lesser.\nSo we can consider the approximate value as 1700.",
-    "criterion_ids": [
-      "bridge_0529_c01",
-      "bridge_0529_c02",
-      "bridge_0529_c03",
-      "bridge_0529_c04",
-      "bridge_0529_c05",
-      "bridge_0529_c06",
-      "bridge_0529_c07",
-      "bridge_0529_c08",
-      "bridge_0529_c09",
-      "bridge_0529_c10",
-      "bridge_0529_c11",
-      "bridge_0529_c12",
-      "bridge_0529_c13",
-      "bridge_0529_c14",
-      "bridge_0529_c15",
-      "bridge_0529_c16",
-      "bridge_0529_c22",
-      "bridge_0529_c23",
-      "bridge_0529_c36",
-      "bridge_0529_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "provide_correction",
-    "expert_intention": "hint_mistake",
-    "lesson_topic": "4.4G.Estimation",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0530",
@@ -14722,7 +12103,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "62",
     "conversation_context": [
@@ -14760,8 +12141,7 @@
       "bridge_0530_c16",
       "bridge_0530_c24",
       "bridge_0530_c25",
-      "bridge_0530_c28",
-      "bridge_0530_c29",
+      "bridge_0530_c36",
       "bridge_0530_c38"
     ],
     "error_type": "diagnose",
@@ -14777,7 +12157,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0532",
@@ -14785,7 +12165,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "310",
     "conversation_context": [
@@ -14823,7 +12203,7 @@
       "bridge_0532_c16",
       "bridge_0532_c24",
       "bridge_0532_c25",
-      "bridge_0532_c30",
+      "bridge_0532_c36",
       "bridge_0532_c39"
     ],
     "error_type": "careless",
@@ -14838,7 +12218,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0539",
@@ -14899,7 +12279,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0540",
@@ -14961,70 +12341,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0541",
-    "source_id": "4113439_21",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "ammmmmmmmmm a littal",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "i dont know"
-      },
-      {
-        "role": "tutor",
-        "content": "This image has 4 halves.  If two halves make a whole, 2 wholes do make 4 halves."
-      },
-      {
-        "role": "tutor",
-        "content": "Do you understand?"
-      }
-    ],
-    "reference_solution": "Ok! Let's try another one. How many wholes do 6 halves make?",
-    "novice_response": "Do you mind explaining which part you are not quite understanding?",
-    "criterion_ids": [
-      "bridge_0541_c01",
-      "bridge_0541_c02",
-      "bridge_0541_c03",
-      "bridge_0541_c04",
-      "bridge_0541_c05",
-      "bridge_0541_c06",
-      "bridge_0541_c07",
-      "bridge_0541_c08",
-      "bridge_0541_c09",
-      "bridge_0541_c10",
-      "bridge_0541_c11",
-      "bridge_0541_c12",
-      "bridge_0541_c13",
-      "bridge_0541_c14",
-      "bridge_0541_c15",
-      "bridge_0541_c16",
-      "bridge_0541_c22",
-      "bridge_0541_c23",
-      "bridge_0541_c28",
-      "bridge_0541_c29",
-      "bridge_0541_c37"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose",
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.6C.Unit Squares (Review) - 1",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0542",
@@ -15085,7 +12402,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0543",
@@ -15149,7 +12466,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0548",
@@ -15157,7 +12474,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "fractions",
     "modality": "text",
     "prompt": "2.3",
     "conversation_context": [
@@ -15195,7 +12512,7 @@
       "bridge_0548_c16",
       "bridge_0548_c20",
       "bridge_0548_c21",
-      "bridge_0548_c35",
+      "bridge_0548_c30",
       "bridge_0548_c39"
     ],
     "error_type": "guess",
@@ -15210,7 +12527,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0549",
@@ -15271,7 +12588,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0550",
@@ -15279,7 +12596,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "fractions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "8",
     "conversation_context": [
@@ -15317,7 +12634,7 @@
       "bridge_0550_c16",
       "bridge_0550_c24",
       "bridge_0550_c25",
-      "bridge_0550_c30",
+      "bridge_0550_c36",
       "bridge_0550_c38"
     ],
     "error_type": "careless",
@@ -15332,68 +12649,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0553",
-    "source_id": "4012844_44",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
-    "modality": "text",
-    "prompt": "no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Sorry for the typo."
-      },
-      {
-        "role": "student",
-        "content": "i did"
-      },
-      {
-        "role": "tutor",
-        "content": "With that in mind, would you like to try it again?"
-      }
-    ],
-    "reference_solution": "That's alright. Let's give this new one a try. How many centimeters are in 2 meters?",
-    "novice_response": "It was a good try. Plus 1 point.",
-    "criterion_ids": [
-      "bridge_0553_c01",
-      "bridge_0553_c02",
-      "bridge_0553_c03",
-      "bridge_0553_c04",
-      "bridge_0553_c05",
-      "bridge_0553_c06",
-      "bridge_0553_c07",
-      "bridge_0553_c08",
-      "bridge_0553_c09",
-      "bridge_0553_c10",
-      "bridge_0553_c11",
-      "bridge_0553_c12",
-      "bridge_0553_c13",
-      "bridge_0553_c14",
-      "bridge_0553_c15",
-      "bridge_0553_c16",
-      "bridge_0553_c22",
-      "bridge_0553_c23",
-      "bridge_0553_c32",
-      "bridge_0553_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": false,
-    "expert_strategy": "provide_similar_problem",
-    "expert_intention": "support_thinking",
-    "lesson_topic": "4.9A.Converting Units of Measure",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0555",
@@ -15454,68 +12710,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0557",
-    "source_id": "4256694_6",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "i dont no",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "can you see the question ?"
-      },
-      {
-        "role": "student",
-        "content": "yes"
-      },
-      {
-        "role": "tutor",
-        "content": "Why is it important to check if there is any unnecessary information in a word problem?"
-      }
-    ],
-    "reference_solution": "Ok! Let's talk through why it is important. Can you identify any information that isn't needed to solve the problem?",
-    "novice_response": "It is important to make sure we don't accidentally use the wrong information to solve the problem which would lead to an incorrect answer.",
-    "criterion_ids": [
-      "bridge_0557_c01",
-      "bridge_0557_c02",
-      "bridge_0557_c03",
-      "bridge_0557_c04",
-      "bridge_0557_c05",
-      "bridge_0557_c06",
-      "bridge_0557_c07",
-      "bridge_0557_c08",
-      "bridge_0557_c09",
-      "bridge_0557_c10",
-      "bridge_0557_c11",
-      "bridge_0557_c12",
-      "bridge_0557_c13",
-      "bridge_0557_c14",
-      "bridge_0557_c15",
-      "bridge_0557_c16",
-      "bridge_0557_c20",
-      "bridge_0557_c21",
-      "bridge_0557_c36",
-      "bridge_0557_c37"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": true,
-    "expert_strategy": "provide_example",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.5B.Word Problems with Multiplication",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0558",
@@ -15523,7 +12718,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "14",
     "conversation_context": [
@@ -15561,8 +12756,7 @@
       "bridge_0558_c16",
       "bridge_0558_c24",
       "bridge_0558_c25",
-      "bridge_0558_c28",
-      "bridge_0558_c29",
+      "bridge_0558_c36",
       "bridge_0558_c37"
     ],
     "error_type": "right-idea",
@@ -15578,7 +12772,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0560",
@@ -15586,7 +12780,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "12 : 60",
     "conversation_context": [
@@ -15625,7 +12819,7 @@
       "bridge_0560_c17",
       "bridge_0560_c18",
       "bridge_0560_c19",
-      "bridge_0560_c32",
+      "bridge_0560_c36",
       "bridge_0560_c37"
     ],
     "error_type": "misinterpret",
@@ -15640,7 +12834,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0561",
@@ -15701,7 +12895,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0563",
@@ -15709,7 +12903,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "algebra_expressions",
     "modality": "text",
     "prompt": "9",
     "conversation_context": [
@@ -15747,7 +12941,7 @@
       "bridge_0563_c16",
       "bridge_0563_c20",
       "bridge_0563_c21",
-      "bridge_0563_c35",
+      "bridge_0563_c34",
       "bridge_0563_c39"
     ],
     "error_type": "right-idea",
@@ -15763,7 +12957,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0565",
@@ -15771,7 +12965,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "im done",
     "conversation_context": [
@@ -15809,7 +13003,7 @@
       "bridge_0565_c16",
       "bridge_0565_c26",
       "bridge_0565_c27",
-      "bridge_0565_c31",
+      "bridge_0565_c36",
       "bridge_0565_c38"
     ],
     "error_type": "diagnose",
@@ -15825,71 +13019,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0566",
-    "source_id": "6166071_74",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "abov 90",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "Which angle appears to be an acute angle?"
-      },
-      {
-        "role": "tutor",
-        "content": "Try to solve it on the whiteboard."
-      },
-      {
-        "role": "tutor",
-        "content": "What is obtuse angle?"
-      }
-    ],
-    "reference_solution": "Yes, that's right!\nAn obtuse angle is an angle that is greater than 90 degrees but less than 180 degrees",
-    "novice_response": "That was a great try.\nSorry, your voice is not audible.\nWould you like to communicate through the chat window?",
-    "criterion_ids": [
-      "bridge_0566_c01",
-      "bridge_0566_c02",
-      "bridge_0566_c03",
-      "bridge_0566_c04",
-      "bridge_0566_c05",
-      "bridge_0566_c06",
-      "bridge_0566_c07",
-      "bridge_0566_c08",
-      "bridge_0566_c09",
-      "bridge_0566_c10",
-      "bridge_0566_c11",
-      "bridge_0566_c12",
-      "bridge_0566_c13",
-      "bridge_0566_c14",
-      "bridge_0566_c15",
-      "bridge_0566_c16",
-      "bridge_0566_c17",
-      "bridge_0566_c18",
-      "bridge_0566_c19",
-      "bridge_0566_c28",
-      "bridge_0566_c29",
-      "bridge_0566_c38"
-    ],
-    "error_type": "imprecise",
-    "error_types": [
-      "diagnose",
-      "imprecise"
-    ],
-    "error_module": "conceptual",
-    "visible_mistake": true,
-    "expert_strategy": "affirm_correct_answer",
-    "expert_intention": "signal_goal",
-    "lesson_topic": "4.6A.Geometric Lines (Review) - 1",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0570",
@@ -15950,7 +13080,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0571",
@@ -16011,7 +13141,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0572",
@@ -16019,7 +13149,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "53",
     "conversation_context": [
@@ -16057,7 +13187,7 @@
       "bridge_0572_c16",
       "bridge_0572_c24",
       "bridge_0572_c25",
-      "bridge_0572_c32",
+      "bridge_0572_c36",
       "bridge_0572_c37"
     ],
     "error_type": "careless",
@@ -16072,7 +13202,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0573",
@@ -16080,7 +13210,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "12",
     "conversation_context": [
@@ -16118,7 +13248,7 @@
       "bridge_0573_c16",
       "bridge_0573_c22",
       "bridge_0573_c23",
-      "bridge_0573_c34",
+      "bridge_0573_c36",
       "bridge_0573_c37"
     ],
     "error_type": "right-idea",
@@ -16133,7 +13263,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0574",
@@ -16195,7 +13325,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0576",
@@ -16257,7 +13387,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0581",
@@ -16318,7 +13448,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0584",
@@ -16380,7 +13510,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0586",
@@ -16442,7 +13572,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0588",
@@ -16450,7 +13580,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "200?",
     "conversation_context": [
@@ -16488,7 +13618,7 @@
       "bridge_0588_c16",
       "bridge_0588_c22",
       "bridge_0588_c23",
-      "bridge_0588_c31",
+      "bridge_0588_c36",
       "bridge_0588_c38"
     ],
     "error_type": "right-idea",
@@ -16503,7 +13633,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0590",
@@ -16511,7 +13641,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "6-12",
-    "topic_domain": "proportional_reasoning",
+    "topic_domain": "measurement_conversion",
     "modality": "text",
     "prompt": "5",
     "conversation_context": [
@@ -16549,7 +13679,7 @@
       "bridge_0590_c16",
       "bridge_0590_c20",
       "bridge_0590_c21",
-      "bridge_0590_c35",
+      "bridge_0590_c32",
       "bridge_0590_c39"
     ],
     "error_type": "guess",
@@ -16564,7 +13694,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0591",
@@ -16626,7 +13756,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0592",
@@ -16634,7 +13764,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "you turn the 1 into a 2????",
     "conversation_context": [
@@ -16672,7 +13802,7 @@
       "bridge_0592_c16",
       "bridge_0592_c22",
       "bridge_0592_c23",
-      "bridge_0592_c36",
+      "bridge_0592_c31",
       "bridge_0592_c38"
     ],
     "error_type": "imprecise",
@@ -16688,7 +13818,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0594",
@@ -16696,7 +13826,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "place_value_number",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "210",
     "conversation_context": [
@@ -16734,7 +13864,7 @@
       "bridge_0594_c16",
       "bridge_0594_c20",
       "bridge_0594_c21",
-      "bridge_0594_c31",
+      "bridge_0594_c36",
       "bridge_0594_c38"
     ],
     "error_type": "guess",
@@ -16749,68 +13879,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0605",
-    "source_id": "4079053_56",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "147",
-    "conversation_context": [
-      {
-        "role": "tutor",
-        "content": "The first factor in our multiplication problem is 7."
-      },
-      {
-        "role": "student",
-        "content": "it is 147"
-      },
-      {
-        "role": "tutor",
-        "content": "How many total bears do you count in our array?"
-      }
-    ],
-    "reference_solution": "Great try! How many groups of bears are there?",
-    "novice_response": "Please recheck your answer.\nLet me help you with that.\nThe box has  3 toys inside.\nSo, 7 groups of 3 bears.\n7 groups of 3 things make 21 total things.\nDo you understand that step?",
-    "criterion_ids": [
-      "bridge_0605_c01",
-      "bridge_0605_c02",
-      "bridge_0605_c03",
-      "bridge_0605_c04",
-      "bridge_0605_c05",
-      "bridge_0605_c06",
-      "bridge_0605_c07",
-      "bridge_0605_c08",
-      "bridge_0605_c09",
-      "bridge_0605_c10",
-      "bridge_0605_c11",
-      "bridge_0605_c12",
-      "bridge_0605_c13",
-      "bridge_0605_c14",
-      "bridge_0605_c15",
-      "bridge_0605_c16",
-      "bridge_0605_c20",
-      "bridge_0605_c21",
-      "bridge_0605_c36",
-      "bridge_0605_c37"
-    ],
-    "error_type": "guess",
-    "error_types": [
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "3.4A.Understanding Multiplication",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0607",
@@ -16871,7 +13940,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0608",
@@ -16879,7 +13948,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "11",
     "conversation_context": [
@@ -16917,7 +13986,7 @@
       "bridge_0608_c16",
       "bridge_0608_c22",
       "bridge_0608_c23",
-      "bridge_0608_c34",
+      "bridge_0608_c36",
       "bridge_0608_c38"
     ],
     "error_type": "right-idea",
@@ -16932,7 +14001,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0609",
@@ -16994,7 +14063,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0610",
@@ -17002,7 +14071,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "520",
     "conversation_context": [
@@ -17040,7 +14109,7 @@
       "bridge_0610_c16",
       "bridge_0610_c24",
       "bridge_0610_c25",
-      "bridge_0610_c32",
+      "bridge_0610_c36",
       "bridge_0610_c38"
     ],
     "error_type": "careless",
@@ -17055,7 +14124,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0611",
@@ -17063,7 +14132,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "operations_arithmetic",
+    "topic_domain": "place_value_number",
     "modality": "text",
     "prompt": "4",
     "conversation_context": [
@@ -17101,7 +14170,7 @@
       "bridge_0611_c16",
       "bridge_0611_c20",
       "bridge_0611_c21",
-      "bridge_0611_c36",
+      "bridge_0611_c31",
       "bridge_0611_c37"
     ],
     "error_type": "misinterpret",
@@ -17117,70 +14186,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0613",
-    "source_id": "2894869_50",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
-    "modality": "text",
-    "prompt": "yes",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "4"
-      },
-      {
-        "role": "tutor",
-        "content": "Good job, plus one point."
-      },
-      {
-        "role": "tutor",
-        "content": "Are the sides equal?"
-      }
-    ],
-    "reference_solution": "What shape do we call it since all sides are equal?",
-    "novice_response": "That was a good try.",
-    "criterion_ids": [
-      "bridge_0613_c01",
-      "bridge_0613_c02",
-      "bridge_0613_c03",
-      "bridge_0613_c04",
-      "bridge_0613_c05",
-      "bridge_0613_c06",
-      "bridge_0613_c07",
-      "bridge_0613_c08",
-      "bridge_0613_c09",
-      "bridge_0613_c10",
-      "bridge_0613_c11",
-      "bridge_0613_c12",
-      "bridge_0613_c13",
-      "bridge_0613_c14",
-      "bridge_0613_c15",
-      "bridge_0613_c16",
-      "bridge_0613_c20",
-      "bridge_0613_c21",
-      "bridge_0613_c28",
-      "bridge_0613_c29",
-      "bridge_0613_c37"
-    ],
-    "error_type": "diagnose",
-    "error_types": [
-      "diagnose",
-      "guess"
-    ],
-    "error_module": "guess",
-    "visible_mistake": true,
-    "expert_strategy": "ask_question",
-    "expert_intention": "understand_topic",
-    "lesson_topic": "2.8A.2- and 3-Dimensional Shapes",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0616",
@@ -17241,68 +14247,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0618",
-    "source_id": "2962429_51",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "6-12",
-    "topic_domain": "algebra_expressions",
-    "modality": "text",
-    "prompt": "no i mean x (x-3) + 5x",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "6-y"
-      },
-      {
-        "role": "student",
-        "content": "?"
-      },
-      {
-        "role": "tutor",
-        "content": "Is this your final answer?"
-      }
-    ],
-    "reference_solution": "You are correct that x is the variable you can combine like terms for. What do we get when we combine like terms in (x-3)+5x?",
-    "novice_response": "That was a good try.\nLet me explain.\nLet me explain it to you.\nThere is no product in t he equation.",
-    "criterion_ids": [
-      "bridge_0618_c01",
-      "bridge_0618_c02",
-      "bridge_0618_c03",
-      "bridge_0618_c04",
-      "bridge_0618_c05",
-      "bridge_0618_c06",
-      "bridge_0618_c07",
-      "bridge_0618_c08",
-      "bridge_0618_c09",
-      "bridge_0618_c10",
-      "bridge_0618_c11",
-      "bridge_0618_c12",
-      "bridge_0618_c13",
-      "bridge_0618_c14",
-      "bridge_0618_c15",
-      "bridge_0618_c16",
-      "bridge_0618_c22",
-      "bridge_0618_c23",
-      "bridge_0618_c34",
-      "bridge_0618_c39"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "simplify_question",
-    "expert_intention": "signal_goal",
-    "lesson_topic": "6.7B.Vocabulary of Algebra",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0622",
@@ -17363,7 +14308,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0623",
@@ -17371,7 +14316,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "geometry_spatial",
+    "topic_domain": "measurement_conversion",
     "modality": "text",
     "prompt": "how long it is",
     "conversation_context": [
@@ -17409,8 +14354,7 @@
       "bridge_0623_c16",
       "bridge_0623_c26",
       "bridge_0623_c27",
-      "bridge_0623_c28",
-      "bridge_0623_c29",
+      "bridge_0623_c32",
       "bridge_0623_c37"
     ],
     "error_type": "imprecise",
@@ -17425,7 +14369,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0627",
@@ -17487,7 +14431,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0631",
@@ -17549,68 +14493,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
-  },
-  {
-    "scenario_id": "bridge_0635",
-    "source_id": "2928499_27",
-    "use_case": "mistake_remediation",
-    "subject": "mathematics",
-    "grade_band": "4-5",
-    "topic_domain": "operations_arithmetic",
-    "modality": "text",
-    "prompt": "2,000",
-    "conversation_context": [
-      {
-        "role": "student",
-        "content": "its 1,715"
-      },
-      {
-        "role": "student",
-        "content": "thanks"
-      },
-      {
-        "role": "tutor",
-        "content": "What is the approximate value?"
-      }
-    ],
-    "reference_solution": "Approximate value should be less than the actual value. Try again.",
-    "novice_response": "That was a good try.\nThe tens place value is lesser.\nSo we can consider the approximate value as 1700.",
-    "criterion_ids": [
-      "bridge_0635_c01",
-      "bridge_0635_c02",
-      "bridge_0635_c03",
-      "bridge_0635_c04",
-      "bridge_0635_c05",
-      "bridge_0635_c06",
-      "bridge_0635_c07",
-      "bridge_0635_c08",
-      "bridge_0635_c09",
-      "bridge_0635_c10",
-      "bridge_0635_c11",
-      "bridge_0635_c12",
-      "bridge_0635_c13",
-      "bridge_0635_c14",
-      "bridge_0635_c15",
-      "bridge_0635_c16",
-      "bridge_0635_c22",
-      "bridge_0635_c23",
-      "bridge_0635_c36",
-      "bridge_0635_c38"
-    ],
-    "error_type": "right-idea",
-    "error_types": [
-      "right-idea"
-    ],
-    "error_module": "right_idea",
-    "visible_mistake": true,
-    "expert_strategy": "explain_concept",
-    "expert_intention": "correct_mistake",
-    "lesson_topic": "4.4G.Estimation",
-    "native_split": "test",
-    "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
-    "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0636",
@@ -17618,7 +14501,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "measurement_conversion",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "it cant",
     "conversation_context": [
@@ -17657,7 +14540,7 @@
       "bridge_0636_c17",
       "bridge_0636_c18",
       "bridge_0636_c19",
-      "bridge_0636_c32",
+      "bridge_0636_c36",
       "bridge_0636_c38"
     ],
     "error_type": "misinterpret",
@@ -17672,7 +14555,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0638",
@@ -17735,7 +14618,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0639",
@@ -17797,7 +14680,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   },
   {
     "scenario_id": "bridge_0640",
@@ -17805,7 +14688,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "algebra_expressions",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "11664.",
     "conversation_context": [
@@ -17843,7 +14726,7 @@
       "bridge_0640_c16",
       "bridge_0640_c24",
       "bridge_0640_c25",
-      "bridge_0640_c34",
+      "bridge_0640_c36",
       "bridge_0640_c38"
     ],
     "error_type": "guess",
@@ -17859,6 +14742,6 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "4.0"
+    "version": "5.0"
   }
 ]
