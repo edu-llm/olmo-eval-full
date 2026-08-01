@@ -38,6 +38,8 @@ from olmo_eval.evals.tasks.common import Task, register
 from olmo_eval.evals.tasks.csqa import CommonsenseQA
 from olmo_eval.evals.tasks.gsm8k import GSM8K
 from olmo_eval.evals.tasks.hellaswag import HellaSwag
+from olmo_eval.evals.tasks.ifeval import IFEval
+from olmo_eval.evals.tasks.leaderboard_math import LeaderboardMath
 from olmo_eval.evals.tasks.piqa import PiQA
 from olmo_eval.evals.tasks.winogrande import Winogrande
 
@@ -170,6 +172,8 @@ _BASE_CLASSES: dict[str, type[Task]] = {
     "csqa": CommonsenseQA,
     "piqa": PiQA,
     "gsm8k": GSM8K,
+    "ifeval": IFEval,
+    "math": LeaderboardMath,
 }
 _CLASS_NAMES: dict[str, str] = {
     "hellaswag": "AtlasHellaSwag",
@@ -177,6 +181,8 @@ _CLASS_NAMES: dict[str, str] = {
     "csqa": "AtlasCommonsenseQA",
     "piqa": "AtlasPiQA",
     "gsm8k": "AtlasGSM8K",
+    "ifeval": "AtlasIFEval",
+    "math": "AtlasLeaderboardMath",
 }
 
 

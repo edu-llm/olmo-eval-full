@@ -12,8 +12,14 @@ This diagnostic wires **4 of the 5 ATLAS benchmarks**: `atlas_arc` (ARC-Challeng
 this repo under `AdaptiveTesting/Inputs/ATLAS/<benchmark>/` (params +
 `atlas_idx_to_question_id.csv`).
 
+Two more OpenLM (Open LLM Leaderboard v2) benchmarks are wired and available via
+`--evals` but off by default (both are slower generative evals): `atlas_ifeval`
+(instruction-following, prompt-level strict) and `atlas_math` (Level-5 MATH-Hard,
+sympy answer equivalence). Their banks were calibrated under lm-eval-harness
+scoring, so their theta is approximate pending a parity pass.
+
 **TruthfulQA is not yet wired** — it has mixed scoring and no olmo-eval base task, so
-it stays out until a base task exists. That's the one remaining benchmark to reach 5/5.
+it stays out until a base task exists.
 
 Id-bridge note: HellaSwag joins on the native `ind`; WinoGrande and GSM8K use
 positional indices, so their `atlas_idx_to_question_id.csv` bridges were generated

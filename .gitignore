@@ -126,6 +126,11 @@ AdaptiveTesting/Inputs/ATLAS/winogrande/*
 !AdaptiveTesting/Inputs/ATLAS/hellaswag/atlas_idx_to_question_id.csv
 !AdaptiveTesting/Inputs/ATLAS/winogrande/irt_item_parameters_combined.csv
 !AdaptiveTesting/Inputs/ATLAS/winogrande/atlas_idx_to_question_id.csv
+# OpenLM (Open LLM Leaderboard v2) banks promoted into CAT.
+!AdaptiveTesting/Inputs/ATLAS/ifeval/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/ifeval/atlas_idx_to_question_id.csv
+!AdaptiveTesting/Inputs/ATLAS/math/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/math/atlas_idx_to_question_id.csv
 AdaptiveTesting/Inputs/ATLAS/arc/atlas_arc_random/
 AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/irt_item_parameters_[0-9]*.csv
 AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/irt_person_scores_*.csv

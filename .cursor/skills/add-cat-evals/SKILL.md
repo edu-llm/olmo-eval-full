@@ -26,10 +26,17 @@ checkpoint is saved.
 4. Writes per-eval `<eval>.json` (theta, se, pirt_accuracy, n_items, selected ids),
    `pipeline_provenance.json`, and `worker.log` to S3, plus a `_READY` marker.
 
-Scope today: **4 benchmarks** — `atlas_arc` (ARC-Challenge), `atlas_hellaswag`,
-`atlas_winogrande` (MCQ log-likelihood), and `atlas_gsm8k` (generative exact-match),
-each backed by a calibrated ATLAS 3PL bank vendored in this repo. TruthfulQA is not
-yet wired (no olmo-eval base task). Override the set with `--evals`.
+Scope today: **4 benchmarks by default** — `atlas_arc` (ARC-Challenge),
+`atlas_hellaswag`, `atlas_winogrande` (MCQ log-likelihood), and `atlas_gsm8k`
+(generative exact-match), each backed by a calibrated ATLAS 3PL bank vendored in
+this repo.
+
+Two more are wired and available via `--evals` (opt-in; both are slower
+generative benchmarks calibrated on Open LLM Leaderboard v2 responses):
+`atlas_ifeval` (instruction-following, prompt-level strict) and `atlas_math`
+(Level-5 MATH-Hard, sympy answer equivalence). Their item difficulties were
+calibrated under lm-eval-harness scoring, so treat their theta as approximate
+until a parity pass is run. TruthfulQA is still not wired (no olmo-eval base task).
 
 ## Requirements
 
@@ -83,7 +90,7 @@ nohup bash .cursor/skills/add-cat-evals/scripts/run_cat_diagnostic.sh \
 | `--min-items` | `8` | CAT floor |
 | `--max-items` | `40` | CAT cap |
 | `--tp` | `1` | vLLM tensor-parallel size (raise for large models) |
-| `--evals` | `atlas_arc atlas_hellaswag atlas_winogrande atlas_gsm8k` | space-separated CAT evals to run (share one vLLM boot) |
+| `--evals` | `atlas_arc atlas_hellaswag atlas_winogrande atlas_gsm8k` | space-separated CAT evals (share one vLLM boot); also supports `atlas_ifeval`, `atlas_math` |
 | `--skip-convert` | off | checkpoint is already HF format / an HF id |
 | `--keep-hf` | off | keep the converted `-hf` dir (default: temp, removed after) |
 | `--dry-run` | off | print the plan without running |

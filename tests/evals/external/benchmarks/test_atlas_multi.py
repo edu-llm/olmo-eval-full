@@ -72,7 +72,7 @@ def test_registered(eval_name: str) -> None:
 
 def test_full_atlas_eval_set() -> None:
     atlas = {e for e in list_external_evals() if e.startswith("atlas")}
-    assert atlas == {"atlas_arc", "atlas_gsm8k", *_MCQ_EVALS}
+    assert atlas == {"atlas_arc", "atlas_gsm8k", "atlas_ifeval", "atlas_math", *_MCQ_EVALS}
 
 
 @pytest.mark.parametrize("bench", ["hellaswag", "winogrande", "csqa", "piqa"])
