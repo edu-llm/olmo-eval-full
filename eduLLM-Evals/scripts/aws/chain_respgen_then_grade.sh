@@ -5,18 +5,22 @@
 #
 # Completion of respgen is detected by the "RESPGEN COMPLETE" marker its wrapper
 # writes to full_launch2.log (or the wrapper process disappearing). Then it waits
-# for GPU 4 to be free and invokes run_grading_gpu4.sh (bridge -> judge -> ingest).
-# All logs go to chain.log and are synced to S3 so results are retrievable even if
-# the laptop is closed the whole time.
+# for GPU 4 to be free and invokes run_grading_gpu4.sh (emit -> judge -> ingest,
+# writing per-benchmark runs/judge/<Benchmark>/). All logs go to chain.log and are
+# synced to S3 so results are retrievable even if the laptop is closed the whole time.
 set -uo pipefail
 
 GPU="${GPU:-4}"
 RESP_LOG="${RESP_LOG:-/opt/dlami/nvme/tutor-cat-v2/full_launch2.log}"
 RESP_WRAPPER_PAT="${RESP_WRAPPER_PAT:-run_on_node_gpu4.sh}"
 GRADE_WRAP="${GRADE_WRAP:-/opt/dlami/nvme/tutor-grading/eduLLM-Evals/scripts/aws/run_grading_gpu4.sh}"
-MATRIX_DIR="${MATRIX_DIR:-/opt/dlami/nvme/tutor-grading/eduLLM-Evals/staging}"
+# Multi-benchmark layout: the driver writes per-benchmark runs/judge/<Benchmark>/
+# (verdicts.jsonl, response_matrix.csv, manifest.json) + runs/judge/_index.json.
+JUDGE_DIR="${JUDGE_DIR:-/opt/dlami/nvme/tutor-grading/eduLLM-Evals/runs/judge}"
 CHAIN_LOG="${CHAIN_LOG:-/opt/dlami/nvme/tutor-grading/chain.log}"
 S3_ARTIFACTS="${S3_ARTIFACTS:-s3://edullm-adaptive-inference-056956104102/edu-tutor-grading/artifacts}"
+# Base S3 prefix run_grading_gpu4.sh uses to push cases + pull verdicts (override per bucket).
+S3_GRADING_PREFIX="${S3_GRADING_PREFIX:-s3://edullm-adaptive-inference-056956104102/edu-tutor-grading}"
 WAIT_TIMEOUT_H="${WAIT_TIMEOUT_H:-12}"
 
 mkdir -p "$(dirname "$CHAIN_LOG")"
@@ -53,15 +57,17 @@ done
 
 log "=== launching grading pipeline: $GRADE_WRAP ==="
 sync_logs
-GPU="$GPU" bash "$GRADE_WRAP" >> "$CHAIN_LOG" 2>&1
+GPU="$GPU" S3_GRADING_PREFIX="$S3_GRADING_PREFIX" bash "$GRADE_WRAP" >> "$CHAIN_LOG" 2>&1
 rc=$?
 log "grading pipeline exited rc=$rc"
 
-# Publish artifacts so they're retrievable regardless of the laptop being closed.
-for f in response_matrix.csv response_matrix.npy response_matrix_manifest.json \
-         verdicts.jsonl judge_inputs_manifest.json; do
-  [ -f "$MATRIX_DIR/$f" ] && aws s3 cp "$MATRIX_DIR/$f" "$S3_ARTIFACTS/$f" --only-show-errors 2>/dev/null || true
-done
+# Publish the whole per-benchmark judge tree (verdicts, matrices, manifests,
+# roll-up) so results are retrievable regardless of the laptop being closed.
+if [ -d "$JUDGE_DIR" ]; then
+  aws s3 cp "$JUDGE_DIR" "$S3_ARTIFACTS/judge" --recursive --only-show-errors 2>/dev/null || true
+else
+  log "no judge output dir at $JUDGE_DIR; nothing to publish"
+fi
 sync_logs
-log "=== chain complete (rc=$rc). artifacts -> $S3_ARTIFACTS ==="
+log "=== chain complete (rc=$rc). artifacts -> $S3_ARTIFACTS/judge ==="
 exit "$rc"

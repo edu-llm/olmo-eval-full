@@ -56,6 +56,7 @@ network/GPU work is the out-of-band phase 2).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from dataclasses import dataclass, field
@@ -110,6 +111,7 @@ class LiteScenario:
     subject: str = ""
     conversation_context: list[dict[str, str]] = field(default_factory=list)
     reference_solution: str = ""
+    system_prompt: str = ""
 
 
 @dataclass
@@ -146,6 +148,7 @@ def load_scenarios(path: Path) -> dict[str, LiteScenario]:
             subject=str(obj.get("subject", "")),
             conversation_context=obj.get("conversation_context") or [],
             reference_solution=str(obj.get("reference_solution", "")),
+            system_prompt=str(obj.get("system_prompt") or ""),
         )
     return out
 
@@ -230,6 +233,7 @@ class StagedBenchmark:
     auto_fail_cells: int = 0
     auto_fail_reasons: dict[str, int] = field(default_factory=dict)
     missing_scenarios: int = 0
+    malformed_lines: int = 0
 
 
 def stage_benchmark(
@@ -263,9 +267,11 @@ def stage_benchmark(
 
     staged_rows: list[dict] = []
     total = gradeable = auto_fail = 0
+    malformed_lines = 0
     reasons: dict[str, int] = {}
     for model in models:
-        index, _dupes = sji.load_response_index(shards[model])
+        index, _dupes, skipped = sji.load_response_index(shards[model])
+        malformed_lines += skipped
         for sid in ordered_sids:
             rec = index.get(sid)
             af, reason, response = sji.classify_cell(rec, False)
@@ -302,6 +308,7 @@ def stage_benchmark(
         auto_fail_cells=auto_fail,
         auto_fail_reasons=reasons,
         missing_scenarios=missing_scenarios,
+        malformed_lines=malformed_lines,
     )
 
 
@@ -324,6 +331,7 @@ def write_staging(out_dir: Path, sb: StagedBenchmark) -> None:
         "auto_fail_cells": sb.auto_fail_cells,
         "auto_fail_reason_counts": sb.auto_fail_reasons,
         "missing_scenarios_for_rubrics": sb.missing_scenarios,
+        "malformed_response_lines_skipped": sb.malformed_lines,
         "models": sb.models,
         "criterion_ids": sb.criterion_ids,
     }
@@ -334,7 +342,29 @@ def write_staging(out_dir: Path, sb: StagedBenchmark) -> None:
 # =====================================================================
 # Emit blinded cases (reuses build_case_dict + case_id/response_id + validator)
 # =====================================================================
-def emit_cases(out_dir: Path, sb: StagedBenchmark) -> tuple[int, int, int]:
+def shard_of_response(response_id: str, num_shards: int) -> int:
+    """Deterministically map a ``response_id`` (i.e. a whole ``(model, scenario)``
+    block) to one of ``num_shards`` buckets via a stable hash. Node-independent and
+    reproducible: every node computes the same bucket for a given response_id, and
+    all criteria of a ``(model, scenario)`` share it, so scenario blocks stay whole
+    and contiguous within their shard (which prefix caching relies on)."""
+    if num_shards <= 1:
+        return 0
+    digest = hashlib.sha1(response_id.encode("utf-8")).hexdigest()
+    return int(digest, 16) % num_shards
+
+
+def cases_filename(num_shards: int, shard_index: int) -> str:
+    return CASES_NAME if num_shards <= 1 else f"cases.shard{shard_index}.jsonl"
+
+
+def cases_index_filename(num_shards: int, shard_index: int) -> str:
+    return CASES_INDEX_NAME if num_shards <= 1 else f"cases_index.shard{shard_index}.jsonl"
+
+
+def emit_cases(
+    out_dir: Path, sb: StagedBenchmark, num_shards: int = 1, shard_index: int = 0
+) -> tuple[int, int, int]:
     cases: list[dict] = []
     index_rows: list[dict] = []
     n_auto_fail = n_bank_missing = 0
@@ -342,11 +372,14 @@ def emit_cases(out_dir: Path, sb: StagedBenchmark) -> tuple[int, int, int]:
         model = str(row["model"])
         sid = str(row["scenario"])
         cid = str(row["criterion_id"])
+        response_id = rjg.response_id_for(model, sid)
+        if num_shards > 1 and shard_of_response(response_id, num_shards) != shard_index:
+            continue
         case_id = rjg.case_id_for(model, sid, cid)
         index_rows.append(
             {
                 "case_id": case_id,
-                "response_id": rjg.response_id_for(model, sid),
+                "response_id": response_id,
                 "model": model,
                 "scenario_id": sid,
                 "criterion_id": cid,
@@ -371,23 +404,36 @@ def emit_cases(out_dir: Path, sb: StagedBenchmark) -> tuple[int, int, int]:
             print(f"  ! {sb.benchmark}: cases failed teammate validation: {e}", file=sys.stderr)
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    with (out_dir / CASES_NAME).open("w", encoding="utf-8") as f:
+    cases_name = cases_filename(num_shards, shard_index)
+    index_name = cases_index_filename(num_shards, shard_index)
+    with (out_dir / cases_name).open("w", encoding="utf-8") as f:
         for c in cases:
             f.write(json.dumps(c, ensure_ascii=False) + "\n")
-    with (out_dir / CASES_INDEX_NAME).open("w", encoding="utf-8") as f:
+    with (out_dir / index_name).open("w", encoding="utf-8") as f:
         for r in index_rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     return len(cases), n_auto_fail, n_bank_missing
 
 
-def handoff_command(benchmark: str, cases_path: Path, judge: str, ingest_root: Path) -> str:
-    out = ingest_root / benchmark / "canonical_r1.jsonl"
+def handoff_command(
+    benchmark: str,
+    cases_path: Path,
+    judge: str,
+    ingest_root: Path,
+    num_shards: int = 1,
+    shard_index: int = 0,
+) -> str:
+    # Each shard grades its own cases file into a shard-tagged verdict file so all
+    # shards can share one benchmark ingest dir (ingest globs <root>/<Benchmark>/*.jsonl).
+    suffix = "" if num_shards <= 1 else f".shard{shard_index}"
+    out = ingest_root / benchmark / f"canonical_r1{suffix}.jsonl"
+    s3_prefix = f"s3://YOUR-BUCKET/edu-tutor-grading/{benchmark}/canonical_r1{suffix}"
     return (
         "python aws_judge_handoff/scripts/run_judge_validation.py run \\\n"
         f"  --cases {_rel(cases_path)} --judge {judge} \\\n"
         f"  --output {_rel(out)} \\\n"
         "  --backend vllm --prompt-variant canonical --replicate-id r1 --resume \\\n"
-        f"  --s3-output-prefix s3://YOUR-BUCKET/edu-tutor-grading/{benchmark}/canonical_r1 \\\n"
+        f"  --s3-output-prefix {s3_prefix} \\\n"
         "  --require-s3-upload"
     )
 
@@ -571,11 +617,27 @@ def main(argv: list[str] | None = None) -> int:
                     help="frozen judge config (default: judge_frozen.yaml)")
     ap.add_argument("--emit-cases-only", action="store_true",
                     help="stage + emit blinded cases; do not ingest (default when --ingest absent)")
+    ap.add_argument("--num-shards", type=int, default=1,
+                    help="partition emit across N shards by (model, scenario) block "
+                         "(default 1: no sharding). Each shard grades independently; "
+                         "ingest merges all shards back into the full matrix.")
+    ap.add_argument("--shard-index", type=int, default=0,
+                    help="0-based index of the shard to emit (0 <= shard-index < num-shards); "
+                         "e.g. driven by AWS_BATCH_JOB_ARRAY_INDEX")
     ap.add_argument("--ingest", type=Path, default=None,
                     help="root of returned verdicts; searched as <root>/<Benchmark>/*.jsonl")
     ap.add_argument("--no-decision-policy", choices=["missing", "fail"], default="missing")
     ap.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
     args = ap.parse_args(argv)
+
+    if args.num_shards < 1:
+        print(f"ERROR: --num-shards must be >= 1 (got {args.num_shards})", file=sys.stderr)
+        return 2
+    if not (0 <= args.shard_index < args.num_shards):
+        print(f"ERROR: --shard-index must satisfy 0 <= shard-index < num-shards "
+              f"(got shard-index={args.shard_index}, num-shards={args.num_shards})",
+              file=sys.stderr)
+        return 2
 
     try:
         benchmarks = _select_benchmarks(args.only, args.exclude)
@@ -590,6 +652,9 @@ def main(argv: list[str] | None = None) -> int:
 
     print("=" * 72)
     print(f"run_all_judge_grading : phase={phase}  judge={judge_name} / {fj.model}")
+    if phase == "emit" and args.num_shards > 1:
+        print(f"sharding : shard {args.shard_index} of {args.num_shards} "
+              "(partitioned by (model, scenario) block)")
     print(f"in scope: {', '.join(benchmarks)}")
     print("=" * 72)
 
@@ -634,20 +699,32 @@ def main(argv: list[str] | None = None) -> int:
         if sb.missing_scenarios:
             print(f"  note: {sb.missing_scenarios} rubric(s) reference a scenario "
                   "absent from scenarios.jsonl")
+        if sb.malformed_lines:
+            print(f"  note: skipped {sb.malformed_lines} malformed JSON line(s) across "
+                  "response shards (see warnings above)")
 
         if phase == "emit":
-            n_cases, n_af, n_missing = emit_cases(out_dir, sb)
-            print(f"  wrote {n_cases} blinded cases -> {_rel(out_dir / CASES_NAME)}"
+            n_cases, n_af, n_missing = emit_cases(
+                out_dir, sb, args.num_shards, args.shard_index
+            )
+            cases_path = out_dir / cases_filename(args.num_shards, args.shard_index)
+            shard_note = (f"  (shard {args.shard_index}/{args.num_shards})"
+                          if args.num_shards > 1 else "")
+            print(f"  wrote {n_cases} blinded cases -> {_rel(cases_path)}{shard_note}"
                   + (f"  (bank_missing={n_missing})" if n_missing else ""))
             print("  GPU hand-off:")
-            cmd = handoff_command(benchmark, out_dir / CASES_NAME, judge_name, ingest_root)
+            cmd = handoff_command(benchmark, cases_path, judge_name, ingest_root,
+                                  args.num_shards, args.shard_index)
             for line in cmd.splitlines():
                 print(f"    {line}")
             roll_up.append({
                 "benchmark": benchmark, "status": "cases_emitted",
                 "n_models": len(sb.models), "n_criteria": len(sb.criterion_ids),
                 "gradeable_cells": sb.gradeable_cells, "auto_fail_cells": sb.auto_fail_cells,
-                "cases": n_cases,
+                "cases": n_cases, "num_shards": args.num_shards,
+                "shard_index": args.shard_index,
+                "cases_file": _rel(cases_path),
+                "malformed_lines_skipped": sb.malformed_lines,
             })
         else:
             ingest_paths = resolve_ingest_paths(ingest_root, benchmark)

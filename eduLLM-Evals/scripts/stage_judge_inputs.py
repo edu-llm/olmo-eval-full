@@ -170,20 +170,30 @@ def classify_cell(rec: "dict | None", check_degenerate: bool) -> "tuple[int, str
     return 0, "", output_str
 
 
-def load_response_index(path: Path) -> "tuple[dict[str, dict], dict[str, int]]":
+def load_response_index(path: Path) -> "tuple[dict[str, dict], dict[str, int], int]":
     """Map Scenario -> record for one shard (first occurrence wins).
 
-    Returns (index, duplicate_counts) where duplicate_counts[sid] is the number of
-    extra rows seen for a scenario beyond the first.
+    Returns (index, duplicate_counts, skipped_lines) where duplicate_counts[sid]
+    is the number of extra rows seen for a scenario beyond the first, and
+    skipped_lines counts malformed JSON lines that were skipped. A single corrupt
+    or truncated line must not abort staging for the whole shard, so bad lines are
+    skipped and surfaced (matching the tolerant readers used elsewhere).
     """
     index: dict[str, dict] = {}
     dupes: dict[str, int] = {}
+    skipped = 0
     with path.open(encoding="utf-8") as f:
-        for line in f:
+        for lineno, line in enumerate(f, 1):
             line = line.strip()
             if not line:
                 continue
-            rec = json.loads(line)
+            try:
+                rec = json.loads(line)
+            except json.JSONDecodeError as e:
+                skipped += 1
+                print(f"WARNING: skipping malformed JSON at {path}:{lineno}: {e}",
+                      file=sys.stderr)
+                continue
             sid = rec.get("Scenario")
             if not sid:
                 continue
@@ -191,7 +201,7 @@ def load_response_index(path: Path) -> "tuple[dict[str, dict], dict[str, int]]":
                 dupes[sid] = dupes.get(sid, 0) + 1
                 continue
             index[sid] = rec
-    return index, dupes
+    return index, dupes, skipped
 
 
 def criteria_for(bank, scenario_id: str) -> list:
@@ -280,7 +290,7 @@ def main(argv: "list[str] | None" = None) -> int:
                 missing_models.append(model)
                 index, dupes = {}, {}
             else:
-                index, dupes = load_response_index(fpath)
+                index, dupes, _skipped = load_response_index(fpath)
             if dupes:
                 per_model_dupes[model] = dupes
 
