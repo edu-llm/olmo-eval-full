@@ -49,6 +49,24 @@ EXCLUSIONS (deterministic)
                        "unresponsive" annotations.
   empty_conversation   `c_h` is empty.
   empty_student_turn   the final student turn has no text.
+  missing_problem_     the math problem itself never appears in the chat. Bridge transcribes
+  statement            live sessions held over a shared whiteboard, and the worksheet was
+                       never captured, so many rows read "Here comes the question. / Is that
+                       your final answer? / yes" -- a tutor is asked to diagnose an error
+                       without being told what was asked. The ids come from
+                       data/Bridge/visual_exclusions.json, so the build stays deterministic;
+                       that file was produced once by scripts/audit_bridge_visuals.py and is
+                       committed rather than recomputed. See its `not_excluded_yet` key for
+                       two related groups (explicit figure pointers, labelled options) that
+                       are still IN the bank pending a separate decision.
+
+SCENARIO ID STABILITY: ids are assigned over every row that survives the deterministic
+checks, BEFORE the exclusion list is applied, so the ids of surviving scenarios never move
+when the list changes. `criterion_ids` follow the scenario id, so the response runs in
+bridge-modelresps/ and the pilot judgments in staging/ stay joinable. The consequence is
+that `bridge_NNNN` ids are intentionally NON-CONTIGUOUS. The canonical error module and the
+`error_types` provenance are likewise computed over all surviving rows including excluded
+ones, so a survivor's criterion set does not depend on what the list happens to contain.
 
 FLAGGED, NOT EXCLUDED -- `visible_mistake`: false when the final student turn is a bare
 acknowledgment ("yes", "no", "done", ...) AND no digit appears anywhere in the
@@ -126,6 +144,9 @@ from datasets import load_dataset
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "data" / "Bridge"
+# Scenario ids whose problem statement lives only on the session's whiteboard. Committed
+# alongside the bank so this build takes no API call; see the module docstring.
+EXCLUSIONS_PATH = OUT_DIR / "visual_exclusions.json"
 
 HF_DATASET = "rose-e-wang/bridge"
 SOURCE_URL = "https://huggingface.co/datasets/rose-e-wang/bridge"
@@ -504,6 +525,22 @@ def scenario_id(index: int) -> str:
     return f"bridge_{index:04d}"
 
 
+def load_visual_exclusions() -> dict[str, str]:
+    """Map scenario_id -> drop reason, from the committed exclusion list.
+
+    Absent file means no exclusions -- the bank then rebuilds to its pre-exclusion state,
+    which is the intended way to undo the cut. Each entry carries its own reason so the
+    rounds stay distinguishable in dropped.jsonl.
+    """
+    if not EXCLUSIONS_PATH.is_file():
+        return {}
+    doc = json.loads(EXCLUSIONS_PATH.read_text(encoding="utf-8"))
+    return {
+        row["scenario_id"]: row.get("reason", "visual_exclusion")
+        for row in doc.get("excluded", [])
+    }
+
+
 def join_turns(turns: list[dict] | None) -> str:
     """Join a list of message bubbles into one text block (one bubble per line)."""
     return "\n".join((t.get("text") or "").strip() for t in (turns or []) if (t.get("text") or "").strip())
@@ -589,7 +626,9 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
             c_id = row.get("c_id")
 
             def drop(reason: str) -> None:
+                # scenario_id is null here: these rows fail before ids are assigned.
                 dropped.append({
+                    "scenario_id": None,
                     "source_id": c_id,
                     "native_split": native_split,
                     "error_type": row.get("e"),
@@ -632,10 +671,22 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
 
     scenarios: list[dict] = []
     rubrics: list[dict] = []
+    excluded = load_visual_exclusions()
 
+    # Enumerate over EVERY staged row so ids do not shift when the exclusion list changes;
+    # excluded rows are skipped after their id is known. See the docstring on id stability.
     for index, item in enumerate(staged):
         row = item["row"]
         sid = scenario_id(index)
+        if sid in excluded:
+            dropped.append({
+                "scenario_id": sid,
+                "source_id": item["c_id"],
+                "native_split": item["native_split"],
+                "error_type": item["error_type"],
+                "reason": excluded[sid],
+            })
+            continue
         lesson_topic = row.get("lesson_topic")
         band = grade_band(lesson_topic)
         domain = topic_domain(lesson_topic)

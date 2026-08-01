@@ -1,0 +1,614 @@
+{
+  "_comment": "Second pass over scenarios the first audit flagged. Asks whether the student's error is diagnosable from the visible text alone, which is the question that decides inclusion; the first pass asked only whether a figure was referenced.",
+  "classifier": "openai-group/gpt-5.5",
+  "salvage": [
+    {
+      "scenario_id": "bridge_0000",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The question asks for an area, but the student answered with a linear unit, 4 m, instead of square units."
+    },
+    {
+      "scenario_id": "bridge_0203",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student is describing a property of shapes having/not having 4 angles instead of explaining that decomposing shapes means breaking a larger shape into smaller shapes."
+    },
+    {
+      "scenario_id": "bridge_0208",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student wrote “spear,” which is not the geometric shape term; they likely meant “sphere.”"
+    },
+    {
+      "scenario_id": "bridge_0245",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student answered with the measurement type, 'length,' instead of a unit marked on the ruler, such as inches or centimeters."
+    },
+    {
+      "scenario_id": "bridge_0269",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student described the shape as 'like a kite' instead of identifying where the line of symmetry is."
+    },
+    {
+      "scenario_id": "bridge_0307",
+      "diagnosable": true,
+      "confidence": "medium",
+      "the_error": "The student wrote “spear,” which is not the correct geometric shape term; they likely meant “sphere.”"
+    },
+    {
+      "scenario_id": "bridge_0396",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student described the shape as 'like a kite' instead of identifying where the line of symmetry is."
+    },
+    {
+      "scenario_id": "bridge_0413",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student gave a length unit (4 m) for an area question; area should be in square units, such as m²."
+    },
+    {
+      "scenario_id": "bridge_0418",
+      "diagnosable": true,
+      "confidence": "medium",
+      "the_error": "The student answered a 'why' question with the bare number 23, which does not explain why 5 appears in the x column."
+    },
+    {
+      "scenario_id": "bridge_0517",
+      "diagnosable": true,
+      "confidence": "high",
+      "the_error": "The student gave a bare number, 23, instead of explaining why 5 appears in the x column despite the pattern counting by twos."
+    },
+    {
+      "scenario_id": "bridge_0605",
+      "diagnosable": true,
+      "confidence": "medium",
+      "the_error": "The student appears to say the first factor is 147, which contradicts the tutor’s statement that the first factor is 7."
+    }
+  ],
+  "cut": [
+    {
+      "scenario_id": "bridge_0012",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0018",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0025",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0038",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0039",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0040",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0048",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0064",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0075",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0076",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0097",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0100",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0112",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0121",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0136",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0146",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0149",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0150",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0162",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0168",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0186",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0187",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0191",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0192",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0195",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0197",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0199",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0201",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0210",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0222",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0237",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0238",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0241",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0244",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0257",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0275",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0285",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0290",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0296",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0298",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0306",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0309",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0314",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0315",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0327",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0329",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0330",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0335",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0345",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0354",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0357",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0388",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0399",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0400",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0423",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0430",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0441",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0450",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0459",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0463",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0467",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0473",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0477",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0484",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0488",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0491",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0493",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0497",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0507",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0514",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0518",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0525",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0527",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0528",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0536",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0537",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0546",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0562",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0568",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0578",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0583",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0602",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0603",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0604",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0615",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0620",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0630",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0632",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0634",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    },
+    {
+      "scenario_id": "bridge_0637",
+      "diagnosable": false,
+      "confidence": "high",
+      "the_error": ""
+    }
+  ]
+}
