@@ -42,17 +42,19 @@ Mapping (Bridge field -> schema field):
     lesson_topic           -> lesson_topic, and derives grade_band + topic_domain
     <HF split>             -> native_split            (provenance; `split` is the pipeline role)
 
-EXCLUSIONS (deterministic)
---------------------------
+EXCLUSIONS -- deterministic
+---------------------------
   no_clear_mistake     `e` is not one of the six clean error types -- these are the
                        free-text "the student did not make a mistake" / "end session" /
                        "unresponsive" annotations.
   empty_conversation   `c_h` is empty.
   empty_student_turn   the final student turn has no text.
-EXCLUSIONS (audited; ids committed, so the build still takes no API call)
-------------------------------------------------------------------------
-Both files below were produced once by an audit script and are committed rather than
-recomputed. Deleting one undoes exactly that audit's cut and leaves the others standing.
+
+EXCLUSIONS -- audited (ids committed, so the build still takes no API call)
+---------------------------------------------------------------------------
+700 source rows -> 528 dropped -> 172 scenarios. Each file below was produced once by an
+audit script and is committed rather than recomputed, so deleting one undoes exactly that
+audit's cut and leaves the others standing.
 
 data/Bridge/visual_exclusions.json -- scripts/audit_bridge_visuals.py
   missing_problem_     the math problem itself never appears in the chat. Bridge transcribes
@@ -72,6 +74,16 @@ data/Bridge/item_exclusions.json -- scripts/audit_bridge_items.py
                        label, which is why the free-text `no_clear_mistake` filter missed them.
   not_mathematics      the graded turn is session admin or tool talk, not a maths task.
   not_gradeable        the error exists but is not recoverable from the visible text.
+
+data/Bridge/verify_exclusions.json -- scripts/verify_bridge_items.py
+  failed_adversarial_  three lenses per scenario, each told to assume the item is unfit and
+  verification         prove it; a majority disqualifies. This is the only pass that measured
+                       RECALL -- every earlier one hunted for bad items and acted on what it
+                       found, never putting the survivors on trial. Dominant defects: gold
+                       keys that state wrong mathematics (bridge_0342 answers a 5-sided shape
+                       with "the prefix for 5 sides is hexa"), malformed tutor questions, gold
+                       keys corrupted with the student's next reply, and error-module criteria
+                       that require building on partial work the transcript never shows.
 
 SCENARIO ID STABILITY: ids are assigned over every row that survives the deterministic
 checks, BEFORE the exclusion list is applied, so the ids of surviving scenarios never move
@@ -103,9 +115,12 @@ Kept scenarios receive a VARIABLE criterion set assembled from four tiers:
 
     core                    every scenario                     (16 criteria)
     error-type module       canonical per conversation         (2-3 criteria)
-    topic-domain module     `lesson_topic` keywords, then the  (1-2 criteria)
-                            per-scenario override list
     grade-band module       keyed on the `lesson_topic` grade  (1 criterion)
+
+giving 19-20 criteria per scenario, 7 of them `critical`. The topic-domain tier that used to
+sit between the error and grade modules is RETIRED IN FULL -- see RETIRED_CODES for the
+measurements that decided it. `topic_domain` survives as scenario metadata and still records
+the per-scenario corrections in topic_overrides.json, but attaches no criterion.
 
 TOPIC GATE CAVEAT: `lesson_topic` names the LESSON a session belongs to, not what the graded
 turn asks, and a multi-turn dialogue routinely drills down into an arithmetic sub-step. A
@@ -172,7 +187,12 @@ OUT_DIR = ROOT / "data" / "Bridge"
 # records one audit; see the module docstring for what each found.
 #   visual_exclusions.json  the problem statement lives only on the session whiteboard
 #   item_exclusions.json    the graded turn has no gradeable error at all
-EXCLUSION_PATHS = (OUT_DIR / "visual_exclusions.json", OUT_DIR / "item_exclusions.json")
+#   verify_exclusions.json  a majority of adversarial lenses disqualified the item
+EXCLUSION_PATHS = (
+    OUT_DIR / "visual_exclusions.json",
+    OUT_DIR / "item_exclusions.json",
+    OUT_DIR / "verify_exclusions.json",
+)
 # Per-scenario topic_domain corrections. The keyword gate reads `lesson_topic`, which names
 # the lesson rather than the graded turn; these are the rows where that diverged.
 TOPIC_OVERRIDES_PATH = OUT_DIR / "topic_overrides.json"
@@ -184,7 +204,10 @@ SPLIT = "calibration"   # pipeline-role label (matches TutorBench/InFoBench), no
 USE_CASE = "mistake_remediation"   # unknown to respgen -> falls back to the adaptive_
                                    # explanation system prompt, which preserves multi-turn
 SUBJECT = "mathematics"
-VERSION = "5.0"   # 5.0 = per-item audit: 50 more scenarios excluded (no gradeable error;
+VERSION = "6.0"   # 6.0 = adversarial verification: 67 more excluded (wrong gold maths,
+                  #       malformed questions, unanswerable criteria), Tier 3 retired
+                  #       whole, D1 reworded so a Socratic reply can pass
+                  # 5.0 = per-item audit: 50 more scenarios excluded (no gradeable error;
                   #       see item_exclusions.json) and 83 topic_domain corrections
                   #       (see topic_overrides.json)
                   # 4.0 = 353 scenarios excluded (the problem statement was never captured;
@@ -233,9 +256,19 @@ Criterion = tuple[str, str, list[str], str, str, str, str]
 # resting on one criterion text apiece.
 # ---------------------------------------------------------------------------
 CORE_CRITERIA: list[Criterion] = [
+    # PILOT: experts 0.255 vs models 0.456 -- the rubric's clearest anti-expert criterion
+    # before rewording. Bridge's expert tutors overwhelmingly answer a wrong value with
+    # "Can you explain how you got 21?", which locates the error precisely without naming
+    # it; the old wording ("correctly identifies the specific error") read that as a miss and
+    # rewarded models that announce a diagnosis instead. Targeting is the construct, naming
+    # is one way to do it, and a generic "try again" still fails.
     ("D1", "diagnosis", ["diagnosis"], "critical", "objective",
-     "The response correctly identifies the specific error the student made.",
-     "Locating the student's actual error is a pure diagnosis act."),
+     "The response engages with the student's specific error: it either names the error, or "
+     "directs the student to the exact step, quantity or claim that went wrong (for example "
+     "by asking them to explain or recheck that particular point). A generic prompt to try "
+     "again or check their work, with no indication of where the problem lies, does not.",
+     "Locating the student's actual error is a pure diagnosis act, whether the tutor states "
+     "it or points the student at it."),
     ("D2", "diagnosis", ["diagnosis"], "critical", "objective",
      "The response addresses the student's real mistake and does not invent or correct an "
      "error the student did not make.",
@@ -536,12 +569,23 @@ CRITERION_BY_CODE = {c[0]: c for c in ALL_CRITERIA}
 # from the middle of ALL_CRITERIA would renumber every code after it. `validate()` exempts
 # these from the "never attached" check.
 #
-#   B1  data-display reading. Its gate (see TOPIC_KEYWORDS) keyed on `lesson_topic`, which
-#       names the lesson rather than the graded turn, so it attached to arithmetic questions
-#       inside graph lessons. After the visual cut only 6 scenarios carried it and 4 of those
-#       were arithmetic or fraction addition, leaving too little signal to be worth a
-#       mis-targeted criterion.
-RETIRED_CODES = {"B1"}
+#   TIER 3 IN FULL -- B1, V1, V2, F1, N1, U1, X1, Z1, O1. The whole topic tier is retired.
+#   Its gate proved unreliable twice (it keys on `lesson_topic`, which names the lesson and
+#   not the graded turn; a "Bar Graphs" lesson ends on "12 - 1", and 83 of 289 scenarios
+#   needed a hand correction). More decisively, the census pilot over all 239 scenarios found
+#   7 of its 8 live criteria defective on at least one measure:
+#
+#       V1  disc 0.074, length-bias +0.291        N1  ceiling 0.954
+#       V2  experts -0.181                        U1  clean -- the only one
+#       F1  length-bias +0.332, experts -0.179    X1  ceiling 0.963, experts -0.263
+#       Z1  disc 0.182, experts -0.475            O1  disc 0.123, experts -0.345
+#
+#   Five of the eight criteria the human experts fail more often than the models were Tier 3,
+#   as were two of the three worst length-biased. The core and error-module criteria are by
+#   contrast healthy and expert-neutral (D2 disc 0.720, P2 0.789, D3 0.783, all within 0.02
+#   of the experts). Keeping U1 alone would mean retaining an unreliable routing layer for
+#   one criterion, so the tier goes whole. `topic_domain` survives as scenario metadata.
+RETIRED_CODES = {"B1", "V1", "V2", "F1", "N1", "U1", "X1", "Z1", "O1"}
 
 # Which tier each code came from -- written onto the rubric as `applicability`.
 TIER_OF_CODE: dict[str, str] = {
@@ -663,6 +707,7 @@ def applicable_codes(error_module: str, domain: str, band: str) -> list[str]:
     codes.update(c[0] for c in ERROR_MODULES[error_module])
     codes.update(c[0] for c in TOPIC_MODULES[domain])
     codes.update(c[0] for c in GRADE_MODULES.get(band, GRADE_MODULES["4-5"]))
+    codes -= RETIRED_CODES      # retired codes keep their bank slot but attach to nothing
     return [code for (code, *_rest) in ALL_CRITERIA if code in codes]
 
 

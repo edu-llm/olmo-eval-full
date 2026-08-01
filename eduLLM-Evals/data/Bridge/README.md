@@ -10,11 +10,11 @@ Built by [`scripts/ingest_bridge.py`](../../scripts/ingest_bridge.py). The recor
 `difficulty` / `discrimination`: those are calibrated from real judge responses, and until
 that fit exists the bank stays parameter-free rather than carrying synthetic stand-ins.
 
-**Current artifact: 239 scenarios · 4,861 criteria · bank of 39 · 20–22 criteria per
-scenario.**
+**Current artifact: 172 scenarios · 3,285 criteria · 30 live criteria of a 39-slot bank ·
+19–20 criteria per scenario, 7 of them `critical`.**
 
-> **⚠️ 403 of the original 642 scenarios were removed.** 353 because the problem statement
-> is missing, then 50 more because the graded turn has no gradeable error at all. Bridge
+> **⚠️ 470 of the original 642 scenarios were removed, and the topic tier retired.** Four
+> audits, each finding what the last one missed — see [Audit trail](#audit-trail). Bridge
 > transcribes live sessions held over a shared whiteboard, and the worksheet was never
 > captured. On 55% of the bank that left transcripts like *"Here comes the question. / Is
 > that your final answer? / yes"* — a tutor asked to diagnose an error without being told
@@ -39,6 +39,46 @@ scenario.**
 **Bridge is math-only.** Every `lesson_topic` is a TEKS math code (`grade.standard.Topic`),
 spanning grades 1–8 plus a few Algebra 2 rows. A θ estimated on Bridge is *math-tutoring*
 ability, not general tutoring ability.
+
+## Audit trail
+
+Four passes, each finding what the previous one missed. The pattern is worth stating because
+it is the reason for the last one: every pass but the final one asked whether an item *looked*
+sound, which measures precision and says nothing about recall.
+
+| # | pass | found | removed |
+|---|---|---|---:|
+| — | Bridge's own free-text filter | `e` is "no mistake" / "end session" | 58 |
+| 1 | [`audit_bridge_visuals.py`](../../scripts/audit_bridge_visuals.py) | the problem statement lives only on the session whiteboard | 263 |
+| 2 | same, second round | a figure is referenced and the error is unreadable without it | 90 |
+| 3 | [`audit_bridge_items.py`](../../scripts/audit_bridge_items.py) | the graded turn has no gradeable error; 83 wrong topic labels | 50 |
+| 4 | [`verify_bridge_items.py`](../../scripts/verify_bridge_items.py) | **adversarial** — wrong gold maths, malformed questions, unanswerable criteria | 67 |
+
+**700 → 172.** The single most consequential fact about Bridge is that it transcribes live
+sessions held over a **shared whiteboard that was never saved**, so most of what the tutor and
+student were looking at is simply absent. That is not a packaging problem; the visual was
+never digitised, and no amount of re-ingesting recovers it.
+
+Pass 4 is the only one that measured recall, by inverting the burden of proof: three lenses
+per scenario, each told to assume the item is unfit and prove it, majority of three required.
+It found a defect class none of the first three looked for — **gold keys that state wrong
+mathematics**. The judge is *shown* the reference, and the pilot separately established that
+showing it makes the judge more lenient, so a wrong reference actively misleads grading:
+
+> `bridge_0342` — the student answers **"hexagon"** for a five-sided shape, and the expert's
+> gold reply says *"Try that again! The prefix for 5 sides is **hexa**."* It confirms the wrong
+> answer and teaches the wrong prefix.
+
+Others: *"a rectangle has two equal sides and two equal angles"*; speed's "formula" given as
+*miles per hour*; commutativity offered as an *inverse* operation; `0.621 × 1000` given as
+`6210`; and a gold key containing the student's next reply pasted after the tutor's.
+
+**Two things the audits deliberately did NOT change.** The expert `error_module` annotation was
+contradicted on 142 scenarios, but 54 of those push `right_idea`/`careless` toward `guess`,
+which is exactly what the missing whiteboard produces — the expert saw the student's working
+and a text-only reader cannot. The labels stand. Separately, the first version of the
+adversarial lenses disqualified `bridge_0000` unanimously, an item deliberately kept in pass 2;
+both settled points are now stated in that prompt so the instrument stops re-litigating them.
 
 ## The 5 skills (q-matrix axis)
 
@@ -90,38 +130,49 @@ A3 not discouraging · A4 safe to be wrong.
 | `careless` | `careless` | S1, S2 |
 | `imprecise` | `imprecise` | I1, I2 |
 
-### Tier 3 — topic-domain modules (first keyword match wins)
+### Tier 3 — topic-domain modules · **RETIRED IN FULL**
 
-Seven domains; `data_graphing` was **retired** — see [Retired criteria](#retired-criteria).
-
-| Domain | Code(s) | Scenarios |
-|--------|---------|-----------|
-| `geometry_spatial` | V1, V2 | 49 |
-| `operations_arithmetic` | O1 | 105 |
-| `place_value_number` | N1 | 44 |
-| `measurement_conversion` | U1 | 19 |
-| `fractions` | F1 | 7 |
-| `proportional_reasoning` | Z1 | 5 |
-| `algebra_expressions` | X1 | 10 |
+All eight codes (V1, V2, F1, N1, U1, X1, Z1, O1, plus B1) are retired. See
+[Retired criteria](#retired-criteria) for the measurements. `topic_domain` survives as
+scenario metadata but attaches no criterion, so the tier list below is provenance only.
 
 ### Tier 4 — grade-band module
 
-`Y1` (grades 1-3, 75) · `Y2` (4-5, 133) · `Y3` (6-12, 31). Derived from the TEKS prefix
+`Y1` (grades 1-3, 56) · `Y2` (4-5, 95) · `Y3` (6-12, 21). Derived from the TEKS prefix
 (`3.6B…` → grade 3; `A2.7D…` → secondary).
 
 ## Retired criteria
 
-`B1` (data-display reading) is **kept in the bank list but attached to nothing**, so
+Nine of the 39 bank slots attach to nothing. They are **kept in the bank list** so
 `CODE_INDEX` — and therefore every existing `criterion_id` — is unchanged; removing an entry
-from the middle of the bank would renumber every code after it. `validate()` exempts retired
-codes from the "never attached" check and asserts they stay unattached.
+from the middle would renumber every code after it. `validate()` exempts retired codes from
+the "never attached" check and asserts they stay unattached.
 
-Its gate keyed on `lesson_topic`, which names the lesson rather than the graded turn. After
-the visual cut only 6 scenarios carried it, and **four of those were arithmetic or fraction
-addition** — `5+1+3+8+12+4+6`, `1/8+2/4+6/8+2/2+5/8` — inside lessons *titled* "Bar Graphs"
-or "Line Plots with Fractions". B1 asks whether the response misreads a scale, key or axis,
-which is unanswerable when no data display is involved. Dropping the gate lets those rows
-route on their actual content: the two fraction ones now draw `F1`, the other four `O1`.
+**The whole of Tier 3.** Its gate keys on `lesson_topic`, which names the *lesson* rather
+than the graded turn — a lesson titled "Bar Graphs" ends on `12 − 1`, and 83 of 289 scenarios
+needed a hand correction. More decisively, the census pilot over all 239 scenarios found
+7 of its 8 live criteria defective:
+
+| code | domain | pass | disc | length-bias | experts − models | verdict |
+|---|---|---:|---:|---:|---:|---|
+| `V1` | geometry | 0.635 | **0.074** | **+0.291** | −0.105 | no discrimination, rewards length |
+| `V2` | geometry | 0.936 | 0.513 | +0.194 | **−0.181** | anti-expert |
+| `F1` | fractions | 0.464 | 0.331 | **+0.332** | **−0.179** | rewards length, anti-expert |
+| `N1` | place value | **0.954** | 0.317 | +0.000 | −0.022 | ceiling |
+| `U1` | measurement | 0.934 | 0.486 | +0.000 | −0.092 | *clean — the only one* |
+| `X1` | algebra | **0.963** | 0.329 | +0.000 | **−0.263** | ceiling, anti-expert |
+| `Z1` | proportional | 0.675 | **0.182** | +0.000 | **−0.475** | weak, worst anti-expert |
+| `O1` | operations | 0.688 | **0.123** | +0.171 | **−0.345** | weak, anti-expert |
+
+Five of the eight criteria human experts fail more often than models were Tier 3, as were two
+of the three worst length-biased. The core and error-module criteria are by contrast healthy
+and expert-neutral (D2 disc 0.720, P2 0.789, D3 0.783, all within 0.02 of the experts). So the
+damage was concentrated in one tier, and keeping U1 alone would have meant retaining an
+unreliable routing layer for a single criterion.
+
+**`B1`** (data-display reading) was retired earlier for the same gating defect: after the
+visual cut only 6 scenarios carried it and four of those were arithmetic or fraction addition
+inside lessons merely *titled* "Bar Graphs".
 
 ## Per-item audit — what each turn actually asks
 
@@ -186,7 +237,7 @@ discarded labels remain in `error_types` for provenance.
 **2. One scenario per row — `source_id` is deliberately non-unique.** Every surviving row
 becomes its own scenario, so each expert's revision stays a separate item and nothing is
 merged away. The consequence is real and must be handled downstream: 178 scenarios share a
-conversation with at least one other (163 unique conversations across 239 scenarios), and
+conversation with at least one other (126 unique conversations across 172 scenarios), and
 those repeats have an identical stimulus *and* an identical criterion set,
 differing only in `reference_solution`. That is perfect local dependence, and the judge sees
 a different gold key for each copy — so the same item can acquire two difficulties. **Group
@@ -213,10 +264,11 @@ the pilot below showed negative form inflates pass rates, so six were rewritten.
 | `no_error_present` | 20 | the student is correct, acknowledging, or ending the session |
 | `not_mathematics` | 18 | the graded turn is session admin or tool talk |
 | `not_gradeable` | 12 | the error is real but not recoverable from the visible text |
+| `failed_adversarial_verification` | 67 | a majority of three adversarial lenses disqualified it |
 | `no_clear_mistake` | 56 | `e` is free text ("no mistake" / "end session" / "unresponsive") |
 | `empty_student_turn` | 2 | final student turn has no text |
 
-700 source rows → 461 dropped → **239 scenarios**. All drops are logged to `dropped.jsonl`
+700 source rows → 528 dropped → **172 scenarios**. All drops are logged to `dropped.jsonl`
 with a reason; the two deterministic reasons carry a null `scenario_id` because they fail
 before ids are assigned.
 
@@ -263,9 +315,14 @@ under `not_excluded_yet` in [`visual_exclusions.json`](visual_exclusions.json):
 
 ### `visible_mistake` — flagged, not excluded
 
-**2 scenarios (42 criteria) carry `visible_mistake: false`.** Their final student turn
-is a bare acknowledgment ("yes", "done", "no", …) **and** no digit appears anywhere
-in the conversation, so the transcript is only tutor turns plus an assent:
+**No scenario now carries `visible_mistake: false`** — all 91 were removed by the audits, 82
+of them because the problem statement was missing rather than for the affective reason the
+flag was built to catch. That is itself a finding: the flag was largely detecting a
+missing-context defect, not an unremediable-assent one. The ingester still computes it, so a
+future re-inclusion would carry it.
+
+The flag fires when the final student turn is a bare acknowledgment ("yes", "done", …) **and**
+no digit appears anywhere in the conversation, leaving only tutor turns plus an assent:
 
 ```
 [tutor]   You are doing a good job.
@@ -274,18 +331,8 @@ in the conversation, so the transcript is only tutor turns plus an assent:
 [student] "yes"          ← the "mistake"
 ```
 
-There is no student position to remediate, so D1/D2 (**both `critical`**) are effectively
-unpassable and will read as floor items. They are **kept** so the bank stays complete, and
-flagged so a calibration run can filter or model them explicitly — `[s for s in scenarios if
-s["visible_mistake"]]` gives the 237 with a remediable error.
-
-This group shrank from 91 to 2 across the cuts, and that overlap is worth
-reading: **82 of the original 91 were also flagged as missing their problem statement.**
-The flag was largely detecting a missing-context defect, not an affective one.
-
-Bare acknowledgments **with** a digit somewhere are `visible_mistake: true`: the student's
-answer is recoverable from an earlier turn or the tutor's restatement, or the assent is
-itself the wrong answer to a yes/no question.
+There is no student position to remediate, so D1/D2 (**both `critical`**) are unpassable.
+`[s for s in scenarios if s["visible_mistake"]]` now returns all 172.
 
 ## Criterion ids
 
@@ -325,107 +372,89 @@ one, so the `use_case` path never fires. The multi-turn context is preserved eit
 > asks for nothing. The expectation was that all three would sit at ceiling. The pilot below
 > shows only A1 does — being *told* to identify the error turns out not to mean models do it.
 
-## Pilot validation
+## Pilot validation — measured on the whole bank
 
-The criterion wording was tuned against a real judging run rather than by argument.
-**8 tutors spanning `gpt-4.1-nano` → `claude-opus-4-8` × 100 stratified scenarios = 790
-graded responses / ~16,200 criterion judgments**, using the production Bridge system prompt
-and `gpt-5.5` as judge. Harness and full report: `staging/bridge_pilot/`.
+The rubric was tuned against real judging runs rather than by argument, and re-measured after
+every change to the bank. The current figures are a **census, not a sample**: all 172
+scenarios × 8 tutors spanning `gpt-4.1-nano` → `claude-opus-4-8` = **1,376 graded responses /
+26,280 criterion judgments**, judge `gpt-5.5`, production Bridge system prompt. Harness:
+[`staging/bridge_pilot/pilot.py`](../../staging/bridge_pilot/pilot.py) with
+`BRIDGE_PILOT_DIR` / `BRIDGE_PILOT_N=all`; report in `staging/bridge_pilot_v6/`.
 
-`discrimination` below is the corrected item–total correlation (how well a criterion tracks
-overall response quality, self excluded). Healthy = pass rate between 0.05 and 0.95 with
-discrimination ≥ 0.20; outside that a criterion carries little information for calibration.
+Sampling was abandoned once the bank got small: a 100-scenario draw would have left the
+conditional criteria with a handful of observations each.
 
-| | baseline | after tuning |
-|---|---|---|
-| at ceiling (pass ≥ 0.95) | 8 | **1** |
-| at floor (pass ≤ 0.05) | 0 | **0** |
-| no discrimination (< 0.10) | 4 | 6 |
-| strong (discrimination ≥ 0.30) | 17 | **21** |
-| **healthy overall** | 23 / 39 | **28 / 39** |
+### Where it stands
 
-Three findings overturned the design assumptions:
+| | 642-bank sample | 239-bank census | **172-bank census** |
+|---|---|---|---|
+| healthy criteria | 27 / 39 | 22 / 36 | **17 / 30** |
+| at ceiling (≥0.95) | 4 | 8 | **9** |
+| at floor | 0 | 0 | **0** |
+| discrimination ≥0.30 | 21 | 24 | **20** |
+| model spread | 0.699–0.788 | 0.808–0.931 | **0.842–0.960** |
+| experts − models | +0.052 | **−0.047** | **+0.031** |
+| criteria experts fail more | 3 | 8 | **1** |
 
-1. **D1 and P1 are among the best items, not freebies.** Despite the system prompt naming
-   them, D1 passes only 0.218 (discrimination 0.499) and P1 0.594 (0.629). Only **A1** is
-   the dead weight that was predicted (0.914 / 0.091).
-2. **Negative wording did inflate pass rates** — 0.866 mean vs 0.646 for positive-form
-   criteria. Six codes were rewritten toward a positive, specific demand; negative-form
-   codes went 19 → 13.
-3. **The sibling criteria are NOT redundant.** Highest within-family correlation is P2–P4 at
-   phi 0.538; C1–C3 is 0.079. A1–A4 top out at 0.347. Nothing approaches the 0.7 threshold,
-   so the four affective / four strategy / four math criteria measure distinct things.
+**Model separation and validity both improved; item difficulty is the cost.** Removing
+unanswerable items raised every pass rate, so more criteria drifted to ceiling — 9 of 30. The
+ordering is now correct (`claude-opus-4-8` 0.960 and `gpt-5.5` 0.943 on top; on the 642 bank
+`gpt-4.1-nano` outscored `gpt-4o`).
+
+### The expert check, which is the one that matters
+
+Grading Bridge's own `reference_solution` — what a real expert tutor actually wrote — as if a
+model had produced it. A criterion the experts fail is far more likely to be a bad criterion
+than a bad expert.
+
+On the 239-scenario bank this **regressed**: models 0.836 against experts 0.789, so the rubric
+ranked eight AI tutors above human teachers, with 8 criteria failed more often by the experts.
+Two things caused it, and both are now fixed:
+
+- **Tier 3** supplied five of those eight criteria. Retired in full (above).
+- **D1** asked the tutor to *identify* the error. Bridge's experts answer a wrong value with
+  *"Can you explain how you got 21?"* — which locates the error precisely without naming it,
+  and the old wording scored that as a miss. D1 now credits directing the student to the exact
+  step that went wrong; a generic "try again" still fails. Its discrimination **rose** with the
+  rewording, 0.333 → **0.548**.
+
+Result: **experts 0.915 against models 0.884 (+0.031)**, and the list of criteria the experts
+fail more often is down from 8 to **one**.
+
+### The one remaining: A1
+
+`A1` (conveys some encouragement) sits at pass 0.850, discrimination **−0.042**, experts
+−0.269. Real expert tutors frequently skip encouragement entirely and get straight to the
+maths, so this is arguably a genuine difference in style rather than a defect — but a
+criterion with negative discrimination is measuring nothing either way.
 
 ### Criteria still carrying little information
 
-| code | pass rate | disc | note |
-|---|---|---|---|
-| `A3` | 0.996 | 0.011 | **kept deliberately** — a tutor demeaning a child *is* a critical failure, so this stays as a safety tripwire. Exclude it from an IRT fit rather than delete the only check on it. |
-| `P3` | 0.881 | 0.007 | two rewrites failed to move it; overlaps P1 conceptually |
-| `F1` | 0.143 | 0.029 | variance recovered after an overcorrection, but discrimination did not |
-| `A1` | 0.914 | 0.091 | named verbatim by the system prompt |
-| `S1` | 0.863 | 0.092 | `critical` |
-| `D5` | 0.596 | 0.093 | good variance, weak discrimination |
+| code | pass | disc | note |
+|---|---:|---:|---|
+| `A1` | 0.850 | −0.042 | above; named verbatim by the system prompt |
+| `D5` | 0.838 | −0.028 | two rewrites have failed to move it |
+| `A4` | 0.996 | −0.015 | ceiling |
+| `A3` | 0.997 | 0.020 | **kept deliberately** — a tutor demeaning a child *is* a critical failure, so this stays as a safety tripwire. Exclude it from an IRT fit rather than delete the only check on it. |
+| `P3` | 0.820 | 0.107 | overlaps P1 conceptually |
+| `S1` | 0.879 | 0.124 | `critical` |
 
-### Validation against Bridge's own experts
+> **⚠️ The `affective` dimension has no informative pure anchor.** Its three pure-loading
+> criteria are A1 (−0.042), A3 (0.020) and A4 (−0.015) — all three at or below zero
+> discrimination. Only A2 (0.443) carries signal, and it is not pure. A confirmatory M2PL will
+> struggle to identify this dimension from the data; treat any `affective` θ with suspicion
+> until the criteria are rewritten.
 
-The strongest check available without human raters: grade each scenario's
-`reference_solution` — what a **real expert tutor actually wrote** — as if a model had
-produced it. A criterion the experts fail is far more likely to be a bad criterion than a
-bad expert.
+**The strongest items** are the diagnosis and strategy core: P2 0.768, C3 0.708, M3 0.701,
+D2 0.674, D3 0.667, S2 0.593 — all with healthy variance and all within 0.02 of the experts.
 
-The first run failed that check.
+### Length bias
 
-| | mean pass rate |
-|---|---|
-| 8 AI tutors | 0.669 |
-| Human experts | 0.681 |
-
-**A tie.** Expert tutors scored no better than `gpt-4.1-nano`. Six criteria — A1, A2, A4,
-C1, X1, Y3 — were failed *more often by the experts than by the models*, A4 by 0.456.
-
-The cause was measurable: **expert replies have a median length of 83 characters; model
-replies 380 (4.3×)**. Real expert tutoring reads like
-
-> *"Great try! Can you explain how you got 21?"*  ·  *"Let's recheck your answer. Count up
-> the sides again."*
-
-Excellent tutoring — brief, targeted, hands the thinking back. But it never pauses to signal
-psychological safety (A4), perform warmth (A1) or lay out a chain of reasoning (C1), so it
-failed all three. **The rubric was partly rewarding verbosity over teaching.**
-
-Those six were reworded so a terse reply can pass — two of them stated negatively, since
-experts establish safety by simply carrying on helpfully rather than announcing it. Result:
-
-| | before | after |
-|---|---|---|
-| experts − models | +0.012 (tie) | **+0.052 (experts ahead)** |
-| criteria experts fail more | 6 | **3** (X1, I2, A1) |
-| healthy criteria | 28/39 | 27/39 |
-| at ceiling | 1 | 4 |
-
-**This was a deliberate trade: validity over item statistics.** Letting brief answers pass
-made those criteria easier for everyone, so ceiling counts rose. A rubric with sharper
-discrimination that ranks chatty models above human teachers is measuring the wrong thing;
-one point of "healthy criteria" is worth that.
-
-Three criteria still favour models — X1 (−0.322), I2 (−0.240), A1 (−0.233). Some of this
-may be genuine rather than a defect: expert tutors really do drop units (I2) and really do
-sometimes skip encouragement entirely (A1). Left as-is and flagged.
-
-**A methodological side finding:** showing the judge a reference answer inflates its
-verdicts substantially — M3 0.870 → 0.570 and P2 0.980 → 0.740 when the reference is hidden.
-The production judge does show it, so grading there is materially more lenient than a blind
-read would be.
-
-**Tuning stopped after three rounds.** Further wording changes fitted to 100 scenarios would
-start tracking sample noise; the real calibration is the definitive read.
-
-> **⚠️ The rubric separates models only weakly.** Mean pass rates span 0.699 → 0.788 across
-> the 8 tutors, and the ordering is partly scrambled (`gpt-4.1-nano` outscored `gpt-4o`).
-> Frontier models do land on top, but a 9-point spread is thin. Removing or fixing the
-> remaining low-information criteria should widen it, since they contribute pass marks
-> almost uniformly.
+Mean length↔pass correlation across 30 criteria: **−0.085**, with 4 flagged beyond ±0.25
+(Y3, S2, Y1, S1) — down from 7 on the previous bank. This is a standing check because the
+rubric was once rewarding verbosity: expert replies have a median length of 83 characters
+against the models' 380, and six criteria originally demanded something a terse reply could
+not produce.
 
 ## Known limitations
 
@@ -438,24 +467,22 @@ start tracking sample noise; the real calibration is the definitive read.
   legitimate alternative remediations, but this has not been validated against Bridge's own
   expert gold replies.
 - **Topic gating is keyword-based** and coarse; `operations_arithmetic` remains a catch-all
-  of 105 scenarios. `lesson_topic` names the **lesson** a session belongs to, not what the
+  of the bank. `lesson_topic` names the **lesson** a session belongs to, not what the
   graded turn asks, so a "Bar Graphs" lesson can hold a plain subtraction question. This
   is what retired `data_graphing`; the same mismatch may affect other strands and has not
   been audited.
-- **Floor items are retained.** The 9 `visible_mistake: false` scenarios (184 criteria)
-  are kept deliberately, but D1/D2 are unpassable on them. Filter on the flag, or expect
-  those items to carry no information.
-- **Duplicate stimuli are retained.** 152 scenarios share a conversation with another and,
+- **Floor items are gone.** The `visible_mistake: false` group is now empty; D1/D2 are
+  answerable on every remaining scenario.
+- **Duplicate stimuli are retained.** 92 scenarios share a conversation with another and,
   byte-identical apart from `reference_solution`. At temperature 0 a
   tutor returns the same response to each, so these rows are near-copies in the response
   matrix while the judge scores them against different gold keys. Group on `source_id`.
-- **⚠️ Tier 3 may not earn its place.** After the topic corrections,
-  `operations_arithmetic` holds **105 of 239 scenarios (44%)** while `fractions` has 7,
-  `proportional_reasoning` 5 and `algebra_expressions` 10. Each instance is still answered by
-  every model, so per-item difficulties remain estimable; what is not estimable is anything
-  about a *strand* resting on 5 stimuli. The corrections did not cause this — they revealed
-  it. Bridge's graded turns are mostly topic-neutral arithmetic sub-steps, so a topic tier has
-  little to gate on. **Retiring Tier 3 entirely is a live option and has not been decided.**
+- **Tier 3 is gone, and that was the right call.** The census pilot found 7 of its 8 live
+  criteria defective: V1 (disc 0.074, length-bias +0.291), V2 (experts −0.181), F1
+  (length-bias +0.332, experts −0.179), N1 (ceiling 0.954), X1 (ceiling 0.963, experts
+  −0.263), Z1 (disc 0.182, experts −0.475), O1 (disc 0.123, experts −0.345). Only U1 was
+  clean, and keeping one criterion did not justify retaining a routing layer whose gate had
+  already proven unreliable twice.
 - **The pilot statistics predate the cut.** Every pass rate and discrimination below was
   measured on a 100-scenario sample of the 642-scenario bank, and roughly 55% of that
   sample no longer exists. Directionally the numbers should hold or improve — the removed
