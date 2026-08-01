@@ -1,0 +1,19 @@
+Dropped 112 constant columns.
+Cleaned dims: 174 733  (col 1 = model id)
+Item columns 2.. 733 ; chunk_ends: 106,211,316,421,526,631,733 
+Fitting chunk cols 2 to 106 ( 105 items )
+Fitting chunk cols 107 to 211 ( 105 items )
+Fitting chunk cols 212 to 316 ( 105 items )
+Fitting chunk cols 317 to 421 ( 105 items )
+Fitting chunk cols 422 to 526 ( 105 items )
+Fitting chunk cols 527 to 631 ( 105 items )
+Fitting chunk cols 632 to 733 ( 102 items )
+Warning message:
+Log-likelihood was decreasing near the ML solution. EM method may be unstable 
+Chunk 2 link: A= 0.991 B= 0.041 
+Chunk 3 link: A= 0.989 B= -0.01 
+Chunk 4 link: A= 1.097 B= -0.113 
+Chunk 5 link: A= 0.955 B= 0.055 
+Chunk 6 link: A= 1.001 B= 0.018 
+Chunk 7 link: A= 1.031 B= 0.13 
+Saved 732 linked items to /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/size_balanced_recal/_work/cache/params_514736756fbb.csv 

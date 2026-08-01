@@ -1,0 +1,10 @@
+source,tag,se_target,mean_items,median_items,pct_items,corr,mae,n_bank_items
+local,local_arc_1pl,0.5,13.69,14.0,1.8,0.7291,0.079,759
+local,local_arc_1pl,0.45,17.77,18.0,2.34,0.8573,0.0713,759
+local,local_arc_1pl,0.4,23.38,23.0,3.08,0.9289,0.0589,759
+local,local_arc_1pl,0.35,31.31,31.0,4.12,0.957,0.0495,759
+local,local_arc_1pl,0.3,43.38,43.0,5.72,0.976,0.05,759
+local,local_arc_1pl,0.25,63.69,63.0,8.39,0.9759,0.0648,759
+local,local_arc_1pl,0.2,100.46,99.0,13.24,0.9772,0.0631,759
+local,local_arc_1pl,0.15,182.0,181.0,23.98,0.9871,0.0597,759
+local,local_arc_1pl,0.12,303.54,298.0,39.99,0.9851,0.0684,759

@@ -1,0 +1,17 @@
+Dropped 121 constant columns.
+Cleaned dims: 72 724  (col 1 = model id)
+Item columns 2.. 724 ; chunk_ends: 106,211,316,421,526,631,724 
+Fitting chunk cols 2 to 106 ( 105 items )
+Fitting chunk cols 107 to 211 ( 105 items )
+Fitting chunk cols 212 to 316 ( 105 items )
+Fitting chunk cols 317 to 421 ( 105 items )
+Fitting chunk cols 422 to 526 ( 105 items )
+Fitting chunk cols 527 to 631 ( 105 items )
+Fitting chunk cols 632 to 724 ( 93 items )
+Chunk 2 link: A= 1.029 B= 0.04 
+Chunk 3 link: A= 0.965 B= 0.028 
+Chunk 4 link: A= 1.008 B= 0.059 
+Chunk 5 link: A= 1.004 B= 0.021 
+Chunk 6 link: A= 1.115 B= 0.152 
+Chunk 7 link: A= 1.121 B= 0.194 
+Saved 723 linked items to /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/size_balanced_recal/_work/cache/params_8ce56709dad3.csv 

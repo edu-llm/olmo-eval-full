@@ -1,0 +1,22 @@
+[ifeval] bank=511 items, held-out=110 models
+[ifeval] SE<=0.3: acc-MAE=0.0503 r=0.921 items=18.2 theta-MAE=0.207
+[ifeval] SE<=0.2: acc-MAE=0.0465 r=0.927 items=43.8 theta-MAE=0.160
+[ifeval] SE<=0.1: acc-MAE=0.0345 r=0.955 items=161.0 theta-MAE=0.070
+[gpqa] bank=579 items, held-out=110 models
+[gpqa] SE<=0.3: acc-MAE=0.0702 r=0.737 items=13.0 theta-MAE=0.407
+[gpqa] SE<=0.2: acc-MAE=0.0661 r=0.757 items=26.1 theta-MAE=0.357
+[gpqa] SE<=0.1: acc-MAE=0.0345 r=0.710 items=154.2 theta-MAE=0.104
+[math] bank=1183 items, held-out=90 models
+[math] SE<=0.3: acc-MAE=0.0245 r=0.878 items=77.3 theta-MAE=0.208
+[math] SE<=0.2: acc-MAE=0.0227 r=0.892 items=100.9 theta-MAE=0.168
+[math] SE<=0.1: acc-MAE=0.0158 r=0.948 items=188.9 theta-MAE=0.097
+[musr] bank=432 items, held-out=110 models
+[musr] SE<=0.3: acc-MAE=0.0951 r=0.746 items=13.6 theta-MAE=0.707
+[musr] SE<=0.2: acc-MAE=0.0909 r=0.770 items=29.6 theta-MAE=0.629
+[musr] SE<=0.1: acc-MAE=0.0752 r=0.893 items=156.2 theta-MAE=0.362
+[bbh] bank=3965 items, held-out=110 models
+[bbh] SE<=0.3: acc-MAE=0.1145 r=0.674 items=8.2 theta-MAE=0.684
+[bbh] SE<=0.2: acc-MAE=0.1118 r=0.677 items=8.8 theta-MAE=0.719
+[bbh] SE<=0.1: acc-MAE=0.1091 r=0.695 items=15.4 theta-MAE=0.711
+
+wrote summaries + figures under /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/atlas_replication and /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures

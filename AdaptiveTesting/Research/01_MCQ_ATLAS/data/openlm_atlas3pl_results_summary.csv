@@ -1,0 +1,6 @@
+benchmark,n_test,n_bank,r,mae,rmse,avg_items,csv,png
+bbh,110,5761,0.7526865174226519,0.03492890491299068,0.049772027866940856,8.072727272727272,bbh/results/bbh_atlas3pl_se0.3.csv,bbh/figures/bbh_atlas3pl_se0.3.png
+gpqa,110,,0.7372981175439822,0.07015016456535231,0.0834290690941532,12.963636363636363,../openlm_gpqa_atlas_3pl/results/openlm_gpqa_atlas3pl_se0.3.csv,../openlm_gpqa_atlas_3pl/figures/openlm_gpqa_atlas3pl_se0.3.png
+ifeval,110,535,0.9214208844866507,0.04810970677656979,0.06703342468983453,9.172727272727272,ifeval/results/ifeval_atlas3pl_se0.3.csv,ifeval/figures/ifeval_atlas3pl_se0.3.png
+math,90,1206,0.8777106871221223,0.024262113333818204,0.04209058835115339,43.82222222222222,math/results/math_atlas3pl_se0.3.csv,math/figures/math_atlas3pl_se0.3.png
+musr,110,754,-0.03626387966688208,0.10863660288971558,0.12238798085676239,8.045454545454545,musr/results/musr_atlas3pl_se0.3.csv,musr/figures/musr_atlas3pl_se0.3.png
