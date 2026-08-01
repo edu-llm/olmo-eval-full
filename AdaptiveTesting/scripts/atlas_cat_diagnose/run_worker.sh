@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Runs on the g6.xlarge worker: online atlas_arc CAT → sync results to S3.
+# Runs on the g6.xlarge worker: online ATLAS CAT → sync results to S3.
 #
 # Env (set by launch_g6.sh user-data):
 #   CHECKPOINT   s3://... or HF model id
 #   RUN_ID       results key segment
 #   S3_OUT_ROOT  e.g. s3://edullm-adaptive-inference-056956104102/smoke/atlas_cat
+#   EVALS        space-separated online eval names (default: the 4 wired ATLAS evals)
 #   SE_STOP      default 0.3
 #   MAX_ITEMS    default 40
 #   MIN_ITEMS    default 8
@@ -14,6 +15,7 @@ set -euo pipefail
 CHECKPOINT="${CHECKPOINT:?CHECKPOINT required}"
 RUN_ID="${RUN_ID:?RUN_ID required}"
 S3_OUT_ROOT="${S3_OUT_ROOT:-s3://edullm-adaptive-inference-056956104102/smoke/atlas_cat}"
+EVALS="${EVALS:-atlas_arc atlas_hellaswag atlas_winogrande atlas_gsm8k}"
 SE_STOP="${SE_STOP:-0.3}"
 MAX_ITEMS="${MAX_ITEMS:-40}"
 MIN_ITEMS="${MIN_ITEMS:-8}"
@@ -55,10 +57,12 @@ fi
 export HF_HOME="${HF_HOME:-/opt/dlami/nvme/atlas-cat/hf-cache}"
 mkdir -p "${HF_HOME}"
 
-log "starting atlas_arc CAT"
+log "starting ATLAS CAT (${EVALS})"
+eval_args=()
+for e in ${EVALS}; do eval_args+=(-e "${e}"); done
 "${PY[@]}" olmo-eval run-external \
   -m "${CHECKPOINT}" \
-  -e atlas_arc \
+  "${eval_args[@]}" \
   -a "se_stop=${SE_STOP}" \
   -a "min_items=${MIN_ITEMS}" \
   -a "max_items=${MAX_ITEMS}" \
@@ -70,6 +74,7 @@ GIT_SHA="$(git -C "${REPO_ROOT}" rev-parse HEAD 2>/dev/null || echo unknown)"
 
 OUT_LOCAL="${OUT_LOCAL}" S3_DEST="${S3_DEST}" CHECKPOINT="${CHECKPOINT}" \
 RUN_ID="${RUN_ID}" SE_STOP="${SE_STOP}" MIN_ITEMS="${MIN_ITEMS}" MAX_ITEMS="${MAX_ITEMS}" \
+EVALS="${EVALS}" \
 INSTANCE_ID="${INSTANCE_ID}" GIT_SHA="${GIT_SHA}" \
 python3 - <<'PY'
 import json, os
@@ -84,7 +89,7 @@ prov = {
     "max_items": int(os.environ["MAX_ITEMS"]),
     "instance_id": os.environ.get("INSTANCE_ID", "unknown"),
     "git_sha": os.environ.get("GIT_SHA", "unknown"),
-    "eval": "atlas_arc",
+    "evals": os.environ.get("EVALS", "").split(),
 }
 (out / "pipeline_provenance.json").write_text(json.dumps(prov, indent=2), encoding="utf-8")
 print("wrote", out / "pipeline_provenance.json")

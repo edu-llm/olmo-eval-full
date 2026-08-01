@@ -1,36 +1,36 @@
 # ATLAS CAT checkpoint diagnostic (training hook)
 
 Drop-in commands for a training job: after a checkpoint lands on S3, launch one
-`g6.xlarge` (1× L4) worker that runs online `atlas_arc` and writes results to a
+`g6.xlarge` (1× L4) worker that runs the online ATLAS CAT and writes results to a
 **fixed S3 prefix**.
 
-## Scope today: ARC-Challenge only
+## Scope today: 4 benchmarks
 
-The full ATLAS suite is **5 benchmarks** — ARC-Challenge, HellaSwag, WinoGrande,
-GSM8K, TruthfulQA — but this diagnostic currently wires **only ARC-Challenge**
-(`atlas_arc`). Treat the ARC theta/SE as a single-benchmark ability signal for now,
-not the full ATLAS profile.
+This diagnostic wires **4 of the 5 ATLAS benchmarks**: `atlas_arc` (ARC-Challenge),
+`atlas_hellaswag`, `atlas_winogrande` (MCQ log-likelihood), and `atlas_gsm8k`
+(generative exact-match). Each is backed by a calibrated ATLAS 3PL bank vendored in
+this repo under `AdaptiveTesting/Inputs/ATLAS/<benchmark>/` (params +
+`atlas_idx_to_question_id.csv`).
 
-To reach all 5 (future work, not yet done):
+**TruthfulQA is not yet wired** — it has mixed scoring and no olmo-eval base task, so
+it stays out until a base task exists. That's the one remaining benchmark to reach 5/5.
 
-1. **Ship the banks.** Only the `arc` bank is committed; `hellaswag/ winogrande/
-   gsm8k/ truthfulqa/` are `.gitignore`d, so a fresh worker can't fetch them. Commit
-   them or stage them in S3 for the worker to pull.
-2. **Wire MCQ benchmarks (low effort).** `atlas_hellaswag` + `atlas_winogrande` reuse
-   the same log-likelihood MCQ scorer as ARC → gets to 3/5. (Watch the id bridge:
-   WinoGrande uses positional indices, so `atlas_idx_to_question_id.csv` must match
-   the task's `metadata["id"]` order.)
-3. **Add a generative scorer (more effort).** GSM8K (generative) and TruthfulQA don't
-   fit the argmax-over-choices scorer; they need a generate-and-match correctness
-   adapter before CAT applies → gets to 5/5.
-4. **Group into an `atlas` suite** so the worker runs all five behind one flag.
+Id-bridge note: HellaSwag joins on the native `ind`; WinoGrande and GSM8K use
+positional indices, so their `atlas_idx_to_question_id.csv` bridges were generated
+against the exact split ordering olmo-eval enumerates (see
+`AdaptiveTesting/Inputs/ATLAS/scripts/build_atlas_idx_bridge.py`). The bank join keeps
+only items present in both the bank and the task; a mismatch degrades to fewer items
+rather than misaligning.
 
 ## Known output location
 
 ```
 s3://edullm-adaptive-inference-056956104102/smoke/atlas_cat/<run_id>/
-  atlas_arc_results.json   # theta, se, pirt_accuracy, n_items, selected ids
-  pipeline_provenance.json # checkpoint URI, instance id, git sha, args
+  atlas_arc.json           # theta, se, pirt_accuracy, n_items, selected ids
+  atlas_hellaswag.json     # one JSON per eval in EVALS
+  atlas_winogrande.json
+  atlas_gsm8k.json
+  pipeline_provenance.json # checkpoint URI, instance id, git sha, evals, args
   worker.log               # full worker stdout (best-effort)
 ```
 
@@ -63,6 +63,7 @@ Optional flags / env:
 | `--run-id` | required | results subdirectory under `atlas_cat/` |
 | `--se-stop` | `0.3` | CAT early-stop SE |
 | `--max-items` | `40` | CAT cap |
+| `--evals` | 4 ATLAS evals | space-separated online evals (share one vLLM boot) |
 | `--branch` | `AdaptiveEvals` | git branch the worker clones |
 | `DRY_RUN=1` | off | print `run-instances` only |
 | `INSTANCE_TYPE` | `g6.xlarge` | preferred; script falls back to `g5.xlarge` if g6 has no capacity |
@@ -82,7 +83,8 @@ the Beaker API for the username:
 
 ```bash
 uv run olmo-eval beaker launch \
-  -m "${CHECKPOINT_S3}" -E atlas_arc \
+  -m "${CHECKPOINT_S3}" \
+  -E atlas_arc -E atlas_hellaswag -E atlas_winogrande -E atlas_gsm8k \
   -c h100 -w ai2/oe-data -B ai2/oe-base \
   --aws-credentials --dry-run
 ```
