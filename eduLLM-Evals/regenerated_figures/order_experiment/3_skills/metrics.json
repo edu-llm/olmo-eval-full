@@ -1,0 +1,218 @@
+{
+  "generated_at": "2026-08-01T19:51:55.071041+00:00",
+  "hypothesis": "the sequential CAT update is order-dependent; batch EAP is not",
+  "config": {
+    "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_3skill.jsonl",
+    "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full.csv",
+    "trials": 10,
+    "seed": 20260731,
+    "grid_nodes_per_dim": 61,
+    "range": 8.0,
+    "se_target": 0.3
+  },
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full.csv",
+    "expected_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "actual_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "aligned": true
+  },
+  "alignment": {
+    "calibrated_items": 4156,
+    "items_without_responses": 0,
+    "usable_items": 4156,
+    "observed_cells": 332637,
+    "n_models": 82
+  },
+  "across_trial_spread": {
+    "correctness": {
+      "mean_sd": 0.09715395953816774,
+      "median_sd": 0.058260306445951544,
+      "max_sd": 0.8146547308617247,
+      "mean_range": 0.33770151151154504,
+      "max_range": 2.7091481413123004
+    },
+    "scaffolding": {
+      "mean_sd": 0.10161068803863274,
+      "median_sd": 0.03308084848791663,
+      "max_sd": 1.298240975313741,
+      "mean_range": 0.3552234581295527,
+      "max_range": 4.609607749347538
+    },
+    "presentation": {
+      "mean_sd": 0.162429725982089,
+      "median_sd": 0.06944836299833862,
+      "max_sd": 1.6522580167361882,
+      "mean_range": 0.4943397320776323,
+      "max_range": 3.9912067710596926
+    }
+  },
+  "per_trial": [
+    {
+      "trial": "baseline (max-info order)",
+      "mean_items": 86.32926829268293,
+      "slope_correctness": 0.6133131440841703,
+      "r_correctness": 0.9498193626919934,
+      "gap_worst12_correctness": 2.829139149737582,
+      "slope_scaffolding": 0.8143134583870649,
+      "r_scaffolding": 0.9479342322971924,
+      "gap_worst12_scaffolding": 0.034761532663638094,
+      "slope_presentation": 0.45796809628894153,
+      "r_presentation": 0.8838066182950624,
+      "gap_worst12_presentation": 2.792025068011134
+    },
+    {
+      "trial": "random order 1",
+      "mean_items": 85.59756097560975,
+      "slope_correctness": 0.7337540511333337,
+      "r_correctness": 0.9550864122764207,
+      "gap_worst12_correctness": 2.1654553954887885,
+      "slope_scaffolding": 0.8843010413333194,
+      "r_scaffolding": 0.9457683582502282,
+      "gap_worst12_scaffolding": 0.04850506366211054,
+      "slope_presentation": 0.6494292253292215,
+      "r_presentation": 0.8204389297893199,
+      "gap_worst12_presentation": 2.273941344030093
+    },
+    {
+      "trial": "random order 2",
+      "mean_items": 86.13414634146342,
+      "slope_correctness": 0.7227182357196331,
+      "r_correctness": 0.951199155283461,
+      "gap_worst12_correctness": 2.24539086274769,
+      "slope_scaffolding": 0.912819450921334,
+      "r_scaffolding": 0.9426349024235826,
+      "gap_worst12_scaffolding": 0.05092873777795796,
+      "slope_presentation": 0.5840285771140337,
+      "r_presentation": 0.8908780424145071,
+      "gap_worst12_presentation": 2.216033762143896
+    },
+    {
+      "trial": "random order 3",
+      "mean_items": 86.02439024390245,
+      "slope_correctness": 0.715894608140763,
+      "r_correctness": 0.955422446987686,
+      "gap_worst12_correctness": 2.25633427173057,
+      "slope_scaffolding": 0.9401323801825173,
+      "r_scaffolding": 0.9369205959923645,
+      "gap_worst12_scaffolding": 0.05774374290120965,
+      "slope_presentation": 0.6109747005473141,
+      "r_presentation": 0.8628645977704514,
+      "gap_worst12_presentation": 2.13992953785448
+    },
+    {
+      "trial": "random order 4",
+      "mean_items": 86.0609756097561,
+      "slope_correctness": 0.7292859505393912,
+      "r_correctness": 0.9612541246349697,
+      "gap_worst12_correctness": 2.158360900760035,
+      "slope_scaffolding": 0.8588609181141963,
+      "r_scaffolding": 0.9289949023094728,
+      "gap_worst12_scaffolding": 0.04923930790331987,
+      "slope_presentation": 0.6050298161000303,
+      "r_presentation": 0.8585408485143039,
+      "gap_worst12_presentation": 2.303482037378742
+    },
+    {
+      "trial": "random order 5",
+      "mean_items": 85.84146341463415,
+      "slope_correctness": 0.7264937319705466,
+      "r_correctness": 0.9577663594028275,
+      "gap_worst12_correctness": 2.2110165792713867,
+      "slope_scaffolding": 0.898495967662037,
+      "r_scaffolding": 0.9551509758961381,
+      "gap_worst12_scaffolding": 0.0493326579786967,
+      "slope_presentation": 0.6178906765792224,
+      "r_presentation": 0.8664920709722433,
+      "gap_worst12_presentation": 2.106887169284192
+    },
+    {
+      "trial": "random order 6",
+      "mean_items": 85.8170731707317,
+      "slope_correctness": 0.7517217596697358,
+      "r_correctness": 0.9390938126704057,
+      "gap_worst12_correctness": 2.260237036936887,
+      "slope_scaffolding": 1.039302572933708,
+      "r_scaffolding": 0.8901028776626928,
+      "gap_worst12_scaffolding": 0.043126352364701935,
+      "slope_presentation": 0.642855661911411,
+      "r_presentation": 0.8443543806335503,
+      "gap_worst12_presentation": 2.1287643183376472
+    },
+    {
+      "trial": "random order 7",
+      "mean_items": 85.85365853658537,
+      "slope_correctness": 0.7384013165116694,
+      "r_correctness": 0.9615319267171222,
+      "gap_worst12_correctness": 2.1066285571444148,
+      "slope_scaffolding": 0.8862479657320296,
+      "r_scaffolding": 0.9479185695943689,
+      "gap_worst12_scaffolding": 0.035252495135381146,
+      "slope_presentation": 0.5811730502530653,
+      "r_presentation": 0.8865462562941248,
+      "gap_worst12_presentation": 2.246340234545964
+    },
+    {
+      "trial": "random order 8",
+      "mean_items": 86.04878048780488,
+      "slope_correctness": 0.730034321051306,
+      "r_correctness": 0.9575516514378775,
+      "gap_worst12_correctness": 2.1570044010515885,
+      "slope_scaffolding": 0.8321789118179626,
+      "r_scaffolding": 0.9029344177969393,
+      "gap_worst12_scaffolding": 0.050676469934888,
+      "slope_presentation": 0.610838900495464,
+      "r_presentation": 0.8601363244567694,
+      "gap_worst12_presentation": 2.109820158334568
+    },
+    {
+      "trial": "random order 9",
+      "mean_items": 86.20731707317073,
+      "slope_correctness": 0.7409959000759876,
+      "r_correctness": 0.9551830572631361,
+      "gap_worst12_correctness": 2.1131479114422604,
+      "slope_scaffolding": 0.9803497533600605,
+      "r_scaffolding": 0.9033583766788087,
+      "gap_worst12_scaffolding": 0.04905536309513825,
+      "slope_presentation": 0.6112834980177405,
+      "r_presentation": 0.8608779452709228,
+      "gap_worst12_presentation": 2.1730399239894287
+    },
+    {
+      "trial": "random order 10",
+      "mean_items": 85.1951219512195,
+      "slope_correctness": 0.7510481192220988,
+      "r_correctness": 0.9573588927981873,
+      "gap_worst12_correctness": 2.0378329765335916,
+      "slope_scaffolding": 0.955720760728311,
+      "r_scaffolding": 0.944052385679081,
+      "gap_worst12_scaffolding": 0.03594483912896599,
+      "slope_presentation": 0.60720917341378,
+      "r_presentation": 0.8497161868249252,
+      "gap_worst12_presentation": 2.2200933638868
+    },
+    {
+      "trial": "batch EAP (order-free)",
+      "mean_items": 86.32926829268293,
+      "slope_correctness": 0.7495742743145434,
+      "r_correctness": 0.9610188910499379,
+      "gap_worst12_correctness": 2.020803926543064,
+      "slope_scaffolding": 0.8859068993948945,
+      "r_scaffolding": 0.9622905516451845,
+      "gap_worst12_scaffolding": 0.023054171208952933,
+      "slope_presentation": 0.6001275693600073,
+      "r_presentation": 0.911148892214435,
+      "gap_worst12_presentation": 1.9697882559542148
+    }
+  ],
+  "figures": {
+    "recovery_overlay_correctness.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\recovery_overlay_correctness.png",
+    "theta_spread_vs_ability_correctness.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\theta_spread_vs_ability_correctness.png",
+    "recovery_scatter_correctness_trial01.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\recovery_scatter_correctness_trial01.png",
+    "recovery_overlay_scaffolding.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\recovery_overlay_scaffolding.png",
+    "theta_spread_vs_ability_scaffolding.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\theta_spread_vs_ability_scaffolding.png",
+    "recovery_scatter_scaffolding_trial01.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\recovery_scatter_scaffolding_trial01.png",
+    "recovery_overlay_presentation.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\recovery_overlay_presentation.png",
+    "theta_spread_vs_ability_presentation.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\theta_spread_vs_ability_presentation.png",
+    "recovery_scatter_presentation_trial01.png": "regenerated_figures\\order_experiment\\3_skills\\figures\\recovery_scatter_presentation_trial01.png"
+  }
+}

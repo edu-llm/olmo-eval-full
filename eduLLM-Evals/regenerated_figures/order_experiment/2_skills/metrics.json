@@ -1,0 +1,172 @@
+{
+  "generated_at": "2026-08-01T19:45:33.662216+00:00",
+  "hypothesis": "the sequential CAT update is order-dependent; batch EAP is not",
+  "config": {
+    "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill.jsonl",
+    "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full_nonopt.csv",
+    "trials": 10,
+    "seed": 20260731,
+    "grid_nodes_per_dim": 201,
+    "range": 8.0,
+    "se_target": 0.3
+  },
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full_nonopt.csv",
+    "expected_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+    "actual_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+    "aligned": true
+  },
+  "alignment": {
+    "calibrated_items": 3443,
+    "items_without_responses": 0,
+    "usable_items": 3443,
+    "observed_cells": 276587,
+    "n_models": 82
+  },
+  "across_trial_spread": {
+    "correctness": {
+      "mean_sd": 0.32068683737063935,
+      "median_sd": 0.1605154220127289,
+      "max_sd": 3.3924105000586526,
+      "mean_range": 1.0701709663374284,
+      "max_range": 12.499455300232684
+    },
+    "scaffolding": {
+      "mean_sd": 0.3478602928335215,
+      "median_sd": 0.044326944597899084,
+      "max_sd": 3.6273846679125756,
+      "mean_range": 1.1713966704608996,
+      "max_range": 12.849179284369848
+    }
+  },
+  "per_trial": [
+    {
+      "trial": "baseline (max-info order)",
+      "mean_items": 39.26829268292683,
+      "slope_correctness": 0.5908296622640185,
+      "r_correctness": 0.9529294200602162,
+      "gap_worst12_correctness": 2.6875050503350253,
+      "slope_scaffolding": 0.778568511119219,
+      "r_scaffolding": 0.8978212179672922,
+      "gap_worst12_scaffolding": 0.05663161994707613
+    },
+    {
+      "trial": "random order 1",
+      "mean_items": 39.18292682926829,
+      "slope_correctness": 0.85793517212531,
+      "r_correctness": 0.8652163829706828,
+      "gap_worst12_correctness": 2.1899240996795775,
+      "slope_scaffolding": 1.068965188886536,
+      "r_scaffolding": 0.7431137581246916,
+      "gap_worst12_scaffolding": 0.04964712575342611
+    },
+    {
+      "trial": "random order 2",
+      "mean_items": 39.24390243902439,
+      "slope_correctness": 0.8098381022699339,
+      "r_correctness": 0.917049275001315,
+      "gap_worst12_correctness": 2.1381335213232453,
+      "slope_scaffolding": 1.1668476129260958,
+      "r_scaffolding": 0.7575217884785598,
+      "gap_worst12_scaffolding": 0.06876437073174095
+    },
+    {
+      "trial": "random order 3",
+      "mean_items": 38.609756097560975,
+      "slope_correctness": 0.8149559525444363,
+      "r_correctness": 0.9039214513322273,
+      "gap_worst12_correctness": 2.2473756029368928,
+      "slope_scaffolding": 1.1548284916376728,
+      "r_scaffolding": 0.7609424710391539,
+      "gap_worst12_scaffolding": 0.06630884116547194
+    },
+    {
+      "trial": "random order 4",
+      "mean_items": 39.15853658536585,
+      "slope_correctness": 0.7810978354015362,
+      "r_correctness": 0.863589007442874,
+      "gap_worst12_correctness": 2.2478387206312522,
+      "slope_scaffolding": 1.2011344257018712,
+      "r_scaffolding": 0.7050584134690773,
+      "gap_worst12_scaffolding": 0.06512700271448058
+    },
+    {
+      "trial": "random order 5",
+      "mean_items": 39.207317073170735,
+      "slope_correctness": 0.7411794760173457,
+      "r_correctness": 0.9115198383974065,
+      "gap_worst12_correctness": 2.2947618150933544,
+      "slope_scaffolding": 1.156326328269371,
+      "r_scaffolding": 0.7934240106014091,
+      "gap_worst12_scaffolding": 0.07941949865756308
+    },
+    {
+      "trial": "random order 6",
+      "mean_items": 38.65853658536585,
+      "slope_correctness": 0.7505251827631716,
+      "r_correctness": 0.9427316417554803,
+      "gap_worst12_correctness": 2.2222672890504986,
+      "slope_scaffolding": 1.2655662875560687,
+      "r_scaffolding": 0.752824537863683,
+      "gap_worst12_scaffolding": 0.06228153681273063
+    },
+    {
+      "trial": "random order 7",
+      "mean_items": 39.08536585365854,
+      "slope_correctness": 0.8199012156441133,
+      "r_correctness": 0.8539838104682896,
+      "gap_worst12_correctness": 2.2587911918978247,
+      "slope_scaffolding": 1.16499854560966,
+      "r_scaffolding": 0.7131686157152533,
+      "gap_worst12_scaffolding": 0.051002979492099
+    },
+    {
+      "trial": "random order 8",
+      "mean_items": 39.073170731707314,
+      "slope_correctness": 0.7199723579437682,
+      "r_correctness": 0.9328666490655332,
+      "gap_worst12_correctness": 2.1670461214224432,
+      "slope_scaffolding": 1.188369452820852,
+      "r_scaffolding": 0.7104379310521347,
+      "gap_worst12_scaffolding": 0.07137402295088417
+    },
+    {
+      "trial": "random order 9",
+      "mean_items": 39.073170731707314,
+      "slope_correctness": 0.7055108533110653,
+      "r_correctness": 0.8756320730811149,
+      "gap_worst12_correctness": 2.277459773161856,
+      "slope_scaffolding": 1.1531861154701724,
+      "r_scaffolding": 0.7978967842012035,
+      "gap_worst12_scaffolding": 0.07559875464795697
+    },
+    {
+      "trial": "random order 10",
+      "mean_items": 39.03658536585366,
+      "slope_correctness": 0.7534912920533327,
+      "r_correctness": 0.9174170616405157,
+      "gap_worst12_correctness": 2.230485027241139,
+      "slope_scaffolding": 1.048490851427684,
+      "r_scaffolding": 0.6311195000114952,
+      "gap_worst12_scaffolding": 0.06126840466293013
+    },
+    {
+      "trial": "batch EAP (order-free)",
+      "mean_items": 39.26829268292683,
+      "slope_correctness": 0.6944895628590907,
+      "r_correctness": 0.956148731811452,
+      "gap_worst12_correctness": 2.1945437148751714,
+      "slope_scaffolding": 0.873535442109452,
+      "r_scaffolding": 0.9211390503281731,
+      "gap_worst12_scaffolding": 0.05172007452794505
+    }
+  ],
+  "figures": {
+    "recovery_overlay_correctness.png": "regenerated_figures\\order_experiment\\2_skills\\figures\\recovery_overlay_correctness.png",
+    "theta_spread_vs_ability_correctness.png": "regenerated_figures\\order_experiment\\2_skills\\figures\\theta_spread_vs_ability_correctness.png",
+    "recovery_scatter_correctness_trial01.png": "regenerated_figures\\order_experiment\\2_skills\\figures\\recovery_scatter_correctness_trial01.png",
+    "recovery_overlay_scaffolding.png": "regenerated_figures\\order_experiment\\2_skills\\figures\\recovery_overlay_scaffolding.png",
+    "theta_spread_vs_ability_scaffolding.png": "regenerated_figures\\order_experiment\\2_skills\\figures\\theta_spread_vs_ability_scaffolding.png",
+    "recovery_scatter_scaffolding_trial01.png": "regenerated_figures\\order_experiment\\2_skills\\figures\\recovery_scatter_scaffolding_trial01.png"
+  }
+}

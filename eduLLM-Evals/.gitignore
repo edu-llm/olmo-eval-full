@@ -16,6 +16,7 @@ __pycache__/
 *.egg-info/
 build/
 full200-results/
+Full200Run/
 # Calibration handoff bundle (huge; lives in S3/local, never in git) + extractions
 qwen_calibration_handoff_32k_20260728/
 qwen_calibration_handoff_32k_20260728.zip

@@ -61,6 +61,11 @@ class RunConfig:
     min_evals_per_skill: int = 15
     max_scenarios: int = 50
     output_dir: str = "runs"
+    # Latent skill dimensions this run models. None => the package default (SKILLS).
+    # Set to a shorter/other tuple (e.g. ("correctness", "scaffolding")) to run the
+    # same engine over a different dimensionality; all vectors (theta, U, q, a) must
+    # match its length. The 3-skill path is unaffected when left None.
+    skills: tuple[str, ...] | None = None
     # Data provenance, echoed into the manifest so runs on different q-matrices /
     # calibrations are distinguishable after the fact.
     data_scenarios: str | None = None
@@ -99,15 +104,18 @@ def run_evaluation(
     if mode not in ("cat", "baseline"):
         raise ValueError("mode must be 'cat' or 'baseline'")
 
+    skills = tuple(cfg.skills) if cfg.skills else SKILLS
+    n_skills = len(skills)
+
     run_seed = derive_seed(cfg.seed, tutor.name, mode)
     rng = np.random.default_rng(run_seed)
     run_id = run_id or f"run_{datetime.now():%Y%m%d_%H%M%S}_{tutor.name}_{mode}"
     out_dir = Path(cfg.output_dir) / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    theta, U = initial_state(cfg.theta_init, cfg.u_init_diag)
-    max_se = np.array([cfg.max_se[s] for s in SKILLS])
-    counts = np.zeros(len(SKILLS), dtype=int)  # scorable evaluations per skill
+    theta, U = initial_state(cfg.theta_init, cfg.u_init_diag, n_skills)
+    max_se = np.array([cfg.max_se.get(s, 0.30) for s in skills])
+    counts = np.zeros(n_skills, dtype=int)  # scorable evaluations per skill
     administered: list[str] = []
     critical_failures: list[dict[str, Any]] = []
 
@@ -132,8 +140,9 @@ def run_evaluation(
         "master_seed": cfg.seed,
         "run_seed": run_seed,
         "top_n": cfg.top_n,
-        "theta_init": list(cfg.theta_init or [0.0] * len(SKILLS)),
-        "u_init_diag": list(cfg.u_init_diag or [1.0] * len(SKILLS)),
+        "skills": list(skills),
+        "theta_init": list(cfg.theta_init or [0.0] * n_skills),
+        "u_init_diag": list(cfg.u_init_diag or [1.0] * n_skills),
         "max_se": cfg.max_se,
         "min_evals_per_skill": cfg.min_evals_per_skill,
         "max_scenarios": cfg.max_scenarios,
@@ -187,7 +196,7 @@ def run_evaluation(
                 sid = selection.scenario_id
                 selection_info = {
                     "mode": selection.mode,
-                    "target_skill": SKILLS[target_k],
+                    "target_skill": skills[target_k],
                     "scenario_value": selection.value,
                     "top_candidates": selection.top_candidates,
                 }
@@ -279,9 +288,9 @@ def run_evaluation(
             else "Evaluation ended without reaching the required measurement precision."
         ),
         "scenarios_administered": len(administered),
-        "theta": {s: round(float(theta[k]), 6) for k, s in enumerate(SKILLS)},
-        "se": {s: round(float(se[k]), 6) for k, s in enumerate(SKILLS)},
-        "scorable_evaluations": {s: int(counts[k]) for k, s in enumerate(SKILLS)},
+        "theta": {s: round(float(theta[k]), 6) for k, s in enumerate(skills)},
+        "se": {s: round(float(se[k]), 6) for k, s in enumerate(skills)},
+        "scorable_evaluations": {s: int(counts[k]) for k, s in enumerate(skills)},
         "critical_failure_count": len(critical_failures),
         "finished_at": datetime.now().isoformat(timespec="seconds"),
     }

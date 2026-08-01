@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-08-01T21:07:54.870846+00:00",
+  "purpose": "A/B CAT item selection: trace (U-blind) vs D-optimality (U-aware)",
+  "config": {
+    "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_3skill.jsonl",
+    "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full.csv",
+    "grid": 61,
+    "range": 6.0,
+    "se_target": 0.3,
+    "min_items": 1,
+    "max_items": 100
+  },
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full.csv",
+    "expected_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "actual_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "aligned": true
+  },
+  "dims": [
+    "correctness",
+    "scaffolding",
+    "presentation"
+  ],
+  "n_models": 82,
+  "results": {
+    "trace": {
+      "length": {
+        "mean": 86.32926829268293,
+        "median": 100.0,
+        "max": 100
+      },
+      "recovery": {
+        "online": {
+          "correctness": {
+            "slope": 0.6193998235049271,
+            "r": 0.9524334652814358,
+            "gap_worst12": 2.766738051340008,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8110981913884996,
+            "r": 0.9470615742270816,
+            "gap_worst12": 0.4643763687121549,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.4574826723558907,
+            "r": 0.8846829819292306,
+            "gap_worst12": 2.7959845482919357,
+            "n": 82
+          }
+        },
+        "batch": {
+          "correctness": {
+            "slope": 0.754797527637622,
+            "r": 0.9637749941979062,
+            "gap_worst12": 1.9583563648590185,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.878109799960194,
+            "r": 0.9600466505445949,
+            "gap_worst12": 0.2969483344838095,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.5991895825303807,
+            "r": 0.9118890173681468,
+            "gap_worst12": 1.9877111424628708,
+            "n": 82
+          }
+        },
+        "mwle": {
+          "correctness": {
+            "slope": 0.9045484064716363,
+            "r": 0.9765493936488845,
+            "gap_worst12": 0.8832910136250116,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.9502560993965575,
+            "r": 0.9636198635683183,
+            "gap_worst12": 0.1694437507676075,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.7846598026312211,
+            "r": 0.9326522214847376,
+            "gap_worst12": 0.8832176462821945,
+            "n": 82
+          }
+        }
+      }
+    },
+    "dopt": {
+      "length": {
+        "mean": 47.98780487804878,
+        "median": 51.5,
+        "max": 87
+      },
+      "recovery": {
+        "online": {
+          "correctness": {
+            "slope": 0.5816515036940428,
+            "r": 0.9551675743908284,
+            "gap_worst12": 2.73323611416453,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.7641190764661547,
+            "r": 0.8955512346115665,
+            "gap_worst12": 0.533980020418857,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.6026885202140906,
+            "r": 0.9593050799672168,
+            "gap_worst12": 2.464937177372768,
+            "n": 82
+          }
+        },
+        "batch": {
+          "correctness": {
+            "slope": 0.7231961000431101,
+            "r": 0.9620447077112286,
+            "gap_worst12": 1.919975397362916,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8383738389182265,
+            "r": 0.9179142727047106,
+            "gap_worst12": 0.36142398023676975,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.7709968848979611,
+            "r": 0.9753218709086914,
+            "gap_worst12": 1.5336995753294078,
+            "n": 82
+          }
+        },
+        "mwle": {
+          "correctness": {
+            "slope": 0.863502418292729,
+            "r": 0.970680109737652,
+            "gap_worst12": 0.8922018113851246,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8972317614752281,
+            "r": 0.9162103282316811,
+            "gap_worst12": 0.2759374862231046,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.9737795775094288,
+            "r": 0.9850472022705915,
+            "gap_worst12": 0.12622992755217852,
+            "n": 82
+          }
+        }
+      }
+    }
+  }
+}
