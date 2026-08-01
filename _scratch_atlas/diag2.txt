@@ -1,0 +1,110 @@
+﻿uv : Uninstalled 2 packages in 299ms
+At C:\Users\Samee\AppData\Local\Temp\ps-script-ff6e3bff-8128-46f6-9f3c-e700fc5e723b.ps1:118 char:1
++ uv run python _scratch_atlas/04_diag.py 2>&1 | Out-File -FilePath "_s ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Uninstalled 2 packages in 299ms:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Installed 2 packages in 6.87s
+Qwen2.5 entries in pools:
+                                                                                model  params_b  family  n_flags  reputable_org
+                                  agentlans/Qwen2.5-0.5B-Instruct-CrashCourse-dropout     0.494 Qwen2.5        0              0
+                                              AtAndDev/Qwen2.5-1.5B-continuous-learnt     1.544 Qwen2.5        0              0
+                                                   bunnycore/Qwen2.5-1.5B-Model-Stock     1.776 Qwen2.5        1              0
+                                                     bunnycore/Qwen2.5-3B-Model-Stock     3.396 Qwen2.5        1              0
+                                                  bunnycore/Qwen2.5-3B-Model-Stock-v2     3.396 Qwen2.5        1              0
+                                                bunnycore/Qwen2.5-3B-Model-Stock-v3.1     3.396 Qwen2.5        1              0
+                                                bunnycore/Qwen2.5-3B-Model-Stock-v3.2     3.396 Qwen2.5        1              0
+                                                bunnycore/Qwen2.5-3B-Model-Stock-v4.1     3.396 Qwen2.5        1              0
+                                                          bunnycore/Qwen2.5-3B-RP-Mix     3.397 Qwen2.5        2              0
+                                                      bunnycore/Qwen2.5-3B-RP-Thinker     3.397 Qwen2.5        2              0
+                                                   bunnycore/Qwen2.5-3B-RP-Thinker-V2     3.397 Qwen2.5        2              0
+                                        cognitivecomputations/Dolphin3.0-Qwen2.5-0.5B     0.494 Qwen2.5        1              1
+                           DavidAU/Qwen2.5-MOE-2X1.5B-DeepSeek-Uncensored-Censored-4B     4.089 Qwen2.5        2              0
+                                            ehristoforu/qwen2.5-with-lora-think-3b-it     3.086 Qwen2.5        2              0
+                                      ewre324/Thinker-Qwen2.5-0.5B-Instruct-Reasoning     0.494 Qwen2.5        1              0
+FlofloB/100k_fineweb_continued_pretraining_Qwen2.5-0.5B-Instruct_Unsloth_merged_16bit     0.500 Qwen2.5        1              0
+         FlofloB/10k_continued_pretraining_Qwen2.5-0.5B-Instruct_Unsloth_merged_16bit     0.500 Qwen2.5        1              0
+         FlofloB/40k_continued_pretraining_Qwen2.5-0.5B-Instruct_Unsloth_merged_16bit     0.500 Qwen2.5        1              0
+         FlofloB/83k_continued_pretraining_Qwen2.5-0.5B-Instruct_Unsloth_merged_16bit     0.500 Qwen2.5        1              0
+                     Goekdeniz-Guelmez/Josiefied-Qwen2.5-0.5B-Instruct-abliterated-v1     0.630 Qwen2.5        1              0
+                     Goekdeniz-Guelmez/Josiefied-Qwen2.5-1.5B-Instruct-abliterated-v1     1.777 Qwen2.5        1              0
+                     Goekdeniz-Guelmez/Josiefied-Qwen2.5-1.5B-Instruct-abliterated-v2     1.544 Qwen2.5        1              0
+                     Goekdeniz-Guelmez/Josiefied-Qwen2.5-1.5B-Instruct-abliterated-v3     1.544 Qwen2.5        1              0
+                                      hatemmahmoud/qwen2.5-1.5b-sft-raft-grpo-hra-doc     1.544 Qwen2.5        0              0
+                                                     jayasuryajsk/Qwen2.5-3B-reasoner     3.086 Qwen2.5        1              0
+                                                   JayHyeon/Qwen2.5-0.5B-Instruct-SFT     0.630 Qwen2.5        0              0
+                                     JayHyeon/Qwen2.5-0.5B-Instruct-SFT-DPO-1epoch_v1     0.494 Qwen2.5        0              0
+                                    JayHyeon/Qwen2.5-0.5B-Instruct-SFT-IRPO-1epoch_v1     0.494 Qwen2.5        0              0
+                                    JayHyeon/Qwen2.5-0.5B-Instruct-SFT-MDPO-1epoch_v1     0.494 Qwen2.5        0              0
+                                                            JayHyeon/Qwen2.5-0.5B-SFT     0.630 Qwen2.5        0              0
+
+zephyr from HuggingFaceH4 / mirror orgs present?
+  HuggingFaceH4/         n=2    HuggingFaceH4/mistral-7b-grok, HuggingFaceH4/zephyr-7b-gemma-v0.1
+  unsloth/               n=4    unsloth/Llama-3.2-1B-Instruct, unsloth/Llama-3.2-1B-Instruct-no-system-message, unsloth/mistral-7b-v0.2, unsloth/Phi-3-mini-4k-instruct
+  bartowski/             n=4    bartowski/internlm2-chat-20b-llama, bartowski/internlm2-chat-20b-llama-old, bartowski/internlm2-chat-7b-sft-llama, bartowski/internlm2-math-20b-llama
+  TheBloke/              n=12   TheBloke/Genz-70b-GPTQ, TheBloke/gpt4-x-vicuna-13B-HF, TheBloke/Lemur-70B-Chat-v1-GPTQ, TheBloke/Mixtral-8x7B-v0.1-GPTQ, TheBloke/neural-chat-7B-v3-2-GPTQ, TheBloke/Orca-2-13B-GPTQ
+  prunaai/               n=0    
+  mradermacher/          n=0    
+  lmstudio-community/    n=0    
+  ModelCloud/            n=1    ModelCloud/Llama-3.2-1B-Instruct-gptqmodel-4bit-vortex-v1
+  neuralmagic/           n=0    
+  RedHatAI/              n=0    
+  second-state/          n=0    
+  nm-testing/            n=0    
+
+gemma family assignment check:
+                   model  params_b  family
+  google/gemma-1.1-2b-it     2.506   Gemma
+  google/gemma-1.1-7b-it     7.000   Gemma
+       google/gemma-2-2b     2.614 Gemma-2
+    google/gemma-2-2b-it     2.614 Gemma-2
+google/gemma-2-2b-jpn-it     2.614 Gemma-2
+         google/gemma-2b     2.506 Gemma-2
+      google/gemma-2b-it     2.506 Gemma-2
+         google/gemma-7b     7.000   Gemma
+      google/gemma-7b-it     7.000   Gemma
+
+llama3x-without-separator ids:
+                                     model  family
+                 iFaz/llama31_8B_en_emo_v4 Llama-3
+                 iFaz/llama32_1B_en_emo_v1 Llama-3
+           iFaz/llama32_3B_en_emo_1000_stp Llama-3
+           iFaz/llama32_3B_en_emo_2000_stp Llama-3
+            iFaz/llama32_3B_en_emo_300_stp Llama-3
+           iFaz/llama32_3B_en_emo_5000_stp Llama-3
+                 iFaz/llama32_3B_en_emo_v2 Llama-3
+                 iFaz/llama32_3B_en_emo_v3 Llama-3
+trthminh1112/autotrain-llama32-1b-finetune Llama-3
+
+ontocord entries:
+                                                                                          model  params_b  n_flags
+                                                                              ontocord/Felix-8B     8.000        0
+                                            ontocord/Llama_3.2_1b-autoredteam_helpfulness-train     1.498        0
+                                                                 ontocord/merged_0.2_expert_0.8     3.759        1
+                                                        ontocord/merged_0.2_expert_0.8-stack_2x     6.512        1
+                                                                 ontocord/merged_0.5_expert_0.5     3.759        1
+ontocord/ontocord_wide_3b-stage1_shuf_sample1_jsonl-pretrained-autoredteam_helpful-0.25_helpful     3.759        0
+                                                           ontocord/RedPajama-3B-v1-AutoRedteam     2.776        0
+                                             ontocord/RedPajama-3B-v1-AutoRedteam-Harmless-only     2.776        0
+                                          ontocord/RedPajama3b_v1-autoredteam_helpfulness-train     2.776        0
+                                                             ontocord/starcoder2_3b-AutoRedteam     3.181        1
+                                                                    ontocord/wide_3b-merge_test     3.759        1
+                                          ontocord/wide_3b-stage1_shuf_sample1_jsonl-pretrained     3.759        0
+     ontocord/wide_3b_sft_stag1.2-lyrical_law_news_software_howto_formattedtext_math_wiki-merge     3.759        3
+                   ontocord/wide_3b_sft_stag1.2-lyrical_news_software_howto_formattedtext-merge     3.759        1
+                                 ontocord/wide_3b_sft_stage1.1-ss1-no_redteam_skg_poem.no_issue     3.759        0
+                                  ontocord/wide_3b_sft_stage1.1-ss1-with_generics_intr.no_issue     3.759        0
+                             ontocord/wide_3b_sft_stage1.1-ss1-with_generics_intr_math.no_issue     3.759        1
+                     ontocord/wide_3b_sft_stage1.1-ss1-with_generics_intr_math_stories.no_issue     3.759        1
+       ontocord/wide_3b_sft_stage1.1-ss1-with_generics_intr_math_stories_no_orig_instr.no_issue     3.759        1
+                          ontocord/wide_3b_sft_stage1.1-ss1-with_generics_intr_stories.no_issue     3.759        0
+                                  ontocord/wide_3b_sft_stage1.1-ss1-with_generics_math.no_issue     3.759        1
+                                           ontocord/wide_3b_sft_stage1.1-ss1-with_math.no_issue     3.759        1
+                  ontocord/wide_3b_sft_stage1.1-ss1-with_r1_generics_intr_math_stories.no_issue     3.759        1
+                                     ontocord/wide_3b_sft_stage1.2-ss1-expert_fictional_lyrical     3.759        0
+                                        ontocord/wide_3b_sft_stage1.2-ss1-expert_formatted_text     3.759        0
+                                                ontocord/wide_3b_sft_stage1.2-ss1-expert_how-to     3.759        0
+                                                  ontocord/wide_3b_sft_stage1.2-ss1-expert_math     3.759        1
+                                                  ontocord/wide_3b_sft_stage1.2-ss1-expert_news     3.759        0
+                                              ontocord/wide_3b_sft_stage1.2-ss1-expert_software     3.759        0

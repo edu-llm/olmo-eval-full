@@ -1,0 +1,659 @@
+====================================================================================================
+### TASK 4 - SHORTLIST
+====================================================================================================
+0-7B window                                  : 3040
+  minus 3a-3g flags (clean)                  : 1707
+  minus no-canonical-family                  : 859
+  minus ablation-grid / org-spam dumps       : 563
+     TIER A  recognizable lab org            : 194
+     TIER B  community tune of canonical base: 369
+full list written to: C:\Users\Samee\Documents\GitHub\olmo-eval-full\_scratch_atlas\shortlist.csv
+
+----------------------------------------------------------------------------------------------------
+PER-FAMILY COUNTS
+----------------------------------------------------------------------------------------------------
+tier                  A_lab  B_community  total
+family                                         
+Mistral                  16          111    127
+Llama-3.2                 5           45     50
+Llama-2                  10           27     37
+Phi                       7           30     37
+Gemma                     9           26     35
+Zephyr                    2           23     25
+Nous/Hermes               3           16     19
+Qwen2.5                   6           12     18
+Orca/Platypus            14            3     17
+OpenChat/Starling         8            7     15
+Granite                  15            0     15
+Qwen1.5                   8            6     14
+SmolLM                    8            4     12
+Yi                        5            6     11
+Qwen2                     4            6     10
+TinyLlama                 5            5     10
+Falcon                    7            1      8
+WizardLM/Airoboros        2            6      8
+OLMo                      7            0      7
+GPT-Neo/NeoX/J            6            1      7
+StableLM                  5            1      6
+RedPajama                 6            0      6
+Pythia                    6            0      6
+Llama-3.1                 1            5      6
+Gemma-2                   2            4      6
+Danube                    5            0      5
+Nemotron/Minitron         4            1      5
+Vicuna                    2            3      5
+BLOOM                     4            0      4
+Zamba/Mamba/RWKV/SSM      0            4      4
+GPT-2                     3            1      4
+Qwen1                     0            3      3
+Qwen3                     0            3      3
+Llama-3                   0            3      3
+DeepSeek                  2            0      2
+InternLM                  2            0      2
+Llama-1/other             0            2      2
+Mixtral                   0            2      2
+Sheared/Pruned-Llama      2            0      2
+MiniCPM                   1            0      1
+Other-named-lab           0            1      1
+OPT                       1            0      1
+MPT                       1            0      1
+Tulu                      0            1      1
+
+====================================================================================================
+TIER A - EVERY SURVIVING CANDIDATE (194 models), grouped by family, sorted by params_b
+====================================================================================================
+
+--- BLOOM  (n=4) ---
+    bigscience/bloom-560m                                      0.56  avg=  3.51  base?    +OpenLM     
+    bigscience/bloom-1b1                                       1.06  avg=  4.03  base?    +OpenLM     
+    bigscience/bloom-1b7                                       1.72  avg=  4.05  base?    +OpenLM     
+    bigscience/bloom-3b                                        3.00  avg=  4.39  base?    +OpenLM     
+
+--- Danube  (n=5) ---
+    h2oai/h2o-danube3-500m-chat                                0.51  avg=  5.20  instruct +OpenLM     
+    h2oai/h2o-danube-1.8b-chat                                 1.83  avg=  6.95  instruct +OpenLM     
+    h2oai/h2o-danube3-4b-base                                  3.96  avg= 10.09  base     +OpenLM     
+    h2oai/h2o-danube3-4b-chat                                  3.96  avg= 11.57  instruct +OpenLM     
+    h2oai/h2o-danube3.1-4b-chat                                3.96  avg= 16.41  instruct +OpenLM     
+
+--- DeepSeek  (n=2) ---
+    deepseek-ai/deepseek-llm-7b-base                           7.00  avg=  8.23  base     +OpenLM     
+    deepseek-ai/deepseek-llm-7b-chat                           7.00  avg= 14.82  instruct ATLAS+OpenLM
+
+--- Falcon  (n=7) ---
+    tiiuae/Falcon3-1B-Base                                     1.67  avg=  9.89  base     +OpenLM     
+    tiiuae/Falcon3-1B-Instruct                                 1.67  avg= 16.16  instruct +OpenLM     
+    tiiuae/Falcon3-3B-Base                                     3.23  avg= 15.74  base     +OpenLM     
+    tiiuae/Falcon3-3B-Instruct                                 3.23  avg= 26.60  instruct +OpenLM     
+    tiiuae/falcon-7b                                           7.00  avg=  5.17  base?    +OpenLM     
+    tiiuae/falcon-7b-instruct                                  7.00  avg=  5.12  instruct +OpenLM     
+    tiiuae/falcon-mamba-7b                                     7.00  avg= 15.18  base?    +OpenLM     
+
+--- GPT-2  (n=3) ---
+    openai-community/gpt2-medium                               0.38  avg=  5.90  base?    +OpenLM     
+    openai-community/gpt2-large                                0.81  avg=  5.57  base?    +OpenLM     
+    openai-community/gpt2-xl                                   1.61  avg=  5.09  base?    +OpenLM     
+
+--- GPT-Neo/NeoX/J  (n=6) ---
+    EleutherAI/gpt-neo-1.3B                                    1.37  avg=  5.39  base?    +OpenLM     
+    EleutherAI/gpt-neo-2.7B                                    2.72  avg=  6.43  base?    +OpenLM     
+    databricks/dolly-v2-3b                                     3.00  avg=  5.60  base?    +OpenLM     
+    EleutherAI/gpt-j-6b                                        6.00  avg=  6.57  base?    +OpenLM     
+    togethercomputer/GPT-JT-6B-v1                              6.00  avg=  6.88  base?    +OpenLM     
+    databricks/dolly-v2-7b                                     7.00  avg=  5.65  base?    +OpenLM     
+
+--- Gemma  (n=9) ---
+    google/gemma-1.1-2b-it                                     2.51  avg=  8.05  instruct +OpenLM     
+    google/gemma-2b                                            2.51  avg=  7.32  base?    +OpenLM     
+    google/gemma-2b-it                                         2.51  avg=  7.49  instruct +OpenLM     
+    google/recurrentgemma-2b                                   2.68  avg=  7.02  base?    +OpenLM     
+    google/recurrentgemma-2b-it                                2.68  avg=  8.00  instruct +OpenLM     
+    HuggingFaceH4/zephyr-7b-gemma-v0.1                         7.00  avg=     -  instruct ATLAS       
+    google/gemma-1.1-7b-it                                     7.00  avg=     -  instruct ATLAS       
+    google/gemma-7b                                            7.00  avg=     -  base?    ATLAS       
+    google/gemma-7b-it                                         7.00  avg=     -  instruct ATLAS       
+
+--- Gemma-2  (n=2) ---
+    google/gemma-2-2b                                          2.61  avg= 10.36  base?    +OpenLM     
+    google/gemma-2-2b-it                                       2.61  avg= 17.05  instruct +OpenLM     
+
+--- Granite  (n=15) ---
+    ibm-granite/granite-3.0-1b-a400m-base                      1.33  avg=  6.03  base     +OpenLM     
+    ibm-granite/granite-3.0-1b-a400m-instruct                  1.33  avg=  8.07  instruct +OpenLM     
+    ibm-granite/granite-3.1-1b-a400m-base                      1.33  avg=  6.31  base     +OpenLM     
+    ibm-granite/granite-3.1-1b-a400m-instruct                  1.33  avg= 10.13  instruct +OpenLM     
+    ibm-granite/granite-3.1-2b-base                            2.53  avg= 13.20  base     +OpenLM     
+    ibm-granite/granite-3.1-2b-instruct                        2.53  avg= 21.71  instruct +OpenLM     
+    ibm-granite/granite-3.2-2b-instruct                        2.53  avg= 21.25  instruct +OpenLM     
+    ibm-granite/granite-3.0-2b-base                            2.63  avg= 14.10  base     +OpenLM     
+    ibm-granite/granite-3.0-2b-instruct                        2.63  avg= 18.40  instruct +OpenLM     
+    ibm-granite/granite-3.1-3b-a800m-base                      3.30  avg= 10.00  base     +OpenLM     
+    ibm-granite/granite-3.1-3b-a800m-instruct                  3.30  avg= 17.28  instruct +OpenLM     
+    ibm-granite/granite-3.0-3b-a800m-base                      3.37  avg=  9.49  base     +OpenLM     
+    ibm-granite/granite-3.0-3b-a800m-instruct                  3.37  avg= 13.70  instruct +OpenLM     
+    ibm-granite/granite-7b-base                                6.74  avg=  7.91  base     +OpenLM     
+    ibm-granite/granite-7b-instruct                            6.74  avg= 12.03  instruct +OpenLM     
+
+--- InternLM  (n=2) ---
+    internlm/internlm2-chat-1_8b                               1.89  avg= 10.64  instruct +OpenLM      [cjk-vendor]
+    internlm/internlm2_5-1_8b-chat                             1.89  avg= 14.75  instruct +OpenLM      [cjk-vendor]
+
+--- Llama-2  (n=10) ---
+    BEE-spoke-data/smol_llama-220M-GQA                         0.22  avg=  6.58  base?    +OpenLM     
+    BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu             0.22  avg=  6.63  base?    +OpenLM     
+    BEE-spoke-data/smol_llama-220M-openhermes                  0.22  avg=  4.94  instruct +OpenLM     
+    NousResearch/Nous-Hermes-llama-2-7b                        6.74  avg=  9.32  instruct +OpenLM     
+    meta-llama/Llama-2-7b-chat-hf                              6.74  avg=  9.61  instruct +OpenLM     
+    meta-llama/Llama-2-7b-hf                                   6.74  avg=  8.81  base?    +OpenLM     
+    NousResearch/Yarn-Llama-2-7b-128k                          7.00  avg=  6.81  base?    +OpenLM     
+    NousResearch/Yarn-Llama-2-7b-64k                           7.00  avg=  7.22  base?    +OpenLM     
+    togethercomputer/LLaMA-2-7B-32K                            7.00  avg=  6.84  base?    +OpenLM     
+    togethercomputer/Llama-2-7B-32K-Instruct                   7.00  avg=  8.26  instruct +OpenLM     
+
+--- Llama-3.1  (n=1) ---
+    nvidia/Llama-3.1-Minitron-4B-Depth-Base                    4.02  avg= 11.66  base     +OpenLM     
+
+--- Llama-3.2  (n=5) ---
+    meta-llama/Llama-3.2-1B                                    1.24  avg=  4.20  base?    +OpenLM     
+    meta-llama/Llama-3.2-1B-Instruct                           1.24  avg= 14.44  instruct +OpenLM     
+    NousResearch/Hermes-3-Llama-3.2-3B                         3.21  avg= 15.24  instruct +OpenLM     
+    meta-llama/Llama-3.2-3B                                    3.21  avg=  8.70  base?    +OpenLM     
+    meta-llama/Llama-3.2-3B-Instruct                           3.21  avg= 24.20  instruct +OpenLM     
+
+--- MPT  (n=1) ---
+    mosaicml/mpt-7b                                            7.00  avg=  6.03  base?    +OpenLM     
+
+--- MiniCPM  (n=1) ---
+    openbmb/MiniCPM-S-1B-sft-llama-format                      1.00  avg=  9.00  instruct +OpenLM     
+
+--- Mistral  (n=16) ---
+    HuggingFaceH4/mistral-7b-grok                              7.00  avg=     -  base?    ATLAS       
+    NousResearch/Hermes-2-Pro-Mistral-7B                       7.00  avg=     -  instruct ATLAS       
+    NousResearch/Nous-Hermes-2-Mistral-7B-DPO                  7.00  avg=     -  instruct ATLAS       
+    NousResearch/Yarn-Mistral-7b-128k                          7.00  avg= 13.27  base?    +OpenLM     
+    NousResearch/Yarn-Mistral-7b-64k                           7.00  avg= 13.54  base?    +OpenLM     
+    argilla/CapybaraHermes-2.5-Mistral-7B                      7.00  avg=     -  instruct ATLAS       
+    argilla/distilabeled-Hermes-2.5-Mistral-7B                 7.00  avg=     -  instruct ATLAS       
+    mistralai/Mistral-7B-Instruct-v0.2                         7.00  avg=     -  instruct ATLAS       
+    mistralai/Mistral-7B-v0.3                                  7.00  avg=     -  base?    ATLAS       
+    mlabonne/Mistralpaca-7B                                    7.00  avg=     -  instruct ATLAS       
+    mlabonne/NeuralHermes-2.5-Mistral-7B                       7.00  avg=     -  instruct ATLAS       
+    mlabonne/NeuralHermes-2.5-Mistral-7B-laser                 7.00  avg=     -  instruct ATLAS       
+    openaccess-ai-collective/mistral-7b-slimorcaboros          7.00  avg=     -  base?    ATLAS       
+    teknium/CollectiveCognition-v1.1-Mistral-7B                7.00  avg= 14.26  base?    +OpenLM     
+    teknium/OpenHermes-2-Mistral-7B                            7.00  avg= 21.44  instruct ATLAS+OpenLM
+    teknium/OpenHermes-2.5-Mistral-7B                          7.00  avg=     -  instruct ATLAS       
+
+--- Nemotron/Minitron  (n=4) ---
+    nvidia/Hymba-1.5B-Base                                     1.52  avg=  8.04  base     +OpenLM     
+    nvidia/Hymba-1.5B-Instruct                                 1.52  avg= 14.19  instruct +OpenLM     
+    nvidia/Minitron-4B-Base                                    4.00  avg= 11.98  base     +OpenLM     
+    nvidia/Nemotron-Mini-4B-Instruct                           4.00  avg= 18.36  instruct +OpenLM     
+
+--- Nous/Hermes  (n=3) ---
+    openaccess-ai-collective/DPOpenHermes-7B                   7.00  avg=     -  instruct ATLAS       
+    openaccess-ai-collective/DPOpenHermes-7B-v2                7.00  avg=     -  instruct ATLAS       
+    teknium/OpenHermes-7B                                      7.00  avg=  9.57  instruct +OpenLM     
+
+--- OLMo  (n=7) ---
+    allenai/OLMo-1B-hf                                         1.18  avg=  6.63  base?    +OpenLM     
+    allenai/OLMo-7B-hf                                         6.89  avg=  6.86  base?    +OpenLM     
+    allenai/OLMoE-1B-7B-0125-Instruct                          6.92  avg= 17.51  instruct +OpenLM     
+    allenai/OLMoE-1B-7B-0924                                   6.92  avg=  7.27  base?    +OpenLM     
+    allenai/OLMoE-1B-7B-0924-Instruct                          6.92  avg= 13.70  instruct +OpenLM     
+    allenai/OLMo-1.7-7B-hf                                     7.00  avg=     -  base?    ATLAS       
+    allenai/OLMo-7B-Instruct-hf                                7.00  avg= 10.85  instruct +OpenLM     
+
+--- OPT  (n=1) ---
+    facebook/opt-1.3b                                          1.30  avg=  5.28  base?    +OpenLM     
+
+--- OpenChat/Starling  (n=8) ---
+    Intel/neural-chat-7b-v3                                    7.00  avg= 18.07  instruct ATLAS+OpenLM
+    Intel/neural-chat-7b-v3-1                                  7.00  avg=     -  instruct ATLAS       
+    Intel/neural-chat-7b-v3-2                                  7.00  avg= 21.47  instruct ATLAS+OpenLM
+    Intel/neural-chat-7b-v3-3                                  7.00  avg= 20.56  instruct ATLAS+OpenLM
+    Nexusflow/Starling-LM-7B-beta                              7.00  avg=     -  instruct ATLAS       
+    berkeley-nest/Starling-LM-7B-alpha                         7.00  avg=     -  instruct ATLAS       
+    declare-lab/starling-7B                                    7.00  avg=     -  instruct ATLAS       
+    openchat/openchat_3.5                                      7.00  avg= 21.64  instruct ATLAS+OpenLM
+
+--- Orca/Platypus  (n=14) ---
+    pankajmathur/orca_mini_v9_1_1B-Instruct                    1.24  avg=  9.06  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_5_1B-Instruct                    1.24  avg= 10.69  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_5_1B-Instruct_preview            1.24  avg=  9.54  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_6_1B-Instruct                    1.24  avg= 15.32  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_7_1B-Instruct                    1.24  avg= 12.49  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_0_3B-Instruct                    3.21  avg= 20.66  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_5_3B-Instruct                    3.21  avg= 24.15  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_6_3B-Instruct                    3.21  avg= 24.09  instruct +OpenLM     
+    pankajmathur/orca_mini_v9_7_3B-Instruct                    3.21  avg= 13.03  instruct +OpenLM     
+    pankajmathur/orca_mini_3b                                  3.43  avg=  3.13  base?    +OpenLM     
+    microsoft/Orca-2-7b                                        7.00  avg= 14.40  base?    ATLAS+OpenLM
+    pankajmathur/orca_mini_7b                                  7.00  avg=  3.41  base?    +OpenLM     
+    pankajmathur/orca_mini_v2_7b                               7.00  avg=  5.50  base?    +OpenLM     
+    pankajmathur/orca_mini_v3_7b                               7.00  avg= 13.64  base?    +OpenLM     
+
+--- Phi  (n=7) ---
+    microsoft/phi-1                                            1.42  avg=  5.57  base?    +OpenLM     
+    microsoft/phi-1_5                                          1.42  avg=  7.17  base?    +OpenLM     
+    microsoft/phi-2                                            2.78  avg= 15.53  base?    ATLAS+OpenLM
+    microsoft/Phi-3-mini-128k-instruct                         3.82  avg= 26.34  instruct ATLAS+OpenLM
+    microsoft/Phi-3-mini-4k-instruct                           3.82  avg= 27.56  instruct ATLAS+OpenLM
+    microsoft/Phi-3.5-mini-instruct                            3.82  avg= 28.18  instruct +OpenLM     
+    microsoft/Phi-4-mini-instruct                              3.84  avg= 29.41  instruct +OpenLM     
+
+--- Pythia  (n=6) ---
+    EleutherAI/pythia-160m                                     0.21  avg=  5.73  base?    +OpenLM     
+    EleutherAI/pythia-410m                                     0.51  avg=  5.23  base?    +OpenLM     
+    EleutherAI/pythia-1b                                       1.08  avg=  5.07  base?    +OpenLM     
+    EleutherAI/pythia-1.4b                                     1.51  avg=  6.01  base?    +OpenLM     
+    EleutherAI/pythia-2.8b                                     2.91  avg=  5.55  base?    +OpenLM     
+    EleutherAI/pythia-6.9b                                     6.90  avg=  5.97  base?    +OpenLM     
+
+--- Qwen1.5  (n=8) ---
+    Qwen/Qwen1.5-0.5B                                          0.62  avg=  5.35  base?    +OpenLM     
+    Qwen/Qwen1.5-0.5B-Chat                                     0.62  avg=  5.68  instruct +OpenLM     
+    Qwen/Qwen1.5-1.8B                                          1.84  avg=  9.27  base?    +OpenLM     
+    Qwen/Qwen1.5-1.8B-Chat                                     1.84  avg=  9.26  instruct +OpenLM     
+    Qwen/Qwen1.5-4B                                            3.95  avg= 11.77  base?    +OpenLM     
+    Qwen/Qwen1.5-4B-Chat                                       3.95  avg= 12.63  instruct +OpenLM     
+    Qwen/Qwen1.5-7B                                            7.00  avg=     -  base?    ATLAS       
+    Qwen/Qwen1.5-7B-Chat                                       7.00  avg=     -  instruct ATLAS       
+
+--- Qwen2  (n=4) ---
+    Qwen/Qwen2-0.5B                                            0.49  avg=  7.22  base?    +OpenLM     
+    Qwen/Qwen2-0.5B-Instruct                                   0.49  avg=  6.59  instruct +OpenLM     
+    Qwen/Qwen2-1.5B                                            1.54  avg= 10.45  base?    +OpenLM     
+    Qwen/Qwen2-1.5B-Instruct                                   1.54  avg= 14.14  instruct +OpenLM     
+
+--- Qwen2.5  (n=6) ---
+    Qwen/Qwen2.5-0.5B-Instruct                                 0.49  avg= 10.11  instruct +OpenLM     
+    Qwen/Qwen2.5-0.5B                                          0.50  avg=  6.55  base?    +OpenLM     
+    Qwen/Qwen2.5-1.5B                                          1.50  avg= 13.85  base?    +OpenLM     
+    Qwen/Qwen2.5-1.5B-Instruct                                 1.50  avg= 18.43  instruct +OpenLM     
+    Qwen/Qwen2.5-3B-Instruct                                   3.00  avg= 27.16  instruct +OpenLM     
+    Qwen/Qwen2.5-3B                                            3.09  avg= 18.10  base?    +OpenLM     
+
+--- RedPajama  (n=6) ---
+    togethercomputer/RedPajama-INCITE-Base-3B-v1               3.00  avg=  5.52  base     +OpenLM     
+    togethercomputer/RedPajama-INCITE-Chat-3B-v1               3.00  avg=  4.85  instruct +OpenLM     
+    togethercomputer/RedPajama-INCITE-Instruct-3B-v1           3.00  avg=  5.78  instruct +OpenLM     
+    togethercomputer/RedPajama-INCITE-7B-Base                  7.00  avg=  5.56  base     +OpenLM     
+    togethercomputer/RedPajama-INCITE-7B-Chat                  7.00  avg=  4.05  instruct +OpenLM     
+    togethercomputer/RedPajama-INCITE-7B-Instruct              7.00  avg=  6.46  instruct +OpenLM     
+
+--- Sheared/Pruned-Llama  (n=2) ---
+    princeton-nlp/Sheared-LLaMA-1.3B                           1.30  avg=  5.58  base?    +OpenLM     
+    princeton-nlp/Sheared-LLaMA-2.7B                           2.70  avg=  6.44  base?    +OpenLM     
+
+--- SmolLM  (n=8) ---
+    HuggingFaceTB/SmolLM-360M                                  0.36  avg=  6.26  base?    +OpenLM     
+    HuggingFaceTB/SmolLM2-360M                                 0.36  avg=  6.25  base?    +OpenLM     
+    HuggingFaceTB/SmolLM2-360M-Instruct                        0.36  avg=  8.14  instruct +OpenLM     
+    HuggingFaceTB/SmolLM-360M-Instruct                         0.36  avg=  5.01  instruct +OpenLM     
+    HuggingFaceTB/SmolLM-1.7B                                  1.71  avg=  5.58  base?    +OpenLM     
+    HuggingFaceTB/SmolLM-1.7B-Instruct                         1.71  avg=  5.49  instruct +OpenLM     
+    HuggingFaceTB/SmolLM2-1.7B                                 1.71  avg=  9.58  base?    +OpenLM     
+    HuggingFaceTB/SmolLM2-1.7B-Instruct                        1.71  avg= 15.02  instruct +OpenLM     
+
+--- StableLM  (n=5) ---
+    stabilityai/stablelm-2-1_6b                                1.65  avg=  5.32  base?    +OpenLM     
+    stabilityai/stablelm-2-1_6b-chat                           1.65  avg=  8.87  instruct +OpenLM     
+    stabilityai/stablelm-2-zephyr-1_6b                         1.65  avg=  9.46  instruct +OpenLM     
+    stabilityai/stablelm-3b-4e1t                               2.79  avg=  7.33  base?    +OpenLM     
+    stabilityai/stablelm-zephyr-3b                             2.79  avg= 12.37  instruct +OpenLM     
+
+--- TinyLlama  (n=5) ---
+    TinyLlama/TinyLlama-1.1B-Chat-v0.1                         1.10  avg=  3.96  instruct +OpenLM     
+    TinyLlama/TinyLlama-1.1B-Chat-v0.5                         1.10  avg=  4.13  instruct +OpenLM     
+    TinyLlama/TinyLlama-1.1B-Chat-v0.6                         1.10  avg=  4.29  instruct +OpenLM     
+    TinyLlama/TinyLlama-1.1B-Chat-v1.0                         1.10  avg=  2.82  instruct +OpenLM     
+    TinyLlama/TinyLlama_v1.1                                   1.10  avg=  4.82  base?    +OpenLM     
+
+--- Vicuna  (n=2) ---
+    lmsys/vicuna-7b-v1.3                                       7.00  avg=  8.53  instruct +OpenLM     
+    lmsys/vicuna-7b-v1.5                                       7.00  avg= 10.89  instruct +OpenLM     
+
+--- WizardLM/Airoboros  (n=2) ---
+    jondurbin/airoboros-m-7b-3.1.2                             7.00  avg=     -  base?    ATLAS       
+    microsoft/WizardLM-2-7B                                    7.00  avg=     -  instruct ATLAS       
+
+--- Yi  (n=5) ---
+    01-ai/Yi-1.5-6B                                            6.06  avg= 16.75  base?    ATLAS+OpenLM
+    01-ai/Yi-1.5-6B-Chat                                       6.06  avg= 22.78  instruct ATLAS+OpenLM
+    01-ai/Yi-6B                                                6.06  avg= 13.61  base?    +OpenLM     
+    01-ai/Yi-6B-200K                                           6.06  avg= 12.00  base?    +OpenLM     
+    01-ai/Yi-6B-Chat                                           6.06  avg= 14.12  instruct +OpenLM     
+
+--- Zephyr  (n=2) ---
+    alignment-handbook/zephyr-7b-dpo-full                      7.00  avg=     -  instruct ATLAS       
+    alignment-handbook/zephyr-7b-sft-full                      7.00  avg=     -  instruct ATLAS       
+
+====================================================================================================
+TIER B - community tunes of canonical bases (369 models): first 15 per family
+====================================================================================================
+
+--- Falcon  (n=1, showing 1) ---
+    jisukim8873/falcon-7B-case-8                               7.00  avg=     -  base?    ATLAS
+
+--- GPT-2  (n=1, showing 1) ---
+    postbot/gpt2-medium-emailgen                               0.38  avg=  4.74  base?    +OpenLM
+
+--- GPT-Neo/NeoX/J  (n=1, showing 1) ---
+    Kimargin/GPT-NEO-1.3B-wiki                                 1.32  avg=  5.35  base?    +OpenLM
+
+--- Gemma  (n=26, showing 15) ---
+    ell44ot/gemma-2b-def                                       1.55  avg=  8.12  base?    +OpenLM
+    Columbia-NLP/gemma-2b-zephyr-dpo                           2.00  avg=     -  instruct ATLAS
+    Columbia-NLP/gemma-2b-zephyr-sft                           2.00  avg=     -  instruct ATLAS
+    StarFox7/gemma-2b-dpo-v1                                   2.00  avg=     -  instruct ATLAS
+    pansophic/gemma-2b-sft-preview                             2.00  avg=     -  instruct ATLAS
+    vicgalle/OpenHermes-Gemma-2B                               2.00  avg=     -  instruct ATLAS
+    wandb/gemma-2b-zephyr-dpo                                  2.00  avg=     -  instruct ATLAS
+    wandb/gemma-2b-zephyr-sft                                  2.00  avg=     -  instruct ATLAS
+    Columbia-NLP/LION-Gemma-2b-dpo-v1.0                        2.51  avg= 11.48  instruct +OpenLM
+    Columbia-NLP/LION-Gemma-2b-odpo-v1.0                       2.51  avg= 11.90  base?    +OpenLM
+    Columbia-NLP/LION-Gemma-2b-sft-v1.0                        2.51  avg= 12.60  instruct +OpenLM
+    LenguajeNaturalAI/leniachat-gemma-2b-v0                    2.51  avg=  5.74  base?    +OpenLM
+    anakin87/gemma-2b-orpo                                     2.51  avg=  7.28  instruct +OpenLM
+    nidum/Nidum-Limitless-Gemma-2B                             2.51  avg=  6.17  base?    +OpenLM
+    Mr-Bhaskar/fbt-gemma-7b                                    7.00  avg=     -  base?    ATLAS
+
+--- Gemma-2  (n=4, showing 4) ---
+    SaisExperiments/Gemma-2-2B-Opus-Instruct                   2.61  avg= 17.25  instruct +OpenLM
+    SaisExperiments/Gemma-2-2B-Stheno-Filtered                 2.61  avg= 15.49  base?    +OpenLM
+    jebish7/gemma-2-2b-it                                      2.61  avg= 12.36  instruct +OpenLM
+    qq8933/OpenLongCoT-Base-Gemma2-2B                          3.20  avg=  5.47  base     +OpenLM
+
+--- Llama-1/other  (n=2, showing 2) ---
+    bfuzzy1/acheron-m1a-llama                                  0.51  avg=  3.35  base?    +OpenLM
+    oopere/Llama-FinSent-S                                     0.91  avg=  5.87  base?    +OpenLM
+
+--- Llama-2  (n=27, showing 15) ---
+    skymizer/Llama2-7b-sft-chat-custom-template-dpo            6.74  avg= 10.14  instruct +OpenLM
+    AIGym/Llama-2-7b-chat-hf-structured-responses              7.00  avg=     -  instruct ATLAS
+    JCX-kcuf/Llama-2-7b-chat-hf-gpt-4-80k                      7.00  avg=     -  instruct ATLAS
+    JCX-kcuf/Llama-2-7b-hf-gpt-3.5-80k                         7.00  avg=     -  base?    ATLAS
+    JCX-kcuf/Llama-2-7b-hf-gpt-4-80k                           7.00  avg=     -  base?    ATLAS
+    JCX-kcuf/Llama-2-7b-hf-llama2-chat-80k                     7.00  avg=     -  instruct ATLAS
+    PeanutJar/LLaMa-2-PeanutButter_v19_R8-7B                   7.00  avg=     -  base?    ATLAS
+    PeanutJar/LLaMa-2-PeanutButter_v37_SFT-R1-DPO-R2-7B        7.00  avg=     -  instruct ATLAS
+    Seungyoun/llama-2-7b-alpaca-gpt4                           7.00  avg=     -  instruct ATLAS
+    TinyPixel/llama2-7b-instruct                               7.00  avg=     -  instruct ATLAS
+    XuanXuanXuanXuan/Llama-2-7b-chat-hf-gpt-3.5-80k            7.00  avg=     -  instruct ATLAS
+    XuanXuanXuanXuan/Llama-2-7b-hf-gpt-3.5-80k                 7.00  avg=     -  base?    ATLAS
+    XuanXuanXuanXuan/Llama-2-7b-hf-llama2-raw-80k              7.00  avg=     -  base?    ATLAS
+    hamxea/Llama-2-7b-chat-hf-activity-fine-tuned-v3           7.00  avg=     -  instruct ATLAS
+    hamxea/Llama-2-7b-chat-hf-activity-fine-tuned-v4           7.00  avg=     -  instruct ATLAS
+
+--- Llama-3  (n=3, showing 3) ---
+    SicariusSicariiStuff/Impish_LLAMA_3B                       3.21  avg= 17.79  base?    +OpenLM
+    DenLabs/llama-3-7B-DenBot                                  7.00  avg=     -  base?    ATLAS
+    refine-ai/Llama3-7b                                        7.00  avg=     -  base?    ATLAS
+
+--- Llama-3.1  (n=5, showing 5) ---
+    PJMixers-Dev/LLaMa-3.1-RomboTiesTest-8B                    4.01  avg= 28.82  base?    +OpenLM
+    PJMixers-Dev/LLaMa-3.1-RomboTiesTest2-8B                   4.01  avg= 28.82  base?    +OpenLM
+    BlackBeenie/Neos-Llama-3.1-base                            4.65  avg=  3.97  base     +OpenLM
+    iFaz/llama31_8B_en_emo_v4                                  4.78  avg= 17.15  base?    +OpenLM
+    ahmeda335/13_outOf_32_pruned_layers_llama3.1-8b            5.20  avg=  4.40  base?    +OpenLM
+
+--- Llama-3.2  (n=45, showing 15) ---
+    iFaz/llama32_1B_en_emo_v1                                  0.77  avg= 10.93  base?    +OpenLM
+    oopere/pruned40-llama-3.2-1B                               0.91  avg=  6.88  base?    +OpenLM
+    DavieLion/Llama-3.2-1B-SPIN-iter0                          1.24  avg=  3.99  base?    +OpenLM
+    DavieLion/Llama-3.2-1B-SPIN-iter1                          1.24  avg=  3.75  base?    +OpenLM
+    DavieLion/Llama-3.2-1B-SPIN-iter2                          1.24  avg=  3.66  base?    +OpenLM
+    DavieLion/Llama-3.2-1B-SPIN-iter3                          1.24  avg=  3.61  base?    +OpenLM
+    DeepAutoAI/Explore_Llama-3.2-1B-Inst                       1.24  avg= 13.90  base?    +OpenLM
+    DeepAutoAI/Explore_Llama-3.2-1B-Inst_v0                    1.24  avg= 13.36  base?    +OpenLM
+    DeepAutoAI/Explore_Llama-3.2-1B-Inst_v1                    1.24  avg= 10.92  base?    +OpenLM
+    DeepAutoAI/Explore_Llama-3.2-1B-Inst_v1.1                  1.24  avg= 14.31  base?    +OpenLM
+    Xiaojian9992024/Llama3.2-1B-THREADRIPPER                   1.24  avg= 14.09  base?    +OpenLM
+    agentlans/Llama-3.2-1B-Instruct-CrashCourse12K             1.24  avg= 13.44  instruct +OpenLM
+    akhadangi/Llama3.2.1B.0.01-First                           1.24  avg=  3.11  base?    +OpenLM
+    akhadangi/Llama3.2.1B.0.01-Last                            1.24  avg=  3.26  base?    +OpenLM
+    akhadangi/Llama3.2.1B.0.1-First                            1.24  avg=  3.27  base?    +OpenLM
+
+--- Mistral  (n=111, showing 15) ---
+    M4-ai/TinyMistral-248M-v3                                  0.25  avg=  4.21  base?    +OpenLM
+    cckm/tinymistral_950m                                      0.95  avg=  5.22  base?    +OpenLM
+    AIJUUD/juud-Mistral-7B                                     7.00  avg=     -  base?    ATLAS
+    AIJUUD/juud-Mistral-7B-dpo                                 7.00  avg=     -  instruct ATLAS
+    ArianAskari/NeuralHermes-2.5-Mistral-7B                    7.00  avg=     -  instruct ATLAS
+    Azure99/blossom-v4-mistral-7b                              7.00  avg=     -  base?    ATLAS
+    Azure99/blossom-v5-mistral-7b                              7.00  avg=     -  base?    ATLAS
+    BlouseJury/Mistral-7B-Discord-0.1-DPO                      7.00  avg=     -  instruct ATLAS
+    BlouseJury/Mistral-7B-Discord-0.2                          7.00  avg=     -  base?    ATLAS
+    Corianas/Neural-Mistral-7B                                 7.00  avg=     -  base?    ATLAS
+    Eric111/Yarn-Mistral-7b-128k-DPO                           7.00  avg=     -  instruct ATLAS
+    FPHam/Writing_Partner_Mistral_7B                           7.00  avg=     -  base?    ATLAS
+    KnutJaegersberg/Walter-Mistral-7B                          7.00  avg=     -  base?    ATLAS
+    KnutJaegersberg/webMistral-7B                              7.00  avg=     -  base?    ATLAS
+    KoboldAI/Mistral-7B-Erebus-v3                              7.00  avg=     -  base?    ATLAS
+
+--- Mixtral  (n=2, showing 2) ---
+    FuseAI/OpenChat-3.5-7B-Mixtral                             7.00  avg=     -  instruct ATLAS
+    LeroyDyer/Mixtral_AI_SwahiliTron_7b                        7.00  avg=     -  base?    ATLAS
+
+--- Nemotron/Minitron  (n=1, showing 1) ---
+    jebish7/Nemotron-Mini-4B-Instruct                          4.19  avg= 16.90  instruct +OpenLM
+
+--- Nous/Hermes  (n=16, showing 15) ---
+    LHC88/DPOpenHermes-7B-v2-PerfLaser                         7.00  avg=     -  instruct ATLAS
+    LHC88/LaseredHermes-7B-v1                                  7.00  avg=     -  instruct ATLAS
+    LTC-AI-Labs/L2-7b-Hermes-Synthia                           7.00  avg=     -  instruct ATLAS
+    amazingvince/openhermes-7b-dpo                             7.00  avg=     -  instruct ATLAS
+    conceptofmind/Hermes-LLongMA-2-7b-8k                       7.00  avg=     -  instruct ATLAS
+    flemmingmiguel/Distilled-HermesChat-7B                     7.00  avg=     -  instruct ATLAS
+    hedronstone/OpenHermes-7B-Symbolic                         7.00  avg=     -  instruct ATLAS
+    lodrick-the-lafted/Hermes-Instruct-7B-100K                 7.00  avg=     -  instruct ATLAS
+    lodrick-the-lafted/Hermes-Instruct-7B-217K                 7.00  avg=     -  instruct ATLAS
+    saishf/West-Hermes-7B                                      7.00  avg=     -  instruct ATLAS
+    seyf1elislam/WestKunai-Hermes-7b                           7.00  avg=     -  instruct ATLAS
+    vicgalle/ConfigurableHermes-7B                             7.00  avg=     -  instruct ATLAS
+    vicgalle/SystemConfigHermes-7B                             7.00  avg=     -  instruct ATLAS
+    vicgalle/SystemHermes-2-7B                                 7.00  avg=     -  instruct ATLAS
+    vicgalle/SystemHermes-7B                                   7.00  avg=     -  instruct ATLAS
+
+--- OpenChat/Starling  (n=7, showing 7) ---
+    FuseAI/OpenChat-3.5-7B-Solar                               7.00  avg=     -  instruct ATLAS
+    JunchengXie/Starling-LM-7B-alpha-gpt-4-80k                 7.00  avg=     -  instruct ATLAS
+    Toten5/Marcoroni-neural-chat-7B-v2                         7.00  avg=     -  instruct ATLAS
+    chujiezheng/Starling-LM-7B-alpha-ExPO                      7.00  avg=     -  instruct ATLAS
+    chujiezheng/Starling-LM-7B-beta-ExPO                       7.00  avg=     -  instruct ATLAS
+    invalid-coder/Starling-LM-7B-beta-laser-dpo                7.00  avg=     -  instruct ATLAS
+    luqmanxyz/LelaStarling-7B                                  7.00  avg=     -  instruct ATLAS
+
+--- Orca/Platypus  (n=3, showing 3) ---
+    Danielbrdz/Barcenas-Orca-2-7b                              7.00  avg=     -  base?    ATLAS
+    NurtureAI/Orca-2-7B-16k                                    7.00  avg=     -  base?    ATLAS
+    ignos/LeoScorpius-GreenNode-Platypus-7B-v1                 7.00  avg=     -  base?    ATLAS
+
+--- Other-named-lab  (n=1, showing 1) ---
+    tensoropera/Fox-1-1.6B                                     1.67  avg=  7.76  base?    +OpenLM
+
+--- Phi  (n=30, showing 15) ---
+    DUAL-GPO-2/phi-2-gpo-renew2-b0.001-v2-i1                   2.70  avg=     -  base?    ATLAS
+    DUAL-GPO-2/phi-2-gpo-renew2-i0                             2.70  avg=     -  base?    ATLAS
+    DUAL-GPO-2/phi-2-ipo-renew1                                2.70  avg=     -  base?    ATLAS
+    NovoCode/Phi-2-DPO                                         2.70  avg=     -  instruct ATLAS
+    abacaj/phi-2-super                                         2.70  avg=     -  base?    ATLAS
+    amu/dpo-phi2                                               2.70  avg=     -  instruct ATLAS
+    amu/spin-phi2                                              2.70  avg=     -  base?    ATLAS
+    amu/spin-phi2-1.5                                          2.70  avg=     -  base?    ATLAS
+    charioteer/Neural-phi2                                     2.70  avg=     -  base?    ATLAS
+    cloudyu/microsoft-phi-2-sft                                2.70  avg=     -  instruct ATLAS
+    g-ronimo/phi-2-OpenHermes-2.5                              2.70  avg=     -  instruct ATLAS
+    huseyinatahaninan/phi-2-dpo                                2.70  avg=     -  instruct ATLAS
+    huseyinatahaninan/phi-2-instruction                        2.70  avg=     -  instruct ATLAS
+    l3utterfly/phi-2-layla-v1                                  2.70  avg=     -  base?    ATLAS
+    l3utterfly/phi-2-layla-v1-chatml                           2.70  avg=     -  base?    ATLAS
+
+--- Qwen1  (n=3, showing 3) ---
+    hotmailuser/QwenStock-0.5B                                 0.63  avg=  5.09  base?    +OpenLM
+    someon98/qwen-CoMa-0.5b                                    0.63  avg=  5.86  base?    +OpenLM
+    hotmailuser/QwenStock-1.7B                                 1.78  avg= 16.76  base?    +OpenLM
+
+--- Qwen1.5  (n=6, showing 6) ---
+    securin/Securin-LLM-V2.5-Qwen-1.5B                         1.54  avg=  5.23  base?    +OpenLM
+    Danielbrdz/Barcenas-R1-Qwen-1.5b                           1.78  avg= 15.14  base?    +OpenLM
+    rombodawg/Rombos-LLM-V2.5-Qwen-1.5b                        1.78  avg= 16.35  base?    +OpenLM
+    minghaowu/Qwen1.5-1.8B-OpenHermes-2.5                      1.84  avg=  8.68  instruct +OpenLM
+    Azure99/blossom-v4-qwen1_5-7b                              7.00  avg=     -  base?    ATLAS
+    Minami-su/Qwen1.5-7B-Chat_llamafy                          7.00  avg=     -  instruct ATLAS
+
+--- Qwen2  (n=6, showing 6) ---
+    CoolSpring/Qwen2-0.5B-Abyme                                0.49  avg=  5.00  base?    +OpenLM
+    CoolSpring/Qwen2-0.5B-Abyme-merge2                         0.63  avg=  6.32  base?    +OpenLM
+    CoolSpring/Qwen2-0.5B-Abyme-merge3                         0.63  avg=  6.82  base?    +OpenLM
+    RESMPDEV/Qwen2-Wukong-0.5B                                 0.63  avg=  4.98  base?    +OpenLM
+    LenguajeNaturalAI/leniachat-qwen2-1.5B-v0                  1.54  avg=  8.58  base?    +OpenLM
+    thomas-yanxin/XinYuan-Qwen2-1_5B                           1.78  avg= 11.52  base?    +OpenLM
+
+--- Qwen2.5  (n=12, showing 12) ---
+    agentlans/Qwen2.5-0.5B-Instruct-CrashCourse-dropout        0.49  avg=  8.43  instruct +OpenLM
+    jebish7/qwen2.5-0.5B-IHA-Hin                               0.49  avg=  3.25  base?    +OpenLM
+    AtAndDev/Qwen2.5-1.5B-continuous-learnt                    1.54  avg= 17.48  base?    +OpenLM
+    RESMPDEV/EVA-Qwen2.5-1.5B-FRFR                             1.54  avg= 14.19  base?    +OpenLM
+    Xiaojian9992024/Qwen2.5-Ultra-1.5B-25.02-Exp               1.54  avg= 14.45  base?    +OpenLM
+    hatemmahmoud/qwen2.5-1.5b-sft-raft-grpo-hra-doc            1.54  avg= 18.16  instruct +OpenLM
+    mergekit-community/SuperQwen-2.5-1.5B                      1.78  avg=  3.26  base?    +OpenLM
+    win10/Qwen2.5-2B-Instruct                                  2.90  avg= 10.57  instruct +OpenLM
+    tensopolis/qwen2.5-3b-or1-tensopolis                       3.09  avg= 18.28  base?    +OpenLM
+    PJMixers-Dev/Qwen2.5-RomboTiesTest-7B                      3.81  avg= 35.29  base?    +OpenLM
+    qingy2024/Qwen2.5-4B                                       4.17  avg= 14.28  base?    +OpenLM
+    jeffmeloy/Qwen2.5-7B-minperplexity-2                       7.00  avg= 30.04  base?    +OpenLM
+
+--- Qwen3  (n=3, showing 3) ---
+    ehristoforu/coolqwen-3b-it                                 3.08  avg= 28.65  instruct +OpenLM
+    rombodawg/Rombos-LLM-V2.5-Qwen-3b                          3.40  avg= 25.92  base?    +OpenLM
+    rombodawg/Rombos-LLM-V2.5.1-Qwen-3b                        3.40  avg= 13.61  base?    +OpenLM
+
+--- SmolLM  (n=4, showing 4) ---
+    aloobun/d-SmolLM2-360M                                     0.36  avg=  6.18  base?    +OpenLM
+    assskelad/smollm2-360M-sft_SmallThoughts                   0.36  avg=  5.04  instruct +OpenLM
+    gabrielmbmb/SmolLM-1.7B-Instruct-IFEval                    1.71  avg=  5.40  instruct +OpenLM
+    meditsolutions/SmolLM2-MedIT-Upscale-2B                    2.11  avg= 15.92  base?    +OpenLM
+
+--- StableLM  (n=1, showing 1) ---
+    hamxea/StableBeluga-7B-activity-fine-tuned-v2              7.00  avg=     -  instruct ATLAS
+
+--- TinyLlama  (n=5, showing 5) ---
+    Josephgflowers/Differential-Attention-Liquid-Metal-Tinyl   1.10  avg=  5.25  base?    +OpenLM
+    Josephgflowers/TinyLlama-Cinder-Agent-v1                   1.10  avg=  6.33  base?    +OpenLM
+    Josephgflowers/TinyLlama-v1.1-Cinders-World                1.10  avg=  5.68  base?    +OpenLM
+    Josephgflowers/Tinyllama-STEM-Cinder-Agent-v1              1.10  avg=  5.68  base?    +OpenLM
+    Josephgflowers/Tinyllama-r1                                1.10  avg=  5.22  base?    +OpenLM
+
+--- Tulu  (n=1, showing 1) ---
+    chujiezheng/tulu-2-dpo-7b-ExPO                             7.00  avg=     -  instruct ATLAS
+
+--- Vicuna  (n=3, showing 3) ---
+    luffycodes/vicuna-class-tutor-7b-ep3                       7.00  avg=     -  instruct ATLAS
+    luffycodes/vicuna-mmlu-val-mcq-7b-ep2                      7.00  avg=     -  instruct ATLAS
+    luffycodes/vicuna-mmlu-val-only-correct-mcq-7b-ep2         7.00  avg=     -  instruct ATLAS
+
+--- WizardLM/Airoboros  (n=6, showing 6) ---
+    amazingvince/Not-WizardLM-2-7B                             7.00  avg=     -  instruct ATLAS
+    dreamgen/WizardLM-2-7B                                     7.00  avg=     -  instruct ATLAS
+    ignos/LeoScorpius-GreenNode-Alpaca-7B-v1                   7.00  avg=     -  instruct ATLAS
+    rufjdk5480/llama-7b-ludwig-alpaca                          7.00  avg=     -  instruct ATLAS
+    umd-zhou-lab/recycled-alpaca-7b-v2.0                       7.00  avg=     -  instruct ATLAS
+    umd-zhou-lab/recycled-wizardlm-7b-v2.0                     7.00  avg=     -  instruct ATLAS
+
+--- Yi  (n=6, showing 6) ---
+    HenryJJ/Instruct_Yi-6B_Dolly_CodeAlpaca                    6.00  avg=     -  instruct ATLAS
+    Walmart-the-bag/Yi-6B-Infinity-Chat                        6.00  avg=     -  instruct ATLAS
+    adamo1139/Yi-6B-200K-AEZAKMI-v2                            6.00  avg=     -  base?    ATLAS
+    adamo1139/Yi-6B-200K-AEZAKMI-v2-rawrr1-DPO                 6.00  avg=     -  instruct ATLAS
+    hongzoh/Yi-6B_Open-Orca                                    6.00  avg=     -  base?    ATLAS
+    hongzoh/Yi-6B_Open-Platypus-v2                             6.00  avg=     -  base?    ATLAS
+
+--- Zamba/Mamba/RWKV/SSM  (n=4, showing 4) ---
+    CobraMamba/mamba-gpt-7b-v1                                 7.00  avg=     -  base?    ATLAS
+    CobraMamba/mamba-gpt-7b-v2                                 7.00  avg=     -  base?    ATLAS
+    Nekochu/Confluence-Renegade-7B                             7.00  avg=     -  base?    ATLAS
+    TRI-ML/mamba-7b-rw                                         7.00  avg=     -  base?    ATLAS
+
+--- Zephyr  (n=23, showing 15) ---
+    ArianAskari/SOLID-SFT-DPO-MixQV2-SOLIDChosen-SFTRejected   7.00  avg=     -  instruct ATLAS
+    ArianAskari/SOLID-SFT-DPO-MixQV2-SOLIDRejected-SFTChosen   7.00  avg=     -  instruct ATLAS
+    ArianAskari/SOLID-SFT-DPO-MixQV3-SOLIDChosen-SFTRejected   7.00  avg=     -  instruct ATLAS
+    ArianAskari/SOLID-SFT-DPO-MixQV3-SOLIDRejected-SFTChosen   7.00  avg=     -  instruct ATLAS
+    ArianAskari/SOLID-SFT-WoDPO-MixQV2-Zephyr-7b-beta          7.00  avg=     -  instruct ATLAS
+    CallComply/zephyr-7b-beta-128k                             7.00  avg=     -  instruct ATLAS
+    DUAL-GPO-2/zephyr-7b-gpo-v6-i1                             7.00  avg=     -  instruct ATLAS
+    JunchengXie/zephyr-7b-beta-gpt-4-80k                       7.00  avg=     -  instruct ATLAS
+    NotAiLOL/Athena-zephyr-7B                                  7.00  avg=     -  instruct ATLAS
+    UCLA-AGI/zephyr-7b-sft-full-SPIN-iter0                     7.00  avg=     -  instruct ATLAS
+    UCLA-AGI/zephyr-7b-sft-full-SPIN-iter1                     7.00  avg=     -  instruct ATLAS
+    UCLA-AGI/zephyr-7b-sft-full-SPIN-iter2                     7.00  avg=     -  instruct ATLAS
+    UCLA-AGI/zephyr-7b-sft-full-SPIN-iter3                     7.00  avg=     -  instruct ATLAS
+    chujiezheng/zephyr-7b-alpha-ExPO                           7.00  avg=     -  instruct ATLAS
+    chujiezheng/zephyr-7b-beta-ExPO                            7.00  avg=     -  instruct ATLAS
+
+====================================================================================================
+### TASK 5 - SIZE-BIN COVERAGE OF THE SHORTLIST
+====================================================================================================
+
+TIER A  (n=194)
+   [0.15-0.5)      12  #######
+   [0.5-1)          7  ####
+   [1-1.5)         25  ##############
+   [1.5-2)         23  #############
+   [2-3)           18  ##########
+   [3-4)           30  #################
+   [4-5)            3  #
+   [5-6)            0  
+   [6-7]           76  #############################################
+
+TIER B  (n=369)
+   [0.15-0.5)       7  #
+   [0.5-1)         10  #
+   [1-1.5)         27  #####
+   [1.5-2)         18  ###
+   [2-3)           45  ########
+   [3-4)           26  #####
+   [4-5)            8  #
+   [5-6)            1  
+   [6-7]          227  #############################################
+
+TIER A+B  (n=563)
+   [0.15-0.5)      19  ##
+   [0.5-1)         17  ##
+   [1-1.5)         52  #######
+   [1.5-2)         41  ######
+   [2-3)           63  #########
+   [3-4)           56  ########
+   [4-5)           11  #
+   [5-6)            1  
+   [6-7]          303  #############################################
+
+whole 0-7B window  (n=3040)
+   [0.15-0.5)     133  ###
+   [0.5-1)        156  ###
+   [1-1.5)        143  ###
+   [1.5-2)        162  ###
+   [2-3)          183  ####
+   [3-4)          309  #######
+   [4-5)           56  #
+   [5-6)            9  
+   [6-7]         1889  #############################################
+
+underpopulated bins (Tier A < 15 models):
+   [0.15-0.5)   TierA=12   TierA+B=19
+   [0.5-1)      TierA=7    TierA+B=17
+   [4-5)        TierA=3    TierA+B=11
+   [5-6)        TierA=0    TierA+B=1
+
+Tier A bin table with example models:
+   [0.15-0.5)   n=12   e.g. pythia-160m, smol_llama-220M-GQA, smol_llama-220M-openhermes, smol_llama-220M-GQA-fineweb_edu
+   [0.5-1)      n=7    e.g. Qwen2.5-0.5B, pythia-410m, h2o-danube3-500m-chat, bloom-560m
+   [1-1.5)      n=25   e.g. MiniCPM-S-1B-sft-llama-format, bloom-1b1, pythia-1b, TinyLlama_v1.1
+   [1.5-2)      n=23   e.g. Qwen2.5-1.5B-Instruct, Qwen2.5-1.5B, pythia-1.4b, Hymba-1.5B-Base
+   [2-3)        n=18   e.g. gemma-1.1-2b-it, gemma-2b, gemma-2b-it, granite-3.1-2b-base
+   [3-4)        n=30   e.g. dolly-v2-3b, RedPajama-INCITE-Base-3B-v1, RedPajama-INCITE-Instruct-3B-v1, RedPajama-INCITE-Chat-3B-v1
+   [4-5)        n=3    e.g. Minitron-4B-Base, Nemotron-Mini-4B-Instruct, Llama-3.1-Minitron-4B-Depth-Base
+   [5-6)        n=0    e.g. 
+   [6-7]        n=76   e.g. GPT-JT-6B-v1, gpt-j-6b, Yi-6B, Yi-6B-Chat
