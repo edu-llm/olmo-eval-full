@@ -16,6 +16,14 @@
 #   (e) INGEST : run the driver with --ingest to assemble per-benchmark verdicts +
 #                response matrices (merges all shards).
 #
+# S3 DIVISION OF LABOR: this wrapper OWNS the on-node S3 transfers (push cases in
+# (b), pull verdicts in (d)) because it runs on the GPU box, loops per shard, and
+# knows the frozen runner's upload layout. The driver (run_all_judge_grading.py)
+# is S3-aware but does NOT duplicate this: it derives its GPU hand-off command's
+# --s3-output-prefix from $S3_GRADING_PREFIX (exported below, so both agree on the
+# same layout), and its --ingest can take an s3:// root for standalone (no-wrapper)
+# runs. Here we still pull to a flat local inbox and ingest from that local path.
+#
 # Prereqs (see scripts/aws/setup_respgen.sh, and `uv sync`):
 #   export HF_TOKEN=<token>
 # S3 (bucket/prefix configurable; NEVER hardcode a real bucket here):
@@ -110,6 +118,7 @@ echo "   benchmarks: $BENCHMARKS"
 echo "== (a) emit cases =="
 EMIT_ARGS=(scripts/run_all_judge_grading.py --emit-cases-only
            --responses-root "$RESPONSES_ROOT" --out-root "$JUDGE_ROOT" --judge "$JUDGE"
+           --s3-prefix "$S3_GRADING_PREFIX"
            --num-shards "$NUM_SHARDS" --shard-index "$SHARD_INDEX")
 [[ -n "$ONLY" ]] && EMIT_ARGS+=(--only "$ONLY")
 uv run "${EMIT_ARGS[@]}"
