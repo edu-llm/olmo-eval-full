@@ -116,6 +116,21 @@ _BENCHMARKS: tuple[AtlasBenchmark, ...] = (
     # This is a calibration-parity note (mirrors docs/02 section 2 for arc), not
     # a wiring blocker -- the pipeline runs regardless.
     AtlasBenchmark("gsm8k", "gsm8k", "gsm8k", scoring=SCORING_GENERATIVE, positional_id=True),
+    # OpenLM (Open LLM Leaderboard v2) banks. Unlike the ATLAS-sourced banks
+    # above, these were calibrated on lm-eval-harness responses; the id-bridge
+    # joins each bank's item to the leaderboard doc_id (ifeval) / "{subtask}|{doc_id}"
+    # (math) rather than a raw split position, so positional_id stays False.
+    #
+    # ifeval is generative + verifier-scored: the CAT's 0/1 cell comes from the
+    # base task's prompt-level *strict* accuracy (IFEvalPromptStrictAccuracy.
+    # compute_instance), matching the metric the OpenLM bank was calibrated on
+    # (prompt_level_strict_acc).
+    AtlasBenchmark("ifeval", "ifeval", "ifeval", scoring=SCORING_GENERATIVE),
+    # math is generative + sympy answer-equivalence. Parity caveat (mirrors the
+    # gsm8k note): the OpenLM bank was calibrated under lm-eval's math_verify
+    # exact_match; olmo-eval's Minerva-style extraction/equivalence is close but
+    # not identical, which can shift item difficulty. Wiring runs regardless.
+    AtlasBenchmark("math", "leaderboard_math", "math", scoring=SCORING_GENERATIVE),
     # truthfulqa: mixed scoring and no olmo-eval base task yet, so it is the one
     # unregistered benchmark (excluded from cat_benchmarks()).
     AtlasBenchmark("truthfulqa", None, "truthfulqa", scoring=SCORING_VARIES),

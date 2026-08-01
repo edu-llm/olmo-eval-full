@@ -3,30 +3,40 @@ name: add-cat-evals
 description: >-
   Add ATLAS CAT (Computerized Adaptive Testing) checkpoint diagnostics to an
   OLMo-core training run. Converts a native OLMo-core checkpoint to HF format,
-  runs the adaptive atlas_arc eval via vLLM, and writes theta/SE results to S3.
+  runs the adaptive ATLAS evals via vLLM, and writes theta/SE results to S3.
   Use when a training team wants to auto-run CAT diagnostics on checkpoints, add
-  atlas_arc / adaptive-testing evals to a training script, or asks how to score
+  atlas / adaptive-testing evals to a training script, or asks how to score
   checkpoints with ATLAS CAT.
 disable-model-invocation: true
 ---
 
 # Add CAT evals to a training run
 
-Runs an ATLAS adaptive test (`atlas_arc`) on a checkpoint and writes results to a
-fixed S3 prefix. Designed to be called from an OLMo-core training script right
-after a checkpoint is saved.
+Runs the ATLAS adaptive tests on a checkpoint and writes results to a fixed S3
+prefix. Designed to be called from an OLMo-core training script right after a
+checkpoint is saved.
 
 ## What it does
 
 1. Converts a native OLMo-core checkpoint (`model_and_optim/` + `config.json`) to
    HF format (`config.json` + `*.safetensors`). CPU-only for standard dense archs.
 2. Boots a local vLLM server on the HF checkpoint.
-3. Runs the adaptive `atlas_arc` CAT (picks 8–40 ARC-Challenge items until SE ≤ stop).
-4. Writes `atlas_arc_results.json` (theta, se, pirt_accuracy, n_items, selected ids),
+3. Runs the adaptive CAT for each benchmark (each picks 8–40 items until SE ≤ stop),
+   sharing one vLLM boot.
+4. Writes per-eval `<eval>.json` (theta, se, pirt_accuracy, n_items, selected ids),
    `pipeline_provenance.json`, and `worker.log` to S3, plus a `_READY` marker.
 
-Scope today: **ARC-Challenge only** (one ability signal, not the full 5-benchmark
-ATLAS profile).
+Scope today: **4 benchmarks by default** — `atlas_arc` (ARC-Challenge),
+`atlas_hellaswag`, `atlas_winogrande` (MCQ log-likelihood), and `atlas_gsm8k`
+(generative exact-match), each backed by a calibrated ATLAS 3PL bank vendored in
+this repo.
+
+Two more are wired and available via `--evals` (opt-in; both are slower
+generative benchmarks calibrated on Open LLM Leaderboard v2 responses):
+`atlas_ifeval` (instruction-following, prompt-level strict) and `atlas_math`
+(Level-5 MATH-Hard, sympy answer equivalence). Their item difficulties were
+calibrated under lm-eval-harness scoring, so treat their theta as approximate
+until a parity pass is run. TruthfulQA is still not wired (no olmo-eval base task).
 
 ## Requirements
 
@@ -80,6 +90,7 @@ nohup bash .cursor/skills/add-cat-evals/scripts/run_cat_diagnostic.sh \
 | `--min-items` | `8` | CAT floor |
 | `--max-items` | `40` | CAT cap |
 | `--tp` | `1` | vLLM tensor-parallel size (raise for large models) |
+| `--evals` | `atlas_arc atlas_hellaswag atlas_winogrande atlas_gsm8k` | space-separated CAT evals (share one vLLM boot); also supports `atlas_ifeval`, `atlas_math` |
 | `--skip-convert` | off | checkpoint is already HF format / an HF id |
 | `--keep-hf` | off | keep the converted `-hf` dir (default: temp, removed after) |
 | `--dry-run` | off | print the plan without running |
@@ -88,8 +99,11 @@ nohup bash .cursor/skills/add-cat-evals/scripts/run_cat_diagnostic.sh \
 
 ```
 <s3-out>/<run-id>/
-  atlas_arc_results.json    # theta, se, pirt_accuracy, n_items, selected_question_ids
-  pipeline_provenance.json  # checkpoint, run_id, git_sha, args
+  atlas_arc.json            # theta, se, pirt_accuracy, n_items, selected_question_ids
+  atlas_hellaswag.json      # (one JSON per --evals entry)
+  atlas_winogrande.json
+  atlas_gsm8k.json
+  pipeline_provenance.json  # checkpoint, run_id, git_sha, evals, args
   worker.log
   _READY                    # written last; poll for this to know it's done
 ```
@@ -106,13 +120,19 @@ The diagnostic step is exactly:
 
 ```bash
 uv run olmo-eval run-external \
-  -m "${HF_CKPT}" -e atlas_arc --provider vllm_server \
+  -m "${HF_CKPT}" \
+  -e atlas_arc -e atlas_hellaswag -e atlas_winogrande -e atlas_gsm8k \
+  --provider vllm_server \
   -a "se_stop=0.3" -a "min_items=8" -a "max_items=40" \
   -O "${OUT}"
 ```
 
-`atlas_arc` only runs through `run-external` (vLLM), which needs HF-format weights —
+These evals only run through `run-external` (vLLM), which needs HF-format weights —
 hence the conversion step. Native OLMo-core weights are not loadable by vLLM directly.
+Each `atlas_*` eval joins its calibrated 3PL bank
+(`AdaptiveTesting/Inputs/ATLAS/<benchmark>/`) to the benchmark's questions via
+`atlas_idx_to_question_id.csv`; only items present in both the bank and the task are
+eligible for selection.
 
 ## Additional resources
 

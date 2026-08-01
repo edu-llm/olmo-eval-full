@@ -48,8 +48,10 @@ models:
     params_b: 0.36
   - id: HuggingFaceTB/SmolLM2-360M-Instruct
     params_b: 0.36
+  # ships a chat_template but no id marker matches; set explicitly
   - id: OpenBMB/MiniCPM4-0.5B
     params_b: 0.5
+    apply_chat_template: true
   - id: Qwen/Qwen2-0.5B
     params_b: 0.5
   - id: Qwen/Qwen2.5-0.5B-Instruct
@@ -245,8 +247,10 @@ models:
     params_b: 4
   - id: nvidia/Nemotron-Mini-4B-Instruct
     params_b: 4
+  # ships a chat_template but no id marker matches; set explicitly
   - id: openbmb/MiniCPM3-4B
     params_b: 4
+    apply_chat_template: true
   - id: facebook/xglm-4.5B
     params_b: 4.5
   # --- 6.0-7.0 B ---

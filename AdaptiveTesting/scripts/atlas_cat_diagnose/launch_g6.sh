@@ -15,6 +15,7 @@ RUN_ID=""
 SE_STOP="0.3"
 MAX_ITEMS="40"
 MIN_ITEMS="8"
+EVALS="${EVALS:-atlas_arc atlas_hellaswag atlas_winogrande atlas_gsm8k}"
 BRANCH="${BRANCH:-AdaptiveEvals}"
 REPO_URL="${REPO_URL:-https://github.com/edu-llm/olmo-eval-full.git}"
 REGION="${REGION:-us-east-1}"
@@ -35,6 +36,7 @@ while [[ $# -gt 0 ]]; do
     --se-stop) SE_STOP="$2"; shift 2 ;;
     --max-items) MAX_ITEMS="$2"; shift 2 ;;
     --min-items) MIN_ITEMS="$2"; shift 2 ;;
+    --evals) EVALS="$2"; shift 2 ;;
     --branch) BRANCH="$2"; shift 2 ;;
     -h|--help)
       sed -n '2,12p' "$0"; exit 0 ;;
@@ -96,6 +98,7 @@ chmod +x \${ROOT}/code/AdaptiveTesting/scripts/atlas_cat_diagnose/run_worker.sh
 export CHECKPOINT=$(printf '%q' "${CHECKPOINT}")
 export RUN_ID=$(printf '%q' "${RUN_ID}")
 export S3_OUT_ROOT=$(printf '%q' "${S3_OUT_ROOT}")
+export EVALS=$(printf '%q' "${EVALS}")
 export SE_STOP=$(printf '%q' "${SE_STOP}")
 export MAX_ITEMS=$(printf '%q' "${MAX_ITEMS}")
 export MIN_ITEMS=$(printf '%q' "${MIN_ITEMS}")

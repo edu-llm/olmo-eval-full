@@ -1,0 +1,365 @@
+{
+  "_comment": "Scenario ids excluded by the per-item audit (scripts/audit_bridge_items.py), which read every scenario for what its GRADED TURN actually asks rather than trusting session-level metadata. Three reasons: no_error_present -- the student is correct, acknowledging, asking a question or ending the session, so D1/D2 (both critical, 'identify the error') are unpassable; not_gradeable -- the error exists but is not recoverable from the visible text; not_mathematics -- the graded turn is session admin or tool talk, not a maths task. These survived the visual cuts because Bridge's free-text 'no mistake' filter only caught rows where an annotator SAID so in words; these carry a clean error label. Read by scripts/ingest_bridge.py; committed so the build stays deterministic.",
+  "generated_by": "scripts/audit_bridge_items.py",
+  "audit_report": "staging/bridge_item_audit/report.md",
+  "classifier": "openai-group/gpt-5.5",
+  "generated_on": "2026-08-01",
+  "count": 50,
+  "reason_counts": {
+    "no_error_present": 20,
+    "not_mathematics": 18,
+    "not_gradeable": 12
+  },
+  "excluded": [
+    {
+      "scenario_id": "bridge_0004",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands the tutor's comparison showing 16.50 and 12.95 are less than 20",
+      "evidence": "The student is only expressing partial understanding, not making a mathematical error."
+    },
+    {
+      "scenario_id": "bridge_0005",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "UNSTATED: the final answer to an unknown problem",
+      "evidence": "The underlying math problem is not visible, and the student's response appears to be gibberish or a typo rather than a diagnosable math error."
+    },
+    {
+      "scenario_id": "bridge_0006",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student's prior answer is final",
+      "evidence": "No mathematical task or student error is visible; the student is only saying the answer is not final."
+    },
+    {
+      "scenario_id": "bridge_0008",
+      "reason": "not_gradeable",
+      "confidence": "high",
+      "asks_for": "UNSTATED: determine how many times 4 can go into 27",
+      "evidence": "The visible tutor prompt is garbled/reversed, so the intended division question is not clear from the visible text alone."
+    },
+    {
+      "scenario_id": "bridge_0013",
+      "reason": "not_gradeable",
+      "confidence": "high",
+      "asks_for": "UNSTATED: identify that the question asks for the expanded notation for 928",
+      "evidence": "The actual problem is not visible, so the imprecision cannot be identified from the visible transcript alone."
+    },
+    {
+      "scenario_id": "bridge_0024",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "show work on the whiteboard using the Pencil Tool",
+      "evidence": "Student is ending the session; there is no mathematical error to address."
+    },
+    {
+      "scenario_id": "bridge_0036",
+      "reason": "not_gradeable",
+      "confidence": "high",
+      "asks_for": "UNSTATED: explain how to check whether the answer about a quadrilateral/trapezoid is correct",
+      "evidence": "The actual task is not visible, so the tutor model could not know from the transcript alone that '2 equal angles' is an insufficient trapezoid criterion."
+    },
+    {
+      "scenario_id": "bridge_0037",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student needs help explaining why a place value cannot contain a two-digit number",
+      "evidence": "The student is merely declining help, not making a mathematical attempt or error."
+    },
+    {
+      "scenario_id": "bridge_0041",
+      "reason": "not_gradeable",
+      "confidence": "medium",
+      "asks_for": "UNSTATED: identify that the task is to find the perimeter, likely of a figure with side lengths 7 and 5",
+      "evidence": "The original problem or diagram is missing, so the tutor cannot verify from visible text alone that 7 + 5 is incomplete for the perimeter."
+    },
+    {
+      "scenario_id": "bridge_0072",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "UNSTATED: identify that he should measure the area",
+      "evidence": "The student appears to be correct; there is no visible mistake for a tutor to address, and the referent of 'he' is under-specified in the visible text."
+    },
+    {
+      "scenario_id": "bridge_0094",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the tutor's multiplication/final-answer step makes sense",
+      "evidence": "The tutor's statement is mathematically inconsistent/wrong: 4 times 1 is 4, not 48; the student only says yes."
+    },
+    {
+      "scenario_id": "bridge_0096",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "UNSTATED: give an example or another example of a multiple of 10",
+      "evidence": "The visible transcript does not include the actual problem, and 90 appears to be a valid multiple of 10 rather than an error."
+    },
+    {
+      "scenario_id": "bridge_0111",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "confirm understanding of the addition problem 1440 + 1440 + 1440",
+      "evidence": "The student is asking to leave rather than making a mathematical error, so this is not a math-tutoring error turn."
+    },
+    {
+      "scenario_id": "bridge_0135",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student needs help answering the place-value question",
+      "evidence": "The student is merely declining help, not making a mathematical error."
+    },
+    {
+      "scenario_id": "bridge_0171",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "to confirm whether the final answer is 1/5 < 1/2",
+      "evidence": "Student is correct; there is no visible mistake to remediate."
+    },
+    {
+      "scenario_id": "bridge_0264",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "identify the unit rate/quantity to find, the average speed in miles per hour",
+      "evidence": "Student is correct; 'avarage' is only a spelling typo."
+    },
+    {
+      "scenario_id": "bridge_0270",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "define measuring length",
+      "evidence": "student's answer is acceptable; no mistake"
+    },
+    {
+      "scenario_id": "bridge_0273",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "state what the student knows about polygons",
+      "evidence": "The student's response is a reasonable prior-knowledge statement, not a clear mistake needing remediation."
+    },
+    {
+      "scenario_id": "bridge_0278",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands why 1/4 equals 2/8 from the models",
+      "evidence": "Student is merely acknowledging understanding; there is no math error to address."
+    },
+    {
+      "scenario_id": "bridge_0280",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands why 2,458 rounded to the nearest hundred is 2,500",
+      "evidence": "The student is merely acknowledging understanding, not making a gradeable math error."
+    },
+    {
+      "scenario_id": "bridge_0287",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student needs anything else before ending the session",
+      "evidence": "Student is simply declining further help; there is no math mistake to tutor."
+    },
+    {
+      "scenario_id": "bridge_0295",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "confirm whether the student is present",
+      "evidence": "The final student turn is only an acknowledgment to 'Are you there?', and the underlying math problem/error is not visible."
+    },
+    {
+      "scenario_id": "bridge_0307",
+      "reason": "not_gradeable",
+      "confidence": "medium",
+      "asks_for": "UNSTATED: name the displayed shape",
+      "evidence": "The actual shape/image is not visible, so the tutor cannot determine from the transcript alone whether the student's answer is correct or what the intended shape is."
+    },
+    {
+      "scenario_id": "bridge_0313",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "say what the student knows about a graph",
+      "evidence": "The student is not actually wrong; this is an open-ended prompt and the expert reply accepts the answer as valid though minimal."
+    },
+    {
+      "scenario_id": "bridge_0344",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "the value of 6 + 8",
+      "evidence": "Student is ending or opting out rather than making a mathematical error."
+    },
+    {
+      "scenario_id": "bridge_0383",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student is aware of the whiteboard tools",
+      "evidence": "No math problem has been asked yet; the student is only acknowledging a setup/tool question."
+    },
+    {
+      "scenario_id": "bridge_0391",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "confirm whether the final answer is 1/5 < 1/2",
+      "evidence": "Student is correct; there is no visible mistake to remediate."
+    },
+    {
+      "scenario_id": "bridge_0398",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands the explanation that 4 place-value jumps gives an exponent of 10^4",
+      "evidence": "The student is only acknowledging partial understanding, not making a math error."
+    },
+    {
+      "scenario_id": "bridge_0402",
+      "reason": "not_gradeable",
+      "confidence": "medium",
+      "asks_for": "UNSTATED: answer an algebra vocabulary/expression question involving the symbol x",
+      "evidence": "The underlying prompt is missing, so the visible text alone does not show why the student's answer is wrong."
+    },
+    {
+      "scenario_id": "bridge_0408",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student has any questions so far",
+      "evidence": "No math task or student error is visible; the student is simply answering the tutor's check-in."
+    },
+    {
+      "scenario_id": "bridge_0421",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "confirm whether the student is present and understood the whiteboard explanation",
+      "evidence": "The student is only acknowledging/presence-checking, not making a mathematical error; the actual next math question is not visible to the tutor model."
+    },
+    {
+      "scenario_id": "bridge_0425",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands that 2 wholes make 4 halves",
+      "evidence": "The student is merely expressing partial understanding, not making a math error."
+    },
+    {
+      "scenario_id": "bridge_0445",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands that 10+4=14",
+      "evidence": "Student is merely acknowledging understanding; there is no visible mistake to address."
+    },
+    {
+      "scenario_id": "bridge_0454",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student is still at the computer",
+      "evidence": "The student is not making a math attempt; they are answering a session/availability question."
+    },
+    {
+      "scenario_id": "bridge_0455",
+      "reason": "not_gradeable",
+      "confidence": "medium",
+      "asks_for": "UNSTATED: identify the specific quantity the question is asking them to find",
+      "evidence": "The actual math problem is not visible, so the tutor cannot verify whether 'the fraction' is incorrect or merely incomplete from the transcript alone."
+    },
+    {
+      "scenario_id": "bridge_0457",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "confirm whether the student is working on finding 17 × 3",
+      "evidence": "The student only acknowledges they are working; there is no visible mathematical error to respond to."
+    },
+    {
+      "scenario_id": "bridge_0465",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student has any questions so far",
+      "evidence": "The student is merely responding that they have no questions; there is no visible math error to tutor."
+    },
+    {
+      "scenario_id": "bridge_0468",
+      "reason": "no_error_present",
+      "confidence": "medium",
+      "asks_for": "identify the digit in 3591 with the next smallest place value after the 1",
+      "evidence": "The prompt says 'next smallest digit,' which would literally be 3, but the intended task appears to be ordering digits by place value, for which the student's answer 9 is correct."
+    },
+    {
+      "scenario_id": "bridge_0486",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "the student to state their question",
+      "evidence": "This turn is not about mathematics; it is a conversational prompt to state a question."
+    },
+    {
+      "scenario_id": "bridge_0513",
+      "reason": "not_gradeable",
+      "confidence": "high",
+      "asks_for": "UNSTATED: identify that the problem asks for the volume of a rectangular prism",
+      "evidence": "The actual problem statement is not visible, so the tutor cannot know from the transcript alone whether the requested quantity is volume rather than area or surface area."
+    },
+    {
+      "scenario_id": "bridge_0523",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "confirm whether to end the session",
+      "evidence": "Student is ending the session, not making a math error."
+    },
+    {
+      "scenario_id": "bridge_0529",
+      "reason": "not_gradeable",
+      "confidence": "high",
+      "asks_for": "UNSTATED: round or approximate 1,715, apparently to the nearest hundred",
+      "evidence": "The visible tutor prompt only asks for an approximate value and does not specify rounding to the nearest hundred; 2,000 is a reasonable approximation/nearest-thousand rounding, so the intended error is not identifiable from the visible text."
+    },
+    {
+      "scenario_id": "bridge_0541",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the student understands that 4 halves make 2 wholes",
+      "evidence": "The final student turn is an acknowledgement of partial understanding, not a mathematical mistake."
+    },
+    {
+      "scenario_id": "bridge_0553",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "whether the student would like to try again after the tutor's typo",
+      "evidence": "The student is simply declining to continue/try again, not making a math error; the actual math task is not visible in the transcript."
+    },
+    {
+      "scenario_id": "bridge_0557",
+      "reason": "not_mathematics",
+      "confidence": "high",
+      "asks_for": "explain why it is important to check for unnecessary information in a word problem",
+      "evidence": "the student says they do not know and gives no explanation"
+    },
+    {
+      "scenario_id": "bridge_0566",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "define an obtuse angle",
+      "evidence": "Student's answer is essentially correct despite misspelling and slight imprecision; stored error label treats a correct response as an error."
+    },
+    {
+      "scenario_id": "bridge_0605",
+      "reason": "not_gradeable",
+      "confidence": "medium",
+      "asks_for": "count the total number of bears in an array",
+      "evidence": "The array or multiplication problem is not visible, so a tutor cannot tell from the transcript whether 147 is wrong."
+    },
+    {
+      "scenario_id": "bridge_0613",
+      "reason": "no_error_present",
+      "confidence": "high",
+      "asks_for": "whether the sides of the shape are equal",
+      "evidence": "The student’s yes/no answer is not visibly wrong, and the shape/figure needed to verify it is not shown."
+    },
+    {
+      "scenario_id": "bridge_0618",
+      "reason": "not_gradeable",
+      "confidence": "medium",
+      "asks_for": "UNSTATED: combine like terms or simplify the expression (x-3)+5x",
+      "evidence": "The actual prompt is not visible, so the tutor cannot reliably know what the student was supposed to answer from the transcript alone."
+    },
+    {
+      "scenario_id": "bridge_0635",
+      "reason": "not_gradeable",
+      "confidence": "high",
+      "asks_for": "UNSTATED: an approximate value for 1,715, apparently one that should be less than the actual value",
+      "evidence": "The visible prompt is under-specified; 2,000 is a reasonable approximation of 1,715 if rounding to the nearest thousand, and the requirement that the estimate be less than the actual value is only revealed by the expert reply."
+    }
+  ]
+}

@@ -28,6 +28,8 @@ def test_registry_covers_expected_benchmarks() -> None:
         "csqa",
         "piqa",
         "gsm8k",
+        "ifeval",
+        "math",
         "truthfulqa",
     }
 
@@ -40,9 +42,18 @@ def test_mcq_benchmarks_excludes_generative_and_taskless() -> None:
 
 
 def test_cat_benchmarks_include_gsm8k_exclude_truthfulqa() -> None:
-    """cat_benchmarks() drives registration: MCQ set + generative gsm8k, no truthfulqa."""
+    """cat_benchmarks() drives registration: MCQ set + generative benchmarks, no truthfulqa."""
     wired = {b.name for b in cat_benchmarks()}
-    assert wired == {"arc_challenge", "hellaswag", "winogrande", "csqa", "piqa", "gsm8k"}
+    assert wired == {
+        "arc_challenge",
+        "hellaswag",
+        "winogrande",
+        "csqa",
+        "piqa",
+        "gsm8k",
+        "ifeval",
+        "math",
+    }
     assert "truthfulqa" not in wired
 
 

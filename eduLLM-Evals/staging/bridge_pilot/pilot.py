@@ -43,13 +43,20 @@ ROOT = HERE.parents[1]
 SCENARIOS = ROOT / "data" / "Bridge" / "scenarios.jsonl"
 RUBRICS = ROOT / "data" / "Bridge" / "rubrics.jsonl"
 
-SAMPLE = HERE / "sample.json"
-RESP_DIR = HERE / "responses"
-JUDGE_DIR = HERE / "judgments"
-REPORT = HERE / "report.md"
+# Output root. Defaults to this directory, so the original run is reproduced in place;
+# point BRIDGE_PILOT_DIR at a fresh directory to measure a rebuilt bank without overwriting
+# the historical results the README cites.
+OUT = Path(os.environ.get("BRIDGE_PILOT_DIR") or HERE)
+SAMPLE = OUT / "sample.json"
+RESP_DIR = OUT / "responses"
+JUDGE_DIR = OUT / "judgments"
+REPORT = OUT / "report.md"
 
 BASE_URL = "https://tfy.promptlens.trilogy.com/api/llm/api/inference/openai"
-N_SCENARIOS = 100
+# Sample size. BRIDGE_PILOT_N=all uses every scenario in the bank, which is the right
+# choice once the bank is small enough that sampling would starve the conditional criteria.
+_N = os.environ.get("BRIDGE_PILOT_N", "100")
+N_SCENARIOS = None if _N == "all" else int(_N)
 SEED = 42
 WORKERS = 12
 
@@ -114,6 +121,18 @@ def stage_sample() -> None:
     """
     scen, _ = load_bank()
     rng = random.Random(SEED)
+
+    if N_SCENARIOS is None:                           # BRIDGE_PILOT_N=all -- census, no draw
+        picked = sorted(scen, key=lambda s: s["scenario_id"])
+        SAMPLE.parent.mkdir(parents=True, exist_ok=True)
+        SAMPLE.write_text(
+            json.dumps([s["scenario_id"] for s in picked], indent=2), encoding="utf-8"
+        )
+        print(f"census: all {len(picked)} scenarios -> {SAMPLE}")
+        for f in ("error_module", "topic_domain", "grade_band", "visible_mistake"):
+            got = Counter(s[f] for s in picked)
+            print(f"  {f}: " + ", ".join(f"{k}={v}" for k, v in got.most_common()))
+        return
 
     def key(s: dict) -> tuple:
         return (s["error_module"], s["topic_domain"], s["grade_band"], s["visible_mistake"])
@@ -407,7 +426,8 @@ def stage_analyze() -> None:
 
     L = []
     L.append("# Bridge criterion-bank pilot — results\n")
-    L.append(f"{len(TUTORS)} tutors x {N_SCENARIOS} scenarios; **{n_resp} graded responses**, "
+    scope = "all" if N_SCENARIOS is None else N_SCENARIOS
+    L.append(f"{len(TUTORS)} tutors x {scope} scenarios; **{n_resp} graded responses**, "
              f"{sum(len(d) for d in cell.values()):,} criterion judgments. "
              f"Judge: `{JUDGE_MODEL}`. Tutor system prompt: the real Bridge one.\n")
 
@@ -527,7 +547,7 @@ def stage_analyze() -> None:
 # gold -- do Bridge's OWN expert replies pass our criteria?
 # ---------------------------------------------------------------------------
 
-GOLD_DIR = HERE / "gold"
+GOLD_DIR = OUT / "gold"
 
 
 def stage_gold() -> None:

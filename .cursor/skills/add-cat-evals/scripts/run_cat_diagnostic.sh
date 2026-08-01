@@ -18,6 +18,10 @@ SE_STOP="0.3"
 MIN_ITEMS="8"
 MAX_ITEMS="40"
 TP="1"
+# CAT benchmarks to administer (space-separated online eval names). Default is the
+# four wired ATLAS benchmarks with calibrated banks in this repo. Override with
+# --evals "atlas_arc atlas_hellaswag" to run a subset.
+EVALS="${ATLAS_EVALS:-atlas_arc atlas_hellaswag atlas_winogrande atlas_gsm8k}"
 SKIP_CONVERT="0"
 KEEP_HF="0"
 DRY_RUN="0"
@@ -35,6 +39,7 @@ while [[ $# -gt 0 ]]; do
     --min-items) MIN_ITEMS="$2"; shift 2 ;;
     --max-items) MAX_ITEMS="$2"; shift 2 ;;
     --tp) TP="$2"; shift 2 ;;
+    --evals) EVALS="$2"; shift 2 ;;
     --skip-convert) SKIP_CONVERT="1"; shift ;;
     --keep-hf) KEEP_HF="1"; shift ;;
     --dry-run) DRY_RUN="1"; shift ;;
@@ -74,10 +79,11 @@ log "checkpoint=${CHECKPOINT}"
 log "run_id=${RUN_ID}"
 log "s3_dest=${S3_DEST}"
 log "params: se_stop=${SE_STOP} min_items=${MIN_ITEMS} max_items=${MAX_ITEMS} tp=${TP}"
+log "evals: ${EVALS}"
 
 if [[ "${DRY_RUN}" == "1" ]]; then
-  if needs_convert; then log "DRY_RUN would convert OLMo-core -> HF, then run atlas_arc"
-  else log "DRY_RUN would run atlas_arc directly (no conversion)"; fi
+  if needs_convert; then log "DRY_RUN would convert OLMo-core -> HF, then run: ${EVALS}"
+  else log "DRY_RUN would run ${EVALS} directly (no conversion)"; fi
   log "DRY_RUN results -> ${S3_DEST}/"
   rm -rf "${OUT_LOCAL}"; exit 0
 fi
@@ -98,12 +104,15 @@ else
   log "no conversion (HF checkpoint or --skip-convert)"
 fi
 
-log "running atlas_arc CAT on ${HF_CKPT}"
+log "running CAT (${EVALS}) on ${HF_CKPT}"
 tp_args=()
 [[ "${TP}" != "1" ]] && tp_args+=(--tp "${TP}")
+eval_args=()
+for e in ${EVALS}; do eval_args+=(-e "${e}"); done
+# One vLLM boot serves every -e; each benchmark runs its own adaptive loop.
 uv run olmo-eval run-external \
   -m "${HF_CKPT}" \
-  -e atlas_arc \
+  "${eval_args[@]}" \
   --provider vllm_server \
   -a "se_stop=${SE_STOP}" \
   -a "min_items=${MIN_ITEMS}" \
@@ -114,6 +123,7 @@ uv run olmo-eval run-external \
 GIT_SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
 OUT_LOCAL="${OUT_LOCAL}" S3_DEST="${S3_DEST}" CHECKPOINT="${CHECKPOINT}" \
 RUN_ID="${RUN_ID}" SE_STOP="${SE_STOP}" MIN_ITEMS="${MIN_ITEMS}" MAX_ITEMS="${MAX_ITEMS}" \
+EVALS="${EVALS}" \
 GIT_SHA="${GIT_SHA}" python3 - <<'PY'
 import json, os
 from pathlib import Path
@@ -126,7 +136,7 @@ prov = {
     "min_items": int(os.environ["MIN_ITEMS"]),
     "max_items": int(os.environ["MAX_ITEMS"]),
     "git_sha": os.environ.get("GIT_SHA", "unknown"),
-    "eval": "atlas_arc",
+    "evals": os.environ.get("EVALS", "").split(),
 }
 (out / "pipeline_provenance.json").write_text(json.dumps(prov, indent=2), encoding="utf-8")
 print("wrote", out / "pipeline_provenance.json")

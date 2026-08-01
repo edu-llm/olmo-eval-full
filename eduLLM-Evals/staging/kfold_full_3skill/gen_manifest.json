@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-07-31T16:58:50.105159+00:00",
+  "script": "staging/cat_eval_3skill/gen_kfold_3skill.py",
+  "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\response_matrix_full.csv",
+  "rubrics": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\run6_presentation\\rubrics_qmatrix_collapse_presentation.jsonl",
+  "k": 5,
+  "seed": 20260729,
+  "grid": 7,
+  "ridge": 0.01,
+  "dim_labels": [
+    "a_correctness",
+    "a_scaffolding",
+    "a_presentation"
+  ],
+  "note": "Full 3-dim confirmatory M2PL per train-fold; slots repurposed content<-correctness, diagnosis<-scaffolding, scaffolding<-presentation. Same folds as Run 6 kfold_presentation.py (seed 20260729)."
+}

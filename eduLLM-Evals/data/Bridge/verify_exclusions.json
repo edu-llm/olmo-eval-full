@@ -1,0 +1,774 @@
+{
+  "_comment": "Scenarios a majority of three independent adversarial lenses disqualified (scripts/verify_bridge_items.py). Unlike the earlier audits, which asked whether an item looked sound, each lens is told to assume the item is unfit and prove it, so this measures what the confirm-shaped passes missed. Dominant defects: gold keys that state wrong mathematics (the judge is SHOWN the reference, so a wrong one misleads grading), malformed or ill-posed tutor questions, corrupted gold keys containing the student's next reply, and error-module criteria that require building on partial work the transcript never shows. Read by scripts/ingest_bridge.py.",
+  "generated_by": "scripts/verify_bridge_items.py",
+  "audit_report": "staging/bridge_item_verify/report.md",
+  "classifier": "openai-group/gpt-5.5",
+  "generated_on": "2026-08-01",
+  "count": 67,
+  "vote_counts": {
+    "3": 18,
+    "2": 49
+  },
+  "severity_counts": {
+    "fatal": 64,
+    "serious": 3
+  },
+  "caveat": "Some entries rest on a criteria-fit complaint about the expert error_module label. The expert annotation itself is not disputed -- the experts saw the session whiteboard -- but the criteria that label attaches assume visible student working, which a text-only tutor model does not have. The item is unusable either way.",
+  "excluded": [
+    {
+      "scenario_id": "bridge_0009",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "answerability",
+        "criteria_fit"
+      ],
+      "evidence": "The tutoring premise is ill-posed: the prompt asks for “the name of quadrilateral having the length bigger than width,” but that description does not uniquely define a quadrilateral. Many quadrilaterals can have an overall length greater than width, and even a rhombus can be drawn wider than it is t"
+    },
+    {
+      "scenario_id": "bridge_0028",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness",
+        "answerability"
+      ],
+      "evidence": "The attached critical conceptual-error criterion does not fit the item. The visible exchange shows no discernible wrong place-value reasoning: the tutor asks, \"Where is the tens place?\" and the student replies, \"she would have 1,200.\" The gold key even affirms that content: \"She would have 1,200, bu"
+    },
+    {
+      "scenario_id": "bridge_0042",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key is not a usable tutor response because it refers to an absent whiteboard action rather than giving the corrective guidance in the transcript: “Let me draw on the whiteboard what 11:01 would look like.” No drawing is included, and the text itself never identifies why the student's answer"
+    },
+    {
+      "scenario_id": "bridge_0043",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key is not a valid next tutor turn: it includes what appears to be the student's answer after the tutor prompt. The expert reply says, \"Great! The time is 1:55, but what is the number the minute hand is on?\\noh, 11\". The final line \"oh, 11\" answers the tutor's own question instead of leavin"
+    },
+    {
+      "scenario_id": "bridge_0051",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The item's tutoring premise/criteria misclassify the student's error as an imprecision gap: I1 says the response should not treat the answer as entirely wrong for issues like \"units, labels, rounding, or completeness.\" But the tutor asked, \"What is meant by 'area'?\" and the student answered \"30ft,\" "
+    },
+    {
+      "scenario_id": "bridge_0053",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The student's final turn contains no mathematical answer to evaluate: after the tutor asks, \"What is the unit for the volume?\" the student only says, \"i did it.\" A tutor cannot identify a specific math error in an unseen answer; they can only ask the student to provide it, as the gold key does: \"Wha"
+    },
+    {
+      "scenario_id": "bridge_0058",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The attached criterion N1 is about place value, but the item is about prime vs. composite numbers. The transcript asks, “39 is a prime number or composite number?” and the student answers “prime”; the relevant error is divisibility/compositeness, not place value. Yet the criterion says: “[N1 · topic"
+    },
+    {
+      "scenario_id": "bridge_0098",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The gold key introduces unsupported numbers and an unsupported diagnosis: it says, “It looks like you subtracted 153 from 166,” but the transcript only contains “What is 163 - 156 = ?” and the student’s answer “13.” The numbers 153 and 166 never appear, so this is not a grounded correction for the v"
+    },
+    {
+      "scenario_id": "bridge_0101",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The student does not give a legible answer or working to the visible question “What would be the value of 4 times 6?” Their final turn is an unclear hypothetical fragment: “if i haf 3 in 1 bag but he ole hav 4 bag ma be he cod hav 1 in het bag.” A tutor cannot name a specific mathematical error with"
+    },
+    {
+      "scenario_id": "bridge_0104",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The student's final turn is not a mathematical answer to check. The tutor asks, \"What is a rectangle?\" and the student replies only \"done.\" This is just a completion/acknowledgment, not a definition or reasoning error, so a tutor cannot identify a specific misconception from the visible text."
+    },
+    {
+      "scenario_id": "bridge_0107",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The transcript is internally inconsistent because the tutor states the subtraction in the wrong order: “We need to subtract 24 from 15,” which means 15−24, but then asks “What is the value of 24-15?” The gold key proceeds with 24−15 (“Can you take 5 from 4?”) and ignores this contradiction, so the n"
+    },
+    {
+      "scenario_id": "bridge_0108",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit",
+        "answerability"
+      ],
+      "evidence": "The tutor's original question is malformed/ambiguous: “What is the place value of ten in 262,956?” There is no digit “ten” in the number, and “place value” would normally ask for a value/place, not simply the digit. The gold key assumes a different intended question—“What would the tens place be?”—a"
+    },
+    {
+      "scenario_id": "bridge_0114",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit",
+        "answerability"
+      ],
+      "evidence": "The visible transcript omits the actual fraction/problem, so the student's final answer cannot be identified as wrong. The only math context is: tutor says “The 1 is in numerator part” and asks “What is our final answer?”, then the student answers “9.” The gold key then asks “If the 1 is in the nume"
+    },
+    {
+      "scenario_id": "bridge_0131",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The item is mislabeled as a “right_idea” error and the criteria require building on a correct part of the student's thinking, but the student's answer contains no correct part about right angles: tutor asks “What is a right angle?” and student answers “it has all of the sides equal,” which describes"
+    },
+    {
+      "scenario_id": "bridge_0133",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The final student turn contains no concrete mathematical answer or identifiable error to correct: \"ok i thought that we turn the whole number more yes  i do\". The attached critical criterion I1 presupposes a specific imprecise mathematical answer/precision gap—\"The response does not treat the studen"
+    },
+    {
+      "scenario_id": "bridge_0144",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit",
+        "answerability"
+      ],
+      "evidence": "The gold key gives the wrong regrouping guidance. The tutor asks, “What will the 4 in 346 become when we borrow from the hundreds column?” In 346, the 4 is the tens digit; borrowing from the hundreds column would make it 14 tens, not “one less than 4.” But the expert reply says, “What is one less th"
+    },
+    {
+      "scenario_id": "bridge_0157",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The student has not made a checkable math error. The tutor asks an open-ended question, “What do you know about place value?”, and the student gives an ambiguous fragment: “it goes on for every.” There is no specific claim about place value to verify or correct; the gold reply only asks for clarific"
+    },
+    {
+      "scenario_id": "bridge_0159",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key is mathematically incorrect/misleading: it says, \"the formula to find the speed of the train is miles per hour.\" Miles per hour is a unit/rate, not the formula; the needed correction to the student's \"by multyplying\" would be to divide distance by time. This would mislead judging becaus"
+    },
+    {
+      "scenario_id": "bridge_0163",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "answerability"
+      ],
+      "evidence": "The student's final turn is not a clear math error but an incomplete/truncated fragment: \"it  goes on for every\". The attached criteria identify this as a \"right_idea\" item and require the tutor not to \"ignore it and restart from scratch\" (R1/R2), but the gold key does exactly that: it gives a gener"
+    },
+    {
+      "scenario_id": "bridge_0176",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The critical criterion is mismatched to the actual error. It labels the issue as an imprecision/precision gap: \"[I1 · error_type:imprecise · critical] The response does not treat the student's answer as entirely wrong when the issue is a precision gap...\" But the prompt asks for a definition — \"What"
+    },
+    {
+      "scenario_id": "bridge_0202",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The gold key corrects the wrong digit. The prompt asks, “What is the place value of 2 in 521?” and the student answers “200,” but the expert reply says “the 5 is in the hundreds place.” That does not address the digit 2; the relevant correction is that 2 is in the tens place / has value 20."
+    },
+    {
+      "scenario_id": "bridge_0203",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key affirms the student's erroneous/non-answer instead of correcting it: the tutor asks, “What are decomposing shapes?” and the student answers “no have 4 angles.” The expert reply says, “You are correct that none have 4 angles,” even though there is no visible referent for “none” and decom"
+    },
+    {
+      "scenario_id": "bridge_0209",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The attached criteria assume the student has shown a partially correct strategy, but the transcript contains no student reasoning to build on—only the wrong final answer: '[student] 1,000' and then '[student] yes'. Yet the critical/standard criteria require preserving and building on 'the correct pa"
+    },
+    {
+      "scenario_id": "bridge_0212",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The visible tutor prompt asks for “an example of an inverse operation,” but the gold key says the expected correction is “7*5=5*7,” which is not an inverse operation; it is the commutative property of multiplication. Thus the tutor model cannot know from the visible text whether to correct the stude"
+    },
+    {
+      "scenario_id": "bridge_0214",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The student’s final response is ambiguous because it follows a different, yes/no question. The tutor first asks, “How many times 4 go in 6?” but then asks, “Have you learned multiplication tables?” The student replies only “6,” which does not clearly answer either question. To mark it wrong as a div"
+    },
+    {
+      "scenario_id": "bridge_0223",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "answerability",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key gives the opposite of the intended guidance due to a missing negation: “It's so that we know use the wrong information when calculating the answer.” This says checking unnecessary information helps us use the wrong information, which is incorrect and would mislead the judge despite the "
+    },
+    {
+      "scenario_id": "bridge_0243",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The attached criteria assume a visible 'right idea' or partial understanding to build on, but the transcript shows none. The student only gives an incorrect final answer, '[student] 1,000', and confirms it with '[student] yes'. There is no work or reasoning showing any correct part of the student's "
+    },
+    {
+      "scenario_id": "bridge_0248",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key gives mathematically false guidance: it says, \"The formula will have only letters.\" But the area formula for a triangle is A = 1/2 bh or A = bh/2, which necessarily includes the numerical factor 1/2 (or division by 2), not \"only letters.\" This could mislead a judge into rewarding an inc"
+    },
+    {
+      "scenario_id": "bridge_0252",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "serious",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The attached right_idea criteria require building on an identifiable correct part of the student's thinking: R1 says “The response does not treat the correct part of the student's thinking as wrong” and R2 says “builds on the student's partial understanding.” But the transcript shows no work or reas"
+    },
+    {
+      "scenario_id": "bridge_0254",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "answerability",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key gives a mathematically impossible/inaccurate prompt for the actual question. The tutor asks, “What are the factors of -8?”, but the expert reply says factors are “whole numbers that multiply to equal -8.” Whole numbers are nonnegative, so no pair of whole numbers multiplies to -8; the c"
+    },
+    {
+      "scenario_id": "bridge_0262",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness",
+        "answerability"
+      ],
+      "evidence": "Criterion Z1 is unanswerable for this item: it requires that the response “identifies which two quantities the rate or ratio compares,” but the transcript provides no quantities or axis labels—only “unit rate,” “one point on the line,” “coordinates,” and the student answer “300.” The gold key likewi"
+    },
+    {
+      "scenario_id": "bridge_0284",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The right_idea criteria require responding to and building on a visible correct part of the student's thinking, but the transcript contains no partial work or reasoning to build on. The entire student turn is just “[student] 54” in response to “what is 60-4?” Thus R1/R2 are not well-fit: “The respon"
+    },
+    {
+      "scenario_id": "bridge_0286",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The item is mislabeled/rubriced as a “right_idea” error requiring the tutor to build on a correct part of the student's thinking, but the visible student response shows no such partial correct idea: tutor asks “What is the product of 6 and 2?” and student answers “3,” which is the quotient 6÷2, not "
+    },
+    {
+      "scenario_id": "bridge_0300",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The attached right-idea criteria require a visible correct part or partial understanding, but the transcript contains no reasoning or partial work to build on: the student only answers \"1000\" and then \"yas.\" Thus R1/R2 are not meaningfully pass/fail here: \"The response does not treat the correct par"
+    },
+    {
+      "scenario_id": "bridge_0301",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The attached criteria assume a 'right_idea' error and require building on a correct part of the student's thinking, but the student's entire answer is just \"cube\" to the question \"Which types of quadrilaterals could the pool not be because it only has 1 pair of parallel sides?\" A cube is a 3-dimensi"
+    },
+    {
+      "scenario_id": "bridge_0320",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The critical conceptual criterion is unanswerable because the transcript gives no reasoning or work to reveal an underlying misconception. The entire student turn is just \"44\" in response to \"How many minutes per hour?\" Yet D3 requires the tutor to \"address the underlying misconception or faulty rea"
+    },
+    {
+      "scenario_id": "bridge_0332",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "D3 is not reliably answerable because the student gives no reasoning or work to diagnose an underlying misconception: the entire final turn is just \"30\" in response to \"What is the formula for the area of a rectangle?\" A response can note the surface issue—that 30 is a number, not a formula—but the "
+    },
+    {
+      "scenario_id": "bridge_0342",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit",
+        "answerability"
+      ],
+      "evidence": "The gold key gives mathematically incorrect guidance: after the student says a 5-sided shape is a “hexagon,” the expert reply says, “The prefix for 5 sides is hexa.” But “hexa-” means 6; the 5-sided shape is a pentagon, with prefix “penta-.” This would mislead a judge about the correct tutoring resp"
+    },
+    {
+      "scenario_id": "bridge_0346",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key violates an explicit attached grading requirement. Criterion D5 says: \"The response ends by asking the student to produce something specific -- an answer, a next step, or an explanation in their own words.\" But the expert reply ends with a declarative example: \"For example, 4 times 1 is"
+    },
+    {
+      "scenario_id": "bridge_0347",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "serious",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The student's response does not reveal a specific conceptual error or faulty reasoning to address: the tutor asks “What is the value of 1 x2 ?” and the student replies only “3x9,” which is not a value and shows no work or rationale. Therefore criterion D3 is not well-fit: it requires the tutor to ad"
+    },
+    {
+      "scenario_id": "bridge_0369",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "Criterion V1 is not fit for this item. It requires that the tutor response \"refers to, describes, or invites a visual or spatial representation where doing so would help the student see the geometric relationship,\" but the transcript contains no geometric relationship or specific figure to visualize"
+    },
+    {
+      "scenario_id": "bridge_0404",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key contains an incoherent correction of the tutor's typo: \"I apologize for the typo above. I meant to say GCF and not GCF.\" This says the same acronym twice, so it does not actually identify or fix the earlier typo \"GCT\" and would mislead/confuse a judge about the intended tutor response."
+    },
+    {
+      "scenario_id": "bridge_0406",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key misdiagnoses the student's error. The student answered \"19\" to \"What is the value of 13 times 3?\", which suggests they multiplied the ones digit by 3 to get 9 and left the 1 unchanged. But the expert says, \"you cannot just multiply the tens digit and the ones digit,\" which would describ"
+    },
+    {
+      "scenario_id": "bridge_0415",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The student's answer is not clearly wrong because the tutor's prompt is ambiguous. The tutor asks, \"Which is the next smallest digit in 3591 other than 1?\" and the student answers \"9 cause its 10 and 3 is 1,000 and 5 is 100,\" which is a valid interpretation if they are ordering by place value/positi"
+    },
+    {
+      "scenario_id": "bridge_0416",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "serious",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The attached X1 criterion is beside the point for this item. It requires attention to algebra-expression structure, specifically “what the unknown stands for, or which operation applies first,” but the prompt is only “find the value of the number 10 to the exponent 5” and the student answers “is it "
+    },
+    {
+      "scenario_id": "bridge_0418",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "Criterion X1 is beside the point for this item. It requires the tutor response to address algebra-expression structure: “what the unknown stands for, or which operation applies first,” but the transcript contains no algebraic expression, no operation order issue, and no unknown to solve for. The tas"
+    },
+    {
+      "scenario_id": "bridge_0419",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "answerability",
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The problem statement is absent from the visible transcript, so the tutor cannot know what kind of answer is required. The only visible final response is \"[student] nhw\" after \"[tutor] What is the final answer?\", and the gold key's prompt about \"a number that is a multiple of 10\" is knowable only fr"
+    },
+    {
+      "scenario_id": "bridge_0435",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key does not address the student's actual turn. The tutor asked, \"How many zeros are in a hundred?\" and the student answered \"0\"; the relevant correction is that 100 has two zeros. Instead, the expert reply introduces an unrelated number absent from the transcript: \"In the number 672, the 6"
+    },
+    {
+      "scenario_id": "bridge_0438",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The critical conceptual-error criterion does not fit the student's turn. The supposed mistake is not an identifiable conceptual misconception; the student says a generally correct formula, \"rectangle area = length    width,\" while the tutor had asked a different question: \"What is the value of the l"
+    },
+    {
+      "scenario_id": "bridge_0449",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key gives an incorrect diagnosis of the student's error. The tutor asked, “What is the value of 10 times 0.621?” and the student answered “6,210.” But the expert reply says, “It looks like you multiplied 0.621 by 1000.” Multiplying 0.621 by 1000 gives 621, not 6,210; 6,210 would come from m"
+    },
+    {
+      "scenario_id": "bridge_0452",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The needed math/problem context is missing, so the requested next tutor turn cannot be judged. The tutor asks, “What would the division expression be for this problem?” but the actual problem is absent. The student says “32,” and the gold key asks “what expression gives us 32?” There are infinitely "
+    },
+    {
+      "scenario_id": "bridge_0464",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The critical criterion requires addressing an underlying misconception or faulty reasoning, but the transcript provides no reasoning to diagnose: the tutor asks, “What is the formula for the area of a rectangle?” and the student only replies “30.” With no work or explanation, any specific underlying"
+    },
+    {
+      "scenario_id": "bridge_0472",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key violates the item’s own critical criterion by attributing an unshown misconception: the student only answered “4” to “What is the product of 26 and 6?”, but the expert says, “It looks like you tried to divide.” The attached critical criterion G1 says the response must not attribute “a s"
+    },
+    {
+      "scenario_id": "bridge_0485",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "Criterion O1 is beside the point for this transcript. The actual prompt is not asking the student to perform or explain an arithmetic operation; it asks for a property name: “What property allows us to write the numbers in any order?” A criterion requiring the tutor response to “connects the operati"
+    },
+    {
+      "scenario_id": "bridge_0487",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "answerability",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key addresses a different subtraction problem than the transcript. The tutor asks, “What is the value of 15 - 6?” and the student answers “it is 11?”, but the expert reply says, “Let’s do 24 - 7 on the whiteboard...” This would mislead judges because it does not address the student’s actual"
+    },
+    {
+      "scenario_id": "bridge_0508",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit",
+        "answerability"
+      ],
+      "evidence": "The gold key addresses a different question and affirms a wrong response. The tutor asked, \"How long is Luciano's train ride?\" and the transcript already states, \"His train ride takes 45 minutes.\" The student answered \"8: 15,\" which is a departure time, not the ride length. But the expert reply says"
+    },
+    {
+      "scenario_id": "bridge_0517",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The tutoring context is incoherent/truncated without the chart: the tutor asks, “Why does the given chart have the five in the x column when it is counting by two's before that?” and the gold key says, “Let's look at the pattern without the 5,” but no chart or values are provided. The student’s “23”"
+    },
+    {
+      "scenario_id": "bridge_0540",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The gold key reinforces the student's imprecise/misleading definition instead of correcting it. The student says symmetry is \"like you cut it in half,\" but symmetry requires matching mirror-image halves, not just any exact half. The expert reply says, \"Yes, exactly in half would result in two symmet"
+    },
+    {
+      "scenario_id": "bridge_0560",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The critical conceptual criterion is unanswerable from the transcript. D3 requires: \"The response addresses the underlying misconception or faulty reasoning behind the error,\" and D4 says not to misstate the cause. But the student gives only the unexplained answer \"12 : 60\" to \"What is the value of "
+    },
+    {
+      "scenario_id": "bridge_0563",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The gold key attributes a specific unshown method to the student, violating the critical criterion. The transcript shows no work: the student only says \"9\" after \"What is the value of 3^3?\" But the expert reply states, \"You solved the problem 3x3.\" That is a definite claim about the student's proces"
+    },
+    {
+      "scenario_id": "bridge_0565",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "answerability",
+        "gold_soundness"
+      ],
+      "evidence": "The final student turn contains no mathematical answer or precision issue: \"im done\". But the critical criterion assumes an imprecise mathematical answer needing refinement: \"when the issue is a precision gap (such as units, labels, rounding, or completeness).\" There are no units, labels, rounding, "
+    },
+    {
+      "scenario_id": "bridge_0573",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The right-idea criteria require visible partial understanding, but the student shows none: the final turn is only \"[student] 12\" after \"What times 3 is 24?\". Criteria R1/R2 ask whether the tutor builds on or avoids treating as wrong \"the correct part of the student's thinking\" / \"the student's parti"
+    },
+    {
+      "scenario_id": "bridge_0586",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness"
+      ],
+      "evidence": "The attached place-value criterion is beside the point for this item. The transcript is about factors/inverse multiplication facts: tutor asks, \"What is an example of an inverse operation we would get if we continued to search for factors?\" and the student answers \"7 times 5=35.\" The gold key also a"
+    },
+    {
+      "scenario_id": "bridge_0607",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness",
+        "answerability"
+      ],
+      "evidence": "The attached imprecision criteria do not fit the actual student error. The tutor asks, “How long is Luciano's train ride?” after already stating “His train ride takes 45 minutes,” but the student answers “8: 15,” which is a clock time/departure time, not an imprecise version of the ride duration. Cr"
+    },
+    {
+      "scenario_id": "bridge_0622",
+      "reason": "failed_adversarial_verification",
+      "votes": 2,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit"
+      ],
+      "evidence": "The prompt itself is mathematically/wording ambiguous: the tutor asks, “What is the place value of ten in 262,956?” There is no digit “ten” in the number, and “place value” could mean the place name, the digit in the tens place, or the value 50. The gold key then changes the task to “what number it "
+    },
+    {
+      "scenario_id": "bridge_0623",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "gold_soundness",
+        "criteria_fit",
+        "answerability"
+      ],
+      "evidence": "The gold key’s suggested correction is mathematically imprecise/incomplete for length measurement: it says, “a number that tells how long it is,” but a length measurement requires a number with a unit. This directly conflicts with the attached criteria requiring the tutor not to “confuse or omit the"
+    },
+    {
+      "scenario_id": "bridge_0639",
+      "reason": "failed_adversarial_verification",
+      "votes": 3,
+      "severity": "fatal",
+      "lenses": [
+        "criteria_fit",
+        "gold_soundness",
+        "answerability"
+      ],
+      "evidence": "The item is supposed to be cut at a student mistake, but the supplied gold key explicitly treats the student's final answer as correct: the student answers \"4\" to \"What number will go in the 'part?'\" and the expert reply says, \"Yes 4 is the part of 100.\" Thus there is no clear student error to ident"
+    }
+  ]
+}

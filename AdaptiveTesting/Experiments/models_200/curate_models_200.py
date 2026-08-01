@@ -1539,12 +1539,22 @@ OVERRIDES: dict[str, dict] = {
     "Qwen/Qwen3-1.7B": {"apply_chat_template": True, "enable_thinking": False},
     "Qwen/Qwen3-4B": {"apply_chat_template": True, "enable_thinking": False},
     "HuggingFaceTB/SmolLM3-3B": {"apply_chat_template": True, "enable_thinking": False},
+    "OpenBMB/MiniCPM4-0.5B": {"apply_chat_template": True},
+    "openbmb/MiniCPM3-4B": {"apply_chat_template": True},
 }
+_QWEN3_NOTE = "bare name is the instruct/thinking hybrid; -Base is the base model"
+# The chat heuristic keys off id substrings (-instruct/-it/-chat/-sft/...), which
+# these two carry none of despite shipping a real chat_template. Left to the
+# heuristic they render as base models: a prior run pushed 4,328 rows through
+# flat `Student:`/`Tutor:` prompting before this was caught.
+_CHAT_NOTE = "ships a chat_template but no id marker matches; set explicitly"
 OVERRIDE_NOTES = {
-    "Qwen/Qwen3-0.6B": "bare name is the instruct/thinking hybrid; -Base is the base model",
-    "Qwen/Qwen3-1.7B": "bare name is the instruct/thinking hybrid; -Base is the base model",
-    "Qwen/Qwen3-4B": "bare name is the instruct/thinking hybrid; -Base is the base model",
+    "Qwen/Qwen3-0.6B": _QWEN3_NOTE,
+    "Qwen/Qwen3-1.7B": _QWEN3_NOTE,
+    "Qwen/Qwen3-4B": _QWEN3_NOTE,
     "HuggingFaceTB/SmolLM3-3B": "bare name is the instruct checkpoint; -Base is the base model",
+    "OpenBMB/MiniCPM4-0.5B": _CHAT_NOTE,
+    "openbmb/MiniCPM3-4B": _CHAT_NOTE,
 }
 
 
