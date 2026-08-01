@@ -50,16 +50,20 @@ Pure existing deps (stdlib + numpy + pyyaml; tutor_cat). Deterministic. No netwo
 from __future__ import annotations
 
 import argparse
+import contextlib
 import csv
 import hashlib
 import importlib.util
 import json
+import os
 import sys
+import tempfile
+from collections.abc import Iterable, Iterator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 import numpy as np
 import yaml
@@ -102,6 +106,22 @@ PROVENANCE_FIELDS = (
     "replicate_id",
     "configuration_hash",
     "frozen_configuration_hash",
+)
+
+# The only fields we consume from a teammate verdict row at ingest time. Every
+# other field (notably the large ``raw_output`` blob the frozen runner writes for
+# every graded cell) is dropped when indexing so that ingesting ~1-2M cells does
+# not materialize multi-KB payloads per row. Keep this in sync with the readers
+# in ``load_ingest_index``, ``normalize_verdict`` and the driver's ingest loop.
+INGEST_ROW_FIELDS = (
+    "case_id",
+    "verdict",
+    "status",
+    "error",
+    "rationale",
+    "evidence",
+    "native_score",
+    *PROVENANCE_FIELDS,
 )
 
 
@@ -201,13 +221,53 @@ def load_frozen_judge_config(path: Path | None) -> FrozenJudgeConfig:
 CellKey = tuple[str, str, str]  # (model, scenario, criterion_id)
 
 
-def iter_jsonl(path: Path) -> Iterator[dict]:
+def iter_jsonl(path: Path, *, tolerate_truncated_tail: bool = False) -> Iterator[dict]:
+    """Yield parsed JSON objects, one per non-blank line.
+
+    When ``tolerate_truncated_tail`` is set, a single malformed FINAL line that
+    lacks a trailing newline -- the signature of a process killed mid-append --
+    is skipped with a warning instead of raising. This mirrors the frozen
+    runner's truncated-tail recovery and keeps a spot-killed resume from
+    crashing. Malformed lines anywhere else still raise.
+    """
     with path.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
+        for raw in f:
+            stripped = raw.strip()
+            if not stripped:
                 continue
-            yield json.loads(line)
+            try:
+                yield json.loads(stripped)
+            except json.JSONDecodeError:
+                # Only the physical last line can lack a trailing newline; a
+                # malformed line with a newline is genuine mid-file corruption.
+                if tolerate_truncated_tail and not raw.endswith("\n"):
+                    print(f"WARNING: skipping truncated final line in {path}",
+                          file=sys.stderr)
+                    return
+                raise
+
+
+def atomic_write_jsonl(path: Path, rows: Iterable[dict]) -> None:
+    """Write ``rows`` to ``path`` atomically: fill a sibling temp file, fsync it,
+    then rename over the target. A crash leaves either the old file or the fully
+    written new one -- never a truncated tail or a half-appended duplicate."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(path.parent), prefix=f"{path.name}.", suffix=".tmp"
+    )
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            for row in rows:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        with contextlib.suppress(OSError):
+            tmp.unlink()
+        raise
 
 
 def _staged_key(row: dict) -> CellKey:
@@ -392,33 +452,69 @@ def cmd_build_cases(args: argparse.Namespace) -> int:
 # grade : ingest teammate verdicts (primary) or call-judge smoke (fallback)
 # =====================================================================
 class VerdictWriter:
+    """Collects verdict rows and rewrites ``verdicts.jsonl`` atomically.
+
+    Rows are keyed by cell ``(model, scenario, criterion_id)`` with the last write
+    winning, so re-emitting a cell (e.g. retrying a previously voided one) REPLACES
+    its prior row rather than appending a duplicate -- this is what lets a full
+    (``--no-resume``) re-run stay free of duplicate rows. ``seed`` carries prior
+    on-disk rows forward so a resume run does not drop the cells it skips. Both
+    ``flush`` and ``close`` commit the current set via a temp file + fsync +
+    rename, so a mid-run kill can never leave a truncated line behind.
+    """
+
     def __init__(self, path: Path):
-        self._fh = path.open("a", encoding="utf-8")
+        self._path = Path(path)
+        self._rows: dict[CellKey, dict] = {}
+
+    @staticmethod
+    def _key(row: dict) -> CellKey:
+        return (str(row["model"]), str(row["scenario"]), str(row["criterion_id"]))
+
+    def seed(self, rows: Iterable[dict]) -> None:
+        for row in rows:
+            self._rows[self._key(row)] = row
 
     def write(self, row: dict) -> None:
-        self._fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+        self._rows[self._key(row)] = row
+
+    def rows(self) -> dict[CellKey, dict]:
+        return self._rows
+
+    def _commit(self) -> None:
+        atomic_write_jsonl(self._path, self._rows.values())
 
     def flush(self) -> None:
-        self._fh.flush()
+        self._commit()
 
     def close(self) -> None:
-        try:
-            self._fh.flush()
-        finally:
-            self._fh.close()
+        self._commit()
 
 
 def load_done_keys(path: Path) -> dict[CellKey, dict]:
     index: dict[CellKey, dict] = {}
     if not path.is_file():
         return index
-    for row in iter_jsonl(path):
+    # Our own verdicts.jsonl is what a spot-killed run truncates, so tolerate a
+    # torn trailing line here rather than crashing the next resume.
+    for row in iter_jsonl(path, tolerate_truncated_tail=True):
         try:
             key = (str(row["model"]), str(row["scenario"]), str(row["criterion_id"]))
         except KeyError:
             continue
         index[key] = row
     return index
+
+
+def is_resume_done(row: dict | None) -> bool:
+    """Whether an existing verdict row counts as DONE for ``--resume``.
+
+    A voided cell is written with ``y=None`` (no_decision / unscorable). Such a
+    cell carries no signal and is exactly what a later judge ``--retry-errors``
+    wave aims to resolve, so it is treated as NOT done -- re-ingest revisits it
+    instead of skipping it. Absent cells (``row is None``) are likewise not done.
+    """
+    return row is not None and row.get("y") is not None
 
 
 def make_verdict_row(key: CellKey, *, y: "int | None", source: str, verdict: str,
@@ -449,22 +545,31 @@ def _expand_ingest_paths(paths: list[str]) -> list[Path]:
     return out
 
 
+def _project_ingest_row(row: dict) -> dict:
+    """Keep only the fields consumed downstream (drops the large ``raw_output``)."""
+    return {k: row[k] for k in INGEST_ROW_FIELDS if k in row}
+
+
 def load_ingest_index(paths: list[Path]) -> tuple[dict[str, dict], dict[str, set], int]:
     """Index the teammate's verdict rows by case_id. On duplicate case_id (e.g.
     multiple waves) the LAST file wins; a conflicting verdict is warned. Also
-    collects the distinct provenance values seen, for cross-checking."""
+    collects the distinct provenance values seen, for cross-checking.
+
+    Each stored row is PROJECTED to the small set of fields ingest actually reads,
+    so the index never holds the multi-KB ``raw_output`` the frozen runner emits
+    per cell -- ingesting a full ~1-2M-cell benchmark stays bounded in memory."""
     by_case: dict[str, dict] = {}
     provenance: dict[str, set] = {f: set() for f in PROVENANCE_FIELDS}
     conflicts = 0
     for path in paths:
-        for row in iter_jsonl(path):
+        for row in iter_jsonl(path, tolerate_truncated_tail=True):
             cid = str(row.get("case_id", "")).strip()
             if not cid:
                 continue
             prev = by_case.get(cid)
             if prev is not None and str(prev.get("verdict")) != str(row.get("verdict")):
                 conflicts += 1
-            by_case[cid] = row
+            by_case[cid] = _project_ingest_row(row)
             for fld in PROVENANCE_FIELDS:
                 if fld in row and row[fld] is not None:
                     provenance[fld].add(str(row[fld]))
@@ -577,6 +682,9 @@ def cmd_grade(args: argparse.Namespace) -> int:
 
     staging.mkdir(parents=True, exist_ok=True)
     writer = VerdictWriter(verdicts_path)
+    # Carry prior rows forward so the atomic rewrite does not drop skipped cells.
+    if args.resume:
+        writer.seed(existing.values())
     stats = {"auto_fail": 0, "ingested_pass_fail": 0, "ingested_no_decision": 0,
              "smoke_judged": 0, "skipped_existing": 0, "ingest_missing": 0,
              "smoke_failed": 0, "bank_missing": 0,
@@ -612,7 +720,7 @@ def cmd_grade(args: argparse.Namespace) -> int:
     try:
         for row in iter_jsonl(inputs_path):
             key = _staged_key(row)
-            if args.resume and key in existing:
+            if args.resume and is_resume_done(existing.get(key)):
                 stats["skipped_existing"] += 1
                 continue
 
@@ -651,8 +759,10 @@ def cmd_grade(args: argparse.Namespace) -> int:
     finally:
         writer.close()
 
-    # --- assemble the response matrix from ALL verdicts on disk ---
-    final_verdicts = load_done_keys(verdicts_path)
+    # --- assemble the response matrix from the committed verdict set ---
+    # Reuse the writer's in-memory rows (seeded from disk + written this run)
+    # instead of re-reading the whole verdicts.jsonl a second time.
+    final_verdicts = writer.rows()
     arr, csv_cells, n_holes = assemble_matrix(models, criterion_ids, final_verdicts)
     matrix_csv = staging / MATRIX_CSV_NAME
     matrix_npy = staging / MATRIX_NPY_NAME
@@ -754,7 +864,7 @@ def _scan_plan(inputs_path: Path, existing: dict[CellKey, dict], resume: bool,
     for row in iter_jsonl(inputs_path):
         plan.total_cells += 1
         key = _staged_key(row)
-        done = resume and key in existing
+        done = resume and is_resume_done(existing.get(key))
         if int(row.get("auto_fail", 0)) == 1:
             plan.auto_fail_cells += 1
             reason = row.get("auto_fail_reason") or "auto_fail"

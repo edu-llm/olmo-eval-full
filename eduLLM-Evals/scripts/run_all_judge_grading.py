@@ -475,10 +475,13 @@ def ingest_benchmark(
     }
 
     writer = rjg.VerdictWriter(verdicts_path)
+    # Carry prior rows forward so the atomic rewrite does not drop skipped cells.
+    if resume:
+        writer.seed(existing.values())
     try:
         for row in sb.staged_rows:
             key = (str(row["model"]), str(row["scenario"]), str(row["criterion_id"]))
-            if resume and key in existing:
+            if resume and rjg.is_resume_done(existing.get(key)):
                 stats["skipped_existing"] += 1
                 continue
             if int(row.get("auto_fail", 0)) == 1:
@@ -512,7 +515,8 @@ def ingest_benchmark(
     finally:
         writer.close()
 
-    final = rjg.load_done_keys(verdicts_path)
+    # Reuse the writer's committed rows rather than re-reading verdicts.jsonl.
+    final = writer.rows()
     arr, csv_cells, n_holes = rjg.assemble_matrix(sb.models, sb.criterion_ids, final)
     rjg.write_matrix_csv(out_dir / MATRIX_CSV_NAME, sb.models, sb.criterion_ids, csv_cells)
 
