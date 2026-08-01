@@ -1,0 +1,57 @@
+name: Build eduLLM research image
+
+# A thin caller and nothing else. Every decision that matters lives in edu-llm/platform;
+# this file exists to satisfy the two obligations a call site cannot inherit, and to say
+# when a build is allowed to fire. Both obligations fail as an AssumeRole denial that reads
+# like a broken role ARN rather than like its cause:
+#
+#   1. `id-token: write` has to be granted on the calling job below. A called workflow can
+#      only downgrade the permissions its caller hands it, so the id-token grant on the
+#      platform's publish job cannot create itself.
+#   2. The `uses:` reference has to be `@main`. The publisher role's trust policy matches
+#      job_workflow_ref with StringEquals against `@refs/heads/main`, so a SHA-pinned or
+#      tag-pinned reference mints a claim the role will never accept. This is the one place
+#      where pinning a ref makes things worse rather than better.
+#
+# The image this builds comes from `.edullm/Dockerfile`, not from the root `Dockerfile`.
+# The root one opens with a defaulted FROM and copies out of a mutable tag, both of which
+# the platform refuses. See the header of `.edullm/Dockerfile`.
+on:
+  workflow_dispatch:
+  # A deliberate opt-in namespace rather than every branch. Every accepted push spends
+  # runner time and publishes an immutable ECR tag that cannot be rewritten, so a build
+  # fires only from a branch whose name says it was meant to. push and workflow_dispatch
+  # are also the only events the reusable workflow accepts: on anything else github.ref
+  # names the default branch rather than the pushed commit, so the run would publish
+  # something other than what the caller meant.
+  push:
+    branches:
+      - "edullm/**"
+
+jobs:
+  publish:
+    permissions:
+      contents: read
+      id-token: write
+    uses: edu-llm/platform/.github/workflows/build-research-image.yml@main
+    with:
+      repository: olmo-eval-full
+      publisher_role_arn: ${{ vars.AWS_ECR_PUBLISHER_ROLE_ARN }}
+      # Runs in the platform's gate job, which holds no AWS identity and only
+      # `contents: read`. That is why code chosen by whoever pushed the branch is acceptable
+      # here: it runs before anything can reach AWS, with nothing to steal.
+      #
+      # The same invocation this repository's own CI uses, minus coverage. `--no-group vllm`
+      # is the load-bearing flag: vllm is a default group, and syncing it would pull several
+      # gigabytes of CUDA wheels onto a runner that has no GPU to use them on. The integration
+      # directory is ignored for the reason its marker says, that it wants docker and
+      # external services.
+      #
+      # `-p no:cacheprovider` because pytest writes `.pytest_cache` beside the rootdir. The
+      # source-identity check runs before this command and refuses a dirty work tree, so a
+      # cache left here would not fail this build. It would fail the next thing to read the
+      # tree, which is worse for being deferred.
+      test_command: |
+        uv run --frozen --no-group vllm pytest tests/ \
+          --ignore=tests/integration/ \
+          -q -p no:cacheprovider
