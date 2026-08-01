@@ -94,11 +94,11 @@ def modeled_q(skills: int, legacy_q: dict, repurposed_q: dict | None) -> dict[st
     }
 
 
-def build_records(skills: int) -> tuple[list[dict], dict]:
+def build_records(skills: int, csv_path: Path | None = None) -> tuple[list[dict], dict]:
     cfg = SKILLSET[skills]
     dims = cfg["dims"]
     base = read_jsonl(cfg["base"])
-    bank = read_csv_bank(cfg["csv"])
+    bank = read_csv_bank(csv_path or cfg["csv"])
     qsrc = read_jsonl(cfg["q_source"]) if cfg["q_source"] else {}
 
     provenance = (base[next(iter(base))].get("irt_params") or {}).get("provenance", {})
@@ -159,10 +159,10 @@ def build_records(skills: int) -> tuple[list[dict], dict]:
     return records, stats
 
 
-def verify(skills: int, records: list[dict]) -> list[str]:
+def verify(skills: int, records: list[dict], csv_path: Path | None = None) -> list[str]:
     """Re-read the CSV and assert every emitted value matches it exactly."""
     cfg = SKILLSET[skills]
-    bank = read_csv_bank(cfg["csv"])
+    bank = read_csv_bank(csv_path or cfg["csv"])
     problems: list[str] = []
     if len(records) != len(bank):
         problems.append(f"record count {len(records)} != CSV rows {len(bank)}")
@@ -184,19 +184,22 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--skills", type=int, choices=(2, 3), required=True)
+    ap.add_argument("--csv", type=Path, default=None,
+                    help="override the calibration CSV (e.g. an alternate refit).")
     ap.add_argument("--out", type=Path, default=None)
     ap.add_argument("--verify-only", action="store_true",
                     help="build and check against the CSV without writing.")
     args = ap.parse_args()
 
     cfg = SKILLSET[args.skills]
+    csv_path = args.csv or cfg["csv"]
     out_path = args.out or cfg["out"]
 
-    records, stats = build_records(args.skills)
-    problems = verify(args.skills, records)
+    records, stats = build_records(args.skills, csv_path)
+    problems = verify(args.skills, records, csv_path)
 
     print(f"skills           : {args.skills} {list(cfg['dims'])}")
-    print(f"csv              : {cfg['csv'].relative_to(ROOT)}")
+    print(f"csv              : {csv_path}")
     print(f"records          : {stats['n_records']} (CSV rows {stats['n_csv']})")
     print(f"negative loadings: {stats['n_negative_loadings']} (preserved)")
     print(f"extreme_a flagged: {stats['n_extreme_a']}")
@@ -215,11 +218,12 @@ def main() -> int:
     if args.verify_only:
         return 0
 
+    out_path = out_path if out_path.is_absolute() else (ROOT / out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as fh:
         for rec in records:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
-    print(f"wrote            : {out_path.relative_to(ROOT)}")
+    print(f"wrote            : {out_path}")
     return 0
 
 
