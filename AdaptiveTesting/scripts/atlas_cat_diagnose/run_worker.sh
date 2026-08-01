@@ -4,7 +4,7 @@
 # Env (set by launch_g6.sh user-data):
 #   CHECKPOINT   s3://... or HF model id
 #   RUN_ID       results key segment
-#   S3_OUT_ROOT  e.g. s3://edullm-adaptive-inference-056956104102/atlas_cat
+#   S3_OUT_ROOT  e.g. s3://edullm-adaptive-inference-056956104102/smoke/atlas_cat
 #   SE_STOP      default 0.3
 #   MAX_ITEMS    default 40
 #   MIN_ITEMS    default 8
@@ -13,7 +13,7 @@ set -euo pipefail
 
 CHECKPOINT="${CHECKPOINT:?CHECKPOINT required}"
 RUN_ID="${RUN_ID:?RUN_ID required}"
-S3_OUT_ROOT="${S3_OUT_ROOT:-s3://edullm-adaptive-inference-056956104102/atlas_cat}"
+S3_OUT_ROOT="${S3_OUT_ROOT:-s3://edullm-adaptive-inference-056956104102/smoke/atlas_cat}"
 SE_STOP="${SE_STOP:-0.3}"
 MAX_ITEMS="${MAX_ITEMS:-40}"
 MIN_ITEMS="${MIN_ITEMS:-8}"

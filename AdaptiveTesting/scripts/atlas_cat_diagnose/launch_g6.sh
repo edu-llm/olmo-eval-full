@@ -22,7 +22,10 @@ AMI="${AMI:-ami-0b6f2229ad14c9323}"
 SG="${SG:-sg-087218d8c87aa8576}"
 PROFILE="${PROFILE:-EswManagedInstance}"
 INSTANCE_TYPE="${INSTANCE_TYPE:-g6.xlarge}"
-S3_OUT_ROOT="${S3_OUT_ROOT:-s3://edullm-adaptive-inference-056956104102/atlas_cat}"
+# Default lands under smoke/ because the EswManagedInstance role only has
+# s3:PutObject on smoke/*, smoke_split/*, full200/*. Point elsewhere only if the
+# worker role can write there.
+S3_OUT_ROOT="${S3_OUT_ROOT:-s3://edullm-adaptive-inference-056956104102/smoke/atlas_cat}"
 DRY_RUN="${DRY_RUN:-0}"
 
 while [[ $# -gt 0 ]]; do
@@ -85,6 +88,7 @@ trap 'rm -f "${UD_FILE}"' EXIT
 cat >"${UD_FILE}" <<UD
 #!/usr/bin/env bash
 set -euo pipefail
+export HOME="\${HOME:-/root}"   # cloud-init runs with no HOME; needed for uv + PATH
 ROOT=/opt/dlami/nvme/atlas-cat
 mkdir -p "\${ROOT}"
 git clone --depth 1 --branch ${BRANCH} ${REPO_URL} \${ROOT}/code
