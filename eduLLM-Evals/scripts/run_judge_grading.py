@@ -298,9 +298,17 @@ def _import_teammate_runner():
         spec = importlib.util.spec_from_file_location(
             "teammate_run_judge_validation", TEAMMATE_RUNNER
         )
-        module = importlib.util.module_from_spec(spec)
         assert spec and spec.loader
-        spec.loader.exec_module(module)  # type: ignore[union-attr]
+        module = importlib.util.module_from_spec(spec)
+        # Register before exec: the runner defines frozen dataclasses, whose
+        # annotation resolution reads sys.modules[cls.__module__].__dict__. Without
+        # this the import raises and validation would be silently skipped.
+        sys.modules[spec.name] = module
+        try:
+            spec.loader.exec_module(module)  # type: ignore[union-attr]
+        except Exception:
+            sys.modules.pop(spec.name, None)
+            raise
         return module
     except Exception as e:  # pragma: no cover - defensive
         print(f"WARNING: could not import teammate runner for validation: {e!r}",
@@ -325,7 +333,13 @@ def build_case_dict(row: dict, bank) -> "dict | None":
     scenario_id = str(row["scenario"])
     criterion_id = str(row["criterion_id"])
     scenario = bank.scenarios.get(scenario_id)
-    rubric = bank.rubrics.get(criterion_id)
+    # Look up the rubric by (scenario_id, criterion_id) first so a criterion_id
+    # reused across scenarios never resolves to the wrong rubric; fall back to a
+    # criterion_id-only lookup for banks (e.g. tutor_cat ItemBank) whose rubrics
+    # dict is keyed by criterion_id alone.
+    rubric = bank.rubrics.get((scenario_id, criterion_id))
+    if rubric is None:
+        rubric = bank.rubrics.get(criterion_id)
     if scenario is None or rubric is None:
         return None
     return {
@@ -807,23 +821,34 @@ def _cross_check_provenance(fj: FrozenJudgeConfig, prov: dict[str, set]) -> None
 # =====================================================================
 # matrix assembly
 # =====================================================================
-def assemble_matrix(models: list[str], criterion_ids: list[str],
+def assemble_matrix(models: list[str], columns: list[str] | list[tuple[str, str]],
                     verdicts: dict[CellKey, dict]) -> tuple[np.ndarray, list[list[str]], int]:
-    by_mc: dict[tuple[str, str], int] = {}
-    for (model, _scenario, criterion_id), row in verdicts.items():
+    """Assemble the models x columns pass/fail matrix from verdict rows.
+
+    ``columns`` may be a list of ``criterion_id`` strings (legacy: cells keyed by
+    ``(model, criterion_id)``, valid when criterion_ids are globally unique) or a
+    list of ``(scenario_id, criterion_id)`` tuples (cells keyed by
+    ``(model, scenario_id, criterion_id)`` so columns never collide if a
+    criterion_id repeats across scenarios).
+    """
+    paired = bool(columns) and isinstance(columns[0], tuple)
+    by_key: dict[tuple, int] = {}
+    for (model, scenario, criterion_id), row in verdicts.items():
         y = row.get("y")
         if y is None:
             # Voided (no_decision) cell recorded for audit -> leave MISSING (NaN).
             continue
-        by_mc[(model, criterion_id)] = int(y)
-    n_rows, n_cols = len(models), len(criterion_ids)
+        key = (model, scenario, criterion_id) if paired else (model, criterion_id)
+        by_key[key] = int(y)
+    n_rows, n_cols = len(models), len(columns)
     arr = np.full((n_rows, n_cols), np.nan, dtype=float)
     csv_cells: list[list[str]] = []
     n_holes = 0
     for i, model in enumerate(models):
         row_cells: list[str] = []
-        for j, cid in enumerate(criterion_ids):
-            y = by_mc.get((model, cid))
+        for j, col in enumerate(columns):
+            lookup = (model, col[0], col[1]) if paired else (model, col)
+            y = by_key.get(lookup)
             if y is None:
                 n_holes += 1
                 row_cells.append("")
