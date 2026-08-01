@@ -1,0 +1,3 @@
+benchmark,se_stop,n_train,n_test,n_items_raw,n_items_kept,corr,mae,avg_cat_items,pct_items
+arc_challenge,0.3,50,13,1172,759,0.8615,0.0825,8.0,1.05
+arc_challenge,0.15,50,13,1172,759,0.9196,0.0739,32.85,4.33
