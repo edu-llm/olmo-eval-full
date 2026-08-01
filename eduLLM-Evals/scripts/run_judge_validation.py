@@ -235,8 +235,8 @@ class S3Publisher:
                 import boto3
             except ImportError as exc:
                 raise RuntimeError(
-                    "boto3 is required for S3 publishing; install the judge-gpu "
-                    "or judge-aws optional dependency"
+                    "boto3 is required for S3 publishing; install the 'gen' "
+                    "optional dependency"
                 ) from exc
             client = boto3.client("s3")
         self.client = client
@@ -1246,7 +1246,7 @@ class VLLMGenerator:
         except ImportError as exc:
             raise RuntimeError(
                 "vLLM is required for --backend vllm; install with "
-                "pip install -e '.[judge-gpu]' on the Linux GPU host"
+                "pip install -e '.[gen]' on the Linux GPU host"
             ) from exc
 
         kwargs: dict[str, object] = {
