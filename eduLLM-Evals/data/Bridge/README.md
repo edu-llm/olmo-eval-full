@@ -10,17 +10,20 @@ Built by [`scripts/ingest_bridge.py`](../../scripts/ingest_bridge.py). The recor
 `difficulty` / `discrimination`: those are calibrated from real judge responses, and until
 that fit exists the bank stays parameter-free rather than carrying synthetic stand-ins.
 
-**Current artifact: 172 scenarios · 3,285 criteria · 30 live criteria of a 39-slot bank ·
-19–20 criteria per scenario, 7 of them `critical`.**
+**Current artifact (v8): 250 scenarios · 4,795 criteria · 30 live criteria of a 39-slot
+bank · 19–20 criteria per scenario, 7 of them `critical` · 162 unique conversations.**
 
-> **⚠️ 470 of the original 642 scenarios were removed, and the topic tier retired.** Four
-> audits, each finding what the last one missed — see [Audit trail](#audit-trail). Bridge
-> transcribes live sessions held over a shared whiteboard, and the worksheet was never
-> captured. On 55% of the bank that left transcripts like *"Here comes the question. / Is
-> that your final answer? / yes"* — a tutor asked to diagnose an error without being told
-> what was asked. See [Missing problem statements](#missing-problem-statements). The
-> excluded ids are committed in [`visual_exclusions.json`](visual_exclusions.json); delete
-> that file and rebuild to restore the 642.
+> **⚠️ 450 of 700 source rows are excluded, and the topic tier is retired.** The deterministic
+> checks remove 58 rows before ids are assigned. Four audits initially removed 470 of the
+> remaining 642 rows; a reverse audit then proposed 127 restorations, and blind three-vote
+> adjudication upheld 78 of them. The resulting 392 audited exclusions plus 58 deterministic
+> drops leave exactly 250 scenarios. See [Audit trail](#audit-trail).
+
+> **⚠️ 54 retained scenarios have a known-bad expert reference.** They remain because the
+> student error is gradeable, but their wrong/corrupted gold replies are quarantined in
+> [`reference_suspect.json`](reference_suspect.json). Their canonical `reference_solution`
+> is empty, so no judge path can accidentally use the bad key. Of the 54, 33 are `fatal` and
+> 21 `serious`; they cover 1,034 of the 4,795 rubric rows.
 
 > **Status: candidate benchmark — not confirmed for the bank.** Bridge is a *potential*
 > option under evaluation, not a committed part of the calibration set. Its presence in
@@ -42,9 +45,10 @@ ability, not general tutoring ability.
 
 ## Audit trail
 
-Four passes, each finding what the previous one missed. The pattern is worth stating because
-it is the reason for the last one: every pass but the final one asked whether an item *looked*
-sound, which measures precision and says nothing about recall.
+Four cutting passes initially reduced the bank to 172. Because every pass looked for reasons
+to cut, a fifth pass argued the opposite case and then re-adjudicated every proposed rescue
+blind. The raw counts below describe the decisions when each pass ran; the final column is
+not the current drop count after restorations.
 
 | # | pass | found | removed |
 |---|---|---|---:|
@@ -53,17 +57,25 @@ sound, which measures precision and says nothing about recall.
 | 2 | same, second round | a figure is referenced and the error is unreadable without it | 90 |
 | 3 | [`audit_bridge_items.py`](../../scripts/audit_bridge_items.py) | the graded turn has no gradeable error; 83 wrong topic labels | 50 |
 | 4 | [`verify_bridge_items.py`](../../scripts/verify_bridge_items.py) | **adversarial** — wrong gold maths, malformed questions, unanswerable criteria | 67 |
+| 5 | [`audit_bridge_reversal.py`](../../scripts/audit_bridge_reversal.py) | blind majority could diagnose the error from tutor-visible text alone | **−78** |
 
-**700 → 172.** The single most consequential fact about Bridge is that it transcribes live
+**700 → 172 after cutting → 250 after blind reversal.** The single most consequential fact
+about Bridge is that it transcribes live
 sessions held over a **shared whiteboard that was never saved**, so most of what the tutor and
 student were looking at is simply absent. That is not a packaging problem; the visual was
 never digitised, and no amount of re-ingesting recovers it.
 
-Pass 4 is the only one that measured recall, by inverting the burden of proof: three lenses
-per scenario, each told to assume the item is unfit and prove it, majority of three required.
-It found a defect class none of the first three looked for — **gold keys that state wrong
-mathematics**. The judge is *shown* the reference, and the pilot separately established that
-showing it makes the judge more lenient, so a wrong reference actively misleads grading:
+The preliminary reversal proposed 127 restorations while the expert reply and `lesson_topic`
+were visible. That leaked information despite instructions not to use it, so all 127 proposals
+plus six already-kept salvage controls were re-read with those fields physically removed,
+three independent votes each. The majority upheld 84: six controls and 78 actual
+restorations. Of the 78, 74 were unanimous and four received 2/3 votes. The compact vote and
+evidence ledger is [`blind_readjudication.json`](blind_readjudication.json); the final override
+list is [`restored.json`](restored.json).
+
+Pass 4 also found **gold keys that state wrong mathematics**. That is a defect in the key, not
+necessarily in the tutoring task. The final bank retains gradeable tasks but quarantines bad
+references, because showing one to a judge makes grading less reliable:
 
 > `bridge_0342` — the student answers **"hexagon"** for a five-sided shape, and the expert's
 > gold reply says *"Try that again! The prefix for 5 sides is **hexa**."* It confirms the wrong
@@ -71,10 +83,12 @@ showing it makes the judge more lenient, so a wrong reference actively misleads 
 
 Others: *"a rectangle has two equal sides and two equal angles"*; speed's "formula" given as
 *miles per hour*; commutativity offered as an *inverse* operation; `0.621 × 1000` given as
-`6210`; and a gold key containing the student's next reply pasted after the tutor's.
+`6210`; and a gold key containing the student's next reply pasted after the tutor's. These
+strings live only in the quarantine sidecar, never in canonical `reference_solution` fields.
 
-**Two things the audits deliberately did NOT change.** The expert `error_module` annotation was
-contradicted on 142 scenarios, but 54 of those push `right_idea`/`careless` toward `guess`,
+**Two things the audits deliberately did NOT change.** On the audit-time bank, the expert
+`error_module` annotation was contradicted on 142 scenarios, but 54 of those push
+`right_idea`/`careless` toward `guess`,
 which is exactly what the missing whiteboard produces — the expert saw the student's working
 and a text-only reader cannot. The labels stand. Separately, the first version of the
 adversarial lenses disqualified `bridge_0000` unanimously, an item deliberately kept in pass 2;
@@ -101,8 +115,8 @@ confirmatory M2PL.
 
 ## Criterion bank: 39 criteria in 4 tiers
 
-Each scenario draws its **core** criteria plus exactly one module from each conditional
-tier, giving **20–22 criteria**.
+Each scenario draws its **core** criteria plus one error-type module and one grade-band
+criterion, giving **19–20 criteria**. The retired topic tier contributes zero.
 
 ```
 core                     every scenario                    16 criteria
@@ -138,7 +152,7 @@ scenario metadata but attaches no criterion, so the tier list below is provenanc
 
 ### Tier 4 — grade-band module
 
-`Y1` (grades 1-3, 56) · `Y2` (4-5, 95) · `Y3` (6-12, 21). Derived from the TEKS prefix
+`Y1` (grades 1-3, 80) · `Y2` (4-5, 137) · `Y3` (6-12, 33). Derived from the TEKS prefix
 (`3.6B…` → grade 3; `A2.7D…` → secondary).
 
 ## Retired criteria
@@ -149,8 +163,9 @@ from the middle would renumber every code after it. `validate()` exempts retired
 the "never attached" check and asserts they stay unattached.
 
 **The whole of Tier 3.** Its gate keys on `lesson_topic`, which names the *lesson* rather
-than the graded turn — a lesson titled "Bar Graphs" ends on `12 − 1`, and 83 of 289 scenarios
-needed a hand correction. More decisively, the census pilot over all 239 scenarios found
+than the graded turn — a lesson titled "Bar Graphs" ends on `12 − 1`, and 83 of the then-289
+scenarios needed a hand correction. More decisively, the historical census pilot over all
+239 scenarios found
 7 of its 8 live criteria defective:
 
 | code | domain | pass | disc | length-bias | experts − models | verdict |
@@ -183,8 +198,9 @@ per scenario, what the graded turn actually asks and what the student actually d
 judges the stored labels against that. Full results:
 [`staging/bridge_item_audit/report.md`](../../staging/bridge_item_audit/report.md).
 
-**50 scenarios excluded** — the graded turn has no gradeable error. These carried a *clean*
-error label, which is exactly why Bridge's free-text `no_clear_mistake` filter missed them:
+**50 scenarios were initially excluded; 46 remain excluded after blind reversal** (18
+`no_error_present`, 18 `not_mathematics`, 10 `not_gradeable`). These carried a *clean* error
+label, which is exactly why Bridge's free-text `no_clear_mistake` filter missed them:
 
 ```
 [tutor]   Please show your work on the whiteboard using the Pencil Tool
@@ -221,8 +237,8 @@ that sub-step is the graded turn:
 ## Three design rules worth knowing
 
 **1. Conversation-level error gating.** Bridge re-annotates the same conversation by
-different experts, who often disagree about `e` — 85 scenarios sit in a conversation whose
-annotators disagreed. Keying the error module on the row's own label gave byte-identical
+different experts, who often disagree about `e` — 101 retained rows have multiple annotated
+values in `error_types`. Keying the error module on the row's own label gave byte-identical
 stimuli *mutually contradictory critical criteria* (42% of the pre-fix bank). The module is
 now resolved once **per conversation** — the first annotation in split order wins — and every
 row sharing that `c_id` draws it. Deterministic pre-pass, no API.
@@ -236,11 +252,11 @@ discarded labels remain in `error_types` for provenance.
 
 **2. One scenario per row — `source_id` is deliberately non-unique.** Every surviving row
 becomes its own scenario, so each expert's revision stays a separate item and nothing is
-merged away. The consequence is real and must be handled downstream: 178 scenarios share a
-conversation with at least one other (126 unique conversations across 172 scenarios), and
-those repeats have an identical stimulus *and* an identical criterion set,
-differing only in `reference_solution`. That is perfect local dependence, and the judge sees
-a different gold key for each copy — so the same item can acquire two difficulties. **Group
+merged away. The consequence is real and must be handled downstream: 176 scenarios belong
+to 88 duplicated-source pairs; together with 74 singletons, that is 162 unique conversations
+across 250 scenarios. Repeats have an identical stimulus and criterion set; their source rows
+differ in the expert revision unless a suspect revision is quarantined. That is perfect local
+dependence. **Group
 or hold out on `source_id` at calibration**; `validate()` only enforces that repeats agree
 on their module set, not that they are unique.
 
@@ -259,16 +275,16 @@ the pilot below showed negative form inflates pass rates, so six were rewritten.
 
 | Reason | Dropped | What it catches |
 |--------|---------|-----------------|
-| `missing_problem_statement` | 263 | the question was on the whiteboard, never in the chat |
-| `error_not_diagnosable_from_text` | 90 | a figure is referenced and the error is unreadable without it |
-| `no_error_present` | 20 | the student is correct, acknowledging, or ending the session |
+| `missing_problem_statement` | 245 | the question was on the whiteboard, never in the chat |
+| `error_not_diagnosable_from_text` | 86 | a figure is referenced and the error is unreadable without it |
+| `no_error_present` | 18 | the student is correct, acknowledging, or ending the session |
 | `not_mathematics` | 18 | the graded turn is session admin or tool talk |
-| `not_gradeable` | 12 | the error is real but not recoverable from the visible text |
-| `failed_adversarial_verification` | 67 | a majority of three adversarial lenses disqualified it |
+| `not_gradeable` | 10 | the error is real but not recoverable from the visible text |
+| `failed_adversarial_verification` | 15 | a majority of three adversarial lenses disqualified it |
 | `no_clear_mistake` | 56 | `e` is free text ("no mistake" / "end session" / "unresponsive") |
 | `empty_student_turn` | 2 | final student turn has no text |
 
-700 source rows → 528 dropped → **172 scenarios**. All drops are logged to `dropped.jsonl`
+700 source rows → 450 dropped → **250 scenarios**. All drops are logged to `dropped.jsonl`
 with a reason; the two deterministic reasons carry a null `scenario_id` because they fail
 before ids are assigned.
 
@@ -279,8 +295,9 @@ and pilot judgments in `staging/` stay joinable across the cut.
 
 ### Missing problem statements
 
-The 263 in the first round. These transcripts record the conversation *around* a problem that
-only ever existed on the shared whiteboard:
+The visual audit initially excluded 263 for this reason. Blind adjudication restored 18 whose
+error was nevertheless explicit in the text, leaving 245 final drops. The remaining cases
+record the conversation *around* a problem that only ever existed on the shared whiteboard:
 
 ```
 [tutor]   Here is your first Exit Ticket question.
@@ -301,18 +318,6 @@ repeated conversations drew inconsistent verdicts. Evidence behind the cut:
 audit re-aggregated over the bank as it now stands is in
 [`report.md`](../../staging/bridge_visual_audit/report.md).
 
-**Two related groups are still IN the bank**, pending a separate decision — they are listed
-under `not_excluded_yet` in [`visual_exclusions.json`](visual_exclusions.json):
-
-| kind | scenarios | what it is |
-|---|---|---|
-| `explicit_pointer` | 74 | names a shared artifact — "the pink rectangle", "look at the whiteboard" |
-| `labelled_option` | 27 | the student answers with a label only a figure defines — `"b"`, `"picture 3"` |
-
-> **The classification is a model's judgment, not a verified label.** Precision was
-> hand-checked on ten cases and held; recall was not measured, and no random sample of the
-> 278 it cleared has been reviewed. Treat 41% as an estimate with an unmeasured error bar.
-
 ### `visible_mistake` — flagged, not excluded
 
 **No scenario now carries `visible_mistake: false`** — all 91 were removed by the audits, 82
@@ -332,7 +337,7 @@ no digit appears anywhere in the conversation, leaving only tutor turns plus an 
 ```
 
 There is no student position to remediate, so D1/D2 (**both `critical`**) are unpassable.
-`[s for s in scenarios if s["visible_mistake"]]` now returns all 172.
+`[s for s in scenarios if s["visible_mistake"]]` now returns all 250.
 
 ## Criterion ids
 
@@ -348,7 +353,8 @@ of the bank to keep existing ids stable.
 | `c_id` | `source_id` (**non-unique** — the conversation key; join key back to HuggingFace) |
 | `c_h[-1].text` | `prompt` (the student's final turn); also derives `visible_mistake` |
 | `c_h[:-1]` | `conversation_context` (`{role, content}`, role `student`/`tutor`) |
-| `c_r_` (joined) | `reference_solution` (this row's expert revised reply = the gold key) |
+| `c_r_` (joined) | `reference_solution` (expert revised reply; empty when quarantined) |
+| quarantine audit | `reference_suspect` (`true` for a known-bad key; raw text stays only in the sidecar) |
 | `c_r` (joined) | `novice_response` (original tutor reply; provenance) |
 | `e` | `error_type` (this row) + `error_types` (all, provenance) → `error_module` (canonical) |
 | `z_what` / `z_why` | `expert_strategy` / `expert_intention` (provenance) |
@@ -372,11 +378,11 @@ one, so the `use_case` path never fires. The multi-turn context is preserved eit
 > asks for nothing. The expectation was that all three would sit at ceiling. The pilot below
 > shows only A1 does — being *told* to identify the error turns out not to mean models do it.
 
-## Pilot validation — measured on the whole bank
+## Historical pilot validation — v6 172-item census
 
-The rubric was tuned against real judging runs rather than by argument, and re-measured after
-every change to the bank. The current figures are a **census, not a sample**: all 172
-scenarios × 8 tutors spanning `gpt-4.1-nano` → `claude-opus-4-8` = **1,376 graded responses /
+The rubric was tuned against real judging runs rather than by argument. The detailed figures
+in this section are a census of the earlier v6 bank, **not a measurement of the final 250**:
+all 172 scenarios × 8 tutors spanning `gpt-4.1-nano` → `claude-opus-4-8` = **1,376 graded responses /
 26,280 criterion judgments**, judge `gpt-5.5`, production Bridge system prompt. Harness:
 [`staging/bridge_pilot/pilot.py`](../../staging/bridge_pilot/pilot.py) with
 `BRIDGE_PILOT_DIR` / `BRIDGE_PILOT_N=all`; report in `staging/bridge_pilot_v6/`.
@@ -384,9 +390,14 @@ scenarios × 8 tutors spanning `gpt-4.1-nano` → `claude-opus-4-8` = **1,376 gr
 Sampling was abandoned once the bank got small: a 100-scenario draw would have left the
 conditional criteria with a handful of observations each.
 
+As a post-selection validity check, the 196 final scenarios whose expert references are not
+quarantined still put experts above models by **+0.032**, with a 95% bootstrap interval of
+**[+0.012, +0.051]**. The 54 suspect-reference rows are excluded from that check and from all
+future reference-shown validation until their keys are repaired.
+
 ### Where it stands
 
-| | 642-bank sample | 239-bank census | **172-bank census** |
+| | 642-bank sample | 239-bank census | **v6 172-bank census** |
 |---|---|---|---|
 | healthy criteria | 27 / 39 | 22 / 36 | **17 / 30** |
 | at ceiling (≥0.95) | 4 | 8 | **9** |
@@ -396,10 +407,10 @@ conditional criteria with a handful of observations each.
 | experts − models | +0.052 | **−0.047** | **+0.031** |
 | criteria experts fail more | 3 | 8 | **1** |
 
-**Model separation and validity both improved; item difficulty is the cost.** Removing
+**Model separation and validity both improved in v6; item difficulty was the cost.** Removing
 unanswerable items raised every pass rate, so more criteria drifted to ceiling — 9 of 30. The
-ordering is now correct (`claude-opus-4-8` 0.960 and `gpt-5.5` 0.943 on top; on the 642 bank
-`gpt-4.1-nano` outscored `gpt-4o`).
+ordering in that run was sensible (`claude-opus-4-8` 0.960 and `gpt-5.5` 0.943 on top; on
+the 642 bank `gpt-4.1-nano` outscored `gpt-4o`).
 
 ### The expert check, which is the one that matters
 
@@ -418,8 +429,8 @@ Two things caused it, and both are now fixed:
   step that went wrong; a generic "try again" still fails. Its discrimination **rose** with the
   rewording, 0.333 → **0.548**.
 
-Result: **experts 0.915 against models 0.884 (+0.031)**, and the list of criteria the experts
-fail more often is down from 8 to **one**.
+Historical v6 result: **experts 0.915 against models 0.884 (+0.031)**, and the list of criteria
+the experts failed more often was down from 8 to **one**.
 
 ### The one remaining: A1
 
@@ -458,10 +469,12 @@ not produce.
 
 ## Known limitations
 
-- **Judge grounding.** `tutor_cat/judge.py` sends the judge only `prompt` and
-  `conversation_context` — not `reference_solution` or `error_type`. The production path
-  (`run_local_judge_v4.py`) does render the reference. The diagnosis criteria (D1/D2) assume
-  the judge can see what the student got wrong; verify that before a real run.
+- **Judge grounding.** `tutor_cat/judge.py` sends only `prompt` and `conversation_context`;
+  production judge paths may also render a nonempty reference. For the 54 known-bad keys the
+  canonical field is empty by construction, so those paths fall back to tutor-visible text.
+- **Reference quarantine.** The 54 retained suspect keys are not repaired answers; they are
+  withheld answers. Any analysis requiring a gold reply must use only the other 196 scenarios
+  until corrected references receive review.
 - **Prescriptiveness.** The error modules encode one remediation framing per error type.
   They have been reworded toward negative/falsifiable form to reduce unfair failure of
   legitimate alternative remediations, but this has not been validated against Bridge's own
@@ -473,21 +486,18 @@ not produce.
   been audited.
 - **Floor items are gone.** The `visible_mistake: false` group is now empty; D1/D2 are
   answerable on every remaining scenario.
-- **Duplicate stimuli are retained.** 92 scenarios share a conversation with another and,
-  byte-identical apart from `reference_solution`. At temperature 0 a
-  tutor returns the same response to each, so these rows are near-copies in the response
-  matrix while the judge scores them against different gold keys. Group on `source_id`.
+- **Duplicate stimuli are retained.** 176 scenarios belong to 88 duplicated-source pairs.
+  At temperature 0 a tutor returns the same response to each, so these rows are near-copies
+  in the response matrix. Group on `source_id`.
 - **Tier 3 is gone, and that was the right call.** The census pilot found 7 of its 8 live
   criteria defective: V1 (disc 0.074, length-bias +0.291), V2 (experts −0.181), F1
   (length-bias +0.332, experts −0.179), N1 (ceiling 0.954), X1 (ceiling 0.963, experts
   −0.263), Z1 (disc 0.182, experts −0.475), O1 (disc 0.123, experts −0.345). Only U1 was
   clean, and keeping one criterion did not justify retaining a routing layer whose gate had
   already proven unreliable twice.
-- **The pilot statistics predate the cut.** Every pass rate and discrimination below was
-  measured on a 100-scenario sample of the 642-scenario bank, and roughly 55% of that
-  sample no longer exists. Directionally the numbers should hold or improve — the removed
-  items are the ones a tutor could not answer — but they are not a measurement of the
-  current bank.
+- **The detailed pilot statistics predate the 78 restorations.** They are a census of the v6
+  172-item bank, not of v8's 250 items. Only the 196-item trustworthy-reference expert gap
+  above was recomputed on the final selection.
 
 ## Rebuild
 
@@ -495,11 +505,14 @@ not produce.
 python scripts/ingest_bridge.py
 ```
 
-The ingester plus [`visual_exclusions.json`](visual_exclusions.json) are the whole rebuild.
+The deterministic inputs are the three exclusion ledgers (`visual_exclusions.json`,
+`item_exclusions.json`, `verify_exclusions.json`), [`restored.json`](restored.json),
+[`blind_readjudication.json`](blind_readjudication.json),
+[`reference_suspect.json`](reference_suspect.json), and `topic_overrides.json`. The blind
+decision ledger is provenance; `restored.json` is the actual override read by ingestion.
 `load_bank` reads this bank cleanly — it infers the 5-skill axis from the criteria's own
-`q_mapping` and reports every rubric as `calibrated: False`, which is what keeps an
-uncalibrated bank out of CAT selection. To restore the pre-cut 642, delete or empty the
-exclusion list and re-run.
+`q_mapping` and reports every rubric as `calibrated: False`, which keeps an uncalibrated bank
+out of CAT selection.
 
 [`scripts/assign_irt_params.py`](../../scripts/assign_irt_params.py) can append synthetic
 placeholder parameters if some downstream step needs the fields populated for a dry run:

@@ -1,0 +1,1427 @@
+{
+  "_comment": "Committed evidence for Bridge v8 blind re-adjudication. The expert reply, lesson_topic, and labels were removed; three independent votes saw only tutor-visible text. Majority (at least 2/3) upheld. Six upheld rows were already-kept round-2 salvage controls, so 84 upheld decisions produced 78 actual restorations.",
+  "generated_by": "scripts/audit_bridge_reversal.py blind_report/publish",
+  "classifier": "openai-group/gpt-5.5",
+  "votes_per_item": 3,
+  "candidate_count": 133,
+  "upheld_count": 84,
+  "overturned_count": 49,
+  "restored_count": 78,
+  "already_kept_control_count": 6,
+  "already_kept_controls": [
+    "bridge_0000",
+    "bridge_0208",
+    "bridge_0245",
+    "bridge_0269",
+    "bridge_0396",
+    "bridge_0413"
+  ],
+  "candidates": [
+    {
+      "scenario_id": "bridge_0000",
+      "origin": "round2_salvage_control",
+      "was_cut_for": null,
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered an area question with a linear unit: \"4 m\" should use square units, such as m².",
+        "The student answered an area question with a linear unit: \"4 m\" instead of square units such as m².",
+        "The student answered an area question with a linear unit: \"4 m\" should be in square units (e.g., m²), not meters."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0005",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_mathematics",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0009",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"rhombus,\" but a rhombus has all sides equal; a quadrilateral with length bigger than width would be a rectangle.",
+        "The student answered \"rhombus,\" but a rhombus has equal side lengths; a quadrilateral described as having length bigger than width is a rectangle.",
+        "The student answered \"rhombus,\" but a rhombus is not the quadrilateral described by having length bigger than width; that description refers to a rectangle."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0028",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"she would have 1,200\" instead of identifying where the tens place is.",
+        "The tutor asked \"Where is the tens place?\" but the student answered \"she would have 1,200,\" which is an amount rather than identifying the tens place.",
+        "The student answered \"she would have 1,200\" instead of identifying where the tens place is."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0035",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student did not identify the minuend; instead they answered with place-value statements: \"one is in the thousad place the other one is in the ten thousand place\".",
+        "The student did not identify the minuend; they answered with place-value information ('one is in the thousad place the other one is in the ten thousand place') instead of naming the number being subtracted from.",
+        "The student did not identify the minuend; they answered with place values: \"one is in the thousad place the other one is in the ten thousand place\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0040",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0041",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_gradeable",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0042",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"11:01,\" but the tutor stated the time was \"1255\" (12:55), almost 1 o'clock.",
+        "The student answered \"11:01,\" but the tutor’s text states the clock is at \"1255\" (12:55), almost 1 o'clock.",
+        "The student answered \"11:01,\" but the tutor stated the time is \"1255\" (12:55), almost 1 o'clock."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0043",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered with a time, \"1:55,\" instead of naming the clock number the minute hand is on.",
+        "The student answered with a time, \"1:55,\" instead of naming the clock number the minute hand is on.",
+        "The student answered with a time, \"1:55,\" instead of naming the clock number the minute hand is on."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0051",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"30ft,\" a linear measurement, instead of explaining what \"area\" means.",
+        "The student answered \"30ft,\" a linear measurement, instead of explaining what \"area\" means.",
+        "The student answered \"30ft,\" a length measurement, instead of explaining that area means the amount of surface/space inside a 2D shape."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0053",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 2,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student responded \"i did it\" instead of giving a unit for volume.",
+        "The student answered \"i did it\" instead of giving a unit for volume; \"i did it\" is not a unit."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0058",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"prime,\" but 39 is composite because 39 = 3 × 13.",
+        "The student answered \"prime\" to \"39 is a prime number or composite number?\" but 39 is composite.",
+        "The student answered \"prime\" for 39, but 39 is composite because 39 = 3 × 13."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0076",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student misspelled \"square\" as \"squre\".",
+        "The student misspelled \"square\" as \"squre\".",
+        "The student misspelled \"square\" as \"squre\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0079",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0084",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0095",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"length\" when asked for the unit marked on the ruler; \"length\" is a measurement type, not a unit.",
+        "The student answered \"length,\" which is a measurement type, not a unit marked on a ruler.",
+        "The student answered \"length\" when asked for the unit marked on the ruler; \"length\" is a measurement type, not a unit."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0098",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"13\" for \"163 - 156\", but 163 - 156 = 7.",
+        "The student answered \"13\" for \"163 - 156\", but 163 - 156 = 7.",
+        "The student answered \"13\" for \"163 - 156\", but 163 - 156 = 7."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0101",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0105",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student wrote \"20 over 100,\" which is not equal to the whole number 20; changing 20 to a fraction should be \"20 over 1\" or an equivalent fraction.",
+        "The student wrote \"20 over 100,\" which is not equivalent to the whole number 20; changing 20 to a fraction should give an equivalent fraction such as 20/1.",
+        "The student wrote \"20 over 100,\" which equals 0.2, not the whole number 20; 20 as a fraction should be something like 20/1."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0107",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"11\" for \"24-15\", but 24 - 15 = 9.",
+        "The student answered \"11\" for \"24-15\", but 24-15 = 9.",
+        "The student answered \"11\" for \"24-15\", but 24-15 = 9."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0108",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"six,\" but in 262,956 the tens place is the 5, so the place value is 50.",
+        "The student answered \"six,\" but in 262,956 the tens-place digit is 5; 6 is in the ones place.",
+        "The student answered \"six,\" but in 262,956 the tens place is 5; 6 is in the ones place."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0109",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student gave two numbers, \"-4     5\", when the tutor asked for the singular \"x-axis value\".",
+        "The student gave two values, \"-4     5\", when asked for the single x-axis value.",
+        "The tutor asked for the x-axis value, but the student gave two numbers: \"-4     5\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0114",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0121",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 2,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student said an obtuse angle is \"abov 90\"; it should be greater than 90° and less than 180°.",
+        "The student answered \"abov 90\" for an obtuse angle, but an obtuse angle must be greater than 90° and less than 180°."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0126",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The tutor asked for the shape of the parking lot, but the student answered with numbers: \"50 and 124\".",
+        "The tutor asked for the shape of the parking lot, but the student answered with numbers: \"50 and 124\" instead of naming a shape.",
+        "The student answered \"50 and 124\" when asked for the shape of the parking lot; those are numbers, not a shape."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0131",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered 'it has all of the sides equal' for 'What is a right angle?'—that describes equal side lengths, not a right angle (90°).",
+        "The student answered \"it has all of the sides equal\" for \"What is a right angle?\"; a right angle is an angle measuring 90 degrees, not a shape with equal sides.",
+        "The student answered 'it has all of the sides equal' for 'What is a right angle?'; a right angle is an angle measuring 90 degrees, not a property about side lengths."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0133",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0142",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student wrote \"11;0 1\", giving minutes other than 55, even though the tutor stated that a minute hand on 11 means 55 minutes.",
+        "The student wrote \"11;0 1\", giving minutes as \"0 1\"/01 instead of 55, even though the tutor stated the minute hand on 11 means 55 minutes.",
+        "The student wrote the minutes as \"0 1\" in \"11;0 1\", but the tutor stated that a minute hand on 11 means 55 minutes."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0143",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student said the y-values go up by 6 when x goes up by 2, but their answers “19 31 44” increase by 12 and then 13, not by 6.",
+        "The student said they were adding 2 to x and 6 to y, but their y-values \"19 31 44\" do not increase by 6 as x goes 6, 8, 10; they increase by 12 and then 13.",
+        "The student said they were increasing y \"by 6,\" but their y-values \"19 31 44\" do not increase by 6; they increase by 12 and then 13."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0144",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"4\", but when borrowing from the hundreds column in 346, the 4 tens becomes 14 tens.",
+        "The student answered \"4,\" but when borrowing from the hundreds column in 346, the 4 tens becomes 14 tens.",
+        "The student answered \"4,\" but when borrowing from the hundreds column in 346, the 4 in the tens column becomes 14."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0157",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0159",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 1,
+      "decision": "overturned",
+      "blind_errors": [
+        "The student said speed is found \"by multyplying,\" but speed is found by dividing distance by time, not multiplying."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0163",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0176",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"30ft,\" which is a linear measurement, not an explanation of what \"area\" means.",
+        "The student answered \"30ft,\" which is a length measurement, not the meaning/definition of \"area.\"",
+        "The student answered \"30ft,\" a linear measurement, instead of explaining what \"area\" means."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0178",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0183",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0191",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 1,
+      "decision": "overturned",
+      "blind_errors": [
+        "The student answered \"like that\" instead of naming a specific shape."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0195",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student misspelled \"square\" as \"squre\".",
+        "The student misspelled \"square\" as \"squre\".",
+        "The student misspelled \"square\" as \"squre\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0198",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "They answered with a time, \"1:55,\" instead of naming the clock number the minute hand is on.",
+        "The student answered with a time, \"1:55,\" instead of naming the clock number the minute hand is on.",
+        "The student answered with a time, \"1:55,\" instead of naming the clock number the minute hand is on."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0199",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0202",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"200\" for the place value of 2 in 521, but the 2 is in the tens place, so its value is 20.",
+        "The student answered \"200,\" but in 521 the digit 2 is in the tens place, so its value is 20.",
+        "The student answered \"200\", but in 521 the digit 2 is in the tens place, so its value is 20."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0203",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"no have 4 angles,\" but decomposing shapes means breaking a shape into smaller parts/shapes, not describing a shape as not having 4 angles.",
+        "The student answered \"no have 4 angles,\" but decomposing shapes means breaking a shape into smaller shapes/parts, not whether a shape has 4 angles.",
+        "The student answered with a property about angles ('no have 4 angles') instead of defining decomposing shapes."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0208",
+      "origin": "round2_salvage_control",
+      "was_cut_for": null,
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"a spear,\" but a spear is not a mathematical shape name.",
+        "The student answered \"a spear,\" which is an object, not a shape name.",
+        "The student answered \"a spear,\" which is not a shape name."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0209",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"1,000\" for \"100*100\", but 100*100 = 10,000.",
+        "The student answered \"1,000\" for \"100*100\", but 100*100 = 10,000.",
+        "The student answered \"1,000\" for \"100*100\", but 100 × 100 = 10,000."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0212",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 2,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student gave a multiplication fact, \"7 times 5=35,\" instead of an inverse operation as requested.",
+        "The student wrote \"7 times 5=35,\" which is a multiplication equation, not an inverse operation."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0214",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"6\" to \"How many times 4 go in 6?\"; 4 goes into 6 only 1 whole time, not 6.",
+        "The student answered \"6\" to \"How many times 4 go in 6?\"; 4 goes into 6 once as a whole number (remainder 2), not 6 times.",
+        "The student answered \"6\" to \"How many times 4 go in 6?\"; 4 does not go into 6 six times."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0223",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0225",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student said the y values go up by 6 when x goes up by 2, but for x = 6, 8, 10 they answered \"19 31 44\", which increases by 12 and then 13, not by 6.",
+        "The student said the y-values go up by 6 when x goes up by 2, but their answer \"19 31 44\" increases by 12 and then 13, not by 6.",
+        "The student said they added y by 6, but for x = 6, 8, and 10 they answered \"19 31 44\", whose y-values increase by 12 and 13, not by 6."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0243",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"1,000\" for \"100*100\", but 100*100 = 10,000.",
+        "The student answered \"1,000\" for \"100*100\", but 100*100 = 10,000.",
+        "The student answered \"1,000\" for \"100*100\", but 100*100 = 10,000."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0245",
+      "origin": "round2_salvage_control",
+      "was_cut_for": null,
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"length\" when asked for the unit marked on the ruler; \"length\" is a type of measurement, not a unit.",
+        "The student answered \"length\" when asked for the unit marked on the ruler; \"length\" is a measurement type, not a unit.",
+        "The student answered \"length,\" which is a measurement type, not a unit marked on a ruler."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0246",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0248",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"9x5\" for the triangle area formula; they used base × height and omitted the required factor of 1/2.",
+        "The student answered \"9x5\" for the triangle area formula, omitting the required factor of 1/2; the formula should be A = 1/2 × base × height.",
+        "The student answered \"9x5\" for the triangle area formula; they omitted the required factor of 1/2 (the formula is A = 1/2 × base × height)."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0251",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"p\" when asked for \"the first number in the ordered pair\" / x-axis position; they gave a letter instead of the x-coordinate number.",
+        "The tutor asked for “the first number in the ordered pair” / x-axis position, but the student answered “p,” a letter rather than the requested number.",
+        "The student answered \"p\" when asked for the first number in the ordered pair / x-axis position; \"p\" is not a numerical x-coordinate."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0252",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"43200\" for the sum of 2700 and 1600; the correct sum is 4300.",
+        "The student answered \"43200\" for the sum of 2700 and 1600, but 2700 + 1600 = 4300.",
+        "The student answered \"43200\" for the sum of 2700 and 1600; the correct sum is 4300."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0254",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0261",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"300,\" a single number, when asked for the coordinate(s) of a point on the line; a point should be given as an ordered pair.",
+        "The student answered \"300,\" a single number, when asked for the coordinate(s) of a point on the line; a point's coordinates should be given as an ordered pair.",
+        "The student answered \"300,\" a single number, instead of giving the coordinates of a point on the line as requested."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0262",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"300,\" a single number, when the tutor asked for the coordinate(s) of a point on the line, which should be an ordered pair.",
+        "The student answered \"300\", a single number, when the tutor asked for the coordinates of a point on the line; this should be an ordered pair, not just one value.",
+        "The student answered \"300,\" a single number, when the tutor asked for the coordinates of a point on the line (an ordered pair)."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0269",
+      "origin": "round2_salvage_control",
+      "was_cut_for": null,
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"like a kite,\" which describes a shape rather than identifying where the line of symmetry is.",
+        "The student answered \"like a kite,\" which describes a shape rather than identifying where the line of symmetry is.",
+        "The student answered \"like a kite,\" which describes a shape rather than identifying where the line of symmetry is."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0277",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student wrote the minutes as \"0 1\" in \"11;0 1\" instead of using 55 minutes, even though the tutor said the minute hand on 11 means 55 minutes.",
+        "The student wrote the minutes as \"0 1\"/01 in \"11;0 1\", but the tutor stated that a minute hand on 11 means 55 minutes.",
+        "The student wrote \"11;0 1\", but the tutor stated that when the minute hand is on 11, the minutes are 55; the answer should have 55 minutes, not \"0 1\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0280",
+      "origin": "audited_exclusion",
+      "was_cut_for": "no_error_present",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0284",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"54\" for \"60-4\", but 60 - 4 = 56.",
+        "The student answered \"54\" for \"60-4\", but 60 - 4 = 56.",
+        "The student answered \"54\" for \"60-4\", but 60 - 4 = 56."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0285",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student misspelled \"division\" as \"divieson\".",
+        "The student misspelled the operation: they wrote \"divieson\" instead of \"division\".",
+        "The student misspelled \"division\" as \"divieson\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0286",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "They answered \"3\" for the product of 6 and 2; 6 × 2 = 12.",
+        "The student answered \"3\" for the product of 6 and 2; the product should be 12.",
+        "The student answered \"3\" for the product of 6 and 2; the product is 12."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0295",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_mathematics",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0298",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0300",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"1000\" centimeters in a meter; a meter has 100 centimeters.",
+        "The student answered \"1000\" centimeters in a meter; 1 meter is 100 centimeters.",
+        "The student answered \"1000\" centimeters in a meter, but 1 meter is 100 centimeters."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0301",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"cube,\" but a cube is a 3D solid, not a type of quadrilateral.",
+        "The student answered \"cube,\" but a cube is a 3D solid, not a type of quadrilateral.",
+        "The student answered \"cube,\" but a cube is a 3D solid, not a type of quadrilateral."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0305",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"32\", a single number, when asked for a division expression.",
+        "The student answered \"32\", a single number, when asked for a division expression.",
+        "The tutor asked for a division expression, but the student answered with a single number: \"32\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0307",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_gradeable",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"a spear,\" but a spear is not a geometric shape name.",
+        "The student answered \"a spear,\" which is not a geometric shape name.",
+        "The student answered \"a spear,\" which is not a mathematical shape name."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0320",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"44\" minutes per hour, but there are 60 minutes in an hour.",
+        "The student answered \"44\" to \"How many minutes per hour?\"; there are 60 minutes in an hour.",
+        "The student answered \"44\" to \"How many minutes per hour?\"; an hour has 60 minutes."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0324",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0327",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0329",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0332",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"30\", a number, when asked for the formula for the area of a rectangle.",
+        "The student answered \"30,\" a number, when asked for the formula for the area of a rectangle.",
+        "The student answered \"30\" when asked for the formula for the area of a rectangle; they gave a number instead of a formula such as A = length × width."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0342",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"hexagon\" for the name of a 5-sided shape; a hexagon has 6 sides, while a 5-sided shape is a pentagon.",
+        "The student answered \"hexagon\" for a \"5 sided shape\"; a hexagon has 6 sides, while a 5-sided shape is a pentagon.",
+        "The student answered \"hexagon\" for the name of a 5-sided shape; a hexagon has 6 sides, not 5."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0343",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0346",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"3x9\" instead of evaluating the given expression \"1 x2\".",
+        "The student answered \"3x9\" instead of giving the value of \"1 x2\" (which would be 2 if \"x\" means multiplication).",
+        "The student answered \"3x9\" for \"1 x2\"; 1×2 equals 2, not 3×9."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0347",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"3x9\" instead of giving the value of \"1 x2\" (1×2 = 2).",
+        "The student answered \"3x9\" instead of giving the value of \"1 x2\"; 1×2 = 2.",
+        "The student answered \"3x9\" instead of the value of \"1 x2\" (1×2), which is 2."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0364",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0367",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"pentagon\" for a quadrilateral; a pentagon is not a quadrilateral (it has 5 sides, not 4).",
+        "The student answered \"pentagon,\" but a pentagon is not a quadrilateral; it has five sides.",
+        "The student answered \"pentagon,\" but the tutor asked for a type of quadrilateral; a pentagon is not a quadrilateral."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0369",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0371",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered with a number, \"12237,\" instead of naming a property.",
+        "The student answered with a number, \"12237,\" instead of naming a property that allows numbers to be written in any order.",
+        "The student answered with a number, \"12237,\" instead of naming a property."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0389",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0396",
+      "origin": "round2_salvage_control",
+      "was_cut_for": null,
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"like a kite,\" which describes a shape rather than identifying where the line of symmetry is.",
+        "The student answered \"like a kite,\" which describes a shape rather than identifying where the line of symmetry is.",
+        "The student answered “like a kite” instead of identifying where the line of symmetry is."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0397",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 1,
+      "decision": "overturned",
+      "blind_errors": [
+        "The student says their total was wrong: \"i got wrong i got 98\"."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0404",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 1,
+      "decision": "overturned",
+      "blind_errors": [
+        "The student answered \"a\" to \"What is the constant term?\"; \"a\" is a variable/symbol, not a constant term."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0406",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"19\" for \"13 times 3,\" but 13 × 3 = 39.",
+        "The student answered \"19\" for \"13 times 3,\" but 13 × 3 = 39.",
+        "The student answered \"19\" for \"13 times 3,\" but 13 × 3 = 39."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0413",
+      "origin": "round2_salvage_control",
+      "was_cut_for": null,
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered an area question with a linear unit: \"4 m\" should use square units (e.g., m²), not meters.",
+        "The student answered an area question with a linear unit: \"4 m\" should be in square units (e.g., m²), not meters.",
+        "The student answered an area question with a linear unit: \"4 m\" should use square units, e.g. m²."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0415",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"9\" as the next smallest digit in 3591, but among the remaining digits 3, 5, and 9, the next smallest is 3.",
+        "The student answered \"9\" as the next smallest digit in 3591 after 1, but the next smallest digit is 3.",
+        "The student answered \"9\" as the next smallest digit in 3591 after 1, but the next smallest digit is 3."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0416",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"10.05\" for \"10 to the exponent 5\"; they treated the exponent as a decimal rather than computing 10^5.",
+        "The student answered \"10.05\" for \"10 to the exponent 5\"; 10^5 equals 100000, not 10.05.",
+        "The student answered \"10.05\" for \"10 to the exponent 5\"; 10^5 means 10 multiplied by itself 5 times, not 10.05."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0418",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered with the bare number \"23\" instead of giving a reason for why the chart has \"five in the x column\" while counting by twos.",
+        "The student answered \"23\" to a \"Why\" question asking for an explanation of why 5 appears in the x column; \"23\" is not an explanation.",
+        "The student answered \"23\" to a why-question; this is a number, not an explanation of why the chart has 5 in the x column."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0419",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0425",
+      "origin": "audited_exclusion",
+      "was_cut_for": "no_error_present",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0435",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"0\" to \"How many zeros are in a hundred?\"; 100 has two zeros.",
+        "The student answered \"0\" to \"How many zeros are in a hundred?\"; a hundred is written as 100, which has two zeros.",
+        "The student answered \"0\" to \"How many zeros are in a hundred?\"; a hundred is 100, which has two zeros."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0437",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0438",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The tutor asked for “the value of the length of the square,” but the student gave a formula/statement, “rectangle area = length    width,” rather than a length value.",
+        "The tutor asked for 'the value of the length of the square,' but the student answered with a formula, 'rectangle area = length    width,' rather than giving a length value.",
+        "They were asked for “the value of the length of the square,” but answered with the formula-like statement “rectangle area = length    width” instead of giving a length value."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0443",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"pentagon,\" but a pentagon has 5 sides and is not a type of quadrilateral.",
+        "The student answered \"pentagon\" when asked for a type of quadrilateral; a pentagon is not a quadrilateral.",
+        "The student answered \"pentagon,\" but the tutor asked for a type of quadrilateral; a pentagon is not a quadrilateral."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0449",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"6,210\" for \"10 times 0.621\"; the product is 6.21, not 6,210.",
+        "The student answered \"6,210\" for \"10 times 0.621\"; the product should be 6.21.",
+        "They answered \"6,210\" for 10 × 0.621; the product is 6.21, not 6,210."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0452",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"32,\" which is a single number, not a division expression as requested.",
+        "The tutor asked for a division expression, but the student answered with just a number: \"32\".",
+        "The student answered \"32,\" a single number, when asked for a division expression."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0455",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_gradeable",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0464",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"30\" when asked for the formula for the area of a rectangle; they gave a number instead of a formula such as length × width.",
+        "The student answered \"30,\" a number, when asked for the formula for the area of a rectangle.",
+        "The student answered \"30\" when asked for the formula for the area of a rectangle, instead of giving a formula such as A = length × width."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0466",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0468",
+      "origin": "audited_exclusion",
+      "was_cut_for": "no_error_present",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"9\" as the next smallest digit in 3591 after 1, but among the remaining digits 3, 5, and 9, the next smallest digit is 3.",
+        "The student answered \"9\" as the next smallest digit in 3591 after 1, but the next smallest digit is 3.",
+        "The student answered \"9\" as the next smallest digit in 3591 after 1, but the next smallest digit is 3."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0471",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0472",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"4\" for the product of 26 and 6, but 26 × 6 = 156.",
+        "The student answered \"4\" for the product of 26 and 6; 26 × 6 = 156.",
+        "The student answered \"4\" for the product of 26 and 6; 26 × 6 = 156."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0485",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered with a number, \"12237,\" instead of naming the property that allows numbers to be written in any order.",
+        "The student answered with a number, \"12237,\" when the question asks for the name of a property.",
+        "The student answered with a number, \"12237,\" instead of naming a property."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0486",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_mathematics",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0487",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"11\" for \"15 - 6\", but 15 - 6 = 9.",
+        "The student answered \"11\" for \"15 - 6,\" but 15 - 6 = 9.",
+        "The student answered \"11\" for \"15 - 6\", but 15 - 6 = 9."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0508",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"8: 15\" when asked \"How long is Luciano's train ride?\"; the ride length given in the text is 45 minutes, not a time of day.",
+        "The student answered \"8: 15\" when asked \"How long is Luciano's train ride?\"; the ride length is stated as 45 minutes.",
+        "The student answered \"8: 15\" when asked \"How long is Luciano's train ride?\"; the train ride duration was stated as 45 minutes."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0516",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"51\", but a number rounded to the nearest 100 has 0 in both the tens and units digit positions.",
+        "The student answered \"51\", but when rounding to the nearest 100, the tens and units digits should be 0 and 0.",
+        "The student answered \"51\", but when rounding to the nearest 100, the tens and units digit positions should both be 0."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0517",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"23\" to a question asking \"Why does the given chart have the five in the x column...\", so they gave a number instead of an explanation.",
+        "The tutor asked for an explanation ('Why does the given chart have the five in the x column...'), but the student answered only with the number '23'.",
+        "The student answered with the bare number \"23\" instead of giving a reason for why the chart has 5 in the x column."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0528",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0540",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 1,
+      "decision": "overturned",
+      "blind_errors": [
+        "They described symmetry as just \"you cut it in half\"; symmetry requires the halves/sides to match or mirror each other, not merely be cut in half."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0552",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"51\", but when rounding to the nearest 100, the 10s and units digit positions should both be 0.",
+        "The student answered \"51\", but when a number is rounded to the nearest 100, the tens and units digit positions in the rounded result should both be 0.",
+        "The student answered \"51\", but when rounding to the nearest 100, the tens and units digit positions in the rounded number should be 0 and 0."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0556",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0557",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_mathematics",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0560",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "For the question \"What is the value of 60-45?\", the student answered \"12 : 60\" instead of 15.",
+        "The student answered \"12 : 60\" for \"60-45\", but 60-45 = 15.",
+        "The student answered \"12 : 60\" for 60-45, but 60-45 = 15."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0563",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"9\" for \"3^3\", but 3^3 = 27.",
+        "The student answered \"9\" for \"3^3\"; 3^3 means 3×3×3, which is 27.",
+        "The student answered \"9\" for \"3^3\"; 3^3 = 27, not 9."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0564",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0566",
+      "origin": "audited_exclusion",
+      "was_cut_for": "no_error_present",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student defined an obtuse angle as only \"abov 90\"; an obtuse angle is greater than 90° but less than 180°.",
+        "The student defined an obtuse angle as just \"abov 90\"; an obtuse angle must be greater than 90° and less than 180°.",
+        "The student answered \"abov 90\" for an obtuse angle, but an obtuse angle is greater than 90° and less than 180°."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0569",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0573",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"12\" to \"What times 3 is 24?\", but 12 × 3 = 36, not 24; the number should be 8.",
+        "The student answered \"12\" to \"What times 3 is 24?\", but 12 × 3 = 36, not 24.",
+        "The student answered \"12\" to \"What times 3 is 24?\", but 12 times 3 is 36, not 24."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0586",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student wrote \"7 times 5=35,\" which is a multiplication equation, not an inverse operation as asked.",
+        "The student gave “7 times 5=35,” which equals 35, not 36, so it is not an inverse-operation example for finding factors of 36.",
+        "The student wrote \"7 times 5=35,\" which is a multiplication equation, not an inverse operation."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0595",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0600",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0605",
+      "origin": "audited_exclusion",
+      "was_cut_for": "not_gradeable",
+      "yes_votes": 2,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student said \"it is 147\" after the tutor stated \"The first factor ... is 7,\" so they identified the first factor as 147 instead of 7.",
+        "The student said the first factor is \"147\" after the tutor stated, \"The first factor in our multiplication problem is 7.\""
+      ]
+    },
+    {
+      "scenario_id": "bridge_0607",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"8: 15\" (a clock time), but the question asked how long the train ride is; the text states it is \"45 minutes.\"",
+        "The student answered \"8: 15\" when asked how long the train ride is; the text states the ride takes \"45 minutes.\"",
+        "The student answered \"8: 15\" when asked how long the train ride is; the text states the ride takes \"45 minutes,\" so they gave a clock time instead of the duration."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0612",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0617",
+      "origin": "audited_exclusion",
+      "was_cut_for": "missing_problem_statement",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0620",
+      "origin": "audited_exclusion",
+      "was_cut_for": "error_not_diagnosable_from_text",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0622",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"six,\" but in 262,956 the tens-place digit is 5, not 6.",
+        "The student answered \"six,\" but the question asks for a place value; \"six\" is a digit/number, not a place value.",
+        "The student answered \"six,\" but in 262,956 the tens place is occupied by 5, not 6."
+      ]
+    },
+    {
+      "scenario_id": "bridge_0623",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 0,
+      "decision": "overturned",
+      "blind_errors": []
+    },
+    {
+      "scenario_id": "bridge_0639",
+      "origin": "audited_exclusion",
+      "was_cut_for": "failed_adversarial_verification",
+      "yes_votes": 3,
+      "decision": "upheld",
+      "blind_errors": [
+        "The student answered \"4\" for the \"part,\" but in \"27 is 4% of what number?\" the part is 27; 4 is the percent.",
+        "The student put \"4\" in the \"part,\" but in \"27 is 4% of what number,\" the part is 27; 4 is the percent.",
+        "The student answered \"4\" for the \"part,\" but in \"27 is 4% of what number,\" the part is 27; 4 is the percent."
+      ]
+    }
+  ]
+}

@@ -56,7 +56,7 @@ them is a separate, still-open decision.
 | `IFEval/` | instruction-following (deterministic verifier) | candidate — **instruction-following only, no content-quality signal**; keep only if that dimension is wanted |
 | `InFoBench/` | instruction-following (judge-scored) | candidate — same instruction-following-vs-content question as IFEval |
 | `TutorEval/` | science-tutoring, offline skeleton | candidate — **not engine-loadable** (ships no per-criterion skill labels); needs a q-matrix source first |
-| `Bridge/` | elementary/middle-school **math mistake-remediation**, 379 real tutor–student conversations | candidate — the only bank whose rubric is **hand-authored** (Bridge ships no per-response criteria), on a 5-skill axis; math-only, so θ is math-tutoring ability, not general. 263 of the original 642 were cut because the problem statement lived on the session whiteboard and was never captured |
+| `Bridge/` | elementary/middle-school **math mistake-remediation**, 250 scenarios from 162 real tutor–student conversations | candidate — the only bank whose rubric is **hand-authored** (Bridge ships no per-response criteria), on a 5-skill axis; math-only, so θ is math-tutoring ability, not general. Final v8 keeps 250/700 source rows; 54 retained bad gold replies are flagged and quarantined from judge-visible data |
 
 Each folder's own `README.md` carries the same status note plus the specifics. (`WildBench/`
 and `AP_IB/` are also present as separate on-disk artifacts; their inclusion status isn't

@@ -455,13 +455,6 @@
     "reason": "not_gradeable"
   },
   {
-    "scenario_id": "bridge_0009",
-    "source_id": "6165953_133",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0010",
     "source_id": "4110653_56",
     "native_split": "train",
@@ -567,13 +560,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0028",
-    "source_id": "2898683_72",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0029",
     "source_id": "2894376_13",
     "native_split": "train",
@@ -611,13 +597,6 @@
   {
     "scenario_id": "bridge_0034",
     "source_id": "2927839_43",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0035",
-    "source_id": "4055585_10",
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
@@ -665,20 +644,6 @@
     "reason": "not_gradeable"
   },
   {
-    "scenario_id": "bridge_0042",
-    "source_id": "2916359_55",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0043",
-    "source_id": "6165932_16",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0044",
     "source_id": "2928611_98",
     "native_split": "train",
@@ -721,25 +686,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0051",
-    "source_id": "2928616_32",
-    "native_split": "train",
-    "error_type": "imprecise",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0052",
     "source_id": "2979259_24",
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0053",
-    "source_id": "2980322_125",
-    "native_split": "train",
-    "error_type": "imprecise",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0054",
@@ -754,13 +705,6 @@
     "native_split": "train",
     "error_type": "careless",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0058",
-    "source_id": "6166533_40",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0059",
@@ -788,13 +732,6 @@
     "source_id": "2989417_116",
     "native_split": "train",
     "error_type": "diagnose",
-    "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0076",
-    "source_id": "2927490_31",
-    "native_split": "train",
-    "error_type": "right-idea",
     "reason": "error_not_diagnosable_from_text"
   },
   {
@@ -861,13 +798,6 @@
     "reason": "no_error_present"
   },
   {
-    "scenario_id": "bridge_0095",
-    "source_id": "2964109_39",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "missing_problem_statement"
-  },
-  {
     "scenario_id": "bridge_0096",
     "source_id": "4055603_31",
     "native_split": "train",
@@ -880,13 +810,6 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0098",
-    "source_id": "4134665_71",
-    "native_split": "train",
-    "error_type": "careless",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0099",
@@ -929,34 +852,6 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0105",
-    "source_id": "2990115_54",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0107",
-    "source_id": "4296295_38",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0108",
-    "source_id": "2962517_47",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0109",
-    "source_id": "4273568_173",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "missing_problem_statement"
   },
   {
     "scenario_id": "bridge_0110",
@@ -1022,13 +917,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0121",
-    "source_id": "6166071_74",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "error_not_diagnosable_from_text"
-  },
-  {
     "scenario_id": "bridge_0122",
     "source_id": "6321506_9",
     "native_split": "train",
@@ -1040,13 +928,6 @@
     "source_id": "2950057_78",
     "native_split": "train",
     "error_type": "guess",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0126",
-    "source_id": "4052914_18",
-    "native_split": "train",
-    "error_type": "diagnose",
     "reason": "missing_problem_statement"
   },
   {
@@ -1062,13 +943,6 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0131",
-    "source_id": "6206828_27",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0133",
@@ -1125,27 +999,6 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0142",
-    "source_id": "6166666_21",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0143",
-    "source_id": "2928562_46",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0144",
-    "source_id": "2900864_55",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0145",
@@ -1302,13 +1155,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0176",
-    "source_id": "2928616_32",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0178",
     "source_id": "2948932_5",
     "native_split": "train",
@@ -1393,25 +1239,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0195",
-    "source_id": "2927490_31",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "error_not_diagnosable_from_text"
-  },
-  {
     "scenario_id": "bridge_0197",
     "source_id": "6348701_103",
     "native_split": "train",
     "error_type": "guess",
     "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0198",
-    "source_id": "6165932_16",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "missing_problem_statement"
   },
   {
     "scenario_id": "bridge_0199",
@@ -1428,20 +1260,6 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0202",
-    "source_id": "2925409_8",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0203",
-    "source_id": "2928702_46",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0204",
     "source_id": "4294482_65",
     "native_split": "train",
@@ -1454,13 +1272,6 @@
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0209",
-    "source_id": "4106180_79",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0210",
@@ -1477,25 +1288,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0212",
-    "source_id": "4288776_44",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0213",
     "source_id": "4055603_15",
     "native_split": "train",
     "error_type": "careless",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0214",
-    "source_id": "6383453_36",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0215",
@@ -1558,13 +1355,6 @@
     "source_id": "2894845_58",
     "native_split": "train",
     "error_type": "guess",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0225",
-    "source_id": "2928562_46",
-    "native_split": "train",
-    "error_type": "diagnose",
     "reason": "missing_problem_statement"
   },
   {
@@ -1645,13 +1435,6 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0243",
-    "source_id": "4106180_79",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0244",
     "source_id": "6166082_86",
     "native_split": "train",
@@ -1671,27 +1454,6 @@
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0248",
-    "source_id": "2963999_25",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0251",
-    "source_id": "6184818_35",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0252",
-    "source_id": "4138450_23",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0253",
@@ -1727,20 +1489,6 @@
     "native_split": "train",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0261",
-    "source_id": "2928581_76",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0262",
-    "source_id": "2928581_76",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0263",
@@ -1813,13 +1561,6 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0277",
-    "source_id": "6166666_21",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "missing_problem_statement"
-  },
-  {
     "scenario_id": "bridge_0278",
     "source_id": "2949283_58",
     "native_split": "train",
@@ -1846,27 +1587,6 @@
     "native_split": "train",
     "error_type": "misinterpret",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0284",
-    "source_id": "2962890_43",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0285",
-    "source_id": "2963654_50",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0286",
-    "source_id": "2990115_85",
-    "native_split": "train",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0287",
@@ -1932,31 +1652,10 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0300",
-    "source_id": "2963782_110",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0301",
-    "source_id": "2979941_57",
-    "native_split": "train",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0304",
     "source_id": "6136458_70",
     "native_split": "train",
     "error_type": "right-idea",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0305",
-    "source_id": "2939685_28",
-    "native_split": "train",
-    "error_type": "diagnose",
     "reason": "missing_problem_statement"
   },
   {
@@ -1965,13 +1664,6 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0307",
-    "source_id": "2928211_32",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "not_gradeable"
   },
   {
     "scenario_id": "bridge_0308",
@@ -2051,13 +1743,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0320",
-    "source_id": "4014122_51",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0324",
     "source_id": "2980373_13",
     "native_split": "train",
@@ -2098,13 +1783,6 @@
     "native_split": "train",
     "error_type": "guess",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0332",
-    "source_id": "2950893_9",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0333",
@@ -2163,13 +1841,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0342",
-    "source_id": "2963625_105",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0343",
     "source_id": "2939723_30",
     "native_split": "train",
@@ -2189,20 +1860,6 @@
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0346",
-    "source_id": "2949365_49",
-    "native_split": "train",
-    "error_type": "diagnose",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0347",
-    "source_id": "2949365_49",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0349",
@@ -2296,25 +1953,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0367",
-    "source_id": "2856167_86",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "missing_problem_statement"
-  },
-  {
     "scenario_id": "bridge_0369",
     "source_id": "2951129_14",
     "native_split": "train",
     "error_type": "diagnose",
     "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0371",
-    "source_id": "2948565_53",
-    "native_split": "train",
-    "error_type": "guess",
-    "reason": "missing_problem_statement"
   },
   {
     "scenario_id": "bridge_0372",
@@ -2478,13 +2121,6 @@
     "reason": "failed_adversarial_verification"
   },
   {
-    "scenario_id": "bridge_0406",
-    "source_id": "2915969_42",
-    "native_split": "validation",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0407",
     "source_id": "4169950_31",
     "native_split": "validation",
@@ -2520,32 +2156,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0415",
-    "source_id": "2927561_29",
-    "native_split": "validation",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0416",
-    "source_id": "6404706_41",
-    "native_split": "validation",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0417",
     "source_id": "4138677_40",
     "native_split": "validation",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0418",
-    "source_id": "2928562_34",
-    "native_split": "validation",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0419",
@@ -2618,25 +2233,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0435",
-    "source_id": "2963009_28",
-    "native_split": "validation",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0437",
     "source_id": "4247410_101",
     "native_split": "validation",
     "error_type": "guess",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0438",
-    "source_id": "2928755_98",
-    "native_split": "validation",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0439",
@@ -2655,13 +2256,6 @@
   {
     "scenario_id": "bridge_0442",
     "source_id": "4290454_38",
-    "native_split": "validation",
-    "error_type": "diagnose",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0443",
-    "source_id": "2856167_86",
     "native_split": "validation",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
@@ -2695,13 +2289,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0449",
-    "source_id": "3982385_33",
-    "native_split": "validation",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0450",
     "source_id": "2979976_52",
     "native_split": "validation",
@@ -2714,13 +2301,6 @@
     "native_split": "validation",
     "error_type": "imprecise",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0452",
-    "source_id": "2939685_28",
-    "native_split": "validation",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0454",
@@ -2779,13 +2359,6 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0464",
-    "source_id": "2950893_9",
-    "native_split": "test",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0465",
     "source_id": "4247191_37",
     "native_split": "test",
@@ -2807,13 +2380,6 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0468",
-    "source_id": "2927561_29",
-    "native_split": "test",
-    "error_type": "imprecise",
-    "reason": "no_error_present"
-  },
-  {
     "scenario_id": "bridge_0469",
     "source_id": "2963388_49",
     "native_split": "test",
@@ -2833,13 +2399,6 @@
     "native_split": "test",
     "error_type": "guess",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0472",
-    "source_id": "4134665_64",
-    "native_split": "test",
-    "error_type": "careless",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0473",
@@ -2905,25 +2464,11 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0485",
-    "source_id": "2948565_53",
-    "native_split": "test",
-    "error_type": "diagnose",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0486",
     "source_id": "2928762_61",
     "native_split": "test",
     "error_type": "misinterpret",
     "reason": "not_mathematics"
-  },
-  {
-    "scenario_id": "bridge_0487",
-    "source_id": "2916162_68",
-    "native_split": "test",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0488",
@@ -3024,13 +2569,6 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0508",
-    "source_id": "6166650_63",
-    "native_split": "test",
-    "error_type": "imprecise",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0510",
     "source_id": "2894845_58",
     "native_split": "test",
@@ -3064,20 +2602,6 @@
     "native_split": "test",
     "error_type": "right-idea",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0516",
-    "source_id": "2979950_43",
-    "native_split": "test",
-    "error_type": "diagnose",
-    "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0517",
-    "source_id": "2928562_34",
-    "native_split": "test",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0518",
@@ -3241,13 +2765,6 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0552",
-    "source_id": "2979950_43",
-    "native_split": "test",
-    "error_type": "right-idea",
-    "reason": "missing_problem_statement"
-  },
-  {
     "scenario_id": "bridge_0553",
     "source_id": "4012844_44",
     "native_split": "test",
@@ -3283,25 +2800,11 @@
     "reason": "missing_problem_statement"
   },
   {
-    "scenario_id": "bridge_0560",
-    "source_id": "6166703_62",
-    "native_split": "test",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
-  },
-  {
     "scenario_id": "bridge_0562",
     "source_id": "4274038_74",
     "native_split": "test",
     "error_type": "right-idea",
     "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0563",
-    "source_id": "2580534_34",
-    "native_split": "test",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0564",
@@ -3316,13 +2819,6 @@
     "native_split": "test",
     "error_type": "diagnose",
     "reason": "failed_adversarial_verification"
-  },
-  {
-    "scenario_id": "bridge_0566",
-    "source_id": "6166071_74",
-    "native_split": "test",
-    "error_type": "imprecise",
-    "reason": "no_error_present"
   },
   {
     "scenario_id": "bridge_0567",
@@ -3344,13 +2840,6 @@
     "native_split": "test",
     "error_type": "guess",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0573",
-    "source_id": "4111720_30",
-    "native_split": "test",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0575",
@@ -3407,13 +2896,6 @@
     "native_split": "test",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0586",
-    "source_id": "4288776_44",
-    "native_split": "test",
-    "error_type": "guess",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0587",
@@ -3507,25 +2989,11 @@
     "reason": "error_not_diagnosable_from_text"
   },
   {
-    "scenario_id": "bridge_0605",
-    "source_id": "4079053_56",
-    "native_split": "test",
-    "error_type": "guess",
-    "reason": "not_gradeable"
-  },
-  {
     "scenario_id": "bridge_0606",
     "source_id": "6321463_13",
     "native_split": "test",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0607",
-    "source_id": "6166650_63",
-    "native_split": "test",
-    "error_type": "imprecise",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0612",
@@ -3589,13 +3057,6 @@
     "native_split": "test",
     "error_type": "diagnose",
     "reason": "missing_problem_statement"
-  },
-  {
-    "scenario_id": "bridge_0622",
-    "source_id": "2962517_47",
-    "native_split": "test",
-    "error_type": "right-idea",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0623",
@@ -3680,13 +3141,6 @@
     "native_split": "test",
     "error_type": "careless",
     "reason": "error_not_diagnosable_from_text"
-  },
-  {
-    "scenario_id": "bridge_0639",
-    "source_id": "4016227_17",
-    "native_split": "test",
-    "error_type": "misinterpret",
-    "reason": "failed_adversarial_verification"
   },
   {
     "scenario_id": "bridge_0641",

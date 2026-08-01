@@ -35,7 +35,7 @@ Mapping (Bridge field -> schema field):
     c_id                   -> source_id            (join key back to HuggingFace)
     c_h[-1].text           -> prompt               (student's final turn)
     c_h[:-1]               -> conversation_context  ({role, content}; role student/tutor)
-    c_r_ (joined)          -> reference_solution    (expert revised reply = the gold key)
+    c_r_ (joined)          -> reference_solution    (expert revised reply; blank if quarantined)
     c_r  (joined)          -> novice_response        (original tutor reply; provenance)
     e                      -> error_type             (drives exclusion + applicability)
     z_what / z_why         -> expert_strategy / expert_intention (provenance)
@@ -52,9 +52,13 @@ EXCLUSIONS -- deterministic
 
 EXCLUSIONS -- audited (ids committed, so the build still takes no API call)
 ---------------------------------------------------------------------------
-700 source rows -> 528 dropped -> 172 scenarios. Each file below was produced once by an
-audit script and is committed rather than recomputed, so deleting one undoes exactly that
-audit's cut and leaves the others standing.
+The four cutting passes originally removed 528 rows and left 172 scenarios. A reversal audit
+then re-examined the audited cuts from the opposite direction. Its preliminary keep-biased
+review proposed 127 restorations; a second, BLIND adjudication removed the expert reply and
+lesson topic, collected three independent votes per item, and upheld 78. The final partition
+is therefore 700 source rows -> 450 dropped -> 250 scenarios.
+
+Each audit result is committed rather than recomputed, so the build remains deterministic.
 
 data/Bridge/visual_exclusions.json -- scripts/audit_bridge_visuals.py
   missing_problem_     the math problem itself never appears in the chat. Bridge transcribes
@@ -85,6 +89,20 @@ data/Bridge/verify_exclusions.json -- scripts/verify_bridge_items.py
                        keys corrupted with the student's next reply, and error-module criteria
                        that require building on partial work the transcript never shows.
 
+data/Bridge/restored.json -- scripts/audit_bridge_reversal.py
+  78 exclusions overturned by a blind, three-vote read of only the text visible to the tutor
+  model. Restorations override the three exclusion ledgers above.
+
+REFERENCE QUARANTINE -- data/Bridge/reference_suspect.json
+----------------------------------------------------------
+Fifty-nine audited rows have an expert-revised reply that is wrong, corrupted, or unrelated
+to the graded turn; 54 of those rows are in the final 250. A broken gold key is not a reason
+to discard an otherwise gradeable tutoring task, but it must never be shown to a judge.
+Their exact source replies and SHA-256 hashes are retained only in the quarantine sidecar.
+The emitted scenario carries `reference_suspect: true` and an empty `reference_solution`.
+The ingester verifies the quarantined text and hash against Bridge's source row before
+blanking it, preserving provenance without exposing the bad key to downstream runners.
+
 SCENARIO ID STABILITY: ids are assigned over every row that survives the deterministic
 checks, BEFORE the exclusion list is applied, so the ids of surviving scenarios never move
 when the list changes. `criterion_ids` follow the scenario id, so the response runs in
@@ -105,9 +123,9 @@ yes/no question.
 
 DUPLICATE CONVERSATIONS: one scenario is emitted per ROW, so the differing expert
 revisions stay as separate items and `source_id` is intentionally NON-unique. Rows sharing
-a `c_id` have the same stimulus and the same criterion set, differing only in
-`reference_solution`. That is genuine local dependence: group or hold out on `source_id`
-at calibration.
+a `c_id` have the same stimulus and criterion set; their source rows differ in the expert
+revision unless that revision is quarantined. That is genuine local dependence: group or
+hold out on `source_id` at calibration.
 
 APPLICABILITY
 -------------
@@ -173,6 +191,7 @@ deliberate opt-in, not part of the build.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -196,6 +215,13 @@ EXCLUSION_PATHS = (
 # Per-scenario topic_domain corrections. The keyword gate reads `lesson_topic`, which names
 # the lesson rather than the graded turn; these are the rows where that diverged.
 TOPIC_OVERRIDES_PATH = OUT_DIR / "topic_overrides.json"
+# Reinstatements upheld by blind three-vote adjudication after the preliminary keep-biased
+# review. A cut stands unless the blind majority could diagnose the error from tutor-visible
+# text alone; see the module docstring for the two-sided audit history.
+RESTORE_PATH = OUT_DIR / "restored.json"
+# Scenarios kept despite a wrong or corrupted gold key. The defect is in the key, not the
+# item, so the raw source reply is quarantined here and blanked in emitted scenarios.
+REFERENCE_SUSPECT_PATH = OUT_DIR / "reference_suspect.json"
 
 HF_DATASET = "rose-e-wang/bridge"
 SOURCE_URL = "https://huggingface.co/datasets/rose-e-wang/bridge"
@@ -204,7 +230,14 @@ SPLIT = "calibration"   # pipeline-role label (matches TutorBench/InFoBench), no
 USE_CASE = "mistake_remediation"   # unknown to respgen -> falls back to the adaptive_
                                    # explanation system prompt, which preserves multi-turn
 SUBJECT = "mathematics"
-VERSION = "6.0"   # 6.0 = adversarial verification: 67 more excluded (wrong gold maths,
+VERSION = "8.0"   # 8.0 = reinstatements re-decided BLIND (no expert reply, no lesson_topic,
+                  #       3 votes): 49 of 127 rested on leaked context and went back out;
+                  #       54 retained suspect gold replies quarantined from judge-visible data
+                  # 7.0 = reversal audit: 127 cuts reinstated after a keep-biased review
+                  #       (the cutting passes conflated "information is missing" with "the
+                  #       error cannot be diagnosed"); wrong gold keys now FLAGGED via
+                  #       reference_suspect rather than deleted
+                  # 6.0 = adversarial verification: 67 more excluded (wrong gold maths,
                   #       malformed questions, unanswerable criteria), Tier 3 retired
                   #       whole, D1 reworded so a Socratic reply can pass
                   # 5.0 = per-item audit: 50 more scenarios excluded (no gradeable error;
@@ -598,7 +631,8 @@ TIER_OF_CODE: dict[str, str] = {
 SCENARIO_KEYS = [
     "scenario_id", "source_id", "use_case", "subject", "grade_band", "topic_domain",
     "modality", "prompt", "conversation_context", "reference_solution", "novice_response",
-    "criterion_ids", "error_type", "error_types", "error_module", "visible_mistake",
+    "reference_suspect", "criterion_ids", "error_type", "error_types", "error_module",
+    "visible_mistake",
     "expert_strategy", "expert_intention", "lesson_topic", "native_split", "source",
     "split", "version",
 ]
@@ -633,7 +667,65 @@ def load_exclusions() -> dict[str, str]:
         doc = json.loads(path.read_text(encoding="utf-8"))
         for row in doc.get("excluded", []):
             out.setdefault(row["scenario_id"], row.get("reason", "excluded"))
+    # Reinstatements win only after blind three-vote adjudication upheld them.
+    for sid in load_restored():
+        out.pop(sid, None)
     return out
+
+
+def load_restored() -> set[str]:
+    """Ids reinstated by blind reversal adjudication. Absent file means no reinstatements."""
+    if not RESTORE_PATH.is_file():
+        return set()
+    doc = json.loads(RESTORE_PATH.read_text(encoding="utf-8"))
+    return {row["scenario_id"] for row in doc.get("restored", [])}
+
+
+def load_reference_suspect() -> dict[str, dict]:
+    """Quarantined wrong/corrupted gold keys, indexed by scenario id."""
+    if not REFERENCE_SUSPECT_PATH.is_file():
+        raise FileNotFoundError(
+            f"required reference quarantine is missing: {REFERENCE_SUSPECT_PATH}"
+        )
+    doc = json.loads(REFERENCE_SUSPECT_PATH.read_text(encoding="utf-8"))
+    rows = doc.get("flagged", [])
+    if doc.get("count") != len(rows):
+        raise ValueError(
+            f"{REFERENCE_SUSPECT_PATH}: count={doc.get('count')!r}, found {len(rows)} rows"
+        )
+    out = {row["scenario_id"]: row for row in rows}
+    if len(out) != len(rows):
+        raise ValueError(f"{REFERENCE_SUSPECT_PATH}: duplicate scenario_id")
+    return out
+
+
+def reference_sha256(text: str) -> str:
+    """Stable digest used to prove the quarantined gold text matches the source row."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def verify_quarantined_reference(
+    sid: str,
+    raw_reference: str,
+    source_id: str,
+    native_split: str,
+    record: dict,
+) -> None:
+    """Fail closed if the quarantine sidecar no longer matches the source dataset."""
+    quarantined = record.get("withheld_reference_solution")
+    recorded_hash = record.get("withheld_reference_sha256")
+    if not isinstance(quarantined, str) or not quarantined:
+        raise ValueError(f"{sid}: reference_suspect entry has no quarantined reference text")
+    if quarantined != raw_reference:
+        raise ValueError(f"{sid}: quarantined reference does not match source c_r_")
+    if record.get("source_id") != source_id or record.get("native_split") != native_split:
+        raise ValueError(f"{sid}: quarantine source join fields do not match the source row")
+    actual_hash = reference_sha256(quarantined)
+    if recorded_hash != actual_hash:
+        raise ValueError(
+            f"{sid}: quarantined reference SHA-256 mismatch "
+            f"({recorded_hash!r} != {actual_hash!r})"
+        )
 
 
 def load_topic_overrides() -> dict[str, str]:
@@ -766,9 +858,9 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
     # --- Pass 2: one scenario per ROW ---------------------------------------------------
     # Every surviving row becomes its own scenario, so the differing expert revisions stay
     # as separate items. `source_id` is therefore NON-unique by design: rows sharing a c_id
-    # have the same stimulus and (after the union) the same criterion set, differing only
-    # in `reference_solution`. That is real local dependence -- group or hold out on
-    # `source_id` at calibration. See the README.
+    # have the same stimulus and canonical criterion set, but distinct source expert
+    # revisions unless a bad revision is quarantined. That is real local dependence --
+    # group or hold out on `source_id` at calibration. See the README.
     error_types_by_cid: dict[str, set[str]] = defaultdict(set)
     for item in staged:
         error_types_by_cid[item["c_id"]].add(item["error_type"])
@@ -777,12 +869,21 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
     rubrics: list[dict] = []
     excluded = load_exclusions()
     topic_overrides = load_topic_overrides()
+    reference_suspect = load_reference_suspect()
+    seen_reference_suspects: set[str] = set()
 
     # Enumerate over EVERY staged row so ids do not shift when the exclusion list changes;
     # excluded rows are skipped after their id is known. See the docstring on id stability.
     for index, item in enumerate(staged):
         row = item["row"]
         sid = scenario_id(index)
+        raw_reference = join_turns(row.get("c_r_"))
+        suspect_record = reference_suspect.get(sid)
+        if suspect_record is not None:
+            verify_quarantined_reference(
+                sid, raw_reference, item["c_id"], item["native_split"], suspect_record
+            )
+            seen_reference_suspects.add(sid)
         if sid in excluded:
             dropped.append({
                 "scenario_id": sid,
@@ -812,8 +913,15 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
             "modality": "text",
             "prompt": item["prompt"],
             "conversation_context": item["context"],
-            "reference_solution": join_turns(row.get("c_r_")),
+            # Wrong/corrupted expert replies are kept only in the quarantine sidecar. Empty
+            # here is a data-boundary invariant: no current or future judge consumer can
+            # accidentally render a known-bad key just because it forgot to inspect a flag.
+            "reference_solution": "" if suspect_record is not None else raw_reference,
             "novice_response": join_turns(row.get("c_r")),
+            # True when the expert reply is itself wrong, corrupted, or does not address the
+            # student's turn. The item is still gradeable; the KEY is not. See
+            # REFERENCE_SUSPECT_PATH for why these are flagged rather than dropped.
+            "reference_suspect": suspect_record is not None,
             "criterion_ids": criterion_ids,
             "error_type": item["error_type"],
             "error_types": sorted(error_types_by_cid[item["c_id"]]),
@@ -851,6 +959,14 @@ def build() -> tuple[list[dict], list[dict], list[dict]]:
                 "status": "approved",
                 "version": VERSION,
             })
+
+    missing_suspects = set(reference_suspect) - seen_reference_suspects
+    if missing_suspects:
+        preview = ", ".join(sorted(missing_suspects)[:5])
+        raise ValueError(
+            f"{REFERENCE_SUSPECT_PATH}: {len(missing_suspects)} ids do not map to source rows: "
+            f"{preview}"
+        )
 
     return scenarios, rubrics, dropped
 
@@ -909,6 +1025,10 @@ def validate(scenarios: list[dict], rubrics: list[dict]) -> list[str]:
             errs.append(f"{s['scenario_id']}: canonical error_type missing from error_types")
         if s["visible_mistake"] != has_visible_mistake(s["prompt"], s["conversation_context"]):
             errs.append(f"{s['scenario_id']}: visible_mistake flag disagrees with the text")
+        if not isinstance(s["reference_suspect"], bool):
+            errs.append(f"{s['scenario_id']}: reference_suspect must be boolean")
+        elif s["reference_suspect"] and s["reference_solution"]:
+            errs.append(f"{s['scenario_id']}: suspect reference was not quarantined")
         for turn in s["conversation_context"]:
             if turn.get("role") not in {"student", "tutor"}:
                 errs.append(f"{s['scenario_id']}: context role {turn.get('role')!r} not student/tutor")

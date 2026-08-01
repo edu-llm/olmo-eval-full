@@ -1,0 +1,544 @@
+{
+  "_comment": "QUARANTINE SIDECAR. These are scenarios whose Bridge expert-revised reply is wrong, corrupted, or does not address the student's turn, as found by the gold_soundness lens of scripts/verify_bridge_items.py.\nThe scenarios are not excluded: a wrong answer key is a defect in the key, not in an otherwise gradeable tutoring task. bridge_0098 asks '163 - 156 = ?', the student answers 13, and the error is plain from the visible text; only the expert explanation is wrong.\nThe exact source reply is retained here as `withheld_reference_solution`, with its SHA-256 and source join fields, solely for provenance and repair. scripts/ingest_bridge.py verifies it against source `c_r_`, then emits an empty scenario `reference_solution` with `reference_suspect: true`. Do not copy quarantined text into scenario artifacts, judge cases, prompts, or reference-shown validation runs.",
+  "generated_by": "scripts/verify_bridge_items.py",
+  "classifier": "openai-group/gpt-5.5",
+  "generated_on": "2026-08-01",
+  "count": 59,
+  "severity_counts": {
+    "fatal": 37,
+    "serious": 22
+  },
+  "flagged": [
+    {
+      "scenario_id": "bridge_0003",
+      "severity": "serious",
+      "evidence": "The gold key does not provide a usable next tutor turn under the item's own premise/criteria. The student answered “1,512” to “What is the value of 36+42?”, and the expert reply only says, “Great try - looks like you solved the problem 36 x 42.” It identifies the likely slip but gives no prompt to c",
+      "source_id": "2928616_65",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try - looks like you solved the problem 36 x 42.",
+      "withheld_reference_sha256": "b0051063763dacb973a576c6534acae47719b445e979854e817f3aa7fc6f8400"
+    },
+    {
+      "scenario_id": "bridge_0042",
+      "severity": "fatal",
+      "evidence": "The gold key is not a usable tutor response because it refers to an absent whiteboard action rather than giving the corrective guidance in the transcript: “Let me draw on the whiteboard what 11:01 would look like.” No drawing is included, and the text itself never identifies why the student's answer",
+      "source_id": "2916359_55",
+      "native_split": "train",
+      "withheld_reference_solution": "Let me draw on the whiteboard what 11:01 would look like",
+      "withheld_reference_sha256": "34f4ec409266c67ae1f93b22f06e3cb1117f016e39879511b29e69be80166506"
+    },
+    {
+      "scenario_id": "bridge_0043",
+      "severity": "fatal",
+      "evidence": "The gold key is not a valid next tutor turn: it includes what appears to be the student's answer after the tutor prompt. The expert reply says, \"Great! The time is 1:55, but what is the number the minute hand is on?\\noh, 11\". The final line \"oh, 11\" answers the tutor's own question instead of leavin",
+      "source_id": "6165932_16",
+      "native_split": "train",
+      "withheld_reference_solution": "Great! The time is 1:55, but what is the number the minute hand is on?\noh, 11",
+      "withheld_reference_sha256": "fd3dc66707aa80a2da35e4f1915fa48b44fd3d5383724722858eae8149c0a993"
+    },
+    {
+      "scenario_id": "bridge_0060",
+      "severity": "fatal",
+      "evidence": "The gold key gives mathematically incorrect guidance for the prompt. The tutor asks, “find out the value of seven in 37,984” and “What is the value of 7?” The value is 7,000, not merely the place name. But the expert reply says, “It's in the thousands place. We can just say thousands,” which conflat",
+      "source_id": "2916342_42",
+      "native_split": "train",
+      "withheld_reference_solution": "Hmm, you're on the right track. It's in the thousands place. We can just say thousands, but it would be wrong to say 2,000",
+      "withheld_reference_sha256": "4d10fe064c3ea4c978c3e3a61a982109a88e353755fc7f0474f3230767ff38a1"
+    },
+    {
+      "scenario_id": "bridge_0078",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the attached requirements for the intended tutor response. The criteria require the response to give a concrete starting point and address expression structure/order of operations: \"[G2] ... gives the student a concrete, accessible starting point\" and \"[X1] ... draws at",
+      "source_id": "6142712_45",
+      "native_split": "train",
+      "withheld_reference_solution": "Can you explain your steps that got you that answer?",
+      "withheld_reference_sha256": "b4c77422d3c9609a54d1ccd00b21186c327ed081691acbf9e1a55986b1cdd8e0"
+    },
+    {
+      "scenario_id": "bridge_0082",
+      "severity": "serious",
+      "evidence": "The gold key teaches a false general rule: \"When you divide whole numbers, the number should get smaller.\" This is not true as stated, since dividing a whole number by 1 gives the same number (e.g., 3 ÷ 1 = 3). The reference answer would mislead a judge by treating this mathematically incorrect guid",
+      "source_id": "4109111_15",
+      "native_split": "train",
+      "withheld_reference_solution": "Good try! When you divide whole numbers, the number should get smaller because you are dividing it into groups. For example, 10 divided by 5 is 2 because you can make two groups of 5.",
+      "withheld_reference_sha256": "f4a63dda6bf97b1c0f690b7afbe080cd1ed1d13ef8c04847edd99ab90340a198"
+    },
+    {
+      "scenario_id": "bridge_0092",
+      "severity": "serious",
+      "evidence": "The gold key is too generic to function as the reference for the required tutor move. The student's wrong answer is specific: tutor asks, “What is the value of 2 in 2,453?” and the student answers “223.” But the expert reply only says, “Great try! Let's think about place value.” It does not identify",
+      "source_id": "2850057_13",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! Let's think about place value.",
+      "withheld_reference_sha256": "bdce7c21a19d1890047bce4164f809ed8c4a41d9cbdba7ae93c72b8752ffb5b1"
+    },
+    {
+      "scenario_id": "bridge_0098",
+      "severity": "fatal",
+      "evidence": "The gold key diagnoses a slip involving numbers that never appear in the transcript: the tutor asks, “What is 163 - 156 = ?” and the student answers “13,” but the expert reply says, “It looks like you subtracted 153 from 166.” There is no evidence the student used 153 or 166; the actual visible issu",
+      "source_id": "4134665_71",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! It looks like you subtracted 153 from 166. Please try again!",
+      "withheld_reference_sha256": "ad274ddd5dcba78fa1c05aa984a543489c1509915aeab343cee40039a036a71a"
+    },
+    {
+      "scenario_id": "bridge_0104",
+      "severity": "fatal",
+      "evidence": "The gold key gives a mathematically incorrect/incomplete definition: it says, “A rectangle has two equal sides and two equal angles. That's the difference between rectangles and other quadrilaterals.” A rectangle is defined by four right angles, and it has two pairs of equal opposite sides; saying m",
+      "source_id": "2901019_23",
+      "native_split": "train",
+      "withheld_reference_solution": "A rectangle has two equal sides and two equal angles. That's the difference between rectangles and other quadrilaterals.",
+      "withheld_reference_sha256": "ad58d8b8a21e0563df5b34ae64f27021fb61468f9ff84f6b46c218774425b34e"
+    },
+    {
+      "scenario_id": "bridge_0141",
+      "severity": "fatal",
+      "evidence": "The gold key relies on information not available in the visible transcript and is internally inconsistent about the needed factors. The tutor model only sees: “Based on the factor 4, what will be one of the binomials in the factored form?” and the student’s answer “-2 and 8.” But the expert reply as",
+      "source_id": "2916378_53",
+      "native_split": "train",
+      "withheld_reference_solution": "Ah, not quite. Remember that once you get the factors, the answer will be in the form (x+a)(x+b), where a and b are your two factors. x just stays as x\nSo for example, if your two factors were -6 and 10, your answer would be (x-6)(x+10)\nKnowing this, could you give it another shot? Our factors are 4 and 2\nOops, 4 and -2",
+      "withheld_reference_sha256": "e3affd2190054bb7f80ebdf5bef8a7404c988f6c6e99f5ae8a5f521513e7c07a"
+    },
+    {
+      "scenario_id": "bridge_0144",
+      "severity": "fatal",
+      "evidence": "The gold key gives the wrong regrouping guidance. The tutor asks, “What will the 4 in 346 become when we borrow from the hundreds column?” In 346, the 4 is the tens digit; borrowing from the hundreds column would make it 14 tens, not “one less than 4.” But the expert reply says, “What is one less th",
+      "source_id": "2900864_55",
+      "native_split": "train",
+      "withheld_reference_solution": "If we have to borrow, we will have one less that what was previously there. What is one less than 4?",
+      "withheld_reference_sha256": "4510a8aa5245c695c2c3477cefa6056ba81d54948419860369139ecc166376c4"
+    },
+    {
+      "scenario_id": "bridge_0159",
+      "severity": "fatal",
+      "evidence": "The gold key is mathematically incorrect/misleading: it says, \"the formula to find the speed of the train is miles per hour.\" Miles per hour is a unit/rate, not the formula; the needed correction to the student's \"by multyplying\" would be to divide distance by time. This would mislead judging becaus",
+      "source_id": "2928581_83",
+      "native_split": "train",
+      "withheld_reference_solution": "You're close, however the formula to find the speed of the train is miles per hour.",
+      "withheld_reference_sha256": "7901601a900913244ec5db407b897be2bc503a5de3e7cd1198603cc0f2c29cb1"
+    },
+    {
+      "scenario_id": "bridge_0174",
+      "severity": "serious",
+      "evidence": "The gold key does not meet the item's own required tutoring behavior. The criteria require the response to connect the operation to its meaning: \"[O1] The response connects the operation to its meaning or to the problem situation,\" but the expert reply only says, \"I would like you to work this probl",
+      "source_id": "2949298_23",
+      "native_split": "train",
+      "withheld_reference_solution": "I would like you to work this problem again. Use should use your calculator to double check your work.",
+      "withheld_reference_sha256": "3107df0ccd03953e3a0db3ff798d4aecc271a7a3848c18fd67ca09230a6caf86"
+    },
+    {
+      "scenario_id": "bridge_0175",
+      "severity": "fatal",
+      "evidence": "The gold key relies on numbers that are not present in the visible transcript. The tutor asks, “What is the difference between 31 and 25?” and the student answers “14,” but the expert reply says, “I think you found the difference between 35 and 21 instead of 31 and 25.” There is no visible basis for",
+      "source_id": "2939723_40",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! I think you found the difference between 35 and 21 instead of 31 and 25.",
+      "withheld_reference_sha256": "d359da40cbd806b13229524f4ecb980619d61bf956b3f9098d8fa12595ff9169"
+    },
+    {
+      "scenario_id": "bridge_0181",
+      "severity": "serious",
+      "evidence": "The gold key is not a valid next tutor turn under the item’s own criteria. The student has shown no reasoning—first says “i doe t no,” then guesses “10  00000”—but the expert reply is only “How did you get that?” This gives no concrete starting point for a student who has shown no working, directly ",
+      "source_id": "4251632_39",
+      "native_split": "train",
+      "withheld_reference_solution": "How did you get that?",
+      "withheld_reference_sha256": "ed30ccec82b6702ef69980c87a132e26df367eda75117d3f1f4ef22b1e98fa22"
+    },
+    {
+      "scenario_id": "bridge_0189",
+      "severity": "fatal",
+      "evidence": "The gold key is only \"Great job!\" and gives no correction or guidance, even though the item treats the student's answer \"you times\" as an imprecise/incomplete definition of multiplication. This would mislead a judge because the reference reply affirms the student without addressing the precision gap",
+      "source_id": "6128122_12",
+      "native_split": "train",
+      "withheld_reference_solution": "Great job!",
+      "withheld_reference_sha256": "80d99dffe9657d82c42c95ee07322d8a052aa936d91babbe83b55a02e673541f"
+    },
+    {
+      "scenario_id": "bridge_0202",
+      "severity": "serious",
+      "evidence": "The gold key does not answer the tutor’s question. The tutor asked, “What is the place value of 2 in 521?” and the student answered “200.” The needed correction is that the 2 is in the tens place / has value 20. But the expert reply says only, “the 5 is in the hundreds place,” which addresses a diff",
+      "source_id": "2925409_8",
+      "native_split": "train",
+      "withheld_reference_solution": "great try! the 5 is in the hundreds place",
+      "withheld_reference_sha256": "00613b5c1e1992cd805e4d4e6955d84c434a7f9827048feecd99af5dddc70922"
+    },
+    {
+      "scenario_id": "bridge_0203",
+      "severity": "fatal",
+      "evidence": "The gold key affirms the student's erroneous/non-answer instead of correcting it: the tutor asks, “What are decomposing shapes?” and the student answers “no have 4 angles.” The expert reply says, “You are correct that none have 4 angles,” even though there is no visible referent for “none” and decom",
+      "source_id": "2928702_46",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! You are correct that none have 4 angles, but what shapes are we breaking the larger shape into?",
+      "withheld_reference_sha256": "fa8c62748780372e59b328126587fbc30c56c7ebc3f0486bbedc28408c18df77"
+    },
+    {
+      "scenario_id": "bridge_0212",
+      "severity": "fatal",
+      "evidence": "The gold key is mathematically wrong for the tutor's question. The tutor asks for \"an example of an inverse operation,\" but the expert reply says \"We could say 7*5=5*7,\" which is the commutative property of multiplication, not an inverse operation. An inverse operation example would use division, e.",
+      "source_id": "4288776_44",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! We could say 7*5=5*7",
+      "withheld_reference_sha256": "bbfddfa87527c08593fe87821e30168a422ce026701125c4aff8021d87d9b2ca"
+    },
+    {
+      "scenario_id": "bridge_0223",
+      "severity": "serious",
+      "evidence": "The gold key gives the opposite of the intended guidance due to a missing negation: “It's so that we know use the wrong information when calculating the answer.” This says checking unnecessary information helps us use the wrong information, which is incorrect and would mislead the judge despite the ",
+      "source_id": "4256694_6",
+      "native_split": "train",
+      "withheld_reference_solution": "It's so that we know use the wrong information when calculating the answer. For example, Abby has 3 apples and 4 bananas. Bob has 2 apples and 6 bananas. How many apples do Abby and Bob have in total?\nThis question is only asking for how many apples Abby and Bob have in total. So the information about how many bananas they have is unnecessary and we should be careful not to accidentally use that when calculating our answer",
+      "withheld_reference_sha256": "97edc2feac42291f9ad534f0dd1c48fcfc84561ff6b96abf57d24d5cbc5b73a2"
+    },
+    {
+      "scenario_id": "bridge_0227",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the student's mathematical error. The tutor asks, \"what is addition?\" and the student answers \"-\", i.e. the minus/subtraction symbol. But the expert reply is only \"Can you elaborate?\" It neither points out that '-' is subtraction, not addition, nor gives any concrete st",
+      "source_id": "4289415_22",
+      "native_split": "train",
+      "withheld_reference_solution": "Can you elaborate?",
+      "withheld_reference_sha256": "a0f2dabc82d9ca23f7d556c1eccc99fbd2930688f67330567e51818e31e9093d"
+    },
+    {
+      "scenario_id": "bridge_0239",
+      "severity": "serious",
+      "evidence": "The gold key is not an adequate reference because it gives only a multiplication algorithm and never states or helps derive the actual correction to the student's wrong answer. The student answered “75” to “What is the value of 5 * 14?”, but the expert reply only says: “When you multiply make sure y",
+      "source_id": "2916282_36",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! When you multiply make sure you multiply the ones and then carry the tens!",
+      "withheld_reference_sha256": "5e74022baddd0d40d4033c5720b67037fd36d8a7faf89bade43760a37d5cafeb"
+    },
+    {
+      "scenario_id": "bridge_0248",
+      "severity": "fatal",
+      "evidence": "The gold key gives mathematically false guidance: it says, \"The formula will have only letters.\" But the area formula for a triangle is A = 1/2 bh or A = bh/2, which necessarily includes the numerical factor 1/2 (or division by 2), not \"only letters.\" This could mislead a judge into rewarding an inc",
+      "source_id": "2963999_25",
+      "native_split": "train",
+      "withheld_reference_solution": "The formula will have only letters. What is the formula for the area of a triangle?",
+      "withheld_reference_sha256": "097e2a29b2852528e5fa985153858d4362c53511ce59090df94986a5faee2329"
+    },
+    {
+      "scenario_id": "bridge_0250",
+      "severity": "serious",
+      "evidence": "The gold key does not provide a usable correction or next step; it merely repeats what the tutor already said before the student made the mistake. The transcript already has: \"[tutor] Good. Now divide the factors 200/4\" and \"[tutor] How many times 4 in 200?\" After the student answers incorrectly, \"8",
+      "source_id": "2979275_51",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! To find that you'll want to divide 200 by 4",
+      "withheld_reference_sha256": "79b07db585b0f15ec509571037e198ef207b75de83c8d760d0d86f47cfe2e716"
+    },
+    {
+      "scenario_id": "bridge_0254",
+      "severity": "fatal",
+      "evidence": "The gold key gives a mathematically impossible/inaccurate prompt for the actual question. The tutor asks, “What are the factors of -8?”, but the expert reply says factors are “whole numbers that multiply to equal -8.” Whole numbers are nonnegative, so no pair of whole numbers multiplies to -8; the c",
+      "source_id": "2916378_34",
+      "native_split": "train",
+      "withheld_reference_solution": "No, not quite. What I mean to say is, what are some whole numbers that multiply to equal -8? For example, the factors of 10 would be 2 and 5 (because 2 x 5 = 10) and 1 and 10 (because 1 x 10 = 10)",
+      "withheld_reference_sha256": "247be60b8e5c69f53746c126d262f918ec31deb5254e5ce498b0cd119a9a53c5"
+    },
+    {
+      "scenario_id": "bridge_0282",
+      "severity": "fatal",
+      "evidence": "The gold key gives an incorrect definition of the metric prefix: it says, \"Milli means thousand.\" In metric units, milli- means one-thousandth (10^-3), not thousand; a liter contains 1000 milliliters because each milliliter is one-thousandth of a liter. This incorrect explanation could mislead a jud",
+      "source_id": "4173639_26",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! Try using the prefixes to help you. Milli means thousand.",
+      "withheld_reference_sha256": "5de5f100bdc3c9e5a68e615a262726c9ecc3edad719bdedf1ac469811fc4016c"
+    },
+    {
+      "scenario_id": "bridge_0284",
+      "severity": "serious",
+      "evidence": "The gold key gives a different subtraction problem instead of guiding the student to fix the asked one. The tutor asked, “what is 60-4?” and the student answered “54,” but the expert reply says only, “60 - 6 is 54.” It never states or prompts the correct target calculation, 60 - 4 = 56, so a judge u",
+      "source_id": "2962890_43",
+      "native_split": "train",
+      "withheld_reference_solution": "Ah, you're close! 60 - 6 is 54",
+      "withheld_reference_sha256": "579c0ca6274284b3b43674f26c68cb17bb2862098b7572c8809e7dfbb7e6b410"
+    },
+    {
+      "scenario_id": "bridge_0293",
+      "severity": "serious",
+      "evidence": "The gold key does not actually identify or correct the student's arithmetic error. The student answered “42” to “What is the value of 12 times 3.14?”, but the expert reply only says, “Great try! You can use a calculator to do this,” without stating that 42 is wrong, giving the correct product, or gu",
+      "source_id": "4253239_46",
+      "native_split": "train",
+      "withheld_reference_solution": "Great try! You can use a calculator to do this",
+      "withheld_reference_sha256": "9e898b6d909b3e2b56d6abf89d446897bf880e031d5c60b7b6b73e6d38d5b2bd"
+    },
+    {
+      "scenario_id": "bridge_0300",
+      "severity": "fatal",
+      "evidence": "The gold key does not actually identify or correct the student's math error. The student answered \"1000\" to \"How many centimeters are in meter?\", but the expert reply only says, \"Ah, not quite. Please take a look at this metric converter chart: [URL]\" and never states or guides toward the relevant c",
+      "source_id": "2963782_110",
+      "native_split": "train",
+      "withheld_reference_solution": "Ah, not quite. Please take a look at this metric converter chart: https://i.etsystatic.com/29493720/r/il/3d8649/4369460039/il_794xN.4369460039_14ar.jpg\nYou can use this as a reference for this assignment, but please do your best to have it memorized by our next meeting",
+      "withheld_reference_sha256": "3c7a074350b3a4bfca8b50c5e5a00af67349191660ac4accff6c96565dbc5bc1"
+    },
+    {
+      "scenario_id": "bridge_0302",
+      "severity": "fatal",
+      "evidence": "The gold key does not correct the student's mistake. The tutor asks, \"What is the value of 5 in 2,593?\" The correct value is 500, but the student answers \"hudrid\" (apparently 'hundred'/hundreds place). The expert reply says, \"Great! The 5 is in the hundreds spot,\" which only identifies the place, no",
+      "source_id": "2916344_54",
+      "native_split": "train",
+      "withheld_reference_solution": "Great! The 5 is in the hundreds spot.",
+      "withheld_reference_sha256": "7fa7c639e6ddb061fb9d2c34d4a5655a8ebd7c27f813560736b68a1b522d83cb"
+    },
+    {
+      "scenario_id": "bridge_0303",
+      "severity": "fatal",
+      "evidence": "The gold key gives a mathematically false correction: it says, \"3.14 is the value of pi.\" But pi is not exactly 3.14; 3.14 is only an approximation, usually pi rounded to the hundredths. The prompt also only asks \"What is the value of pi?\" without specifying a rounding place, so treating 3.14 as the",
+      "source_id": "4111828_8",
+      "native_split": "train",
+      "withheld_reference_solution": "That is close! 3.14 is the value of pi.",
+      "withheld_reference_sha256": "cb29632ec3f9df9ac18c07e722db2f19d0a5d0f958bd73ce4ed4139192e33978"
+    },
+    {
+      "scenario_id": "bridge_0320",
+      "severity": "fatal",
+      "evidence": "The gold key does not satisfy the attached requirements and would mislead judging. The criteria require: \"[D3 · error_type:conceptual · critical] The response addresses the underlying misconception or faulty reasoning behind the error, not just the surface wrong answer\" and \"[D5 ...] The response en",
+      "source_id": "4014122_51",
+      "native_split": "train",
+      "withheld_reference_solution": "There are 60 minutes in an hour. There are also 60 seconds in a minute.",
+      "withheld_reference_sha256": "ebb99ceb2161b4c10cad47a1c5e81eb86306b8a62ec4a6dfa08e7fe80f39c334"
+    },
+    {
+      "scenario_id": "bridge_0332",
+      "severity": "fatal",
+      "evidence": "The gold key responds as if the task were to compute a numerical area, but the tutor asked for a formula. The transcript says: tutor: \"What is the formula for the area of a rectangle?\" student: \"30\". The expert reply is: \"How did you get 30 for the area?\" This does not address the actual error that ",
+      "source_id": "2950893_9",
+      "native_split": "train",
+      "withheld_reference_solution": "How did you get 30 for the area?",
+      "withheld_reference_sha256": "7af5407f7066860653c71f1930908d1d675c1aaa4ca5929416d4bb425a11b988"
+    },
+    {
+      "scenario_id": "bridge_0342",
+      "severity": "fatal",
+      "evidence": "The gold key gives mathematically incorrect guidance: after the student says a 5-sided shape is a “hexagon,” the expert reply says, “The prefix for 5 sides is hexa.” But “hexa-” means 6; the 5-sided shape is a pentagon, with prefix “penta-.” This would mislead a judge about the correct tutoring resp",
+      "source_id": "2963625_105",
+      "native_split": "train",
+      "withheld_reference_solution": "Try that again! The prefix for 5 sides is hexa.",
+      "withheld_reference_sha256": "5d457d3999aec379b696e1021c7f9972c7df7e583f641b46166a37f03ba2fc2a"
+    },
+    {
+      "scenario_id": "bridge_0351",
+      "severity": "serious",
+      "evidence": "The gold key is not a sound reference for the attached criteria. The criteria require the next tutor turn to connect multiplication to meaning: \"[O1] The response connects the operation to its meaning or to the problem situation,\" but the expert reply only says, \"That is incorrect. Please use your c",
+      "source_id": "4055603_45",
+      "native_split": "train",
+      "withheld_reference_solution": "That is incorrect. Please use your calculator to double check your answer.",
+      "withheld_reference_sha256": "baefab18c8849ef36650596fc2da4ae90930cca905caddbbabdaafb5b8977ef5"
+    },
+    {
+      "scenario_id": "bridge_0368",
+      "severity": "fatal",
+      "evidence": "The gold key gives a mathematically false check: it says, \"add 53 to 5 and you should get 57,\" but 53 + 5 = 58, not 57. This would mislead a judge because the reference tutor response itself contains the arithmetic error.",
+      "source_id": "6348278_24",
+      "native_split": "train",
+      "withheld_reference_solution": "You're very close! To check your work you could add 53 to 5 and you should get 57",
+      "withheld_reference_sha256": "404fe4642e33afcc637bcddd3ff626ef2fa9aa2162faefb1d905473653028ba8"
+    },
+    {
+      "scenario_id": "bridge_0369",
+      "severity": "fatal",
+      "evidence": "The gold key gives a mathematically false definition: “A shape is figure that has lines and angles.” Shapes do not necessarily have lines and angles—circles/ovals are shapes, and the lesson is labeled “2- and 3-Dimensional Shapes,” which would also include figures like spheres. The student’s Spanish",
+      "source_id": "2951129_14",
+      "native_split": "train",
+      "withheld_reference_solution": "Close, but let's add to that definition! A shape is figure that has lines and angles. Can you give me an example of a shape? What's your favorite shape?",
+      "withheld_reference_sha256": "41c498b3c2a0fe8d08836a6b0ea8f084eb6b7b46bf434791d95d8ea2147cf80b"
+    },
+    {
+      "scenario_id": "bridge_0370",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the visible student mistake. The transcript’s actual prompt is plain arithmetic: \"What is 12+3=?\" and the student answers \"the Ar is 13\". The needed correction is that 12+3 is 15, but the expert reply instead introduces an unsupported context: \"that will give us the ent",
+      "source_id": "4169995_30",
+      "native_split": "train",
+      "withheld_reference_solution": "Let's go step by step. I'm add 12 + 3 because that will give us the entire length of the rectangle.",
+      "withheld_reference_sha256": "4fdeeb9d2ba185a40464e1705a550905f4ceb4320b5ca7252926f45dbb0ebc1d"
+    },
+    {
+      "scenario_id": "bridge_0418",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the attached grading criteria and would mislead the judge. The entire expert reply is only \"How did you get that?\", but the item's criteria require the next tutor turn to provide \"a concrete, accessible starting point\" (G2) and to \"draw attention to the structure -- wha",
+      "source_id": "2928562_34",
+      "native_split": "validation",
+      "withheld_reference_solution": "How did you get that?",
+      "withheld_reference_sha256": "ed30ccec82b6702ef69980c87a132e26df367eda75117d3f1f4ef22b1e98fa22"
+    },
+    {
+      "scenario_id": "bridge_0422",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the attached F1 criterion. F1 requires: \"The response treats the fraction or mixed number as a quantity -- referring to its size, or to what it is a part of -- and not only as two numbers to manipulate.\" But the expert reply only discusses denominator manipulation: \"Rem",
+      "source_id": "6321465_41",
+      "native_split": "validation",
+      "withheld_reference_solution": "Great try! Remember that you need common denominators when you add fractions. What is the common denominator between 8, 4, and 2?",
+      "withheld_reference_sha256": "835c189f982459b9150b7d04aee3cbf60ab0e6b8f9900c7c6883e0b6164f9c45"
+    },
+    {
+      "scenario_id": "bridge_0429",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the item’s own required tutoring move: D5 says the response must “end by asking the student to produce something specific -- an answer, a next step, or an explanation in their own words,” but the expert reply ends with only a statement: “When we want to change a whole n",
+      "source_id": "2990115_54",
+      "native_split": "validation",
+      "withheld_reference_solution": "Great try. When we want to change a whole number into a fraction we do not want to change it's value.",
+      "withheld_reference_sha256": "01537b27dd913e759a8b04db726ff67d307f2aa8828827f9fa6bc71149d83ffb"
+    },
+    {
+      "scenario_id": "bridge_0435",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the student's actual turn. The tutor asked, \"How many zeros are in a hundred?\" and the student answered \"0\"; the relevant correction is that 100 has two zeros. Instead, the expert reply introduces an unrelated number absent from the transcript: \"In the number 672, the 6",
+      "source_id": "2963009_28",
+      "native_split": "validation",
+      "withheld_reference_solution": "Let's review place value. In the number 672, the 6 digit is in the hundreds place, representing 600. 7 is in the tens place and 2 is in the ones place.",
+      "withheld_reference_sha256": "7ca6cc636d925c4c889e8ae007d8c6ecd5c8cc68a6eaddcdd14a6199d87586fa"
+    },
+    {
+      "scenario_id": "bridge_0444",
+      "severity": "fatal",
+      "evidence": "The gold key relies on problem context that is absent from what the tutor model sees. The visible transcript only says, “What would be the value of 4 times 6?” and the student’s garbled mention of “3 in 1 bag” / “4 bag”; it never states that the problem is about marbles or that each bag has 6 marble",
+      "source_id": "2928821_90",
+      "native_split": "validation",
+      "withheld_reference_solution": "Yes, he has 4 bags. We're trying to find how many total marbles he has\nWe know he has 4 bags and each bag has 6 marbles, so we can do 4 x 6 to figure out how many total marbles he has\n4 x 6 = ?",
+      "withheld_reference_sha256": "c249b47146f07d6b82273eb2d78a879ca94c225eee5faffa7023f1bf2c5cfa29"
+    },
+    {
+      "scenario_id": "bridge_0449",
+      "severity": "fatal",
+      "evidence": "The gold key gives an incorrect diagnosis of the student's error. The tutor asked, “What is the value of 10 times 0.621?” and the student answered “6,210.” But the expert reply says, “It looks like you multiplied 0.621 by 1000.” Multiplying 0.621 by 1000 gives 621, not 6,210; 6,210 would come from m",
+      "source_id": "3982385_33",
+      "native_split": "validation",
+      "withheld_reference_solution": "Great try! It looks like you multiplied 0.621 by 1000",
+      "withheld_reference_sha256": "c3ab93a5d5436c51bd659685ff638d4930414a93347661c64658b19ba94360b5"
+    },
+    {
+      "scenario_id": "bridge_0464",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the actual error in the student's turn. The tutor asked, \"What is the formula for the area of a rectangle?\" and the student answered \"30\"; the face-value error is that a number was given instead of a formula such as length × width. But the expert reply only says, \"Hm, n",
+      "source_id": "2950893_9",
+      "native_split": "test",
+      "withheld_reference_solution": "Hm, not quite. Could you let me know how you got 30?",
+      "withheld_reference_sha256": "605eec28cc014f5c93cc12e1e2eb3727d80f681baece583fe7690522200d8a15"
+    },
+    {
+      "scenario_id": "bridge_0485",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the actual student turn/question. The tutor asks, \"What property allows us to write the numbers in any order?\" so the expected issue is that the student gave a number instead of naming a property. But the expert reply says, \"Can you show on the whiteboard how you got th",
+      "source_id": "2948565_53",
+      "native_split": "test",
+      "withheld_reference_solution": "Can you show on the whiteboard how you got that as the sum?",
+      "withheld_reference_sha256": "9cda90d2ca1adc02c8973a9d641013f0942881481d48f742470cfaead786a443"
+    },
+    {
+      "scenario_id": "bridge_0487",
+      "severity": "fatal",
+      "evidence": "The gold key addresses a different subtraction problem than the transcript. The tutor asks, “What is the value of 15 - 6?” and the student answers “it is 11?”, but the expert reply says, “Let’s do 24 - 7 on the whiteboard...” This would mislead judges because it does not address the student’s actual",
+      "source_id": "2916162_68",
+      "native_split": "test",
+      "withheld_reference_solution": "You're close! Let's do 24 - 7 on the whiteboard and then you can think about your answer again.",
+      "withheld_reference_sha256": "28f78ba4f2581d6c3986cbb37aaf0e204f839c3510fa0c31599d6af4fb1be17c"
+    },
+    {
+      "scenario_id": "bridge_0530",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the attached criterion O1. O1 requires: “The response connects the operation to its meaning or to the problem situation,” but the expert reply only says, “I would like for you to recalculate your answer. Use your calculator to double check your work.” It gives no connec",
+      "source_id": "6136403_46",
+      "native_split": "test",
+      "withheld_reference_solution": "I would like for you to recalculate your answer. Use your calculator to double check your work.",
+      "withheld_reference_sha256": "48c00e20a6ba84a60e87ccf833d0b3e53e3889c72c6537f996f20c84e3cbd984"
+    },
+    {
+      "scenario_id": "bridge_0549",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the item's own required tutoring behavior: S2 says the response should \"prompt[] the student to locate and fix the slip themselves rather than simply pointing at it,\" but the expert reply only states, \"It looks like you solved 87-75\" and gives no prompt to correct 85-77",
+      "source_id": "4295762_26",
+      "native_split": "test",
+      "withheld_reference_solution": "It looks like you solved 87-75",
+      "withheld_reference_sha256": "1af5a5e67a309b5be7926d30744773053235a369d4c37594b9d80831203a8697"
+    },
+    {
+      "scenario_id": "bridge_0550",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy an attached grading requirement. O1 requires that the tutor response “connects the operation to its meaning or to the problem situation,” but the expert reply is only: “You're very close! Could you double check your answer?” It gives no connection to the subtraction mea",
+      "source_id": "4295637_66",
+      "native_split": "test",
+      "withheld_reference_solution": "You're very close! Could you double check your answer?",
+      "withheld_reference_sha256": "030cde945ec4ef0726d77dcb883db61ee48dc1bd5d5b91c97cc05d76cd244d77"
+    },
+    {
+      "scenario_id": "bridge_0560",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the student's erroneous final answer at all; it merely repeats the exact question the tutor already asked. Transcript: tutor asks, \"What is the value of 60-45?\" student answers, \"12 : 60\". Gold key: \"Can you answer 60-45?\" This would mislead judging because the attached",
+      "source_id": "6166703_62",
+      "native_split": "test",
+      "withheld_reference_solution": "Great try! Let's take this one step at a time. Can you answer 60-45?",
+      "withheld_reference_sha256": "04438e0f8a27787088852e1e7dc32c882fe5e19d0870da714f7b7c9d72ea7181"
+    },
+    {
+      "scenario_id": "bridge_0561",
+      "severity": "fatal",
+      "evidence": "The gold key does not address the student's actual error or give any actionable tutoring. The student answered the hundreds-place question with the whole number: tutor asks, “Which number is in the hundreds place?” and student says “2671.” The expert reply is only “Let's go step by step,” which neit",
+      "source_id": "2979598_73",
+      "native_split": "test",
+      "withheld_reference_solution": "Let's go step by step",
+      "withheld_reference_sha256": "702a4830b168d296e14b26779cad0c027e2663112da3ad58860e0ae4bae27700"
+    },
+    {
+      "scenario_id": "bridge_0572",
+      "severity": "serious",
+      "evidence": "The gold key does not satisfy the attached O1 criterion. O1 requires that the tutor response “connects the operation to its meaning or to the problem situation,” but the expert reply only says, “recheck that calculation,” “Use a calculator,” and asks “What is 57 minus 5?” It never connects subtracti",
+      "source_id": "6348278_24",
+      "native_split": "test",
+      "withheld_reference_solution": "I would like you to recheck that calculation. Use a calculator to double check your answer. What is 57 minus 5?",
+      "withheld_reference_sha256": "7dd13bc67a52eefb7177095b4976c771df8090a41d5994db64c202c49346731a"
+    },
+    {
+      "scenario_id": "bridge_0576",
+      "severity": "fatal",
+      "evidence": "The gold key affirms and repeats the student's imprecise/incorrect definition instead of correcting it. Student says symmetry is \"like you cut it in half\"; the expert replies, \"That's right! A line of symmetry is a line that cuts a figure in half.\" But a line of symmetry must divide a figure into tw",
+      "source_id": "4014119_8",
+      "native_split": "test",
+      "withheld_reference_solution": "That's right! A line of symmetry is a line that cuts a figure in half\nTake a look at this equilateral triangle: data:image/png;base64,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\nOops, sorry, that link was too long and went off the screen. Here, try this: https://tinyurl.com/nhf53zw7\nPlease take a look at that equilateral triangle and let me know how many lines of symmetry you think it has",
+      "withheld_reference_sha256": "05f6a08414a3f55114a22c7ea1c499000cc1bc26e483d3f30e23396be359c83b"
+    },
+    {
+      "scenario_id": "bridge_0584",
+      "severity": "serious",
+      "evidence": "The gold key gives an unsupported method that may not match the actual prompt. The visible tutor says, “The shape is made of 8 unit squares. What is the area of the shape?” So the area can be answered directly as 8 square units by counting. But the expert reply says, “we need to multiply the 2 and 4",
+      "source_id": "2939698_45",
+      "native_split": "test",
+      "withheld_reference_solution": "Yes, there are 8 squares. To get the area, we need to multiply the 2 and 4, not add them",
+      "withheld_reference_sha256": "f7b29cce064cf69a8a73af36f24fb664d7f82d420d4f5c3e14e05e55689bad9e"
+    },
+    {
+      "scenario_id": "bridge_0590",
+      "severity": "serious",
+      "evidence": "The gold key gives a misleading/incorrect method for the specific time interval. It says: “start at 7:30pm and increase the hour by 1 until we get to or pass 11:00pm.” Starting at 7:30 and adding 1-hour intervals reaches 8:30, 9:30, 10:30, then 11:30, so following the instruction “until we get to or",
+      "source_id": "2950220_40",
+      "native_split": "test",
+      "withheld_reference_solution": "Here, let's count it in 1 hour intervals. Let's start at 7:30pm and increase the hour by 1 until we get to or pass 11:00pm. Could you try that?",
+      "withheld_reference_sha256": "6ec68c1f48c3009429fe71a85c2165340d136abb09a60a8ea946f9a10085f673"
+    },
+    {
+      "scenario_id": "bridge_0591",
+      "severity": "fatal",
+      "evidence": "The gold key gives incorrect place-value guidance: it correctly says \"the 2 is 6th from the right\" in 204530, but then asks \"what place value is 6th from the left?\" The relevant place is 6th from the right, not left; 6th from the left would depend on the chart and would not identify the 2's place. T",
+      "source_id": "2879218_70",
+      "native_split": "test",
+      "withheld_reference_solution": "Hmm, not quite. Here's how we can know for sure\nTake a look at this place value chart: https://www.shutterstock.com/image-vector/place-value-chart-blank-template-260nw-2023023992.jpg\nIn 204530, notice how the 2 is 6th from the right\nIn the place value chart, what place value is 6th from the left?",
+      "withheld_reference_sha256": "e592f3fc505863d0e80fdd3b50478acc8cfafecbfe6333ff6f1f97f8ba857836"
+    },
+    {
+      "scenario_id": "bridge_0607",
+      "severity": "fatal",
+      "evidence": "The gold key affirms the student's answer even though it does not answer the tutor's actual question. The tutor asks, \"How long is Luciano's train ride?\" and the transcript already states the ride \"takes 45 minutes.\" The student answers \"8: 15,\" which is a clock time, not the duration of the train r",
+      "source_id": "6166650_63",
+      "native_split": "test",
+      "withheld_reference_solution": "Yes, since Luciano's train ride is 45 minutes, he would need to leave at the latest at 8:15. Good thinking!",
+      "withheld_reference_sha256": "ee1ba54e6e1c35611c7872934d561152391339e7dd2d61dec4f7662a2f0a3337"
+    },
+    {
+      "scenario_id": "bridge_0639",
+      "severity": "fatal",
+      "evidence": "The gold key affirms the student's wrong answer instead of correcting it. The tutor asks, \"What number will go in the \\\"part?\\\"\" for the problem \"27 is 4% of what number?\" In a percent proportion, the part is 27 and the whole is unknown; 4 is the percent. But the student answers \"4,\" and the expert ",
+      "source_id": "4016227_17",
+      "native_split": "test",
+      "withheld_reference_solution": "Yes 4 is the part of 100. What's the other part we're looking for?",
+      "withheld_reference_sha256": "608eaa02abf192db0f8498fd295439ff11c3cc6aeb4386687037089845640ca7"
+    }
+  ]
+}
