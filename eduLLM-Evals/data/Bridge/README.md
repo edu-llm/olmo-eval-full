@@ -91,21 +91,36 @@ A3 not discouraging · A4 safe to be wrong.
 
 ### Tier 3 — topic-domain modules (first keyword match wins)
 
+Seven domains; `data_graphing` was **retired** — see [Retired criteria](#retired-criteria).
+
 | Domain | Code(s) | Scenarios |
 |--------|---------|-----------|
 | `geometry_spatial` | V1, V2 | 81 |
-| `operations_arithmetic` | O1 | 70 |
+| `operations_arithmetic` | O1 | 74 |
 | `place_value_number` | N1 | 55 |
 | `measurement_conversion` | U1 | 27 |
-| `fractions` | F1 | 14 |
+| `fractions` | F1 | 16 |
 | `proportional_reasoning` | Z1 | 17 |
 | `algebra_expressions` | X1 | 19 |
-| `data_graphing` | B1 | 6 |
 
 ### Tier 4 — grade-band module
 
 `Y1` (grades 1-3, 95) · `Y2` (4-5, 156) · `Y3` (6-12, 38). Derived from the TEKS prefix
 (`3.6B…` → grade 3; `A2.7D…` → secondary).
+
+## Retired criteria
+
+`B1` (data-display reading) is **kept in the bank list but attached to nothing**, so
+`CODE_INDEX` — and therefore every existing `criterion_id` — is unchanged; removing an entry
+from the middle of the bank would renumber every code after it. `validate()` exempts retired
+codes from the "never attached" check and asserts they stay unattached.
+
+Its gate keyed on `lesson_topic`, which names the lesson rather than the graded turn. After
+the visual cut only 6 scenarios carried it, and **four of those were arithmetic or fraction
+addition** — `5+1+3+8+12+4+6`, `1/8+2/4+6/8+2/2+5/8` — inside lessons *titled* "Bar Graphs"
+or "Line Plots with Fractions". B1 asks whether the response misreads a scale, key or axis,
+which is unanswerable when no data display is involved. Dropping the gate lets those rows
+route on their actual content: the two fraction ones now draw `F1`, the other four `O1`.
 
 ## Three design rules worth knowing
 
@@ -375,7 +390,10 @@ start tracking sample noise; the real calibration is the definitive read.
   legitimate alternative remediations, but this has not been validated against Bridge's own
   expert gold replies.
 - **Topic gating is keyword-based** and coarse; `operations_arithmetic` remains a catch-all
-  of 70 scenarios.
+  of 74 scenarios. `lesson_topic` names the **lesson** a session belongs to, not what the
+  graded turn asks, so a "Bar Graphs" lesson can hold a plain subtraction question. This
+  is what retired `data_graphing`; the same mismatch may affect other strands and has not
+  been audited.
 - **Floor items are retained.** The 9 `visible_mistake: false` scenarios (184 criteria)
   are kept deliberately, but D1/D2 are unpassable on them. Filter on the flag, or expect
   those items to carry no information.
@@ -383,10 +401,11 @@ start tracking sample noise; the real calibration is the definitive read.
   byte-identical apart from `reference_solution`. At temperature 0 a
   tutor returns the same response to each, so these rows are near-copies in the response
   matrix while the judge scores them against different gold keys. Group on `source_id`.
-- **Four strands are now too thin to fit.** After the cuts, `data_graphing` holds 6
-  scenarios and `fractions`/`proportional_reasoning`/`algebra_expressions` sit at 14–19, so
-  their single-criterion modules (B1, Z1, F1, X1) rest on very few observations. Expect
-  wide standard errors on those item parameters, or fold the strands together.
+- **Three strands remain thin.** `fractions` (16), `proportional_reasoning` (17) and
+  `algebra_expressions` (19) each rest on a single criterion (F1, Z1, X1) with few
+  instances. Each instance is still answered by every model, so the per-item difficulty is
+  estimable; what is thin is any claim about the *strand*, which rests on <20 stimuli.
+  `data_graphing` was retired for this reason plus a gating defect (below).
 - **The pilot statistics predate the cut.** Every pass rate and discrimination below was
   measured on a 100-scenario sample of the 642-scenario bank, and roughly 55% of that
   sample no longer exists. Directionally the numbers should hold or improve — the removed

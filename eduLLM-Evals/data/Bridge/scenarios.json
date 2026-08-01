@@ -59,7 +59,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0003",
@@ -121,7 +121,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0004",
@@ -182,7 +182,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0005",
@@ -244,7 +244,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0006",
@@ -306,7 +306,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0008",
@@ -369,7 +369,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0009",
@@ -431,7 +431,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0013",
@@ -492,7 +492,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0014",
@@ -553,7 +553,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0022",
@@ -614,7 +614,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0023",
@@ -676,7 +676,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0024",
@@ -739,7 +739,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0028",
@@ -801,7 +801,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0036",
@@ -863,7 +863,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0037",
@@ -925,7 +925,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0041",
@@ -987,7 +987,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0042",
@@ -1048,7 +1048,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0043",
@@ -1111,7 +1111,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0045",
@@ -1172,7 +1172,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0051",
@@ -1235,7 +1235,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0053",
@@ -1298,7 +1298,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0055",
@@ -1360,7 +1360,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0057",
@@ -1422,7 +1422,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0058",
@@ -1484,7 +1484,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0060",
@@ -1545,7 +1545,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0061",
@@ -1607,7 +1607,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0062",
@@ -1668,7 +1668,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0063",
@@ -1729,7 +1729,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0065",
@@ -1790,7 +1790,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0066",
@@ -1853,7 +1853,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0067",
@@ -1914,7 +1914,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0068",
@@ -1975,7 +1975,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0069",
@@ -2038,7 +2038,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0070",
@@ -2100,7 +2100,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0071",
@@ -2162,7 +2162,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0072",
@@ -2224,7 +2224,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0073",
@@ -2285,7 +2285,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0074",
@@ -2347,7 +2347,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0077",
@@ -2408,7 +2408,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0078",
@@ -2469,7 +2469,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0082",
@@ -2530,7 +2530,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0085",
@@ -2592,7 +2592,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0089",
@@ -2654,7 +2654,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0090",
@@ -2717,7 +2717,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0091",
@@ -2778,7 +2778,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0092",
@@ -2839,7 +2839,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0093",
@@ -2901,7 +2901,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0094",
@@ -2963,7 +2963,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0096",
@@ -3025,7 +3025,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0098",
@@ -3087,7 +3087,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0101",
@@ -3148,7 +3148,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0104",
@@ -3211,7 +3211,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0106",
@@ -3272,7 +3272,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0107",
@@ -3333,7 +3333,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0108",
@@ -3394,7 +3394,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0111",
@@ -3456,7 +3456,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0113",
@@ -3518,7 +3518,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0114",
@@ -3579,7 +3579,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0116",
@@ -3641,7 +3641,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0123",
@@ -3702,7 +3702,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0125",
@@ -3764,7 +3764,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0127",
@@ -3826,7 +3826,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0128",
@@ -3887,7 +3887,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0131",
@@ -3949,7 +3949,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0132",
@@ -4010,7 +4010,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0133",
@@ -4072,7 +4072,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0135",
@@ -4134,7 +4134,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0141",
@@ -4196,7 +4196,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0144",
@@ -4258,7 +4258,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0147",
@@ -4320,7 +4320,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0152",
@@ -4381,7 +4381,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0156",
@@ -4443,7 +4443,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0157",
@@ -4505,7 +4505,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0159",
@@ -4566,7 +4566,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0163",
@@ -4628,7 +4628,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0165",
@@ -4689,7 +4689,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0166",
@@ -4751,7 +4751,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0167",
@@ -4814,7 +4814,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0170",
@@ -4875,7 +4875,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0171",
@@ -4938,7 +4938,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0174",
@@ -5000,7 +5000,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0175",
@@ -5063,7 +5063,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0176",
@@ -5126,7 +5126,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0177",
@@ -5187,7 +5187,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0179",
@@ -5249,7 +5249,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0180",
@@ -5310,7 +5310,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0181",
@@ -5371,7 +5371,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0182",
@@ -5432,7 +5432,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0189",
@@ -5493,7 +5493,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0196",
@@ -5554,7 +5554,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0200",
@@ -5616,7 +5616,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0202",
@@ -5677,7 +5677,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0203",
@@ -5740,7 +5740,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0205",
@@ -5803,7 +5803,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0207",
@@ -5865,7 +5865,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0208",
@@ -5928,7 +5928,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0209",
@@ -5989,7 +5989,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0212",
@@ -6051,7 +6051,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0214",
@@ -6112,7 +6112,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0216",
@@ -6175,7 +6175,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0223",
@@ -6236,7 +6236,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0227",
@@ -6297,7 +6297,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0228",
@@ -6359,7 +6359,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0236",
@@ -6420,7 +6420,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0239",
@@ -6481,7 +6481,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0240",
@@ -6543,7 +6543,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0242",
@@ -6605,7 +6605,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0243",
@@ -6666,7 +6666,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0245",
@@ -6730,7 +6730,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0248",
@@ -6793,7 +6793,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0249",
@@ -6856,7 +6856,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0250",
@@ -6917,7 +6917,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0252",
@@ -6978,7 +6978,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0254",
@@ -7039,7 +7039,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0255",
@@ -7102,7 +7102,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0258",
@@ -7164,7 +7164,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0259",
@@ -7225,7 +7225,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0262",
@@ -7287,7 +7287,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0264",
@@ -7348,7 +7348,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0268",
@@ -7409,7 +7409,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0269",
@@ -7473,7 +7473,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0270",
@@ -7535,7 +7535,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0272",
@@ -7597,7 +7597,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0273",
@@ -7659,7 +7659,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0276",
@@ -7722,7 +7722,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0278",
@@ -7783,7 +7783,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0280",
@@ -7845,7 +7845,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0281",
@@ -7906,7 +7906,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0282",
@@ -7967,7 +7967,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0284",
@@ -8028,7 +8028,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0286",
@@ -8090,7 +8090,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0287",
@@ -8152,7 +8152,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0288",
@@ -8213,7 +8213,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0293",
@@ -8275,7 +8275,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0294",
@@ -8337,7 +8337,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0295",
@@ -8399,7 +8399,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0297",
@@ -8461,7 +8461,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0300",
@@ -8522,7 +8522,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0301",
@@ -8585,7 +8585,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0302",
@@ -8646,7 +8646,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0303",
@@ -8708,7 +8708,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0307",
@@ -8771,7 +8771,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0310",
@@ -8832,7 +8832,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0313",
@@ -8840,7 +8840,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "data_graphing",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "it can be big",
     "conversation_context": [
@@ -8878,7 +8878,7 @@
       "bridge_0313_c16",
       "bridge_0313_c26",
       "bridge_0313_c27",
-      "bridge_0313_c33",
+      "bridge_0313_c36",
       "bridge_0313_c37"
     ],
     "error_type": "imprecise",
@@ -8893,7 +8893,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0320",
@@ -8956,7 +8956,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0321",
@@ -9018,7 +9018,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0322",
@@ -9079,7 +9079,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0323",
@@ -9140,7 +9140,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0325",
@@ -9202,7 +9202,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0326",
@@ -9264,7 +9264,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0332",
@@ -9328,7 +9328,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0339",
@@ -9390,7 +9390,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0342",
@@ -9452,7 +9452,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0344",
@@ -9514,7 +9514,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0346",
@@ -9577,7 +9577,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0347",
@@ -9640,7 +9640,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0348",
@@ -9701,7 +9701,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0351",
@@ -9762,7 +9762,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0353",
@@ -9824,7 +9824,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0356",
@@ -9885,7 +9885,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0359",
@@ -9946,7 +9946,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0360",
@@ -10008,7 +10008,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0368",
@@ -10069,7 +10069,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0369",
@@ -10132,7 +10132,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0370",
@@ -10194,7 +10194,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0374",
@@ -10256,7 +10256,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0375",
@@ -10319,7 +10319,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0377",
@@ -10380,7 +10380,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0379",
@@ -10443,7 +10443,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0380",
@@ -10505,7 +10505,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0383",
@@ -10513,7 +10513,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "data_graphing",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -10552,7 +10552,7 @@
       "bridge_0383_c17",
       "bridge_0383_c18",
       "bridge_0383_c19",
-      "bridge_0383_c33",
+      "bridge_0383_c36",
       "bridge_0383_c38"
     ],
     "error_type": "diagnose",
@@ -10567,7 +10567,7 @@
     "native_split": "train",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0391",
@@ -10630,7 +10630,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0392",
@@ -10691,7 +10691,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0393",
@@ -10754,7 +10754,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0394",
@@ -10815,7 +10815,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0396",
@@ -10879,7 +10879,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0398",
@@ -10940,7 +10940,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0401",
@@ -11002,7 +11002,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0402",
@@ -11063,7 +11063,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0404",
@@ -11124,7 +11124,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0405",
@@ -11185,7 +11185,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0406",
@@ -11247,7 +11247,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0408",
@@ -11309,7 +11309,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0409",
@@ -11372,7 +11372,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0412",
@@ -11434,7 +11434,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0413",
@@ -11496,7 +11496,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0415",
@@ -11559,7 +11559,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0416",
@@ -11622,7 +11622,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0418",
@@ -11683,7 +11683,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0419",
@@ -11745,7 +11745,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0420",
@@ -11806,7 +11806,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0421",
@@ -11868,7 +11868,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0422",
@@ -11876,7 +11876,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "data_graphing",
+    "topic_domain": "fractions",
     "modality": "text",
     "prompt": "16/8",
     "conversation_context": [
@@ -11914,7 +11914,7 @@
       "bridge_0422_c16",
       "bridge_0422_c20",
       "bridge_0422_c21",
-      "bridge_0422_c33",
+      "bridge_0422_c30",
       "bridge_0422_c38"
     ],
     "error_type": "guess",
@@ -11930,7 +11930,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0425",
@@ -11993,7 +11993,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0426",
@@ -12056,7 +12056,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0427",
@@ -12118,7 +12118,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0429",
@@ -12181,7 +12181,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0433",
@@ -12243,7 +12243,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0435",
@@ -12304,7 +12304,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0436",
@@ -12366,7 +12366,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0438",
@@ -12428,7 +12428,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0440",
@@ -12489,7 +12489,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0444",
@@ -12550,7 +12550,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0445",
@@ -12612,7 +12612,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0449",
@@ -12673,7 +12673,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0452",
@@ -12736,7 +12736,7 @@
     "native_split": "validation",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0453",
@@ -12798,7 +12798,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0454",
@@ -12860,7 +12860,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0455",
@@ -12922,7 +12922,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0456",
@@ -12983,7 +12983,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0457",
@@ -13044,7 +13044,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0458",
@@ -13106,7 +13106,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0464",
@@ -13170,7 +13170,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0465",
@@ -13232,7 +13232,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0468",
@@ -13295,7 +13295,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0472",
@@ -13357,7 +13357,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0476",
@@ -13418,7 +13418,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0478",
@@ -13426,7 +13426,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "data_graphing",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "=29",
     "conversation_context": [
@@ -13464,7 +13464,7 @@
       "bridge_0478_c16",
       "bridge_0478_c24",
       "bridge_0478_c25",
-      "bridge_0478_c33",
+      "bridge_0478_c36",
       "bridge_0478_c37"
     ],
     "error_type": "careless",
@@ -13479,7 +13479,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0479",
@@ -13541,7 +13541,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0485",
@@ -13603,7 +13603,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0486",
@@ -13665,7 +13665,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0487",
@@ -13726,7 +13726,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0489",
@@ -13787,7 +13787,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0492",
@@ -13850,7 +13850,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0496",
@@ -13912,7 +13912,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0500",
@@ -13973,7 +13973,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0503",
@@ -14036,7 +14036,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0504",
@@ -14097,7 +14097,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0508",
@@ -14158,7 +14158,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0509",
@@ -14220,7 +14220,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0512",
@@ -14282,7 +14282,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0513",
@@ -14345,7 +14345,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0517",
@@ -14406,7 +14406,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0520",
@@ -14468,7 +14468,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0523",
@@ -14530,7 +14530,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0524",
@@ -14592,7 +14592,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0526",
@@ -14653,7 +14653,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0529",
@@ -14714,7 +14714,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0530",
@@ -14777,7 +14777,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0532",
@@ -14838,7 +14838,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0539",
@@ -14899,7 +14899,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0540",
@@ -14961,7 +14961,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0541",
@@ -15024,7 +15024,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0542",
@@ -15085,7 +15085,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0543",
@@ -15149,7 +15149,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0548",
@@ -15210,7 +15210,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0549",
@@ -15271,7 +15271,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0550",
@@ -15332,7 +15332,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0553",
@@ -15393,7 +15393,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0555",
@@ -15454,7 +15454,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0557",
@@ -15515,7 +15515,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0558",
@@ -15578,7 +15578,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0560",
@@ -15640,7 +15640,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0561",
@@ -15701,7 +15701,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0563",
@@ -15763,7 +15763,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0565",
@@ -15825,7 +15825,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0566",
@@ -15889,7 +15889,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0570",
@@ -15950,7 +15950,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0571",
@@ -15958,7 +15958,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "1-3",
-    "topic_domain": "data_graphing",
+    "topic_domain": "operations_arithmetic",
     "modality": "text",
     "prompt": "yes",
     "conversation_context": [
@@ -15996,7 +15996,7 @@
       "bridge_0571_c16",
       "bridge_0571_c20",
       "bridge_0571_c21",
-      "bridge_0571_c33",
+      "bridge_0571_c36",
       "bridge_0571_c37"
     ],
     "error_type": "guess",
@@ -16011,7 +16011,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0572",
@@ -16072,7 +16072,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0573",
@@ -16133,7 +16133,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0574",
@@ -16195,7 +16195,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0576",
@@ -16257,7 +16257,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0581",
@@ -16318,7 +16318,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0584",
@@ -16380,7 +16380,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0586",
@@ -16442,7 +16442,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0588",
@@ -16503,7 +16503,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0590",
@@ -16564,7 +16564,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0591",
@@ -16626,7 +16626,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0592",
@@ -16688,7 +16688,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0594",
@@ -16749,7 +16749,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0605",
@@ -16810,7 +16810,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0607",
@@ -16871,7 +16871,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0608",
@@ -16932,7 +16932,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0609",
@@ -16994,7 +16994,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0610",
@@ -17055,7 +17055,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0611",
@@ -17117,7 +17117,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0613",
@@ -17180,7 +17180,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0616",
@@ -17241,7 +17241,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0618",
@@ -17302,7 +17302,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0622",
@@ -17363,7 +17363,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0623",
@@ -17425,7 +17425,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0627",
@@ -17433,7 +17433,7 @@
     "use_case": "mistake_remediation",
     "subject": "mathematics",
     "grade_band": "4-5",
-    "topic_domain": "data_graphing",
+    "topic_domain": "fractions",
     "modality": "text",
     "prompt": "16/8",
     "conversation_context": [
@@ -17471,7 +17471,7 @@
       "bridge_0627_c16",
       "bridge_0627_c20",
       "bridge_0627_c21",
-      "bridge_0627_c33",
+      "bridge_0627_c30",
       "bridge_0627_c38"
     ],
     "error_type": "right-idea",
@@ -17487,7 +17487,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0631",
@@ -17549,7 +17549,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0635",
@@ -17610,7 +17610,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0636",
@@ -17672,7 +17672,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0638",
@@ -17735,7 +17735,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0639",
@@ -17797,7 +17797,7 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   },
   {
     "scenario_id": "bridge_0640",
@@ -17859,6 +17859,6 @@
     "native_split": "test",
     "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
     "split": "calibration",
-    "version": "3.0"
+    "version": "4.0"
   }
 ]

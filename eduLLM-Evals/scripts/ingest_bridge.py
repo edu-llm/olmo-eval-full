@@ -155,7 +155,9 @@ SPLIT = "calibration"   # pipeline-role label (matches TutorBench/InFoBench), no
 USE_CASE = "mistake_remediation"   # unknown to respgen -> falls back to the adaptive_
                                    # explanation system prompt, which preserves multi-turn
 SUBJECT = "mathematics"
-VERSION = "3.0"   # 3.0 = visible_mistake flag, canonical per-conversation error module,
+VERSION = "4.0"   # 4.0 = 353 scenarios excluded (the problem statement was never captured;
+                  #       see visual_exclusions.json), B1 retired, 7 topic domains
+                  # 3.0 = visible_mistake flag, canonical per-conversation error module,
                   #       8 topic domains, 16 core criteria, negative-form wording
 
 # The fixed q-matrix column order. Bridge's own 5-skill axis (see module docstring).
@@ -368,9 +370,13 @@ ERROR_MODULES: dict[str, list[Criterion]] = {
 TOPIC_KEYWORDS: list[tuple[str, tuple[str, ...]]] = [
     ("proportional_reasoning",
      ("ratio", "unit rate", "percent", "proportional", "speed")),
-    ("data_graphing",
-     ("graph", "pictograph", "line plot", "coordinate", "ordered pair", "data",
-      "populations and samples", "range and deviation")),
+    # `data_graphing` was gated here and is retired -- see RETIRED_CODES. `lesson_topic`
+    # names the LESSON a session belongs to, not what the graded turn asks, and a "Bar
+    # Graphs" lesson routinely contains a plain arithmetic question. Of the six scenarios
+    # this gate caught, four were arithmetic or fraction addition ("5+1+3+8+12+4+6",
+    # "1/8+2/4+6/8+2/2+5/8"), so B1 -- about misreading a scale, key or axis -- was being
+    # asked of responses with no data display in sight. Removing the gate lets those rows
+    # match on their actual content: the fraction ones now draw F1, the rest fall to O1.
     ("geometry_spatial",
      ("shape", "area", "quadrilateral", "symmetry", "geometric line", "figure",
       "polygon", "reflection", "angle", "perimeter", "volume", "length",
@@ -492,6 +498,18 @@ ALL_CRITERIA: list[Criterion] = [
 ]
 CODE_INDEX = {code: i for i, (code, *_) in enumerate(ALL_CRITERIA, start=1)}
 CRITERION_BY_CODE = {c[0]: c for c in ALL_CRITERIA}
+
+# Codes kept in the bank list but no longer attached to any scenario. They stay here so
+# CODE_INDEX -- and therefore every existing criterion_id -- is unchanged; dropping an entry
+# from the middle of ALL_CRITERIA would renumber every code after it. `validate()` exempts
+# these from the "never attached" check.
+#
+#   B1  data-display reading. Its gate (see TOPIC_KEYWORDS) keyed on `lesson_topic`, which
+#       names the lesson rather than the graded turn, so it attached to arithmetic questions
+#       inside graph lessons. After the visual cut only 6 scenarios carried it and 4 of those
+#       were arithmetic or fraction addition, leaving too little signal to be worth a
+#       mis-targeted criterion.
+RETIRED_CODES = {"B1"}
 
 # Which tier each code came from -- written onto the rubric as `applicability`.
 TIER_OF_CODE: dict[str, str] = {
@@ -871,9 +889,12 @@ def validate(scenarios: list[dict], rubrics: list[dict]) -> list[str]:
         elif tier.startswith("grade_band:") and tier != f"grade_band:{scen['grade_band']}":
             errs.append(f"{r['criterion_id']}: {tier} attached to {scen['grade_band']!r}")
 
-    unused = valid_codes - {r["criterion_code"] for r in rubrics}
+    unused = valid_codes - {r["criterion_code"] for r in rubrics} - RETIRED_CODES
     if unused:
         errs.append(f"criteria never attached to any scenario: {sorted(unused)}")
+    attached_but_retired = RETIRED_CODES & {r["criterion_code"] for r in rubrics}
+    if attached_but_retired:
+        errs.append(f"retired criteria still attached: {sorted(attached_but_retired)}")
 
     return errs
 
