@@ -1,0 +1,2859 @@
+{
+  "_comment": "Scenario ids excluded from the Bridge bank. Round 1 (263, missing_problem_statement): the math problem itself never appears in the chat -- Bridge transcribes live sessions held over a shared whiteboard, and the worksheet was never captured. Round 2 (90, error_not_diagnosable_from_text): a second, sharper pass over what round 1 flagged as merely REFERENCING a figure, asking the question that actually decides inclusion -- can a tutor identify the student's error from the visible text alone? 11 of those 101 could (a student answering '4 m' to an area question has given a linear unit, which is diagnosable without seeing the rectangle) and were kept. Read by scripts/ingest_bridge.py; committed so the build stays deterministic.",
+  "generated_by": "scripts/audit_bridge_visuals.py",
+  "audit_report": "staging/bridge_visual_audit/report.md",
+  "classifier": "openai-group/gpt-5.5",
+  "generated_on": "2026-07-31",
+  "count": 353,
+  "excluded": [
+    {
+      "scenario_id": "bridge_0001",
+      "confidence": "high",
+      "evidence": "Here comes the question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0002",
+      "confidence": "high",
+      "evidence": "No fraction or student answer appears in the chat.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0007",
+      "confidence": "high",
+      "evidence": "How long is the wood the carpenter wants to break into pieces?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0010",
+      "confidence": "high",
+      "evidence": "area of the top rectangle",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0011",
+      "confidence": "high",
+      "evidence": "this shape is a pentagon",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0012",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Is that picture visible to you?"
+    },
+    {
+      "scenario_id": "bridge_0015",
+      "confidence": "high",
+      "evidence": "Problem asks for 8th multiple of 10, absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0016",
+      "confidence": "high",
+      "evidence": "student asks “is it right” but answer is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0017",
+      "confidence": "high",
+      "evidence": "What is the value of y1? [student] 5?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0018",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "that question"
+    },
+    {
+      "scenario_id": "bridge_0019",
+      "confidence": "high",
+      "evidence": "Only 'Is that your final answer?' and 'yes'; problem/answer absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0020",
+      "confidence": "high",
+      "evidence": "Student answers 85; no angle or protractor shown in text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0021",
+      "confidence": "high",
+      "evidence": "Timothy's rule is not given in the text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0025",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "can i you see my answer"
+    },
+    {
+      "scenario_id": "bridge_0026",
+      "confidence": "high",
+      "evidence": "Only final answer 260; no prism dimensions",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0027",
+      "confidence": "high",
+      "evidence": "output for this graph when the input is 2.5",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0029",
+      "confidence": "high",
+      "evidence": "Only answer 21372 shown; subtraction problem is missing",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0030",
+      "confidence": "high",
+      "evidence": "question is asking for the area of the rectangle",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0031",
+      "confidence": "high",
+      "evidence": "Only 'How much mail does a photographer need?' and answer 7 shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0032",
+      "confidence": "high",
+      "evidence": "Question asks hundreds place, but the number is not in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0033",
+      "confidence": "high",
+      "evidence": "other quadrilaterals that I could have drawn in this example",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0034",
+      "confidence": "high",
+      "evidence": "This is our next question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0035",
+      "confidence": "high",
+      "evidence": "Here is the first question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0038",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Here is the place value chart."
+    },
+    {
+      "scenario_id": "bridge_0039",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "Student answers only “A” / “B”"
+    },
+    {
+      "scenario_id": "bridge_0040",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "top part of the chart"
+    },
+    {
+      "scenario_id": "bridge_0044",
+      "confidence": "high",
+      "evidence": "train is moving 300 miles over 2 hours",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0046",
+      "confidence": "high",
+      "evidence": "Problem numbers absent; only expert mentions subtract 45 from 95",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0047",
+      "confidence": "high",
+      "evidence": "asked to determine whether the lines are parallel, perpendicular, or neither",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0048",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "Which point on the number line... student: b"
+    },
+    {
+      "scenario_id": "bridge_0049",
+      "confidence": "high",
+      "evidence": "What are the factors in this problem?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0050",
+      "confidence": "high",
+      "evidence": "No numbers or problem statement; student says “Done”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0052",
+      "confidence": "high",
+      "evidence": "Original number to round is absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0054",
+      "confidence": "high",
+      "evidence": "question data absent; only 'Give your best with this question'",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0056",
+      "confidence": "high",
+      "evidence": "No problem text or numbers; only student answer “14”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0059",
+      "confidence": "high",
+      "evidence": "Only final answer 6; no ratio counts or prompt",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0064",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Is that number visible now?"
+    },
+    {
+      "scenario_id": "bridge_0075",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Is that picture visible to you?"
+    },
+    {
+      "scenario_id": "bridge_0076",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Which shape is given in this question?"
+    },
+    {
+      "scenario_id": "bridge_0079",
+      "confidence": "high",
+      "evidence": "student refers to “the right” and “the left”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0080",
+      "confidence": "high",
+      "evidence": "Only student answer “13,116”; original addition problem absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0081",
+      "confidence": "high",
+      "evidence": "shape of the playground a square",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0083",
+      "confidence": "high",
+      "evidence": "greatest decimal number out of all the options",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0084",
+      "confidence": "high",
+      "evidence": "Student answers “0.3” but no conversion problem/value is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0086",
+      "confidence": "high",
+      "evidence": "Only answer given: “210 … thats the answer”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0087",
+      "confidence": "high",
+      "evidence": "How many equal pieces is the brick split into?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0088",
+      "confidence": "high",
+      "evidence": "Student says 'there is two' but no problem is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0095",
+      "confidence": "high",
+      "evidence": "unit marked at the top of the ruler",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0097",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Can you use the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0099",
+      "confidence": "high",
+      "evidence": "Only says student completed it; no problem or answer shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0100",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Are you working on this question?"
+    },
+    {
+      "scenario_id": "bridge_0102",
+      "confidence": "high",
+      "evidence": "Jason sprinted 6 ft is absent from conversation",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0103",
+      "confidence": "high",
+      "evidence": "Only value given is width 2; multiplication problem is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0105",
+      "confidence": "high",
+      "evidence": "the problem’s 2/5 is absent from the conversation",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0109",
+      "confidence": "high",
+      "evidence": "Looking at the dot, how far left/right",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0110",
+      "confidence": "high",
+      "evidence": "No problem or numbers are provided besides student's answer 9050.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0112",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “a”; expert references “the image”"
+    },
+    {
+      "scenario_id": "bridge_0115",
+      "confidence": "high",
+      "evidence": "Only '?', 'yes'; problem numbers absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0117",
+      "confidence": "high",
+      "evidence": "How many sides does the figure have?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0118",
+      "confidence": "high",
+      "evidence": "which of the following best represents a ray",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0119",
+      "confidence": "high",
+      "evidence": "Are you working on this question? ... is it 8",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0120",
+      "confidence": "high",
+      "evidence": "No subtraction problem or student work shown in text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0121",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Try to solve it on the whiteboard."
+    },
+    {
+      "scenario_id": "bridge_0122",
+      "confidence": "high",
+      "evidence": "How many bags of crayons do you see?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0124",
+      "confidence": "high",
+      "evidence": "No problem or student answer appears in the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0126",
+      "confidence": "high",
+      "evidence": "find the area of the parking lot given",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0129",
+      "confidence": "high",
+      "evidence": "student only says “yes”; no number shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0130",
+      "confidence": "high",
+      "evidence": "Student only says “yes”; problem/answer absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0134",
+      "confidence": "high",
+      "evidence": "Only 'Give it a try'; actual place-value prompt is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0136",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "work you wrote on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0137",
+      "confidence": "high",
+      "evidence": "How many lines of symmetry does it have?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0138",
+      "confidence": "high",
+      "evidence": "Only answer given: “50 times”; problem data absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0139",
+      "confidence": "high",
+      "evidence": "Only student's answer “210”; no problem statement shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0140",
+      "confidence": "high",
+      "evidence": "Only final answer 27,000; problem text is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0142",
+      "confidence": "high",
+      "evidence": "What time is it on the clock?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0143",
+      "confidence": "high",
+      "evidence": "Asked y values for x=6,8,10 but no function/rule given",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0145",
+      "confidence": "high",
+      "evidence": "month with the highest rainfall; which bar is the highest",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0146",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Look at the circle."
+    },
+    {
+      "scenario_id": "bridge_0148",
+      "confidence": "high",
+      "evidence": "What is the answer? [student] 9050",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0149",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "The next question is here"
+    },
+    {
+      "scenario_id": "bridge_0150",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Please focus on the whiteboard."
+    },
+    {
+      "scenario_id": "bridge_0151",
+      "confidence": "high",
+      "evidence": "How many times 27 can go into the 4th fact?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0153",
+      "confidence": "high",
+      "evidence": "No problem numbers are shown in the conversation",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0154",
+      "confidence": "high",
+      "evidence": "These are all parallelograms ... all 90 degree angles",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0155",
+      "confidence": "high",
+      "evidence": "Only final answer “100.0 maybe”; problem value absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0158",
+      "confidence": "high",
+      "evidence": "look over your work",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0160",
+      "confidence": "high",
+      "evidence": "student says “hexagon”; shape’s sides only known from absent visual",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0161",
+      "confidence": "high",
+      "evidence": "missing length here",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0162",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “b” only"
+    },
+    {
+      "scenario_id": "bridge_0164",
+      "confidence": "high",
+      "evidence": "The given shape has four sides; top shorter than bottom",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0168",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "How can we solve this question?"
+    },
+    {
+      "scenario_id": "bridge_0169",
+      "confidence": "high",
+      "evidence": "Only answer '22'; no word problem text given",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0172",
+      "confidence": "high",
+      "evidence": "How many yards did Jason sprint?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0173",
+      "confidence": "high",
+      "evidence": "Please go ahead and answer this question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0178",
+      "confidence": "high",
+      "evidence": "Here is our first question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0183",
+      "confidence": "high",
+      "evidence": "What are we asked to find in this question?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0184",
+      "confidence": "high",
+      "evidence": "Student answers “3,2” for a coordinate grid problem",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0185",
+      "confidence": "high",
+      "evidence": "Question asks inches in half a foot, absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0186",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "“uploaded on the board”; student says “it is b”"
+    },
+    {
+      "scenario_id": "bridge_0187",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "What is the area of this shape?"
+    },
+    {
+      "scenario_id": "bridge_0188",
+      "confidence": "high",
+      "evidence": "The next one is the exit ticket.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0190",
+      "confidence": "high",
+      "evidence": "value of 6 in the given number",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0191",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "blueprint for the playground, shown below"
+    },
+    {
+      "scenario_id": "bridge_0192",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "answer is B; lines are parallel"
+    },
+    {
+      "scenario_id": "bridge_0193",
+      "confidence": "high",
+      "evidence": "student only says “so 15”; no prism dimensions/problem text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0194",
+      "confidence": "high",
+      "evidence": "greatest decimal out of available options",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0195",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "identify the given figure shape"
+    },
+    {
+      "scenario_id": "bridge_0197",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student asks “is it C”"
+    },
+    {
+      "scenario_id": "bridge_0198",
+      "confidence": "high",
+      "evidence": "Which number is the minute hand of the clock on?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0199",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "take a look at the last line"
+    },
+    {
+      "scenario_id": "bridge_0201",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Try to solve this question on the whiteboard."
+    },
+    {
+      "scenario_id": "bridge_0204",
+      "confidence": "high",
+      "evidence": "Only answer 180 hours; original conversion problem absent.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0206",
+      "confidence": "high",
+      "evidence": "No subtraction problem or student answer shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0210",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "Student answered “B” with no option text shown"
+    },
+    {
+      "scenario_id": "bridge_0211",
+      "confidence": "high",
+      "evidence": "Is that your final answer? yes",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0213",
+      "confidence": "high",
+      "evidence": "reread the second line of the question",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0215",
+      "confidence": "high",
+      "evidence": "How many spaces to the right must you move to get to Point D?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0217",
+      "confidence": "high",
+      "evidence": "This is our next question... [student] 6",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0218",
+      "confidence": "high",
+      "evidence": "Student's plotted point is only on the missing whiteboard",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0219",
+      "confidence": "high",
+      "evidence": "What is your answer to this problem?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0220",
+      "confidence": "high",
+      "evidence": "hour hand, did it reach the 1 yet",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0221",
+      "confidence": "high",
+      "evidence": "endpoints of the line; one is at 2",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0222",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “b”; options are absent"
+    },
+    {
+      "scenario_id": "bridge_0224",
+      "confidence": "high",
+      "evidence": "Only answers “two” and “three”; no shape or dimensions given",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0225",
+      "confidence": "high",
+      "evidence": "What are the y values when x = 6, 8, and 10?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0226",
+      "confidence": "high",
+      "evidence": "Only answer '200'; original estimation problem absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0229",
+      "confidence": "high",
+      "evidence": "Expert reply references student's answer 2400, absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0230",
+      "confidence": "high",
+      "evidence": "Only final answer '900'; problem number/question absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0231",
+      "confidence": "high",
+      "evidence": "How many points are on the graph?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0232",
+      "confidence": "high",
+      "evidence": "How many lines of symmetry does it have?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0233",
+      "confidence": "high",
+      "evidence": "try to solve this question... [student] 970",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0234",
+      "confidence": "high",
+      "evidence": "side lengths 1 foot and 3 yards absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0235",
+      "confidence": "high",
+      "evidence": "Have you completed working on this question?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0237",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student says “it is b”; question uploaded on the board"
+    },
+    {
+      "scenario_id": "bridge_0238",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Looking at your work"
+    },
+    {
+      "scenario_id": "bridge_0241",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "find the shaded region from the given image"
+    },
+    {
+      "scenario_id": "bridge_0244",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “B”; choices absent"
+    },
+    {
+      "scenario_id": "bridge_0246",
+      "confidence": "high",
+      "evidence": "student gives 6,198 but no multiplication problem is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0247",
+      "confidence": "high",
+      "evidence": "Only says “answer this question”; the actual estimation problem is absent.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0251",
+      "confidence": "high",
+      "evidence": "position of the point on the x-axis",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0253",
+      "confidence": "high",
+      "evidence": "How big is the brick?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0256",
+      "confidence": "high",
+      "evidence": "No problem or student answer appears in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0257",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “B”"
+    },
+    {
+      "scenario_id": "bridge_0260",
+      "confidence": "high",
+      "evidence": "x coordinate is 7, what will be the y coordinates?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0261",
+      "confidence": "high",
+      "evidence": "selecting one point on the line",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0263",
+      "confidence": "high",
+      "evidence": "Question and student's answer are not shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0265",
+      "confidence": "high",
+      "evidence": "What is the value of y1?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0266",
+      "confidence": "high",
+      "evidence": "Only answer “260”; prism dimensions are absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0267",
+      "confidence": "high",
+      "evidence": "Do these shapes have rotational symmetry?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0271",
+      "confidence": "high",
+      "evidence": "Do these shapes have rotational symmetry?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0274",
+      "confidence": "high",
+      "evidence": "No problem or student answer shown; only 'yes'",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0275",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answer refers to option C"
+    },
+    {
+      "scenario_id": "bridge_0277",
+      "confidence": "medium",
+      "evidence": "What time is it on the clock?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0279",
+      "confidence": "high",
+      "evidence": "Area problem side lengths absent; student answered 60",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0283",
+      "confidence": "high",
+      "evidence": "Are all the sides of the playground straight?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0285",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Please don't erase any content from the whiteboard."
+    },
+    {
+      "scenario_id": "bridge_0289",
+      "confidence": "high",
+      "evidence": "Need to divide 10080 by 2, not in text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0290",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "How many triangles are there on the whiteboard?"
+    },
+    {
+      "scenario_id": "bridge_0291",
+      "confidence": "high",
+      "evidence": "problem numbers 25.9 and 25.10 absent from conversation",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0292",
+      "confidence": "high",
+      "evidence": "Only says final answer is 6; problem text absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0296",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "How many parallel sides are there in the given image?"
+    },
+    {
+      "scenario_id": "bridge_0298",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "according to the graph"
+    },
+    {
+      "scenario_id": "bridge_0299",
+      "confidence": "high",
+      "evidence": "Problem number 142.5 absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0304",
+      "confidence": "high",
+      "evidence": "Only student answer “8”; no problem text or diagram",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0305",
+      "confidence": "high",
+      "evidence": "division expression for this problem",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0306",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "next question on board"
+    },
+    {
+      "scenario_id": "bridge_0308",
+      "confidence": "high",
+      "evidence": "Read the question carefully and choose your correct answer.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0309",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "show your work on the board"
+    },
+    {
+      "scenario_id": "bridge_0311",
+      "confidence": "high",
+      "evidence": "No problem text or student answer is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0312",
+      "confidence": "high",
+      "evidence": "Only student answer “2,568”; original rounding prompt is missing",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0314",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Here is the first exit ticket."
+    },
+    {
+      "scenario_id": "bridge_0315",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "according to the graph ... J?"
+    },
+    {
+      "scenario_id": "bridge_0316",
+      "confidence": "high",
+      "evidence": "What number is in the hundreds place?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0317",
+      "confidence": "high",
+      "evidence": "Please go ahead and answer this question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0318",
+      "confidence": "high",
+      "evidence": "What number is in the hundredth place?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0319",
+      "confidence": "high",
+      "evidence": "choose the correct answer",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0324",
+      "confidence": "high",
+      "evidence": "Student only says “0.3”; no problem text given",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0327",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Take a look at the figure 2."
+    },
+    {
+      "scenario_id": "bridge_0328",
+      "confidence": "high",
+      "evidence": "Is the playground a square?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0329",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "this part of the chart; top part of the chart"
+    },
+    {
+      "scenario_id": "bridge_0330",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “c”"
+    },
+    {
+      "scenario_id": "bridge_0331",
+      "confidence": "high",
+      "evidence": "How many backpacks are not sold in month 7?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0333",
+      "confidence": "high",
+      "evidence": "Only says “This is our next question”; problem text is absent.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0334",
+      "confidence": "high",
+      "evidence": "The endpoints are 5 and 31",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0335",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "show your first step on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0336",
+      "confidence": "high",
+      "evidence": "Student chose 15, but no addition problem is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0337",
+      "confidence": "high",
+      "evidence": "How many days did she meet her doctor's goal?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0338",
+      "confidence": "high",
+      "evidence": "student's work/carrying is not in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0340",
+      "confidence": "high",
+      "evidence": "frog's weight rounded to the nearest ten thousands place",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0341",
+      "confidence": "high",
+      "evidence": "What are the lengths of each of the sides?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0343",
+      "confidence": "high",
+      "evidence": "length of the segment; start and endpoint",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0345",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Please see on the board."
+    },
+    {
+      "scenario_id": "bridge_0349",
+      "confidence": "high",
+      "evidence": "asks thousands place but number is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0350",
+      "confidence": "high",
+      "evidence": "Question and student's actual answer are absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0352",
+      "confidence": "high",
+      "evidence": "Student says “160”; subtraction problem numbers are absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0354",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "doing good on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0355",
+      "confidence": "high",
+      "evidence": "Only student answer '336'; problem numbers absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0357",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "impressive work on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0358",
+      "confidence": "high",
+      "evidence": "Asked to round a value, but the number is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0361",
+      "confidence": "high",
+      "evidence": "find the difference in heights; How tall is Gerald?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0362",
+      "confidence": "high",
+      "evidence": "Student answers “100.0”; original problem/value absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0363",
+      "confidence": "high",
+      "evidence": "question content is absent from the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0364",
+      "confidence": "high",
+      "evidence": "Student answered 'polygon' to an unseen shape question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0365",
+      "confidence": "high",
+      "evidence": "Only student answer 0.22000; original rounding prompt is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0366",
+      "confidence": "high",
+      "evidence": "Are you working on this question?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0367",
+      "confidence": "high",
+      "evidence": "What type of quadrilateral is the pool?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0371",
+      "confidence": "high",
+      "evidence": "Student gives 12237, but addends/problem are absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0372",
+      "confidence": "high",
+      "evidence": "Here is your next question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0373",
+      "confidence": "high",
+      "evidence": "Only final answer 63,968; multiplication problem not shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0376",
+      "confidence": "high",
+      "evidence": "shape on your screen has 4 sides, but it is open",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0378",
+      "confidence": "high",
+      "evidence": "What is the number of sides in group 2?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0381",
+      "confidence": "high",
+      "evidence": "No problem, answer, or work appears in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0382",
+      "confidence": "high",
+      "evidence": "“first5 box and the next one is 0.4”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0384",
+      "confidence": "high",
+      "evidence": "No problem data; only “final answer” and “2”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0385",
+      "confidence": "high",
+      "evidence": "Perimeter problem but no side lengths or figure in text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0386",
+      "confidence": "high",
+      "evidence": "Add together all the glasses in the pictograph.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0387",
+      "confidence": "high",
+      "evidence": "Only 'Is this your final answer?' no subtraction problem shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0388",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "What is the length of this rectangle?"
+    },
+    {
+      "scenario_id": "bridge_0389",
+      "confidence": "high",
+      "evidence": "number of sides in group 2",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0390",
+      "confidence": "high",
+      "evidence": "Student says yes, but their actual answer is not in the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0395",
+      "confidence": "high",
+      "evidence": "Need number of bags/legos; text only has student answer 13",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0397",
+      "confidence": "high",
+      "evidence": "Bar graph values for favorite colors are not in the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0399",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Please don't erase any content from the whiteboard."
+    },
+    {
+      "scenario_id": "bridge_0400",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "show me on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0403",
+      "confidence": "high",
+      "evidence": "“width will be 2... across the other side”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0407",
+      "confidence": "high",
+      "evidence": "What digit is in the thousands place?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0410",
+      "confidence": "high",
+      "evidence": "count the total number of boxes within the rectangle",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0411",
+      "confidence": "high",
+      "evidence": "Question text absent; only student answer '0.8' is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0414",
+      "confidence": "high",
+      "evidence": "Only student answer “28”; no prism dimensions or problem text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0417",
+      "confidence": "high",
+      "evidence": "No fractions or student answer shown in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0423",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "What is the length of this rectangle?"
+    },
+    {
+      "scenario_id": "bridge_0424",
+      "confidence": "high",
+      "evidence": "Only answer '200'; no problem or values shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0428",
+      "confidence": "high",
+      "evidence": "Need to break up this shape into two rectangles",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0430",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "Student answered “b”; balloon groups/options are not in text."
+    },
+    {
+      "scenario_id": "bridge_0431",
+      "confidence": "high",
+      "evidence": "Identify the least and most favorite colors.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0432",
+      "confidence": "high",
+      "evidence": "Question details and prices are absent from the text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0434",
+      "confidence": "high",
+      "evidence": "Here is the next question... it is 68",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0437",
+      "confidence": "high",
+      "evidence": "Question is never stated; only student’s answer appears",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0439",
+      "confidence": "high",
+      "evidence": "Problem fraction and student's answer absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0441",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered option D"
+    },
+    {
+      "scenario_id": "bridge_0442",
+      "confidence": "high",
+      "evidence": "volume of the rectangular prism",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0443",
+      "confidence": "high",
+      "evidence": "What type of quadrilateral is the pool?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0446",
+      "confidence": "high",
+      "evidence": "How many total bears do you count in our array?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0447",
+      "confidence": "high",
+      "evidence": "point from the origin; grid",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0448",
+      "confidence": "high",
+      "evidence": "Did they three follow the right angle's rule?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0450",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Please use the whiteboard to justify your answer."
+    },
+    {
+      "scenario_id": "bridge_0451",
+      "confidence": "high",
+      "evidence": "What is the length of the rectangle? 4 ft",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0459",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "And for figure 2? number of angle for figure 2"
+    },
+    {
+      "scenario_id": "bridge_0460",
+      "confidence": "high",
+      "evidence": "Only answer given: “um it is 43”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0461",
+      "confidence": "high",
+      "evidence": "Add together all the glasses in the pictograph.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0462",
+      "confidence": "high",
+      "evidence": "Problem prompt is absent; only student answer “142” appears.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0463",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Which expression is not represented by Pete's model? this one"
+    },
+    {
+      "scenario_id": "bridge_0466",
+      "confidence": "high",
+      "evidence": "No problem text or length values are provided",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0467",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "find the length of this segment"
+    },
+    {
+      "scenario_id": "bridge_0469",
+      "confidence": "high",
+      "evidence": "length of the two segments",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0470",
+      "confidence": "high",
+      "evidence": "What method does Tony use?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0471",
+      "confidence": "high",
+      "evidence": "endpoint values needed to find length are not in text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0473",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered 'c'"
+    },
+    {
+      "scenario_id": "bridge_0474",
+      "confidence": "high",
+      "evidence": "What is the given number in this question?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0475",
+      "confidence": "high",
+      "evidence": "two measures we read from the protractor",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0477",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "take a look at this place value chart"
+    },
+    {
+      "scenario_id": "bridge_0480",
+      "confidence": "high",
+      "evidence": "Are the sides equal?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0481",
+      "confidence": "high",
+      "evidence": "No problem text; student only says 24",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0482",
+      "confidence": "high",
+      "evidence": "No problem or student answer is shown in text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0483",
+      "confidence": "high",
+      "evidence": "Kindly choose the correct answer",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0484",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answer: “1 an 3”"
+    },
+    {
+      "scenario_id": "bridge_0488",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "both drawings are quadrilaterals"
+    },
+    {
+      "scenario_id": "bridge_0490",
+      "confidence": "high",
+      "evidence": "Only “22”; apple counts/problem text absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0491",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "Student answers labelled options “b” and “a”; angle is only shown visually."
+    },
+    {
+      "scenario_id": "bridge_0493",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Are you working on this question?"
+    },
+    {
+      "scenario_id": "bridge_0494",
+      "confidence": "high",
+      "evidence": "No subtraction problem or student answer appears in the text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0495",
+      "confidence": "high",
+      "evidence": "Rectangle dimensions 5 and 3 are absent from the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0497",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Please focus on the whiteboard."
+    },
+    {
+      "scenario_id": "bridge_0498",
+      "confidence": "high",
+      "evidence": "number to round only appears as 5.4 in hidden evidence",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0499",
+      "confidence": "high",
+      "evidence": "clock hands' positions are not described",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0501",
+      "confidence": "high",
+      "evidence": "short hand is pointing somewhere between 7 and 8",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0502",
+      "confidence": "high",
+      "evidence": "No money amounts or student answer appear in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0505",
+      "confidence": "high",
+      "evidence": "Question data absent; only 'Please give this question a try'",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0506",
+      "confidence": "high",
+      "evidence": "No problem text or student answer is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0507",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “a”"
+    },
+    {
+      "scenario_id": "bridge_0510",
+      "confidence": "high",
+      "evidence": "Only answers “two” and “three”; no shape or area data",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0511",
+      "confidence": "high",
+      "evidence": "What is the area of the top rectangle?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0514",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Show your work on the whiteboard; place value chart"
+    },
+    {
+      "scenario_id": "bridge_0515",
+      "confidence": "high",
+      "evidence": "student only says 'yes'; fraction 5/2 absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0516",
+      "confidence": "high",
+      "evidence": "Question asks digits, but the number 329 is not in the conversation.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0518",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "“only number three” / “picture number? 3”"
+    },
+    {
+      "scenario_id": "bridge_0519",
+      "confidence": "high",
+      "evidence": "Only student answer '900'; actual place-value question is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0521",
+      "confidence": "high",
+      "evidence": "Only chat says: “Is that your final answer?” “yes”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0522",
+      "confidence": "high",
+      "evidence": "Problem numbers 342 + 200 are absent from chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0525",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered “letter c”"
+    },
+    {
+      "scenario_id": "bridge_0527",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Here is the place value chart."
+    },
+    {
+      "scenario_id": "bridge_0528",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "take a look at the last line"
+    },
+    {
+      "scenario_id": "bridge_0531",
+      "confidence": "medium",
+      "evidence": "What should he measure?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0533",
+      "confidence": "high",
+      "evidence": "How many sides does the shape have?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0534",
+      "confidence": "high",
+      "evidence": "How many baseballs does the team use per game?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0535",
+      "confidence": "high",
+      "evidence": "frog's weight rounded to nearest ten thousandths",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0536",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "The next question will now appear on the board."
+    },
+    {
+      "scenario_id": "bridge_0537",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "How many triangles are there on the whiteboard?"
+    },
+    {
+      "scenario_id": "bridge_0538",
+      "confidence": "high",
+      "evidence": "“The next question is here” with no problem text",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0544",
+      "confidence": "high",
+      "evidence": "Expert says missing length and symmetrical sides; question data absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0545",
+      "confidence": "high",
+      "evidence": "two lines shown are parallel, perpendicular, or neither",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0546",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Can you use the whiteboard to justify your answer?"
+    },
+    {
+      "scenario_id": "bridge_0547",
+      "confidence": "high",
+      "evidence": "Question and answer choices are not in the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0551",
+      "confidence": "high",
+      "evidence": "“tenth in the first5 box and the next one is 0.4”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0552",
+      "confidence": "high",
+      "evidence": "question asks digit positions, but number 8510 is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0554",
+      "confidence": "high",
+      "evidence": "EXIT TICKET question not shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0556",
+      "confidence": "high",
+      "evidence": "How many glasses are represented by a full glass in the picture?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0559",
+      "confidence": "high",
+      "evidence": "Question asks to round 18, but chat lacks problem/answer",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0562",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "Student chose “c”; options/graph are absent"
+    },
+    {
+      "scenario_id": "bridge_0564",
+      "confidence": "high",
+      "evidence": "what is the 2 position in this number",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0567",
+      "confidence": "high",
+      "evidence": "Give your best with this question",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0568",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Is that number visible now?"
+    },
+    {
+      "scenario_id": "bridge_0569",
+      "confidence": "high",
+      "evidence": "pictograph and legend; full glass in the picture",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0575",
+      "confidence": "high",
+      "evidence": "length is 4, width is 3 and height is 5",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0577",
+      "confidence": "high",
+      "evidence": "What is the length of this shape?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0578",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Show your work on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0579",
+      "confidence": "high",
+      "evidence": "How much of the brick is painted yellow?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0580",
+      "confidence": "high",
+      "evidence": "No problem or student answer shown; only “done” and “yes”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0582",
+      "confidence": "high",
+      "evidence": "How many sides does the shape have?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0583",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "“only number three is it” / “picture number”"
+    },
+    {
+      "scenario_id": "bridge_0585",
+      "confidence": "high",
+      "evidence": "Are all the sides of the playground straight?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0587",
+      "confidence": "high",
+      "evidence": "We're looking for 342 + 200",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0589",
+      "confidence": "high",
+      "evidence": "student asks “is that right” but no answer is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0593",
+      "confidence": "high",
+      "evidence": "No fractions or student answer are shown in the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0595",
+      "confidence": "high",
+      "evidence": "Which part of the problem needs to be solved?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0596",
+      "confidence": "high",
+      "evidence": "student answer '15'; prism dimensions absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0597",
+      "confidence": "high",
+      "evidence": "Use the chat box to answer this question.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0598",
+      "confidence": "high",
+      "evidence": "No problem text; answer choice rhombus only implied",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0599",
+      "confidence": "high",
+      "evidence": "first shape that follows Timothy's rule",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0600",
+      "confidence": "high",
+      "evidence": "number of line of symmetry for the given figures",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0601",
+      "confidence": "high",
+      "evidence": "Perimeter problem has only student answer '16'; no dimensions shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0602",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "question on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0603",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "show your work on the whiteboard"
+    },
+    {
+      "scenario_id": "bridge_0604",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answers “#1”; pick the rhombus from choices"
+    },
+    {
+      "scenario_id": "bridge_0606",
+      "confidence": "high",
+      "evidence": "No coordinate pair or grid information appears in the chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0612",
+      "confidence": "high",
+      "evidence": "angle drawn that is smaller than a right angle",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0614",
+      "confidence": "high",
+      "evidence": "How many equal pieces is the brick split into?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0615",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "student says \"this\""
+    },
+    {
+      "scenario_id": "bridge_0617",
+      "confidence": "high",
+      "evidence": "How much of the brick is painted yellow?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0619",
+      "confidence": "high",
+      "evidence": "Only 'yes' is shown; problem number 228 is absent.",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0620",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Take a look at the figure 2."
+    },
+    {
+      "scenario_id": "bridge_0621",
+      "confidence": "high",
+      "evidence": "find how many crayons are there in all",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0624",
+      "confidence": "high",
+      "evidence": "Question refers to problem data not included in chat",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0625",
+      "confidence": "high",
+      "evidence": "converting from hours to minutes; sum of total minutes",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0626",
+      "confidence": "high",
+      "evidence": "Only student answer “25.10”; original comparison problem is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0628",
+      "confidence": "high",
+      "evidence": "Measuring an angle; only final answer “85” is shown",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0629",
+      "confidence": "high",
+      "evidence": "No problem prompt; student only says “hexagon”",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0630",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Now you'll see the next question on board."
+    },
+    {
+      "scenario_id": "bridge_0632",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Look at the circle."
+    },
+    {
+      "scenario_id": "bridge_0633",
+      "confidence": "high",
+      "evidence": "Only student answer “24”; problem text is absent",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    },
+    {
+      "scenario_id": "bridge_0634",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "labelled_option",
+      "confidence": "high",
+      "evidence": "student answered 'b'; data set/options absent"
+    },
+    {
+      "scenario_id": "bridge_0637",
+      "round": 2,
+      "reason": "error_not_diagnosable_from_text",
+      "kind": "explicit_pointer",
+      "confidence": "high",
+      "evidence": "Take a look at the picture again"
+    },
+    {
+      "scenario_id": "bridge_0641",
+      "confidence": "high",
+      "evidence": "How many sides does the figure have?",
+      "round": 1,
+      "reason": "missing_problem_statement",
+      "kind": "missing_data"
+    }
+  ],
+  "rounds": {
+    "1": {
+      "reason": "missing_problem_statement",
+      "count": 263,
+      "stage": "classify"
+    },
+    "2": {
+      "reason": "error_not_diagnosable_from_text",
+      "count": 90,
+      "stage": "reaudit",
+      "salvaged": [
+        "bridge_0000",
+        "bridge_0203",
+        "bridge_0208",
+        "bridge_0245",
+        "bridge_0269",
+        "bridge_0307",
+        "bridge_0396",
+        "bridge_0413",
+        "bridge_0418",
+        "bridge_0517",
+        "bridge_0605"
+      ]
+    }
+  }
+}

@@ -1,0 +1,356 @@
+# TutorBench response-generation manifest — the curated 156 "common person" models.
+#
+# Person (row) roster of the MIRT response matrix: each of these checkpoints
+# answers every TutorBench scenario, and the between-model spread is what
+# identifies the item parameters. Selection is the same curated set as
+# AdaptiveTesting/Inputs/Models/models_200.yaml (built by
+# Experiments/models_200/curate_models_200.py) — English-first, vLLM-clean, no
+# mirrors/merges/quantisations, matched base<->instruct pairs kept, domain
+# specialists as filler only, and all 28 pre-registered anchors included.
+#
+# `defaults` apply to every model; a per-model key overrides them. registry.py
+# derives apply_chat_template / gated / backend / architecture / max_model_len
+# from the model id, so most entries need only `id`.
+#
+# NOTE (numeric fields): keep temperature/top_p/repetition_penalty as bare
+# numbers — a trailing comma (e.g. `1.1,`) makes YAML parse a *string* and the
+# loader will reject it. `params_b` is metadata only (kept in ModelSpec.extra).
+
+defaults:
+  max_model_len_cap: 32768      # hard ceiling; clamped down to the model's own limit
+  max_new_tokens: 4096          # output budget (bounds base-model rambling)
+  tensor_parallel_size: 1       # one <=7B model per B200; parallelism is across models
+  scoring_method: generate
+  temperature: 0.0              # deterministic decode for construct validity
+  top_p: 1.0                    # inert at temperature 0
+  repetition_penalty: 1.1       # low + uniform; still shifts argmax at temp 0
+  seed: 0
+
+models:
+  # --- 0.2-1.0 B ---
+  - id: BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu
+    params_b: 0.218
+  - id: BEE-spoke-data/smol_llama-220M-openhermes
+    params_b: 0.218
+  - id: Salesforce/codegen-350M-mono
+    params_b: 0.35
+  - id: facebook/MobileLLM-350M
+    params_b: 0.35
+  - id: facebook/opt-350m
+    params_b: 0.35
+  - id: openai-community/gpt2-medium
+    params_b: 0.355
+  - id: HuggingFaceTB/SmolLM-360M
+    params_b: 0.36
+  - id: HuggingFaceTB/SmolLM-360M-Instruct
+    params_b: 0.36
+  - id: HuggingFaceTB/SmolLM2-360M
+    params_b: 0.36
+  - id: HuggingFaceTB/SmolLM2-360M-Instruct
+    params_b: 0.36
+  - id: OpenBMB/MiniCPM4-0.5B
+    params_b: 0.5
+  - id: Qwen/Qwen2-0.5B
+    params_b: 0.5
+  - id: Qwen/Qwen2.5-0.5B-Instruct
+    params_b: 0.5
+  - id: bigscience/bloom-560m
+    params_b: 0.56
+  - id: facebook/xglm-564M
+    params_b: 0.56
+  - id: facebook/MobileLLM-600M
+    params_b: 0.6
+  - id: MBZUAI/LaMini-GPT-774M
+    params_b: 0.77
+  - id: openai-community/gpt2-large
+    params_b: 0.77
+  # --- 1.0-2.0 B ---
+  - id: allenai/OLMo-1B-hf
+    params_b: 1
+  - id: allenai/OLMo-2-0425-1B
+    params_b: 1
+  - id: allenai/OLMo-2-0425-1B-DPO
+    params_b: 1
+  - id: allenai/OLMo-2-0425-1B-Instruct
+    params_b: 1
+  - id: bigcode/starcoderbase-1b
+    params_b: 1
+  - id: facebook/MobileLLM-1B
+    params_b: 1
+  - id: meta-llama/Llama-3.2-1B
+    params_b: 1
+  - id: meta-llama/Llama-3.2-1B-Instruct
+    params_b: 1
+  - id: openbmb/MiniCPM-1B-sft-bf16
+    params_b: 1
+  - id: tiiuae/Falcon3-1B-Base
+    params_b: 1
+  - id: tiiuae/Falcon3-1B-Instruct
+    params_b: 1
+  - id: bigscience/bloom-1b1
+    params_b: 1.1
+  - id: ai-forever/mGPT
+    params_b: 1.3
+  - id: deepseek-ai/deepseek-coder-1.3b-base
+    params_b: 1.3
+  - id: microsoft/phi-1_5
+    params_b: 1.3
+  - id: princeton-nlp/Sheared-LLaMA-1.3B
+    params_b: 1.3
+  - id: MBZUAI/LaMini-GPT-1.5B
+    params_b: 1.5
+  - id: Qwen/Qwen2-1.5B
+    params_b: 1.5
+  - id: Qwen/Qwen2-1.5B-Instruct
+    params_b: 1.5
+  - id: Qwen/Qwen2.5-1.5B
+    params_b: 1.5
+  - id: Qwen/Qwen2.5-1.5B-Instruct
+    params_b: 1.5
+  - id: microsoft/BioGPT-Large
+    params_b: 1.5
+  - id: openai-community/gpt2-xl
+    params_b: 1.5
+  - id: stabilityai/stablelm-2-1_6b
+    params_b: 1.6
+  - id: stabilityai/stablelm-2-zephyr-1_6b
+    params_b: 1.6
+  - id: stabilityai/stablelm-2-1_6b-chat
+    params_b: 1.645
+  - id: HuggingFaceTB/SmolLM-1.7B
+    params_b: 1.7
+  - id: HuggingFaceTB/SmolLM-1.7B-Instruct
+    params_b: 1.7
+  - id: HuggingFaceTB/SmolLM2-1.7B
+    params_b: 1.7
+  - id: HuggingFaceTB/SmolLM2-1.7B-Instruct
+    params_b: 1.7
+  # bare name is the instruct/thinking hybrid; -Base is the base model
+  - id: Qwen/Qwen3-1.7B
+    params_b: 1.7
+    apply_chat_template: true
+    enable_thinking: false
+  - id: Qwen/Qwen3-1.7B-Instruct
+    params_b: 1.7
+  - id: bigscience/bloom-1b7
+    params_b: 1.7
+  - id: facebook/xglm-1.7B
+    params_b: 1.7
+  - id: utter-project/EuroLLM-1.7B
+    params_b: 1.7
+  - id: utter-project/EuroLLM-1.7B-Instruct
+    params_b: 1.7
+  - id: nvidia/AceInstruct-1.5B
+    params_b: 1.777
+  - id: Qwen/Qwen1.5-1.8B
+    params_b: 1.8
+  - id: Qwen/Qwen1.5-1.8B-Chat
+    params_b: 1.8
+  - id: h2oai/h2o-danube2-1.8b-base
+    params_b: 1.8
+  - id: h2oai/h2o-danube2-1.8b-chat
+    params_b: 1.8
+  - id: h2oai/h2o-danube-1.8b-chat
+    params_b: 1.831
+  # --- 2.0-3.0 B ---
+  - id: BSC-LT/salamandra-2b
+    params_b: 2
+  - id: BSC-LT/salamandra-2b-instruct
+    params_b: 2
+  - id: Salesforce/codegen-2B-mono
+    params_b: 2
+  - id: google/gemma-2-2b
+    params_b: 2
+  - id: ibm-granite/granite-3.0-2b-base
+    params_b: 2
+  - id: ibm-granite/granite-3.1-2b-base
+    params_b: 2
+  - id: ibm-granite/granite-3.1-2b-instruct
+    params_b: 2
+  - id: kyutai/helium-1-preview-2b
+    params_b: 2.173
+  - id: LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct
+    params_b: 2.4
+  - id: google/gemma-2b
+    params_b: 2.5
+  - id: openbmb/MiniCPM-2B-sft-bf16
+    params_b: 2.7
+  - id: princeton-nlp/Sheared-LLaMA-2.7B
+    params_b: 2.7
+  - id: facebook/xglm-2.9B
+    params_b: 2.9
+  # --- 3.0-4.0 B ---
+  # bare name is the instruct checkpoint; -Base is the base model
+  - id: HuggingFaceTB/SmolLM3-3B
+    params_b: 3
+    apply_chat_template: true
+    enable_thinking: false
+  - id: Qwen/Qwen2.5-3B
+    params_b: 3
+  - id: Qwen/Qwen2.5-3B-Instruct
+    params_b: 3
+  - id: Writer/Palmyra-3B
+    params_b: 3
+  - id: bigcode/starcoder2-3b
+    params_b: 3
+  - id: bigcode/starcoderbase-3b
+    params_b: 3
+  - id: bigscience/bloom-3b
+    params_b: 3
+  - id: databricks/dolly-v2-3b
+    params_b: 3
+  - id: meta-llama/Llama-3.2-3B
+    params_b: 3
+  - id: meta-llama/Llama-3.2-3B-Instruct
+    params_b: 3
+  - id: openlm-research/open_llama_3b
+    params_b: 3
+  - id: stabilityai/stablelm-3b-4e1t
+    params_b: 3
+  - id: stabilityai/stablelm-zephyr-3b
+    params_b: 3
+  - id: tiiuae/Falcon3-3B-Base
+    params_b: 3
+  - id: tiiuae/Falcon3-3B-Instruct
+    params_b: 3
+  - id: arcee-ai/raspberry-3B
+    params_b: 3.086
+  - id: pankajmathur/orca_mini_v9_5_3B-Instruct
+    params_b: 3.213
+  - id: pankajmathur/orca_mini_3b
+    params_b: 3.426
+  - id: ibm/PowerLM-3b
+    params_b: 3.512
+  - id: microsoft/Phi-3-mini-4k-instruct
+    params_b: 3.8
+  - id: microsoft/Phi-3.5-mini-instruct
+    params_b: 3.8
+  - id: microsoft/Phi-4-mini-instruct
+    params_b: 3.8
+  # --- 4.0-5.0 B ---
+  - id: Qwen/Qwen1.5-4B
+    params_b: 4
+  - id: Qwen/Qwen1.5-4B-Chat
+    params_b: 4
+  # bare name is the instruct/thinking hybrid; -Base is the base model
+  - id: Qwen/Qwen3-4B
+    params_b: 4
+    apply_chat_template: true
+    enable_thinking: false
+  - id: Qwen/Qwen3-4B-Instruct
+    params_b: 4
+  - id: nvidia/Llama-3.1-Minitron-4B-Depth-Base
+    params_b: 4
+  - id: nvidia/Minitron-4B-Base
+    params_b: 4
+  - id: nvidia/Nemotron-Mini-4B-Instruct
+    params_b: 4
+  - id: openbmb/MiniCPM3-4B
+    params_b: 4
+  - id: facebook/xglm-4.5B
+    params_b: 4.5
+  # --- 6.0-7.0 B ---
+  - id: 01-ai/Yi-1.5-6B
+    params_b: 6
+  - id: 01-ai/Yi-1.5-6B-Chat
+    params_b: 6
+  - id: 01-ai/Yi-6B
+    params_b: 6
+  - id: 01-ai/Yi-6B-Chat
+    params_b: 6
+  - id: databricks/dolly-v1-6b
+    params_b: 6
+  - id: 01-ai/Yi-6B-200K
+    params_b: 6.061
+  - id: ibm-granite/granite-7b-base
+    params_b: 6.738
+  - id: ibm-granite/granite-7b-instruct
+    params_b: 6.738
+  - id: BSC-LT/salamandra-7b
+    params_b: 7
+  - id: BSC-LT/salamandra-7b-instruct
+    params_b: 7
+  - id: CohereForAI/c4ai-command-r7b-12-2024
+    params_b: 7
+  - id: Deci/DeciLM-7B
+    params_b: 7
+  - id: Deci/DeciLM-7B-instruct
+    params_b: 7
+  - id: EleutherAI/llemma_7b
+    params_b: 7
+  - id: HuggingFaceH4/zephyr-7b-beta
+    params_b: 7
+  - id: HuggingFaceH4/zephyr-7b-gemma-v0.1
+    params_b: 7
+  - id: Intel/neural-chat-7b-v3-2
+    params_b: 7
+  - id: Nexusflow/Starling-LM-7B-beta
+    params_b: 7
+  - id: NousResearch/Hermes-2-Pro-Mistral-7B
+    params_b: 7
+  - id: Open-Orca/Mistral-7B-OpenOrca
+    params_b: 7
+  - id: allenai/OLMo-2-1124-7B
+    params_b: 7
+  - id: allenai/OLMo-2-1124-7B-Instruct
+    params_b: 7
+  - id: allenai/OLMo-7B-0724-hf
+    params_b: 7
+  - id: allenai/OLMo-7B-Instruct-hf
+    params_b: 7
+  - id: argilla/DistilabelBeagle14-7B
+    params_b: 7
+  - id: argilla/notus-7b-v1
+    params_b: 7
+  - id: databricks/dolly-v2-7b
+    params_b: 7
+  - id: deepseek-ai/deepseek-llm-7b-base
+    params_b: 7
+  - id: deepseek-ai/deepseek-llm-7b-chat
+    params_b: 7
+  - id: garage-bAInd/Platypus2-7B
+    params_b: 7
+  - id: google/gemma-7b
+    params_b: 7
+  - id: h2oai/h2ogpt-gm-oasst1-en-2048-open-llama-7b
+    params_b: 7
+  - id: ibm/merlinite-7b
+    params_b: 7
+  - id: jondurbin/airoboros-7b
+    params_b: 7
+  - id: jondurbin/bagel-7b-v0.1
+    params_b: 7
+  - id: lmsys/vicuna-7b-v1.5
+    params_b: 7
+  - id: meta-llama/Llama-2-7b-chat-hf
+    params_b: 7
+  - id: meta-llama/Llama-2-7b-hf
+    params_b: 7
+  - id: microsoft/Orca-2-7b
+    params_b: 7
+  - id: microsoft/Phi-3-small-8k-instruct
+    params_b: 7
+  - id: microsoft/WizardLM-2-7B
+    params_b: 7
+  - id: migtissera/SynthIA-7B-v1.5
+    params_b: 7
+  - id: migtissera/Tess-7B-v1.4
+    params_b: 7
+  - id: mistralai/Mistral-7B-Instruct-v0.3
+    params_b: 7
+  - id: mistralai/Mistral-7B-v0.1
+    params_b: 7
+  - id: openchat/openchat_3.5
+    params_b: 7
+  - id: openlm-research/open_llama_7b_v2
+    params_b: 7
+  - id: stabilityai/stablelm-tuned-alpha-7b
+    params_b: 7
+  - id: teknium/CollectiveCognition-v1.1-Mistral-7B
+    params_b: 7
+  - id: teknium/OpenHermes-2-Mistral-7B
+    params_b: 7
+  - id: tiiuae/Falcon3-7B-Base
+    params_b: 7
+  - id: tiiuae/Falcon3-7B-Instruct
+    params_b: 7

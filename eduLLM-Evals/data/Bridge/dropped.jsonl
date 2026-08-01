@@ -1,58 +1,411 @@
-{"source_id": "2570448_42", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "4297343_78", "native_split": "train", "error_type": "Student unresponsive", "reason": "no_clear_mistake"}
-{"source_id": "2949283_58", "native_split": "train", "error_type": "The student did not make a mistake. Rather, he was telling the tutor that he now understands.", "reason": "no_clear_mistake"}
-{"source_id": "6163970_92", "native_split": "train", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2950026_44", "native_split": "train", "error_type": "student stopped responding", "reason": "no_clear_mistake"}
-{"source_id": "4054193_63", "native_split": "train", "error_type": "Student did not make a mistake, but also does not seem to be answering", "reason": "no_clear_mistake"}
-{"source_id": "2879242_61", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2927785_18", "native_split": "train", "error_type": "student is not wrong", "reason": "no_clear_mistake"}
-{"source_id": "6404710_15", "native_split": "train", "error_type": "no error", "reason": "no_clear_mistake"}
-{"source_id": "6207818_58", "native_split": "train", "error_type": "End session", "reason": "no_clear_mistake"}
-{"source_id": "2948958_72", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "6263315_123", "native_split": "train", "error_type": "Ending session", "reason": "no_clear_mistake"}
-{"source_id": "6303165_12", "native_split": "train", "error_type": "Student answered question", "reason": "no_clear_mistake"}
-{"source_id": "6207818_58", "native_split": "train", "error_type": "no error", "reason": "no_clear_mistake"}
-{"source_id": "2963794_65", "native_split": "train", "error_type": "Student did not make a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2961262_40", "native_split": "train", "error_type": "Student did not make a mistake", "reason": "no_clear_mistake"}
-{"source_id": "2939739_66", "native_split": "train", "error_type": "student is ending the session", "reason": "no_clear_mistake"}
-{"source_id": "4012844_44", "native_split": "train", "error_type": "Student ready to end session.", "reason": "no_clear_mistake"}
-{"source_id": "4111720_8", "native_split": "train", "error_type": "The student did not make a mistake. The student just said that he wasn't at the computer.", "reason": "no_clear_mistake"}
-{"source_id": "2963643_58", "native_split": "train", "error_type": "Student is correct\n", "reason": "no_clear_mistake"}
-{"source_id": "4111720_63", "native_split": "train", "error_type": "No mistake, student is just ending the session.", "reason": "no_clear_mistake"}
-{"source_id": "4288819_9", "native_split": "train", "error_type": "The student did not make an error.", "reason": "no_clear_mistake"}
-{"source_id": "4274213_164", "native_split": "train", "error_type": "End session.", "reason": "no_clear_mistake"}
-{"source_id": "6303295_3", "native_split": "train", "error_type": "End session", "reason": "no_clear_mistake"}
-{"source_id": "6348265_61", "native_split": "train", "error_type": "Correct Answer", "reason": "no_clear_mistake"}
-{"source_id": "2945235_65", "native_split": "train", "error_type": "It seems like the student is reluctant to answer and wants to ends the session. Does not seem like the student made mistake though.", "reason": "no_clear_mistake"}
-{"source_id": "4014122_28", "native_split": "train", "error_type": "The student did not make a mistake in this given segment.", "reason": "no_clear_mistake"}
-{"source_id": "4017173_67", "native_split": "train", "error_type": "diagnose", "reason": "empty_student_turn"}
-{"source_id": "2989406_98", "native_split": "train", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2951129_14", "native_split": "train", "error_type": "Answered in another language", "reason": "no_clear_mistake"}
-{"source_id": "6263315_123", "native_split": "train", "error_type": "Student did not make a mistake or have a misconception.", "reason": "no_clear_mistake"}
-{"source_id": "2950026_38", "native_split": "train", "error_type": "student stops responding", "reason": "no_clear_mistake"}
-{"source_id": "4145096_55", "native_split": "train", "error_type": "The student has not made a mistake yet - in fact, I am pretty sure it was the tutor who made the mistake. The tutor said \"the exponent would be 10^4\", when I'm pretty sure the exponent is just 4. Maybe that's why the student only \"kinda\" gets it.", "reason": "no_clear_mistake"}
-{"source_id": "3981486_67", "native_split": "validation", "error_type": "The student did not make a mistake and the tutor did not indicate that the student had made a mistake. Maybe the word \"effort\" was mistakenly flagged as the tutor indicating  the student had made a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "3981486_67", "native_split": "validation", "error_type": "No mistake!", "reason": "no_clear_mistake"}
-{"source_id": "4177924_72", "native_split": "validation", "error_type": "Student ending session\n", "reason": "no_clear_mistake"}
-{"source_id": "2928305_68", "native_split": "validation", "error_type": "End session\n", "reason": "no_clear_mistake"}
-{"source_id": "6136272_5", "native_split": "test", "error_type": "The student didn't make a mistake. I don't know whether the tutor is acknowledging the student's response as a mistake because sometimes the tutor would give +3 points for a correct answer and +1 for an incorrect answer. I'm not sure if that's for all tutors or only some tutors.", "reason": "no_clear_mistake"}
-{"source_id": "4294482_89", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2898733_18", "native_split": "test", "error_type": "unrelated to content, but student answered question", "reason": "no_clear_mistake"}
-{"source_id": "6136357_63", "native_split": "test", "error_type": "End session", "reason": "no_clear_mistake"}
-{"source_id": "2927785_18", "native_split": "test", "error_type": "The tutor is incorrect and the student has the correct response.", "reason": "no_clear_mistake"}
-{"source_id": "6166381_36", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2915943_61", "native_split": "test", "error_type": "I don't see that the student made an error", "reason": "no_clear_mistake"}
-{"source_id": "6329091_31", "native_split": "test", "error_type": "The student did not make an error.", "reason": "no_clear_mistake"}
-{"source_id": "4296295_38", "native_split": "test", "error_type": "The tutor made a slight mistake in his explanation. He says \"We need to subtract 24 from 15\" which means 15 - 24 but then asks for 24 - 15. This could have confused the student.", "reason": "no_clear_mistake"}
-{"source_id": "6377795_12", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "2915943_61", "native_split": "test", "error_type": "Student did not make a mistake. Possible that the student did make a mistake earlier and the tutor was explaining why the student's answer was incorrect.", "reason": "no_clear_mistake"}
-{"source_id": "6165898_51", "native_split": "test", "error_type": "tutor didn't ask for answer", "reason": "no_clear_mistake"}
-{"source_id": "6166250_45", "native_split": "test", "error_type": "Student needs to go", "reason": "no_clear_mistake"}
-{"source_id": "2894872_74", "native_split": "test", "error_type": "The student did not make an error", "reason": "no_clear_mistake"}
-{"source_id": "2928616_51", "native_split": "test", "error_type": "The student did not make a mistake, and I don't think the tutor indicated that the student made a mistake. I think the \"Great effort\" was mistakenly flagged as the tutor indicating that the student made a mistake.", "reason": "no_clear_mistake"}
-{"source_id": "6207147_26", "native_split": "test", "error_type": "I think the student did get the correct answer. I don't know for sure based on the context.", "reason": "no_clear_mistake"}
-{"source_id": "2939739_66", "native_split": "test", "error_type": "End session", "reason": "no_clear_mistake"}
-{"source_id": "4294762_110", "native_split": "test", "error_type": "Student answered question ", "reason": "no_clear_mistake"}
-{"source_id": "2979999_58", "native_split": "test", "error_type": "Student understands\n", "reason": "no_clear_mistake"}
-{"source_id": "4111720_63", "native_split": "test", "error_type": "The student did not make a mistake. The student was telling the tutor that there was nothing more the tutor could help with today.", "reason": "no_clear_mistake"}
-{"source_id": "4017173_67", "native_split": "test", "error_type": "careless", "reason": "empty_student_turn"}
+{"scenario_id": null, "source_id": "2570448_42", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4297343_78", "native_split": "train", "error_type": "Student unresponsive", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2949283_58", "native_split": "train", "error_type": "The student did not make a mistake. Rather, he was telling the tutor that he now understands.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6163970_92", "native_split": "train", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2950026_44", "native_split": "train", "error_type": "student stopped responding", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4054193_63", "native_split": "train", "error_type": "Student did not make a mistake, but also does not seem to be answering", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2879242_61", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2927785_18", "native_split": "train", "error_type": "student is not wrong", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6404710_15", "native_split": "train", "error_type": "no error", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6207818_58", "native_split": "train", "error_type": "End session", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2948958_72", "native_split": "train", "error_type": "It doesn't seem like the student made a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6263315_123", "native_split": "train", "error_type": "Ending session", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6303165_12", "native_split": "train", "error_type": "Student answered question", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6207818_58", "native_split": "train", "error_type": "no error", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2963794_65", "native_split": "train", "error_type": "Student did not make a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2961262_40", "native_split": "train", "error_type": "Student did not make a mistake", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2939739_66", "native_split": "train", "error_type": "student is ending the session", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4012844_44", "native_split": "train", "error_type": "Student ready to end session.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4111720_8", "native_split": "train", "error_type": "The student did not make a mistake. The student just said that he wasn't at the computer.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2963643_58", "native_split": "train", "error_type": "Student is correct\n", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4111720_63", "native_split": "train", "error_type": "No mistake, student is just ending the session.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4288819_9", "native_split": "train", "error_type": "The student did not make an error.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4274213_164", "native_split": "train", "error_type": "End session.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6303295_3", "native_split": "train", "error_type": "End session", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6348265_61", "native_split": "train", "error_type": "Correct Answer", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2945235_65", "native_split": "train", "error_type": "It seems like the student is reluctant to answer and wants to ends the session. Does not seem like the student made mistake though.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4014122_28", "native_split": "train", "error_type": "The student did not make a mistake in this given segment.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4017173_67", "native_split": "train", "error_type": "diagnose", "reason": "empty_student_turn"}
+{"scenario_id": null, "source_id": "2989406_98", "native_split": "train", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2951129_14", "native_split": "train", "error_type": "Answered in another language", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6263315_123", "native_split": "train", "error_type": "Student did not make a mistake or have a misconception.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2950026_38", "native_split": "train", "error_type": "student stops responding", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4145096_55", "native_split": "train", "error_type": "The student has not made a mistake yet - in fact, I am pretty sure it was the tutor who made the mistake. The tutor said \"the exponent would be 10^4\", when I'm pretty sure the exponent is just 4. Maybe that's why the student only \"kinda\" gets it.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "3981486_67", "native_split": "validation", "error_type": "The student did not make a mistake and the tutor did not indicate that the student had made a mistake. Maybe the word \"effort\" was mistakenly flagged as the tutor indicating  the student had made a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "3981486_67", "native_split": "validation", "error_type": "No mistake!", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4177924_72", "native_split": "validation", "error_type": "Student ending session\n", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2928305_68", "native_split": "validation", "error_type": "End session\n", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6136272_5", "native_split": "test", "error_type": "The student didn't make a mistake. I don't know whether the tutor is acknowledging the student's response as a mistake because sometimes the tutor would give +3 points for a correct answer and +1 for an incorrect answer. I'm not sure if that's for all tutors or only some tutors.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4294482_89", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2898733_18", "native_split": "test", "error_type": "unrelated to content, but student answered question", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6136357_63", "native_split": "test", "error_type": "End session", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2927785_18", "native_split": "test", "error_type": "The tutor is incorrect and the student has the correct response.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6166381_36", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2915943_61", "native_split": "test", "error_type": "I don't see that the student made an error", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6329091_31", "native_split": "test", "error_type": "The student did not make an error.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4296295_38", "native_split": "test", "error_type": "The tutor made a slight mistake in his explanation. He says \"We need to subtract 24 from 15\" which means 15 - 24 but then asks for 24 - 15. This could have confused the student.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6377795_12", "native_split": "test", "error_type": "The student did not make a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2915943_61", "native_split": "test", "error_type": "Student did not make a mistake. Possible that the student did make a mistake earlier and the tutor was explaining why the student's answer was incorrect.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6165898_51", "native_split": "test", "error_type": "tutor didn't ask for answer", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6166250_45", "native_split": "test", "error_type": "Student needs to go", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2894872_74", "native_split": "test", "error_type": "The student did not make an error", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2928616_51", "native_split": "test", "error_type": "The student did not make a mistake, and I don't think the tutor indicated that the student made a mistake. I think the \"Great effort\" was mistakenly flagged as the tutor indicating that the student made a mistake.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "6207147_26", "native_split": "test", "error_type": "I think the student did get the correct answer. I don't know for sure based on the context.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2939739_66", "native_split": "test", "error_type": "End session", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4294762_110", "native_split": "test", "error_type": "Student answered question ", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "2979999_58", "native_split": "test", "error_type": "Student understands\n", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4111720_63", "native_split": "test", "error_type": "The student did not make a mistake. The student was telling the tutor that there was nothing more the tutor could help with today.", "reason": "no_clear_mistake"}
+{"scenario_id": null, "source_id": "4017173_67", "native_split": "test", "error_type": "careless", "reason": "empty_student_turn"}
+{"scenario_id": "bridge_0001", "source_id": "2950057_118", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0002", "source_id": "2989485_22", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0007", "source_id": "2963055_17", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0010", "source_id": "4110653_56", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0011", "source_id": "2979589_63", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0012", "source_id": "2989417_116", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0015", "source_id": "4055603_31", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0016", "source_id": "2949390_49", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0017", "source_id": "4273168_71", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0018", "source_id": "2950026_44", "native_split": "train", "error_type": "careless", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0019", "source_id": "2963511_36", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0020", "source_id": "4293213_83", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0021", "source_id": "6349228_67", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0025", "source_id": "4294482_65", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0026", "source_id": "6136394_57", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0027", "source_id": "2980217_66", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0029", "source_id": "2894376_13", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0030", "source_id": "2963055_68", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0031", "source_id": "4236544_59", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0032", "source_id": "2928128_44", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0033", "source_id": "6207151_25", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0034", "source_id": "2927839_43", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0035", "source_id": "4055585_10", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0038", "source_id": "2949308_17", "native_split": "train", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0039", "source_id": "4071501_53", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0040", "source_id": "2928732_9", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0044", "source_id": "2928611_98", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0046", "source_id": "6206815_65", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0047", "source_id": "6136458_84", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0048", "source_id": "2963906_33", "native_split": "train", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0049", "source_id": "4053713_13", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0050", "source_id": "6348248_86", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0052", "source_id": "2979259_24", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0054", "source_id": "2949261_68", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0056", "source_id": "4138548_19", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0059", "source_id": "2950391_35", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0064", "source_id": "2949335_49", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0075", "source_id": "2989417_116", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0076", "source_id": "2927490_31", "native_split": "train", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0079", "source_id": "6137290_63", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0080", "source_id": "6383399_15", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0081", "source_id": "2951077_27", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0083", "source_id": "4136413_98", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0084", "source_id": "2980373_13", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0086", "source_id": "4106180_65", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0087", "source_id": "3978685_37", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0088", "source_id": "6136439_9", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0095", "source_id": "2964109_39", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0097", "source_id": "4104715_98", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0099", "source_id": "4055639_56", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0100", "source_id": "2898670_114", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0102", "source_id": "4250127_28", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0103", "source_id": "4104575_59", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0105", "source_id": "2990115_54", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0109", "source_id": "4273568_173", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0110", "source_id": "2900612_47", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0112", "source_id": "2951125_93", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0115", "source_id": "4168516_19", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0117", "source_id": "2894783_32", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0118", "source_id": "6136280_26", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0119", "source_id": "2895097_49", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0120", "source_id": "4176036_21", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0121", "source_id": "6166071_74", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0122", "source_id": "6321506_9", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0124", "source_id": "2950057_78", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0126", "source_id": "4052914_18", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0129", "source_id": "2950057_78", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0130", "source_id": "2976728_100", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0134", "source_id": "4111721_89", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0136", "source_id": "6165975_60", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0137", "source_id": "2982313_60", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0138", "source_id": "6377203_37", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0139", "source_id": "4106180_65", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0140", "source_id": "4055259_90", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0142", "source_id": "6166666_21", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0143", "source_id": "2928562_46", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0145", "source_id": "4134490_35", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0146", "source_id": "2949295_112", "native_split": "train", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0148", "source_id": "2900612_47", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0149", "source_id": "2580534_104", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0150", "source_id": "6134311_9", "native_split": "train", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0151", "source_id": "6172033_30", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0153", "source_id": "6377203_37", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0154", "source_id": "2948958_54", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0155", "source_id": "2949305_37", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0158", "source_id": "6136668_18", "native_split": "train", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0160", "source_id": "2963625_147", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0161", "source_id": "6377147_120", "native_split": "train", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0162", "source_id": "4174334_62", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0164", "source_id": "2894825_52", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0168", "source_id": "2898754_37", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0169", "source_id": "4250131_63", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0172", "source_id": "4250127_28", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0173", "source_id": "2898670_106", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0178", "source_id": "2948932_5", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0183", "source_id": "4109090_51", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0184", "source_id": "6321463_47", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0185", "source_id": "2895097_49", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0186", "source_id": "4104715_77", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0187", "source_id": "2928616_51", "native_split": "train", "error_type": "imprecise", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0188", "source_id": "6328612_57", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0190", "source_id": "2916152_31", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0191", "source_id": "4289668_27", "native_split": "train", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0192", "source_id": "6136458_97", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0193", "source_id": "4258634_19", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0194", "source_id": "4136413_50", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0195", "source_id": "2927490_31", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0197", "source_id": "6348701_103", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0198", "source_id": "6165932_16", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0199", "source_id": "2964114_96", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0201", "source_id": "2948958_72", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0204", "source_id": "4294482_65", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0206", "source_id": "4176036_35", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0210", "source_id": "2916172_42", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0211", "source_id": "6259783_53", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0213", "source_id": "4055603_15", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0215", "source_id": "4110409_42", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0217", "source_id": "2989508_51", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0218", "source_id": "6321463_13", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0219", "source_id": "2927517_92", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0220", "source_id": "6165939_45", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0221", "source_id": "2963388_49", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0222", "source_id": "6345758_104", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0224", "source_id": "2894845_58", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0225", "source_id": "2928562_46", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0226", "source_id": "2928505_92", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0229", "source_id": "2879185_27", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0230", "source_id": "2898683_32", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0231", "source_id": "4140692_15", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0232", "source_id": "2982313_60", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0233", "source_id": "6128722_62", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0234", "source_id": "2980322_125", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0235", "source_id": "6165898_51", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0237", "source_id": "4104715_77", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0238", "source_id": "4055224_113", "native_split": "train", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0241", "source_id": "2939765_51", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0244", "source_id": "6166082_86", "native_split": "train", "error_type": "imprecise", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0246", "source_id": "6289248_59", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0247", "source_id": "6329249_44", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0251", "source_id": "6184818_35", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0253", "source_id": "3983473_16", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0256", "source_id": "4012809_66", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0257", "source_id": "2916172_42", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0260", "source_id": "4110409_27", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0261", "source_id": "2928581_76", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0263", "source_id": "6165056_65", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0265", "source_id": "4273168_71", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0266", "source_id": "6136394_57", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0267", "source_id": "2963668_44", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0271", "source_id": "2963668_44", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0274", "source_id": "2979976_75", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0275", "source_id": "6348701_103", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0277", "source_id": "6166666_21", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0279", "source_id": "4110589_61", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0283", "source_id": "2856167_18", "native_split": "train", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0285", "source_id": "2963654_50", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0289", "source_id": "2901013_26", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0290", "source_id": "2949295_131", "native_split": "train", "error_type": "careless", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0291", "source_id": "2928525_123", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0292", "source_id": "2950391_35", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0296", "source_id": "2951077_78", "native_split": "train", "error_type": "imprecise", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0298", "source_id": "6166532_25", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0299", "source_id": "2979950_101", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0304", "source_id": "6136458_70", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0305", "source_id": "2939685_28", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0306", "source_id": "6377203_25", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0308", "source_id": "2950088_75", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0309", "source_id": "4106739_76", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0311", "source_id": "2856167_175", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0312", "source_id": "2949040_19", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0314", "source_id": "4168829_47", "native_split": "train", "error_type": "careless", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0315", "source_id": "6166532_25", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0316", "source_id": "2928128_44", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0317", "source_id": "2898670_106", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0318", "source_id": "4054327_50", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0319", "source_id": "2950113_51", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0324", "source_id": "2980373_13", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0327", "source_id": "2939739_38", "native_split": "train", "error_type": "imprecise", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0328", "source_id": "2915991_50", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0329", "source_id": "2928732_9", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0330", "source_id": "2928165_103", "native_split": "train", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0331", "source_id": "2980217_21", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0333", "source_id": "2989508_51", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0334", "source_id": "2939723_30", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0335", "source_id": "4105122_38", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0336", "source_id": "2989456_162", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0337", "source_id": "6206897_64", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0338", "source_id": "6136439_9", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0340", "source_id": "4141276_34", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0341", "source_id": "6136668_18", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0343", "source_id": "2939723_30", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0345", "source_id": "6329091_31", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0349", "source_id": "4169950_31", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0350", "source_id": "6165056_65", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0352", "source_id": "2962890_17", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0354", "source_id": "6166714_78", "native_split": "train", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0355", "source_id": "4106734_113", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0357", "source_id": "6165912_33", "native_split": "train", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0358", "source_id": "2900642_15", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0361", "source_id": "4105122_38", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0362", "source_id": "2949305_37", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0363", "source_id": "2979976_25", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0364", "source_id": "2948932_5", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0365", "source_id": "2927872_25", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0366", "source_id": "2898695_31", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0367", "source_id": "2856167_86", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0371", "source_id": "2948565_53", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0372", "source_id": "2916421_82", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0373", "source_id": "4014470_14", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0376", "source_id": "2856167_175", "native_split": "train", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0378", "source_id": "6165060_89", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0381", "source_id": "4139067_72", "native_split": "train", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0382", "source_id": "4144916_113", "native_split": "train", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0384", "source_id": "4257656_59", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0385", "source_id": "6136668_14", "native_split": "train", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0386", "source_id": "6315993_39", "native_split": "validation", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0387", "source_id": "4139067_72", "native_split": "validation", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0388", "source_id": "4294755_60", "native_split": "validation", "error_type": "imprecise", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0389", "source_id": "6165060_89", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0390", "source_id": "2879185_27", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0395", "source_id": "4055603_15", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0397", "source_id": "4054686_22", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0399", "source_id": "2963654_50", "native_split": "validation", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0400", "source_id": "2976728_100", "native_split": "validation", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0403", "source_id": "4104575_59", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0407", "source_id": "4169950_31", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0410", "source_id": "2963376_36", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0411", "source_id": "2950057_118", "native_split": "validation", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0414", "source_id": "4290454_38", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0417", "source_id": "4138677_40", "native_split": "validation", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0423", "source_id": "4294755_60", "native_split": "validation", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0424", "source_id": "2928505_92", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0428", "source_id": "4110653_70", "native_split": "validation", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0430", "source_id": "2963788_93", "native_split": "validation", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0431", "source_id": "4054686_35", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0432", "source_id": "4114606_89", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0434", "source_id": "2850095_108", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0437", "source_id": "4247410_101", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0439", "source_id": "2989231_74", "native_split": "validation", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0441", "source_id": "4054582_82", "native_split": "validation", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0442", "source_id": "4290454_38", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0443", "source_id": "2856167_86", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0446", "source_id": "4079053_56", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0447", "source_id": "6321463_47", "native_split": "validation", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0448", "source_id": "6165981_43", "native_split": "validation", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0450", "source_id": "2979976_52", "native_split": "validation", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0451", "source_id": "4110589_12", "native_split": "validation", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0459", "source_id": "6166067_53", "native_split": "test", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0460", "source_id": "4104667_21", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0461", "source_id": "6315993_39", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0462", "source_id": "2979950_101", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0463", "source_id": "4013361_43", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0466", "source_id": "6166109_24", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0467", "source_id": "2856614_71", "native_split": "test", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0469", "source_id": "2963388_49", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0470", "source_id": "2948358_36", "native_split": "test", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0471", "source_id": "6166109_24", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0473", "source_id": "2928165_103", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0474", "source_id": "2989227_17", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0475", "source_id": "4296165_23", "native_split": "test", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0477", "source_id": "6404710_15", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0480", "source_id": "2894869_50", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0481", "source_id": "4250131_122", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0482", "source_id": "4055570_209", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0483", "source_id": "2950113_51", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0484", "source_id": "2856205_121", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0488", "source_id": "2901019_23", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0490", "source_id": "4250131_63", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0491", "source_id": "4174334_65", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0493", "source_id": "2898670_114", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0494", "source_id": "6206815_65", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0495", "source_id": "4110653_70", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0497", "source_id": "6134311_9", "native_split": "test", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0498", "source_id": "2898671_110", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0499", "source_id": "6206901_52", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0501", "source_id": "6206901_52", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0502", "source_id": "6165975_60", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0505", "source_id": "4114606_89", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0506", "source_id": "2949261_68", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0507", "source_id": "2951125_93", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0510", "source_id": "2894845_58", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0511", "source_id": "4110653_56", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0514", "source_id": "6404710_95", "native_split": "test", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0515", "source_id": "4012809_66", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0516", "source_id": "2979950_43", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0518", "source_id": "2928092_30", "native_split": "test", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0519", "source_id": "2927452_96", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0521", "source_id": "2939780_38", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0522", "source_id": "4078014_39", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0525", "source_id": "2927455_68", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0527", "source_id": "2949308_17", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0528", "source_id": "2964114_96", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0531", "source_id": "2850525_35", "native_split": "test", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0533", "source_id": "2951125_71", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0534", "source_id": "2928821_50", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0535", "source_id": "4141276_34", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0536", "source_id": "6135859_117", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0537", "source_id": "2949295_131", "native_split": "test", "error_type": "careless", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0538", "source_id": "2580534_104", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0544", "source_id": "2963710_103", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0545", "source_id": "6137290_63", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0546", "source_id": "4104715_98", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0547", "source_id": "2949358_89", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0551", "source_id": "4144916_113", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0552", "source_id": "2979950_43", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0554", "source_id": "2928284_79", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0556", "source_id": "6321382_83", "native_split": "test", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0559", "source_id": "2900916_26", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0562", "source_id": "4274038_74", "native_split": "test", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0564", "source_id": "4249946_42", "native_split": "test", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0567", "source_id": "2948958_54", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0568", "source_id": "2949335_49", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0569", "source_id": "6321382_83", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0575", "source_id": "6165036_15", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0577", "source_id": "4013993_24", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0578", "source_id": "6404710_95", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0579", "source_id": "4296261_23", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0580", "source_id": "2856205_78", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0582", "source_id": "2951125_71", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0583", "source_id": "2928092_30", "native_split": "test", "error_type": "diagnose", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0585", "source_id": "2856167_18", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0587", "source_id": "4078014_39", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0589", "source_id": "6303276_19", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0593", "source_id": "4055570_209", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0595", "source_id": "4259825_31", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0596", "source_id": "4258634_19", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0597", "source_id": "2913327_21", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0598", "source_id": "2939743_75", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0599", "source_id": "6163947_51", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0600", "source_id": "2939739_29", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0601", "source_id": "6136668_14", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0602", "source_id": "4110423_27", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0603", "source_id": "2979259_24", "native_split": "test", "error_type": "right-idea", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0604", "source_id": "2900622_138", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0606", "source_id": "6321463_13", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0612", "source_id": "4293222_6", "native_split": "test", "error_type": "misinterpret", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0614", "source_id": "3978685_37", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0615", "source_id": "2927448_42", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0617", "source_id": "4296261_23", "native_split": "test", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0619", "source_id": "2898671_110", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0620", "source_id": "2939739_38", "native_split": "test", "error_type": "imprecise", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0621", "source_id": "6321506_9", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0624", "source_id": "2928821_50", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0625", "source_id": "2950026_38", "native_split": "test", "error_type": "imprecise", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0626", "source_id": "2928525_123", "native_split": "test", "error_type": "diagnose", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0628", "source_id": "4293213_83", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0629", "source_id": "2963625_147", "native_split": "test", "error_type": "guess", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0630", "source_id": "6377203_25", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0632", "source_id": "2949295_112", "native_split": "test", "error_type": "misinterpret", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0633", "source_id": "4250131_122", "native_split": "test", "error_type": "right-idea", "reason": "missing_problem_statement"}
+{"scenario_id": "bridge_0634", "source_id": "6345758_104", "native_split": "test", "error_type": "guess", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0637", "source_id": "4257656_59", "native_split": "test", "error_type": "careless", "reason": "error_not_diagnosable_from_text"}
+{"scenario_id": "bridge_0641", "source_id": "2894783_32", "native_split": "test", "error_type": "careless", "reason": "missing_problem_statement"}
