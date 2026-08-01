@@ -44,7 +44,8 @@ models:
   - {id: HuggingFaceTB/SmolLM-360M-Instruct, params_b: 0.36, family: SmolLM, arch: transformer}
   - {id: HuggingFaceTB/SmolLM2-360M, params_b: 0.36, family: SmolLM2, arch: transformer}
   - {id: HuggingFaceTB/SmolLM2-360M-Instruct, params_b: 0.36, family: SmolLM2, arch: transformer}
-  - {id: OpenBMB/MiniCPM4-0.5B, params_b: 0.5, family: MiniCPM4, arch: transformer}
+  # ships a chat_template but no id marker matches; set explicitly
+  - {id: OpenBMB/MiniCPM4-0.5B, params_b: 0.5, family: MiniCPM4, arch: transformer, apply_chat_template: true}
   - {id: Qwen/Qwen2-0.5B, params_b: 0.5, family: Qwen2, arch: transformer}
   - {id: Qwen/Qwen2.5-0.5B-Instruct, params_b: 0.5, family: Qwen2.5, arch: transformer}
   - {id: bigscience/bloom-560m, params_b: 0.56, family: BLOOM, arch: transformer}
@@ -143,7 +144,8 @@ models:
   - {id: nvidia/Llama-3.1-Minitron-4B-Depth-Base, params_b: 4, family: Llama3.1, arch: transformer}
   - {id: nvidia/Minitron-4B-Base, params_b: 4, family: Minitron, arch: transformer}
   - {id: nvidia/Nemotron-Mini-4B-Instruct, params_b: 4, family: Nemotron, arch: transformer}
-  - {id: openbmb/MiniCPM3-4B, params_b: 4, family: MiniCPM3, arch: transformer}
+  # ships a chat_template but no id marker matches; set explicitly
+  - {id: openbmb/MiniCPM3-4B, params_b: 4, family: MiniCPM3, arch: transformer, apply_chat_template: true}
   - {id: facebook/xglm-4.5B, params_b: 4.5, family: XGLM, arch: transformer}
   # --- 6.0-7.0 B ---
   - {id: 01-ai/Yi-1.5-6B, params_b: 6, family: Yi1.5, arch: transformer}

@@ -70,8 +70,24 @@ curation/tranche/
 # logs, and the big fitted-item CSV. None of it is a deliverable and it is all
 # regenerable from runs. The shareable CAT + calibration deliverables (figures,
 # summary tables, metrics, manifest) are copied into reports/ (tracked).
+#
+# Written as `staging/**` + a directory re-include rather than a bare `staging/`
+# so the small fit manifests below can be negated: git will not descend into an
+# excluded DIRECTORY, so `staging/` would make any negation a silent no-op.
 # ---------------------------------------------------------------------------
-staging/
+staging/**
+!staging/**/
+
+# Exception: the fit audit trail (~60KB each). These carry the exact argv, the
+# response-matrix sha256, EM convergence, the AIC/BIC model comparison and the
+# latent correlation matrix -- the evidence behind the dimensionality decisions,
+# which is not reconstructable from the calibrated banks alone.
+!staging/**/*_manifest.json
+!staging/**/coverage_report.json
+
+# ...but not the judge-shard wrappers, which are run plumbing rather than
+# calibration provenance.
+staging/supp_v2/
 
 # ---------------------------------------------------------------------------
 # Heavy / generated artifacts, depth-agnostic: raw model-output dumps, judge
@@ -175,3 +191,6 @@ data/TutorEval/review_queue*.tsv
 reword_logs/
 data/TutorEval/scenarios_reworded.json
 data/TutorEval/scenarios_reworded.jsonl
+
+# cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
+biggen_results_cache.parquet
