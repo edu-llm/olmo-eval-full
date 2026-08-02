@@ -1,0 +1,20 @@
+{
+  "matrix": "AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/response_matrix_115.csv",
+  "n_persons_fit": 115,
+  "n_items_fit": 3669,
+  "n_observed_cells": 415118,
+  "grid_nodes_per_dim": 7,
+  "ridge": 0.01,
+  "loglik": -90876.8801644669,
+  "converged": true,
+  "n_iter": 48,
+  "latent_correlation_correctness_scaffolding": -0.7031246125473657,
+  "a_correctness_median_nonzero": 0.9830942606319609,
+  "a_scaffolding_median_nonzero": 0.8035690024950233,
+  "a_correctness_n_loading": 3260,
+  "a_scaffolding_n_loading": 413,
+  "a_se_median": 0.3368689907506958,
+  "a_se_correctness_median": 0.3497789739204753,
+  "a_se_scaffolding_median": 0.2874531676830785,
+  "b_median": 2.8412576268123777
+}

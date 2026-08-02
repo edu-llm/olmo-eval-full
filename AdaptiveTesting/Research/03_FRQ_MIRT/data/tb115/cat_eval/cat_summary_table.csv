@@ -1,0 +1,4 @@
+Benchmark,Models,Items kept (fit_block / total),Bank (healthy / needs refit),a median,Recovery r,CAT items,pIRT MAE
+"TutorBench (2-skill, overall)",115,3497 / 6180,correctness healthy / scaffolding needs refit,corr 0.98 / scaff 0.80,corr 0.970 / scaff 0.923,44.9 (median 44; 110/115 conv.),0.0216
+  - correctness,115,3260 loading,healthy,0.983,0.970,38.0 (median 35; 110/115 conv.),0.0216 (overall)
+  - scaffolding,115,413 loading,needs refit,0.804,0.923,21.7 (median 18; 115/115 conv.),-

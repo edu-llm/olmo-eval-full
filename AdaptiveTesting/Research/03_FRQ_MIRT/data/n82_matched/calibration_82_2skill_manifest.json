@@ -1,0 +1,20 @@
+{
+  "matrix": "eduLLM-Evals/staging/response_matrix_full_nonopt.csv",
+  "n_persons_fit": 82,
+  "n_items_fit": 3443,
+  "n_observed_cells": 276587,
+  "grid_nodes_per_dim": 7,
+  "ridge": 0.01,
+  "loglik": -60478.09629733709,
+  "converged": true,
+  "n_iter": 16,
+  "latent_correlation_correctness_scaffolding": -0.42042980911865563,
+  "a_correctness_median_nonzero": 1.0597644134989923,
+  "a_scaffolding_median_nonzero": 0.8985818092757878,
+  "a_correctness_n_loading": 3080,
+  "a_scaffolding_n_loading": 442,
+  "a_se_median": 0.41148602386512995,
+  "a_se_correctness_median": 0.41851400355134294,
+  "a_se_scaffolding_median": 0.408555832676884,
+  "b_median": 2.7814733844672443
+}

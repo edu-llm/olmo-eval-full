@@ -1,0 +1,16 @@
+metric,n82,n115,source
+n_calibration_models,82,115,response matrices merged (82 original + 33 non-overlapping AWS Qwen-judge)
+n_items_fit,3443,3669,mirt_2skill_bank.py (matched fit)
+n_observed_cells,276587,415118,matched fit manifests
+latent_corr_correctness_scaffolding,-0.420,-0.703,matched 2-skill M2PL (estimate-latent-corr)
+a_correctness_median_nonzero,1.060,0.983,matched fit
+a_scaffolding_median_nonzero,0.899,0.804,matched fit
+loading_SE_median_matched_asymptotic,0.411,0.337,mirt_2skill_bank.py observed-information SE (same method both N)
+loading_SE_correctness_matched,0.419,0.350,matched
+loading_SE_scaffolding_matched,0.409,0.287,matched
+recovery_r_correctness_insample,0.960,0.970,cat_eval_tutorbench.py in-sample EAP recovery
+recovery_r_scaffolding_insample,0.850,0.923,cat_eval_tutorbench.py
+recovery_r_overall_stacked,0.941,0.955,cat_eval_tutorbench.py
+cat_items_overall_mean,23.6,44.9,cat_eval (SE target 0.3; 82 median 26 / 115 median 44)
+pirt_mae_cat,0.0349,0.0216,cat_eval
+pirt_mae_full_ceiling,0.0176,0.0165,cat_eval

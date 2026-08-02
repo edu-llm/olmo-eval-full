@@ -1,0 +1,63 @@
+{
+  "generated_at": "2026-08-02T20:34:49.724220+00:00",
+  "config": {
+    "bank": "AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/calibration_mirt_115_2skill.csv",
+    "matrix": "AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/response_matrix_115.csv",
+    "kfold_dir": "/Users/arhant/Documents/EDLM/olmo-eval-full/eduLLM-Evals/staging/kfold_full",
+    "grid": 7,
+    "se_target": 0.3,
+    "min_items": 1,
+    "max_items": 100,
+    "seed": 20260730
+  },
+  "bank": {
+    "n_items_fit": 3497,
+    "n_items_total": 6180,
+    "a_correctness_median_nonzero": 0.9830945,
+    "a_scaffolding_median_nonzero": 0.803569,
+    "a_correctness_n_loading": 3260,
+    "a_scaffolding_n_loading": 413,
+    "bank_health": {
+      "correctness": "healthy (cross-fold a r=0.80)",
+      "scaffolding": "needs refit (cross-fold a r=0.48)"
+    }
+  },
+  "n_models": 115,
+  "in_sample": {
+    "recovery_r": {
+      "correctness": 0.9695337773612841,
+      "scaffolding": 0.9233726384439607,
+      "overall_stacked": 0.9549057568008944
+    },
+    "cat_items": {
+      "correctness": {
+        "mean": 37.96363636363636,
+        "median": 35.0,
+        "converged": 110
+      },
+      "scaffolding": {
+        "mean": 21.721739130434784,
+        "median": 18.0,
+        "converged": 115
+      },
+      "overall": {
+        "mean": 44.93636363636364,
+        "median": 44.0,
+        "converged": 110
+      },
+      "n_models": 115
+    },
+    "pirt_mae_cat": 0.021644266466345093,
+    "pirt_mae_full": 0.016512834256209582,
+    "pirt_corr_cat": 0.9745588119832332,
+    "tag": "in_sample"
+  },
+  "figures": {
+    "recovery_scatter_correctness.png": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/cat_eval/figures/recovery_scatter_correctness.png",
+    "recovery_scatter_scaffolding.png": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/cat_eval/figures/recovery_scatter_scaffolding.png",
+    "cat_length_hist.png": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/cat_eval/figures/cat_length_hist.png",
+    "se_reduction_curve.png": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/cat_eval/figures/se_reduction_curve.png",
+    "pirt_calibration.png": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/cat_eval/figures/pirt_calibration.png",
+    "item_info_by_skill.png": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/cat_eval/figures/item_info_by_skill.png"
+  }
+}

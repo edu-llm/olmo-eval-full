@@ -1,0 +1,54 @@
+========================================================================
+coverage report
+========================================================================
+matrix            : 115 models x 6507 criteria = 748305 cells
+filled cells      : 711984 (95.1% fill rate)
+per-criterion obs : min=24 median=115.0 max=115
+per-model obs     : min=5697 median=6113.0 max=6462
+zero-variance     : 1904 all-fail + 0 all-pass = 1904 unfittable (4603 variant/fittable) -- dropped before fitting
+per-item coverage histogram (observed-person count buckets):
+    [  24.0,   33.1) : 327
+    [  33.1,   42.2) : 0
+    [  42.2,   51.3) : 0
+    [  51.3,   60.4) : 2
+    [  60.4,   69.5) : 1
+    [  69.5,   78.6) : 7
+    [  78.6,   87.7) : 42
+    [  87.7,   96.8) : 18
+    [  96.8,  105.9) : 102
+    [ 105.9,  115.0) : 6008
+
+wrote coverage report -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/coverage_report.csv
+wrote coverage summary -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/coverage_report.json
+
+========================================================================
+confirmatory M2PL calibration plan
+========================================================================
+fitting 3669 items x 115 persons, 7 nodes/dim (343 grid nodes)
+dropped zero-variance : 1904 (1904 all-fail, 0 all-pass)
+dropped missing Q-row : 934
+Q pattern counts      : {'100': 1322, '110': 1213, '101': 311, '010': 310, '011': 23, '001': 357, '111': 133}
+
+fitting UNIDIMENSIONAL 2PL baseline (EM, 1 dim) ...
+fitting CONFIRMATORY M2PL (3 dims) ...
+fitting COLLAPSED M2PL (2 dims; merged content+diagnosis) ...
+
+========================================================================
+uni vs collapsed vs multi
+========================================================================
+unidim    : loglik=-93056.11  k=7338  AIC=200788.21  BIC=281038.91
+collapsed : loglik=-90876.88  k=7806  AIC=197365.76  BIC=282734.66  (2-dim, merged content+diagnosis)
+multi     : loglik=-91154.61  k=9154  AIC=200617.23  BIC=300728.28  (3-dim, full)
+multi beats uni : AIC=True  BIC=False
+collapsed beats full : AIC=True  BIC=True  (delta_AIC full-collapsed=+3251.47, delta_BIC=+17993.62)
+AIC winner : collapsed   BIC winner : unidim
+latent correlation (content, diagnosis, scaffolding):
+    [1.0, 0.937, -0.696]
+    [0.937, 1.0, -0.683]
+    [-0.696, -0.683, 1.0]
+
+wrote calibration CSV -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/calibration_mirt.csv
+wrote calibration manifest -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/calibration_mirt_manifest.json
+
+wrote calibrated rubric copy -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/rubrics_qmatrix_115_mirt.jsonl (3669 criteria updated; rest kept synthetic)
+(input eduLLM-Evals/data/TutorBench/curated/rubrics_qmatrix_curated.jsonl left untouched)
