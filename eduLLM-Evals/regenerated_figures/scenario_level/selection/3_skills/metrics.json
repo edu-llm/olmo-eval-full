@@ -1,0 +1,205 @@
+{
+  "generated_at": "2026-08-02T01:12:56.831105+00:00",
+  "purpose": "scenario-level trace vs D-optimality selection A/B (real engine)",
+  "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_3skill_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full.csv",
+  "dims": [
+    "correctness",
+    "scaffolding",
+    "presentation"
+  ],
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full.csv",
+    "expected_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "actual_sha256": "b6216bbf1b88226ca9175807fd15422fe833ec4d040b514fce3adc702c1ff0b3",
+    "aligned": true
+  },
+  "config": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "grid": 61,
+    "negative_policy": "clamp"
+  },
+  "n_models": 82,
+  "results": {
+    "trace": {
+      "length": {
+        "scenarios_mean": 35.829268292682926,
+        "scenarios_median": 38.0,
+        "criteria_mean": 213.890243902439,
+        "criteria_median": 231.5
+      },
+      "precision_reached": 53,
+      "recovery": {
+        "theta_online": {
+          "correctness": {
+            "slope": 0.6424109437116439,
+            "r": 0.9459756187841035,
+            "gap_worst12": 2.6409850437563827,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8342184004074477,
+            "r": 0.9295954908035573,
+            "gap_worst12": 0.2808526908123761,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.7490019149168258,
+            "r": 0.9797630943825922,
+            "gap_worst12": 1.6838990697630292,
+            "n": 82
+          }
+        },
+        "theta_batch": {
+          "correctness": {
+            "slope": 0.7619700051221119,
+            "r": 0.9674439020804823,
+            "gap_worst12": 1.802119677655421,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8721707811842364,
+            "r": 0.9215714673569936,
+            "gap_worst12": 0.2163296736297494,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.8225935875153724,
+            "r": 0.9870659749371143,
+            "gap_worst12": 1.0929611916603617,
+            "n": 82
+          }
+        },
+        "theta_mwle": {
+          "correctness": {
+            "slope": 1.0585485702751571,
+            "r": 0.9731982323148085,
+            "gap_worst12": -0.4110730954438357,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.9628142716881931,
+            "r": 0.9184930776077723,
+            "gap_worst12": 0.10299999881803866,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 1.1030637883444507,
+            "r": 0.9859255667767274,
+            "gap_worst12": -0.9751110777384097,
+            "n": 82
+          }
+        }
+      },
+      "per_skill": {
+        "correctness": {
+          "median_final_se": 0.2590705,
+          "frac_se_over_target": 0.07317073170731707,
+          "median_scorable_evals": 169.5
+        },
+        "scaffolding": {
+          "median_final_se": 0.2856785,
+          "frac_se_over_target": 0.06097560975609756,
+          "median_scorable_evals": 50.5
+        },
+        "presentation": {
+          "median_final_se": 0.2985275,
+          "frac_se_over_target": 0.35365853658536583,
+          "median_scorable_evals": 33.0
+        }
+      }
+    },
+    "dopt": {
+      "length": {
+        "scenarios_mean": 42.548780487804876,
+        "scenarios_median": 50.0,
+        "criteria_mean": 205.2560975609756,
+        "criteria_median": 227.5
+      },
+      "precision_reached": 33,
+      "recovery": {
+        "theta_online": {
+          "correctness": {
+            "slope": 0.6941791682094106,
+            "r": 0.9591660360240267,
+            "gap_worst12": 2.3633445437563827,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.9166239814622263,
+            "r": 0.9640423227089803,
+            "gap_worst12": 0.25575094081237615,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.718921629419067,
+            "r": 0.9707338519704184,
+            "gap_worst12": 1.934919069763029,
+            "n": 82
+          }
+        },
+        "theta_batch": {
+          "correctness": {
+            "slope": 0.8141902514278623,
+            "r": 0.9766328017944933,
+            "gap_worst12": 1.5402628137196144,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.9324458001708216,
+            "r": 0.9718688149782136,
+            "gap_worst12": 0.19681141844703856,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 0.7663946594096359,
+            "r": 0.976220663061027,
+            "gap_worst12": 1.5548333960081875,
+            "n": 82
+          }
+        },
+        "theta_mwle": {
+          "correctness": {
+            "slope": 1.0302063416804719,
+            "r": 0.9895816654442624,
+            "gap_worst12": -0.06954323724432994,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 1.0019998817077775,
+            "r": 0.9724440395448789,
+            "gap_worst12": 0.09837654151680579,
+            "n": 82
+          },
+          "presentation": {
+            "slope": 1.0492046454785529,
+            "r": 0.9807787170264622,
+            "gap_worst12": -0.33771700638309027,
+            "n": 82
+          }
+        }
+      },
+      "per_skill": {
+        "correctness": {
+          "median_final_se": 0.211783,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 158.5
+        },
+        "scaffolding": {
+          "median_final_se": 0.21216249999999998,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 72.0
+        },
+        "presentation": {
+          "median_final_se": 0.320944,
+          "frac_se_over_target": 0.5975609756097561,
+          "median_scorable_evals": 32.0
+        }
+      }
+    }
+  }
+}

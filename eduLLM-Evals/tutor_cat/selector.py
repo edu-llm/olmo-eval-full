@@ -56,6 +56,34 @@ def total_information_value(theta: np.ndarray, rubrics: list[Rubric]) -> float:
     return total / len(rubrics)
 
 
+def scenario_dopt_value(theta: np.ndarray, U: np.ndarray, rubrics: list[Rubric]) -> float:
+    """D-optimality score for administering an ENTIRE scenario (all its criteria).
+
+    Administering the scenario updates the information matrix by a sum of rank-1 terms:
+        I_new = U^-1 + sum_c p_c(1-p_c) (q_c ⊙ a_c)(q_c ⊙ a_c)^T
+    D-optimality maximises det(I_new); we score the log-det gain over U^-1 so the value
+    is comparable across steps. Unlike the trace/`scenario_value` rule, this uses the
+    current posterior covariance U, so it prefers scenarios that shrink the widest
+    remaining uncertainty direction. Normalised per scorable criterion so it measures
+    information per unit judging cost, matching `scenario_value`'s cost normalisation.
+    """
+    info = np.linalg.inv(U)
+    _, base_logdet = np.linalg.slogdet(info)
+    m_new = info.copy()
+    n_scorable = 0
+    for r in rubrics:
+        if int(r.q.sum()) == 0:
+            continue
+        n_scorable += 1
+        m = r.q * r.a
+        p = pass_probability(theta, r.a, r.q, r.b)
+        m_new = m_new + (p * (1.0 - p)) * np.outer(m, m)
+    if n_scorable == 0:
+        return 0.0
+    _, new_logdet = np.linalg.slogdet(m_new)
+    return float(new_logdet - base_logdet) / n_scorable
+
+
 def select_next(
     theta: np.ndarray,
     bank: ItemBank,
@@ -63,21 +91,43 @@ def select_next(
     target_skill_index: int,
     rng: np.random.Generator,
     top_n: int = 5,
+    selection: str = "trace",
+    U: np.ndarray | None = None,
 ) -> SelectionResult | None:
-    """Pick the next scenario per the PRD. Returns None if the bank is exhausted."""
+    """Pick the next scenario. Returns None if the bank is exhausted.
+
+    ``selection``:
+      * ``"trace"`` (default, PRD production): rank scenarios by per-criterion Fisher
+        information for the ``target_skill_index`` at the plug-in ``theta``.
+      * ``"dopt"``: rank scenarios by the D-optimality log-det gain of administering the
+        whole scenario, using the posterior covariance ``U`` (uncertainty-aware). The
+        target skill is not used; ``U`` is required.
+    """
     if not unused_scenario_ids:
         return None
 
-    scored: list[tuple[str, float]] = []
+    if selection == "dopt":
+        if U is None:
+            raise ValueError("selection='dopt' requires the posterior covariance U")
+        scored = [
+            (sid, scenario_dopt_value(theta, U, bank.rubrics_for(sid)))
+            for sid in unused_scenario_ids
+        ]
+        scored.sort(key=lambda t: (-t[1], t[0]))
+        top = scored[:top_n]
+        sid, value = top[int(rng.integers(len(top)))]
+        return SelectionResult(sid, "dopt", None, value, top)
+
+    scored_opt: list[tuple[str, float]] = []
     for sid in unused_scenario_ids:
         value = scenario_value(theta, bank.rubrics_for(sid), target_skill_index)
         if value is not None:
-            scored.append((sid, value))
+            scored_opt.append((sid, value))
 
-    if scored:
+    if scored_opt:
         # Deterministic order: value descending, scenario_id as tie-break.
-        scored.sort(key=lambda t: (-t[1], t[0]))
-        top = scored[:top_n]
+        scored_opt.sort(key=lambda t: (-t[1], t[0]))
+        top = scored_opt[:top_n]
         sid, value = top[int(rng.integers(len(top)))]
         return SelectionResult(sid, "target_skill", target_skill_index, value, top)
 

@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-08-02T17:06:57.527953+00:00",
+  "benchmark": "TutorBench",
+  "phase": "ingest",
+  "judge_expected": {
+    "judge_name": "qwen",
+    "judge_model": "Qwen/Qwen3.5-9B",
+    "judge_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "adapter": "generic-binary",
+    "prompt_version": "judge-validation-v3",
+    "normalization_version": "judge-normalization-v3",
+    "evidence_policy_version": "criterion-evidence-gate-v1",
+    "prompt_variant": "canonical",
+    "replicate_id": "r1"
+  },
+  "judge_observed": {
+    "judge_name": [
+      "qwen"
+    ],
+    "judge_model": [
+      "Qwen/Qwen3.5-9B"
+    ],
+    "judge_revision": [
+      "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+    ],
+    "adapter": [
+      "generic-binary"
+    ],
+    "prompt_version": [
+      "judge-validation-v3"
+    ],
+    "normalization_version": [
+      "judge-normalization-v3"
+    ],
+    "evidence_policy_version": [
+      "criterion-evidence-gate-v1"
+    ],
+    "prompt_variant": [
+      "canonical"
+    ],
+    "replicate_id": [
+      "r1"
+    ],
+    "configuration_hash": [
+      "0113cca99a66f74bb10f3858f82edaf81ca9d9496fa26c248632a0afc382f7d7"
+    ],
+    "frozen_configuration_hash": [
+      "1823a13125c2990e30c4121e1e33a2cb340ccd34d9af3697b0766484738b4367"
+    ]
+  },
+  "policy_versions": {
+    "prompt_version": "judge-validation-v3",
+    "normalization_version": "judge-normalization-v3",
+    "evidence_policy_version": "criterion-evidence-gate-v1"
+  },
+  "ingest_files": [
+    "/tmp/qwen_judge/tb33_ingest/TutorBench/canonical_r1.shard0.jsonl",
+    "/tmp/qwen_judge/tb33_ingest/TutorBench/canonical_r1.shard1.jsonl",
+    "/tmp/qwen_judge/tb33_ingest/TutorBench/canonical_r1.shard2.jsonl",
+    "/tmp/qwen_judge/tb33_ingest/TutorBench/canonical_r1.shard3.jsonl",
+    "/tmp/qwen_judge/tb33_ingest/TutorBench/canonical_r1.shard4.jsonl"
+  ],
+  "counts": {
+    "total_cells": 213246,
+    "verdicts_on_disk": 213246,
+    "this_run": {
+      "auto_fail": 542,
+      "ingested_pass_fail": 212688,
+      "ingested_no_decision": 16,
+      "skipped_existing": 0,
+      "ingest_missing": 0,
+      "no_decision_policy": "missing",
+      "cross_file_conflicts": 0
+    },
+    "by_source": {
+      "ingest": 212688,
+      "ingest_no_decision": 16,
+      "auto_fail": 542
+    }
+  },
+  "coverage": {
+    "complete": false,
+    "n_holes": 16,
+    "n_filled": 213230
+  },
+  "models": [
+    "01-ai/Yi-1.5-6B",
+    "01-ai/Yi-1.5-6B-Chat",
+    "01-ai/Yi-6B-200K",
+    "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+    "BEE-spoke-data/smol_llama-220M-openhermes",
+    "BSC-LT/salamandra-2b",
+    "BSC-LT/salamandra-2b-instruct",
+    "BSC-LT/salamandra-7b",
+    "BSC-LT/salamandra-7b-instruct",
+    "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+    "OpenBMB/MiniCPM4-0.5B",
+    "Qwen/Qwen1.5-1.8B",
+    "Qwen/Qwen1.5-1.8B-Chat",
+    "ai-forever/mGPT",
+    "allenai/OLMo-1B-hf",
+    "allenai/OLMo-2-0425-1B-DPO",
+    "allenai/OLMo-2-0425-1B-Instruct",
+    "arcee-ai/raspberry-3B",
+    "google/gemma-2b",
+    "h2oai/h2o-danube-1.8b-chat",
+    "h2oai/h2o-danube2-1.8b-chat",
+    "ibm-granite/granite-7b-instruct",
+    "ibm/PowerLM-3b",
+    "nvidia/AceInstruct-1.5B",
+    "openbmb/MiniCPM-1B-sft-bf16",
+    "openlm-research/open_llama_3b",
+    "pankajmathur/orca_mini_3b",
+    "pankajmathur/orca_mini_v9_5_3B-Instruct",
+    "stabilityai/stablelm-2-1_6b-chat",
+    "tiiuae/Falcon3-1B-Instruct",
+    "tiiuae/Falcon3-3B-Instruct",
+    "utter-project/EuroLLM-1.7B",
+    "utter-project/EuroLLM-1.7B-Instruct"
+  ],
+  "n_criteria": 6462,
+  "n_excluded_models": 0,
+  "excluded_models": []
+}

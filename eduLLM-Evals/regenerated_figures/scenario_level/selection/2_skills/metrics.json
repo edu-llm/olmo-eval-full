@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-08-02T00:36:50.981018+00:00",
+  "purpose": "scenario-level trace vs D-optimality selection A/B (real engine)",
+  "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full_nonopt.csv",
+  "dims": [
+    "correctness",
+    "scaffolding"
+  ],
+  "provenance": {
+    "expected_matrix": "staging/response_matrix_full_nonopt.csv",
+    "expected_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+    "actual_sha256": "b62f6dcf5f53ddddcec20afac7edc7b27cb9a102a26be51f80d330ca3c0d74b9",
+    "aligned": true
+  },
+  "config": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "grid": 61,
+    "negative_policy": "clamp"
+  },
+  "n_models": 82,
+  "results": {
+    "trace": {
+      "length": {
+        "scenarios_mean": 13.658536585365853,
+        "scenarios_median": 14.5,
+        "criteria_mean": 60.670731707317074,
+        "criteria_median": 61.5
+      },
+      "precision_reached": 82,
+      "recovery": {
+        "theta_online": {
+          "correctness": {
+            "slope": 0.5905486192893213,
+            "r": 0.9369760154396082,
+            "gap_worst12": 3.0070720021290804,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8074153026781737,
+            "r": 0.924614555777451,
+            "gap_worst12": 0.4034123673344238,
+            "n": 82
+          }
+        },
+        "theta_batch": {
+          "correctness": {
+            "slope": 0.7093595233912293,
+            "r": 0.9488945804416284,
+            "gap_worst12": 2.2546491895760057,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8874071632041349,
+            "r": 0.9296770832392144,
+            "gap_worst12": 0.2251496758779511,
+            "n": 82
+          }
+        },
+        "theta_mwle": {
+          "correctness": {
+            "slope": 0.9031408804569333,
+            "r": 0.9605521859354303,
+            "gap_worst12": 1.0315762935161985,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 1.04610626688766,
+            "r": 0.9110916683852788,
+            "gap_worst12": 0.12808998874121055,
+            "n": 82
+          }
+        }
+      },
+      "per_skill": {
+        "correctness": {
+          "median_final_se": 0.2907955,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 49.5
+        },
+        "scaffolding": {
+          "median_final_se": 0.288501,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 23.0
+        }
+      }
+    },
+    "dopt": {
+      "length": {
+        "scenarios_mean": 17.146341463414632,
+        "scenarios_median": 16.5,
+        "criteria_mean": 73.84146341463415,
+        "criteria_median": 70.5
+      },
+      "precision_reached": 82,
+      "recovery": {
+        "theta_online": {
+          "correctness": {
+            "slope": 0.6474429291588635,
+            "r": 0.9452563793845143,
+            "gap_worst12": 2.66518500212908,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.8331817663388787,
+            "r": 0.9254244986949521,
+            "gap_worst12": 0.3807488673344237,
+            "n": 82
+          }
+        },
+        "theta_batch": {
+          "correctness": {
+            "slope": 0.7345716960588268,
+            "r": 0.9598065505355146,
+            "gap_worst12": 2.0813512023736274,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.9011312652085166,
+            "r": 0.9330895468642217,
+            "gap_worst12": 0.29812128587457015,
+            "n": 82
+          }
+        },
+        "theta_mwle": {
+          "correctness": {
+            "slope": 0.9054653638154596,
+            "r": 0.9731565906614131,
+            "gap_worst12": 0.9270507172847483,
+            "n": 82
+          },
+          "scaffolding": {
+            "slope": 0.960464251293188,
+            "r": 0.9325706114706879,
+            "gap_worst12": 0.21503528324188403,
+            "n": 82
+          }
+        }
+      },
+      "per_skill": {
+        "correctness": {
+          "median_final_se": 0.29066899999999996,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 55.0
+        },
+        "scaffolding": {
+          "median_final_se": 0.2646015,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 29.0
+        }
+      }
+    }
+  }
+}

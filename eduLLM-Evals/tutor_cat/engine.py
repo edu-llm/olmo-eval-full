@@ -66,6 +66,15 @@ class RunConfig:
     # same engine over a different dimensionality; all vectors (theta, U, q, a) must
     # match its length. The 3-skill path is unaffected when left None.
     skills: tuple[str, ...] | None = None
+    # Scenario-selection rule. "trace" (default) is the PRD per-criterion Fisher rule for
+    # the argmax-SE skill; "dopt" ranks scenarios by the D-optimality log-det gain using
+    # the posterior covariance U (uncertainty-aware). Default leaves production unchanged.
+    selection: str = "trace"
+    # Write the verbose per-run JSONL logs (manifest, judge_results, criterion_updates,
+    # steps, critical_failures, final_result). Default True (production). Offline replays
+    # over a cached matrix set this False: the administered criterion order is returned in
+    # the result instead, so the heavy per-line flushed I/O is skipped entirely.
+    write_logs: bool = True
     # Data provenance, echoed into the manifest so runs on different q-matrices /
     # calibrations are distinguishable after the fact.
     data_scenarios: str | None = None
@@ -92,6 +101,16 @@ class _JsonlWriter:
         self._f.close()
 
 
+class _NullWriter:
+    """No-op writer used when ``RunConfig.write_logs`` is False (offline replays)."""
+
+    def write(self, obj: dict[str, Any]) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
 def run_evaluation(
     bank: ItemBank,
     tutor: TutorLike,
@@ -106,17 +125,20 @@ def run_evaluation(
 
     skills = tuple(cfg.skills) if cfg.skills else SKILLS
     n_skills = len(skills)
+    write_logs = cfg.write_logs
 
     run_seed = derive_seed(cfg.seed, tutor.name, mode)
     rng = np.random.default_rng(run_seed)
     run_id = run_id or f"run_{datetime.now():%Y%m%d_%H%M%S}_{tutor.name}_{mode}"
     out_dir = Path(cfg.output_dir) / run_id
-    out_dir.mkdir(parents=True, exist_ok=True)
+    if write_logs:
+        out_dir.mkdir(parents=True, exist_ok=True)
 
     theta, U = initial_state(cfg.theta_init, cfg.u_init_diag, n_skills)
     max_se = np.array([cfg.max_se.get(s, 0.30) for s in skills])
     counts = np.zeros(n_skills, dtype=int)  # scorable evaluations per skill
     administered: list[str] = []
+    administered_criteria: list[str] = []  # criterion ids in grading order (returned)
     critical_failures: list[dict[str, Any]] = []
 
     # Calibration marker for the manifest: the distinct calibration_version(s)
@@ -152,11 +174,13 @@ def run_evaluation(
         "calibration_version": calibration_version,
         "started_at": datetime.now().isoformat(timespec="seconds"),
     }
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-
-    judge_log = _JsonlWriter(out_dir / "judge_results.jsonl")
-    update_log = _JsonlWriter(out_dir / "criterion_updates.jsonl")
-    step_log = _JsonlWriter(out_dir / "steps.jsonl")
+    if write_logs:
+        (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        judge_log = _JsonlWriter(out_dir / "judge_results.jsonl")
+        update_log = _JsonlWriter(out_dir / "criterion_updates.jsonl")
+        step_log = _JsonlWriter(out_dir / "steps.jsonl")
+    else:
+        judge_log = update_log = step_log = _NullWriter()
 
     # Baseline: fixed seeded-random order over the whole bank, decided up front.
     baseline_order: list[str] = []
@@ -188,7 +212,8 @@ def run_evaluation(
             if mode == "cat":
                 target_k = int(np.argmax(se))
                 selection: SelectionResult | None = select_next(
-                    theta, bank, unused, target_k, rng, cfg.top_n
+                    theta, bank, unused, target_k, rng, cfg.top_n,
+                    selection=cfg.selection, U=U,
                 )
                 if selection is None:
                     stop_reason = "bank_exhausted"
@@ -216,6 +241,7 @@ def run_evaluation(
 
                 theta, U, p = update(theta, U, rubric.a, rubric.q, rubric.b, y)
                 counts += rubric.q  # scorable evaluation for every skill with q=1
+                administered_criteria.append(rubric.criterion_id)
 
                 # dataset uses both "critical" and "critical_negative"
                 if rubric.criticality.startswith("critical") and y == 0:
@@ -292,12 +318,14 @@ def run_evaluation(
         "se": {s: round(float(se[k]), 6) for k, s in enumerate(skills)},
         "scorable_evaluations": {s: int(counts[k]) for k, s in enumerate(skills)},
         "critical_failure_count": len(critical_failures),
+        "administered_criteria": administered_criteria,
         "finished_at": datetime.now().isoformat(timespec="seconds"),
     }
-    (out_dir / "critical_failures.json").write_text(
-        json.dumps(critical_failures, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    (out_dir / "final_result.json").write_text(
-        json.dumps(final, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    if write_logs:
+        (out_dir / "critical_failures.json").write_text(
+            json.dumps(critical_failures, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        (out_dir / "final_result.json").write_text(
+            json.dumps(final, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
     return final
