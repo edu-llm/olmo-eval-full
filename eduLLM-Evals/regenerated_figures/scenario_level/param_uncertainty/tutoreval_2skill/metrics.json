@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-08-02T18:49:15.824808+00:00",
+  "purpose": "scenario-level parameter-uncertainty inflation of ability SEs",
+  "bank": "data/TutorEval/rubrics_qmatrix_final_2skill_fitted.jsonl",
+  "matrix": "runs/judge/TutorEval/response_matrix.csv",
+  "dims": [
+    "conceptual_understanding",
+    "quantitative_procedural"
+  ],
+  "config": {
+    "fit_nodes": 7,
+    "eap_grid": 61,
+    "n_boot": 150,
+    "max_se": 0.3
+  },
+  "n_models": 52,
+  "median_item_param_se": {
+    "conceptual_understanding": 0.5021210479394818,
+    "quantitative_procedural": 0.9393426443499245
+  },
+  "se_components": {
+    "conceptual_understanding": {
+      "median_se_posterior": 0.32439684633511656,
+      "median_se_param": 0.1721820306160169,
+      "median_se_total": 0.3624588990275501,
+      "median_bar_inflation": 1.1209908093831578,
+      "max_bar_inflation": 1.4632392905071208
+    },
+    "quantitative_procedural": {
+      "median_se_posterior": 0.32119638560405345,
+      "median_se_param": 0.12623922737304294,
+      "median_se_total": 0.3552587333569427,
+      "median_bar_inflation": 1.0718282081608401,
+      "max_bar_inflation": 1.6304001419507164
+    }
+  }
+}

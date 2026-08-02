@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-08-02T18:48:49.388362+00:00",
+  "purpose": "scenario-level seed/path dependence of the CAT estimate (real engine)",
+  "bank": "data/TutorEval/rubrics_qmatrix_final_unidim_fitted.jsonl",
+  "matrix": "runs/judge/TutorEval/response_matrix.csv",
+  "dims": [
+    "ability"
+  ],
+  "provenance": {
+    "expected_matrix": "runs/judge/TutorEval/response_matrix.csv",
+    "expected_sha256": "f7830280a40f6bb774116bb6e7a44f9840073c88d7ce8fbd538b357cdcbd4781",
+    "actual_sha256": "f7830280a40f6bb774116bb6e7a44f9840073c88d7ce8fbd538b357cdcbd4781",
+    "aligned": true
+  },
+  "n_models": 52,
+  "n_seeds": 8,
+  "selection": "trace",
+  "config": {
+    "base_seed": 1000,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "grid": 61
+  },
+  "across_seed_spread": {
+    "online": {
+      "ability": {
+        "mean_sd": 0.1592309573435478,
+        "median_sd": 0.12970338095751044,
+        "max_sd": 0.4706885664230218,
+        "mean_range": 0.4857886153846155,
+        "max_range": 1.4164070000000002
+      }
+    },
+    "batch": {
+      "ability": {
+        "mean_sd": 0.15343999658747656,
+        "median_sd": 0.11723238658688818,
+        "max_sd": 0.42928658589352137,
+        "mean_range": 0.4524382422255402,
+        "max_range": 1.3017401575735505
+      }
+    },
+    "mwle": {
+      "ability": {
+        "mean_sd": 0.1680325258809202,
+        "median_sd": 0.11838993022927802,
+        "max_sd": 0.5315120549889736,
+        "mean_range": 0.5033566518290876,
+        "max_range": 1.497935259073685
+      }
+    }
+  }
+}

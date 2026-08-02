@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-08-02T18:49:18.746608+00:00",
+  "purpose": "scenario-level parameter-uncertainty inflation of ability SEs",
+  "bank": "data/TutorEval/rubrics_qmatrix_final_unidim_fitted.jsonl",
+  "matrix": "runs/judge/TutorEval/response_matrix.csv",
+  "dims": [
+    "ability"
+  ],
+  "config": {
+    "fit_nodes": 7,
+    "eap_grid": 61,
+    "n_boot": 150,
+    "max_se": 0.3
+  },
+  "n_models": 52,
+  "median_item_param_se": {
+    "ability": 0.502117621425376
+  },
+  "se_components": {
+    "ability": {
+      "median_se_posterior": 0.24435923441684804,
+      "median_se_param": 0.1166732479300126,
+      "median_se_total": 0.27228871315608516,
+      "median_bar_inflation": 1.112773468637446,
+      "max_bar_inflation": 1.4011640256370426
+    }
+  }
+}

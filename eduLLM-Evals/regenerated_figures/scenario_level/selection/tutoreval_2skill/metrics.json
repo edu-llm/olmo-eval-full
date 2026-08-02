@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-08-02T18:48:27.250017+00:00",
+  "purpose": "scenario-level trace vs D-optimality selection A/B (real engine)",
+  "bank": "data/TutorEval/rubrics_qmatrix_final_2skill_fitted.jsonl",
+  "matrix": "runs/judge/TutorEval/response_matrix.csv",
+  "dims": [
+    "conceptual_understanding",
+    "quantitative_procedural"
+  ],
+  "provenance": {
+    "expected_matrix": "runs/judge/TutorEval/response_matrix.csv",
+    "expected_sha256": "f7830280a40f6bb774116bb6e7a44f9840073c88d7ce8fbd538b357cdcbd4781",
+    "actual_sha256": "f7830280a40f6bb774116bb6e7a44f9840073c88d7ce8fbd538b357cdcbd4781",
+    "aligned": true
+  },
+  "config": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "grid": 61,
+    "negative_policy": "clamp"
+  },
+  "n_models": 52,
+  "results": {
+    "trace": {
+      "length": {
+        "scenarios_mean": 18.326923076923077,
+        "scenarios_median": 17.0,
+        "criteria_mean": 32.34615384615385,
+        "criteria_median": 28.5
+      },
+      "precision_reached": 52,
+      "recovery": {
+        "theta_online": {
+          "conceptual_understanding": {
+            "slope": 0.41567677334064734,
+            "r": 0.8367926672897258,
+            "gap_worst12": 1.9457478764522937,
+            "n": 52
+          },
+          "quantitative_procedural": {
+            "slope": 0.7449410442163336,
+            "r": 0.9447381580139734,
+            "gap_worst12": 0.8461947183651474,
+            "n": 52
+          }
+        },
+        "theta_batch": {
+          "conceptual_understanding": {
+            "slope": 0.6085232992155266,
+            "r": 0.9127641128928395,
+            "gap_worst12": 1.304813074827669,
+            "n": 52
+          },
+          "quantitative_procedural": {
+            "slope": 0.9364740229146774,
+            "r": 0.9692670738817871,
+            "gap_worst12": 0.211337291361973,
+            "n": 52
+          }
+        },
+        "theta_mwle": {
+          "conceptual_understanding": {
+            "slope": 0.7369905032623413,
+            "r": 0.9436873544348251,
+            "gap_worst12": 0.7860745752228185,
+            "n": 52
+          },
+          "quantitative_procedural": {
+            "slope": 1.146993444635389,
+            "r": 0.9573714647376624,
+            "gap_worst12": -0.42090082409931934,
+            "n": 52
+          }
+        }
+      },
+      "per_skill": {
+        "conceptual_understanding": {
+          "median_final_se": 0.262484,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 18.0
+        },
+        "quantitative_procedural": {
+          "median_final_se": 0.2726095,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 16.0
+        }
+      }
+    },
+    "dopt": {
+      "length": {
+        "scenarios_mean": 27.807692307692307,
+        "scenarios_median": 22.5,
+        "criteria_mean": 45.69230769230769,
+        "criteria_median": 36.0
+      },
+      "precision_reached": 43,
+      "recovery": {
+        "theta_online": {
+          "conceptual_understanding": {
+            "slope": 0.6409522987063874,
+            "r": 0.944377813110328,
+            "gap_worst12": 1.114337876452294,
+            "n": 52
+          },
+          "quantitative_procedural": {
+            "slope": 0.7333266923541025,
+            "r": 0.9582187834182466,
+            "gap_worst12": 0.7194357183651472,
+            "n": 52
+          }
+        },
+        "theta_batch": {
+          "conceptual_understanding": {
+            "slope": 0.8357585515761246,
+            "r": 0.9819929647961119,
+            "gap_worst12": 0.48144329294984517,
+            "n": 52
+          },
+          "quantitative_procedural": {
+            "slope": 0.9428272689471613,
+            "r": 0.9752290824855893,
+            "gap_worst12": 0.13118462850362475,
+            "n": 52
+          }
+        },
+        "theta_mwle": {
+          "conceptual_understanding": {
+            "slope": 0.9186746720163598,
+            "r": 0.9900501539064881,
+            "gap_worst12": 0.1959157166429383,
+            "n": 52
+          },
+          "quantitative_procedural": {
+            "slope": 1.1670825824106708,
+            "r": 0.96530897734562,
+            "gap_worst12": -0.5434366487418231,
+            "n": 52
+          }
+        }
+      },
+      "per_skill": {
+        "conceptual_understanding": {
+          "median_final_se": 0.1710085,
+          "frac_se_over_target": 0.0,
+          "median_scorable_evals": 27.0
+        },
+        "quantitative_procedural": {
+          "median_final_se": 0.2903885,
+          "frac_se_over_target": 0.17307692307692307,
+          "median_scorable_evals": 16.0
+        }
+      }
+    }
+  }
+}
