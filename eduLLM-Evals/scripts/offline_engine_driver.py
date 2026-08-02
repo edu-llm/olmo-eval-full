@@ -73,11 +73,8 @@ from tutor_cat.dataio import ItemBank  # noqa: E402
 from tutor_cat.engine import RunConfig, run_evaluation  # noqa: E402
 from tutor_cat.schemas import JudgeVerdict, Rubric, Scenario  # noqa: E402
 
-# Reuse the reference-ability and alternative-estimator math already written and verified.
-_spec = importlib.util.spec_from_file_location("regen", ROOT / "scripts" / "regen_cat_figures.py")
-regen = importlib.util.module_from_spec(_spec)
-sys.modules["regen"] = regen
-_spec.loader.exec_module(regen)
+# Scenario-level engine runner + estimator math (parallel, self-contained).
+import scripts.scenario_cat_lib as scat  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -255,6 +252,10 @@ def main() -> int:
     p.add_argument("--min-evals-per-skill", type=int, default=15)
     p.add_argument("--max-scenarios", type=int, default=50)
     p.add_argument("--unmapped-criteria", choices=("judge", "skip"), default="judge")
+    p.add_argument("--selection", choices=("trace", "dopt"), default="trace",
+                   help="scenario selection rule: trace (PRD) or D-optimality (uncertainty-aware).")
+    p.add_argument("--workers", type=int, default=1,
+                   help="parallel worker processes across models (1 = serial).")
     # reference / post-hoc estimator grid
     p.add_argument("--grid", type=int, default=61)
     p.add_argument("--range", type=float, default=8.0)
@@ -294,57 +295,48 @@ def main() -> int:
     mask = ~np.isnan(Yraw)
     Y = np.nan_to_num(Yraw, nan=0.0)
     col = {c: i for i, c in enumerate(ids)}
-    grid, log_prior = regen.build_grid(len(dims), args.grid, "uniform", args.range)
+    grid, log_prior = scat.build_grid(len(dims), args.grid, args.range)
     print(f"\ncomputing full-bank EAP reference ({grid.shape[0]:,} quadrature nodes) ...")
     row_of = {m: i for i, m in enumerate(matrix.index)}
-    theta_full = regen.eap_all_models(Y, mask, A, b, grid, log_prior, 4096)
+    theta_full = scat.eap_all_models(Y, mask, A, b, grid, log_prior, 4096)
 
     args.runs_dir.mkdir(parents=True, exist_ok=True)
-    cfg = RunConfig(
-        seed=args.seed, top_n=args.top_n,
-        max_se={s: args.max_se for s in dims},
+    spec = scat.RunSpec(
+        seed=args.seed, top_n=args.top_n, max_se=args.max_se,
         min_evals_per_skill=args.min_evals_per_skill,
-        max_scenarios=args.max_scenarios,
-        output_dir=str(args.runs_dir),
-        data_scenarios=str(args.scenarios), data_rubrics=str(args.bank),
-        unmapped_criteria=args.unmapped_criteria,
-        skills=tuple(dims),
+        max_scenarios=args.max_scenarios, unmapped_criteria=args.unmapped_criteria,
+        selection=args.selection, runs_dir=str(args.runs_dir),
     )
+    print(f"running the production engine for {len(models)} models "
+          f"(selection={args.selection}, workers={args.workers}) ...")
+    results = scat.run_models(models, args.bank, args.matrix, args.scenarios,
+                              args.negative_policy, dims, spec, workers=args.workers)
 
-    print(f"running the production engine for {len(models)} models ...")
     rows = []
     stop_reasons: dict[str, int] = {}
-    for i, model in enumerate(models, 1):
+    for rec0 in results:
+        model = rec0["model"]
         r = row_of[model]
-        row = matrix.loc[model]
-        bank = bank_for_model(rubrics, scen_raw, row)
-        tutor = MatrixTutor(model)
-        judge = MatrixJudge(row, model)
-        run_id = f"offline_{tutor.name}"
-        final = run_evaluation(bank, tutor, judge, cfg, mode="cat", run_id=run_id)
-        stop_reasons[final["stop_reason"]] = stop_reasons.get(final["stop_reason"], 0) + 1
-
-        run_dir = args.runs_dir / run_id
-        order = [c for c in administered_from_log(run_dir) if c in col]
+        stop_reasons[rec0["stop_reason"]] = stop_reasons.get(rec0["stop_reason"], 0) + 1
+        order = [c for c in rec0["order"] if c in col]
         idx = np.array([col[c] for c in order], dtype=int)
 
-        # production's own online estimate, in modeled-dim order
-        th_online = np.array([final["theta"][s] for s in dims], dtype=float)
-        se_online = np.array([final["se"][s] for s in dims], dtype=float)
-        th_batch = (regen.eap_subset(Y[r], idx, A, b, grid, log_prior)
+        th_online = np.array(rec0["theta_online"], dtype=float)
+        se_online = np.array(rec0["se_online"], dtype=float)
+        th_batch = (scat.eap_subset(Y[r], idx, A, b, grid, log_prior)
                     if idx.size else th_online.copy())
-        th_mwle, ok = (regen.mwle_subset(Y[r], idx, A, b, th_batch)
+        th_mwle, ok = (scat.mwle_subset(Y[r], idx, A, b, th_batch)
                        if idx.size else (th_batch.copy(), True))
 
         obs = np.where(mask[r])[0]
         rec = {
             "model": model,
-            "scenarios_administered": final["scenarios_administered"],
+            "scenarios_administered": rec0["scenarios_administered"],
             "criteria_administered": len(order),
-            "stop_reason": final["stop_reason"],
-            "precision_reached": final["precision_reached"],
-            "judge_lookups": judge.n_lookups,
-            "judge_missing": judge.n_missing,
+            "stop_reason": rec0["stop_reason"],
+            "precision_reached": rec0["precision_reached"],
+            "judge_lookups": rec0["judge_lookups"],
+            "judge_missing": rec0["judge_missing"],
             "obs_acc": float(Y[r][obs].mean()) if obs.size else np.nan,
         }
         for k, d in enumerate(dims):
@@ -353,12 +345,8 @@ def main() -> int:
             rec[f"theta_batch_{d}"] = float(th_batch[k])
             rec[f"theta_mwle_{d}"] = float(th_mwle[k])
             rec[f"final_se_{d}"] = float(se_online[k])
-            rec[f"scorable_evals_{d}"] = int(final["scorable_evaluations"][dims[k]])
+            rec[f"scorable_evals_{d}"] = int(rec0["scorable_evals"][k])
         rows.append(rec)
-        if not args.keep_run_logs:
-            shutil.rmtree(run_dir, ignore_errors=True)
-        if i % 10 == 0 or i == len(models):
-            print(f"   {i}/{len(models)} models")
 
     df = pd.DataFrame(rows)
     args.out_dir.mkdir(parents=True, exist_ok=True)
