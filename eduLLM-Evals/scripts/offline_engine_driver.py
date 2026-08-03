@@ -250,6 +250,8 @@ def main() -> int:
     p.add_argument("--top-n", type=int, default=5)
     p.add_argument("--max-se", type=float, default=0.30)
     p.add_argument("--min-evals-per-skill", type=int, default=15)
+    p.add_argument("--min-scenarios", type=int, default=0,
+                   help="minimum scenarios administered before a precision-based stop (0=off).")
     p.add_argument("--max-scenarios", type=int, default=50)
     p.add_argument("--unmapped-criteria", choices=("judge", "skip"), default="judge")
     p.add_argument("--selection", choices=("trace", "dopt"), default="trace",
@@ -304,6 +306,7 @@ def main() -> int:
     spec = scat.RunSpec(
         seed=args.seed, top_n=args.top_n, max_se=args.max_se,
         min_evals_per_skill=args.min_evals_per_skill,
+        min_scenarios=args.min_scenarios,
         max_scenarios=args.max_scenarios, unmapped_criteria=args.unmapped_criteria,
         selection=args.selection, runs_dir=str(args.runs_dir),
     )

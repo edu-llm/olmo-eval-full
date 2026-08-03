@@ -1,0 +1,4 @@
+model,corr_r,corr_slope,corr_SEpost,corr_SEtot,scaf_r,scaf_slope,scaf_SEpost,scaf_SEtot,pres_r,pres_slope,pres_SEpost,pres_SEtot,precision,scen_mean
+1-skill (unidim)*,0.949,0.958,0.24,0.258,,,,,,,,,115/115,12.1
+2-skill,0.945,0.981,0.334,0.412,0.902,1.032,0.307,0.359,,,,,115/115,21.9
+3-skill (se=0.30),0.969,1.115,0.315,0.397,0.916,0.997,0.319,0.382,0.965,1.067,0.332,0.346,58/115,41.2

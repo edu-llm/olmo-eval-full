@@ -90,6 +90,8 @@ def main() -> int:
     p.add_argument("--range", type=float, default=6.0)
     p.add_argument("--max-se", type=float, default=0.30)
     p.add_argument("--min-evals-per-skill", type=int, default=15)
+    p.add_argument("--min-scenarios", type=int, default=0,
+                   help="minimum scenarios before a precision-based stop (0=off).")
     p.add_argument("--max-scenarios", type=int, default=50)
     p.add_argument("--workers", type=int, default=scat.default_workers())
     args = p.parse_args()
@@ -164,6 +166,7 @@ def main() -> int:
         # run the scenario engine on TEST models with the fold bank
         spec = scat.RunSpec(seed=args.seed, max_se=args.max_se,
                             min_evals_per_skill=args.min_evals_per_skill,
+                            min_scenarios=args.min_scenarios,
                             max_scenarios=args.max_scenarios, selection="trace",
                             runs_dir=str(args.tmp_dir / f"runs_f{f}"))
         results = scat.run_models(test, fold_bank, args.matrix, args.scenarios,

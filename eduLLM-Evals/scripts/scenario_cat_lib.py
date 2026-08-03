@@ -272,6 +272,7 @@ class RunSpec:
     top_n: int = 5
     max_se: float = 0.30
     min_evals_per_skill: int = 15
+    min_scenarios: int = 0
     max_scenarios: int = 50
     unmapped_criteria: str = "judge"
     selection: str = "trace"
@@ -283,6 +284,7 @@ class RunSpec:
             seed=self.seed, top_n=self.top_n,
             max_se={s: self.max_se for s in dims},
             min_evals_per_skill=self.min_evals_per_skill,
+            min_scenarios=self.min_scenarios,
             max_scenarios=self.max_scenarios,
             output_dir=self.runs_dir,
             unmapped_criteria=self.unmapped_criteria,

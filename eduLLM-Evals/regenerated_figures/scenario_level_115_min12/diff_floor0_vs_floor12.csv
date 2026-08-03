@@ -1,0 +1,4 @@
+model,scen_mean_f0,scen_mean_f12,precision_f0,precision_f12,mwle_corr_r_f0,mwle_corr_r_f12,mwle_scaf_r_f0,mwle_scaf_r_f12
+unidim,6.7,12.1,115/115,115/115,0.94,0.965,,
+2-skill,21.5,21.9,115/115,115/115,0.982,0.982,0.942,0.946
+3-skill,41.2,41.2,58/115,58/115,0.974,0.974,0.935,0.935
