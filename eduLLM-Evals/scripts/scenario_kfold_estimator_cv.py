@@ -115,6 +115,7 @@ def main() -> int:
 
     pooled = {e: {"x": [], "y": {d: [] for d in dims}} for e in ESTIMATORS}
     fold_len = []
+    fold_scen = []
     for f in range(args.k):
         test = folds[f]
         train = [m for m in models if m not in set(test)]
@@ -178,6 +179,7 @@ def main() -> int:
             th_mw, _ = (scat.mwle_subset(y, idx, Ak, bk, th_ba) if idx.size else (th_ba.copy(), True))
             ths = {"online": th_on, "batch": th_ba, "mwle": th_mw}
             fold_len.append(rec0["criteria_administered"])
+            fold_scen.append(rec0["scenarios_administered"])
             for e in ESTIMATORS:
                 pooled[e]["x"].append(theta_ref[ti])
                 for kk, d in enumerate(dims):
@@ -201,6 +203,7 @@ def main() -> int:
                           "min_evals_per_skill": args.min_evals_per_skill,
                           "max_scenarios": args.max_scenarios},
                "mean_criteria_administered": float(np.mean(fold_len)),
+               "mean_scenarios_administered": float(np.mean(fold_scen)),
                "oos_recovery": agg}
     with (args.out_dir / "metrics.json").open("w", encoding="utf-8") as fh:
         json.dump(metrics, fh, indent=2)
@@ -214,6 +217,7 @@ def main() -> int:
         print(f"  {e:7s}: " + "  ".join(
             f"{d[:4]} r={agg[e][d]['r']:.3f} m={agg[e][d]['slope']:.3f}" for d in dims))
     print(f"  mean criteria/model administered: {np.mean(fold_len):.1f}")
+    print(f"  mean scenarios/model administered: {np.mean(fold_scen):.1f}")
     print(f"wrote -> {args.out_dir}")
     return 0
 
