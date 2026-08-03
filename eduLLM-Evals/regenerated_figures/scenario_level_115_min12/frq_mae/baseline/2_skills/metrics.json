@@ -1,0 +1,90 @@
+{
+  "generated_at": "2026-08-03T15:38:22.310881+00:00",
+  "driver": "scripts/offline_engine_driver.py",
+  "engine": "tutor_cat.engine.run_evaluation (production, unmodified)",
+  "selection": "tutor_cat.selector.select_next targeting argmax(se)",
+  "mode": "baseline",
+  "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill_115_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full_nonopt_115.csv",
+  "matrix_sha256": "152286b6ded6561aca84e4b90cb0abbf065634d374217f91c9edcc783cccc0eb",
+  "provenance_aligned": true,
+  "dims": [
+    "correctness",
+    "scaffolding"
+  ],
+  "negatives": {
+    "n_negative_cells": 462,
+    "n_negative_items": 452,
+    "negative_policy": "clamp",
+    "n_records_after": 3666
+  },
+  "config": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "unmapped_criteria": "judge",
+    "grid_nodes_per_dim": 61,
+    "range": 8.0
+  },
+  "n_models": 115,
+  "stop_reasons": {
+    "max_scenarios_reached": 115
+  },
+  "scenarios_administered": {
+    "mean": 50.0,
+    "median": 50.0,
+    "max": 50
+  },
+  "criteria_administered": {
+    "mean": 274.25217391304346,
+    "median": 275.0,
+    "max": 320
+  },
+  "precision_reached": 0,
+  "recovery": {
+    "theta_cat": {
+      "correctness": {
+        "slope": 0.6727310074662529,
+        "r": 0.95184120853269,
+        "gap_worst12": 2.767609993161051,
+        "n_distinct_x": 97
+      },
+      "scaffolding": {
+        "slope": 0.674949875632043,
+        "r": 0.8460709691843527,
+        "gap_worst12": 0.524587246623406,
+        "n_distinct_x": 112
+      }
+    },
+    "theta_batch": {
+      "correctness": {
+        "slope": 0.7363161859273759,
+        "r": 0.9631701408268211,
+        "gap_worst12": 2.2999997752295607,
+        "n_distinct_x": 97
+      },
+      "scaffolding": {
+        "slope": 0.6858133662625692,
+        "r": 0.857511415181542,
+        "gap_worst12": 0.41442737556708037,
+        "n_distinct_x": 112
+      }
+    },
+    "theta_mwle": {
+      "correctness": {
+        "slope": 1.0981564630564673,
+        "r": 0.9699981390524112,
+        "gap_worst12": -0.819678384723368,
+        "n_distinct_x": 97
+      },
+      "scaffolding": {
+        "slope": 1.009068004096404,
+        "r": 0.8488171100905079,
+        "gap_worst12": 0.06324093175158474,
+        "n_distinct_x": 112
+      }
+    }
+  }
+}
