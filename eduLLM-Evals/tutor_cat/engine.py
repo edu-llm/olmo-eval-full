@@ -59,6 +59,11 @@ class RunConfig:
         default_factory=lambda: {s: 0.30 for s in SKILLS}
     )
     min_evals_per_skill: int = 15
+    # Minimum scenarios administered before a precision-based stop is allowed. Default 0
+    # (off) keeps the historical behavior. A scenario-level floor is a stronger minimum
+    # test-length guarantee than min_evals_per_skill (which counts criteria); the SE target
+    # and max_scenarios still apply on top.
+    min_scenarios: int = 0
     max_scenarios: int = 50
     output_dir: str = "runs"
     # Latent skill dimensions this run models. None => the package default (SKILLS).
@@ -167,6 +172,7 @@ def run_evaluation(
         "u_init_diag": list(cfg.u_init_diag or [1.0] * n_skills),
         "max_se": cfg.max_se,
         "min_evals_per_skill": cfg.min_evals_per_skill,
+        "min_scenarios": cfg.min_scenarios,
         "max_scenarios": cfg.max_scenarios,
         "n_scenarios_in_bank": len(bank.scenarios),
         "data_scenarios": cfg.data_scenarios,
@@ -195,7 +201,8 @@ def run_evaluation(
     try:
         while True:
             # --- stopping rule (checked between scenarios) ---
-            if precision_reached():
+            # A precision-based stop also requires the minimum-scenarios floor to be met.
+            if precision_reached() and len(administered) >= cfg.min_scenarios:
                 stop_reason = "precision_reached"
                 break
             if len(administered) >= cfg.max_scenarios:

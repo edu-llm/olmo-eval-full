@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-08-02T20:18:24.252505+00:00",
+  "purpose": "Correlation of the unidimensional (single overall-ability) CAT estimate with the 2-skill correctness and scaffolding abilities on the 115-model set.",
+  "n_models": 115,
+  "unidim_bank": "data/TutorBench/rubrics_qmatrix_calibrated_unidim_115_fitted.jsonl",
+  "unidim_leaderboard": "regenerated_figures/scenario_level_115/unidim/leaderboard/cat_per_model.csv",
+  "twoskill_leaderboard": "regenerated_figures/scenario_level_115/leaderboard/2_skills/cat_per_model.csv",
+  "correctness_scaffolding_latent_corr": -0.7031247089779804,
+  "pearson_r": {
+    "full_bank_eap": {
+      "unidim_vs_correctness": 0.9961005240141036,
+      "unidim_vs_scaffolding": -0.6620196155756465
+    },
+    "batch_eap": {
+      "unidim_vs_correctness": 0.959610221934222,
+      "unidim_vs_scaffolding": -0.6652013301528515
+    },
+    "mwle": {
+      "unidim_vs_correctness": 0.9504850849441971,
+      "unidim_vs_scaffolding": -0.6646094522002599
+    }
+  },
+  "interpretation": "The single overall-ability axis tracks correctness far more strongly (r=0.996 vs correctness, r=-0.662 vs scaffolding). Because the two latent skills are strongly NEGATIVELY correlated (r=-0.70), one composite cannot represent both: it collapses onto the higher-variance correctness dimension and inverts / obscures the scaffolding axis, so scaffolding-strong-but-correctness-weak models are misranked."
+}

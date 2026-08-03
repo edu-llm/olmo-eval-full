@@ -120,6 +120,8 @@ def main() -> int:
     p.add_argument("--range", type=float, default=6.0)
     p.add_argument("--max-se", type=float, default=0.30)
     p.add_argument("--min-evals-per-skill", type=int, default=15)
+    p.add_argument("--min-scenarios", type=int, default=0,
+                   help="minimum scenarios before a precision-based stop (0=off).")
     p.add_argument("--max-scenarios", type=int, default=50)
     p.add_argument("--n-boot", type=int, default=150)
     p.add_argument("--ridge", type=float, default=1e-2)
@@ -165,6 +167,7 @@ def main() -> int:
     print("running the scenario engine to get administered sets ...", flush=True)
     spec = scat.RunSpec(seed=42, max_se=args.max_se,
                         min_evals_per_skill=args.min_evals_per_skill,
+                        min_scenarios=args.min_scenarios,
                         max_scenarios=args.max_scenarios, selection="trace",
                         runs_dir=str(args.runs_dir))
     results = scat.run_models(models, args.bank, args.matrix, args.scenarios,

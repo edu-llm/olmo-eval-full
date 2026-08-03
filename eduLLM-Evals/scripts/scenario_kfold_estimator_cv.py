@@ -90,6 +90,8 @@ def main() -> int:
     p.add_argument("--range", type=float, default=6.0)
     p.add_argument("--max-se", type=float, default=0.30)
     p.add_argument("--min-evals-per-skill", type=int, default=15)
+    p.add_argument("--min-scenarios", type=int, default=0,
+                   help="minimum scenarios before a precision-based stop (0=off).")
     p.add_argument("--max-scenarios", type=int, default=50)
     p.add_argument("--workers", type=int, default=scat.default_workers())
     args = p.parse_args()
@@ -116,6 +118,7 @@ def main() -> int:
     pooled = {e: {"x": [], "y": {d: [] for d in dims}} for e in ESTIMATORS}
     fold_len = []
     fold_scen = []
+    per_model_rows: list[dict] = []  # additive per-model OOS export
     for f in range(args.k):
         test = folds[f]
         train = [m for m in models if m not in set(test)]
@@ -165,6 +168,7 @@ def main() -> int:
         # run the scenario engine on TEST models with the fold bank
         spec = scat.RunSpec(seed=args.seed, max_se=args.max_se,
                             min_evals_per_skill=args.min_evals_per_skill,
+                            min_scenarios=args.min_scenarios,
                             max_scenarios=args.max_scenarios, selection="trace",
                             runs_dir=str(args.tmp_dir / f"runs_f{f}"))
         results = scat.run_models(test, fold_bank, args.matrix, args.scenarios,
@@ -184,6 +188,15 @@ def main() -> int:
                 pooled[e]["x"].append(theta_ref[ti])
                 for kk, d in enumerate(dims):
                     pooled[e]["y"][d].append(ths[e][kk])
+            prow = {"model": m, "fold": f,
+                    "criteria_administered": rec0["criteria_administered"],
+                    "scenarios_administered": rec0["scenarios_administered"]}
+            for kk, d in enumerate(dims):
+                prow[f"theta_ref_{d}"] = float(theta_ref[ti][kk])
+                prow[f"theta_online_{d}"] = float(th_on[kk])
+                prow[f"theta_batch_{d}"] = float(th_ba[kk])
+                prow[f"theta_mwle_{d}"] = float(th_mw[kk])
+            per_model_rows.append(prow)
 
     # aggregate pooled OOS recovery
     agg = {}
@@ -207,6 +220,10 @@ def main() -> int:
                "oos_recovery": agg}
     with (args.out_dir / "metrics.json").open("w", encoding="utf-8") as fh:
         json.dump(metrics, fh, indent=2)
+
+    # additive: per-model OOS abilities (held-out reference + each estimator)
+    pd.DataFrame(per_model_rows).sort_values("model").to_csv(
+        args.out_dir / "oos_per_model.csv", index=False)
 
     _figures(pooled, dims, agg, args.out_dir / "figures")
 

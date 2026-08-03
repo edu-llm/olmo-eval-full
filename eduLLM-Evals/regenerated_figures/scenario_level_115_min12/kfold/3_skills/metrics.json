@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-08-03T15:51:21.275014+00:00",
+  "purpose": "scenario-level OOS k-fold estimator recovery (real engine on held-out models)",
+  "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_3skill_115_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full_115.csv",
+  "dims": [
+    "correctness",
+    "scaffolding",
+    "presentation"
+  ],
+  "k": 5,
+  "seed": 20260729,
+  "n_models": 115,
+  "config": {
+    "fit_grid": 7,
+    "ridge": 0.01,
+    "eap_grid": 61,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50
+  },
+  "mean_criteria_administered": 206.4695652173913,
+  "oos_recovery": {
+    "online": {
+      "correctness": {
+        "slope": 0.6990433223043464,
+        "r": 0.9519457265940438,
+        "gap_worst12": 2.3339778037025307,
+        "n": 115
+      },
+      "scaffolding": {
+        "slope": 0.8711032069768502,
+        "r": 0.9054996597181303,
+        "gap_worst12": 0.06934269900138328,
+        "n": 115
+      },
+      "presentation": {
+        "slope": 0.703399722531816,
+        "r": 0.9560927789600026,
+        "gap_worst12": 1.7091961854193725,
+        "n": 115
+      }
+    },
+    "batch": {
+      "correctness": {
+        "slope": 0.8237117152111878,
+        "r": 0.970428454792793,
+        "gap_worst12": 1.3744788320450556,
+        "n": 115
+      },
+      "scaffolding": {
+        "slope": 0.9020022456621081,
+        "r": 0.9263557784390637,
+        "gap_worst12": 0.125446868324428,
+        "n": 115
+      },
+      "presentation": {
+        "slope": 0.807483793370784,
+        "r": 0.9691451328551326,
+        "gap_worst12": 1.073812867444586,
+        "n": 115
+      }
+    },
+    "mwle": {
+      "correctness": {
+        "slope": 1.1151056077857526,
+        "r": 0.9694233702968025,
+        "gap_worst12": -0.850667895389153,
+        "n": 115
+      },
+      "scaffolding": {
+        "slope": 0.9973582567457088,
+        "r": 0.915999065715535,
+        "gap_worst12": 0.07478319192410326,
+        "n": 115
+      },
+      "presentation": {
+        "slope": 1.0674436743998825,
+        "r": 0.965314811961136,
+        "gap_worst12": -0.6715064446844589,
+        "n": 115
+      }
+    }
+  }
+}

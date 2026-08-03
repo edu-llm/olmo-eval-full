@@ -272,9 +272,11 @@ class RunSpec:
     top_n: int = 5
     max_se: float = 0.30
     min_evals_per_skill: int = 15
+    min_scenarios: int = 0
     max_scenarios: int = 50
     unmapped_criteria: str = "judge"
     selection: str = "trace"
+    mode: str = "cat"  # "cat" (adaptive) or "baseline" (seeded-random scenario order)
     runs_dir: str = str(ROOT / "staging" / "engine_runs")
     write_logs: bool = False  # offline replays skip the per-line flushed JSONL logs
 
@@ -283,6 +285,7 @@ class RunSpec:
             seed=self.seed, top_n=self.top_n,
             max_se={s: self.max_se for s in dims},
             min_evals_per_skill=self.min_evals_per_skill,
+            min_scenarios=self.min_scenarios,
             max_scenarios=self.max_scenarios,
             output_dir=self.runs_dir,
             unmapped_criteria=self.unmapped_criteria,
@@ -301,8 +304,8 @@ def run_one_model(model: str, rubrics: dict, scen_raw: dict, row: pd.Series,
     bank = bank_for_model(rubrics, scen_raw, row)
     tutor = MatrixTutor(model)
     judge = MatrixJudge(row, model)
-    run_id = f"offline_{tutor.name}_{spec.selection}_s{spec.seed}"
-    final = run_evaluation(bank, tutor, judge, cfg, mode="cat", run_id=run_id)
+    run_id = f"offline_{tutor.name}_{spec.selection}_{spec.mode}_s{spec.seed}"
+    final = run_evaluation(bank, tutor, judge, cfg, mode=spec.mode, run_id=run_id)
     # Prefer the order returned in the result (write_logs=False); fall back to the log file.
     order = final.get("administered_criteria")
     if order is None:

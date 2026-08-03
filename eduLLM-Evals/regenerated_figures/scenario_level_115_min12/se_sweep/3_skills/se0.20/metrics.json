@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-08-02T21:51:59.231308+00:00",
+  "driver": "scripts/offline_engine_driver.py",
+  "engine": "tutor_cat.engine.run_evaluation (production, unmodified)",
+  "selection": "tutor_cat.selector.select_next targeting argmax(se)",
+  "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_3skill_115_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full_115.csv",
+  "matrix_sha256": "8f9baa1689228bbc4a253971fd34bce12d6c78f1a367c2d459fff83cf8621f8b",
+  "provenance_aligned": true,
+  "dims": [
+    "correctness",
+    "scaffolding",
+    "presentation"
+  ],
+  "negatives": {
+    "n_negative_cells": 445,
+    "n_negative_items": 434,
+    "negative_policy": "clamp",
+    "n_records_after": 4325
+  },
+  "config": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.2,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "unmapped_criteria": "judge",
+    "grid_nodes_per_dim": 61,
+    "range": 8.0
+  },
+  "n_models": 115,
+  "stop_reasons": {
+    "max_scenarios_reached": 113,
+    "precision_reached": 2
+  },
+  "scenarios_administered": {
+    "mean": 49.82608695652174,
+    "median": 50.0,
+    "max": 50
+  },
+  "criteria_administered": {
+    "mean": 301.5217391304348,
+    "median": 302.0,
+    "max": 344
+  },
+  "precision_reached": 2,
+  "recovery": {
+    "theta_cat": {
+      "correctness": {
+        "slope": 0.6634110251170094,
+        "r": 0.9480625941158555,
+        "gap_worst12": 2.8505869272949664,
+        "n_distinct_x": 97
+      },
+      "scaffolding": {
+        "slope": 0.8157854375924233,
+        "r": 0.9411126881696565,
+        "gap_worst12": 0.2387614099087121,
+        "n_distinct_x": 112
+      },
+      "presentation": {
+        "slope": 0.7720946192164603,
+        "r": 0.9763886564259353,
+        "gap_worst12": 1.6820619282843114,
+        "n_distinct_x": 113
+      }
+    },
+    "theta_batch": {
+      "correctness": {
+        "slope": 0.7793173404700119,
+        "r": 0.9692710624832493,
+        "gap_worst12": 1.9471971802116672,
+        "n_distinct_x": 97
+      },
+      "scaffolding": {
+        "slope": 0.8624318006676246,
+        "r": 0.9488280669626522,
+        "gap_worst12": 0.16461756159548077,
+        "n_distinct_x": 112
+      },
+      "presentation": {
+        "slope": 0.8449786730477716,
+        "r": 0.9834701832956587,
+        "gap_worst12": 1.161543253241092,
+        "n_distinct_x": 113
+      }
+    },
+    "theta_mwle": {
+      "correctness": {
+        "slope": 1.053369437156141,
+        "r": 0.9731871671631606,
+        "gap_worst12": -0.38171542647934015,
+        "n_distinct_x": 97
+      },
+      "scaffolding": {
+        "slope": 1.0219653880802997,
+        "r": 0.9491503386742892,
+        "gap_worst12": 0.04194016036129716,
+        "n_distinct_x": 112
+      },
+      "presentation": {
+        "slope": 1.1494285353742353,
+        "r": 0.9789109682299084,
+        "gap_worst12": -1.2772625565260245,
+        "n_distinct_x": 113
+      }
+    }
+  }
+}
