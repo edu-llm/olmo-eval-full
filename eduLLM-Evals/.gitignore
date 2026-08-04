@@ -134,10 +134,13 @@ data/experimental/
 # EduBench: candidate-bank scenario/rubric artifacts (HF-derived, reproducible
 # via scripts/ingest_edubench.py / scripts/build_edubench_merged.py) -- never
 # tracked, regardless of nesting depth (unmerged/, merged/, given_qmat/, ...).
-data/EduBench/**/scenarios.json
-data/EduBench/**/scenarios.jsonl
-data/EduBench/**/rubrics.json
-data/EduBench/**/rubrics.jsonl
+# Globbed on the stem so sampled variants (scenarios_252.jsonl, rubrics_252.jsonl
+# from scripts/stratified_sample_bank.py) are covered too - the exact filenames
+# used to slip through and put ~20MB of regenerable data in a commit.
+data/EduBench/**/scenarios*.json
+data/EduBench/**/scenarios*.jsonl
+data/EduBench/**/rubrics*.json
+data/EduBench/**/rubrics*.jsonl
 # Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible).
 data/EduBench/en_data/
 
