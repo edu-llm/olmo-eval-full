@@ -85,3 +85,8 @@ main/
 
 # LitSearch rerank pools: built locally, hosted on HF (allenai/litsearch-rerank-pools)
 src/olmo_eval/evals/tasks/data/litsearch_rerank_pools.jsonl
+
+# eduLLM-Evals working files (present on disk from other branches; not part of this
+# branch). Ignore the whole tree so a stray "stage all" can't sweep in data/, runs/,
+# logs/, etc. AWS smoke-test files live at repo-root tests/aws/ instead.
+/eduLLM-Evals/
