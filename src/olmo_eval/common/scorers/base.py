@@ -206,6 +206,34 @@ class SQuADF1Scorer(Scorer):
 
 
 @dataclass(frozen=True, slots=True)
+class SQuADExactMatchScorer(Scorer):
+    """Score using SQuAD-style exact match over all reference answers.
+
+    The exact-match companion to :class:`SQuADF1Scorer`, sharing its normalization
+    and its multi-reference handling so the two report on the same footing. Plain
+    :class:`ExactMatchScorer` would disagree with the F1 it sits beside, since it
+    compares raw strings and so penalizes differences in articles, punctuation and
+    casing that SQuAD scoring is defined to ignore.
+
+    Uses metadata["all_answers"] for multiple references. Falls back to
+    instance.gold_answer if metadata is not present.
+    """
+
+    name: str = "squad_exact_match"
+
+    def score(self, instance: Instance, output: LMOutput) -> float:
+        if output.extracted_answer is None:
+            return 0.0
+        pred = _squad_normalize_answer(str(output.extracted_answer))
+        all_answers = instance.metadata.get("all_answers", [])
+        if not all_answers:
+            if instance.gold_answer is None:
+                return 0.0
+            all_answers = [instance.gold_answer]
+        return 1.0 if any(pred == _squad_normalize_answer(str(ref)) for ref in all_answers) else 0.0
+
+
+@dataclass(frozen=True, slots=True)
 class BitsPerByteScorer(Scorer):
     """Compute bits per byte from logprobs.
 

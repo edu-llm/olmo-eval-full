@@ -12,6 +12,7 @@ from .base import (
     PerplexityScorer,
     ProcessScorer,
     Scorer,
+    SQuADExactMatchScorer,
     SQuADF1Scorer,
 )
 from .citation import (
@@ -74,6 +75,7 @@ __all__ = [
     "score_citation_group",
     "score_citations_for_sections",
     "Scorer",
+    "SQuADExactMatchScorer",
     "SQuADF1Scorer",
     "SimpleQAGrade",
     "SimpleQAJudgeScorer",

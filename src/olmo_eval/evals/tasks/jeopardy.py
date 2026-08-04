@@ -2,7 +2,8 @@ import re
 from collections.abc import Iterator
 from typing import Any
 
-from olmo_eval.common.metrics import SQuADF1Metric
+from olmo_eval.common.metrics import AccuracyMetric, SQuADF1Metric
+from olmo_eval.common.scorers import SQuADExactMatchScorer
 from olmo_eval.common.types import Instance, LMRequest, RequestType, SamplingParams, Split
 from olmo_eval.data import DataSource
 from olmo_eval.evals.tasks.common import Task, register, register_variant
@@ -22,7 +23,14 @@ def _format_query(category: str, question: str) -> str:
 
 class JeopardyBase(Task):
     fewshot_split: str = "train"
-    metrics = (SQuADF1Metric(),)
+    # F1 stays primary, matching how Jeopardy is conventionally reported. Exact match
+    # is reported alongside it because F1 gives partial credit, so the two answer
+    # different questions: "how close was the answer" versus "was it right".
+    metrics = (
+        SQuADF1Metric(),
+        AccuracyMetric(scorer=SQuADExactMatchScorer),
+    )
+    primary_metric = SQuADF1Metric()
     sampling_params = SamplingParams(
         max_tokens=50,
         temperature=0,
