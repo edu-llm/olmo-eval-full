@@ -1,0 +1,186 @@
+"""CLI entry point that drives an MCQ CAT session for one checkpoint.
+
+Usage::
+
+    python -m diagnostics.mcq_cat.runner --cat-style NAME \\
+        --checkpoint <path|s3://...> --s3-out s3://bucket/prefix
+
+The runner resolves the requested style through the auto-discovering registry and
+runs it through the generic CAT engine. It resolves any registered style without
+being modified when new styles are added.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import sys
+import tempfile
+from datetime import UTC, datetime
+from pathlib import Path
+
+from . import registry
+from .common import cat_loop, inference, s3_io
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [mcq_cat.runner] %(levelname)s: %(message)s",
+)
+log = logging.getLogger("mcq_cat.runner")
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Build the runner's argument parser."""
+    parser = argparse.ArgumentParser(
+        prog="python -m diagnostics.mcq_cat.runner",
+        description="Run an MCQ CAT diagnostic on a checkpoint.",
+    )
+    parser.add_argument("--cat-style", help="Registered CAT style name (see --list-styles).")
+    parser.add_argument("--checkpoint", help="Checkpoint local path or s3:// URI.")
+    parser.add_argument("--s3-out", help="Destination s3:// URI (or local dir) for results.")
+    parser.add_argument("--benchmark", help="Benchmark JSONL path/URI or registered task name.")
+    parser.add_argument("--irt-params", help="IRT parameter JSON path/URI for the benchmark items.")
+    parser.add_argument(
+        "--se-threshold",
+        type=float,
+        default=0.3,
+        help="Standard-error stop threshold (default: 0.3).",
+    )
+    parser.add_argument(
+        "--max-items",
+        type=int,
+        default=50,
+        help="Maximum number of items to administer (default: 50).",
+    )
+    parser.add_argument(
+        "--checkpoint-kind",
+        default="hf",
+        choices=["hf", "olmo_core"],
+        help="Checkpoint format to load (default: hf).",
+    )
+    parser.add_argument(
+        "--batch-size", type=int, default=16, help="Scoring batch size (default: 16)."
+    )
+    parser.add_argument(
+        "--aws-region", default="us-east-1", help="AWS region for S3 (default: us-east-1)."
+    )
+    parser.add_argument("--s3-endpoint-url", default=None, help="Optional S3 endpoint URL.")
+    parser.add_argument(
+        "--list-styles", action="store_true", help="List discovered CAT styles and exit."
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Resolve the style and print the plan without loading the model.",
+    )
+    return parser
+
+
+def _write_report(report_dict: dict, args: argparse.Namespace) -> str:
+    """Write the report to the S3 or local destination and return its location."""
+    payload = json.dumps(report_dict, indent=2)
+    name = "cat_report.json"
+    if s3_io.is_s3_uri(args.s3_out):
+        s3_io.upload_files(
+            args.s3_out,
+            {name: payload},
+            region=args.aws_region,
+            endpoint_url=args.s3_endpoint_url,
+        )
+        return f"{args.s3_out.rstrip('/')}/{name}"
+    dest_dir = Path(args.s3_out)
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    out_path = dest_dir / name
+    out_path.write_text(payload)
+    return str(out_path)
+
+
+def run(args: argparse.Namespace) -> int:
+    """Execute the runner for parsed ``args``."""
+    if args.list_styles:
+        styles = registry.available_styles()
+        print("Available CAT styles:", ", ".join(styles) if styles else "<none>")
+        return 0
+
+    missing = [
+        flag
+        for flag, value in (
+            ("--cat-style", args.cat_style),
+            ("--checkpoint", args.checkpoint),
+            ("--s3-out", args.s3_out),
+        )
+        if not value
+    ]
+    if missing:
+        log.error("Missing required arguments: %s", ", ".join(missing))
+        return 2
+
+    style = registry.get_cat(args.cat_style)
+    benchmark = args.benchmark or ""
+
+    if args.dry_run:
+        log.info(
+            "[dry-run] style=%s benchmark=%s checkpoint=%s kind=%s "
+            "se_threshold=%.3f max_items=%d -> %s",
+            args.cat_style,
+            benchmark or "<unset>",
+            args.checkpoint,
+            args.checkpoint_kind,
+            args.se_threshold,
+            args.max_items,
+            args.s3_out,
+        )
+        return 0
+
+    config = inference.InferenceConfig(
+        checkpoint_kind=args.checkpoint_kind,
+        batch_size=args.batch_size,
+    )
+
+    with tempfile.TemporaryDirectory(prefix="mcq-cat-") as tmp:
+        checkpoint_dir = s3_io.resolve_checkpoint(
+            args.checkpoint,
+            Path(tmp) / "checkpoint",
+            region=args.aws_region,
+            endpoint_url=args.s3_endpoint_url,
+        )
+        model = inference.load_scoring_model(checkpoint_dir, config)
+
+        bank = style.download_benchmark(benchmark, dest=Path(tmp) / "benchmark")
+        irt_bank = style.load_irt_params(args.irt_params or benchmark)
+
+        report = cat_loop.run_cat(
+            style,
+            bank=bank,
+            irt_bank=irt_bank,
+            model=model,
+            se_threshold=args.se_threshold,
+            max_items=args.max_items,
+        )
+
+    report_dict = report.to_dict()
+    report_dict["run"] = {
+        "cat_style": args.cat_style,
+        "checkpoint": args.checkpoint,
+        "checkpoint_kind": args.checkpoint_kind,
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
+    location = _write_report(report_dict, args)
+    log.info("Done. Report written to %s", location)
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Parse arguments and run the CAT diagnostic."""
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    try:
+        return run(args)
+    except Exception as exc:  # noqa: BLE001 - surface a clear failure to the caller
+        log.error("mcq_cat runner failed: %s", exc)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
