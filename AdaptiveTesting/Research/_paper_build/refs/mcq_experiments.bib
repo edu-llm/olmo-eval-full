@@ -1,0 +1,146 @@
+% References for section 12 (MCQ experiments: calibration-pool size, model
+% diversity, parameter range, stopping rule, discrimination parameter).
+% Real, verifiable entries only, checked against primary sources on 2026-08-02.
+% If a claim needs a source not listed here, mark it
+% \textcolor{red}{[CITATION NEEDED]} in the text rather than inventing an entry.
+
+% --- ATLAS (the method we rebuild) -------------------------------------------
+@inproceedings{li2026adaptive,
+  title     = {Adaptive Testing for {LLM} Evaluation: A Psychometric Alternative to Static Benchmarks},
+  author    = {Li, Peiyu and Tang, Xiuxiu and Chen, Si and Cheng, Ying and Metoyer, Ronald and Hua, Ting and Chawla, Nitesh V.},
+  booktitle = {Proceedings of the Forty-Third International Conference on Machine Learning (ICML)},
+  year      = {2026},
+  note      = {Spotlight. arXiv:2511.04689}
+}
+
+% --- Item response theory and CAT foundations -------------------------------
+@incollection{birnbaum1968,
+  title     = {Some Latent Trait Models and Their Use in Inferring an Examinee's Ability},
+  author    = {Birnbaum, Allan},
+  booktitle = {Statistical Theories of Mental Test Scores},
+  editor    = {Lord, Frederic M. and Novick, Melvin R.},
+  pages     = {397--479},
+  publisher = {Addison-Wesley},
+  address   = {Reading, MA},
+  year      = {1968}
+}
+
+@book{rasch1960,
+  title     = {Probabilistic Models for Some Intelligence and Attainment Tests},
+  author    = {Rasch, Georg},
+  year      = {1960},
+  publisher = {Danish Institute for Educational Research},
+  address   = {Copenhagen}
+}
+
+@book{lord1980irt,
+  title     = {Applications of Item Response Theory to Practical Testing Problems},
+  author    = {Lord, Frederic M.},
+  year      = {1980},
+  publisher = {Lawrence Erlbaum Associates},
+  address   = {Hillsdale, NJ}
+}
+
+@book{embretson2000irt,
+  title     = {Item Response Theory for Psychologists},
+  author    = {Embretson, Susan E. and Reise, Steven P.},
+  year      = {2000},
+  publisher = {Lawrence Erlbaum Associates},
+  address   = {Mahwah, NJ}
+}
+
+@book{wainer2000cat,
+  title     = {Computerized Adaptive Testing: A Primer},
+  author    = {Wainer, Howard and Dorans, Neil J. and Eignor, Daniel and Flaugher, Ronald and Green, Bert F. and Mislevy, Robert J. and Steinberg, Lynne and Thissen, David},
+  edition   = {2nd},
+  year      = {2000},
+  publisher = {Lawrence Erlbaum Associates},
+  address   = {Mahwah, NJ}
+}
+
+% --- Effect of calibration-sample size / item-parameter uncertainty ---------
+@article{tsutakawa1990,
+  title   = {The Effect of Uncertainty of Item Parameter Estimation on Ability Estimates},
+  author  = {Tsutakawa, Robert K. and Johnson, Jane C.},
+  journal = {Psychometrika},
+  volume  = {55},
+  number  = {2},
+  pages   = {371--390},
+  year    = {1990}
+}
+
+@article{patton2013,
+  title   = {The Influence of Item Calibration Error on Variable-Length Computerized Adaptive Testing},
+  author  = {Patton, Jeffrey M. and Cheng, Ying and Yuan, Ke-Hai and Diao, Qi},
+  journal = {Applied Psychological Measurement},
+  volume  = {37},
+  number  = {1},
+  pages   = {24--40},
+  year    = {2013}
+}
+
+% --- Calibration software ----------------------------------------------------
+@article{chalmers2012mirt,
+  title   = {{mirt}: A Multidimensional Item Response Theory Package for the {R} Environment},
+  author  = {Chalmers, R. Philip},
+  journal = {Journal of Statistical Software},
+  volume  = {48},
+  number  = {6},
+  pages   = {1--29},
+  year    = {2012}
+}
+
+% --- Data source -------------------------------------------------------------
+@misc{fourrier2024openllm,
+  title        = {Open {LLM} Leaderboard v2},
+  author       = {Fourrier, Cl{\'e}mentine and Habib, Nathan and Lozovskaya, Alina and Szafer, Konrad and Wolf, Thomas},
+  year         = {2024},
+  publisher    = {Hugging Face},
+  howpublished = {\url{https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard}}
+}
+
+% --- Benchmarks used ---------------------------------------------------------
+@article{clark2018arc,
+  title   = {Think You Have Solved Question Answering? {Try} {ARC}, the {AI2} Reasoning Challenge},
+  author  = {Clark, Peter and Cowhey, Isaac and Etzioni, Oren and Khot, Tushar and Sabharwal, Ashish and Schoenick, Carissa and Tafjord, Oyvind},
+  journal = {arXiv preprint arXiv:1803.05457},
+  year    = {2018}
+}
+
+@article{zhou2023ifeval,
+  title   = {Instruction-Following Evaluation for Large Language Models},
+  author  = {Zhou, Jeffrey and Lu, Tianjian and Mishra, Swaroop and Brahma, Siddhartha and Basu, Sujoy and Luan, Yi and Zhou, Denny and Hou, Le},
+  journal = {arXiv preprint arXiv:2311.07911},
+  year    = {2023}
+}
+
+@inproceedings{hendrycks2021math,
+  title     = {Measuring Mathematical Problem Solving With the {MATH} Dataset},
+  author    = {Hendrycks, Dan and Burns, Collin and Kadavath, Saurav and Arora, Akul and Basart, Steven and Tang, Eric and Song, Dawn and Steinhardt, Jacob},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS): Datasets and Benchmarks Track},
+  year      = {2021},
+  note      = {arXiv:2103.03874}
+}
+
+@inproceedings{rein2024gpqa,
+  title     = {{GPQA}: A Graduate-Level Google-Proof {Q\&A} Benchmark},
+  author    = {Rein, David and Hou, Betty Li and Stickland, Asa Cooper and Petty, Jackson and Pang, Richard Yuanzhe and Dirani, Julien and Michael, Julian and Bowman, Samuel R.},
+  booktitle = {First Conference on Language Modeling (COLM)},
+  year      = {2024},
+  note      = {arXiv:2311.12022}
+}
+
+@inproceedings{suzgun2023bbh,
+  title     = {Challenging {BIG}-Bench Tasks and Whether Chain-of-Thought Can Solve Them},
+  author    = {Suzgun, Mirac and Scales, Nathan and Sch{\"a}rli, Nathanael and Gehrmann, Sebastian and Tay, Yi and Chung, Hyung Won and Chowdhery, Aakanksha and Le, Quoc V. and Chi, Ed H. and Zhou, Denny and Wei, Jason},
+  booktitle = {Findings of the Association for Computational Linguistics: ACL 2023},
+  pages     = {13003--13051},
+  year      = {2023}
+}
+
+@article{lelievre2025pedagogy,
+  title        = {Benchmarking the Pedagogical Knowledge of Large Language Models},
+  author       = {Leli{\`e}vre, Maxime and Waldock, Amy and Liu, Meng and Vald{\'e}s Aspillaga, Natalia and Mackintosh, Alasdair and Ogando Portela, Mar{\'i}a Jos{\'e} and Lee, Jared and Atherton, Paul and Ince, Robin A. A. and Garrod, Oliver G. B.},
+  journal      = {arXiv preprint arXiv:2506.18710},
+  year         = {2025}
+}

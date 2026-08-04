@@ -1,0 +1,103 @@
+% Bibliography for the "MIRT discussion" section (MCQ track).
+% All entries verified against publisher / arXiv / DOI records (checked 2026-08).
+%
+% Shared keys (kept byte-consistent with sibling section bibs so the assembler
+% can dedupe cleanly; do not fork these into new keys):
+%   li2025atlas        -> also in refs/abstract_strategy.bib, refs/mcq_feasibility.bib
+%                         (note: refs/mcq_atlas.bib cites the same ATLAS paper under
+%                          the separate key li2026adaptive; reconcile at assembly).
+%   chalmers2012mirt   -> also in refs/frq_mirt.bib
+%   bock1981marginal   -> also in refs/irt_appendix.bib
+% Section-unique keys: reckase2009mirt, segall1996mat, hattie1985unidim,
+%   akaike1974aic, schwarz1978bic.
+
+@misc{li2025atlas,
+  author        = {Li, Peiyu and Tang, Xiuxiu and Chen, Si and Cheng, Ying and
+                   Metoyer, Ronald and Hua, Ting and Chawla, Nitesh V.},
+  title         = {Adaptive Testing for {LLM} Evaluation: A Psychometric
+                   Alternative to Static Benchmarks},
+  year          = {2025},
+  eprint        = {2511.04689},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  doi           = {10.48550/arXiv.2511.04689},
+  note          = {arXiv:2511.04689}
+}
+
+@book{reckase2009mirt,
+  title     = {Multidimensional Item Response Theory},
+  author    = {Reckase, Mark D.},
+  year      = {2009},
+  publisher = {Springer},
+  address   = {New York, NY},
+  series    = {Statistics for Social and Behavioral Sciences},
+  doi       = {10.1007/978-0-387-89976-3},
+  isbn      = {978-0-387-89975-6}
+}
+
+@article{chalmers2012mirt,
+  title     = {{mirt}: A Multidimensional Item Response Theory Package for the {R} Environment},
+  author    = {Chalmers, R. Philip},
+  journal   = {Journal of Statistical Software},
+  volume    = {48},
+  number    = {6},
+  pages     = {1--29},
+  year      = {2012},
+  doi       = {10.18637/jss.v048.i06}
+}
+
+@article{segall1996mat,
+  title   = {Multidimensional Adaptive Testing},
+  author  = {Segall, Daniel O.},
+  journal = {Psychometrika},
+  year    = {1996},
+  volume  = {61},
+  number  = {2},
+  pages   = {331--354},
+  doi     = {10.1007/BF02294343}
+}
+
+@article{bock1981marginal,
+  author  = {Bock, R. Darrell and Aitkin, Murray},
+  title   = {Marginal Maximum Likelihood Estimation of Item Parameters:
+             Application of an {EM} Algorithm},
+  journal = {Psychometrika},
+  year    = {1981},
+  volume  = {46},
+  number  = {4},
+  pages   = {443--459},
+  doi     = {10.1007/BF02293801}
+}
+
+@article{hattie1985unidim,
+  title   = {Methodology Review: Assessing Unidimensionality of Tests and Items},
+  author  = {Hattie, John},
+  journal = {Applied Psychological Measurement},
+  year    = {1985},
+  volume  = {9},
+  number  = {2},
+  pages   = {139--164},
+  doi     = {10.1177/014662168500900204}
+}
+
+@article{akaike1974aic,
+  title   = {A New Look at the Statistical Model Identification},
+  author  = {Akaike, Hirotugu},
+  journal = {IEEE Transactions on Automatic Control},
+  year    = {1974},
+  volume  = {19},
+  number  = {6},
+  pages   = {716--723},
+  doi     = {10.1109/TAC.1974.1100705}
+}
+
+@article{schwarz1978bic,
+  title   = {Estimating the Dimension of a Model},
+  author  = {Schwarz, Gideon},
+  journal = {The Annals of Statistics},
+  year    = {1978},
+  volume  = {6},
+  number  = {2},
+  pages   = {461--464},
+  doi     = {10.1214/aos/1176344136}
+}

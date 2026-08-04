@@ -249,8 +249,8 @@ def fig_mechanism(results: dict) -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(benches)
     ax.set_ylabel("Pearson r(full-bank theta, actual score)")
-    ax.set_title("(A) Latent-trait recovery collapses when a<=0 items are kept\n"
-                 "-> the 'link failure' was bad items, not the benchmark")
+    ax.set_title("(A) theta-accuracy r drops when a<=0 items are kept\n"
+                 "cause is bad items, not the benchmark")
     ax.legend(fontsize=8)
     ax.grid(True, axis="y", alpha=0.3)
 
@@ -266,7 +266,7 @@ def fig_mechanism(results: dict) -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(benches)
     ax.set_ylabel("% of fitted bank items")
-    ax.set_title("(B) Bank pollution: fraction of non-positive / near-zero a")
+    ax.set_title("(B) Fraction of items with non-positive or near-zero a")
     ax.legend(fontsize=8)
     ax.grid(True, axis="y", alpha=0.3)
 
@@ -281,8 +281,8 @@ def fig_mechanism(results: dict) -> None:
     ax.axvline(0, color="red", ls="--", lw=1.5)
     ax.set_xlabel("item discrimination a (clipped to [-8,8])")
     ax.set_ylabel("density")
-    ax.set_title("(C) Unfiltered discrimination: large a<=0 mass (left of red)\n"
-                 "gpqa/musr banks are ~half polarity-flipped/failed fits")
+    ax.set_title("(C) Unfiltered discrimination distribution (red line at a=0)\n"
+                 "gpqa and musr have about half their items at a<=0")
     ax.legend(fontsize=8)
     ax.grid(True, alpha=0.3)
 
@@ -298,11 +298,11 @@ def fig_mechanism(results: dict) -> None:
                label=f"filtered theta (r={results[b]['row']['r_theta_score_filtered']:.2f})")
     ax.set_xlabel("full-bank EAP theta")
     ax.set_ylabel("actual gpqa score")
-    ax.set_title("(D) gpqa: filtering realigns theta with score")
+    ax.set_title("(D) gpqa: dropping a<=0 items raises theta-score r")
     ax.legend(fontsize=8)
     ax.grid(True, alpha=0.3)
 
-    fig.suptitle("Item-quality (a<=0) mechanism behind the apparent gpqa/musr link failure",
+    fig.suptitle("Why gpqa and musr showed low link r: a<=0 items in the bank",
                  fontsize=14, y=1.0)
     fig.tight_layout()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -336,7 +336,7 @@ def fig_bbh(results: dict) -> None:
                 ha="center", fontsize=8)
     ax.set_ylabel("per-model full-benchmark score")
     ax.set_title("(1) Score spread across models\n"
-                 "bbh has healthy spread -> low variance is NOT the cause")
+                 "bbh spread is wide, so low variance is not the cause")
     ax.grid(True, axis="y", alpha=0.3)
 
     # (2) early-stop under-sampling: full-bank theta-r vs CAT r, + mean #items
@@ -353,8 +353,8 @@ def fig_bbh(results: dict) -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(benches)
     ax.set_ylabel("Pearson r vs actual")
-    ax.set_title("(2) bbh: biggest full-bank -> CAT drop\n"
-                 "CAT stops at the ~8-item MINIMUM (inflated a) -> under-samples")
+    ax.set_title("(2) bbh has the largest full-bank to CAT r drop\n"
+                 "CAT stops near the 8-item minimum and under-samples")
     ax.legend(fontsize=8)
     ax.grid(True, axis="y", alpha=0.3)
 
@@ -374,7 +374,7 @@ def fig_bbh(results: dict) -> None:
     ax.set_xlabel("actual score")
     ax.set_ylabel("CAT p-IRT prediction (SE<=0.3)")
     ax.set_title("(3) bbh predictions are over-dispersed (MAE 0.11, highest)\n"
-                 "8 ultra-high-a items give noisy, extreme theta")
+                 "few high-a items give noisy, extreme theta")
     ax.legend(fontsize=7)
     ax.grid(True, alpha=0.3)
 
@@ -388,12 +388,12 @@ def fig_bbh(results: dict) -> None:
     ax.set_xlabel("item p-value (proportion correct)")
     ax.set_ylabel("density")
     ax.set_title("(4) Item difficulty (filtered items)\n"
-                 "bbh a-median ~4 (highest) -> overconfident SE, early stop")
+                 "bbh a-median about 4 (highest), so SE is overconfident and stops early")
     ax.legend(fontsize=7)
     ax.grid(True, alpha=0.3)
 
-    fig.suptitle("bbh diagnosis: the true weak case — early-stop under-sampling of a "
-                 "heterogeneous suite (not bad items, not low variance)",
+    fig.suptitle("bbh diagnosis: early-stop under-sampling of a heterogeneous suite "
+                 "(not bad items, not low variance)",
                  fontsize=13, y=1.0)
     fig.tight_layout()
     out = OUT_DIR / "bbh_diagnosis.png"

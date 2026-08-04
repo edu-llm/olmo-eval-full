@@ -423,7 +423,7 @@ def cross_figures(all_stats: dict, ses: list[float], fig_dir: Path) -> None:
                 label=f"{bench} random")
     ax.set_xlabel("SE stopping threshold")
     ax.set_ylabel("mean # items administered")
-    ax.set_title("OpenLM: mean #items to reach SE — adaptive (Fisher) vs random\n"
+    ax.set_title("OpenLM: mean #items to reach SE, adaptive (Fisher) vs random\n"
                  "(ATLAS-style random-item baseline)")
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=7, ncol=2)

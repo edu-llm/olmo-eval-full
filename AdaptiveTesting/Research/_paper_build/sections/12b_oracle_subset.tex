@@ -1,0 +1,201 @@
+% =============================================================================
+% Subsection 12b: Oracle (upper-bound) latent-ability subset selection.
+% Nests under the MCQ "Experiments" section; splice where the red
+% [ORACLE SUBSET RESULT PENDING] placeholder sits in 12_mcq_experiments.tex
+% (it carries \label{subsec:mcq-oracle}).
+% Bib: refs/oracle_subset.bib
+%
+% FIGURES REFERENCED (\includegraphics{figures/<basename>}).
+% Integrator: copy each basename into ./figures/ from the ABSOLUTE source path.
+%   figures/oracle_curve_ifeval.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/oracle_subset_selection/oracle_curve_ifeval.png
+%   figures/latent_axis_ifeval.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/oracle_subset_selection/latent_axis_ifeval.png
+%   figures/oracle_curve_math.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/oracle_subset_selection/oracle_curve_math.png
+%   figures/latent_axis_math.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/oracle_subset_selection/latent_axis_math.png
+%
+% TABLE SOURCE DATA (absolute):
+%   Table (min-N-to-hold) <- .../data/oracle_subset_selection/README.md, results.csv
+%
+% PREAMBLE REQUIREMENTS (main document): \usepackage{graphicx}, \usepackage{xcolor},
+%   \usepackage{booktabs}.
+%
+% Convention: this is a fully-AI subsection. Prose is wrapped in \aiadd{...}
+%   (renders blue) and the subsection closes with an \aibullets{...} skeleton a
+%   human can rewrite from. [CITATION NEEDED] markers render red. Every number
+%   traces to oracle_subset_selection/results.csv and README.md.
+% =============================================================================
+
+\providecommand{\aiadd}[1]{\textcolor{blue}{#1}}
+\providecommand{\aibullets}[1]{{\color{blue}#1}}
+
+% =============================================================================
+\subsection{Oracle latent-ability subset selection}
+\label{subsec:mcq-oracle}
+
+\aiadd{The diversity experiment in Section~\ref{subsec:mcq-diversity} showed that
+choosing calibration models well saves models over random sampling, but only by
+about $1.4$ to $1.6\times$. That leaves a ceiling question: how much could the
+best possible subset save if we allowed it to use information that is available
+only after calibration? We answer it with an oracle. We calibrate the 3PL bank on
+the whole capped pool~\cite{li2026adaptive,chalmers2012mirt}, read each model's
+fitted latent ability (its EAP $\theta$)~\cite{lord1980irt,embretson2000irt} from
+that bank, and then pick subsets that either spread across the fitted ability
+range or directly maximize the held-out correlation. Both choices use the final
+abilities, and the greedy choice also reads the held-out accuracies it is scored
+against, so every value here is an upper bound rather than a rule a practitioner
+can run. It marks how far selection could go, not how to get there.}
+
+\aiadd{The pool is capped at 300 models drawn once with a fixed seed from the
+cleaned training pool ($992$ models for IFEval~\cite{zhou2023ifeval}, $811$ for
+MATH~\cite{hendrycks2021math}), and this capped pool is the reference: both the
+full-pool correlation and the fitted abilities come from it. The held-out split
+is the same fixed seed-7 $10\%$ test set used in the other
+experiments~\cite{fourrier2024openllm}, $110$ IFEval models and $90$ MATH models,
+so the curves line up with Sections~\ref{subsec:mcq-trainsize}
+and~\ref{subsec:mcq-diversity}. We fit the abilities once, sort the 300 models
+into five equal latent-ability groups of $60$, and report at $\mathrm{SE}\le0.3$.
+On IFEval the groups span $\theta$ from about $-3.2$ to $1.6$
+(Figure~\ref{fig:mcq-oracle-axis}). The full 300-model pool reaches $r=0.950$ on
+IFEval and $r=0.933$ on MATH.}
+
+\aiadd{The greedy oracle holds the reference correlation with very few models
+(Table~\ref{tab:mcq-oracle}, Figure~\ref{fig:mcq-oracle}). On IFEval it reaches
+$r=0.941$ at $N=50$, inside the tight $0.02$ band of the 300-model reference, and
+$r=0.953$ at $N=100$, just above the reference. A random draw needs about $156$
+models to come within $0.02$ of the reference and about $88$ to come within
+$0.05$, so the greedy oracle holds the $0.02$ band with about $3.1\times$ fewer
+models than random and the $0.05$ band with about $1.8\times$ fewer. We built the
+greedy search on IFEval only. On MATH each calibration runs the long adaptive test
+to $\mathrm{SE}\le0.3$ (about $164$ items), which makes the sequential greedy build
+too costly for the compute budget, and the MATH fit is unstable enough (see below)
+that a search reading held-out $r$ would chase noise.}
+
+\aiadd{Spreading models across the ability groups is weaker and depends on the
+benchmark. On IFEval the stratified oracle only matches random: it first comes
+within $0.02$ of the reference at $N=300$, the whole pool, and within $0.05$ at
+$N=150$, both worse than random at the same tolerance ($0.5$ and $0.6\times$). On
+MATH it looks stronger, holding within $0.02$ at $N=100$, about $2.8\times$ fewer
+than random (Figures~\ref{fig:mcq-oracle-math} and~\ref{fig:mcq-oracle-math-axis}),
+but the MATH curve is noisy and its full-pool fit is unstable, with
+the same 300 models re-fitting to $r$ between $0.90$ and $0.93$, so that factor is
+not reliable. The stable reading is IFEval's: quantile spanning on its own is not
+enough, and the dependable saving needs the greedy search that reads the held-out
+correlation, which is exactly the information a deployable rule lacks.}
+
+\aiadd{Read against the a-priori strategies in
+Section~\ref{subsec:mcq-diversity}, the oracle fixes the two ends of the range.
+Random sits at the bottom, needing about $156$ IFEval models for the $0.02$ band.
+The greedy oracle sits at the top, holding the same band at $50$. The deployable
+diversity strategies, which saved about $1.4$ to $1.6\times$, fall between the
+two, closer to random than to the oracle. The practical reading is that most of
+the theoretical saving depends on post-hoc ability information, so a real
+selection rule should aim for the diversity end and treat the roughly $3\times$
+figure as a ceiling, not a target.}
+
+\aiadd{Several caveats bound these numbers. They are upper bounds by construction,
+since the abilities come from the final calibration and the greedy search reads
+the held-out correlation, so no a-priori rule can match them. The holding points
+sit at the small-$N$ end, where a 3PL fit on $50$ to $100$ respondents against
+several hundred items is noisy, so the min-$N$ values should be read as a band
+rather than exact counts, and the savings factors come from interpolating the
+random mean curve to the tolerance line. The greedy search on IFEval is also
+restricted to the smallest grid sizes for tractability, built to $N=100$. MATH is
+the least stable benchmark here: its adaptive test runs long, about $164$ items to
+reach $\mathrm{SE}\le0.3$ against about $20$ on IFEval, its full-pool correlation
+moves by about $0.03$ across re-fits of the same models, and we did not build its
+greedy oracle, so the MATH results are random and stratified only and should be
+read with caution.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Minimum calibration models to hold the full-pool correlation at
+  $\mathrm{SE}\le0.3$. ``Min $N$'' is the smallest pool size whose mean held-out
+  $r$ stays within the tolerance of the full-pool reference; the random row gives
+  the interpolated size where the random mean curve reaches the same line, and
+  ``Save'' is that random size divided by the oracle Min $N$. Oracle rows use
+  post-hoc fitted abilities (greedy also reads held-out $r$), so they are upper
+  bounds. The greedy oracle was built on IFEval only; MATH is noisier and its
+  full-pool $r$ moves across re-fits, so its stratified saving is not reliable.
+  Source: \texttt{oracle\_subset\_selection/README.md} and
+  \texttt{results.csv}.}}
+  \label{tab:mcq-oracle}
+  \small
+  \begin{tabular}{l l r r r r}
+    \toprule
+     & & \multicolumn{2}{c}{within $0.02$} & \multicolumn{2}{c}{within $0.05$} \\
+    \cmidrule(lr){3-4}\cmidrule(lr){5-6}
+    Benchmark & Strategy & Min $N$ ($r$) & Save & Min $N$ ($r$) & Save \\
+    \midrule
+    IFEval & random ($r=0.950$)   & 156         & n/a         & 88         & n/a         \\
+    IFEval & oracle-stratified    & 300 (0.950)& 0.5$\times$  & 150 (0.926)& 0.6$\times$  \\
+    IFEval & oracle-greedy        & 50 (0.941) & 3.1$\times$  & 50 (0.941) & 1.8$\times$  \\
+    \midrule
+    MATH & random ($r=0.933$)     & 280         & n/a         & 199        & n/a         \\
+    MATH & oracle-stratified      & 100 (0.921) & 2.8$\times$ & 100 (0.921)& 2.0$\times$  \\
+    MATH & oracle-greedy          & \multicolumn{4}{c}{not run (see text)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/oracle_curve_ifeval.png}
+  \caption{\aiadd{Held-out correlation against pool size on IFEval at
+  $\mathrm{SE}\le0.3$. The shaded band is the random seed spread, the black line
+  is the 300-model full-pool reference, and the circled markers show where each
+  oracle strategy first holds within $0.02$ of it. The greedy oracle (red) holds
+  the reference at $N=50$; the stratified oracle (blue) tracks random. Source:
+  \texttt{figures/oracle\_curve\_ifeval.png}.}}
+  \label{fig:mcq-oracle}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/latent_axis_ifeval.png}
+  \caption{\aiadd{The 300 IFEval calibration models placed along the oracle latent
+  ability axis (full-pool EAP $\theta$), colored by the five equal-size groups.
+  Triangles mark the theoretical-best subset (greedy, $N=50$), which spreads
+  across the whole ability range. Source:
+  \texttt{figures/latent\_axis\_ifeval.png}.}}
+  \label{fig:mcq-oracle-axis}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/oracle_curve_math.png}
+  \caption{\aiadd{Held-out correlation against pool size on MATH at
+  $\mathrm{SE}\le0.3$, with the random band, the full-pool reference line, and the
+  oracle strategies. The greedy oracle is built only to $N=50$ here. Source:
+  \texttt{figures/oracle\_curve\_math.png}.}}
+  \label{fig:mcq-oracle-math}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/latent_axis_math.png}
+  \caption{\aiadd{The 300 MATH calibration models along the oracle latent ability
+  axis (full-pool EAP $\theta$), colored by the five latent groups. No subset is
+  marked because the greedy oracle was not built on MATH. Source:
+  \texttt{figures/latent\_axis\_math.png}.}}
+  \label{fig:mcq-oracle-math-axis}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item An oracle greedy subset holds the 300-model reference correlation within
+  $0.02$ using $50$ IFEval models ($r=0.941$ against a full-pool $r=0.950$), about
+  $3.1\times$ fewer than the roughly $156$ models random needs.
+  \item On IFEval, spreading models across latent-ability groups (stratified) does
+  not beat random; the dependable saving comes only from the greedy search that
+  reads held-out $r$, so it is an upper bound, not a deployable rule.
+  \item This oracle bounds the a-priori diversity result
+  (Section~\ref{subsec:mcq-diversity}): random is the floor, the oracle is the
+  ceiling, and practical diversity selection ($1.4$ to $1.6\times$) sits between
+  them, closer to random.
+  \item Caveats: upper bound by construction, noisy small-$N$ 3PL fits, greedy
+  restricted to small $N$ for compute, and MATH runs a long full-pool test
+  (about $164$ items), so its oracle points are the least stable.
+\end{itemize}}

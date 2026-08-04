@@ -12,6 +12,7 @@ held-out models.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import importlib.util
 import os
@@ -173,6 +174,50 @@ def evaluate(params_path: str, idx_map, atlas_models, se_stop: float):
                 n_items_bank=len(qids), n_held=len(held))
 
 
+def plot_comparison() -> str:
+    """Draw the balanced-vs-skewed r comparison from the existing summary.csv.
+
+    Reads numbers only (no recalibration), so it is safe to run any time.
+    """
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    summ = pd.read_csv(os.path.join(OUTDIR, "summary.csv"))
+    schemes = [("3band", "3-band\n(N=72)"), ("2band", "2-band\n(N=174)")]
+    ses = sorted(summ["se_stop"].unique())
+    fig, axes = plt.subplots(1, len(ses), figsize=(9.2, 4.8), sharey=True)
+    if len(ses) == 1:
+        axes = [axes]
+    width = 0.38
+    for ax, se in zip(axes, ses):
+        sub = summ[summ["se_stop"] == se].set_index("pool")
+        x = np.arange(len(schemes))
+        bal_r = [sub.loc[f"balanced_{s}", "r_mean"] for s, _ in schemes]
+        bal_sd = [sub.loc[f"balanced_{s}", "r_sd"] for s, _ in schemes]
+        skew_r = [sub.loc[f"skewed_{s}", "r_mean"] for s, _ in schemes]
+        skew_sd = [sub.loc[f"skewed_{s}", "r_sd"] for s, _ in schemes]
+        ax.bar(x - width / 2, bal_r, width, yerr=bal_sd, capsize=4,
+               color="#1f77b4", label="size-balanced")
+        ax.bar(x + width / 2, skew_r, width, yerr=skew_sd, capsize=4,
+               color="#d62728", label="size-skewed (~95% 7B)")
+        ax.set_xticks(x)
+        ax.set_xticklabels([lab for _, lab in schemes])
+        ax.set_title(f"SE<={se:g}")
+        ax.set_ylim(0, 1.0)
+        ax.grid(True, axis="y", alpha=0.3)
+    axes[0].set_ylabel("Pearson r (p-IRT pred vs actual), mean over 5 seeds")
+    axes[0].legend(loc="upper right", framealpha=0.9)
+    fig.suptitle("Held-out correlation by calibration pool: balanced vs skewed at matched N")
+    fig.tight_layout()
+    png = os.path.join(OUTDIR, "size_balance_r_comparison.png")
+    fig.savefig(png, dpi=140)
+    plt.close(fig)
+    print(f"saved {png}")
+    return png
+
+
 def main() -> None:
     df = load_roster()
     train = pd.read_csv(TRAIN)
@@ -231,7 +276,15 @@ def main() -> None:
             .reset_index())
     print(summ.to_string(index=False))
     summ.to_csv(os.path.join(OUTDIR, "summary.csv"), index=False)
+    plot_comparison()
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--replot", action="store_true",
+                    help="re-render size_balance_r_comparison.png from summary.csv (no fits)")
+    cli = ap.parse_args()
+    if cli.replot:
+        plot_comparison()
+    else:
+        main()

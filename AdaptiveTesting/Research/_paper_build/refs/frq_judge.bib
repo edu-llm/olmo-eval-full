@@ -1,0 +1,80 @@
+% =====================================================================
+% Bibliography for the free-response (FRQ) LLM-as-judge section
+%   sections/40_frq_judge.tex
+% Every entry below was checked against arXiv / publisher records.
+% Do not add entries that have not been verified; use
+% \textcolor{red}{[CITATION NEEDED]} in the text instead.
+% =====================================================================
+
+% --- Evaluator / judge model actually used as a candidate ---
+@misc{kim2024prometheus2,
+  title         = {Prometheus 2: An Open Source Language Model Specialized in Evaluating Other Language Models},
+  author        = {Kim, Seungone and Suk, Juyoung and Longpre, Shayne and Lin, Bill Yuchen and Shin, Jamin and Welleck, Sean and Neubig, Graham and Lee, Moontae and Lee, Kyungjae and Seo, Minjoon},
+  year          = {2024},
+  eprint        = {2405.01535},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  note          = {Also in Proceedings of EMNLP 2024},
+  url           = {https://arxiv.org/abs/2405.01535}
+}
+
+% --- LLM-as-judge paradigm and its known biases ---
+@inproceedings{zheng2023judging,
+  title         = {Judging {LLM}-as-a-Judge with {MT}-Bench and Chatbot Arena},
+  author        = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric P. and Zhang, Hao and Gonzalez, Joseph E. and Stoica, Ion},
+  booktitle     = {Advances in Neural Information Processing Systems 36 (NeurIPS 2023), Datasets and Benchmarks Track},
+  year          = {2023},
+  eprint        = {2306.05685},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2306.05685}
+}
+
+@inproceedings{wang2024unfair,
+  title         = {Large Language Models are not Fair Evaluators},
+  author        = {Wang, Peiyi and Li, Lei and Chen, Liang and Cai, Zefan and Zhu, Dawei and Lin, Binghuai and Cao, Yunbo and Kong, Lingpeng and Liu, Qi and Liu, Tianyu and Sui, Zhifang},
+  booktitle     = {Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  pages         = {9440--9450},
+  year          = {2024},
+  address       = {Bangkok, Thailand},
+  publisher     = {Association for Computational Linguistics},
+  doi           = {10.18653/v1/2024.acl-long.511},
+  url           = {https://aclanthology.org/2024.acl-long.511/}
+}
+
+@inproceedings{panickssery2024selfpreference,
+  title         = {{LLM} Evaluators Recognize and Favor Their Own Generations},
+  author        = {Panickssery, Arjun and Bowman, Samuel R. and Feng, Shi},
+  booktitle     = {Advances in Neural Information Processing Systems 37 (NeurIPS 2024)},
+  year          = {2024},
+  eprint        = {2404.13076},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  url           = {https://arxiv.org/abs/2404.13076}
+}
+
+% --- Standard error of ability under item-parameter uncertainty
+% --- (the two citations already listed in the source outline) ---
+@article{tsutakawa1990effect,
+  title         = {The Effect of Uncertainty of Item Parameter Estimation on Ability Estimates},
+  author        = {Tsutakawa, Robert K. and Johnson, Jane C.},
+  journal       = {Psychometrika},
+  volume        = {55},
+  number        = {2},
+  pages         = {371--390},
+  year          = {1990},
+  publisher     = {Springer},
+  doi           = {10.1007/BF02295293}
+}
+
+@article{patton2013influence,
+  title         = {The Influence of Item Calibration Error on Variable-Length Computerized Adaptive Testing},
+  author        = {Patton, Jeffrey M. and Cheng, Ying and Yuan, Ke-Hai and Diao, Qi},
+  journal       = {Applied Psychological Measurement},
+  volume        = {37},
+  number        = {1},
+  pages         = {24--40},
+  year          = {2013},
+  publisher     = {SAGE Publications},
+  doi           = {10.1177/0146621612461727}
+}

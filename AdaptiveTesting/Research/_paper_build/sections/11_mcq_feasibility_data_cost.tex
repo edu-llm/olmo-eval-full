@@ -1,0 +1,308 @@
+% =====================================================================
+% Section 11: MCQ feasibility, response-data availability, and inference cost
+%
+% ACM-format paper fragment. Intended to be \input under the MCQ section
+% (the three \subsection blocks below sit under the paper's MCQ \section{}).
+% A grouping \section is left commented out; uncomment if this file is
+% included at top level.
+%
+% Authorship convention:
+%   - Black prose is lightly cleaned from the outline PDF
+%     "CAT for Accelerated Pedagogy Benchmarking.pdf"
+%     (MCQ Feasibility; Availability and Quality of Response Data; Inference Cost).
+%   - AI additions (numbers, analysis, figures/tables drawn from the repo)
+%     are wrapped in \aiadd{...} and render blue.
+%   - [CITATION NEEDED] markers render red.
+%
+% Requires (from the main preamble): graphicx, xcolor.
+%
+% Figure source paths (absolute), copied into ./figures/:
+%   figures/diag_pedagogy_se0.3.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/pedagogy_feasibility/diag_pedagogy_se0.3.png
+%   figures/calib_pedagogy_1pl_se0.3.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/pedagogy_feasibility/linear_calibration/calib_pedagogy_1pl_se0.3.png
+%   figures/models_200_param_dist.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/05_Data_Availability/figures/models_200_param_dist.png
+%   figures/individual_latency_by_param_range.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/04_Inference_Cost/data/individual_latency_by_param_range.png
+%
+% Table source data (absolute):
+%   Table (MCQ CAT diagnostic)  <- .../pedagogy_feasibility/mcq_diagnostic_summary.csv
+%                                  + .../pedagogy_feasibility/rasch_1pl/pedagogy_1pl_vs_2pl_summary.csv
+%   Table (linear recalibration) <- .../pedagogy_feasibility/linear_calibration/pedagogy_linear_calibration.csv
+%   Table (inference cost)      <- outline PDF; supported by .../04_Inference_Cost/data/individual_latency_by_param_range.csv
+%
+% Bibliography: refs/mcq_feasibility.bib
+% =====================================================================
+
+% Fallback macros: no-ops if the main preamble already defines them.
+\providecommand{\aiadd}[1]{\textcolor{blue}{#1}}
+\providecommand{\aibullets}[1]{{\color{blue}#1}}
+
+% \section{ATLAS recreation: feasibility, data, and cost}
+
+\subsection{Feasibility}
+
+ATLAS shows that adaptive testing can cut the number of items needed to
+predict benchmark accuracy \cite{li2025atlas}. There is still a gap between
+that result and using evaluations during model training. Applying IRT
+calibration to a benchmark with no public response data needs an honest
+account of the upfront cost required to reach a target correlation. ATLAS
+also did not show whether a benchmark can separate models at parameter
+ranges where few calibration models are available.
+
+We ran two feasibility experiments. The first calibrates the Pedagogy
+benchmark, a skill-specific benchmark with no publicly available response
+data \cite{lelievre2025pedagogy}. The second calibrates on subsets of ATLAS
+data to imitate real-world conditions and to show the trade-offs between
+model diversity, model count, and parameter-range match on calibration
+correlation. \aiadd{The diversity, count, and range results are reported in
+the experiments that follow. This subsection covers the pedagogy calibration
+and two MCQ replications, using computerized adaptive testing built on Item
+Response Theory \cite{lord1980irt,embretson2000irt}.}
+
+\aiadd{We calibrated the Pedagogy CDPK set, 920 multiple-choice questions
+\cite{lelievre2025pedagogy}, with the same bank calibration, EAP-theta
+estimation, and Fisher-information item selection used in the ATLAS
+replication. Fifty-two in-house models from the 156-model roster answered the
+set; 40 were used for calibration and 12 were held out for validation (seed
+7). After item screening, 318 of the 920 items carried usable response
+variance. We report a 2PL bank and a 1PL/Rasch bank \cite{rasch1960} at two
+stopping targets, standard error $\le 0.3$ and $\le 0.15$.}
+
+\aiadd{Table~\ref{tab:mcq-cat} gives the result. At SE~$\le 0.3$ the 2PL bank
+recovers the held-out ranking with Pearson $r = 0.72$ using about 10 of 318
+items (3\%), but it over-predicts accuracy (MAE $0.063$). Tightening the
+target to SE~$\le 0.15$ raises $r$ to $0.90$, but the test grows to about 276
+items (87\%), which removes most of the saving. The 1PL/Rasch bank ranks
+better at SE~$\le 0.3$ ($r = 0.89$) yet over-predicts the most (MAE $0.101$),
+and at SE~$\le 0.15$ it never reaches the target, so it administers the full
+bank.}
+
+\aiadd{The two commonsense MCQ benchmarks behave very differently. PIQA
+\cite{bisk2020piqa} replicates cleanly: at SE~$\le 0.3$ the 2PL bank reaches
+$r = 0.94$ with about 11 of 831 items (1.3\%). SocialIQa
+\cite{sap2019socialiqa} does not recover, with $r = 0.27$ at SE~$\le 0.3$ and
+only $0.43$ at SE~$\le 0.15$, so adaptive selection cannot rank models on that
+benchmark at either target. Feasibility depends on the benchmark and is not
+automatic.}
+
+\begin{table}[t]
+\centering
+\caption{\aiadd{MCQ CAT diagnostic on 12 held-out models (40 calibration
+models, seed 7). Items kept after screening: pedagogy 318 of 920, PIQA 831 of
+1{,}838, SocialIQa 969 of 1{,}954. ``Avg.\ items'' is the mean number
+administered by the adaptive test; ``\% of bank'' is that as a share of the
+kept items. Source: \texttt{mcq\_diagnostic\_summary.csv} and
+\texttt{pedagogy\_1pl\_vs\_2pl\_summary.csv}.}}
+\label{tab:mcq-cat}
+\begin{tabular}{llcccrr}
+\hline
+Benchmark & Bank & SE~$\le$ & $r$ & MAE & Avg.\ items & \% of bank \\
+\hline
+Pedagogy  & 2PL & 0.30 & 0.716 & 0.063 & 10.2  & 3.2 \\
+Pedagogy  & 2PL & 0.15 & 0.900 & 0.080 & 275.5 & 86.6 \\
+Pedagogy  & 1PL & 0.30 & 0.890 & 0.101 & 43.8  & 13.8 \\
+Pedagogy  & 1PL & 0.15 & 0.941 & 0.097 & 318.0 & 100.0 \\
+PIQA      & 2PL & 0.30 & 0.937 & 0.040 & 10.6  & 1.3 \\
+PIQA      & 2PL & 0.15 & 0.954 & 0.038 & 194.1 & 23.4 \\
+SocialIQa & 2PL & 0.30 & 0.271 & 0.093 & 8.0   & 0.8 \\
+SocialIQa & 2PL & 0.15 & 0.430 & 0.080 & 14.3  & 1.5 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/diag_pedagogy_se0.3.png}
+\caption{\aiadd{Pedagogy CAT diagnostic, 2PL bank at SE~$\le 0.3$, on the 12
+held-out models. Rank recovery is good ($r = 0.72$) with about 10 of 318
+items, but every point sits above $y = x$: the raw prediction over-states
+accuracy by a fixed offset. Source:
+\texttt{pedagogy\_feasibility/diag\_pedagogy\_se0.3.png}.}}
+\label{fig:diag-pedagogy}
+\end{figure}
+
+\aiadd{The pedagogy over-prediction is a fixed affine offset, not noise. The
+IRT mean-probability prediction lives in a compressed range but is read
+against the full 0 to 1 accuracy axis, while true pedagogy accuracy is
+squeezed into about 0.22 to 0.31. The raw cloud has the right order but a
+slope about six times too steep and a large positive intercept. A single
+linear map fit on the 40 calibration models and applied to the 12 held-out
+models removes almost all of the error and leaves $r$ unchanged
+(Table~\ref{tab:pedagogy-recal} and Figure~\ref{fig:calib-pedagogy}). Honest
+test-set MAE drops 76 to 90\% across the four cases. The 1PL/Rasch bank, the
+worst raw case at MAE $0.101$, ends with the lowest calibrated MAE at about
+$0.010$. Leave-one-out on the 12 test models agrees (0.008 to 0.016), so the
+gain is real rather than fit noise.}
+
+\begin{table}[t]
+\centering
+\caption{\aiadd{Pedagogy linear recalibration (honest train-fit: slope and
+intercept fit on the 40 calibration models, applied to the 12 held-out
+models). The map $\hat{y} = a\,x + b$ takes raw predicted accuracy $x$ to true
+accuracy $\hat{y}$; $r$ is unchanged by an affine map. Source:
+\texttt{pedagogy\_linear\_calibration.csv}.}}
+\label{tab:pedagogy-recal}
+\begin{tabular}{lccccrr}
+\hline
+Bank & SE~$\le$ & $r$ & MAE raw & MAE cal. & \% red. & $a$ / $b$ \\
+\hline
+2PL & 0.30 & 0.716 & 0.063 & 0.0151 & 76.1 & 0.152 / 0.214 \\
+2PL & 0.15 & 0.900 & 0.080 & 0.0121 & 84.8 & 0.169 / 0.208 \\
+1PL & 0.30 & 0.890 & 0.101 & 0.0104 & 89.7 & 0.171 / 0.208 \\
+1PL & 0.15 & 0.941 & 0.097 & 0.0095 & 90.3 & 0.188 / 0.200 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/calib_pedagogy_1pl_se0.3.png}
+\caption{\aiadd{Pedagogy 1PL/Rasch bank at SE~$\le 0.3$, before and after
+linear recalibration on the 12 held-out models. Left: the raw prediction
+tracks the ordering ($r = 0.89$) but rides a steep, shifted line (fit
+$\mathrm{act} = 0.17\,\mathrm{pred} + 0.21$), giving MAE $0.101$. Right: after the
+train-fit map the points fall onto $y = x$ at MAE $0.010$, a 90\% reduction,
+with $r$ unchanged. Source:
+\texttt{linear\_calibration/calib\_pedagogy\_1pl\_se0.3.png}.}}
+\label{fig:calib-pedagogy}
+\end{figure*}
+
+\aiadd{For pedagogy the practical recipe is a 1PL/Rasch bank at SE~$\le 0.3$
+for ranking, plus a linear recalibration step when an absolute accuracy number
+is needed. This recovers the ranking with roughly 3 to 14\% of the bank,
+depending on the bank, and brings predicted accuracy within about one point of
+the full-bank value.}
+
+\subsection{Availability and quality of response data}
+
+Two of the higher-quality sources of per-question model responses are the Open
+LLM Leaderboard (OpenLM) \cite{beeching2023openllm,fourrier2024openllm} and
+HELM (OpenHELM) \cite{liang2023helm}. ATLAS also uses OpenLM. Prompting
+strategy and scoring vary across these sources, and new benchmarks take time
+to be added to OpenLM.
+
+\aiadd{We checked five sources for reusable response data. Four are available
+to us; OpenHELM is not present in our local copies and is referenced here only
+for context. The Open LLM Leaderboard v2 dumps \cite{fourrier2024openllm}
+cover BBH, GPQA, MATH, IFEval, and MuSR for 1{,}102 models spanning 0.213 to
+7.0B parameters (about 28~GB), keeping the question, response text,
+prediction, gold answer, result, and scoring method for each item. Of these,
+1{,}101 downloaded cleanly, 84 had no sample files, and 3 errored. The ATLAS
+release \cite{li2025atlas} provides a full 0/1 response matrix only for ARC
+\cite{clark2018arc} (3{,}747 calibration and 417 held-out models); its other
+benchmarks ship item parameters and accuracy summaries rather than full
+matrices.}
+
+\aiadd{Quality and coverage vary in ways that matter for pooling. OpenLM mixes
+scoring methods (\texttt{acc\_norm} for BBH, GPQA, and MuSR; \texttt{exact\_match}
+for MATH; a strict prompt score for IFEval) and keeps the raw generated text,
+while our in-house MCQ dumps reduce each item to a loglikelihood choice with no
+latency. Any cross-source pooling has to reconcile these first. The two large
+sources also barely overlap: OpenLM carries the newer benchmarks but none of
+the five ATLAS core MCQ sets (ARC, HellaSwag, GSM8K, TruthfulQA, WinoGrande),
+and a skill-specific benchmark such as Pedagogy has no public response data at
+all. That absence is why the feasibility study above had to generate its own
+response matrix.}
+
+\aiadd{The curated roster (Figure~\ref{fig:paramdist}) holds 156 checkpoints
+from 0.218 to 7.0B parameters (mean 3.6B, median 3.0B) across 50
+organizations. The sizes cluster at 1 to 2B (42 models) and at 6 to 7B (52
+models), the 5 to 6B band is empty, and the 2 to 5B middle is thin. This shape
+matters for calibration: the ATLAS recalibration pool skews even harder, with
+about 95\% of its 1{,}686 models at 7B, so mid-range coverage is the weak
+point when matching a calibration set to a target parameter range.}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/models_200_param_dist.png}
+\caption{\aiadd{Parameter distribution of the 156-model calibration roster
+(left) and the top organizations by model count (right). Coverage clusters at
+1 to 2B and at 6 to 7B, with a thin 2 to 5B middle and no 5 to 6B models.
+Source: \texttt{05\_Data\_Availability/figures/models\_200\_param\_dist.png}.}}
+\label{fig:paramdist}
+\end{figure*}
+
+\aiadd{New benchmarks are also slow to appear in OpenLM. Its coverage is fixed
+to the v2 task set, so a skill-specific benchmark such as Pedagogy is absent
+and has to be run in-house. For a team that depends on public response data,
+this means the calibration data for a new skill does not exist yet, which
+pushes the work onto local inference and makes the inference cost below the
+deciding factor.}
+
+\subsection{Inference cost}
+
+The inference cost is reported for the 0 to 7B parameter range. L4 GPUs were
+used for inference, and CPUs parallelized the model downloads into an
+accessible cache.
+
+\begin{table}[t]
+\centering
+\caption{Inference cost for tutor models, reproduced from the outline.
+\aiadd{The header label is corrected below: the measurements are an L4
+estimate, not L40S.}}
+\label{tab:inference-cost}
+\begin{tabular}{cc}
+\hline
+Parameter range & Average individual inference \\
+(billions of parameters) & time on L40S GPU (seconds) \\
+\hline
+0-1 & 4 \\
+1-2 & 10 \\
+2-5 & 19 \\
+5-7 & 34 \\
+\hline
+\end{tabular}
+\end{table}
+
+\aiadd{Two things about Table~\ref{tab:inference-cost} need stating plainly.
+First, the numbers are single-stream latency, the time to answer one request
+at a time, and they are an L4 memory-bandwidth roofline estimate (300~GB/s,
+60\% efficiency, 2 bytes per parameter), not a direct measurement. Second, the
+header says L40S but the inference actually ran on an L4, a g6.xlarge instance
+at \$0.8048 per hour. An L40S has roughly 864~GB/s of bandwidth and would
+decode about two to three times faster, so the L40S label understates the cost
+on the hardware that was used. The table should be read as L4.}
+
+\aiadd{In production the roster ran batched under vLLM \cite{kwon2023vllm},
+where the measured per-request time is 0.25 to 1.6 seconds across the same
+size bands, a 14 to 21 times speed-up over the single-stream estimate
+(Figure~\ref{fig:latency}). Which number applies depends on the question: a
+cold, one-request-at-a-time diagnostic sees the 4 to 34 second figures, while a
+warm batched server at checkpoint time sees the sub-two-second figures.
+Converted to dollars, an MCQ inference costs about \$0.009 per 1{,}000
+requests, and an open-ended inference costs about \$0.20 to \$0.23 per 1{,}000,
+roughly 20 to 25 times more, because open-ended cost is driven by output
+tokens rather than input length.}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/individual_latency_by_param_range.png}
+\caption{\aiadd{Single-stream (roofline estimate) versus batched vLLM
+(measured) latency per open-ended inference on an L4 GPU, by parameter range.
+Batching cuts per-request time 14 to 21 times. The single-stream bars are the
+L4 roofline estimates (about 4, 10, 20, and 35 seconds) that underlie the
+outline's tutor-cost table.
+Source: \texttt{04\_Inference\_Cost/data/individual\_latency\_by\_param\_range.png}.}}
+\label{fig:latency}
+\end{figure*}
+
+There are two points of discussion. The first is the reduction in time during
+inference, which allows CAT to be used at checkpoints and speeds up
+experimentation. The second is the actual delta in cost.
+
+\aiadd{On the first point, the adaptive test needs only a small fraction of the
+bank once items are calibrated: about 3\% of the pedagogy items with the 2PL
+bank and about 14\% with the 1PL bank at SE~$\le 0.3$, and about 1\% of PIQA.
+With batched inference at well under two seconds per request, the marginal cost
+of running a diagnostic on a fresh checkpoint is small enough to run during
+training rather than only at the end.}
+
+\aiadd{On the second point, the cost is front-loaded. The large expense is the
+one-time calibration pass, running the full model roster over the full item
+bank, plus the judge grading for open-ended tasks. After that, each new model
+pays only for the items its adaptive test actually selects, roughly 7 to 30
+times fewer than a full pedagogy pass, depending on the bank. The upfront cost
+buys cheap, repeatable evaluation afterward, which is what makes
+checkpoint-time testing practical.}

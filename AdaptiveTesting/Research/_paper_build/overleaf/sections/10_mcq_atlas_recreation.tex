@@ -1,0 +1,283 @@
+% =============================================================================
+% Section: ATLAS Recreation (MCQ)
+% Bib: refs/mcq_atlas.bib
+%
+% FIGURES REFERENCED (\includegraphics{figures/<basename>}).
+% Integrator: copy each source file below into the paper's figures/ directory.
+%   figures/atlas_arc_heldout_se0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlas_arc_heldout_se0.2.png
+%   figures/atlas_arc_heldout_se0.3.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlas_arc_heldout_se0.3.png
+%   figures/atlas_arc_0p5_7b_heldout_se0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlas_arc_0p5_7b_heldout_se0.2.png
+%   figures/atlas_arc_0p5_7b_heldout_se0.3.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlas_arc_0p5_7b_heldout_se0.3.png
+%   figures/atlas_selfresp_arc_se0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/atlas_selfresp/figures/atlas_selfresp_arc_se0.2.png
+%   figures/atlas_selfresp_arc_se0.3.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/atlas_selfresp/figures/atlas_selfresp_arc_se0.3.png
+%   figures/atlasrep_mae_vs_se.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_mae_vs_se.png
+%   figures/atlasrep_items_vs_se.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_items_vs_se.png
+%   figures/atlasrep_theta_mae_vs_se.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_theta_mae_vs_se.png
+%   figures/atlasrep_ifeval_pirt_vs_actual_se_0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_ifeval_pirt_vs_actual_se_0.2.png
+%   figures/atlasrep_gpqa_pirt_vs_actual_se_0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_gpqa_pirt_vs_actual_se_0.2.png
+%   figures/atlasrep_math_pirt_vs_actual_se_0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_math_pirt_vs_actual_se_0.2.png
+%   figures/atlasrep_bbh_pirt_vs_actual_se_0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_bbh_pirt_vs_actual_se_0.2.png
+%   figures/atlasrep_musr_pirt_vs_actual_se_0.2.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/atlasrep_musr_pirt_vs_actual_se_0.2.png
+%
+% PREAMBLE REQUIREMENTS (main document): \usepackage{graphicx}, \usepackage{xcolor},
+%   \usepackage{booktabs}. If \url is used in the .bib, load \usepackage{hyperref} or {url}.
+%
+% Convention: human prose (from the outline) is left in the default color.
+%   AI-added prose is wrapped in \aiadd{...} (renders blue). Fully-AI subsections
+%   close with an \aibullets{...} takeaway list.
+% =============================================================================
+
+\providecommand{\aiadd}[1]{\textcolor{blue}{#1}}
+\providecommand{\aibullets}[1]{{\color{blue}#1}}
+
+\section{ATLAS Recreation}
+\label{sec:mcq-atlas-recreation}
+
+% --- HUMAN prose (outline PDF, lightly cleaned) -------------------------------
+While ATLAS showcases promising results for reduction in benchmark size, there is
+a gap between the ATLAS results and actual applications for evaluations during
+model training. The ability to apply IRT calibration to a benchmark without public
+response data requires a proper analysis of the upfront cost required to reach a
+desired correlation. The ability for the benchmarks to discriminate between models
+at parameter ranges without many calibration models was also not shown explicitly.
+% --- end HUMAN prose ----------------------------------------------------------
+
+\aiadd{To probe that gap we rebuild the ATLAS pipeline~\cite{li2025atlas} on
+our own data and ask four questions. Does a published item bank transfer to a
+different pool of models? Does refitting the bank on a narrow parameter range help
+or hurt? How much of any transfer loss is a scoring-protocol mismatch rather than
+a limit of item response theory? And do the error patterns ATLAS reported on its
+five benchmarks reappear when the same analysis runs on the newer Open LLM
+Leaderboard tasks~\cite{fourrier2024openllm}? Throughout, every correlation is the
+Pearson $r$ between the CAT-predicted benchmark score and the true full-benchmark
+accuracy on held-out models.}
+
+% =============================================================================
+\subsection{A published bank transfers; a range-restricted refit does not}
+\label{subsec:atlas-transfer}
+
+\aiadd{We run ATLAS-style adaptive testing on ARC~\cite{clark2018arc} two ways and
+score both on the same 60 held-out models. The first condition uses the published
+ATLAS 3PL bank, which was calibrated on thousands of models across a wide parameter
+range. The second refits the identical pipeline on only the 0.5 to 7B slice of
+models, about 1{,}686 of them, with roughly 95\% at 7B. Table~\ref{tab:atlas-transfer}
+reports both at two stopping thresholds.}
+
+\aiadd{The published bank recovers held-out ARC accuracy at $r=0.83$ using about 21
+of its 1{,}172 items at $\mathrm{SE}\le0.2$ (Figure~\ref{fig:atlas-transfer}, top
+row). Refitting on the narrow 0.5 to 7B slice drops the correlation to $r=0.59$ at
+the same threshold, even though the mean absolute error is almost unchanged
+(Figure~\ref{fig:atlas-transfer}, bottom row). A range-matched bank is cheaper to
+build, but it discriminates worse when the calibration pool is small and
+concentrated at a single model size. The loss shows up in ranking correlation, not
+in average error.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{ATLAS-style CAT on ARC, scored on the same 60 held-out models.
+  A published wide-pool 3PL bank versus the same pipeline refit on only the 0.5 to
+  7B model slice.}}
+  \label{tab:atlas-transfer}
+  \small
+  \begin{tabular}{l c c c c}
+    \toprule
+    Calibration pool & SE stop & Pearson $r$ & MAE & Mean items \\
+    \midrule
+    Published ATLAS bank  & 0.2 & 0.830 & 0.147 & 21.1 \\
+    Published ATLAS bank  & 0.3 & 0.738 & 0.172 & 9.9  \\
+    Refit, 0.5 to 7B      & 0.2 & 0.589 & 0.147 & 12.5 \\
+    Refit, 0.5 to 7B      & 0.3 & 0.585 & 0.150 & 8.3  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.48\linewidth]{figures/atlas_arc_heldout_se0.2.png}\hfill
+  \includegraphics[width=0.48\linewidth]{figures/atlas_arc_heldout_se0.3.png}\\[3pt]
+  \includegraphics[width=0.48\linewidth]{figures/atlas_arc_0p5_7b_heldout_se0.2.png}\hfill
+  \includegraphics[width=0.48\linewidth]{figures/atlas_arc_0p5_7b_heldout_se0.3.png}
+  \caption{\aiadd{p-IRT predicted accuracy against actual full-benchmark accuracy on
+  60 held-out ARC models. Top row: the published ATLAS 3PL bank at $\mathrm{SE}\le0.2$
+  (left) and $\mathrm{SE}\le0.3$ (right). Bottom row: the same pipeline refit on only
+  the 0.5 to 7B slice. The wide-pool bank tracks the $y=x$ line more tightly.}}
+  \label{fig:atlas-transfer}
+\end{figure*}
+
+\aibullets{%
+\begin{itemize}
+  \item The published wide-pool bank transfers to a fresh set of models at $r=0.83$
+  ($\mathrm{SE}\le0.2$) using about 21 of 1{,}172 items.
+  \item A bank refit only on 0.5 to 7B models falls to $r=0.59$, so parameter-range
+  coverage in the calibration pool matters more than matching the target range.
+  \item MAE stays near 0.147 in both conditions, so the loss is in ranking
+  correlation rather than average error.
+\end{itemize}}
+
+% =============================================================================
+\subsection{Prompt-matched responses recover near-ceiling transfer}
+\label{subsec:atlas-selfresp}
+
+\aiadd{The transfer test above carries a confound. Our 0-shot loglikelihood
+responses were scored against a bank that ATLAS calibrated on 25-shot leaderboard
+responses, so the prompting protocol does not match. To separate that from any real
+IRT transfer error, we replay the same 3PL CAT on ATLAS's own ARC test response
+matrix, aligned to the bank by item index. The held-out set here is a seed-7 sample
+of 60 models drawn from ATLAS's 417-model ARC test set, which spans a wider
+parameter range than our 0.2 to 7B pool, and 650 bank items align to that matrix.}
+
+\aiadd{With prompt-matched responses the published bank reaches $r=0.91$ in under 10
+items, and the mean absolute error drops by about 5x, from 0.147 to 0.031 at
+$\mathrm{SE}\le0.2$ (Table~\ref{tab:atlas-selfresp}, Figure~\ref{fig:atlas-selfresp}).
+Most of the degradation seen in Section~\ref{subsec:atlas-transfer} came from the
+scoring-protocol mismatch, not from a failure of the item bank to carry over.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{The same published ATLAS bank and 3PL CAT, scored on our 0-shot
+  responses versus ATLAS's own (prompt-matched) ARC test responses.}}
+  \label{tab:atlas-selfresp}
+  \small
+  \begin{tabular}{l c c c c}
+    \toprule
+    Held-out responses   & SE stop & Pearson $r$ & MAE & Mean items \\
+    \midrule
+    Our 0-shot responses & 0.2 & 0.830 & 0.147 & 21.1 \\
+    Our 0-shot responses & 0.3 & 0.738 & 0.172 & 9.9  \\
+    ATLAS own responses  & 0.2 & 0.915 & 0.031 & 13.0 \\
+    ATLAS own responses  & 0.3 & 0.906 & 0.034 & 9.2  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.49\linewidth]{figures/atlas_selfresp_arc_se0.2.png}\hfill
+  \includegraphics[width=0.49\linewidth]{figures/atlas_selfresp_arc_se0.3.png}
+  \caption{\aiadd{The published ATLAS bank replayed on ATLAS's own ARC test
+  responses at $\mathrm{SE}\le0.2$ (left) and $\mathrm{SE}\le0.3$ (right). Removing
+  the 0-shot versus 25-shot scoring mismatch raises the correlation to $r=0.91$ and
+  cuts MAE about 5x relative to Table~\ref{tab:atlas-transfer}.}}
+  \label{fig:atlas-selfresp}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item On prompt-matched responses the bank recovers accuracy at $r=0.91$
+  ($\mathrm{SE}\le0.2$) in about 13 items, and $r=0.906$ at $\mathrm{SE}\le0.3$ in
+  about 9.
+  \item MAE falls about 5x against the 0-shot replay (0.031 versus 0.147), so a
+  matched scoring protocol, not IRT itself, drove most of the earlier error.
+\end{itemize}}
+
+% =============================================================================
+\subsection{Replicating the ATLAS error analyses on Open LLM Leaderboard tasks}
+\label{subsec:atlas-replication}
+
+\aiadd{ATLAS reports a fixed set of error views: a scatter of p-IRT predicted
+accuracy against actual accuracy, a histogram of the prediction error, absolute
+error against the number of items administered, and error against actual accuracy.
+We reproduce this set on five Open LLM Leaderboard v2 tasks~\cite{fourrier2024openllm}
+that ATLAS never covered: IFEval~\cite{zhou2023ifeval}, MATH~\cite{hendrycks2021math},
+GPQA~\cite{rein2024gpqa}, BBH~\cite{suzgun2023bbh}, and MuSR~\cite{sprague2024musr}.
+We use the same frozen 3PL banks and the Fisher-information p-IRT selector, with a
+single calibration on a fixed 90/10 split at seed 7, at ATLAS's own SE thresholds of
+0.1, 0.2, and 0.3.}
+
+\aiadd{Table~\ref{tab:atlas-replication} gives the per-benchmark correlation,
+accuracy MAE, ability (theta) MAE, and the adaptive-versus-random item counts. On
+IFEval, GPQA, and MATH the accuracy MAE (0.016 to 0.070) sits in the same 0.02 to
+0.05 band ATLAS reports, and it falls as the SE target tightens
+(Figure~\ref{fig:atlasrep-curves}, left). Fisher-information selection reaches a
+given SE in 1.6x to 5.6x fewer items than a random-item baseline, which is the core
+ATLAS efficiency result (Figure~\ref{fig:atlasrep-curves}, center). Ability recovery
+on IFEval and MATH (theta MAE 0.07 to 0.21) brackets ATLAS's 0.06 to 0.18 range
+(Figure~\ref{fig:atlasrep-curves}, right).}
+
+\aiadd{One preprocessing step decides these numbers. We drop items with
+non-positive discrimination ($a\le0$), which are mirt calibration failures or
+reverse-scored items, matching the canonical GPQA loader. The GPQA, MuSR, and BBH
+banks contain 51\%, 43\%, and 31\% such items. Keeping them collapses GPQA to
+$r\approx0$; dropping them recovers $r=0.74$ at $\mathrm{SE}\le0.3$. Under the same
+filter MuSR recovers to about $r=0.75$, so it is not the clean negative control it
+first appeared to be. BBH stays the weakest case (Figure~\ref{fig:atlasrep-scatter}):
+its p-IRT estimates are rank-correlated with actual accuracy ($r\approx0.68$) but
+biased, because a single-factor 3PL underfits its multi-subtask mixture.}
+
+\begin{table*}[t]
+  \centering
+  \caption{\aiadd{ATLAS error analyses reproduced on Open LLM Leaderboard v2 tasks
+  (about 110 held-out models each; math 90). Ability MAE is measured against the
+  full-bank EAP ability. The last column gives mean items to reach
+  $\mathrm{SE}\le0.3$ under adaptive versus random item selection.}}
+  \label{tab:atlas-replication}
+  \small
+  \begin{tabular}{l ccc ccc ccc c}
+    \toprule
+    & \multicolumn{3}{c}{Pearson $r$} & \multicolumn{3}{c}{Accuracy MAE}
+    & \multicolumn{3}{c}{Ability (theta) MAE} & Items @ $\mathrm{SE}\le0.3$ \\
+    \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+    Benchmark & 0.1 & 0.2 & 0.3 & 0.1 & 0.2 & 0.3 & 0.1 & 0.2 & 0.3 & adaptive / random \\
+    \midrule
+    IFEval & 0.955 & 0.927 & 0.921 & 0.034 & 0.047 & 0.050 & 0.070 & 0.160 & 0.207 & 18 / 62  \\
+    GPQA   & 0.710 & 0.757 & 0.737 & 0.034 & 0.066 & 0.070 & 0.104 & 0.357 & 0.407 & 13 / 46  \\
+    MATH   & 0.948 & 0.892 & 0.878 & 0.016 & 0.023 & 0.024 & 0.097 & 0.168 & 0.208 & 77 / 148 \\
+    MuSR   & 0.893 & 0.770 & 0.746 & 0.075 & 0.091 & 0.095 & 0.362 & 0.629 & 0.707 & 14 / 76  \\
+    BBH    & 0.695 & 0.677 & 0.674 & 0.109 & 0.112 & 0.114 & 0.711 & 0.719 & 0.684 & 8 / 13   \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_mae_vs_se.png}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_items_vs_se.png}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_theta_mae_vs_se.png}
+  \caption{\aiadd{Cross-benchmark error curves reproduced from ATLAS on the Open LLM
+  Leaderboard v2 tasks. Left: accuracy MAE against the SE stopping threshold. Center:
+  mean items administered, adaptive against a random-item baseline. Right: ability
+  (theta) MAE against SE. Tighter SE lowers MAE and raises the item count.}}
+  \label{fig:atlasrep-curves}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_ifeval_pirt_vs_actual_se_0.2.png}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_gpqa_pirt_vs_actual_se_0.2.png}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_math_pirt_vs_actual_se_0.2.png}\\[3pt]
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_bbh_pirt_vs_actual_se_0.2.png}\hfill
+  \includegraphics[width=0.32\linewidth]{figures/atlasrep_musr_pirt_vs_actual_se_0.2.png}\hfill
+  \begin{minipage}[b]{0.32\linewidth}~\end{minipage}
+  \caption{\aiadd{Per-benchmark p-IRT predicted accuracy against actual accuracy at
+  $\mathrm{SE}\le0.2$ for IFEval, GPQA, MATH (top) and BBH, MuSR (bottom). IFEval and
+  MATH track the $y=x$ line closely; BBH is rank-correlated but biased on its large
+  multi-subtask bank.}}
+  \label{fig:atlasrep-scatter}
+\end{figure*}
+
+\aibullets{%
+\begin{itemize}
+  \item On IFEval, MATH, and GPQA the p-IRT accuracy MAE (0.016 to 0.070) matches
+  ATLAS's 0.02 to 0.05 band and improves as the SE target tightens.
+  \item Adaptive selection reaches the same SE in 1.6x to 5.6x fewer items than
+  random, reproducing the ATLAS efficiency claim on benchmarks ATLAS never covered.
+  \item Dropping non-positive-discrimination items is essential: GPQA moves from
+  $r\approx0$ to $r=0.74$, and MuSR recovers to about $r=0.75$, so its near-zero
+  result elsewhere was a bad-item artifact.
+  \item BBH is the weakest replication ($r\approx0.68$, MAE $\approx0.11$): a
+  unidimensional 3PL underfits a multi-subtask benchmark.
+\end{itemize}}

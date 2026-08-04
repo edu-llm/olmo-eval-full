@@ -1,0 +1,4 @@
+# Regenerable intermediate calibration scratch and caches (large, not deliverables)
+**/_work/
+**/.mplcache/
+**/__pycache__/

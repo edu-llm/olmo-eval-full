@@ -1,0 +1,103 @@
+% =====================================================================
+% CAT for Accelerated Pedagogy Benchmarking
+% Single-column acmart review draft, assembled from the staged section
+% drafts in AdaptiveTesting/Research/_paper_build/sections/.
+%
+% Authorship / review markers (visible in the compiled PDF):
+%   \aiadd{...}, \aibullets{...}  -> blue  (AI-drafted additions)
+%   \aiflag{...}, \textcolor{red}{...} -> red (open TODOs / checks to resolve)
+%
+% See BUILD_NOTES.md for section order, canonical bib keys, and open flags.
+% =====================================================================
+\documentclass[manuscript,nonacm,review]{acmart}
+
+\settopmatter{printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+
+\graphicspath{{figures/}}
+
+% visible AI-content markers
+\newcommand{\aiadd}[1]{\textcolor{blue}{#1}}
+\newcommand{\aibullets}[1]{\textcolor{blue}{#1}}
+\providecommand{\aiflag}[1]{\textcolor{red}{#1}}
+
+\begin{document}
+
+\title{CAT for Accelerated Pedagogy Benchmarking}
+
+\author{\textcolor{red}{[AUTHOR NAME]}}
+\affiliation{%
+  \institution{\textcolor{red}{[AFFILIATION]}}
+  \country{}
+}
+\email{}
+
+% acmart requires the abstract before \maketitle. Text extracted from
+% sections/00_abstract_strategy.tex.
+\begin{abstract}
+According to estimates by AI labs, benchmarking and evaluation take up a large
+share of a modern training run: \aiadd{the Olmo 3 report puts evaluation at
+10\% to 20\% of its compute budget}~\cite{olmo3}\aiadd{, and open efforts such
+as Llama 3 run extensive benchmark suites throughout development}~\cite{llama3herd}.
+Fast, granular, and trustworthy benchmarking is crucial for EDU-LLM given the
+sheer number of novel hypotheses being tested. We propose a skill-based
+Computerized Adaptive Test (CAT) that reduces the number of items a diagnostic
+needs to predict accuracy on a specific skill, while holding a level of
+precision similar to full-length benchmarks. Our findings are split between
+multiple-choice benchmarks and free-response benchmarks.
+
+On MCQ benchmarks, we reproduce ATLAS-style adaptive testing on
+\aiadd{ARC}~\cite{li2025atlas}\aiadd{, where the published ATLAS item bank
+recovers held-out accuracy at Pearson $r = 0.83$ from about 21 of 1,172 items
+and reaches $r = 0.91$ in under 10 items once scoring protocols match}. Using
+\aiadd{about 52 in-house} models in the 0 to 7B range \aiadd{on benchmarks
+with no public response data}, CAT recovers full benchmark accuracy with
+\aiadd{1\% to 3\%} of items \aiadd{(Pedagogy $r = 0.72$, PIQA $r = 0.94$)}. On
+FRQ benchmarks, we grade responses with an LLM-as-judge against per-scenario
+rubrics to build a criterion-level response matrix, derive a Q-matrix, and fit
+2PL/MIRT so that CAT selects scenarios adaptively.
+\end{abstract}
+
+\maketitle
+
+% =====================================================================
+% Multiple-choice benchmarks
+% (00 supplies \section{Multiple-Choice Benchmarks} + Strategy; sections
+% 11 and 12 are authored as \subsection blocks that nest under 10's
+% \section{ATLAS Recreation}, per their source comments. Kept flat as
+% authored, no heading demotions.)
+% =====================================================================
+\input{sections/00_abstract_strategy}
+\input{sections/10_mcq_atlas_recreation}
+\input{sections/11_mcq_feasibility_data_cost}
+\input{sections/12_mcq_experiments}
+\input{sections/20_mirt_discussion}
+\input{sections/30_recommendations}
+
+% =====================================================================
+% Free-response benchmarks
+% (Grouping header intentionally omitted: sections 40 and 41 already open
+% with their own \section{Free-response track: ...}; adding a bare
+% \section{Free-Response Benchmarks} here would create an empty section or
+% force a heading demotion, which the assembly brief asked to avoid.)
+% =====================================================================
+\input{sections/40_frq_judge}
+\input{sections/41_frq_mirt_results}
+
+% =====================================================================
+% Appendix
+% =====================================================================
+\appendix
+\input{sections/90_appendix_irt}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

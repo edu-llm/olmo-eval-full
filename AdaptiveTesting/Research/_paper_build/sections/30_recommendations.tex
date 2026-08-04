@@ -1,0 +1,161 @@
+% =====================================================================
+% Section 30: Recommendations (MCQ)
+%
+% ACM-format paper fragment. Emits \section{Recommendations}; the
+% integrator may demote it to \subsection under the MCQ \section{}.
+%
+% Authorship convention:
+%   - The outline PDF ("CAT for Accelerated Pedagogy Benchmarking.pdf",
+%     MCQ Recommendations) gives only a human bullet list. Each bullet is
+%     preserved as a subsection heading (its intent) and, verbatim in spirit,
+%     as an item in the closing \aibullets{} skeleton.
+%   - All expanded prose is AI-drafted and wrapped in \aiadd{...} (renders blue).
+%   - [CITATION NEEDED] markers render red. None are needed here: every number
+%     is our own result and every reference is verified.
+%
+% Numbers are cited in-line from the repo READMEs (no figures in this section):
+%   AdaptiveTesting/Research/01_MCQ_ATLAS/README.md  (parameter range, 1PL/2PL/3PL,
+%     SE sweep, model-count/diversity, feasibility %-of-bank)
+%   AdaptiveTesting/Research/04_Inference_Cost/README.md  (latency, cost, batching)
+%   AdaptiveTesting/Research/05_Data_Availability/README.md  (OpenLM/ATLAS coverage)
+%
+% Requires (from the main preamble): xcolor.
+% Bibliography: refs/recommendations.bib
+% =====================================================================
+
+% Fallback macros: no-ops if the main preamble already defines them.
+\providecommand{\aiadd}[1]{\textcolor{blue}{#1}}
+\providecommand{\aibullets}[1]{{\color{blue}#1}}
+
+\section{Recommendations}
+
+\aiadd{The MCQ experiments and cost measurements above point to a short list of
+defaults for building a CAT as a benchmark replacement. Each recommendation
+gives the default, the evidence for it, and the condition that changes the
+choice.}
+
+\subsection{Open response data is useful but limited}
+
+\aiadd{Public response sets remove most of the calibration cost when they cover
+your benchmark. The Open LLM Leaderboard v2 dumps~\cite{fourrier2024openllm,
+beeching2023openllm} give per-question responses for 1{,}102 models from 0.213
+to 7.0B on BBH, GPQA, MATH, IFEval, and MuSR, and the ATLAS
+release~\cite{li2025atlas} ships a full response matrix for
+ARC~\cite{clark2018arc} (3{,}747 calibration and 417 held-out models). The
+limits appear quickly. OpenLM and HELM~\cite{liang2023helm} carry the newer
+tasks but none of the five ATLAS core MCQ sets, ATLAS provides only item
+parameters and accuracy summaries for its non-ARC benchmarks, and scoring
+methods differ across sources (\texttt{acc\_norm}, exact match, and a strict
+prompt score), so any pooling has to reconcile them first. A skill-specific
+benchmark such as Pedagogy~\cite{lelievre2025pedagogy} has no public response
+data at all, which is why we generated a 52-model matrix in-house. Start from
+public data when it covers your benchmark, and budget for local inference when
+it does not.}
+
+\subsection{Choose the calibration parameter range to match your targets}
+
+\aiadd{The calibration pool should span the parameter range you plan to test. On
+ARC, the published ATLAS 3PL bank, built from thousands of models across a wide
+range, recovers held-out accuracy at $r = 0.83$ using about 21 of 1{,}172 items
+at SE~$\le 0.2$~\cite{li2025atlas}. Refitting the same pipeline on only the 0.5
+to 7B slice, a pool of 1{,}686 models with about 95\% of them at 7B, drops
+transfer to $r = 0.59$ at the same target. A range-matched bank is cheaper to
+build, but a pool that is thin and skewed toward one size discriminates worse.
+If you restrict the range to save calibration effort, cover the middle of that
+range rather than clustering at a single size.}
+
+\subsection{Use 1PL or a regularized 2PL when calibration models are scarce}
+
+\aiadd{The model form should follow the size of the calibration pool. On a thin
+in-house pool of about 50 to 63 models, a Rasch (1PL) bank~\cite{rasch1960}
+recovers held-out ARC accuracy at $r = 0.98$ but needs about 43 items at
+SE~$\le 0.3$, while an unregularized 2PL cuts the test to about 8 items and
+drops to $r = 0.86$ because thin-sample discriminations are noisy. A regularized
+(Bayesian) 2PL gets both, about 34 items at $r = 0.91$. A 3PL on the same pool
+is the worst option, at $r = 0.73$ and about 493 items, because the guessing
+parameter is poorly identified with few models~\cite{embretson2000irt}. The
+order flips with a large pool: on GPQA with the full OpenLM set the 3PL reaches
+$r = 0.74$ against about $0.10$ for the 2PL~\cite{li2025atlas}. Default to a 1PL
+or a regularized 2PL under a few dozen models, and add the guessing parameter
+only once the pool is in the hundreds.}
+
+\subsection{Set the standard-error target to the accuracy you need}
+
+\aiadd{The stopping SE trades test length for precision, and the right value
+depends on the bank. A well-calibrated bank plateaus early: the ATLAS 3PL bank
+already reaches $r \approx 0.91$ with about 8 items at SE~$\le 0.5$, and
+tightening to SE~$\le 0.12$ adds only about $0.03$ in $r$ for roughly six times
+the items~\cite{li2025atlas}. A thin in-house bank needs a tighter target to pay
+off: the local 1PL climbs from $r = 0.73$ at SE~$\le 0.5$ (14 items) to about
+$r = 0.98$ by SE~$\le 0.3$ (about 43 items). Test length grows faster than
+linearly as the target tightens, about five to nine times from SE~$\le 0.3$ to
+SE~$\le 0.12$. Use SE~$\le 0.3$ to $0.4$ (about 8 to 10 items) for a trusted
+large-pool bank, and budget SE~$\le 0.3$ (about 30 to 45 items) for a thin
+in-house bank. Tighter targets rarely earn their length: on a thin 2PL Pedagogy
+bank, SE~$\le 0.15$ consumes about 87\% of the items for little gain in $r$.}
+
+\subsection{Model diversity matters more than raw model count}
+
+\aiadd{Calibration correlation depends on covering a spread of abilities, not on
+sheer count. Below about 15 models the correlation swings widely (roughly $0.45$
+to $0.92$); it settles into the $0.85$ to $0.94$ band from about 25 models up,
+and about 25 to 40 diverse models hold it near $0.85$ to
+$0.9$~\cite{li2025atlas}. Adding models past that buys stability rather than
+correlation: on OpenLM the accuracy ceiling is reached by 100 to 200 models and
+stays flat out to about 1{,}000. Count does not shorten the test either, since
+CAT length stays about 4 to 5 items across pool sizes. Two failure modes are
+worth watching. A benchmark whose target models cluster in ability gives IRT
+little to work with, so SocialIQa~\cite{sap2019socialiqa} recovers at only
+$r = 0.27$ on 52 clustered models; and on a multi-subtask benchmark, more models
+can hurt a unidimensional bank, with BBH peaking near $r = 0.86$ at about 600
+models and then falling to $r = 0.67$ at the full pool. Aim for a few dozen
+models that span the ability range you care about.}
+
+\subsection{Inference is an upfront cost that pays back on demand}
+
+\aiadd{The cost of calibration is front-loaded, and the payoff is cheap repeat
+evaluation. The one-time pass runs the full roster over the full item bank:
+single-stream latency on an L4 runs about 4, 10, 19, and 34 seconds per request
+for the 0 to 1B, 1 to 2B, 2 to 5B, and 5 to 7B bands, and MCQ inference costs
+about \$0.009 per 1{,}000 requests against about \$0.20 to \$0.23 for
+open-ended. After calibration, each new model pays only for the items its
+adaptive test selects, about 3\% of the Pedagogy bank with a 2PL and about 1\%
+of PIQA~\cite{bisk2020piqa} at SE~$\le 0.3$, roughly 7 to 30 times fewer
+inferences than a full pass. Batched serving under vLLM~\cite{kwon2023vllm} cuts
+per-request time to 0.25 to 1.6 seconds, 14 to 21 times faster than
+single-stream. Because evaluation can take 10\% to 20\% of a training
+run~\cite{olmo3, llama3herd}, this speedup is what makes a diagnostic cheap
+enough to run at every checkpoint rather than only at the end.}
+
+% ---- Human-rewritable skeleton (each item traceable to a README section) ----
+\aibullets{%
+\begin{itemize}
+  \item Open resources are nice but limited: OpenLM v2 covers 1{,}102 models on
+  five tasks and ATLAS ships a full matrix only for ARC; scoring methods differ,
+  and Pedagogy has no public data, so budget for local inference
+  (05\_Data\_Availability; 01\_MCQ\_ATLAS \S5).
+  \item Choose the parameter range appropriately: the wide-range ATLAS 3PL bank
+  transfers at $r = 0.83$ (SE~$\le 0.2$); a 0.5 to 7B refit skewed 95\% to 7B
+  drops to $r = 0.59$; cover the middle of the range, do not cluster at one size
+  (01\_MCQ\_ATLAS \S1).
+  \item 1PL/2PL when fewer calibration models: on about 50 to 63 models, 1PL
+  gives $r = 0.98$ / 43 items, unregularized 2PL $r = 0.86$ / 8 items,
+  regularized 2PL $r = 0.91$ / 34 items, 3PL $r = 0.73$ / 493 items; the 3PL
+  only wins on the large OpenLM pool ($r = 0.74$ vs $0.10$ on GPQA)
+  (01\_MCQ\_ATLAS \S2, \S2b, \S4).
+  \item Adjust standard error for accuracy requirements: a large-pool bank
+  plateaus at SE~$\le 0.3$ to $0.4$ (about 8 to 10 items, $r \approx 0.9$); a
+  thin bank needs SE~$\le 0.3$ (about 30 to 45 items); length grows five to nine
+  times from SE~$\le 0.3$ to SE~$\le 0.12$; SE~$\le 0.15$ eats about 87\% of a
+  thin Pedagogy bank (01\_MCQ\_ATLAS \S6, \S5).
+  \item Model diversity is important: correlation is unstable below about 15
+  models, stabilizes at about 25 to 40 ($0.85$ to $0.9$), and plateaus by 100 to
+  200 on OpenLM; clustered-ability benchmarks fail (SocialIQa $r = 0.27$) and
+  more models can hurt a unidimensional bank (BBH $0.86 \to 0.67$)
+  (01\_MCQ\_ATLAS \S3, \S3b).
+  \item Inference is a significant upfront cost, but it speeds up on demand and
+  unlocks checkpoint benchmarking: one-time full-roster calibration
+  (single-stream about 4 / 10 / 19 / 34 s per request by size band), then each
+  model uses about 1 to 3\% of the bank (7 to 30 times fewer inferences), with
+  batched vLLM 14 to 21 times faster (04\_Inference\_Cost; 01\_MCQ\_ATLAS \S5).
+\end{itemize}}

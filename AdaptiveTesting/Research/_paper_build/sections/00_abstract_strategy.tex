@@ -1,0 +1,57 @@
+% Abstract + MCQ "Strategy" subsection.
+% Human (outline) prose is left unmarked; prose added beyond the outline is wrapped in \aiadd{}.
+% Requires the preamble to define \aiadd, e.g. \newcommand{\aiadd}[1]{\textcolor{blue}{#1}}.
+% Bibliography: refs/abstract_strategy.bib
+
+\begin{abstract}
+According to estimates by AI labs, benchmarking and evaluation take up a large
+share of a modern training run: \aiadd{the Olmo 3 report puts evaluation at
+10\% to 20\% of its compute budget}~\cite{olmo3}\aiadd{, and open efforts such
+as Llama 3 run extensive benchmark suites throughout development}~\cite{llama3herd}.
+Fast, granular, and trustworthy benchmarking is crucial for EDU-LLM given the
+sheer number of novel hypotheses being tested. We propose a skill-based
+Computerized Adaptive Test (CAT) that reduces the number of items a diagnostic
+needs to predict accuracy on a specific skill, while holding a level of
+precision similar to full-length benchmarks. Our findings are split between
+multiple-choice benchmarks and free-response benchmarks.
+
+On MCQ benchmarks, we reproduce ATLAS-style adaptive testing on
+\aiadd{ARC}~\cite{li2025atlas}\aiadd{, where the published ATLAS item bank
+recovers held-out accuracy at Pearson $r = 0.83$ from about 21 of 1,172 items
+and reaches $r = 0.91$ in under 10 items once scoring protocols match}. Using
+\aiadd{about 52} calibration models in the 0 to 7B range \aiadd{on benchmarks
+with no public response data}, CAT recovers full benchmark accuracy with
+\aiadd{1\% to 3\%} of items \aiadd{(Pedagogy $r = 0.72$, PIQA $r = 0.94$)}. On
+FRQ benchmarks, we grade responses with an LLM-as-judge against per-scenario
+rubrics to build a criterion-level response matrix, derive a Q-matrix, and fit
+2PL/MIRT so that CAT selects scenarios adaptively.
+\end{abstract}
+
+\section{Multiple-Choice Benchmarks}
+
+\subsection{Strategy}
+
+\aiadd{A computerized adaptive test (CAT) chooses each question from how the
+model has answered so far. It selects the item that reveals the most about the
+model's ability, then stops once the estimate is precise
+enough~\cite{wainer2000, vanderlinden2000cat, weiss1982}. This selection rests
+on item response theory (IRT), which models the chance of a correct answer from
+an item's difficulty and discrimination together with the model's latent
+ability~\cite{hambleton1991}. Because the test skips items that add little, it
+reaches a target precision with far fewer questions than a fixed
+benchmark~\cite{maiapolo2024tiny}.}
+
+Our work builds upon ATLAS~\cite{li2025atlas}, which showed the potential for
+adaptive testing to dramatically reduce the number of items required for
+predicting benchmark accuracy. Items calibrated using item response theory have
+also been shown to provide information beyond
+accuracy~\cite{lalor2016, rodriguez2021, vania2021}. Models that answer harder
+questions correctly but miss some easy ones are appropriately ranked higher
+under a CAT, even though a simple accuracy comparison cannot capture this
+difference~\cite{li2025atlas}.
+
+This paper shows the feasibility of recreating the ATLAS methodology on new
+benchmarks, and it formalizes the requirements for using a CAT as a true
+replacement for an MCQ benchmark. It also sets out where multidimensional IRT
+(MIRT) helps and where it falls short for MCQ, a discussion largely missing
+from ATLAS~\cite{li2025atlas}.

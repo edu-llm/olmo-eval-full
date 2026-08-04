@@ -87,11 +87,32 @@ chunk_idx <- which(chunk_ends == chunk_end)
 start_col <- if (chunk_idx == 1L) 2L else chunk_ends[chunk_idx - 1L] + 1L
 dat <- clean_data[, start_col:chunk_end]
 cat("Fitting 3PL chunk", chunk_end, "items", ncol(dat), "ncycles", ncycles, "\n")
-model <- mirt(dat, 1, itemtype = "3PL", method = "EM",
-              technical = list(NCYCLES = ncycles))
-theta_scores <- fscores(model, method = "EAP", full.scores = TRUE,
-                        full.scores.SE = TRUE, quadpts = 61)
-item_params <- coef(model, simplify = TRUE)$items
+fit_chunk <- function(genrand, seed) {
+  if (genrand) set.seed(seed)
+  model <- mirt(dat, 1, itemtype = "3PL", method = "EM",
+                technical = list(NCYCLES = ncycles),
+                GenRandomPars = genrand, verbose = FALSE)
+  theta_scores <- fscores(model, method = "EAP", full.scores = TRUE,
+                          full.scores.SE = TRUE, quadpts = 61)
+  item_params <- coef(model, simplify = TRUE)$items
+  list(theta = theta_scores, items = item_params)
+}
+# Deterministic default fit first (numerically identical to the plain
+# mirt() call whenever the EM converges). Some model subsets drive the 3PL
+# EM to a divergent Heywood solution whose EAP scoring (fscores) errors; in
+# that case retry from random starting values (fixed seeds -> reproducible)
+# to reach a well-behaved solution instead of aborting the whole fold.
+res <- tryCatch(fit_chunk(FALSE, 0L), error = function(e) NULL)
+if (is.null(res)) {
+  for (sd_ in c(1L, 7L, 42L, 123L, 2024L)) {
+    cat("Chunk", chunk_end, "default EM unstable; retry GenRandomPars seed", sd_, "\n")
+    res <- tryCatch(fit_chunk(TRUE, sd_), error = function(e) NULL)
+    if (!is.null(res)) break
+  }
+}
+if (is.null(res)) stop(paste("chunk", chunk_end, "failed after GenRandomPars retries"))
+theta_scores <- res$theta
+item_params <- res$items
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 tag <- as.character(chunk_end)
 write.csv(theta_scores, file.path(outdir, paste0("irt_person_scores_", tag, ".csv")),
@@ -518,7 +539,7 @@ def _plot_bench(bench: str, rows: list[dict], se: float) -> None:
     ax2.set_ylabel("mean # CAT items administered", color="#d62728")
     ax2.tick_params(axis="y", labelcolor="#d62728")
     ax1.set_title(
-        f"OpenLM {bench} — ATLAS k-subset 3PL train-size sweep (SE<={se:g})\n"
+        f"OpenLM {bench}: correlation and test length vs train-set size (SE<={se:g})\n"
         f"(bank ~{n_bank} items, {sel[-1]['n_test']} fixed held-out models)"
     )
     ax1.grid(True, alpha=0.3)
@@ -526,6 +547,19 @@ def _plot_bench(bench: str, rows: list[dict], se: float) -> None:
     png = OUT_ROOT / f"{bench}_openlm_trainsize.png"
     fig.savefig(png, dpi=140)
     plt.close(fig)
+
+
+def replot_bench(bench: str, ses: list[float]) -> None:
+    """Re-render a per-bench figure from its existing CSV (no fits, numbers untouched)."""
+    path = OUT_ROOT / f"{bench}_openlm_trainsize.csv"
+    if not path.exists():
+        print(f"[{bench}] no CSV at {path}; nothing to replot")
+        return
+    df = pd.read_csv(path)
+    rows = df.to_dict("records")
+    se = ses[0] if ses[0] in set(df["se_target"]) else float(df["se_target"].iloc[0])
+    _plot_bench(bench, rows, se)
+    print(f"[{bench}] replotted {OUT_ROOT / f'{bench}_openlm_trainsize.png'} (SE{se})")
 
 
 def combine() -> None:
@@ -551,7 +585,7 @@ def combine() -> None:
     ax.set_xlabel("# calibration (train) models")
     ax.set_ylabel("Pearson r (p-IRT pred vs actual)")
     ax.set_title(
-        f"OpenLM ATLAS k-subset 3PL — correlation vs #calibration models (SE<={primary:g})")
+        f"OpenLM: correlation vs number of calibration models (SE<={primary:g})")
     ax.grid(True, alpha=0.3)
     ax.legend(title="benchmark")
     fig.tight_layout()
@@ -565,6 +599,8 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--bench", help="single OpenLM benchmark (ifeval/gpqa/math/bbh/musr)")
     p.add_argument("--combine", action="store_true", help="combine per-bench CSVs + figure")
+    p.add_argument("--replot", action="store_true",
+                   help="re-render the per-bench figure from its existing CSV (no fits)")
     p.add_argument("--seed", type=int, default=7)
     p.add_argument("--test-frac", type=float, default=0.10)
     p.add_argument("--step", type=int, default=100)
@@ -581,6 +617,9 @@ def main() -> None:
         return
     if not args.bench:
         p.error("--bench required (or use --combine)")
+    if args.replot:
+        replot_bench(args.bench, [float(s) for s in args.se_list.split(",")])
+        return
     run_sweep(args)
 
 

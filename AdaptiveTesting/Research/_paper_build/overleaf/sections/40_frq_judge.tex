@@ -1,0 +1,279 @@
+% =====================================================================
+% Section 40: Free-response track, the LLM judge
+% File: AdaptiveTesting/Research/_paper_build/sections/40_frq_judge.tex
+% Bibliography: refs/frq_judge.bib
+%
+% Provenance / authorship convention (matches sibling sections):
+%   - Plain black text is transcribed (and lightly cleaned) from the human
+%     outline PDF "CAT for Accelerated Pedagogy Benchmarking.pdf".
+%   - \aiadd{...} (blue) marks additions written for this draft, cross-checked
+%     against the local study data in AdaptiveTesting/Research/02_FRQ_Judge.
+%   - Fully-AI subsections end with an \aibullets{...} itemize summary.
+%   - \textcolor{red}{[CHECK: ...]} flags a source inconsistency to resolve.
+%   - \textcolor{red}{[CITATION NEEDED]} flags an unverified reference.
+%
+% Expected preamble macros / packages (define in the main document if absent):
+%   \usepackage{xcolor}
+%   \newcommand{\aiadd}[1]{\textcolor{blue}{#1}}
+%   \newcommand{\aibullets}[1]{\begingroup\color{blue}#1\endgroup}
+%
+% DATA SOURCES (numbers in prose and the threshold table):
+%   .../02_FRQ_Judge/README.md
+%   .../02_FRQ_Judge/data/{STUDY_DESIGN.json, judge_frozen.yaml,
+%       skill_definitions_v2.md, qmatrix_human_review_summary.json}
+% =====================================================================
+
+\section{Free-response track: the LLM judge}
+\label{sec:frq-judge}
+
+\subsection{Strategy}
+On free-response benchmarks we grade each tutor response with an LLM-as-judge
+against per-scenario rubrics, build a criterion-level response matrix, derive a
+Q-matrix, and fit a 2PL / MIRT model so the adaptive test can select scenarios
+one at a time.
+\aiadd{The judge sits on the critical path: every entry of the response matrix
+that the calibration and the adaptive test consume is a judge verdict, so the
+judge has to be validated against human graders before it is trusted to produce
+hundreds of thousands of labels. Using an LLM as an evaluator is now common
+practice~\cite{zheng2023judging}, but it carries documented failure modes
+(position, verbosity, and self-preference effects), which is why we treat judge
+choice as an empirical selection problem rather than a default.}
+
+\subsection{Selecting and validating the judge}
+\label{sec:frq-judge-selection}
+Prometheus~2~\cite{kim2024prometheus2} had been used as a judge before anyone
+checked that its verdicts matched human graders. We therefore ran an explicit
+selection study as a fixed sequence of steps. \aiadd{The design, thresholds, and
+blinded case set are frozen in \texttt{STUDY\_DESIGN.json} and
+\texttt{judge\_cases.blinded.jsonl}.}
+
+\begin{enumerate}
+  \item \textbf{Build the case set.} We graded three tutor-model responses for
+  each of ten scenarios. Each response was scored separately against its own
+  criteria, which produced 261 binary response-criterion cases.
+  \item \textbf{Set acceptance thresholds.} We fixed five thresholds in advance
+  (Table~\ref{tab:judge-thresholds}). Each one guards a different property: the
+  judge must do well on both pass and fail cases so that strength on one class
+  does not hide weakness on the other (macro-F1); it must catch the serious
+  failures humans flagged (critical-failure sensitivity); it must hold up inside
+  every mapped skill and not only in aggregate (per-skill F1); it must return the
+  same verdict when handed the same case again (repeat agreement); and small
+  meaning-preserving edits to the prompt must rarely change its verdict
+  (prompt-flip rate).
+  \item \textbf{Blind the judge.} The judge saw the scenario, the tutor response,
+  and one criterion. It did not see the human label and did not see the tutor's
+  identity, which removes both an answer key and an identity signal that could
+  bias the verdict. \aiadd{Blinding the identity is a direct guard against the
+  self-preference and position effects reported for LLM
+  judges~\cite{wang2024unfair,panickssery2024selfpreference}.}
+  \item \textbf{Use native formats.} Each judge answered in its own format:
+  Prometheus kept its 1-to-5 scale, Flow and Selene used their native binary
+  formats, and Qwen and Gemma returned binary JSON. \aiadd{Verdicts were mapped
+  to a common pass/fail scale afterward under \texttt{judge-normalization-v3}
+  (\textcolor{red}{[CITATION NEEDED: model references and exact versions for the
+  Flow, Selene, and Gemma judges]}).}
+  \item \textbf{Run six waves.} Each local judge ran six times: three identical
+  canonical runs to measure test-retest consistency, then three
+  meaning-preserving prompt variants, namely added whitespace, renamed headers,
+  and more polite instructions. \aiadd{The waves are
+  \texttt{canonical\_r1/r2/r3}, \texttt{whitespace\_r1},
+  \texttt{header\_synonyms\_r1}, and \texttt{instruction\_politeness\_r1}; five
+  judges by six waves is the full grid.}
+  \item \textbf{Score without new calls.} The comparison step made no additional
+  LLM calls. It joined the stored verdicts to the human labels and computed
+  accuracy, macro-F1, critical-failure sensitivity, per-skill performance,
+  coverage, repeat agreement, and prompt-flip rate.
+  \item \textbf{Separate parsing from grading errors.} Parsing failures were kept
+  separate from genuine grading errors. Malformed outputs were recovered where
+  possible, while truly ambiguous outputs became a ``no decision'' instead of a
+  forced verdict. Qwen's disagreements with the human labels were then read by
+  hand: some were real judge errors, and others exposed questionable human labels
+  or unclear grading policy, so the ground truth itself is noisy.
+  \item \textbf{Run the evidence pilot.} The strongest local judges (Qwen, Flow,
+  and Selene) were re-run under stricter evidence requirements on a 96-case pilot
+  that compared three prompting styles. Zero-shot gives the judge the rules, the
+  criterion, and the response with no example verdicts. Few-shot adds worked
+  examples for the hard cases: partial answers, rounding, reference leakage, and
+  hint-only criteria. Countercheck keeps the few-shot examples and then tells the
+  judge to actively look for a missing clause, a wrong value, or a contradiction
+  that would overturn a tentative pass, so it grades more strictly.
+  \aiadd{Requiring the judge to cite evidence from the response before it commits
+  to a verdict is the criterion-level analogue of the evidence-first calibration
+  that reduces evaluator bias in~\cite{wang2024unfair}.}
+  \item \textbf{Select and freeze Qwen.} The final configuration is
+  Qwen/Qwen3.5-9B
+  \textcolor{red}{[CHECK: the judge model name is written identically in the
+  outline, \texttt{judge\_frozen.yaml}, and the README as ``Qwen/Qwen3.5-9B'',
+  but no public Qwen release uses that name (the family ships 2.5 and 3 series,
+  not a ``3.5-9B''); confirm the exact checkpoint]}, doing zero-shot binary
+  judging one criterion at a time, with evidence required from the tutor response
+  and a fail whenever $p_{\mathrm{fail}} \geq 0.33$. \aiadd{The frozen record in
+  \texttt{judge\_frozen.yaml} pins the revision
+  \texttt{c202236235762e1c871ad0ccb60c8ee5ba337b9a}, temperature $0$, seed $42$,
+  and the \texttt{judge-validation-v3} / \texttt{judge-normalization-v3} /
+  \texttt{criterion-evidence-gate-v1} policy versions.}
+\end{enumerate}
+
+\begin{table}[t]
+  \centering
+  \caption{Judge acceptance thresholds. Values are from the source outline and
+  match \texttt{STUDY\_DESIGN.json}.}
+  \label{tab:judge-thresholds}
+  \begin{tabular}{lc}
+    \hline
+    Metric & Threshold \\
+    \hline
+    Criterion macro-F1 & $\geq 0.80$ \\
+    Critical-failure sensitivity & $\geq 0.90$ \\
+    Per-skill F1 (each mapped skill) & $\geq 0.70$ \\
+    Repeat (test-retest) agreement & $\geq 0.90$ \\
+    Prompt-flip rate & $\leq 0.10$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\aiadd{Two operational notes matter for reading the results.
+First, the thresholds are applied at their worst case, not on average: the study
+scores test-retest agreement on the worst replicate pair and the prompt-flip
+rate on the worst variant, and it requires the per-skill bar to hold for every
+mapped primary skill. Second, these 261 cases are a development and
+recalibration set used to diagnose the v2 configuration, not an untouched
+acceptance set. A formal marginal-reliability estimate is not identifiable from
+this design, and final acceptance would need a separate, unseen, scenario-level
+holdout graded after the configuration is frozen.}
+
+\subsection{Results}
+\label{sec:frq-judge-results}
+No judge passed every threshold. Qwen was the strongest practical local
+candidate.
+
+Each frontier judge graded only 174 of the 261 cases, because a judge was
+blocked from grading tutor responses that came from its own provider family.
+\aiadd{That exclusion is deliberate: an evaluator tends to favor generations
+from its own family, so scoring same-family responses would inflate its
+apparent agreement~\cite{panickssery2024selfpreference}. The side effect is that
+the frontier judges were measured on a smaller and not directly comparable
+slice of the case set, which weakens any head-to-head claim against the local
+judges.}
+
+Repeat and prompt-stability tests were run during the earlier screening waves.
+The final zero-shot, $p_{\mathrm{fail}} = 0.33$ configuration completed only one
+canonical development run, not the full six-wave reliability suite.
+\aiadd{So the frozen configuration inherits its stability evidence from
+screening rather than from a dedicated six-wave test of the exact frozen
+settings. The per-judge metric tables that back these statements
+(macro-F1, critical-failure sensitivity, per-skill F1, test-retest agreement,
+prompt-flip rate) are regenerated from the wave logs and are not stored in the
+repository; see Section~\ref{sec:frq-judge-repro}.}
+
+\subsection{Why Qwen instead of a frontier model?}
+\label{sec:frq-judge-whyqwen}
+The frontier judges produced broadly similar verdicts, and none of them passed
+every acceptance threshold either. We chose Qwen because it had the strongest
+overall performance among the local candidates, was stable across the screening
+waves, and can be self-hosted from a frozen checkpoint. A frozen local judge
+gives us reproducibility, privacy, and deployment control, and a low marginal
+cost for the hundreds of thousands of judgments that calibration needs.
+\aiadd{At that volume the marginal cost and the ability to pin an exact revision
+outweigh the small quality gap to a frontier judge, especially when the frontier
+judges could not be scored on the full case set anyway.}
+
+\subsection{Skills and rubrics: the Q-matrix}
+\label{sec:frq-judge-qmatrix}
+The MIRT model needs a set of skills for each benchmark and a Q-matrix that
+records which skills each criterion tests. We calibrate several ability scores
+where the benchmark supports it. To build the Q-matrix we write a definition for
+each skill, label every criterion against those definitions, and then review a
+subset of the labels by hand.
+
+\aiadd{The canonical instrument uses three tutoring skills, defined in
+\texttt{skill\_definitions\_v2.md}: \emph{content} (the criterion turns on
+subject-matter correctness), \emph{diagnosis} (it turns on reading or acting on
+this student's specific error), and \emph{scaffolding} (it constrains the form
+of the help, such as a hint or a withheld answer rather than the full solution).
+A criterion may load several skills or none; the labeling rule is conservative,
+marking a skill $1$ only when a competent tutor could not satisfy the criterion
+without it. \textcolor{red}{[CHECK: the outline's Q-matrix-generation paragraph
+says the generator is shown ``the definition of the four skills,'' but
+\texttt{skill\_definitions\_v2.md} is explicit that the canonical set is three
+(content, diagnosis, scaffolding), with presentation only appearing as an
+optional third axis in a separate 3-skill calibration; reconcile the count].}}
+
+The initial Q-matrix is generated by an LLM. It is given a sample row (the item,
+the correct answer with its rationale, the skill definitions, and positive and
+negative labeling examples). For every $1$ it proposes, it must supply evidence
+from the item, an explanation for why the correct answer cannot be reached
+without that skill, and a counterfactual describing why a tutor lacking the skill
+could not get there. Once the $1$s are filled in, they are re-checked by two
+independent LLM verifiers and, on a small subset, by two human reviewers, with a
+positive label kept only when the reviewers agree unanimously. A sample of $0$
+labels is also checked to estimate the false-negative rate.
+
+\aiadd{The human audit (\texttt{qmatrix\_human\_review\_summary.json}, 25
+criteria, three raters) shows the skills separate cleanly to different degrees.
+Content is the most reliable dimension (84\% of items unanimous across the three
+raters). Scaffolding is next (80\% unanimous, Fleiss $\kappa = 0.59$), and
+diagnosis is the weakest (64\% unanimous, Fleiss $\kappa = 0.365$). Judged
+against the adjudicated human labels, the LLM Q-matrix agrees well on content
+(F1 $= 0.96$) and scaffolding (F1 $= 0.82$) but poorly on diagnosis
+(F1 $= 0.50$), for an overall F1 of $0.84$.
+\textcolor{red}{[CHECK: content reliability is reported two ways in the sources
+(Fleiss $\kappa = 0.85$ in \texttt{skill\_definitions\_v2.md} and in the summary
+JSON's core Fleiss block, versus pairwise Cohen $\kappa \approx 0.86$ in the
+README); these are different estimators (three-rater Fleiss versus mean pairwise
+Cohen), so state one primary figure and footnote the other].}
+The weak diagnosis agreement, together with the roughly 82\% content-to-diagnosis
+overlap, is why content and diagnosis are collapsed into a single
+``correctness'' ability for the TutorBench calibration, leaving correctness and
+scaffolding as the two calibrated skills.}
+
+\subsection{Benchmarks}
+\label{sec:frq-judge-benchmarks}
+The same judge-and-Q-matrix pipeline targets five free-response benchmarks:
+
+\begin{itemize}
+  \item \textbf{TutorBench}: 662 scenarios and 6,462 criteria across content,
+  diagnosis, and scaffolding.
+  \item \textbf{TutorEval}: 828 scenarios, split into conceptual and quantitative
+  questions.
+  \item \textbf{WildBench}: 1,001 general free-response scenarios with eleven
+  capability tags.
+  \item \textbf{EduBench}: nine task types graded by deterministic verifiers.
+  \item \textbf{Bridge}: 642 scenarios, with a rubric drawn from 39 templates
+  and five tutoring skills.
+  \textcolor{red}{[CHECK: the outline gives Bridge as 642 scenarios, but the
+  README lists Bridge as 250 scenarios (both agree on five skills); confirm the
+  scenario count]}
+\end{itemize}
+
+\aiadd{The downstream MIRT calibration reported later in the paper uses the
+curated TutorBench bank as its primary instrument; the other four benchmarks
+exercise the pipeline across task formats and grading styles.}
+
+\subsection{Reproducibility and open limitations}
+\label{sec:frq-judge-repro}
+\aiadd{The judge is frozen so the calibration is reproducible. Anyone with the
+pinned Qwen checkpoint, the recorded revision and seed, and the three policy
+versions can regrade the response matrix and get the same verdicts, which is
+what makes a self-hosted local judge preferable to a moving frontier endpoint
+for a study of this size. The trade-off is that the ground truth is imperfect:
+the hand review found real judge errors alongside questionable human labels, so
+some verdict noise is baked into the response matrix and propagates into the
+ability estimates. Judge-label noise is one of several error sources that reach
+the final ability standard error; item-parameter uncertainty from a modest
+calibration sample is another, and both are known to inflate the standard error
+of ability beyond the naive posterior~\cite{tsutakawa1990effect,patton2013influence}.}
+
+\aibullets{%
+\begin{itemize}
+  \item In-repo: the study design, blinded 261-case set, frozen judge config,
+  skill definitions, and the human Q-matrix audit.
+  \item Not in-repo: the per-judge scoreboard (macro-F1, critical-failure
+  sensitivity, per-skill F1, test-retest agreement, prompt-flip rate), which
+  lives in gitignored run logs and object storage and is regenerated from the
+  six-wave verdict logs plus the human labels.
+  \item Open items before formal acceptance: run the full six-wave reliability
+  suite on the exact frozen configuration, evaluate on a fresh scenario-level
+  holdout, and reduce ground-truth noise by re-adjudicating the human labels the
+  audit flagged.
+\end{itemize}}

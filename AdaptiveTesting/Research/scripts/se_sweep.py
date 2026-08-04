@@ -140,7 +140,9 @@ def main():
     ap.add_argument("--mcq-dir")
     ap.add_argument("--bench", default="arc_challenge")
     ap.add_argument("--method", default="girth")
-    ap.add_argument("--n-test", type=int, default=13)
+    ap.add_argument("--n-test", type=int, default=13,
+                    help="number of held-out models sampled by --seed; the local ARC "
+                         "banks use 13, the ATLAS own-response baseline uses 60")
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--tag", required=True)
     ap.add_argument("--out-dir", required=True, type=Path)
@@ -199,7 +201,7 @@ def main():
     items_y = [r["mean_items"] for r in rows]
     fig, ax1 = plt.subplots(figsize=(7.6, 4.8))
     ax1.plot(se_x, corr_y, "o-", color="#1f77b4", label="Pearson r")
-    ax1.set_xlabel("SE stopping requirement (tighter -> left)")
+    ax1.set_xlabel("SE stopping target (smaller = stricter)")
     ax1.set_ylabel("Pearson r (pred vs actual)", color="#1f77b4")
     ax1.tick_params(axis="y", labelcolor="#1f77b4")
     ax1.invert_xaxis()
@@ -208,7 +210,7 @@ def main():
     ax2.plot(se_x, items_y, "s--", color="#d62728", label="mean # items")
     ax2.set_ylabel("mean # items administered", color="#d62728")
     ax2.tick_params(axis="y", labelcolor="#d62728")
-    ax1.set_title(f"SE requirement vs. correlation & test length — {args.tag}\n"
+    ax1.set_title(f"SE stopping target vs correlation and test length ({args.tag})\n"
                   f"(bank {n_bank} items, {len(resp)} held-out models)")
     ax1.grid(True, alpha=0.3)
     fig.tight_layout()

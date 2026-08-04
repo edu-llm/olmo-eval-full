@@ -149,21 +149,22 @@ def main():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
+    model_label = {"girth": "2PL", "rasch": "1PL (Rasch)"}.get(args.method, args.method)
     fig, ax = plt.subplots(figsize=(7.2, 7))
     lo = min(acts.min(), preds.min()) - 0.03
     hi = max(acts.max(), preds.max()) + 0.03
-    ax.plot([lo, hi], [lo, hi], "--", color="gray", label="perfect (y=x)")
+    ax.plot([lo, hi], [lo, hi], "--", color="gray", label="perfect prediction (y=x)")
     ax.scatter(acts, preds, s=70, color="#1f77b4", edgecolor="black", zorder=3)
     for m, act, pred, *_ in recs:
         ax.annotate(m.split("/")[-1][:16], (act, pred), fontsize=6.5,
                     xytext=(4, 3), textcoords="offset points")
-    ax.set_xlabel(f"actual full {args.bench} accuracy ({full_items} items)")
-    ax.set_ylabel(f"CAT-predicted accuracy (2PL, SE<{args.se_stop})")
+    ax.set_xlabel(f"actual full {args.bench} accuracy (fraction correct, {full_items} items)")
+    ax.set_ylabel(f"CAT-predicted accuracy (fraction correct, {model_label}, SE<={args.se_stop:g})")
     ax.set_xlim(lo, hi)
     ax.set_ylim(lo, hi)
     ax.set_title(
-        f"{args.bench}: CAT diagnostic vs full score, {len(test)} held-out models\n"
-        f"Pearson r={r:.3f}  MAE={mae:.3f}  avg {avg_items:.1f}/{full_items} items ({pct:.0f}%)"
+        f"{args.bench}: CAT-predicted vs actual full accuracy, {len(test)} held-out models\n"
+        f"Pearson r={r:.3f}, MAE={mae:.3f}, {avg_items:.1f} of {full_items} items ({pct:.0f}%)"
     )
     ax.grid(True, alpha=0.3)
     ax.legend(loc="upper left")

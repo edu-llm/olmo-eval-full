@@ -1,0 +1,37 @@
+% Abstract + MCQ "Strategy" subsection.
+% Human (outline) prose is left unmarked; prose added beyond the outline is wrapped in \aiadd{}.
+% Requires the preamble to define \aiadd, e.g. \newcommand{\aiadd}[1]{\textcolor{blue}{#1}}.
+% Bibliography: refs/abstract_strategy.bib
+
+% NOTE: The abstract was extracted into main.tex (acmart requires the abstract
+% environment to appear before \maketitle). Only the MCQ ``Strategy'' content
+% remains in this file.
+
+\section{Multiple-Choice Benchmarks}
+
+\subsection{Strategy}
+
+\aiadd{A computerized adaptive test (CAT) chooses each question from how the
+model has answered so far. It selects the item that reveals the most about the
+model's ability, then stops once the estimate is precise
+enough~\cite{wainer2000cat, vanderlinden2000cat, weiss1982}. This selection rests
+on item response theory (IRT), which models the chance of a correct answer from
+an item's difficulty and discrimination together with the model's latent
+ability~\cite{hambleton1991}. Because the test skips items that add little, it
+reaches a target precision with far fewer questions than a fixed
+benchmark~\cite{maiapolo2024tiny}.}
+
+Our work builds upon ATLAS~\cite{li2025atlas}, which showed the potential for
+adaptive testing to dramatically reduce the number of items required for
+predicting benchmark accuracy. Items calibrated using item response theory have
+also been shown to provide information beyond
+accuracy~\cite{lalor2016, rodriguez2021, vania2021}. Models that answer harder
+questions correctly but miss some easy ones are appropriately ranked higher
+under a CAT, even though a simple accuracy comparison cannot capture this
+difference~\cite{li2025atlas}.
+
+This paper shows the feasibility of recreating the ATLAS methodology on new
+benchmarks, and it formalizes the requirements for using a CAT as a true
+replacement for an MCQ benchmark. It also sets out where multidimensional IRT
+(MIRT) helps and where it falls short for MCQ, a discussion largely missing
+from ATLAS~\cite{li2025atlas}.

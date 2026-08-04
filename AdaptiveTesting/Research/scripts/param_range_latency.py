@@ -146,16 +146,15 @@ def main():
     amort = [r["amortized_batched_latency_s"] for r in fine]
     x = range(len(labels))
     fig, ax = plt.subplots(figsize=(7.6, 4.6))
-    ax.bar([i - 0.2 for i in x], indiv, width=0.4, label="individual (single-stream, roofline)",
+    ax.bar([i - 0.2 for i in x], indiv, width=0.4, label="single-stream (roofline estimate)",
            color="#c44e52")
-    ax.bar([i + 0.2 for i in x], amort, width=0.4, label="amortized (batched vLLM, measured)",
+    ax.bar([i + 0.2 for i in x], amort, width=0.4, label="batched vLLM (measured)",
            color="#4c72b0")
     ax.set_xticks(list(x))
     ax.set_xticklabels(labels)
-    ax.set_ylabel("latency per FRQ inference (s)")
-    ax.set_xlabel("parameter range")
-    ax.set_title("Open-ended (FRQ) inference latency by parameter range\n"
-                 "individual vs batched (full200 open-ended, L4)")
+    ax.set_ylabel("latency per open-ended inference (s)")
+    ax.set_xlabel("parameter range (B)")
+    ax.set_title("Batching cuts single-stream latency 14-21x on an L4 GPU")
     for i, v in enumerate(indiv):
         ax.annotate(f"{v:.0f}s", (i - 0.2, v), ha="center", va="bottom", fontsize=8)
     ax.legend()

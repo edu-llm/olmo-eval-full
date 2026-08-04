@@ -166,7 +166,7 @@ def main():
     ax.set_ylabel(f"ATLAS p-IRT diagnostic (3PL CAT, SE<={args.se_stop:g})")
     ax.set_xlim(lo, hi); ax.set_ylim(lo, hi)
     ax.set_aspect("equal", adjustable="box")
-    ax.set_title(f"ATLAS 3PL bank -> {len(held)} ATLAS held-out models (own responses)\n"
+    ax.set_title(f"ATLAS 3PL bank on {len(held)} held-out models (ATLAS own responses)\n"
                  f"Pearson r={r:.3f}  MAE={mae:.3f}  RMSE={rmse:.3f}  avg {avg_items:.0f} items")
     ax.grid(True, alpha=0.3)
     ax.legend(loc="upper left")

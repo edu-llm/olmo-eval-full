@@ -1,0 +1,595 @@
+% =============================================================================
+% Section 12: MCQ Experiments
+% Bib: refs/mcq_experiments.bib
+%
+% ACM-format paper fragment. The \subsection blocks below sit under the paper's
+% MCQ "ATLAS Recreation" \section{} (see 10_mcq_atlas_recreation.tex). No
+% \documentclass or \section here; \input this file after section 11.
+%
+% FIGURES REFERENCED (\includegraphics{figures/<basename>}).
+% Integrator: each basename below was copied into ./figures/ from the ABSOLUTE
+% source path shown.
+%   figures/trainsize_corr_ext.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/trainsize_corr_ext.png
+%   figures/selection_curve_combined.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/model_diversity_selection/selection_curve_combined.png
+%   figures/param_extrapolation_combined.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/param_extrapolation/param_extrapolation_combined.png
+%   figures/calib_range_to_7b_r_A_vs_B.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/calib_range_to_7b/calib_range_to_7b_r_A_vs_B.png
+%   figures/size_balance_r_comparison.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/size_balanced_recal/size_balance_r_comparison.png
+%   figures/se_sweep_corr_vs_se.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/se_sweep_corr_vs_se.png
+%   figures/se_sweep_items_vs_se.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/se_sweep_items_vs_se.png
+%   figures/compare_2pl_vs_3pl_se0.3.png
+%     <- /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/figures/compare_2pl_vs_3pl_se0.3.png
+%
+% TABLE SOURCE DATA (absolute):
+%   Table (train size)       <- .../01_MCQ_ATLAS/data/trainsize_corr.csv, trainsize_corr_ext.csv
+%   Table (model selection)  <- .../01_MCQ_ATLAS/data/model_diversity_selection/README.md, results.csv
+%   Table (range restriction)<- .../01_MCQ_ATLAS/data/calib_range_to_7b/README.md, results_summary.csv
+%   Table (out-of-range)     <- .../01_MCQ_ATLAS/data/param_extrapolation/README.md, param_extrapolation_results.csv
+%   Table (size vs range)    <- .../01_MCQ_ATLAS/data/size_balanced_recal/README.md, summary.csv
+%   Table (stopping rule)    <- .../01_MCQ_ATLAS/data/se_sweep/se_sweep_combined.csv
+%   Table (1PL/2PL/3PL)      <- .../se_sweep/se_sweep_combined.csv,
+%                               .../data/compare_2pl_vs_3pl_se0.3.csv (GPQA; r derived),
+%                               .../data/pedagogy_feasibility/rasch_1pl/pedagogy_1pl_vs_2pl_summary.csv
+%
+% PREAMBLE REQUIREMENTS (main document): \usepackage{graphicx}, \usepackage{xcolor},
+%   \usepackage{booktabs}. If \url appears in the .bib, load \usepackage{hyperref} or {url}.
+%
+% Convention: the outline PDF gives only bullet headings for these experiments,
+%   so the prose here is AI-added and wrapped in \aiadd{...} (renders blue).
+%   Each fully-AI \subsection closes with an \aibullets{...} takeaway list.
+%   [CITATION NEEDED] and pending-result markers render red.
+% =============================================================================
+
+\providecommand{\aiadd}[1]{\textcolor{blue}{#1}}
+\providecommand{\aibullets}[1]{{\color{blue}#1}}
+
+\aiadd{The experiments below measure what an ATLAS-style item bank costs to
+build and what it returns. Every run uses the same validated calibration and
+adaptive-testing pipeline~\cite{li2026adaptive}: a chunked 3PL fit in the R
+\texttt{mirt} package~\cite{chalmers2012mirt}, mean-sigma chunk linking, a
+positive-discrimination ($a>0$) item filter, and an EAP-ability, Fisher-information
+p-IRT computerized adaptive test~\cite{lord1980irt,wainer2000cat}. Unless stated
+otherwise, the reported correlation is the Pearson $r$ between the CAT-predicted
+benchmark accuracy and the true full-benchmark accuracy on held-out models, and
+the stopping target is a posterior standard error of $0.3$. The five questions
+are: how many calibration models are needed, whether a good choice of models
+beats a random one, how the calibration parameter range constrains transfer,
+where to set the stopping rule, and when the discrimination and guessing
+parameters are worth their calibration cost.}
+
+% =============================================================================
+\subsection{Grounding the hypothesis: how many calibration models}
+\label{subsec:mcq-trainsize}
+
+\aiadd{IRT calibration estimates the item parameters from the response patterns
+of the calibration models~\cite{lord1980irt,embretson2000irt}. A held-out model's
+ability estimate then carries two sources of error: the posterior error from the
+items it answered, and the uncertainty in the item parameters themselves. The
+second term shrinks as the calibration pool grows, and it feeds directly into the
+reported ability error~\cite{tsutakawa1990,patton2013}. The first practical
+question is therefore how many calibration models a benchmark needs before its
+bank is stable.}
+
+\aiadd{We sweep the calibration-pool size on ARC-Challenge~\cite{clark2018arc},
+refitting the 3PL bank on $N$ models and scoring the same 13-model held-out set
+at each $N$ (Table~\ref{tab:mcq-trainsize}, Figure~\ref{fig:mcq-trainsize}).
+Below about 15 models the correlation is unusable and swings between $0.45$ and
+$0.92$ from one $N$ to the next, because a 3PL fit on so few respondents against
+several hundred items is badly over-parameterized. From about 25 models up the
+correlation settles into the $0.85$ to $0.94$ band: $r=0.938$ at $N=25$, $0.926$
+at $N=45$, $0.898$ at $N=50$, and $0.846$ at $N=60$. The remaining
+point-to-point movement is calibration noise, not a trend, so single points in
+this range should be read as a band rather than a ranking.}
+
+\aiadd{Two details matter for planning. First, the adaptive test stays about 4 to
+5 items long at every pool size, so more calibration models buy calibration
+stability, not shorter diagnostics. Second, a five-shuffle run across three MCQ
+benchmarks reproduces the same shape, reaching a mean $r$ at $N=60$ of $0.897$
+on ARC-Challenge, $0.845$ on SciQ, and $0.806$ on OpenBookQA. About 25 to 40
+diverse models is enough to hold correlation near $0.85$ to $0.9$ on these
+benchmarks, and below roughly 15 models the correlation collapses.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Calibration-pool size against held-out correlation on
+  ARC-Challenge (13 held-out models, $\mathrm{SE}\le0.3$). ``Items kept'' is the
+  bank size after the $a>0$ filter; it grows with $N$ as more items show response
+  variance. ``CAT items'' is the mean administered per model. The $N=60$ point
+  ($r=0.846$) is reported in the text from the extended run. Source:
+  \texttt{trainsize\_corr.csv}.}}
+  \label{tab:mcq-trainsize}
+  \small
+  \begin{tabular}{r r r r r}
+    \toprule
+    $N$ models & Items kept & CAT items & Pearson $r$ & MAE \\
+    \midrule
+    5   & 444 & 4.5 & 0.555 & 0.104 \\
+    10  & 589 & 4.1 & 0.454 & 0.096 \\
+    15  & 628 & 4.2 & 0.919 & 0.047 \\
+    20  & 657 & 4.1 & 0.764 & 0.075 \\
+    25  & 668 & 4.7 & 0.938 & 0.044 \\
+    30  & 678 & 4.9 & 0.856 & 0.057 \\
+    35  & 716 & 5.5 & 0.905 & 0.043 \\
+    40  & 733 & 5.5 & 0.830 & 0.052 \\
+    45  & 752 & 5.4 & 0.926 & 0.034 \\
+    50  & 759 & 5.2 & 0.898 & 0.042 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/trainsize_corr_ext.png}
+  \caption{\aiadd{Held-out correlation against calibration-pool size on
+  ARC-Challenge at $\mathrm{SE}\le0.3$. The curve is noisy below about 15 models,
+  then stabilizes in the $0.85$ to $0.94$ band from about 25 models up. Source:
+  \texttt{figures/trainsize\_corr\_ext.png}.}}
+  \label{fig:mcq-trainsize}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item Correlation is noisy below about 15 calibration models ($r$ swings $0.45$
+  to $0.92$) and stabilizes at $0.85$ to $0.94$ from about 25 to 40 models up.
+  \item The adaptive test stays about 4 to 5 items long at every pool size, so
+  calibration models buy stability rather than shorter tests.
+  \item Small-$N$ 3PL fits are over-parameterized, so single points below 15
+  models are noise; read the band, not the individual value.
+\end{itemize}}
+
+% =============================================================================
+\subsection{Model diversity against random selection}
+\label{subsec:mcq-diversity}
+
+\aiadd{If correlation stabilizes once the pool is diverse enough, then choosing
+the calibration models well should reach the same correlation as a larger random
+draw. We test this with the same pipeline, changing only which $N$ models enter
+calibration, and scoring every strategy on one fixed seed-7 held-out split so the
+curves are comparable~\cite{fourrier2024openllm}. Three strategies compete:
+\emph{random} (five seeds, reported as mean and spread), \emph{ability spread}
+(models chosen to cover the accuracy range evenly), and \emph{response diversity}
+(a farthest-point selection on the model-by-item correctness matrix under Hamming
+distance).}
+
+\aiadd{Choosing models well reaches the random plateau with fewer models
+(Table~\ref{tab:mcq-diversity}, Figure~\ref{fig:mcq-diversity}). On
+IFEval~\cite{zhou2023ifeval} random saturates at $r=0.919$ near $N=120$; ability
+spread matches that plateau at $N=80$, where random would need about 113 models,
+a $1.41\times$ saving. On MATH~\cite{hendrycks2021math} random plateaus at
+$r=0.865$ near $N=120$; response diversity matches the plateau with about
+$1.59\times$ fewer models, and at $N=50$ it already reaches $r=0.889$, above the
+120-model random plateau. In other words, 50 well-chosen models can beat a
+random pool more than twice that size.}
+
+\aiadd{The honest caveat is the same as in
+Section~\ref{subsec:mcq-trainsize}: at the small-$N$ end these are 3PL fits on 10
+to 30 respondents against 500 to 1{,}000 items, so the banks are over-parameterized
+and shrink as constant items drop. The smallest-$N$ points are noisy and should be
+read as a trend. The smart strategies are also deterministic, so they show a single
+curve with no seed band, while random carries the spread across five seeds. The
+savings factors come from interpolating the random mean curve to the match
+threshold, so they are estimates rather than exact counts.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Reaching the random-selection plateau with fewer models
+  ($\mathrm{SE}\le0.3$). Each smart strategy is listed with the pool size at which
+  it first matches the random plateau, the correlation there, and the
+  interpolated model saving against random. Source:
+  \texttt{model\_diversity\_selection/README.md} and \texttt{results.csv}.}}
+  \label{tab:mcq-diversity}
+  \small
+  \begin{tabular}{l l r r r}
+    \toprule
+    Benchmark & Strategy & $N$ & Pearson $r$ & Saving \\
+    \midrule
+    IFEval & random plateau    & 120 & 0.919 & n/a       \\
+    IFEval & ability spread    & 80  & 0.921 & 1.41$\times$ \\
+    IFEval & response diversity& 120 & 0.912 & 0.94$\times$ \\
+    \midrule
+    MATH   & random plateau    & 120 & 0.865 & n/a       \\
+    MATH   & ability spread    & 50  & 0.859 & 0.95$\times$ \\
+    MATH   & response diversity& 30  & 0.837 & 1.59$\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/selection_curve_combined.png}
+  \caption{\aiadd{Held-out correlation against pool size for random, ability-spread,
+  and response-diversity selection on IFEval and MATH ($\mathrm{SE}\le0.3$). The
+  shaded band is the random seed spread; markers show where a smart strategy first
+  reaches the random plateau. Source: \texttt{figures/selection\_curve\_combined.png}.}}
+  \label{fig:mcq-diversity}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item A diversity-aware or ability-spread choice reaches the random plateau with
+  $1.4\times$ to $1.6\times$ fewer models (IFEval ability spread $1.41\times$; MATH
+  response diversity $1.59\times$).
+  \item On MATH, 50 response-diverse models reach $r=0.889$, above the $r=0.865$
+  plateau of a 120-model random pool.
+  \item Small-$N$ 3PL fits are noisy and over-parameterized, so the gains should be
+  read from the trend, not from single low-$N$ points.
+\end{itemize}}
+
+% =============================================================================
+\subsection{Oracle latent-ability subset selection}
+\label{subsec:mcq-oracle}
+
+\textcolor{red}{[ORACLE SUBSET RESULT PENDING: theoretical best-subset selection
+reverse-engineered from final calibration into latent-ability groups; ~300 initial
+models, 50-model steps; fill on completion.]}
+
+% =============================================================================
+\subsection{Parameter range: restricting the pool and testing out of range}
+\label{subsec:mcq-range}
+
+\aiadd{A team calibrating for a target model size wants to know whether it can use
+a narrow, matched calibration pool, and whether a bank calibrated on one size
+range can score models in another. We run three experiments that pull in different
+directions at first and then agree on one rule: what drives correlation is the
+ability spread of the calibration pool, not how close its parameter range sits to
+the models under test.}
+
+\aiadd{\textbf{Reducing models by specifying a range.} We fix the test set to 7B
+models (parameters $\ge 6.5$B) and compare two matched-size calibration pools:
+pool A drawn from $[0,5)$B, which sits entirely below the test range, and pool B
+drawn from $[3,6.5)$B, which sits right beneath it. Proximity would favor B. It
+does not (Table~\ref{tab:mcq-calibrange}, Figure~\ref{fig:mcq-calibrange}). The
+wider low pool A wins on every benchmark at $\mathrm{SE}\le0.3$: $r=0.961$ against
+$0.831$ on MATH, $0.907$ against $0.871$ on IFEval, $0.697$ against $0.512$ on
+BBH~\cite{suzgun2023bbh}, and a near-tie on GPQA~\cite{rein2024gpqa}
+($0.632$ against $0.594$). The pool that spans a wider ability range predicts 7B
+models better than the pool that sits closest to them.}
+
+\aiadd{\textbf{Using out-of-range models.} We then remove the middle of the range
+entirely: calibrate on a LOW band ($\le 2$B) or a HIGH band ($\ge 3.5$B) with the
+$(2,3.5)$B middle excluded, and test across the gap, using in-range held-out
+controls for comparison (Table~\ref{tab:mcq-extrap},
+Figure~\ref{fig:mcq-extrap}). A bank does extrapolate across the gap when the
+benchmark links well. On IFEval the transfer is essentially free, with
+out-of-range correlations of $0.917$ (up) and $0.919$ (down) against a $0.910$
+in-range control. On MATH it works with a real cost, $0.789$ up and $0.859$ down.
+The cost is asymmetric in every benchmark: calibrating on small models and testing
+large (the up direction) is harder than the reverse, because a bank built on small
+models is dominated by items that saturate for large models and lose
+discrimination at the top. GPQA shows the same mechanism from the other side: it
+links weakly and is near guessing for small models, so out-of-range transfer
+breaks down to $r=0.389$ up and $0.540$ down. That is a linking failure, not a
+property of parameter range.}
+
+\aiadd{\textbf{Range restriction against size skew.} The first ATLAS
+recreation showed that refitting the published bank on only the $0.5$ to $7$B
+slice drops held-out ARC correlation from $0.830$ to $0.589$ at
+$\mathrm{SE}\le0.2$. That slice is about $95.6\%$ 7B models, so the drop could be
+range restriction or a size-skewed pool. We hold $N$ fixed and vary only the size
+mix (Table~\ref{tab:mcq-sizebal}, Figure~\ref{fig:mcq-sizebal}). De-skewing the
+pool from about $95\%$ 7B down to $33$ to $50\%$ 7B does not move the correlation
+back toward $0.83$. The balanced pools land at $r\approx0.56$ to $0.59$, right on
+top of the full-slice result and slightly below the skewed pools at the same $N$.
+Pool count does not rescue it either: skewed $r\approx0.65$ holds at $N=72$ and
+$N=174$, and the full slice gives $0.589$ at $N=1{,}686$. Balancing does lower the
+accuracy MAE (about $0.11$ against $0.13$, since small models sharpen absolute
+calibration), but it costs rank-correlation stability, with the two-band spread
+rising to about $0.20$ as scarce sub-2B models add noise.}
+
+\aiadd{Read together, the three results give one rule. Pool A beats pool B
+because A covers a wider ability range; the extrapolation bank transfers because a
+well-linked bank carries its discrimination across a parameter gap; and
+rebalancing sizes inside the restricted $0.5$ to $7$B slice cannot help because the
+missing ingredient is the wide ability spread of the full ATLAS pool, not the size
+histogram. Calibration-pool ability spread is the main driver, and matching or
+overlapping the target parameter range is secondary.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Reducing models by parameter range, tested on 7B models
+  ($\mathrm{SE}\le0.3$, matched $N$). Pool A is $[0,5)$B (below the test range);
+  pool B is $[3,6.5)$B (just below it). Pool B uses its whole pool each seed, so
+  its spread is near zero. Source: \texttt{calib\_range\_to\_7b/results\_summary.csv}.}}
+  \label{tab:mcq-calibrange}
+  \small
+  \begin{tabular}{l r r r}
+    \toprule
+    Benchmark & A: $[0,5)$B $r$ & B: $[3,6.5)$B $r$ & $B-A$ \\
+    \midrule
+    BBH    & 0.697 & 0.512 & $-0.185$ \\
+    GPQA   & 0.632 & 0.594 & $-0.038$ \\
+    IFEval & 0.907 & 0.871 & $-0.036$ \\
+    MATH   & 0.961 & 0.831 & $-0.130$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/calib_range_to_7b_r_A_vs_B.png}
+  \caption{\aiadd{Recovery of 7B-model accuracy from a wide out-of-range pool A
+  ($[0,5)$B) against a narrow near-range pool B ($[3,6.5)$B) at matched $N$. The
+  wider pool wins on every benchmark. Source:
+  \texttt{figures/calib\_range\_to\_7b\_r\_A\_vs\_B.png}.}}
+  \label{fig:mcq-calibrange}
+\end{figure}
+
+\begin{table*}[t]
+  \centering
+  \caption{\aiadd{Out-of-range transfer across an excluded middle band
+  (LOW~$\le2$B, HIGH~$\ge3.5$B; $\mathrm{SE}\le0.3$, mean over 3 seeds). LOW$\to$LOW
+  and HIGH$\to$HIGH are in-range controls; LOW$\to$HIGH extrapolates up and
+  HIGH$\to$LOW extrapolates down. Penalty is control minus extrapolation on the
+  shared test set. Source: \texttt{param\_extrapolation/README.md} and
+  \texttt{param\_extrapolation\_results.csv}.}}
+  \label{tab:mcq-extrap}
+  \small
+  \begin{tabular}{l c c c c c c}
+    \toprule
+    Benchmark & LOW$\to$LOW & HIGH$\to$HIGH & LOW$\to$HIGH (up) & HIGH$\to$LOW (down) & Penalty up & Penalty down \\
+    \midrule
+    IFEval & 0.910 & 0.955 & 0.917 & 0.919 & $+0.038$ & $-0.009$ \\
+    MATH   & 0.891 & 0.907 & 0.789 & 0.859 & $+0.118$ & $+0.032$ \\
+    GPQA   & 0.854 & 0.835 & 0.389 & 0.540 & $+0.445$ & $+0.314$ \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/param_extrapolation_combined.png}
+  \caption{\aiadd{Out-of-range transfer for IFEval, MATH, and GPQA. Each panel
+  shows the two in-range controls and the two cross-gap conditions. IFEval
+  transfers freely, MATH transfers with an asymmetric cost, and GPQA breaks down
+  because it links weakly. Source: \texttt{figures/param\_extrapolation\_combined.png}.}}
+  \label{fig:mcq-extrap}
+\end{figure*}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Range restriction against size skew on ARC ($\mathrm{SE}\le0.2$,
+  60 held-out models; balanced and skewed rows are mean over 5 seeds). De-skewing
+  the $0.5$ to $7$B pool does not recover the wide-pool correlation. The first two
+  rows are references from the ATLAS recreation. Source:
+  \texttt{size\_balanced\_recal/README.md} and \texttt{summary.csv}.}}
+  \label{tab:mcq-sizebal}
+  \small
+  \begin{tabular}{l r r r r}
+    \toprule
+    Pool & $N$ & \% 7B & $r$ & MAE \\
+    \midrule
+    Published ATLAS bank & \multicolumn{1}{c}{$\sim$1000s} & wide  & 0.830 & 0.147 \\
+    Full $0.5$ to $7$B   & 1{,}686 & 95.6 & 0.589 & 0.147 \\
+    Skewed               & 72   & $\sim$95 & 0.652 & 0.130 \\
+    Balanced (3-band)    & 72   & 33   & 0.594 & 0.106 \\
+    Skewed               & 174  & $\sim$95 & 0.651 & 0.139 \\
+    Balanced (2-band)    & 174  & 50   & 0.560 & 0.114 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/size_balance_r_comparison.png}
+  \caption{\aiadd{Held-out ARC correlation for skewed against size-balanced pools
+  at matched $N$, with the published wide-pool bank and the full $0.5$ to $7$B slice
+  for reference. Balancing the size mix does not recover the wide-pool
+  correlation. Source: \texttt{figures/size\_balance\_r\_comparison.png}.}}
+  \label{fig:mcq-sizebal}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item A wide out-of-range pool ($[0,5)$B) predicts 7B models better than a narrow
+  near-range pool ($[3,6.5)$B) on every benchmark, so ability spread beats
+  proximity to the test range.
+  \item A well-linked bank extrapolates across an excluded parameter band (IFEval
+  almost free, MATH with a modest cost), but transfer is asymmetric: calibrating
+  small and testing large costs more than the reverse.
+  \item Weakly-linking GPQA fails to transfer out of range ($r=0.39$ up), a linking
+  failure rather than a range effect.
+  \item Rebalancing the size mix inside the restricted $0.5$ to $7$B slice does not
+  recover the wide-pool correlation ($r\approx0.56$ to $0.59$ against $0.83$); the
+  binding constraint is range restriction, not size skew.
+\end{itemize}}
+
+% =============================================================================
+\subsection{Stopping rule: the standard-error target}
+\label{subsec:mcq-sestop}
+
+\aiadd{The adaptive test stops when a model's ability estimate reaches a target
+posterior standard error, so that target trades test length against precision and
+correlation~\cite{wainer2000cat}. We sweep the target from $0.5$ down to $0.12$
+for three banks: the published ATLAS 3PL bank replayed on ATLAS's own ARC
+responses, a locally-fit 2PL bank, and a locally-fit 1PL bank on the same ARC
+pool (Table~\ref{tab:mcq-sestop}, Figures~\ref{fig:mcq-sestop-corr}
+and~\ref{fig:mcq-sestop-items}). The three banks respond very differently, so the
+right target depends on which bank is in use.}
+
+\aiadd{The well-calibrated ATLAS 3PL bank is already near its ceiling at a loose
+target. It reaches $r=0.905$ in about 8 items at $\mathrm{SE}\le0.5$, and
+tightening all the way to $0.12$ raises correlation only to $0.931$ while the test
+grows to about 47 items. Past $\mathrm{SE}\le0.3$ the extra items mostly buy
+precision, not ranking accuracy. The local 1PL bank behaves the opposite way:
+correlation climbs steeply with the target, from $0.729$ at $\mathrm{SE}\le0.5$
+(about 14 items) to $0.976$ at $\mathrm{SE}\le0.3$ (about 43 items) and $0.987$ at
+$\mathrm{SE}\le0.15$ (182 items), so precision and correlation improve together but
+the test gets long. The local 2PL bank sits at the 8-item floor with $r\approx0.86$
+until the target passes $0.2$, dips slightly there, then jumps to $0.965$ at
+$\mathrm{SE}\le0.12$ once it is allowed about 71 items.}
+
+\aiadd{The practical reading is to set the target from the accuracy requirement
+rather than by default. A well-calibrated 3PL bank delivers about $0.90$
+correlation at $\mathrm{SE}\le0.3$ in roughly 9 items, and tightening further is
+mostly wasted on ranking. A 1PL or 2PL bank needs a tighter target to reach the
+same correlation, and pays for it in items.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Stopping target against mean items and correlation for three
+  banks on ARC: the published ATLAS 3PL bank on ATLAS's own responses (650 items),
+  a local 2PL bank, and a local 1PL bank (759 items each). Source:
+  \texttt{se\_sweep/se\_sweep\_combined.csv}.}}
+  \label{tab:mcq-sestop}
+  \small
+  \begin{tabular}{r r r r r r r}
+    \toprule
+    & \multicolumn{2}{c}{ATLAS 3PL} & \multicolumn{2}{c}{Local 2PL} & \multicolumn{2}{c}{Local 1PL} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+    SE~$\le$ & items & $r$ & items & $r$ & items & $r$ \\
+    \midrule
+    0.50 & 8.2  & 0.905 & 8.0  & 0.862 & 13.7  & 0.729 \\
+    0.30 & 9.2  & 0.906 & 8.0  & 0.862 & 43.4  & 0.976 \\
+    0.20 & 13.0 & 0.915 & 14.6 & 0.842 & 100.5 & 0.977 \\
+    0.15 & 32.2 & 0.925 & 32.9 & 0.920 & 182.0 & 0.987 \\
+    0.12 & 47.2 & 0.931 & 71.1 & 0.965 & 303.5 & 0.985 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/se_sweep_corr_vs_se.png}
+  \caption{\aiadd{Correlation against the standard-error target for the ATLAS 3PL,
+  local 2PL, and local 1PL banks on ARC. The 3PL bank is near ceiling at a loose
+  target; the 1PL bank climbs steeply as the target tightens. Source:
+  \texttt{figures/se\_sweep\_corr\_vs\_se.png}.}}
+  \label{fig:mcq-sestop-corr}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/se_sweep_items_vs_se.png}
+  \caption{\aiadd{Mean items administered against the standard-error target for the
+  same three banks. A tighter target costs far more items for the 1PL bank than for
+  the 3PL bank. Source: \texttt{figures/se\_sweep\_items\_vs\_se.png}.}}
+  \label{fig:mcq-sestop-items}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item The published 3PL bank reaches $r\approx0.90$ at $\mathrm{SE}\le0.3$ in
+  about 9 items; tightening to $0.12$ adds items (about 47) for a small correlation
+  gain (to $0.931$).
+  \item The local 1PL bank trades length for correlation, rising from $r=0.729$ at
+  $\mathrm{SE}\le0.5$ to $0.987$ at $\mathrm{SE}\le0.15$ as the test grows from 14
+  to 182 items.
+  \item Set the target from the accuracy requirement: a well-calibrated 3PL bank
+  gains little past $\mathrm{SE}\le0.3$, while 1PL and 2PL banks need a tighter
+  target and more items to match it.
+\end{itemize}}
+
+% =============================================================================
+\subsection{Value of the discrimination and guessing parameters}
+\label{subsec:mcq-1pl2pl3pl}
+
+\aiadd{The 1PL/Rasch model fits only item difficulty~\cite{rasch1960}, the 2PL
+adds a discrimination slope, and the 3PL adds a lower-asymptote guessing term
+\cite{birnbaum1968}. Each extra parameter can sharpen the test, but only if the
+calibration pool is large enough to estimate it reliably. The stopping-rule sweep
+and two paired comparisons show when the extra parameters earn their cost
+(Table~\ref{tab:mcq-param}, Figure~\ref{fig:mcq-2pl3pl}).}
+
+\aiadd{The guessing parameter is decisive on a near-guessing benchmark. On GPQA,
+which is four-choice and close to chance for small models, the 3PL bank recovers
+held-out accuracy at $r=0.737$ in about 13 items, while the 2PL bank on the same
+110 models collapses to $r=0.095$. Without a lower asymptote the 2PL cannot fit a
+benchmark whose weak models cluster near the guessing floor.}
+
+\aiadd{When calibration models are scarce, the discrimination slope becomes a
+liability and the simpler 1PL is more robust. On the Pedagogy
+benchmark~\cite{lelievre2025pedagogy}, calibrated on 40 models, the 1PL bank ranks
+held-out models at $r=0.890$ at $\mathrm{SE}\le0.3$ against the 2PL bank's $0.716$.
+The same ordering holds on the in-house ARC pool, where the 1PL bank reaches
+$r=0.976$ at $\mathrm{SE}\le0.3$ against the 2PL bank's $0.862$. With few models
+the estimated slopes are noisy and drag the ranking down.}
+
+\aiadd{The discrimination slope pays off in efficiency once it is well estimated.
+On ARC the 2PL bank hits $\mathrm{SE}\le0.3$ in 8 items against the 1PL bank's 43,
+and it reaches $r=0.965$ at $\mathrm{SE}\le0.12$ in 71 items against the 1PL bank's
+304. With a large pool the full 3PL gives both efficiency and accuracy: the
+published ATLAS bank, calibrated on thousands of models, recovers ARC accuracy at
+$r=0.906$ in about 9 items at $\mathrm{SE}\le0.3$. The reading is that 2PL and 3PL
+add the most when calibration models are plentiful, and 1PL is the safer choice
+when they are scarce, except on near-guessing benchmarks where the 3PL guessing
+term is required regardless.}
+
+\begin{table}[t]
+  \centering
+  \caption{\aiadd{Discrimination and guessing against calibration-pool size, all at
+  $\mathrm{SE}\le0.3$. The near-guessing GPQA comparison shows the 3PL guessing term
+  is required; the scarce-pool comparisons show 1PL ranks better than 2PL. Source:
+  \texttt{se\_sweep\_combined.csv}, \texttt{compare\_2pl\_vs\_3pl\_se0.3.csv} (GPQA;
+  Pearson $r$ derived from the per-model file), and
+  \texttt{pedagogy\_1pl\_vs\_2pl\_summary.csv}.}}
+  \label{tab:mcq-param}
+  \small
+  \begin{tabular}{l l r r}
+    \toprule
+    Bank & Pool (benchmark, models) & $r$ & Items \\
+    \midrule
+    3PL & ARC, thousands   & 0.906 & 9.2  \\
+    3PL & GPQA, 110         & 0.737 & 13.0 \\
+    2PL & GPQA, 110         & 0.095 & 18.1 \\
+    2PL & ARC, in-house     & 0.862 & 8.0  \\
+    1PL & ARC, in-house     & 0.976 & 43.4 \\
+    2PL & Pedagogy, 40      & 0.716 & 10.2 \\
+    1PL & Pedagogy, 40      & 0.890 & 43.8 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figures/compare_2pl_vs_3pl_se0.3.png}
+  \caption{\aiadd{Predicted against actual accuracy for the 3PL and 2PL banks on
+  GPQA at $\mathrm{SE}\le0.3$. The 3PL guessing term recovers the ranking
+  ($r=0.737$); the 2PL bank, with no lower asymptote, collapses near the guessing
+  floor ($r=0.095$). Source: \texttt{figures/compare\_2pl\_vs\_3pl\_se0.3.png}.}}
+  \label{fig:mcq-2pl3pl}
+\end{figure}
+
+\aibullets{%
+\begin{itemize}
+  \item The 3PL guessing term is required on near-guessing benchmarks: on GPQA the
+  3PL bank reaches $r=0.737$ while the 2PL bank collapses to $r=0.095$.
+  \item When calibration models are scarce, 1PL ranks better than 2PL (Pedagogy
+  $0.890$ against $0.716$; in-house ARC $0.976$ against $0.862$ at
+  $\mathrm{SE}\le0.3$).
+  \item The discrimination slope buys item-efficiency once well estimated (ARC 2PL
+  reaches its target in 8 items against the 1PL bank's 43), and a large-pool 3PL is
+  both efficient and accurate ($r=0.906$ in about 9 items).
+\end{itemize}}
+
+% =============================================================================
+\subsection{Results}
+\label{subsec:mcq-results}
+
+\aiadd{The five experiments give a consistent recipe for standing up an
+ATLAS-style MCQ diagnostic. Get the calibration pool diverse enough, spend the
+model budget on ability spread rather than range matching, and pick the model
+family and stopping target from the calibration budget and the accuracy
+requirement.}
+
+\aibullets{%
+\begin{itemize}
+  \item About 25 to 40 calibration models stabilize correlation at $0.85$ to
+  $0.94$; below about 15 the fit collapses, and extra models buy stability, not
+  shorter tests.
+  \item Choosing models by ability spread or response diversity reaches the random
+  plateau with $1.4\times$ to $1.6\times$ fewer models.
+  \item Calibration-pool ability spread drives correlation more than matching the
+  test parameter range: a wide out-of-range pool beats a narrow near-range one, and
+  rebalancing sizes inside a restricted range does not recover the wide-pool
+  correlation.
+  \item Set the standard-error target from the accuracy requirement; a
+  well-calibrated 3PL bank gains little past $\mathrm{SE}\le0.3$.
+  \item Use 1PL when calibration models are scarce, 2PL or 3PL when they are
+  plentiful, and the 3PL guessing term whenever the benchmark is near guessing.
+\end{itemize}}
