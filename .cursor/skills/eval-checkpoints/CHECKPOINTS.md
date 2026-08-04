@@ -1,107 +1,89 @@
-# Finding the checkpoints to evaluate
+# The checkpoint path
 
-`--checkpoint-root` needs an S3 prefix, and that prefix is not guessable. This
-file explains where training writes checkpoints, how to recover the exact path,
-and how to confirm you have the right one before spending GPU time.
+**The checkpoint path is an input the user supplies. Ask for it. Do not go
+looking for it.**
 
-## Why this file exists
+This file explains why it cannot be worked out from anything in the repository,
+and what to check about a path once you have been given one.
+
+## Why it has to come from the user
 
 A training run's output path contains a randomly generated run id, and nothing
 outside the training platform records which run produced which model. Two runs of
 the same experiment that differ only in configuration are indistinguishable from
-their paths: same bucket, same team, same shape, different UUID. The mapping from
-run id back to *what was trained* lives only in the experiment tracker.
+their paths: same bucket, same team, same shape, different id. The mapping from
+run id back to *what was trained* lives only with whoever launched the run.
 
-So the path cannot be derived. It has to be read off the run that produced it.
+A plausible-looking guess is worse than no path at all. It either fails partway
+through a sweep that has already started spending, or it succeeds against the
+wrong model and produces a clean table of numbers that describe something nobody
+intended to measure. Nothing downstream can detect that second case.
 
-## Path shape
+So if you do not have the exact prefix, **stop and ask.** Do not assemble one
+from a template, do not substitute a team or bucket name that seems likely, and
+do not go hunting through experiment trackers, config files or bucket listings
+for something that looks close enough. Hand the question back to the user.
+
+If the user does not have it to hand, the thing to ask them for is the value the
+training run exposed as `EDULLM_CHECKPOINT_DIR`, copied verbatim. Asking them to
+copy that one string is reliable; anything reconstructed from parts is not.
+
+## What to ask for
+
+A single S3 prefix whose **immediate children are the individual checkpoint
+directories**:
 
 ```
-s3://<bucket>/teams/<team>/runs/<run_id>/checkpoints/
+s3://<bucket>/.../<run>/checkpoints/
+                        |- step500/
+                        |- step1000/
+                        |- step2000/
 ```
 
-For the eduLLM platform that is typically:
+`--checkpoint-root` wants that `checkpoints/` level. `--checkpoint` wants one
+step directory from inside it.
 
-```
-s3://sbsandbox-intern-edullm-outputs/teams/<team>/runs/run_<uuid>/checkpoints/
-```
+The two neighbouring levels are the common mix-ups, and neither fails cleanly:
 
-Region is `us-east-1`. The `run_id` looks like `run_019fca96-e03c-70c5-8a97-996b618329e3`.
+- **The run root**, whose children are `checkpoints/`, `logs/` and similar. The
+  sweep finds prefixes that are not checkpoints and tries to evaluate them.
+- **A single step directory**, whose children are the weight files. The sweep
+  finds nothing to enumerate and reports no checkpoints.
 
-`--checkpoint-root` wants the `checkpoints/` level -- the directory whose children
-are the individual steps. The sweep lists immediate child prefixes and treats each
-as one checkpoint.
+`AWS_REGION` defaults to `us-east-1`; override it if the bucket is elsewhere.
 
-## Recovering the exact path
+## Checking a path you were given
 
-Training exposes its save directory as the environment variable
-**`EDULLM_CHECKPOINT_DIR`**. That string, copied verbatim, is the correct
-`--checkpoint-root` for that run.
-
-Copy it rather than reassembling it. Reconstruction means guessing both the team
-and the UUID, and the team is the part people get wrong -- the path embeds
-whichever team the run actually used, which is not always the one a runbook names.
-
-### Where to find it in Weights & Biases
-
-In rough order of reliability:
-
-1. **Logs tab, search for `s3://`.** The training script almost certainly printed
-   its save path. This works regardless of how the run was configured, which is
-   why it is first.
-2. **Overview then Config**, searched for `CHECKPOINT` or for the bucket name.
-   Present when the training script logged its environment into `wandb.config`.
-3. **Files then `wandb-metadata.json`**, which records the exact command line the
-   run was launched with, including arguments.
-
-If a run has several checkpoint-shaped paths, prefer the one ending in
-`checkpoints/`; some scripts also log a separate directory for final artifacts.
-
-### Matching runs to models
-
-Note which W&B run you took each path from, and label the sweep accordingly with
-`--run-id-prefix`. It is the only defense against silently comparing a model to
-itself: two paths that differ by one UUID character look identical at a glance,
-and `accuracy_wide.csv` would happily report two columns of near-identical numbers
-without anything looking wrong.
-
-## Confirming a path before spending
-
-Listing the prefix should show step directories:
-
-```bash
-aws s3 ls s3://.../runs/run_<uuid>/checkpoints/
-#                           PRE step1000/
-#                           PRE step2000/
-#                           PRE step500/
-```
-
-`--dry-run` does exactly this and needs only S3 **read** permission, since it
-exits before any download, conversion, upload, or GPU work. It costs nothing and
-confirms four things at once: the path exists, your credentials can read it, the
-`aws` CLI is present, and the discovered checkpoints are the ones you expected.
+`--dry-run` confirms the path for free. It needs only S3 **read**, exits before
+any download, conversion, GPU work or upload, and validates four things at once:
+the path exists, your credentials can read it, the `aws` CLI is present, and the
+discovered checkpoints are the ones the user expected.
 
 ```bash
 bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
-  --checkpoint-root s3://.../runs/run_<uuid>/checkpoints \
+  --checkpoint-root s3://.../<run>/checkpoints \
   --s3-out s3://.../evals/scratch \
   --dry-run
 ```
+
+**Show the discovered checkpoint list to the user and let them confirm it is the
+right run** before dropping `--dry-run`. That confirmation is the only real check
+that exists: two paths differing by one character in a run id look identical at a
+glance, and `accuracy_wide.csv` would report two columns of near-identical
+numbers without anything appearing wrong. When evaluating more than one run, give
+each sweep a `--run-id-prefix` the user recognizes, so the results stay
+attributable afterwards.
 
 ### What a checkpoint directory should contain
 
 Each child prefix should hold `config.json` plus **either**:
 
-- `model_and_optim/` (or a `.metadata` file) -- native OLMo-core format, which the
+- `model_and_optim/` (or a `.metadata` file) — native OLMo-core format, which the
   sweep converts before evaluating, or
-- `*.safetensors` -- already HF format, used directly.
+- `*.safetensors` — already HF format, used directly.
 
-If a listing shows neither, the path is at the wrong level. Common mistakes are
-pointing at the run root (whose children are `checkpoints/`, `logs/` and similar
-rather than steps) or at a single step directory (whose children are the weight
-files themselves). Both produce confusing results rather than clean errors: the
-first finds prefixes that are not checkpoints, the second finds nothing to
-enumerate.
+A listing with neither means the path is at the wrong level. Ask the user for the
+corrected one rather than trying adjacent prefixes.
 
 ## Ordering, and picking a subset
 
@@ -110,15 +92,15 @@ Checkpoints are ordered by the trailing integer in the directory name, so
 number sort last. That ordering drives both `--latest` and the row order in
 `accuracy_wide.csv`, so the output plots against training progress directly.
 
-- `--latest 1` evaluates only the final checkpoint. Use this to pilot -- it
-  exercises the entire pipeline at the cost of one checkpoint.
+- `--latest 1` evaluates only the final checkpoint. Use it to pilot: it exercises
+  the entire pipeline at the cost of one checkpoint.
 - `--latest N` keeps the N highest-step checkpoints.
 - `--pattern` filters on the directory name with a regex, for example
   `--pattern 'step[0-9]*000$'` to take only thousands.
 
 Prefer `--latest` over `--limit` for shrinking a trial run. `--limit` caps
-instances per benchmark and, on some tasks, changes which split is loaded --
-see [BENCHMARKS.md](BENCHMARKS.md).
+instances per benchmark and, on some tasks, changes which split is loaded — see
+[BENCHMARKS.md](BENCHMARKS.md).
 
 ## Permissions
 
@@ -129,9 +111,7 @@ The box running the sweep needs:
 
 Those are often granted by different roles. On a managed platform, a job's role
 is usually scoped to write only inside that job's own output directory, so
-`--s3-out` may not be freely chosen -- check what your platform exposes as the
-run's output root. Running the eval under the same team that owns the checkpoints
-keeps both permissions inside one role and avoids cross-team access entirely.
-
-`AWS_REGION` defaults to `us-east-1` in the sweep; override it if the bucket lives
-elsewhere.
+`--s3-out` may not be freely chosen — ask the user what their platform exposes as
+the run's output root rather than picking a bucket. Running the eval under the
+same team that owns the checkpoints keeps both permissions inside one role and
+avoids cross-team access entirely.

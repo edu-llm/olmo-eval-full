@@ -114,8 +114,8 @@ if command -v aws >/dev/null 2>&1; then
   log "aws: $(aws --version 2>&1 | head -1)"
 else
   log "WARNING: aws CLI not found. The sweep needs it for S3 discovery, staging"
-  log "         and upload. Install it, or run with local --checkpoints and a"
-  log "         local --s3-out is not supported, so aws is effectively required."
+  log "         and upload. Results always go to S3 even when the checkpoints are"
+  log "         local, so install it before running the sweep."
 fi
 
 log "done. If uv was just installed, export PATH before running the sweep:"

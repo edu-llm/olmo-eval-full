@@ -15,9 +15,22 @@
     "           prompt count relates to the instance count.",
     "",
     "groups:    named sets, selectable with --group. 'default' is what runs when",
-    "           neither --group nor --benchmarks is given.",
+    "           neither --group nor --benchmarks is given. A group is either a",
+    "           plain list of benchmark names, or an object with:",
+    "             benchmarks -- the list, or",
+    "             like       -- inherit another group's list, so the two cannot",
+    "                           drift apart when one is edited",
+    "             limit      -- instances per benchmark, applied unless --limit",
+    "                           is passed explicitly",
+    "             description-- shown in the log when the group is selected",
     "aliases:   common wrong names, mapped to the real olmo-eval task name. Used",
     "           only to produce a helpful error; they are never runnable.",
+    "unsupported: names people ask for that cannot produce a score today, with",
+    "           the reason. These are refused even under --allow-any-task,",
+    "           because that flag bypasses this registry -- it cannot conjure a",
+    "           task olmo-eval does not define. Without this table the run would",
+    "           fail only after the checkpoint was fetched, converted and booted,",
+    "           taking every valid benchmark in the same request down with it.",
     "",
     "See BENCHMARKS.md for where these numbers come from and why these splits."
   ],
@@ -48,7 +61,12 @@
       "arc_easy",
       "naturalqs",
       "jeopardy"
-    ]
+    ],
+    "smoke": {
+      "like": "default",
+      "limit": 2,
+      "description": "plumbing check: the default set at 2 instances per benchmark, not a measurement"
+    }
   },
   "benchmarks": {
     "hellaswag": {
@@ -129,6 +147,13 @@
     "nq_open": "naturalqs",
     "arc-easy": "arc_easy",
     "hella_swag": "hellaswag"
+  },
+  "unsupported": {
+    "triviaqa": "no task file exists in olmo-eval; it would have to be written first",
+    "popqa": "no task file exists in olmo-eval; it would have to be written first",
+    "trex": "no task file exists, and no canonical evaluation split has been chosen",
+    "factscore": "no task file exists; also needs an LLM judge and a retrieval corpus",
+    "simpleqa": "the bare task sets no metrics and would score nothing; use the 'simpleqa:judge' variant, which needs an OpenAI key and outbound network"
   },
   "limit_unsafe": {
     "hellaswag": "loads validation AND train when limited, then samples from the union",

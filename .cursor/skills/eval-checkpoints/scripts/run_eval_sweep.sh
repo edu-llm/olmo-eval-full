@@ -17,14 +17,19 @@
 #   and one of:
 #   --checkpoint-root s3://.../checkpoints
 #                                   a prefix whose immediate children are the
-#                                   checkpoints (stepN/ ...). Local dirs work too.
-#   --checkpoints "A B C"           an explicit space-separated list
+#                                   checkpoints (stepN/ ...). A local directory
+#                                   works too; children are found with find.
+#   --checkpoint PATH               exactly one checkpoint, s3:// or local. For
+#                                   several, use --checkpoint-root. (The former
+#                                   plural --checkpoints is rejected with a hint.)
 #
 # Each checkpoint must contain config.json plus either model_and_optim/ (native
 # OLMo-core, converted automatically) or *.safetensors (HF, used as-is).
 #
 # Optional -- what to run:
-#   --group NAME                    a named benchmark set (default: "default")
+#   --group NAME                    a named benchmark set (default: "default").
+#                                   "smoke" runs the default set at 2 instances
+#                                   per benchmark -- a plumbing check only.
 #   --benchmarks "a b c"            explicit tasks; conflicts with --group
 #   --allow-any-task                permit tasks outside the registry
 # Optional -- which checkpoints:
@@ -33,7 +38,8 @@
 # Optional -- how to run:
 #   --tp N                          vLLM tensor-parallel size (default 1)
 #   --gpu-memory-utilization 0.N    VRAM fraction; lower it to share a GPU
-#   --limit N                       cap instances per task (smoke tests only)
+#   --limit N                       cap instances per task; overrides a group's
+#                                   own limit. Smoke tests only, see BENCHMARKS.md
 #   --tokenizer ID                  HF tokenizer, if the config names none
 #   --run-id-prefix STR             prefix for result subdirectories
 #   --bootstrap                     install the environment first
@@ -78,7 +84,7 @@
 # environment, then sweep as normal.
 set -euo pipefail
 
-CHECKPOINTS=""
+CHECKPOINT=""
 CHECKPOINT_ROOT=""
 BENCHMARKS=""
 GROUP=""
@@ -107,8 +113,15 @@ CONVERT_SCRIPT="${OLMO_CORE_CONVERT:-${BUNDLED_CONVERT}}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --checkpoints) CHECKPOINTS="$2"; shift 2 ;;
+    --checkpoint) CHECKPOINT="$2"; shift 2 ;;
     --checkpoint-root) CHECKPOINT_ROOT="$2"; shift 2 ;;
+    # Named explicitly rather than falling to the catch-all: the plural took a
+    # list, so anyone reaching for it wants the sweep form and should be sent to
+    # --checkpoint-root instead of just being told the flag is unknown.
+    --checkpoints)
+      echo "--checkpoints was replaced by --checkpoint, which takes exactly one." >&2
+      echo "To evaluate several, point --checkpoint-root at the prefix above them." >&2
+      exit 2 ;;
     --benchmarks) BENCHMARKS="$2"; shift 2 ;;
     --group) GROUP="$2"; shift 2 ;;
     --s3-out) S3_OUT="$2"; shift 2 ;;
@@ -132,8 +145,16 @@ while [[ $# -gt 0 ]]; do
 done
 
 [[ -n "${S3_OUT}" ]] || { echo "--s3-out required" >&2; exit 2; }
-if [[ -z "${CHECKPOINTS}" && -z "${CHECKPOINT_ROOT}" ]]; then
-  echo "one of --checkpoints or --checkpoint-root required" >&2; exit 2
+if [[ -z "${CHECKPOINT}" && -z "${CHECKPOINT_ROOT}" ]]; then
+  echo "one of --checkpoint or --checkpoint-root required" >&2; exit 2
+fi
+# --checkpoint is deliberately singular. Catching a space-separated list here
+# gives a usable message; without this the whole string becomes one path and the
+# failure surfaces much later as a confusing fetch error.
+if [[ "${CHECKPOINT}" =~ [[:space:]] ]]; then
+  echo "--checkpoint takes exactly one checkpoint, got: ${CHECKPOINT}" >&2
+  echo "To evaluate several, point --checkpoint-root at the prefix above them." >&2
+  exit 2
 fi
 [[ -f "${REGISTRY}" ]] || { echo "missing benchmark registry: ${REGISTRY}" >&2; exit 2; }
 
@@ -156,6 +177,14 @@ fi
 if [[ "${BOOTSTRAP}" == "1" ]]; then
   echo "running bootstrap (this installs the environment; see scripts/bootstrap.sh)"
   OLMO_EVAL_ROOT="${REPO_ROOT}" bash "${SKILL_DIR}/scripts/bootstrap.sh"
+  # bootstrap.sh installs uv into ~/.local/bin and adds that to *its own* PATH,
+  # but it runs as a child process, so the export dies with it. Re-apply it here
+  # or the preflight below reports uv missing on exactly the bare box that
+  # --bootstrap exists to serve, forcing a pointless second invocation.
+  if ! command -v uv >/dev/null 2>&1 && [[ -x "${HOME:-/root}/.local/bin/uv" ]]; then
+    export PATH="${HOME:-/root}/.local/bin:${PATH}"
+    echo "added ${HOME:-/root}/.local/bin to PATH for this run"
+  fi
 fi
 
 # Preflight. The sweep's first real work is an S3 listing followed by a
@@ -195,11 +224,23 @@ fi
 # Emits three lines: the resolved benchmark names, then
 # "<instances> <prompts> <unknown_count>", then a description of what was chosen.
 if [[ -n "${BENCHMARKS}" && -n "${GROUP}" ]]; then
-  echo "pass --benchmarks or --group, not both" >&2; exit 2
+  {
+    echo "pass --benchmarks or --group, not both: a group already names its benchmarks."
+    # "smoke test on this specific list" is a natural request that no single flag
+    # expresses, since smoke is a group. Say so here rather than leaving the
+    # caller to infer that the limit is what they actually wanted.
+    if [[ "${GROUP}" == "smoke" ]]; then
+      echo
+      echo "For a smoke test over your own list, drop --group and cap the instances:"
+      echo "  --benchmarks \"${BENCHMARKS}\" --limit 2"
+      echo "That is exactly what --group smoke does to the default set."
+    fi
+  } >&2
+  exit 2
 fi
 if ! RESOLVED="$(
   BENCHMARKS="${BENCHMARKS}" GROUP="${GROUP}" ALLOW_ANY="${ALLOW_ANY_TASK}" \
-  REGISTRY="${REGISTRY}" \
+  REGISTRY="${REGISTRY}" CLI_LIMIT="${LIMIT}" \
   python3 - <<'PY'
 import json, os, sys
 
@@ -212,6 +253,31 @@ allow_any = os.environ["ALLOW_ANY"] == "1"
 explicit = os.environ["BENCHMARKS"].split()
 group = os.environ["GROUP"].strip()
 
+
+def group_members(name, _seen=None):
+    """A group's benchmark list, following one 'like' reference at a time.
+
+    _seen guards against a cycle in the registry turning into infinite
+    recursion; a malformed registry should produce a message, not a hang.
+    """
+    _seen = _seen or []
+    if name in _seen:
+        print(f"group '{name}' inherits from itself: {' -> '.join(_seen + [name])}",
+              file=sys.stderr)
+        raise SystemExit(2)
+    spec = groups[name]
+    if isinstance(spec, list):
+        return list(spec)
+    if "benchmarks" in spec:
+        return list(spec["benchmarks"])
+    parent = spec.get("like")
+    if parent not in groups:
+        print(f"group '{name}' inherits unknown group '{parent}'", file=sys.stderr)
+        raise SystemExit(2)
+    return group_members(parent, _seen + [name])
+
+
+group_limit = None
 if explicit:
     requested, source = explicit, "explicit --benchmarks"
 else:
@@ -221,12 +287,54 @@ else:
         print("known groups: " + " ".join(sorted(groups)), file=sys.stderr)
         print("See BENCHMARKS.md for what each group covers.", file=sys.stderr)
         raise SystemExit(2)
-    requested = list(groups[name])
+    requested = group_members(name)
+    spec = groups[name]
     source = f"group '{name}'" + ("" if group else " (registry default)")
+    if isinstance(spec, dict):
+        group_limit = spec.get("limit")
+        if group_limit is not None and (
+            isinstance(group_limit, bool) or not isinstance(group_limit, int) or group_limit < 1
+        ):
+            print(
+                f"group '{name}' has an invalid limit {group_limit!r}; "
+                "want a positive integer",
+                file=sys.stderr,
+            )
+            raise SystemExit(2)
+        if spec.get("description"):
+            source += f" -- {spec['description']}"
 
 if not requested:
     print("nothing to run: the resolved benchmark list is empty", file=sys.stderr)
     raise SystemExit(2)
+
+# Names the registry positively knows cannot produce a score. Refused even under
+# --allow-any-task: that flag bypasses *this* registry, not olmo-eval's, so it
+# cannot make a task that does not exist run. Letting these through would fail
+# after the checkpoint was fetched, converted and booted, and would take every
+# valid benchmark in the same invocation down with it.
+unsupported = reg.get("unsupported", {})
+blocked = [n for n in requested if n in unsupported]
+if blocked:
+    print("cannot run: " + " ".join(blocked), file=sys.stderr)
+    for name in blocked:
+        print(f"  {name}: {unsupported[name]}", file=sys.stderr)
+    print(file=sys.stderr)
+    print(
+        "--allow-any-task does not help here; it skips this registry, not olmo-eval's.",
+        file=sys.stderr,
+    )
+    runnable = [n for n in requested if n not in unsupported]
+    if runnable:
+        print("The rest of the request is runnable:", file=sys.stderr)
+        print("  --benchmarks \"" + " ".join(runnable) + "\"", file=sys.stderr)
+    print("See BENCHMARKS.md for what ships today.", file=sys.stderr)
+    raise SystemExit(2)
+
+# An explicit --limit beats the group's, so a group's cap is a default rather
+# than a cage. Empty string means the flag was not passed at all.
+cli_limit = os.environ["CLI_LIMIT"].strip()
+effective_limit = int(cli_limit) if cli_limit else group_limit
 
 instances = prompts = 0
 unknown = []
@@ -235,8 +343,14 @@ for name in requested:
     if entry is None:
         unknown.append(name)
         continue
-    instances += entry["instances"]
-    prompts += entry["instances"] * entry["choices"]
+    # With a limit in force the estimate is the limited count, not the split
+    # size; reporting 17k instances for a 10-instance smoke run would be worse
+    # than useless.
+    n = entry["instances"]
+    if effective_limit is not None:
+        n = min(n, effective_limit)
+    instances += n
+    prompts += n * entry["choices"]
 
 if unknown and not allow_any:
     print("unknown benchmark(s): " + " ".join(unknown), file=sys.stderr)
@@ -250,9 +364,14 @@ if unknown and not allow_any:
     print("known: " + " ".join(sorted(known)), file=sys.stderr)
     print("known groups: " + " ".join(sorted(groups)), file=sys.stderr)
     print("See BENCHMARKS.md for what each one scores.", file=sys.stderr)
+    # Deliberately worded to say what the flag *is* for. The looser "run any
+    # other task" reads as a way to force through a benchmark olmo-eval has
+    # never heard of, which only defers the failure until after the checkpoint
+    # has been fetched and converted.
     print(
-        "To run any other registered olmo-eval task, pass --allow-any-task "
-        "(no cost estimate will be available for it).",
+        "If olmo-eval registers one of these and this registry simply omits it, "
+        "--allow-any-task will run it without a cost estimate. That flag cannot "
+        "run a task olmo-eval does not define.",
         file=sys.stderr,
     )
     raise SystemExit(2)
@@ -260,6 +379,7 @@ if unknown and not allow_any:
 print(" ".join(requested))
 print(instances, prompts, len(unknown))
 print(source)
+print(effective_limit if effective_limit is not None else "")
 PY
 )"; then
   exit 2
@@ -273,6 +393,10 @@ readarray -t RESOLVED_LINES < <(printf '%s' "${RESOLVED}" | tr -d '\r')
 read -r -a BENCH_LIST <<< "${RESOLVED_LINES[0]}"
 read -r TOTAL_INSTANCES TOTAL_PROMPTS N_UNKNOWN <<< "${RESOLVED_LINES[1]}"
 BENCH_SOURCE="${RESOLVED_LINES[2]}"
+# The resolver already applied the precedence rule (an explicit --limit beats a
+# group's), so whatever it returns is the effective limit. An empty trailing
+# line is dropped by command substitution, hence the default.
+LIMIT="${RESOLVED_LINES[3]:-}"
 
 WORK="$(mktemp -d)"
 LOG="${WORK}/sweep.log"
@@ -291,21 +415,35 @@ fi
 # ---------------------------------------------------------------------------
 # 1. Discover checkpoints
 # ---------------------------------------------------------------------------
+# Immediate child directories of a root, whether it is an S3 prefix or a local
+# path. Both branches emit one absolute checkpoint path per line, so everything
+# downstream is indifferent to which was used.
 discover() {
-  # List immediate child "directories" of an S3 prefix. `aws s3 ls` emits these
-  # as "PRE <name>/" lines; olmo-eval has no checkpoint enumeration of its own.
-  local root="${1%/}/"
-  aws s3 ls "${root}" --region "${REGION}" \
-    | awk '/^ *PRE /{print $2}' \
-    | sed 's:/$::' \
-    | while read -r seg; do
-        if [[ -n "${seg}" ]]; then echo "${root}${seg}"; fi
-      done
+  local root="${1%/}"
+  if [[ "${root}" == s3://* ]]; then
+    # `aws s3 ls` emits child prefixes as "PRE <name>/" lines; olmo-eval has no
+    # checkpoint enumeration of its own.
+    aws s3 ls "${root}/" --region "${REGION}" \
+      | awk '/^ *PRE /{print $2}' \
+      | sed 's:/$::' \
+      | while read -r seg; do
+          if [[ -n "${seg}" ]]; then echo "${root}/${seg}"; fi
+        done
+  else
+    # Local root -- pre-converted checkpoints on disk, or a test fixture. Without
+    # this branch the path would be handed to `aws s3 ls`, which reports no
+    # prefixes, and the sweep would fail with a misleading "no checkpoints found".
+    if [[ ! -d "${root}" ]]; then
+      echo "--checkpoint-root is neither an s3:// URI nor an existing directory: ${root}" >&2
+      return 1
+    fi
+    find "${root}" -mindepth 1 -maxdepth 1 -type d | sort
+  fi
 }
 
 CKPT_LIST=()
-if [[ -n "${CHECKPOINTS}" ]]; then
-  for c in ${CHECKPOINTS}; do CKPT_LIST+=("${c%/}"); done
+if [[ -n "${CHECKPOINT}" ]]; then
+  CKPT_LIST=("${CHECKPOINT%/}")
 else
   log "discovering checkpoints under ${CHECKPOINT_ROOT}"
   readarray -t CKPT_LIST < <(discover "${CHECKPOINT_ROOT}")
@@ -358,7 +496,7 @@ SWEEP_PROMPTS=$((TOTAL_PROMPTS * ${#CKPT_LIST[@]}))
 log "cost estimate: ~${TOTAL_INSTANCES} instances / ~${TOTAL_PROMPTS} vLLM prompts per checkpoint"
 log "               ~${SWEEP_INSTANCES} instances / ~${SWEEP_PROMPTS} vLLM prompts for the whole sweep"
 if [[ -n "${LIMIT}" ]]; then
-  log "NOTE: --limit ${LIMIT} is set, so the real counts are far lower."
+  log "NOTE: capped at ${LIMIT} instances per benchmark; the estimate above reflects that."
   # Some tasks change which split they load once a limit is set, which makes a
   # limited run score a different population. The registry flags those.
   AFFECTED="$(
@@ -372,7 +510,8 @@ for b in hits:
 PY
   )"
   if [[ -n "${AFFECTED}" ]]; then
-    log "      Limiting is not a valid measurement for these (see BENCHMARKS.md):"
+    log "      These score a different population when limited, so this run is a"
+    log "      plumbing check and not a measurement (see BENCHMARKS.md):"
     while IFS= read -r line; do log "        ${line}"; done <<< "${AFFECTED}"
   fi
 fi

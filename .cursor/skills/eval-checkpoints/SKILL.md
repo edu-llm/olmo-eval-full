@@ -22,17 +22,29 @@ are all in [BENCHMARKS.md](BENCHMARKS.md).** This file covers only the mechanics
 
 ## If you are an agent asked to run this
 
+**This skill is not standalone.** The script shells out to `uv run olmo-eval`
+from the repository it ships inside, so a copy of this folder on its own cannot
+work. If you were pointed at a link to the skill rather than the repo, clone the
+whole olmo-eval fork and run the script from that checkout — it finds the repo
+root by walking up out of `.cursor/skills/`. Set `OLMO_EVAL_ROOT` only if the
+folder was moved somewhere that walk no longer lands correctly.
+
 Do not guess the inputs. Two of them cannot be inferred from the repository and
 one of them costs money to get wrong, so **ask the user before running anything.**
 
 Ask for these two, which have no defaults:
 
 1. **Where the checkpoints are.** An S3 prefix whose immediate children are the
-   checkpoint directories, for example
-   `s3://bucket/teams/<team>/runs/run_<uuid>/checkpoints`. If the user does not
-   know, point them at [CHECKPOINTS.md](CHECKPOINTS.md) — it explains how to
-   recover the path from their experiment tracker. Do not attempt to construct it
-   from a template; the run id is random and the team is easy to get wrong.
+   checkpoint directories, or one such directory for `--checkpoint`.
+
+   **This is the user's to provide, and yours only to check.** If they do not
+   give it, ask; if what they give does not work, ask again with what you saw. Do
+   not construct a path from a template, substitute a likely bucket or team, or
+   search an experiment tracker, config file or bucket listing for something
+   plausible. The run id is random, two runs differ by a few characters, and a
+   wrong-but-valid path produces confident numbers for the wrong model that
+   nothing downstream will catch. [CHECKPOINTS.md](CHECKPOINTS.md) covers how to
+   verify the path they hand you.
 2. **Where results should go.** An `s3://` prefix they can write to. On a managed
    platform this is often constrained to the job's own output directory, so ask
    rather than assuming any bucket will accept writes.
@@ -41,6 +53,19 @@ Then confirm these, stating the default so the user can accept it:
 
 3. **Which benchmarks.** Default is the registry's `default` group. Offer
    [BENCHMARKS.md](BENCHMARKS.md) if they want to choose.
+
+   If the user names benchmarks explicitly, **check them against
+   [BENCHMARKS.md](BENCHMARKS.md) before running anything and tell the user
+   about any that cannot run.** Several commonly requested ones — TriviaQA,
+   PopQA, SimpleQA, T-REx, FactScore — produce no score today. The script now
+   refuses them outright, but raising it in your first reply is much better than
+   surfacing it after the user has waited. **Do not reach for
+   `--allow-any-task`** to force them through: it bypasses this skill's registry,
+   not olmo-eval's, so it cannot run a task that does not exist.
+
+   For a smoke test over the user's own list rather than the default set, use
+   `--benchmarks "a b c" --limit 2`. `--group smoke` only caps the default set,
+   and combining it with `--benchmarks` is rejected.
 4. **How many checkpoints.** Default is all of them. Recommend `--latest 1` for a
    first run, since a full sweep multiplies cost by the number of checkpoints.
 5. **Whether the box is already set up.** If this is a fresh GPU box, add
@@ -53,11 +78,19 @@ Then follow this order, which exists so a mistake is cheap:
   benchmark list and the cost estimate in one shot.
 - Show the user the dry-run output — particularly the discovered checkpoints and
   the prompt-count estimate — and get confirmation before running for real.
-- Only then drop `--dry-run`.
+- If the skill has not been pointed at this training run before, do a real run of
+  `--group smoke --latest 1` next. It evaluates 2 instances per benchmark, so it
+  exercises the entire path — fetch, convert, vLLM boot, upload, summary — in
+  minutes, and surfaces a bad checkpoint or a wrong tokenizer before a full sweep
+  spends hours discovering the same thing. **Its scores are meaningless. Never
+  report them.**
+- Only then drop `--dry-run` and `--group smoke`.
 
 If the dry-run finds no checkpoints, the path is almost certainly at the wrong
-level. See the checkpoint-layout section of [CHECKPOINTS.md](CHECKPOINTS.md)
-before retrying.
+level. Show the user what you ran and what came back, and ask them for the
+corrected prefix — see the checkpoint-layout section of
+[CHECKPOINTS.md](CHECKPOINTS.md) for the two levels people usually land on. Do
+not probe neighbouring prefixes looking for one that lists.
 
 ## Quick start
 
@@ -77,31 +110,40 @@ Pass `--group NAME` for a named set, or `--benchmarks "a b c"` for an explicit
 list. To pilot on the most recent checkpoint before committing to a sweep, use
 `--latest 1`.
 
+`--group smoke` runs the same benchmarks as `default` but only 2 instances of
+each, which is the cheapest way to prove the whole path works end to end. It is
+a plumbing check, not a measurement — see the `--limit` trap in
+[BENCHMARKS.md](BENCHMARKS.md) for why its numbers cannot be reported.
+
 ## Inputs
 
-Checkpoints, one of (if both are given, `--checkpoints` wins):
+Checkpoints, one of (if both are given, `--checkpoint` wins):
 
 | Flag | Meaning |
 |---|---|
-| `--checkpoint-root s3://.../EXP` | discover every immediate child prefix as a checkpoint |
-| `--checkpoints "s3://a s3://b"` | explicit space-separated list; local paths also work |
+| `--checkpoint-root s3://.../EXP` | discover every immediate child prefix as a checkpoint; a local directory works too |
+| `--checkpoint s3://.../step1000` | exactly one checkpoint; a local path works too |
+
+`--checkpoint` is singular by design: a space-separated list is rejected with a
+pointer to `--checkpoint-root`, rather than being silently treated as one very
+strange path. Sweeping several checkpoints is what `--checkpoint-root` is for.
 
 Checkpoints are ordered by the trailing integer in their name, so `step9` sorts
 before `step10`, and names with no trailing number sort last.
 
-**If you do not know the S3 path**, see [CHECKPOINTS.md](CHECKPOINTS.md). Training
-run output paths contain a random run id and cannot be derived; that file covers
-how to recover the exact prefix, how to tell two similar runs apart, and how to
-confirm a path for free before spending GPU time.
+**If you do not have the S3 path, ask for it.** Training run output paths contain
+a random run id and cannot be derived, so there is nothing to work it out from.
+[CHECKPOINTS.md](CHECKPOINTS.md) covers why, what to ask for, and how to confirm
+a supplied path for free before spending GPU time.
 
 | Flag | Default | Meaning |
 |---|---|---|
 | `--s3-out` | required | `s3://bucket/prefix` root for results |
-| `--group NAME` | the registry's `default` group | run a named set of benchmarks |
+| `--group NAME` | the registry's `default` group | run a named set of benchmarks; `smoke` is the 2-instance plumbing check |
 | `--benchmarks` | (see `--group`) | space-separated olmo-eval task names; mutually exclusive with `--group` |
 | `--pattern` | (none) | regex filter on the checkpoint directory name |
 | `--latest N` | (all) | keep only the N highest-step checkpoints |
-| `--limit N` | (none) | cap instances per task; smoke tests only, see BENCHMARKS.md |
+| `--limit N` | (none, or the group's own) | cap instances per task; overrides a group's limit. Smoke tests only, see BENCHMARKS.md |
 | `--tp` | `1` | vLLM tensor-parallel size |
 | `--gpu-memory-utilization` | vLLM default (~0.9) | fraction of VRAM vLLM may claim; lower it to share a GPU |
 | `--tokenizer` | (from config) | HF tokenizer id, if the checkpoint config does not resolve one |
@@ -243,12 +285,17 @@ cannot distinguish a failure from a run still in progress.
 ```bash
 # Preview a sweep, including the cost estimate
 bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
-  --checkpoints "s3://b/ck/step500 s3://b/ck/step1000" \
+  --checkpoint-root s3://b/ck \
   --s3-out s3://b/evals --dry-run
+
+# Price the smoke group against one checkpoint
+bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+  --checkpoint s3://b/ck/step1000 --s3-out s3://b/evals \
+  --group smoke --dry-run
 
 # Confirm an invalid benchmark name is caught before anything spends
 bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
-  --checkpoints s3://b/ck/step1 --s3-out s3://b/evals \
+  --checkpoint s3://b/ck/step1 --s3-out s3://b/evals \
   --benchmarks "not_a_real_task" --dry-run
 ```
 
@@ -289,7 +336,7 @@ drop the second metric on any task that reports more than one.
 | `scripts/summarize_accuracy.py` | reads each `metrics.json`, writes the two CSVs |
 | `scripts/benchmarks.json` | the benchmark registry; the only place names live |
 | `BENCHMARKS.md` | what each benchmark scores, costs and reports |
-| `CHECKPOINTS.md` | how to find the S3 prefix to evaluate |
+| `CHECKPOINTS.md` | what to ask the user for, and how to verify the prefix they give |
 
 ## Additional resources
 

@@ -20,6 +20,7 @@ sourcing.
 | `default` / `reasoning` | `csqa` `hellaswag` `piqa` `socialiqa` `arc_easy` | ready, API-free |
 | `fact_proxy` | `naturalqs` `jeopardy` | ready, API-free; generative, see the metric notes |
 | `all` | all seven | ready |
+| `smoke` | same as `default`, capped at 2 instances each | plumbing check only — **not a measurement** |
 
 `fact_proxy` is separated because those two are *proxies* for fact recall rather
 than purpose-built fact benchmarks. They work today and cost nothing extra, so
@@ -47,9 +48,16 @@ the eventual target. None of it is wired, and the gap is larger than it looks:
   many tokens instead of scoring a fixed continuation, so they are cheaper in
   prompt count and considerably slower per prompt.
 
-When those land, add registry entries and extend a `factual` group. Until then
-they can be run with `--allow-any-task`, which skips validation and gives no cost
-estimate.
+When those land, add registry entries and extend a `factual` group.
+
+Until then they are listed in the registry's `unsupported` table and **refused
+outright**, with the reason printed. That refusal survives `--allow-any-task` on
+purpose: the flag skips this registry, not olmo-eval's task registry, so it
+cannot run a task that has no task file. Allowing it through would only move the
+failure to after the checkpoint had been fetched, converted and booted — and
+because all benchmarks share one `olmo-eval run` invocation, it would take every
+valid benchmark in the same request down with it. When a request mixes supported
+and unsupported names, the error prints the runnable subset ready to paste back.
 
 ## The registry
 
@@ -74,6 +82,19 @@ Three side tables: `groups` names selectable sets (`default` is what runs when
 neither `--group` nor `--benchmarks` is given), `aliases` maps common wrong names
 to the real task name purely to produce a helpful error, and `limit_unsafe` flags
 tasks whose split selection changes when `--limit` is set.
+
+A group is either a plain list of benchmark names or an object, which lets a
+group carry settings as well as membership:
+
+| Key | Meaning |
+|---|---|
+| `benchmarks` | the list, same as the plain-list form |
+| `like` | inherit another group's list, so the two cannot drift apart |
+| `limit` | instances per benchmark, applied unless `--limit` is passed |
+| `description` | appended to the log line and to `benchmark_selection` |
+
+`smoke` uses `like: default` rather than repeating the five names, so editing
+`default` keeps the smoke check honest automatically.
 
 **To add a benchmark**, add an entry and put it in a group. Nothing else changes —
 no shell edits, no `SKILL.md` edits. To run a task that is not in the registry,
@@ -218,10 +239,18 @@ the reverse, and F1 their harmonic mean. It gives partial credit — answering
 "Shakespeare" against a reference of "William Shakespeare" earns 0.67.
 
 Exact match asks a stricter question: did the answer match after normalization.
-Both use the same SQuAD-style normalization (lowercase, strip punctuation, drop
-`a`/`an`/`the`, collapse whitespace) and both take the best result over multiple
-reference answers, so they differ only in strictness rather than in
-preprocessing.
+Within a task the two metrics share their normalization and both take the best
+result over multiple reference answers, so they differ only in strictness rather
+than in preprocessing.
+
+The two tasks do not share that normalization with *each other*, which the scorer
+column above records and which matters if you are tempted to compare them.
+`jeopardy` scores SQuAD-style: lowercase, strip punctuation, drop `a`/`an`/`the`,
+collapse whitespace. `naturalqs` uses DROP scoring (`drop.py`), which on top of
+that splits on hyphens, canonicalizes numbers so `5` and `5.0` match, compares
+token *sets* so repeated tokens collapse, scores a reference containing a number
+as 0 unless the answer contains that number, and rounds F1 to two decimals. Track
+`naturalqs` against `naturalqs` across checkpoints, not against `jeopardy`.
 
 **An F1 of 0.62 does not mean 62% of questions were answered correctly.** It is
 the mean partial-credit overlap. Reporting both is deliberate: F1 alone hides
@@ -246,7 +275,7 @@ metrics exist without one, which would drop the task from the `summary` block of
 
 ## Cost
 
-A full seven-benchmark sweep is roughly **22,200 instances but about 71,000 vLLM
+A full seven-benchmark sweep is roughly **23,200 instances but about 71,000 vLLM
 prompts** per checkpoint. The gap is because multiple-choice scoring sends one
 prompt per answer choice, and HellaSwag alone accounts for about 40,000 of the
 total (10,042 instances at four choices). The prompt count is what drives
@@ -264,8 +293,38 @@ unlimited one — in both directions, since the sampled set is neither the
 evaluation split nor a superset of it.
 
 Those two are flagged in the registry's `limit_unsafe` table, and the script
-names them in its output whenever `--limit` is combined with an affected
-benchmark. Use `--latest 1` to pilot instead.
+names them in its output whenever a limit is combined with an affected
+benchmark. Use `--latest 1` to pilot a real measurement instead.
+
+### Why `smoke` exists anyway
+
+`--group smoke` deliberately walks into this trap: it is `default` with a limit
+of 2, so it triggers exactly the warning above on `hellaswag` and `socialiqa`.
+That is the intended behavior. Its purpose is to prove the machinery works —
+checkpoint fetched, converted, vLLM booted, all five tasks scored, results
+uploaded, summary written — at roughly 10 instances and 36 prompts per
+checkpoint instead of 17,431 and 65,315.
+
+The scores it produces are not measurements of anything and must never be
+reported or plotted. Use it to answer "does this run at all", then re-run
+without it to answer "how good is this checkpoint".
+
+**A limit shrinks inference, not the download.** The two mechanisms differ per
+task, and neither avoids reading the dataset:
+
+| Benchmark | How the limit is applied | Sampled from | Rows read to pick 2 |
+|---|---|---|---|
+| `csqa` | generic sampler in `runners/asynq/preparation.py`, seed 42 | validation | 1,221 |
+| `piqa` | same generic sampler | validation | 1,838 |
+| `arc_easy` | same generic sampler | test | 2,376 |
+| `hellaswag` | in-task, `random.Random(1234)` | validation **+ train** | 49,947 |
+| `socialiqa` | in-task, `random.Random(1234)` | validation **+ train** | 35,364 |
+
+So a smoke run issues 36 prompts but still downloads and processes roughly 90k
+rows on a cold `HF_HOME`, most of it HellaSwag and SocialIQA train data that
+exists only to be sampled away. Budget for the download on a fresh box; it is
+cached for subsequent runs. Both samplers are seeded, so repeated smoke runs
+score the same instances.
 
 ## Reading the output
 
