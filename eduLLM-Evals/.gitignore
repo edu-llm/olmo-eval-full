@@ -14,6 +14,8 @@ __pycache__/
 *.so
 .Python
 *.egg-info/
+.mplcache/
+.pytest_cache/
 build/
 full200-results/
 Full200Run/
