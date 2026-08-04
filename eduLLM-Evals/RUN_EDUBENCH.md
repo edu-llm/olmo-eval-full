@@ -59,18 +59,26 @@ export HF_TOKEN=<your_hf_token>
 
 ## 3. Place the EduBench scenarios file (important)
 
-The scenarios file is **gitignored**, so a fresh clone will NOT contain it. Copy the
-file you were given to exactly this path (relative to the repo root):
+Every EduBench bank file is **gitignored**, so a fresh clone will NOT contain one. Two
+ways to get the sampled bank this doc assumes:
 
-```
-data/EduBench/augmented_qmat/unmerged/scenarios.jsonl
+```bash
+# (a) build it from the cleaned bank, if you have unmerged/scenarios.json
+python scripts/stratified_sample_bank.py \
+    --scenarios data/EduBench/augmented_qmat/unmerged/scenarios.json \
+    --stratify-by use_case --per-group 252 \
+    --out-scenarios data/EduBench/augmented_qmat/unmerged/scenarios_252.jsonl
+
+# (b) or copy the file you were given to exactly that path
 ```
 
 Notes:
-- Only the `.jsonl` is needed. The loader reads `scenarios.jsonl`; the pretty `.json`
-  twin is not used for generation.
-- It contains 9,163 text-modality scenarios (all are generated; there is no non-text
-  content to skip).
+- The loader reads `.jsonl` only; the pretty `.json` twin is the source the sampler
+  converts from, not something generation can read.
+- The sampled bank is 2,268 text-modality scenarios: 252 for each of the 9 task types,
+  drawn from the 7,040 cleaned scenarios. All are generated; there is no non-text
+  content to skip. Use `--per-group` to change the quota, or omit it to convert the
+  whole 7,040-scenario bank.
 - Generation reads only each scenario's `prompt`, `use_case`, and
   `conversation_context`. It does not read the rubrics, so you do not need
   `rubrics.jsonl` for this stage.
@@ -78,18 +86,18 @@ Notes:
 ## 4. Verify the layout
 
 ```bash
-ls models.yaml benchmarks.yaml                                   # you are in the repo root
-wc -l data/EduBench/augmented_qmat/unmerged/scenarios.jsonl      # expect 9163
+ls models.yaml benchmarks.yaml                                       # you are in the repo root
+wc -l data/EduBench/augmented_qmat/unmerged/scenarios_252.jsonl      # expect 2268
 ```
 
 ## 5. Register EduBench as a benchmark
 
-Append this entry under `benchmarks:` in `benchmarks.yaml` (paths are relative to the
-repo root):
+EduBench is already registered in `benchmarks.yaml`; confirm the entry matches the file
+you placed in step 3 (paths are relative to the repo root):
 
 ```yaml
   - name: EduBench
-    scenarios: data/EduBench/augmented_qmat/unmerged/scenarios.jsonl
+    scenarios: data/EduBench/augmented_qmat/unmerged/scenarios_252.jsonl
     enabled: true
 ```
 
@@ -179,12 +187,15 @@ the end.
   in `conversation_context` and the `prompt` holds only the instruction. The runner turns
   those turns into alternating `assistant`/`user` chat messages before the final user
   prompt. Confirm the rendering in the `--dry-run` output.
-- **System prompt.** EduBench is not in the per-benchmark system-prompt table, and its
-  `use_case` values (`answering_questions`, `mental_health`, ...) are not TutorBench
-  use_cases, so scenarios fall back to the default tutor system prompt. The `--dry-run`
-  output shows exactly which system turn each scenario gets; if you want a neutral / no
-  system prompt for EduBench, that is a code change (out of scope for this doc) — flag it
-  rather than assuming.
+- **No system prompt.** EduBench is in `respgen/prompts.py::_NO_SYSTEM_BENCHMARKS`
+  (alongside IFEval and InFoBench), so the system turn is **omitted entirely** — the
+  message list starts at the first user turn. This is deliberate: an EduBench `prompt`
+  already states the subject, education level, task and required output sections, so a
+  tutor persona would compete with it. The `--dry-run` output shows the roles per
+  scenario; expect `roles=['user']` for single-turn tasks and no `system` entry for ES.
+  Getting this right depends on the benchmark label being exactly `EduBench` — that
+  string is what selects the rule, which is the other reason not to use the
+  `--scenarios` shortcut below.
 - **Generation only.** Grading (LLM judge) and MIRT calibration are a separate,
   per-benchmark stage and do not apply to this uncalibrated bank. This doc stops at
   producing the response matrix.

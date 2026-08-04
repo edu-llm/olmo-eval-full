@@ -1,0 +1,39 @@
+# Extra FRQ scenario banks, registered at runtime:
+#
+#   python run_benchmark.py --frq-banks configs/frq_banks.yaml --benchmarks edubench
+#   python smoke_test.py    --frq-banks configs/frq_banks.yaml --num-mcq 0
+#
+# The six standing FRQ banks are built into frq_scenarios.FRQ_BANKS; this file is
+# for banks that are not part of the default suite. Repeat --frq-banks to layer
+# several files.
+#
+# Fields:
+#   key    - benchmark name used by --benchmarks and in output paths (lowercase)
+#   label  - CANONICAL benchmark name. frq_prompts selects its system-prompt rule
+#            by this exact string, so a typo silently falls through to the default
+#            tutor persona. Stamped onto every scenario and written to each output
+#            row's "Benchmark" field.
+#   path   - scenarios.jsonl, relative to the eduLLM-Evals repo root (override the
+#            root with EDULLM_EVALS_ROOT) or absolute.
+#   rubric - optional judge rubric key -> Inputs/Open/LLM-Judge/<rubric>.rubric.txt,
+#            falling back to default.rubric.txt. Defaults to "default".
+
+banks:
+  # 252 scenarios per task type (2,268 total / 16,632 criteria), sampled from the
+  # cleaned "unmerged" bank -- the variant carrying the 4-skill q_mapping
+  # (academic assistance, emotional assistance, checking-student-work, content
+  # generation). Regenerate with eduLLM-Evals/scripts/stratified_sample_bank.py.
+  #
+  # EduBench prompts are self-contained instructions that already state subject,
+  # level and required output sections, so frq_prompts omits the system turn for
+  # this label (_NO_SYSTEM_BENCHMARKS). Only the mental_health task carries
+  # conversation_context.
+  - key: edubench
+    label: EduBench
+    path: data/EduBench/augmented_qmat/unmerged/scenarios_252.jsonl
+    rubric: edubench
+
+  # - key: mathdial
+  #   label: MathDial
+  #   path: data/MathDial/scenarios.jsonl
+  #   rubric: mathdial

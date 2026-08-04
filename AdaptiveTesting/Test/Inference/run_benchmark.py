@@ -53,12 +53,26 @@ from datasets_registry import (
     MCQ_BENCHMARKS,
     OPEN_BENCHMARKS,
     load_items,
+    register_frq_benchmark,
 )
 from engine import Engine, build_engine, probe_backend
 from frq_generate import generate_frq
-from frq_scenarios import FRQBankNotFound
+from frq_scenarios import FRQBankNotFound, load_banks_yaml
 from mcq_scoring import score_mcq
 from models_registry import ModelSpec, load_models, select_models
+
+
+def register_extra_banks(paths: list[str]) -> list[str]:
+    """Register FRQ banks declared in ``--frq-banks`` YAML files.
+
+    Must run before :func:`resolve_benchmarks`, which rejects unknown names.
+    """
+    keys: list[str] = []
+    for path in paths:
+        for key in load_banks_yaml(path):
+            register_frq_benchmark(key)
+            keys.append(key)
+    return keys
 
 
 def resolve_benchmarks(arg: str) -> list[str]:
@@ -383,6 +397,14 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="path to models yaml (default: Inputs/Models/models.yaml)",
     )
+    ap.add_argument(
+        "--frq-banks",
+        action="append",
+        default=None,
+        metavar="PATH",
+        help="YAML file registering extra FRQ scenario banks (repeatable); "
+        "see configs/frq_banks.yaml",
+    )
     ap.add_argument("--shard-index", type=int, default=None)
     ap.add_argument("--num-shards", type=int, default=None)
     ap.add_argument("--limit-models", type=int, default=None)
@@ -420,6 +442,10 @@ def main(argv: list[str] | None = None) -> None:
     # Must precede the first HTTPS connection (TLS trust store + .env HF_TOKEN).
     bootstrap_env()
     args = build_parser().parse_args(argv)
+    # Before --list and before resolve_benchmarks, so extra banks are both
+    # listable and nameable.
+    if args.frq_banks:
+        print(f"registered FRQ bank(s): {', '.join(register_extra_banks(args.frq_banks))}")
     if args.list:
         print("MCQ (HuggingFace)      :", ", ".join(MCQ_BENCHMARKS))
         print("FRQ (local banks)      :", ", ".join(OPEN_BENCHMARKS))

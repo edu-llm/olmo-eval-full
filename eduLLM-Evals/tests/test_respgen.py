@@ -769,11 +769,36 @@ def _bscn(benchmark, sid="s1", prompt="PROMPT", use_case="", context=None):
     )
 
 
-def test_ifeval_and_infobench_omit_the_system_turn():
-    for bench in ("IFEval", "InFoBench"):
+def test_no_system_benchmarks_omit_the_system_turn():
+    for bench in ("IFEval", "InFoBench", "EduBench"):
         msgs = P.build_chat_messages(_bscn(bench, use_case="instruction_following"))
         assert [m["role"] for m in msgs] == ["user"]  # no system turn at all
         assert msgs[0]["content"] == "PROMPT"
+
+
+def test_edubench_es_context_alternates_without_a_system_turn():
+    """ES (`mental_health`) is the only EduBench task carrying conversation_context.
+    It opens on a tutor turn and its `prompt` holds only the instruction, so this
+    covers both EduBench-specific paths at once: no system turn, and a transcript
+    that has to be made user-first and alternating."""
+    msgs = P.build_chat_messages(
+        _bscn(
+            "EduBench",
+            prompt="INSTRUCTION",
+            use_case="mental_health",
+            context=[
+                {"role": "tutor", "content": "How are you feeling today?"},
+                {"role": "student", "content": "Nervous about the exam."},
+            ],
+        )
+    )
+    roles = [m["role"] for m in msgs]
+    assert "system" not in roles
+    assert roles[0] == "user" and roles[-1] == "user"
+    assert all(a != b for a, b in zip(roles, roles[1:])), roles
+    assert "How are you feeling today?" in msgs[1]["content"]
+    assert "Nervous about the exam." in msgs[-1]["content"]
+    assert "INSTRUCTION" in msgs[-1]["content"]
 
 
 def test_fixed_benchmark_system_prompts_selected():

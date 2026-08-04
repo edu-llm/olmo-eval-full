@@ -257,6 +257,21 @@ def is_frq(name: str) -> bool:
     return BENCHMARKS[name].type == BenchType.OPEN
 
 
+def register_frq_benchmark(key: str) -> BenchmarkSpec:
+    """Expose a runtime-registered FRQ bank (:func:`frq_scenarios.register_bank`)
+    to ``--benchmarks``.
+
+    The name lists above are built once at import as independent copies, so a new
+    benchmark has to be appended to each rather than just added to ``BENCHMARKS``.
+    """
+    spec = _frq_spec(key)
+    BENCHMARKS[key] = spec
+    for names in (OPEN_BENCHMARKS, ALL_BENCHMARKS, CPU_SWEEP_BENCHMARKS):
+        if key not in names:
+            names.append(key)
+    return spec
+
+
 # ---------------------------------------------------------------------------
 # loading
 # ---------------------------------------------------------------------------

@@ -97,6 +97,54 @@ def bank_path(key: str) -> Path:
     return EDULLM_ROOT / FRQ_BANKS[key].path
 
 
+def register_bank(key: str, label: str, path: str, rubric_key: str = "default") -> FRQBank:
+    """Register an FRQ bank at runtime, for the driver's ``--frq-banks``.
+
+    ``path`` resolves against the eduLLM-Evals repo root, or is used as-is when
+    absolute. ``label`` is the canonical benchmark name stamped onto every
+    scenario, and is the key :mod:`frq_prompts` selects its system-prompt rule
+    with - so it must match those rules exactly (``"EduBench"``, not
+    ``"edubench"``), or the scenario silently gets the default tutor persona.
+    """
+    spec = FRQBank(key, label, path, rubric_key)
+    FRQ_BANKS[key] = spec
+    return spec
+
+
+def load_banks_yaml(path: str | Path) -> list[str]:
+    """Register every bank declared in a YAML file; returns the keys added.
+
+    Keeping this declarative (rather than a ``KEY:LABEL:PATH`` CLI value) avoids
+    a delimiter that collides with Windows drive letters, and mirrors the
+    ``benchmarks.yaml`` registry the eduLLM-Evals CLI already uses::
+
+        banks:
+          - key: edubench
+            label: EduBench
+            path: data/EduBench/augmented_qmat/unmerged/scenarios_252.jsonl
+            rubric: edubench        # optional; default "default"
+    """
+    import yaml  # lazy: keeps this module importable without the dependency
+
+    p = Path(path)
+    if not p.is_file():
+        raise FileNotFoundError(f"FRQ bank registry not found: {p}")
+    raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    entries = raw.get("banks", raw) if isinstance(raw, dict) else raw
+    if not isinstance(entries, list):
+        raise ValueError(f"{p}: expected a list of banks, or a mapping with a 'banks:' key")
+    added: list[str] = []
+    for i, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise ValueError(f"{p}: bank #{i} is not a mapping")
+        missing = [k for k in ("key", "label", "path") if not entry.get(k)]
+        if missing:
+            raise ValueError(f"{p}: bank #{i} is missing {', '.join(missing)}")
+        register_bank(entry["key"], entry["label"], entry["path"], entry.get("rubric") or "default")
+        added.append(entry["key"])
+    return added
+
+
 def _cap(items: list[Scenario], max_samples: int | None, seed: int) -> list[Scenario]:
     """Deterministic subsample, matching datasets_registry._cap so --max-samples
     behaves identically for MCQ and FRQ."""

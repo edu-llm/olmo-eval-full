@@ -55,7 +55,7 @@ from models_registry import (  # noqa: E402
     load_models,
     select_models,
 )
-from run_benchmark import _frq_overrides, make_engine  # noqa: E402
+from run_benchmark import _frq_overrides, make_engine, register_extra_banks  # noqa: E402
 
 PREVIEW = 240  # chars of model output shown inline; full text goes to the JSON
 PROMPT_PREVIEW = 400
@@ -653,6 +653,8 @@ def build_parser() -> argparse.ArgumentParser:
                     help="default: inference.yaml (vllm). 'mock' needs no weights and no GPU")
     ap.add_argument("--models-yaml", default=None,
                     help="roster (default: Inputs/Models/models_200.yaml, else models.yaml)")
+    ap.add_argument("--frq-banks", action="append", default=None, metavar="PATH",
+                    help="YAML file registering extra FRQ scenario banks (repeatable)")
     ap.add_argument("--max-new-tokens", type=int, default=256,
                     help="cap the FRQ generation budget so the test finishes quickly; "
                          "0 = use the manifest/config value (4096)")
@@ -679,6 +681,7 @@ def main(argv: list[str] | None = None) -> int:
     cfg = InferenceConfig.load(Path(args.inference_config) if args.inference_config else None)
     if args.backend:
         cfg.backend = args.backend
+    extra_banks = register_extra_banks(args.frq_banks) if args.frq_banks else []
 
     run_id = time.strftime("%Y%m%d-%H%M%S")
     run_dir = common.OUTPUTS_DIR / "_smoke" / run_id
@@ -693,7 +696,10 @@ def main(argv: list[str] | None = None) -> int:
     frq_names = ["synth_open"] if args.synthetic else OPEN_BENCHMARKS
 
     print(f"smoke test {run_id}   backend={cfg.backend}   seed={args.seed}")
-    print(f"output dir: {run_dir}\n")
+    print(f"output dir: {run_dir}")
+    if extra_banks:
+        print(f"registered FRQ bank(s): {', '.join(extra_banks)}")
+    print()
     print("PREFLIGHT")
     checks = preflight(
         cfg.backend,

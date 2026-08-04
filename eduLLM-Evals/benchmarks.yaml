@@ -45,6 +45,9 @@ benchmarks:
   - name: BiGGen
     scenarios: data/BiGGen/scenarios.jsonl
     enabled: true
+  # 252 scenarios per task type, sampled from the cleaned "unmerged" bank (the
+  # variant carrying the 4-skill q_mapping). Regenerate with
+  # scripts/stratified_sample_bank.py; both .json source and .jsonl are gitignored.
   - name: EduBench
-    scenarios: data/EduBench/scenarios.jsonl
+    scenarios: data/EduBench/augmented_qmat/unmerged/scenarios_252.jsonl
     enabled: true
