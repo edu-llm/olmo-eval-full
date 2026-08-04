@@ -1,0 +1,118 @@
+{
+  "Benchmark": "musr",
+  "Pearson r": 0.8022,
+  "Slope": 0.8381,
+  "Accuracy MAE": 0.0501,
+  "95% CI MAE": [
+    0.0474,
+    0.0529
+  ],
+  "Avg CAT items": 37.55,
+  "Bank size": 493.6,
+  "% items dropped": 34.47,
+  "n models": 1099,
+  "itemtype": "2PL",
+  "bank_size_per_fold": [
+    493,
+    494,
+    495,
+    492,
+    493,
+    493,
+    494,
+    494,
+    495,
+    493
+  ],
+  "calibrated_items_per_fold": [
+    754,
+    754,
+    754,
+    752,
+    754,
+    752,
+    754,
+    752,
+    754,
+    753
+  ],
+  "pct_dropped_per_fold": [
+    34.62,
+    34.48,
+    34.35,
+    34.57,
+    34.62,
+    34.44,
+    34.48,
+    34.31,
+    34.35,
+    34.53
+  ],
+  "fold_pearson_r": [
+    0.7095,
+    0.8781,
+    0.8021,
+    0.787,
+    0.832,
+    0.7935,
+    0.8058,
+    0.7725,
+    0.8335,
+    0.7997
+  ],
+  "worst_fold": 0,
+  "pearson_r_excl_worst_fold": 0.812,
+  "se_target": 0.3,
+  "folds": 10,
+  "seed": 7,
+  "linking": "polarity_flip_mean_sigma (sweep.LINK_R_TEXT; MuSR 3PL default)",
+  "wall_clock_s": 315.6,
+  "fold_identity": "fold-identity check PASSED: all 1099 models match 3PL fold assignment",
+  "complete": true,
+  "comparison_vs_3pl": {
+    "3pl": {
+      "Pearson r": 0.7565,
+      "Slope": 0.9585,
+      "Accuracy MAE": 0.0888,
+      "95% CI MAE": [
+        0.0849,
+        0.0926
+      ],
+      "Avg CAT items": 12.87,
+      "Bank size": 430.4,
+      "% items dropped": 42.86,
+      "fold_pearson_r": [
+        0.7468,
+        0.8225,
+        0.8186,
+        0.8202,
+        0.8469,
+        0.8195,
+        0.8276,
+        0.7553,
+        0.7998,
+        0.1417
+      ],
+      "worst_fold": 9,
+      "pearson_r_excl_worst_fold": 0.8094,
+      "source": "openlm_atlas_cv.py (existing)"
+    },
+    "delta_2pl_minus_3pl": {
+      "Pearson r": 0.0457,
+      "Slope": -0.1204,
+      "Accuracy MAE": -0.0387,
+      "Avg CAT items": 24.68,
+      "Bank size": 63.2,
+      "% items dropped": -8.39
+    },
+    "fold_r_std": {
+      "3pl": 0.2017,
+      "2pl": 0.0417
+    },
+    "min_fold_r": {
+      "3pl": 0.1417,
+      "2pl": 0.7095
+    },
+    "stability_note": "3PL had one collapsed fold (fold 9, r=0.14) that dragged the pooled r; 2PL shows no such fold (worst fold r=0.71). Excluding each run's worst fold the two agree (3PL 0.8094 vs 2PL 0.8120), so 2PL's pooled-r gain is driven by eliminating the fold-9-type instability. 2PL is more stable."
+  }
+}

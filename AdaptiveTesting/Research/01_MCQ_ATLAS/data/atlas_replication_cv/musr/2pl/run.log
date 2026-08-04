@@ -1,0 +1,30 @@
+[musr/2PL] building master matrix...
+[musr/2PL] fold-identity check PASSED: all 1099 models match 3PL fold assignment
+[musr/2PL] models=1099 items=754 folds=10 seed=7 SE<=0.3 fold_sizes=[110, 110, 110, 110, 110, 110, 110, 110, 110, 109]
+[musr/2PL] fold 0: n_train=989 n_test=110 kept=754 bank=493/754 (drop 34.6%) fold_r=0.7095 items=29.8 (30.8s)
+[musr/2PL] fold 1: n_train=989 n_test=110 kept=754 bank=494/754 (drop 34.5%) fold_r=0.8781 items=35.8 (29.5s)
+[musr/2PL] fold 2: n_train=989 n_test=110 kept=754 bank=495/754 (drop 34.4%) fold_r=0.8021 items=37.1 (36.7s)
+[musr/2PL] fold 3: n_train=989 n_test=110 kept=752 bank=492/752 (drop 34.6%) fold_r=0.7870 items=44.8 (30.4s)
+[musr/2PL] fold 4: n_train=989 n_test=110 kept=754 bank=493/754 (drop 34.6%) fold_r=0.8320 items=36.0 (32.7s)
+[musr/2PL] fold 5: n_train=989 n_test=110 kept=752 bank=493/752 (drop 34.4%) fold_r=0.7935 items=43.1 (33.0s)
+[musr/2PL] fold 6: n_train=989 n_test=110 kept=754 bank=494/754 (drop 34.5%) fold_r=0.8058 items=43.7 (32.1s)
+[musr/2PL] fold 7: n_train=989 n_test=110 kept=752 bank=494/752 (drop 34.3%) fold_r=0.7725 items=31.9 (29.8s)
+[musr/2PL] fold 8: n_train=989 n_test=110 kept=754 bank=495/754 (drop 34.4%) fold_r=0.8335 items=30.8 (31.4s)
+[musr/2PL] fold 9: n_train=990 n_test=109 kept=753 bank=493/753 (drop 34.5%) fold_r=0.7997 items=42.6 (29.1s)
+
+==============================================================================
+OpenLM ATLAS 10-fold CV (2PL)  |  SE<=0.3  |  seed 7
+==============================================================================
+  Benchmark        : musr
+  Pearson r        : 0.8022
+  Slope            : 0.8381
+  Accuracy MAE     : 0.0501
+  95% CI MAE       : [0.0474, 0.0529]
+  Avg CAT items    : 37.55
+  Bank size        : 493.6
+  % items dropped  : 34.47
+  n models         : 1099
+  per-fold r       : [0.7095, 0.8781, 0.8021, 0.787, 0.832, 0.7935, 0.8058, 0.7725, 0.8335, 0.7997]
+  r excl worst fold: 0.812 (fold 0)
+  wall-clock (s)   : 315.6
+==============================================================================

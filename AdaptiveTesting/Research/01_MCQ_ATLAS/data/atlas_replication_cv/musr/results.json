@@ -1,0 +1,30 @@
+{
+  "Benchmark": "musr",
+  "Pearson r": 0.7565,
+  "Slope": 0.9585,
+  "Accuracy MAE": 0.0888,
+  "95% CI MAE": [
+    0.0849,
+    0.0926
+  ],
+  "Avg CAT items": 12.87,
+  "Bank size": 430.4,
+  "n models": 1099,
+  "bank_size_per_fold": [
+    432,
+    421,
+    421,
+    443,
+    419,
+    438,
+    423,
+    441,
+    433,
+    433
+  ],
+  "se_target": 0.3,
+  "folds": 10,
+  "seed": 7,
+  "wall_clock_s": 268.9,
+  "complete": true
+}

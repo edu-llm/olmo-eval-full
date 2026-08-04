@@ -1,0 +1,43 @@
+{
+  "Benchmark": "ifeval",
+  "Pearson r": 0.9423,
+  "Slope": 0.9437,
+  "Accuracy MAE": 0.0425,
+  "95% CI MAE": [
+    0.04,
+    0.0451
+  ],
+  "Avg CAT items": 26.92,
+  "Bank size": 513.5,
+  "n models": 1102,
+  "bank_size_per_fold": [
+    511,
+    515,
+    514,
+    514,
+    513,
+    514,
+    513,
+    513,
+    513,
+    515
+  ],
+  "se_target": 0.3,
+  "folds": 10,
+  "seed": 7,
+  "wall_clock_s": 428.3,
+  "complete": true,
+  "fold_compute_s": [
+    39.3,
+    38.2,
+    38.9,
+    37.4,
+    44.6,
+    39.1,
+    39.0,
+    37.0,
+    47.6,
+    37.2
+  ],
+  "wall_clock_note": "from-scratch total = build_master (~30s) + 10 sequential folds (~37-48s each, R workers=2). Final full invocation itself took ~397s with fold 0 reused from the single-fold smoke test."
+}

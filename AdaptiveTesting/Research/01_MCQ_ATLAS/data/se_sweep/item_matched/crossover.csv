@@ -1,0 +1,5 @@
+mode,pair,crossover_N
+hold_at_floor,1PL_over_2PL,30
+hold_at_floor,1PL_over_3PL,30
+forced_N,1PL_over_2PL,30
+forced_N,1PL_over_3PL,30

@@ -1,0 +1,28 @@
+=== attempt 1 2026-08-03 14:49:56 ===
+[math] building master matrix (all models) via sweep.build_master...
+[math] cached master matrix -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/atlas_replication_cv/_work/math/master_math.pkl
+[math] models=901 items=1214 folds=10 seed=7 se=0.3 fold_sizes=[91, 90, 90, 90, 90, 90, 90, 90, 90, 90]
+[math] fold 0: held-out=91 bank=1184 (56.1s) cumulative_models=91
+[math] fold 1: held-out=90 bank=1193 (52.5s) cumulative_models=181
+[math] fold 2: held-out=90 bank=1186 (62.5s) cumulative_models=271
+[math] fold 3: held-out=90 bank=1192 (53.9s) cumulative_models=361
+[math] fold 4: held-out=90 bank=1191 (49.1s) cumulative_models=451
+[math] fold 5: held-out=90 bank=1186 (52.9s) cumulative_models=541
+[math] fold 6: held-out=90 bank=1194 (51.5s) cumulative_models=631
+[math] fold 7: held-out=90 bank=1193 (57.2s) cumulative_models=721
+[math] fold 8: held-out=90 bank=1193 (62.3s) cumulative_models=811
+[math] fold 9: held-out=90 bank=1108 (50.8s) cumulative_models=901
+
+=== 10-fold CV ATLAS replication (out-of-sample, SE<=0.3) ===
+Benchmark      : math
+Pearson r      : 0.9176
+Slope          : 0.7047
+Accuracy MAE   : 0.021
+95% CI MAE     : [0.0191, 0.023]
+Avg CAT items  : 96.15
+Bank size      : 1182.0 (min 1108, max 1194)
+n models       : 901
+wall-clock     : 0h09m48s (587.7s)
+
+wrote /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/atlas_replication_cv/math/per_model.csv and /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/01_MCQ_ATLAS/data/atlas_replication_cv/math/results.json
+=== attempt 1 exit=0 2026-08-03 14:59:44 ===

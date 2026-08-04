@@ -1,0 +1,38 @@
+{
+  "benchmark": "gpqa",
+  "se_target": 0.3,
+  "n_folds": 10,
+  "seed": 7,
+  "n_models": 1102,
+  "pearson_r": 0.6518,
+  "slope": 1.2553,
+  "accuracy_mae": 0.0738,
+  "mae_95ci": [
+    0.0709,
+    0.0767
+  ],
+  "avg_cat_items": 13.71,
+  "bank_size": 575.6,
+  "bank_size_per_fold": [
+    579,
+    557,
+    580,
+    578,
+    577,
+    575,
+    577,
+    579,
+    582,
+    572
+  ],
+  "wall_clock_s": 99.2,
+  "partial": false,
+  "linking": "noflip",
+  "cat": {
+    "definition": "atlas_error_plots_openlm.adaptive_trace",
+    "min_items": 8,
+    "max_items": 400,
+    "floor_se": 0.095,
+    "a_filter": "a>0"
+  }
+}

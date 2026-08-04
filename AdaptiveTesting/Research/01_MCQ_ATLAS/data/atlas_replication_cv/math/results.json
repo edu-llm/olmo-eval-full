@@ -1,0 +1,51 @@
+{
+  "Benchmark": "math",
+  "Pearson r": 0.9176,
+  "Slope": 0.7047,
+  "Accuracy MAE": 0.021,
+  "95% CI MAE": [
+    0.0191,
+    0.023
+  ],
+  "Avg CAT items": 96.15,
+  "Bank size": 1182.0,
+  "n_models": 901,
+  "se_target": 0.3,
+  "folds": 10,
+  "seed": 7,
+  "bank_size_mean": 1182.0,
+  "bank_size_min": 1108,
+  "bank_size_max": 1194,
+  "bank_size_per_fold": [
+    1184,
+    1193,
+    1186,
+    1192,
+    1191,
+    1186,
+    1194,
+    1193,
+    1193,
+    1108
+  ],
+  "fold_sizes": [
+    91,
+    90,
+    90,
+    90,
+    90,
+    90,
+    90,
+    90,
+    90,
+    90
+  ],
+  "n_folds_used": 10,
+  "dropped_folds": [],
+  "mae_std_abs_err": 0.02982,
+  "mae_se": 0.000993,
+  "actual_accuracy_definition": "mean correctness over usable (a>0) bank items per fold (ATLAS convention)",
+  "pipeline": "openlm_trainsize_sweep: chunked R mirt 3PL + mean-sigma polarity link + a>0 filter; atlas_error_plots_openlm.adaptive_trace CAT (MIN_ITEMS=8, max 400, Fisher/EAP)",
+  "wall_clock_s": 587.7,
+  "wall_clock": "0h09m48s"
+}
