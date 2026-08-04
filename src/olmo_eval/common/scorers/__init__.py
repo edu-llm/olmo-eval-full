@@ -2,6 +2,7 @@
 
 from .base import (
     BitsPerByteScorer,
+    ContainmentScorer,
     ExactMatchFlexScorer,
     ExactMatchScorer,
     F1Scorer,
@@ -14,6 +15,7 @@ from .base import (
     Scorer,
     SQuADExactMatchScorer,
     SQuADF1Scorer,
+    WindowedContainmentScorer,
 )
 from .citation import (
     CITATION_GROUP_PROMPT,
@@ -53,6 +55,7 @@ __all__ = [
     "CITATION_GROUP_PROMPT",
     "CodeExecutionScorer",
     "compute_citation_scores_from_groups",
+    "ContainmentScorer",
     "ContextScorer",
     "ExactMatchFlexScorer",
     "ExactMatchScorer",
@@ -87,4 +90,5 @@ __all__ = [
     "TrajectoryEfficiencyScorer",
     "TrajectoryResponseScorer",
     "TrajectoryStateScorer",
+    "WindowedContainmentScorer",
 ]

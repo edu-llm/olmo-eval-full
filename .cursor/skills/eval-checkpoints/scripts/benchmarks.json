@@ -53,6 +53,10 @@
       "naturalqs",
       "jeopardy"
     ],
+    "factual": [
+      "popqa",
+      "triviaqa"
+    ],
     "all": [
       "csqa",
       "hellaswag",
@@ -60,7 +64,9 @@
       "socialiqa",
       "arc_easy",
       "naturalqs",
-      "jeopardy"
+      "jeopardy",
+      "popqa",
+      "triviaqa"
     ],
     "smoke": {
       "like": "default",
@@ -133,6 +139,24 @@
         "accuracy"
       ],
       "kind": "generative"
+    },
+    "popqa": {
+      "instances": 14267,
+      "choices": 1,
+      "split": "test",
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "generative"
+    },
+    "triviaqa": {
+      "instances": 17944,
+      "choices": 1,
+      "split": "validation",
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "generative"
     }
   },
   "aliases": {
@@ -149,8 +173,6 @@
     "hella_swag": "hellaswag"
   },
   "unsupported": {
-    "triviaqa": "no task file exists in olmo-eval; it would have to be written first",
-    "popqa": "no task file exists in olmo-eval; it would have to be written first",
     "trex": "no task file exists, and no canonical evaluation split has been chosen",
     "factscore": "no task file exists; also needs an LLM judge and a retrieval corpus",
     "simpleqa": "the bare task sets no metrics and would score nothing; use the 'simpleqa:judge' variant, which needs an OpenAI key and outbound network"

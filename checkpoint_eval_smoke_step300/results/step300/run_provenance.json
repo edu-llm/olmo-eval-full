@@ -1,0 +1,18 @@
+{
+  "run_id": "step300",
+  "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+  "s3_dest": "s3://edullm-adaptive-inference-056956104102/mock-checkpoint-eval/mock-20260804-142414/step300",
+  "benchmarks": [
+    "csqa",
+    "hellaswag",
+    "piqa",
+    "socialiqa",
+    "arc_easy"
+  ],
+  "benchmark_selection": "group 'smoke' -- plumbing check: the default set at 2 instances per benchmark, not a measurement",
+  "status": "ok",
+  "limit": 2,
+  "tensor_parallel_size": 1,
+  "gpu_memory_utilization": 0.5,
+  "git_sha": "unknown"
+}

@@ -128,25 +128,45 @@ def collect(runs_dir: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def column_for(benchmark: str, metric: str | None, multi: set[str]) -> str:
-    """Wide-CSV column name.
+def column_for(
+    benchmark: str,
+    metric: str | None,
+    scorer: str | None,
+    multi_metric: set[str],
+    multi_scorer: set[tuple[str, str]],
+) -> str:
+    """Wide-CSV column name, qualified only as far as it needs to be.
 
-    Bare benchmark name when it reports a single metric, ``benchmark.metric``
-    when it reports several -- which is how the F1 and exact-match scores for
-    ``naturalqs`` and ``jeopardy`` stay distinguishable.
+    Bare benchmark name when it reports a single score, ``benchmark.metric``
+    when it reports several metrics -- which is how the F1 and exact-match
+    scores for ``naturalqs`` and ``jeopardy`` stay distinguishable.
+
+    A third level is added when one metric name carries several scorers.
+    ``Task.compute_metrics`` deliberately supports that (its result is keyed
+    ``{metric: {scorer: value}}`` precisely so two scorers can both report
+    "accuracy"), so without the scorer in the name those columns would collide
+    and one score would silently overwrite the other.
     """
-    if benchmark in multi and metric:
-        return f"{benchmark}.{metric}"
-    return benchmark
+    col = benchmark
+    if benchmark in multi_metric and metric:
+        col = f"{benchmark}.{metric}"
+    if metric and scorer and (benchmark, metric) in multi_scorer:
+        col = f"{col}.{scorer}"
+    return col
 
 
 def build_wide(rows: list[dict[str, Any]]) -> tuple[list[str], list[dict[str, Any]]]:
     """Pivot to one row per checkpoint, one column per score."""
     metrics_per_bench: dict[str, set[str]] = {}
+    scorers_per_metric: dict[tuple[str, str], set[str]] = {}
     for r in rows:
         if r.get("metric"):
-            metrics_per_bench.setdefault(str(r["benchmark"]), set()).add(str(r["metric"]))
-    multi = {b for b, m in metrics_per_bench.items() if len(m) > 1}
+            bench, metric = str(r["benchmark"]), str(r["metric"])
+            metrics_per_bench.setdefault(bench, set()).add(metric)
+            if r.get("scorer"):
+                scorers_per_metric.setdefault((bench, metric), set()).add(str(r["scorer"]))
+    multi_metric = {b for b, m in metrics_per_bench.items() if len(m) > 1}
+    multi_scorer = {k for k, s in scorers_per_metric.items() if len(s) > 1}
 
     order: list[str] = []
     by_run: dict[str, dict[str, Any]] = {}
@@ -161,7 +181,9 @@ def build_wide(rows: list[dict[str, Any]]) -> tuple[list[str], list[dict[str, An
             # as "not requested".
             entry.setdefault("status", r.get("status") or "no_results")
             continue
-        col = column_for(str(r["benchmark"]), r.get("metric"), multi)
+        col = column_for(
+            str(r["benchmark"]), r.get("metric"), r.get("scorer"), multi_metric, multi_scorer
+        )
         entry[col] = r["score"]
         if col not in order:
             order.append(col)

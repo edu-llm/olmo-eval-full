@@ -234,6 +234,110 @@ class SQuADExactMatchScorer(Scorer):
 
 
 @dataclass(frozen=True, slots=True)
+class ContainmentScorer(Scorer):
+    """Score 1.0 if any reference answer occurs as a substring of the generation.
+
+    Implements PopQA's published metric (Mallen et al. 2023, section 3.1): "We
+    mark a prediction as correct if any substring of the prediction is an exact
+    match of any of the gold answers."
+
+    The lenient member of the SQuAD-normalized family, sharing normalization and
+    multi-reference handling with :class:`SQuADF1Scorer` and
+    :class:`SQuADExactMatchScorer`. It exists for short-answer factual tasks
+    where a base model answers correctly but conversationally -- "The capital of
+    France is Paris" against a gold of "Paris" is exact-match 0 and F1 0.33
+    despite being right.
+
+    Two known false positives come with the published rule, and are kept
+    deliberately so scores stay comparable to the paper:
+
+    - Matching is on raw substrings, not token boundaries. Several PopQA answer
+      sets list short aliases -- "pol" for politician, "pop" for pop music -- so
+      a prediction of "policy" or "popular" scores correct.
+    - A model that hedges by listing candidates ("Paris, London, Rome") scores
+      correct because one of them hits.
+
+    Both inflate the score, so read it beside a stricter metric rather than
+    alone. :class:`SQuADExactMatchScorer` is the intended partner.
+
+    Uses metadata["all_answers"] for multiple references. Falls back to
+    instance.gold_answer if metadata is not present.
+    """
+
+    name: str = "containment"
+
+    def score(self, instance: Instance, output: LMOutput) -> float:
+        if output.extracted_answer is None:
+            return 0.0
+        pred = _squad_normalize_answer(str(output.extracted_answer))
+        if not pred:
+            return 0.0
+        all_answers = instance.metadata.get("all_answers", [])
+        if not all_answers:
+            if instance.gold_answer is None:
+                return 0.0
+            all_answers = [instance.gold_answer]
+        for ref in all_answers:
+            gold = _squad_normalize_answer(str(ref))
+            if gold and gold in pred:
+                return 1.0
+        return 0.0
+
+
+@dataclass(frozen=True, slots=True)
+class WindowedContainmentScorer(Scorer):
+    """Case-insensitive substring match within a leading window of the output.
+
+    Reproduces the metric Co-LMLM (arXiv:2607.07707, appendix A.6) reports for
+    TriviaQA: "whether any alias in the set of gold answers appears
+    (case-insensitive) within the first 100 characters of the model output".
+    Their ``score_popqa.py`` is the reference implementation::
+
+        window = continuation[:_ANSWER_WINDOW_CHARS].lower()
+        return any(ans.lower() in window for ans in possible_answers)
+
+    Two things separate this from :class:`ContainmentScorer`, and both exist to
+    reproduce the published rule rather than improve on it:
+
+    - Lowercasing is the only normalization. Punctuation and articles are left
+      alone, so a gold of "the Beatles" does not match a prediction of
+      "Beatles" -- where every SQuAD-normalized scorer would.
+    - Only the first ``window_chars`` characters are searched, so an answer
+      that surfaces after a long preamble does not count.
+
+    The paper calls this "Exact Match". It is not: it is substring containment,
+    and it scores strictly higher than exact match on the same outputs. Pair it
+    with a strict scorer to see how far apart they are.
+
+    Uses metadata["all_answers"] for multiple references. Falls back to
+    instance.gold_answer if metadata is not present.
+    """
+
+    name: str = "windowed_containment"
+    window_chars: int = 100
+
+    def score(self, instance: Instance, output: LMOutput) -> float:
+        if output.extracted_answer is None:
+            return 0.0
+        window = str(output.extracted_answer)[: self.window_chars].lower()
+        if not window:
+            return 0.0
+        all_answers = instance.metadata.get("all_answers", [])
+        if not all_answers:
+            if instance.gold_answer is None:
+                return 0.0
+            all_answers = [instance.gold_answer]
+        for ref in all_answers:
+            # An empty reference would match everything. The upstream code does
+            # not guard against this; a blank alias is a data artifact rather
+            # than an answer, so treat it as no reference at all.
+            gold = str(ref).strip().lower()
+            if gold and gold in window:
+                return 1.0
+        return 0.0
+
+
+@dataclass(frozen=True, slots=True)
 class BitsPerByteScorer(Scorer):
     """Compute bits per byte from logprobs.
 

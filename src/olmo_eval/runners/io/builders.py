@@ -112,6 +112,13 @@ def build_predictions(scored: Sequence[Any], metrics: Sequence[Metric] = ()) -> 
         if "judge_result" in resp.instance.metadata:
             prediction["judge_result"] = resp.instance.metadata["judge_result"]
 
+        # Facts a task carried over from its input dataset, never produced by the
+        # model. Copied here so per-instance scores can be broken down by them
+        # without joining against requests.jsonl -- PopQA uses it for entity
+        # popularity, which is the axis its results are meant to be read along.
+        if resp.instance.metadata.get("instance_attributes"):
+            prediction["instance_attributes"] = resp.instance.metadata["instance_attributes"]
+
         # Add final_output text for chat/agent tasks
         if resp.outputs and resp.outputs[0].text:
             prediction["final_output"] = resp.outputs[0].text

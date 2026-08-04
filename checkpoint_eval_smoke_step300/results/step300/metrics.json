@@ -1,0 +1,346 @@
+{
+  "timestamp": "2026-08-04T20:40:33.883368",
+  "config": {
+    "name": "default",
+    "provider": {
+      "kind": "vllm_server",
+      "model": "/tmp/tmp.8OAGWK3sIg/ckpt/step300",
+      "kwargs": {
+        "gpu_memory_utilization": 0.5
+      }
+    },
+    "tool_names": [],
+    "system_prompt": null,
+    "tool_choice": "auto",
+    "scaffold": null,
+    "required_secrets": [],
+    "metrics": {
+      "enabled": true,
+      "reporters": [
+        "file"
+      ],
+      "collect_gpu": false,
+      "collect_vllm_server": true,
+      "vllm_poll_interval_s": 10.0,
+      "experiment_id": "0becd4c59ec2",
+      "model_name": "/tmp/tmp.8OAGWK3sIg/ckpt/step300",
+      "model_hash": "a67dd9274682252f"
+    },
+    "batching": {
+      "strategy": "batched",
+      "chunk_size": 64,
+      "chunk_timeout": 5.0
+    },
+    "model_hash": "a67dd9274682252f"
+  },
+  "tasks": [
+    {
+      "task": "hellaswag",
+      "metrics": {
+        "accuracy": {
+          "logprob": 0.0
+        }
+      },
+      "num_instances": 2,
+      "primary_metric": "accuracy:logprob",
+      "config": {
+        "name": "hellaswag",
+        "data_source": {
+          "path": "allenai/hellaswag",
+          "subset": null,
+          "split": "validation",
+          "source_type": "hf",
+          "data_files": null,
+          "revision": null
+        },
+        "fewshot_source": null,
+        "formatter": null,
+        "metrics": [
+          {
+            "type": "LogprobMCAccuracyMetric",
+            "name": "accuracy",
+            "scorer": "LogprobScorer"
+          }
+        ],
+        "num_fewshot": 0,
+        "fewshot_seed": 42,
+        "limit": 2,
+        "seed": 42,
+        "split": "validation",
+        "primary_metric": {
+          "type": "LogprobMCAccuracyMetric",
+          "name": "accuracy",
+          "scorer": "LogprobScorer"
+        },
+        "sampling_params": {
+          "max_tokens": 512,
+          "temperature": 0.0,
+          "top_p": null,
+          "top_k": null,
+          "stop_sequences": null,
+          "num_samples": 1,
+          "logprobs": null,
+          "do_sample": true
+        },
+        "output_score_aggregation": "max",
+        "max_length": null,
+        "answer_extractor": null,
+        "dependencies": null
+      },
+      "duration_seconds": 6.911813259124756,
+      "task_hash": "492f7932dad3ca32"
+    },
+    {
+      "task": "socialiqa",
+      "metrics": {
+        "accuracy": {
+          "logprob": 0.5
+        }
+      },
+      "num_instances": 2,
+      "primary_metric": "accuracy:logprob",
+      "config": {
+        "name": "socialiqa",
+        "data_source": {
+          "path": "social_i_qa",
+          "subset": null,
+          "split": "validation",
+          "source_type": "hf",
+          "data_files": null,
+          "revision": "refs/convert/parquet"
+        },
+        "fewshot_source": null,
+        "formatter": null,
+        "metrics": [
+          {
+            "type": "LogprobPerCharMCAccuracyMetric",
+            "name": "accuracy",
+            "scorer": "LogprobScorer"
+          }
+        ],
+        "num_fewshot": 0,
+        "fewshot_seed": 42,
+        "limit": 2,
+        "seed": 42,
+        "split": "validation",
+        "primary_metric": {
+          "type": "LogprobPerCharMCAccuracyMetric",
+          "name": "accuracy",
+          "scorer": "LogprobScorer"
+        },
+        "sampling_params": {
+          "max_tokens": 512,
+          "temperature": 0.0,
+          "top_p": null,
+          "top_k": null,
+          "stop_sequences": null,
+          "num_samples": 1,
+          "logprobs": null,
+          "do_sample": true
+        },
+        "output_score_aggregation": "max",
+        "max_length": null,
+        "answer_extractor": null,
+        "dependencies": null
+      },
+      "duration_seconds": 6.9143455028533936,
+      "task_hash": "76333dc099959b92"
+    },
+    {
+      "task": "arc_easy",
+      "metrics": {
+        "accuracy": {
+          "logprob": 0.0
+        }
+      },
+      "num_instances": 2,
+      "primary_metric": "accuracy:logprob",
+      "config": {
+        "name": "arc_easy",
+        "data_source": {
+          "path": "allenai/ai2_arc",
+          "subset": "ARC-Easy",
+          "split": "test",
+          "source_type": "hf",
+          "data_files": null,
+          "revision": null
+        },
+        "fewshot_source": null,
+        "formatter": null,
+        "metrics": [
+          {
+            "type": "LogprobMCAccuracyMetric",
+            "name": "accuracy",
+            "scorer": "LogprobScorer"
+          }
+        ],
+        "num_fewshot": 0,
+        "fewshot_seed": 42,
+        "limit": 2,
+        "seed": 42,
+        "split": "test",
+        "primary_metric": {
+          "type": "LogprobMCAccuracyMetric",
+          "name": "accuracy",
+          "scorer": "LogprobScorer"
+        },
+        "sampling_params": {
+          "max_tokens": 512,
+          "temperature": 0.0,
+          "top_p": null,
+          "top_k": null,
+          "stop_sequences": null,
+          "num_samples": 1,
+          "logprobs": null,
+          "do_sample": true
+        },
+        "output_score_aggregation": "max",
+        "max_length": null,
+        "answer_extractor": null,
+        "dependencies": null
+      },
+      "duration_seconds": 6.9156293869018555,
+      "task_hash": "dbdc07d424f0049e"
+    },
+    {
+      "task": "piqa",
+      "metrics": {
+        "accuracy": {
+          "logprob": 1.0
+        }
+      },
+      "num_instances": 2,
+      "primary_metric": "accuracy:logprob",
+      "config": {
+        "name": "piqa",
+        "data_source": {
+          "path": "piqa",
+          "subset": null,
+          "split": "validation",
+          "source_type": "hf",
+          "data_files": null,
+          "revision": "refs/convert/parquet"
+        },
+        "fewshot_source": null,
+        "formatter": null,
+        "metrics": [
+          {
+            "type": "LogprobPerTokenMCAccuracyMetric",
+            "name": "accuracy",
+            "scorer": "LogprobScorer"
+          }
+        ],
+        "num_fewshot": 0,
+        "fewshot_seed": 42,
+        "limit": 2,
+        "seed": 42,
+        "split": "validation",
+        "primary_metric": {
+          "type": "LogprobPerTokenMCAccuracyMetric",
+          "name": "accuracy",
+          "scorer": "LogprobScorer"
+        },
+        "sampling_params": {
+          "max_tokens": 512,
+          "temperature": 0.0,
+          "top_p": null,
+          "top_k": null,
+          "stop_sequences": null,
+          "num_samples": 1,
+          "logprobs": null,
+          "do_sample": true
+        },
+        "output_score_aggregation": "max",
+        "max_length": null,
+        "answer_extractor": null,
+        "dependencies": null
+      },
+      "duration_seconds": 6.9169652462005615,
+      "task_hash": "d76d05f59ef35fd9"
+    },
+    {
+      "task": "csqa",
+      "metrics": {
+        "accuracy": {
+          "logprob": 0.0
+        }
+      },
+      "num_instances": 2,
+      "primary_metric": "accuracy:logprob",
+      "config": {
+        "name": "csqa",
+        "data_source": {
+          "path": "commonsense_qa",
+          "subset": null,
+          "split": "validation",
+          "source_type": "hf",
+          "data_files": null,
+          "revision": null
+        },
+        "fewshot_source": null,
+        "formatter": null,
+        "metrics": [
+          {
+            "type": "LogprobMCAccuracyMetric",
+            "name": "accuracy",
+            "scorer": "LogprobScorer"
+          }
+        ],
+        "num_fewshot": 0,
+        "fewshot_seed": 42,
+        "limit": 2,
+        "seed": 42,
+        "split": "validation",
+        "primary_metric": {
+          "type": "LogprobMCAccuracyMetric",
+          "name": "accuracy",
+          "scorer": "LogprobScorer"
+        },
+        "sampling_params": {
+          "max_tokens": 512,
+          "temperature": 0.0,
+          "top_p": null,
+          "top_k": null,
+          "stop_sequences": null,
+          "num_samples": 1,
+          "logprobs": null,
+          "do_sample": true
+        },
+        "output_score_aggregation": "max",
+        "max_length": null,
+        "answer_extractor": null,
+        "dependencies": null
+      },
+      "duration_seconds": 6.918204069137573,
+      "task_hash": "2cea823f8e9e9e30"
+    }
+  ],
+  "summary": {
+    "hellaswag": {
+      "metric": "accuracy:logprob",
+      "score": 0.0
+    },
+    "socialiqa": {
+      "metric": "accuracy:logprob",
+      "score": 0.5
+    },
+    "arc_easy": {
+      "metric": "accuracy:logprob",
+      "score": 0.0
+    },
+    "piqa": {
+      "metric": "accuracy:logprob",
+      "score": 1.0
+    },
+    "csqa": {
+      "metric": "accuracy:logprob",
+      "score": 0.0
+    }
+  },
+  "errors": [],
+  "experiment_id": "0becd4c59ec2",
+  "experiment_duration_seconds": 101.79408288002014,
+  "provider_init_seconds": {
+    "step300-w0": 71.98121643066406
+  }
+}

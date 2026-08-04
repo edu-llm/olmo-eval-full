@@ -1,0 +1,77 @@
+{
+  "rows": [
+    {
+      "run_id": "step300",
+      "step": 300,
+      "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+      "benchmark": "arc_easy",
+      "metric": "accuracy",
+      "scorer": "logprob",
+      "score": 0.0,
+      "is_primary": true,
+      "num_instances": 2,
+      "status": "ok"
+    },
+    {
+      "run_id": "step300",
+      "step": 300,
+      "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+      "benchmark": "csqa",
+      "metric": "accuracy",
+      "scorer": "logprob",
+      "score": 0.0,
+      "is_primary": true,
+      "num_instances": 2,
+      "status": "ok"
+    },
+    {
+      "run_id": "step300",
+      "step": 300,
+      "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+      "benchmark": "hellaswag",
+      "metric": "accuracy",
+      "scorer": "logprob",
+      "score": 0.0,
+      "is_primary": true,
+      "num_instances": 2,
+      "status": "ok"
+    },
+    {
+      "run_id": "step300",
+      "step": 300,
+      "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+      "benchmark": "piqa",
+      "metric": "accuracy",
+      "scorer": "logprob",
+      "score": 1.0,
+      "is_primary": true,
+      "num_instances": 2,
+      "status": "ok"
+    },
+    {
+      "run_id": "step300",
+      "step": 300,
+      "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+      "benchmark": "socialiqa",
+      "metric": "accuracy",
+      "scorer": "logprob",
+      "score": 0.5,
+      "is_primary": true,
+      "num_instances": 2,
+      "status": "ok"
+    }
+  ],
+  "wide": [
+    {
+      "run_id": "step300",
+      "step": 300,
+      "checkpoint": "s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300",
+      "arc_easy": 0.0,
+      "csqa": 0.0,
+      "hellaswag": 0.0,
+      "piqa": 1.0,
+      "socialiqa": 0.5,
+      "status": "ok"
+    }
+  ]
+}

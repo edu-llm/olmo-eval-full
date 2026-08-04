@@ -1,0 +1,2 @@
+run_id,step,checkpoint,arc_easy,csqa,hellaswag,piqa,socialiqa,status
+step300,300,s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300,0.0,0.0,0.0,1.0,0.5,ok

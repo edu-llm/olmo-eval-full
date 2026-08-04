@@ -265,9 +265,11 @@ Nothing is uploaded to the HuggingFace Hub. "HF" refers to the on-disk format.
 ```
 
 `accuracy_wide.csv` is the deliverable: one row per checkpoint, sorted by step,
-one column per score. A benchmark reporting a single metric gets a bare column
-name; one reporting several gets `<benchmark>.<metric>` columns so the units stay
-distinguishable. See BENCHMARKS.md for which are which and how to read them.
+one column per score. Column names are qualified only as far as they need to be:
+a benchmark reporting a single score gets a bare name, one reporting several
+metrics gets `<benchmark>.<metric>`, and a metric carrying more than one scorer
+gets `<benchmark>.<metric>.<scorer>`. See BENCHMARKS.md for which are which and
+how to read them.
 
 `accuracy.csv` is the same data in long form, with the scorer behind each number,
 an `is_primary` flag, and `num_instances`.

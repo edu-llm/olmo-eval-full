@@ -10,7 +10,7 @@ are left out because they are unlabeled or because they are training data.
 
 ## Scope: what ships today
 
-The registry holds seven benchmarks, organized into groups. **Running with no
+The registry holds nine benchmarks, organized into groups. **Running with no
 flags gets the `default` group: the five multiple-choice reasoning tasks.** They
 need no setup beyond the skill itself — no API keys, no new task code, no data
 sourcing.
@@ -19,7 +19,8 @@ sourcing.
 |---|---|---|
 | `default` / `reasoning` | `csqa` `hellaswag` `piqa` `socialiqa` `arc_easy` | ready, API-free |
 | `fact_proxy` | `naturalqs` `jeopardy` | ready, API-free; generative, see the metric notes |
-| `all` | all seven | ready |
+| `factual` | `popqa` `triviaqa` | ready, API-free; purpose-built fact recall |
+| `all` | all nine | ready |
 | `smoke` | same as `default`, capped at 2 instances each | plumbing check only — **not a measurement** |
 
 `fact_proxy` is separated because those two are *proxies* for fact recall rather
@@ -29,12 +30,14 @@ not what a fact-recall study would report.
 
 ### What is deliberately not here yet
 
-A fact-recall suite (TriviaQA, PopQA, SimpleQA, T-REx exact-match, FactScore) is
-the eventual target. None of it is wired, and the gap is larger than it looks:
+`popqa` has landed; the rest of the fact-recall suite (TriviaQA, SimpleQA, T-REx
+exact-match, FactScore) has not, and the gap is larger than it looks:
 
-- **TriviaQA, PopQA, T-REx, FactScore have no task file in olmo-eval at all.**
-  Each needs writing, and T-REx additionally needs a data source chosen, since
-  there is no canonical evaluation split.
+- **TriviaQA, T-REx and FactScore have no task file in olmo-eval at all.** Each
+  needs writing, and T-REx additionally needs a data source chosen, since there
+  is no canonical evaluation split. TriviaQA is the easy one — it is the same
+  shape as `popqa`, and its `answer.aliases` field maps straight onto the
+  multi-reference handling the SQuAD-family scorers already do.
 - **SimpleQA exists but the bare task scores nothing.** `Task.metrics` defaults to
   `()` and `simpleqa.py` never sets it; the only metric is attached by the
   `simpleqa:judge` variant. Running `-t simpleqa` would do full inference and
@@ -140,10 +143,12 @@ involved, but the eval box needs Hub access and an `HF_HOME` with room.
 | `socialiqa` | validation | ~1,954 | 3 | `accuracy` |
 | `naturalqs` | validation | 3,610 | 1 | `f1` (primary) + `accuracy` |
 | `jeopardy` | train | ~2,117 | 1 | `f1` (primary) + `accuracy` |
+| `popqa` | test | 14,267 | 1 | `accuracy` under two scorers: `containment` (primary) + `squad_exact_match` |
+| `triviaqa` | validation | 17,944 | 1 | `accuracy` under two scorers: `windowed_containment` (primary) + `squad_exact_match` |
 
-Five of the seven are multiple choice and report a single accuracy. Two are
-generative and report **two** scores, because F1 and exact match answer different
-questions — "how close was the answer" versus "was it right".
+Five of the nine are multiple choice and report a single accuracy. Four are
+generative and report **two** scores each, because a single number cannot say
+both "was it right" and "how close was it".
 
 ### What is excluded, and why
 
@@ -156,6 +161,7 @@ questions — "how close was the answer" versus "was it right".
 | `socialiqa` | ~33,410, labeled, unused | **unlabeled** |
 | `naturalqs` | ~87k, labeled, unused | *(none exists)* |
 | `jeopardy` | *(this is the scored split)* | *(none exists)* |
+| `popqa` | *(none exists)* | *(this is the scored split)* |
 
 Five use validation, two use test. That pattern follows the OLMES convention,
 visible in the `olmes_*_fixed` few-shot source names throughout the task files.
@@ -197,15 +203,23 @@ proceeds, which would read as genuine capability gain on a training curve.
 
 ### The few-shot split is loaded but never scored
 
-All seven declare `fewshot_split = "train"`, so train is referenced. It is only
-used to build demonstration examples. The five multiple-choice tasks default to
-`num_fewshot = 0`, so it is not even loaded. `jeopardy` sets
+Seven of the nine declare `fewshot_split = "train"`, so train is referenced. It
+is only used to build demonstration examples. The five multiple-choice tasks
+default to `num_fewshot = 0`, so it is not even loaded. `jeopardy` sets
 `fewshot_source = "jeopardy_fixed"` and routes to a hardcoded constant instead of
 the dataset.
 
 `naturalqs` is the exception: `num_fewshot = 5` with no `fewshot_source` on the
 base class, so it genuinely downloads the nq_open train split to draw five
 examples. That is a download-size surprise, not a correctness problem.
+
+`popqa` declares no `fewshot_split` at all, because it has no train split to
+declare. Its 15 demonstrations are hardcoded in `constants/popqa.py`, so it
+never reads anything but the split it scores.
+
+`triviaqa` declares none either, for a different reason: it is zero-shot, so
+there are no demonstrations to source. TriviaQA does publish a train split of
+138,384 questions; this task simply never touches it.
 
 ## Metrics
 
@@ -220,6 +234,10 @@ examples. That is a download-size surprise, not a correctness problem.
 | | `accuracy` | `drop_exact_match` | |
 | `jeopardy` | `f1` (primary) | `f1` | generative, SQuAD-style |
 | | `accuracy` | `squad_exact_match` | |
+| `popqa` | `accuracy` (primary) | `containment` | generative; gold answer appearing anywhere in the generation |
+| | `accuracy` | `squad_exact_match` | same metric name, second scorer |
+| `triviaqa` | `accuracy` (primary) | `windowed_containment` | generative; gold answer in the first 100 characters, lowercase only |
+| | `accuracy` | `squad_exact_match` | same metric name, second scorer |
 
 All five multiple-choice tasks serialize under the metric name `accuracy`
 regardless of their normalization variant. `LogprobMCAccuracyMetric`,
@@ -273,13 +291,156 @@ Adding a second metric to a task means it also needs an explicit
 metrics exist without one, which would drop the task from the `summary` block of
 `metrics.json`.
 
+### `popqa`: aligned to the paper
+
+`popqa` follows the setup in Mallen et al. 2023, *When Not to Trust Language
+Models* ([arXiv:2212.10511](https://arxiv.org/abs/2212.10511)), which introduced
+the dataset. Comparability to published numbers is the main reason to run PopQA
+rather than one of the fact proxies, so each of these is the paper's choice
+rather than ours:
+
+| Setting | Value | Source |
+|---|---|---|
+| Prompt | `Q: <question>\nA:` | §4.1, "a simple template 'Q: A:'" |
+| Shots | 15 | §4.1, 15-shot for GPT-Neo and OPT |
+| Split | all 14,267 of `test` | the only split published |
+| Primary metric | accuracy by substring containment | §3.1 |
+
+The metric, quoted: *"We mark a prediction as correct if any substring of the
+prediction is an exact match of any of the gold answers."* That is containment,
+and it is deliberately lenient — it is robust to a base model answering "The
+capital of France is Paris" rather than "Paris", which exact match reads as
+flatly wrong.
+
+**`squad_exact_match` is reported beside it, and is not from the paper.** It is
+there because containment is inflated by two things, and the gap between the two
+scores is what exposes them:
+
+- The rule is raw substring, not token boundaries. Several PopQA answer sets list
+  short aliases — `politician` also lists `pol` — so a prediction of "policy"
+  scores correct. This is a known false positive of the published metric, kept
+  and asserted in the tests rather than fixed, because tightening it would leave
+  published numbers unreachable.
+- A model that hedges by listing candidates ("Paris, London, Rome") scores
+  correct because one of them hits.
+
+So containment far above exact match means either padding or hedging, not
+necessarily recall. Report containment for comparison with the literature; watch
+exact match to know whether to trust it.
+
+No F1: the answer is a single entity, so partial token overlap is not a
+meaningful quantity.
+
+Both scores land under the metric name `accuracy` with different scorer keys, so
+`accuracy_wide.csv` gives them the three-level names
+`popqa.accuracy.containment` and `popqa.accuracy.squad_exact_match`.
+
+PopQA has no train split, so demonstrations cannot be sampled. The 15 in
+`constants/popqa.py` are written by hand, since the paper does not publish its
+own. Every question uses a relation template taken verbatim from the dataset —
+PopQA phrases these precisely, "Who *was* the director of X?" against "Who *is*
+the author of X?", and a mismatched demonstration would teach a format the scored
+questions never use. Subjects are high-popularity, so a few may also appear among
+the scored questions; that is the same contamination the paper's own
+demonstrations would carry, bounded at roughly 0.1% of the split.
+
+The `popqa:zeroshot` variant reproduces the paper's other arm, which it used for
+GPT-3 only to hold down API cost.
+
+### Popularity is carried through to the predictions
+
+PopQA exists to separate head from long-tail factual recall, so a single flat
+score throws away the point of it. Each instance therefore carries the dataset's
+own popularity fields into `predictions/popqa-predictions.jsonl` under
+`instance_attributes`:
+
+| Field | Meaning |
+|---|---|
+| `s_pop` | subject entity's monthly Wikipedia pageviews — the axis to bucket by |
+| `o_pop` | answer entity's pageviews |
+| `prop` | relation type, e.g. `occupation` |
+| `subj` | subject entity name |
+
+These are copied from the input dataset and are **never** produced by the model
+being evaluated. They sit on the same JSONL row as that instance's scores, so
+accuracy can be broken down by popularity without joining against
+`requests.jsonl`.
+
+The summarizer still reports one number per scorer across the whole split;
+bucketing by popularity is a downstream step on the predictions file.
+
+### `triviaqa`: closed-book, and a deliberate mirror of Co-LMLM
+
+TriviaQA is titled a reading-comprehension dataset and ships evidence documents
+with every question. **The config choice is what decides whether this measures
+recall or comprehension**, so it is the first thing to check if the numbers ever
+look wrong. This task loads `rc.nocontext`: the same 17,944 questions as `rc`
+with the evidence stripped. The two are otherwise identical, but `rc` validation
+is 936 MB against 7.3 MB — so if a run suddenly downloads a gigabyte, the wrong
+config is wired up.
+
+The setup mirrors **Co-LMLM** (arXiv:2607.07707, appendix A.6), which is where
+each choice comes from rather than from our own judgement:
+
+| Setting | Value | Source |
+|---|---|---|
+| Config / split | `rc.nocontext` / `validation` | their `prepare_popqa_prompts.py` loader |
+| Instances | all 17,944 | A.6, "the full TriviaQA evaluation set (17,944 examples)" |
+| Shots | 0 | their pipeline has no few-shot machinery |
+| Prompt | `{question}\nThe answer is` | their `append_answer_stub.py` |
+| Decoding | greedy, 32 tokens | A.6, "greedy decoding with a maximum of 32 tokens" |
+| References | raw `value` + `aliases` | their loader; *not* the `normalized_*` fields |
+| Metric | gold in the first 100 chars, case-insensitive | A.6 |
+
+Two consequences worth internalizing. **Zero-shot means nothing demonstrates the
+answer format**, so a model that knows the fact may still answer in a sentence;
+their answer cue nudges toward brevity but does not enforce it. That is exactly
+what containment absorbs, and why exact match sits beside it. And **the paper
+calls its metric "Exact Match" when it is substring containment** — it scores
+strictly higher, so do not compare their TriviaQA column against an exact-match
+number from anywhere else.
+
+`WindowedContainmentScorer` implements their rule rather than reusing
+`ContainmentScorer`, because the two differ in ways that move the score:
+lowercasing is the only normalization, so a gold of "the Beatles" does not match
+a prediction of "Beatles" where SQuAD normalization would; and only the first
+100 characters are searched, so an answer after a long preamble does not count.
+
+**What is ours, not theirs:** the `squad_exact_match` companion. The paper
+reports no second metric for TriviaQA. It changes no published-comparable
+number, and it is the thing that reveals when containment is being inflated by a
+rambling answer.
+
+One caveat on the benchmark itself. `rc` is the *reading-comprehension* subset,
+filtered so evidence documents contain the answer, and stripping the evidence
+does not undo that filtering — the question set still skews toward what was
+answerable from retrieved text. TriviaQA's authors suggest `unfiltered` for
+open-domain use. Matching the paper is the reason to run this, so `rc.nocontext`
+stands, but `unfiltered.nocontext` (11,313 questions) is the purer read if a
+second opinion is ever wanted.
+
+Finally, `triviaqa` and `popqa` are complements rather than substitutes, which
+is why both sit in `factual`. TriviaQA skews toward well-known entities and
+measures head knowledge; PopQA is built for the long tail. A mid-training
+checkpoint should show a wide gap between them, and that gap closing is more
+informative than either number alone.
+
 ## Cost
 
-A full seven-benchmark sweep is roughly **23,200 instances but about 71,000 vLLM
-prompts** per checkpoint. The gap is because multiple-choice scoring sends one
-prompt per answer choice, and HellaSwag alone accounts for about 40,000 of the
-total (10,042 instances at four choices). The prompt count is what drives
+A full nine-benchmark sweep is roughly **55,400 instances and about 103,300 vLLM
+prompts** per checkpoint. Prompts exceed instances because multiple-choice scoring
+sends one prompt per answer choice, and HellaSwag alone accounts for about 40,000
+of the total (10,042 instances at four choices). The prompt count is what drives
 runtime, and it multiplies by every checkpoint in the sweep.
+
+The two `factual` benchmarks are the largest by instance count — `triviaqa` at
+17,944 and `popqa` at 14,267 — but being generative they issue one prompt each,
+so they add less runtime than their share of the instances suggests. `--group
+factual` runs just those two, at 32,211 instances and the same 32,211 prompts.
+
+Generative prompts are not directly comparable to multiple-choice ones, though:
+each one generates tokens rather than scoring a fixed continuation, so it is
+slower per prompt. Treat the prompt count as a within-kind comparison.
 
 `--dry-run` prints both figures, per checkpoint and for the whole sweep, before
 anything spends. Use `--latest N` to cap a trial run.
@@ -328,13 +489,19 @@ score the same instances.
 
 ## Reading the output
 
-`accuracy_wide.csv` has one row per checkpoint and one column per score.
-Benchmarks reporting a single metric get a bare column name; the generative pair
-get qualified ones, so the columns for a full sweep are:
+`accuracy_wide.csv` has one row per checkpoint and one column per score. Column
+names are qualified only as far as they need to be: a bare benchmark name when it
+reports a single score, `<benchmark>.<metric>` when it reports several metrics,
+and `<benchmark>.<metric>.<scorer>` when one metric name carries more than one
+scorer. Nothing shipping today needs that third level — `Task.compute_metrics`
+allows it, so the summarizer names for it rather than letting two scorers collide
+into one column. The columns for a full sweep are:
 
 ```
 hellaswag  piqa  arc_easy  csqa  socialiqa
 naturalqs.f1  naturalqs.accuracy  jeopardy.f1  jeopardy.accuracy
+popqa.accuracy.containment  popqa.accuracy.squad_exact_match
+triviaqa.accuracy.windowed_containment  triviaqa.accuracy.squad_exact_match
 ```
 
 `accuracy.csv` is the same data in long form, with the `scorer` that produced
@@ -355,6 +522,7 @@ every benchmark:
 ```bash
 uv run olmo-eval run -m "${HF_CKPT}" \
   --harness default -o provider.kind=vllm_server \
-  -t hellaswag -t piqa -t arc_easy -t csqa -t socialiqa -t naturalqs -t jeopardy \
+  -t hellaswag -t piqa -t arc_easy -t csqa -t socialiqa \
+  -t naturalqs -t jeopardy -t popqa -t triviaqa \
   -O "${OUT}"
 ```

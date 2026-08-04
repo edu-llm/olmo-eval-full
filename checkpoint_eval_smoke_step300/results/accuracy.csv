@@ -1,0 +1,6 @@
+run_id,step,checkpoint,benchmark,metric,scorer,score,is_primary,num_instances,status
+step300,300,s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300,arc_easy,accuracy,logprob,0.0,True,2,ok
+step300,300,s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300,csqa,accuracy,logprob,0.0,True,2,ok
+step300,300,s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300,hellaswag,accuracy,logprob,0.0,True,2,ok
+step300,300,s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300,piqa,accuracy,logprob,1.0,True,2,ok
+step300,300,s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300,socialiqa,accuracy,logprob,0.5,True,2,ok
