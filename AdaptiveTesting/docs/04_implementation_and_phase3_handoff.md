@@ -173,6 +173,16 @@ Goal: extend beyond ARC-Challenge to more benchmarks, group them into an `atlas`
 suite, and (separately) recalibrate a scoring-parity bank.
 
 ### 3a. Data reality (read first)
+
+> **Out of date.** This described the state when Phase 2 shipped. The hellaswag,
+> winogrande, gsm8k, ifeval, and math banks are now vendored: `.gitignore` still
+> excludes those directories wholesale but negates the two CSVs `load_bank` needs, so
+> the params + bridge are committed while the bulky by-products stay ignored. HellaSwag
+> in particular is vendored twice — `hellaswag/` (3PL, retained for reference) and
+> `hellaswag_2pl/` (2PL, what the registry resolves to). TruthfulQA is still absent and
+> still unwired. Note the directory name is not always the benchmark name; read
+> `bank_subdir` in `src/olmo_eval/adaptive/benchmarks.py`.
+
 Only the **ARC** bank is vendored locally: `AdaptiveTesting/Inputs/ATLAS/arc/`
 (and `arc_0p5_7b/`). Banks for hellaswag/winogrande/gsm8k/truthfulqa are in the
 upstream ATLAS repo (`github.com/Peiyu-Georgia-Li/ATLAS`) but are **gitignored**

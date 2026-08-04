@@ -1,10 +1,16 @@
 """Config-driven ATLAS benchmark registry.
 
 Single source of truth mapping each ATLAS benchmark to its ``olmo-eval`` base
-task, its calibrated 3PL bank subdirectory, and the per-item scoring method the
-CAT needs. The offline adaptive tasks, the online adaptive external evals, and
-the ``atlas`` suite all read this registry, so the two entry points and the
-suite cannot drift on which benchmarks exist or where their banks live.
+task, its calibrated bank subdirectory, and the per-item scoring method the CAT
+needs. The offline adaptive tasks, the online adaptive external evals, and the
+``atlas`` suite all read this registry, so the two entry points and the suite
+cannot drift on which benchmarks exist or where their banks live.
+
+IRT model per bank: HellaSwag points at a **2PL** refit (the project standard);
+every other bank here is still the upstream 3PL calibration. The runtime does not
+branch on this -- ``bank.py`` reads a 2PL bank as a 3PL one with ``c = 0``, which
+is exactly what the 2PL CSV encodes -- so the model choice is a property of the
+bank on disk, not of the code.
 
 Scoring methods:
 
@@ -100,7 +106,15 @@ class AtlasBenchmark:
 
 _BENCHMARKS: tuple[AtlasBenchmark, ...] = (
     AtlasBenchmark("arc_challenge", "arc_challenge", "arc", online_name="atlas_arc"),
-    AtlasBenchmark("hellaswag", "hellaswag", "hellaswag"),
+    # HellaSwag is on the 2PL bank: the project standard is 2PL, and this is the one
+    # benchmark with a vendored 2PL refit. Swapping the subdir here moves both entry
+    # points at once (offline task atlas_hellaswag and online eval atlas_hellaswag),
+    # so they cannot disagree about which calibration a theta came from. The 3PL bank
+    # stays on disk at hellaswag/ for reference; pass bank_dir=.../hellaswag explicitly
+    # to read it. Sibling banks stay 3PL because no 2PL refit was published for them --
+    # that is intentional, not an oversight. Thetas are not comparable across the two
+    # calibrations; ItemBank.version records which one produced a result.
+    AtlasBenchmark("hellaswag", "hellaswag", "hellaswag_2pl"),
     AtlasBenchmark("winogrande", "winogrande", "winogrande", positional_id=True),
     AtlasBenchmark("csqa", "csqa", "csqa"),
     AtlasBenchmark("piqa", "piqa", "piqa", positional_id=True),

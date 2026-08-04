@@ -26,6 +26,16 @@ ATLAS replaces a static benchmark score with a **psychometric** one:
 
 ### 3PL and why we use it
 
+> **Superseded for HellaSwag.** The project standard is now **2PL**, and HellaSwag
+> runs on a vendored 2PL refit (`AdaptiveTesting/Inputs/ATLAS/hellaswag_2pl/`, 5,005
+> usable items) rather than the 3PL bank kept alongside it. The argument below is the
+> phase-2 reasoning as written; it is retained as a record, not as current policy. The
+> other banks are still 3PL because no 2PL refit was published for them. The runtime
+> is indifferent: a 2PL bank has `g` present and identically zero, so `load_bank` reads
+> it unchanged and the response function below degenerates to the 2PL one at `g = 0`.
+> Thetas do not transfer between the two calibrations — see
+> [`05_cat_deferred.md`](05_cat_deferred.md) §4 for the comparison.
+
 $$P(\text{correct}\mid\theta)=g+(1-g)\,\sigma\!\big(a(\theta-b)\big)$$
 
 - `a` discrimination, `b` difficulty, `g` pseudo-guessing (lower asymptote).

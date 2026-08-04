@@ -200,3 +200,11 @@ data/TutorEval/scenarios_reworded.jsonl
 
 # cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
 biggen_results_cache.parquet
+
+# Merged judge verdicts from a TutorBench grading run. ~248 MB, past GitHub's
+# hard 100 MB per-file limit, which is what got a push rejected by the
+# pre-receive hook. Regenerable from verdicts_raw_shards/; results belong in S3.
+#
+# Path is relative to this file, so no eduLLM-Evals/ prefix -- and no leading
+# space, which gitignore treats as part of the pattern and would stop it matching.
+tutorbench_tb33_grading/verdicts_merged/

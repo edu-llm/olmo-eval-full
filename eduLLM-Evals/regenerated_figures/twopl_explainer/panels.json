@@ -1,0 +1,42 @@
+{
+  "n_models_run1": 82,
+  "n_models_tb33": 33,
+  "n_models_combined": 115,
+  "cohort_overlap": 0,
+  "bank": "C:\\Users\\Avane\\UT-Austin\\AlphaIA\\LLM-From-Scratch\\olmo-eval-full\\eduLLM-Evals\\data\\TutorBench\\rubrics_qmatrix_calibrated_2skill_fitted.jsonl",
+  "items_shared": 3423,
+  "panels": [
+    {
+      "label": "steep - high discrimination",
+      "criterion_id": "tb_0245_c06",
+      "a_correctness": 8.025777,
+      "b": 14.683831,
+      "n_observed": 112,
+      "pass_rate": 0.07142857142857142
+    },
+    {
+      "label": "flat - low discrimination",
+      "criterion_id": "tb_0489_c11",
+      "a_correctness": 0.056853,
+      "b": 1.924612,
+      "n_observed": 108,
+      "pass_rate": 0.08333333333333333
+    },
+    {
+      "label": "hard - shifted right",
+      "criterion_id": "tb_0018_c04",
+      "a_correctness": 5.838616,
+      "b": 18.772997,
+      "n_observed": 115,
+      "pass_rate": 0.06956521739130435
+    },
+    {
+      "label": "NEGATIVE discrimination - curve slopes down",
+      "criterion_id": "tb_0025_c06",
+      "a_correctness": -0.167567,
+      "b": 1.853131,
+      "n_observed": 113,
+      "pass_rate": 0.17699115044247787
+    }
+  ]
+}

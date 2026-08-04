@@ -124,6 +124,12 @@ AdaptiveTesting/Inputs/ATLAS/winogrande/*
 !AdaptiveTesting/Inputs/ATLAS/gsm8k/atlas_idx_to_question_id.csv
 !AdaptiveTesting/Inputs/ATLAS/hellaswag/irt_item_parameters_combined.csv
 !AdaptiveTesting/Inputs/ATLAS/hellaswag/atlas_idx_to_question_id.csv
+# 2PL refit of the same HellaSwag item set (upstream experiments/hellaswag_2pl).
+# `g` is present and all-zero, so load_bank reads it unchanged. The bridge is a
+# copy of the 3PL one -- the 2PL fit covers a subset of the same atlas_idx space.
+AdaptiveTesting/Inputs/ATLAS/hellaswag_2pl/*
+!AdaptiveTesting/Inputs/ATLAS/hellaswag_2pl/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/hellaswag_2pl/atlas_idx_to_question_id.csv
 !AdaptiveTesting/Inputs/ATLAS/winogrande/irt_item_parameters_combined.csv
 !AdaptiveTesting/Inputs/ATLAS/winogrande/atlas_idx_to_question_id.csv
 # OpenLM (Open LLM Leaderboard v2) banks promoted into CAT.

@@ -98,8 +98,32 @@ def test_unknown_benchmark_raises() -> None:
 
 def test_bank_dir_defaults_to_subdir(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv(ENV_BANK_DIR, raising=False)
-    assert bank_dir_for(get_benchmark("hellaswag")) == ATLAS_INPUTS_DIR / "hellaswag"
+    assert bank_dir_for(get_benchmark("hellaswag")) == ATLAS_INPUTS_DIR / "hellaswag_2pl"
     assert bank_dir_for(get_benchmark("arc_challenge")) == ATLAS_INPUTS_DIR / "arc"
+
+
+def test_hellaswag_resolves_to_the_2pl_bank(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The 2PL swap is the project standard, so pin it against a silent revert.
+
+    Both entry points read ``bank_subdir``, so this one assertion covers the offline
+    task and the online eval. The 3PL bank is retained on disk but must stay
+    unreferenced by the registry -- reaching it requires an explicit path.
+    """
+    monkeypatch.delenv(ENV_BANK_DIR, raising=False)
+    hs = get_benchmark("hellaswag")
+    assert hs.bank_subdir == "hellaswag_2pl"
+    assert bank_dir_for(hs).name == "hellaswag_2pl"
+    # Sibling banks have no 2PL refit and must not have been swapped along with it.
+    assert {b.name: b.bank_subdir for b in list_benchmarks() if b.name != "hellaswag"} == {
+        "arc_challenge": "arc",
+        "winogrande": "winogrande",
+        "csqa": "csqa",
+        "piqa": "piqa",
+        "gsm8k": "gsm8k",
+        "ifeval": "ifeval",
+        "math": "math",
+        "truthfulqa": "truthfulqa",
+    }
 
 
 def test_explicit_bank_dir_wins(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
