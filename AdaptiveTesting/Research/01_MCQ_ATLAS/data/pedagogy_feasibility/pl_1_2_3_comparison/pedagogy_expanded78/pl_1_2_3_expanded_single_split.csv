@@ -1,0 +1,7 @@
+model_type,se_stop,r,items,mae,frac_reached,kept_items,caveat
+1PL,0.3,0.4571,42.67,0.0648,1.0,384,"CAVEAT: naive seed-7 draw of 12 held-out from 78 spans a narrow accuracy band, which deflates Pearson r; use the controlled and k-fold designs for conclusions"
+2PL,0.3,0.8238,13.33,0.0724,1.0,384,"CAVEAT: naive seed-7 draw of 12 held-out from 78 spans a narrow accuracy band, which deflates Pearson r; use the controlled and k-fold designs for conclusions"
+3PL,0.3,-0.0519,19.5,0.1898,1.0,384,"CAVEAT: naive seed-7 draw of 12 held-out from 78 spans a narrow accuracy band, which deflates Pearson r; use the controlled and k-fold designs for conclusions"
+1PL,0.15,0.7238,274.58,0.0743,0.92,384,"CAVEAT: naive seed-7 draw of 12 held-out from 78 spans a narrow accuracy band, which deflates Pearson r; use the controlled and k-fold designs for conclusions"
+2PL,0.15,0.7272,384.0,0.0842,0.0,384,"CAVEAT: naive seed-7 draw of 12 held-out from 78 spans a narrow accuracy band, which deflates Pearson r; use the controlled and k-fold designs for conclusions"
+3PL,0.15,0.0934,324.33,0.1742,0.17,384,"CAVEAT: naive seed-7 draw of 12 held-out from 78 spans a narrow accuracy band, which deflates Pearson r; use the controlled and k-fold designs for conclusions"

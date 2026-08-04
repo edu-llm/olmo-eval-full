@@ -1,0 +1,10 @@
+benchmark,model_type,n_items_raw,n_items_filtered,kept_items_a_gt0,n_dropped_unusable,a_min,a_max,a_pinned_lo,a_pinned_hi,c_min,c_max,c_pinned_hi,fit_seconds
+pedagogy,1PL,920,318,318,0,1.0,1.0,0,0,0.0,0.0,0,0.9
+pedagogy,2PL,920,318,318,0,0.2,5.0,0,0,0.0,0.0,0,53.5
+pedagogy,3PL,920,318,318,0,0.01,6.0,115,100,0.0,0.5,46,1.9
+piqa,1PL,1838,831,831,0,1.0,1.0,0,0,0.0,0.0,0,0.2
+piqa,2PL,1838,831,831,0,0.2,5.0,0,0,0.0,0.0,0,338.4
+piqa,3PL,1838,831,831,0,0.01,6.0,72,310,0.0,0.5,271,5.1
+socialiqa,1PL,1954,969,969,0,1.0,1.0,0,0,0.0,0.0,0,0.2
+socialiqa,2PL,1954,969,969,0,0.2,5.0,0,0,0.0,0.0,0,196.2
+socialiqa,3PL,1954,969,969,0,0.01,6.0,93,424,0.0,0.5,247,6.1

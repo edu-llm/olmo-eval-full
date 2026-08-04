@@ -171,7 +171,7 @@ def main():
             hi = max(xte.max(), yte.max(), pred_cal_train_fit.max()) + 0.03
             # Left: raw predicted (y) vs actual (x), with fitted line.
             axL = axes[0]
-            axL.plot([lo, hi], [lo, hi], "--", color="gray", label="perfect (y=x)")
+            axL.plot([lo, hi], [lo, hi], "--", color="gray", label="perfect prediction (y=x)")
             axL.scatter(yte, xte, s=70, color="#1f77b4", edgecolor="black", zorder=3,
                         label="test models")
             xs = np.linspace(lo, hi, 100)
@@ -179,20 +179,20 @@ def main():
             # fit act = a*pred + b, so draw pred-axis line act_hat = a*pred+b as pred vs act.
             axL.plot(a_tr * xs + b_tr, xs, "-", color="#d62728",
                      label=f"train fit: act={a_tr:.2f}*pred+{b_tr:.2f}")
-            axL.set_xlabel(f"actual full {BENCH} accuracy")
-            axL.set_ylabel(f"raw CAT-predicted ({model_name}, SE<{se_stop})")
+            axL.set_xlabel(f"actual full {BENCH} accuracy (fraction correct)")
+            axL.set_ylabel(f"raw CAT-predicted accuracy ({model_name}, SE<={se_stop:g})")
             axL.set_xlim(lo, hi); axL.set_ylim(lo, hi)
-            axL.set_title(f"RAW  r={r:.3f}  MAE={mae_raw:.4f}")
+            axL.set_title(f"Raw prediction: r={r:.3f}, MAE={mae_raw:.4f}")
             axL.grid(True, alpha=0.3); axL.legend(loc="upper left", fontsize=8)
             # Right: calibrated predicted vs actual.
             axR = axes[1]
-            axR.plot([lo, hi], [lo, hi], "--", color="gray", label="perfect (y=x)")
+            axR.plot([lo, hi], [lo, hi], "--", color="gray", label="perfect prediction (y=x)")
             axR.scatter(yte, pred_cal_train_fit, s=70, color="#2ca02c", edgecolor="black",
                         zorder=3, label="test models (calibrated)")
-            axR.set_xlabel(f"actual full {BENCH} accuracy")
-            axR.set_ylabel(f"calibrated predicted ({model_name}, SE<{se_stop})")
+            axR.set_xlabel(f"actual full {BENCH} accuracy (fraction correct)")
+            axR.set_ylabel(f"calibrated predicted accuracy ({model_name}, SE<={se_stop:g})")
             axR.set_xlim(lo, hi); axR.set_ylim(lo, hi)
-            axR.set_title(f"CALIBRATED (train-fit)  r={r:.3f}  MAE={mae_train_fit:.4f} "
+            axR.set_title(f"Calibrated (train fit): r={r:.3f}, MAE={mae_train_fit:.4f} "
                           f"({rows[-3]['pct_mae_reduction']:.0f}% lower)")
             axR.grid(True, alpha=0.3); axR.legend(loc="upper left", fontsize=8)
             fig.suptitle(f"{BENCH} {model_name} linear calibration, {len(test)} held-out models "

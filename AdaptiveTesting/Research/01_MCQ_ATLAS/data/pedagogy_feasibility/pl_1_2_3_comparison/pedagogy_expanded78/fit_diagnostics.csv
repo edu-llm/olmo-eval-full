@@ -1,0 +1,7 @@
+pool,model_type,n_train,n_items_raw,kept_filtered,bank_items,n_dropped_unusable,a_min,a_max,a_pinned_lo,a_pinned_hi,c_min,c_max,c_pinned_hi,fit_seconds
+calib40,1PL,40,920,318,318,0,1.0,1.0,0,0,0.0,0.0,0,0.7
+calib40,2PL,40,920,318,318,0,0.2,5.0,0,0,0.0,0.0,0,62.6
+calib40,3PL,40,920,318,318,0,0.01,6.0,113,102,0.0,0.5,45,2.0
+calib66,1PL,66,920,366,366,0,1.0,1.0,0,0,0.0,0.0,0,0.0
+calib66,2PL,66,920,366,366,0,0.2,5.0,0,0,0.0,0.0,0,54.9
+calib66,3PL,66,920,366,366,0,0.01,6.0,68,82,0.0,0.5,51,2.3
