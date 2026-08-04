@@ -28,8 +28,11 @@ checkpoint is saved.
 
 Scope today: **4 benchmarks by default** — `atlas_arc` (ARC-Challenge),
 `atlas_hellaswag`, `atlas_winogrande` (MCQ log-likelihood), and `atlas_gsm8k`
-(generative exact-match), each backed by a calibrated ATLAS 3PL bank vendored in
-this repo.
+(generative exact-match), each backed by a calibrated ATLAS bank vendored in this
+repo. HellaSwag is on a **2PL** bank (the project standard, `hellaswag_2pl/`); the
+other three are the upstream 3PL calibrations. Nothing in the runtime branches on
+which, but a HellaSwag theta from this bank is not comparable to one recorded
+against the retained 3PL bank.
 
 Two more are wired and available via `--evals` (opt-in; both are slower
 generative benchmarks calibrated on Open LLM Leaderboard v2 responses):
@@ -129,10 +132,13 @@ uv run olmo-eval run-external \
 
 These evals only run through `run-external` (vLLM), which needs HF-format weights —
 hence the conversion step. Native OLMo-core weights are not loadable by vLLM directly.
-Each `atlas_*` eval joins its calibrated 3PL bank
-(`AdaptiveTesting/Inputs/ATLAS/<benchmark>/`) to the benchmark's questions via
+Each `atlas_*` eval joins its calibrated bank to the benchmark's questions via
 `atlas_idx_to_question_id.csv`; only items present in both the bank and the task are
-eligible for selection.
+eligible for selection. The bank directory comes from `bank_subdir` in
+`src/olmo_eval/adaptive/benchmarks.py` and is usually
+`AdaptiveTesting/Inputs/ATLAS/<benchmark>/`, but not always — HellaSwag resolves to
+`hellaswag_2pl/`. Read the registry rather than assuming the directory matches the
+benchmark name.
 
 ## Additional resources
 
