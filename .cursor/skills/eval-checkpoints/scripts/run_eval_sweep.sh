@@ -7,52 +7,126 @@
 #
 # Usage:
 #   run_eval_sweep.sh --checkpoint-root s3://B/checkpoints/EXP \
-#     --s3-out s3://B/evals/EXP [--benchmarks "a b c"]
+#     --s3-out s3://B/evals/EXP [--group NAME | --benchmarks "a b c"]
 #
+# ---------------------------------------------------------------------------
+# INPUTS
+# ---------------------------------------------------------------------------
+# Required:
+#   --s3-out s3://BUCKET/PREFIX     where results are written
+#   and one of:
+#   --checkpoint-root s3://.../checkpoints
+#                                   a prefix whose immediate children are the
+#                                   checkpoints (stepN/ ...). Local dirs work too.
+#   --checkpoints "A B C"           an explicit space-separated list
+#
+# Each checkpoint must contain config.json plus either model_and_optim/ (native
+# OLMo-core, converted automatically) or *.safetensors (HF, used as-is).
+#
+# Optional -- what to run:
+#   --group NAME                    a named benchmark set (default: "default")
+#   --benchmarks "a b c"            explicit tasks; conflicts with --group
+#   --allow-any-task                permit tasks outside the registry
+# Optional -- which checkpoints:
+#   --latest N                      keep the N highest-step checkpoints
+#   --pattern REGEX                 filter on the checkpoint directory name
+# Optional -- how to run:
+#   --tp N                          vLLM tensor-parallel size (default 1)
+#   --gpu-memory-utilization 0.N    VRAM fraction; lower it to share a GPU
+#   --limit N                       cap instances per task (smoke tests only)
+#   --tokenizer ID                  HF tokenizer, if the config names none
+#   --run-id-prefix STR             prefix for result subdirectories
+#   --bootstrap                     install the environment first
+#   --keep-local                    keep the local work tree
+#   --dry-run                       print the plan and cost, then exit
+#
+# From the environment, not flags:
+#   a checkout of this repo (or $OLMO_EVAL_ROOT), the aws CLI, AWS credentials
+#   with read on the checkpoints and s3:PutObject on --s3-out, one GPU, and Hub
+#   access with room in $HF_HOME. $AWS_REGION defaults to us-east-1.
+#   $OLMO_CORE_CONVERT is an optional override for the bundled converter.
+#
+# ---------------------------------------------------------------------------
+# OUTPUTS
+# ---------------------------------------------------------------------------
+# Per checkpoint, under <s3-out>/<run-id>/:
+#   metrics.json                    one entry per benchmark
+#   predictions/, requests/         per-instance JSONL
+#   logs/                           vLLM server log
+#   run_provenance.json             checkpoint, benchmarks, status, args, git sha
+#   _READY | _FAILED                always one or the other
+# At the sweep root:
+#   accuracy_wide.csv               one row per checkpoint  <- the deliverable
+#   accuracy.csv                    long form, one row per metric
+#   accuracy.json, sweep.log
+#
+# Exit codes: 0 all succeeded, 1 some checkpoint failed, 2 bad arguments,
+# 3 preflight failed (missing dependency, before anything spends).
+#
+# ---------------------------------------------------------------------------
 # Every benchmark runs its complete evaluation split, which is expensive. Always
 # preview with --dry-run first: it prints the resolved list and a cost estimate
 # without spending anything. Use --latest N to cap the sweep.
 #
-# Which benchmarks exist, what they cost, and which splits they score all come
-# from scripts/benchmarks.json, documented in BENCHMARKS.md.
+# Which benchmarks exist, which groups they belong to, what they cost, and which
+# splits they score all come from scripts/benchmarks.json, documented in
+# BENCHMARKS.md. With neither --group nor --benchmarks, the registry's "default"
+# group runs.
+#
+# No pre-built container image is required. On a bare Linux + CUDA box, run once
+# with --bootstrap (or run scripts/bootstrap.sh yourself) to install the
+# environment, then sweep as normal.
 set -euo pipefail
 
 CHECKPOINTS=""
 CHECKPOINT_ROOT=""
 BENCHMARKS=""
+GROUP=""
 S3_OUT=""
 LIMIT=""
 TP="1"
+GPU_MEM=""
 TOKENIZER=""
 PATTERN=""
 LATEST=""
 RUN_ID_PREFIX=""
 ALLOW_ANY_TASK="0"
+BOOTSTRAP="0"
 KEEP_LOCAL="0"
 DRY_RUN="0"
 REGION="${AWS_REGION:-us-east-1}"
-CONVERT_SCRIPT="${OLMO_CORE_CONVERT:-}"
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="${OLMO_EVAL_ROOT:-$(cd "${SKILL_DIR}/../../.." && pwd)}"
 REGISTRY="${SKILL_DIR}/scripts/benchmarks.json"
+BUNDLED_CONVERT="${SKILL_DIR}/scripts/convert_to_hf.py"
+
+# $OLMO_CORE_CONVERT overrides; otherwise the bundled library-only converter is
+# used, so nothing has to clone OLMo-core at run time.
+CONVERT_SCRIPT="${OLMO_CORE_CONVERT:-${BUNDLED_CONVERT}}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --checkpoints) CHECKPOINTS="$2"; shift 2 ;;
     --checkpoint-root) CHECKPOINT_ROOT="$2"; shift 2 ;;
     --benchmarks) BENCHMARKS="$2"; shift 2 ;;
+    --group) GROUP="$2"; shift 2 ;;
     --s3-out) S3_OUT="$2"; shift 2 ;;
     --limit) LIMIT="$2"; shift 2 ;;
     --tp) TP="$2"; shift 2 ;;
+    --gpu-memory-utilization) GPU_MEM="$2"; shift 2 ;;
     --tokenizer) TOKENIZER="$2"; shift 2 ;;
     --pattern) PATTERN="$2"; shift 2 ;;
     --latest) LATEST="$2"; shift 2 ;;
     --run-id-prefix) RUN_ID_PREFIX="$2"; shift 2 ;;
     --allow-any-task) ALLOW_ANY_TASK="1"; shift ;;
+    --bootstrap) BOOTSTRAP="1"; shift ;;
     --keep-local) KEEP_LOCAL="1"; shift ;;
     --dry-run) DRY_RUN="1"; shift ;;
-    -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
+    # Print the header block: every comment line after the shebang, stopping at
+    # the first line of code. Derived rather than a fixed line range, which drifts
+    # silently every time the header changes length.
+    -h|--help) awk 'NR>1 && /^#/ {print; next} NR>1 {exit}' "$0"; exit 0 ;;
     *) echo "unknown arg: $1" >&2; exit 2 ;;
   esac
 done
@@ -71,27 +145,87 @@ integer() { [[ "$2" =~ ^[0-9]+$ ]] || { echo "$1 must be an integer, got '$2'" >
 integer --tp "${TP}"
 [[ -z "${LIMIT}" ]] || integer --limit "${LIMIT}"
 [[ -z "${LATEST}" ]] || integer --latest "${LATEST}"
+if [[ -n "${GPU_MEM}" ]]; then
+  [[ "${GPU_MEM}" =~ ^0?\.[0-9]+$|^1(\.0+)?$ ]] || {
+    echo "--gpu-memory-utilization must be a fraction in (0,1], got '${GPU_MEM}'" >&2
+    exit 2
+  }
+fi
 
-# Resolve the request against the registry: expand an empty --benchmarks to
-# everything known, reject typos, and total up the cost. Validating here rather
-# than letting olmo-eval reject an unknown task matters because olmo-eval only
-# does so after the checkpoint has been downloaded and possibly converted.
+# Bootstrap before anything else, since the preflight below tests what it installs.
+if [[ "${BOOTSTRAP}" == "1" ]]; then
+  echo "running bootstrap (this installs the environment; see scripts/bootstrap.sh)"
+  OLMO_EVAL_ROOT="${REPO_ROOT}" bash "${SKILL_DIR}/scripts/bootstrap.sh"
+fi
+
+# Preflight. The sweep's first real work is an S3 listing followed by a
+# multi-gigabyte checkpoint download, and only then does it invoke olmo-eval. A
+# missing dependency discovered at that point has already cost time and transfer,
+# so check the whole toolchain up front.
+missing=()
+command -v uv >/dev/null 2>&1 || missing+=("uv")
+command -v aws >/dev/null 2>&1 || missing+=("aws CLI")
+command -v python3 >/dev/null 2>&1 || missing+=("python3")
+if command -v uv >/dev/null 2>&1; then
+  if ! (cd "${REPO_ROOT}" && uv run python -c 'import olmo_eval' >/dev/null 2>&1); then
+    missing+=("an importable olmo_eval in ${REPO_ROOT}")
+  fi
+fi
+if [[ ${#missing[@]} -gt 0 ]]; then
+  {
+    echo "preflight failed; missing: ${missing[*]}"
+    echo
+    echo "This skill needs no container image, but it does need its environment"
+    echo "installed once on this box. Run:"
+    echo "  bash ${SKILL_DIR}/scripts/bootstrap.sh"
+    echo "or re-run this script with --bootstrap."
+    echo
+    echo "If uv was just installed, its bin directory may not be on PATH yet:"
+    echo "  export PATH=\"\${HOME}/.local/bin:\${PATH}\""
+  } >&2
+  exit 3
+fi
+
+# Resolve the request against the registry: pick an explicit --benchmarks list, a
+# named --group, or the registry's "default" group; reject typos; total up the
+# cost. Validating here rather than letting olmo-eval reject an unknown task
+# matters because olmo-eval only does so after the checkpoint has been downloaded
+# and possibly converted, by which point the time is already spent.
 #
-# Emits two lines: the resolved benchmark names, then
-# "<instances> <prompts> <unknown_count>".
+# Emits three lines: the resolved benchmark names, then
+# "<instances> <prompts> <unknown_count>", then a description of what was chosen.
+if [[ -n "${BENCHMARKS}" && -n "${GROUP}" ]]; then
+  echo "pass --benchmarks or --group, not both" >&2; exit 2
+fi
 if ! RESOLVED="$(
-  BENCHMARKS="${BENCHMARKS}" ALLOW_ANY="${ALLOW_ANY_TASK}" REGISTRY="${REGISTRY}" \
+  BENCHMARKS="${BENCHMARKS}" GROUP="${GROUP}" ALLOW_ANY="${ALLOW_ANY_TASK}" \
+  REGISTRY="${REGISTRY}" \
   python3 - <<'PY'
 import json, os, sys
 
 reg = json.load(open(os.environ["REGISTRY"], encoding="utf-8"))
 known = reg["benchmarks"]
+groups = reg.get("groups", {})
 aliases = reg.get("aliases", {})
 allow_any = os.environ["ALLOW_ANY"] == "1"
 
-requested = os.environ["BENCHMARKS"].split() or sorted(known)
+explicit = os.environ["BENCHMARKS"].split()
+group = os.environ["GROUP"].strip()
+
+if explicit:
+    requested, source = explicit, "explicit --benchmarks"
+else:
+    name = group or "default"
+    if name not in groups:
+        print(f"unknown group '{name}'", file=sys.stderr)
+        print("known groups: " + " ".join(sorted(groups)), file=sys.stderr)
+        print("See BENCHMARKS.md for what each group covers.", file=sys.stderr)
+        raise SystemExit(2)
+    requested = list(groups[name])
+    source = f"group '{name}'" + ("" if group else " (registry default)")
+
 if not requested:
-    print("benchmark registry is empty", file=sys.stderr)
+    print("nothing to run: the resolved benchmark list is empty", file=sys.stderr)
     raise SystemExit(2)
 
 instances = prompts = 0
@@ -114,6 +248,7 @@ if unknown and not allow_any:
                 file=sys.stderr,
             )
     print("known: " + " ".join(sorted(known)), file=sys.stderr)
+    print("known groups: " + " ".join(sorted(groups)), file=sys.stderr)
     print("See BENCHMARKS.md for what each one scores.", file=sys.stderr)
     print(
         "To run any other registered olmo-eval task, pass --allow-any-task "
@@ -124,14 +259,20 @@ if unknown and not allow_any:
 
 print(" ".join(requested))
 print(instances, prompts, len(unknown))
+print(source)
 PY
 )"; then
   exit 2
 fi
 
-readarray -t RESOLVED_LINES <<< "${RESOLVED}"
+# tr -d '\r': python writes CRLF when stdout is a pipe on a Windows host, and
+# `readarray -t` strips only the LF. A surviving CR would ride along on the last
+# benchmark name (producing a `-t name<CR>` argument) and on N_UNKNOWN (breaking
+# the numeric comparison below).
+readarray -t RESOLVED_LINES < <(printf '%s' "${RESOLVED}" | tr -d '\r')
 read -r -a BENCH_LIST <<< "${RESOLVED_LINES[0]}"
 read -r TOTAL_INSTANCES TOTAL_PROMPTS N_UNKNOWN <<< "${RESOLVED_LINES[1]}"
+BENCH_SOURCE="${RESOLVED_LINES[2]}"
 
 WORK="$(mktemp -d)"
 LOG="${WORK}/sweep.log"
@@ -207,7 +348,7 @@ if [[ -n "${LATEST}" && ${#CKPT_LIST[@]} -gt ${LATEST} ]]; then
   CKPT_LIST=("${CKPT_LIST[@]: -${LATEST}}")
 fi
 
-log "benchmarks (${#BENCH_LIST[@]}): ${BENCH_LIST[*]}"
+log "benchmarks (${#BENCH_LIST[@]}) from ${BENCH_SOURCE}: ${BENCH_LIST[*]}"
 log "checkpoints (${#CKPT_LIST[@]}):"
 for c in "${CKPT_LIST[@]}"; do log "  ${c}"; done
 
@@ -263,9 +404,9 @@ is_native_olmo_core() {
 write_provenance() {
   local status="$1"
   RUN_ID="${RUN_ID}" CKPT="${CKPT}" DEST="${DEST}" OUT="${OUT}" \
-  BENCHES="${BENCH_LIST[*]}" STATUS="${status}" \
+  BENCHES="${BENCH_LIST[*]}" BENCH_SOURCE="${BENCH_SOURCE}" STATUS="${status}" \
   GIT_SHA="$(git -C "${REPO_ROOT}" rev-parse HEAD 2>/dev/null || echo unknown)" \
-  LIMIT="${LIMIT}" TP="${TP}" \
+  LIMIT="${LIMIT}" TP="${TP}" GPU_MEM="${GPU_MEM}" \
   python3 - <<'PY' || log "WARNING: could not write run_provenance.json"
 import json, os
 from pathlib import Path
@@ -275,9 +416,11 @@ prov = {
     "checkpoint": env["CKPT"],
     "s3_dest": env["DEST"],
     "benchmarks": env["BENCHES"].split(),
+    "benchmark_selection": env["BENCH_SOURCE"],
     "status": env["STATUS"],
     "limit": int(env["LIMIT"]) if env["LIMIT"] else None,
     "tensor_parallel_size": int(env["TP"]),
+    "gpu_memory_utilization": float(env["GPU_MEM"]) if env["GPU_MEM"] else None,
     "git_sha": env["GIT_SHA"],
 }
 Path(env["OUT"], "run_provenance.json").write_text(
@@ -328,8 +471,11 @@ for CKPT in "${CKPT_LIST[@]}"; do
 
   MODEL="${LOCAL_CKPT}"
   if is_native_olmo_core "${LOCAL_CKPT}"; then
-    if [[ -z "${CONVERT_SCRIPT}" ]]; then
-      log "[${RUN_ID}] native OLMo-core checkpoint but OLMO_CORE_CONVERT is unset; skipping"
+    # CONVERT_SCRIPT defaults to the bundled library-only converter, so this only
+    # trips if that file is missing or an $OLMO_CORE_CONVERT override points
+    # somewhere that does not exist.
+    if [[ ! -f "${CONVERT_SCRIPT}" ]]; then
+      log "[${RUN_ID}] native OLMo-core checkpoint but no converter at ${CONVERT_SCRIPT}; skipping"
       fail_early "no_converter"
       continue
     fi
@@ -341,7 +487,9 @@ for CKPT in "${CKPT_LIST[@]}"; do
     if [[ -n "${TOKENIZER}" ]]; then
       conv+=(-t "${TOKENIZER}")
     fi
-    if ! python3 "${CONVERT_SCRIPT}" "${conv[@]}"; then
+    # Through `uv run` so the converter sees the synced environment: it imports
+    # olmo_core and torch, which are project dependencies rather than system ones.
+    if ! (cd "${REPO_ROOT}" && uv run python "${CONVERT_SCRIPT}" "${conv[@]}"); then
       log "[${RUN_ID}] FAILED conversion; skipping"
       fail_early "conversion_failed"
       continue
@@ -361,6 +509,9 @@ for CKPT in "${CKPT_LIST[@]}"; do
   args=(--harness default -o provider.kind=vllm_server)
   if [[ "${TP}" != "1" ]]; then
     args+=(-o "provider.kwargs.tensor_parallel_size=${TP}")
+  fi
+  if [[ -n "${GPU_MEM}" ]]; then
+    args+=(-o "provider.kwargs.gpu_memory_utilization=${GPU_MEM}")
   fi
   for b in "${BENCH_LIST[@]}"; do
     args+=(-t "${b}")

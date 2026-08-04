@@ -11,54 +11,110 @@
     "           estimate can be checked against the task definition.",
     "metrics:   metric keys the task emits in metrics.json. Tasks with more than",
     "           one get qualified column names in accuracy_wide.csv.",
+    "kind:      mcq or generative. Affects how to read the score and how the",
+    "           prompt count relates to the instance count.",
     "",
+    "groups:    named sets, selectable with --group. 'default' is what runs when",
+    "           neither --group nor --benchmarks is given.",
     "aliases:   common wrong names, mapped to the real olmo-eval task name. Used",
     "           only to produce a helpful error; they are never runnable.",
     "",
     "See BENCHMARKS.md for where these numbers come from and why these splits."
   ],
+  "groups": {
+    "default": [
+      "csqa",
+      "hellaswag",
+      "piqa",
+      "socialiqa",
+      "arc_easy"
+    ],
+    "reasoning": [
+      "csqa",
+      "hellaswag",
+      "piqa",
+      "socialiqa",
+      "arc_easy"
+    ],
+    "fact_proxy": [
+      "naturalqs",
+      "jeopardy"
+    ],
+    "all": [
+      "csqa",
+      "hellaswag",
+      "piqa",
+      "socialiqa",
+      "arc_easy",
+      "naturalqs",
+      "jeopardy"
+    ]
+  },
   "benchmarks": {
     "hellaswag": {
       "instances": 10042,
       "choices": 4,
       "split": "validation",
-      "metrics": ["accuracy"]
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "mcq"
     },
     "piqa": {
       "instances": 1838,
       "choices": 2,
       "split": "validation",
-      "metrics": ["accuracy"]
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "mcq"
     },
     "arc_easy": {
       "instances": 2376,
       "choices": 4,
       "split": "test",
-      "metrics": ["accuracy"]
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "mcq"
     },
     "csqa": {
       "instances": 1221,
       "choices": 5,
       "split": "validation",
-      "metrics": ["accuracy"]
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "mcq"
     },
     "socialiqa": {
       "instances": 1954,
       "choices": 3,
       "split": "validation",
-      "metrics": ["accuracy"]
+      "metrics": [
+        "accuracy"
+      ],
+      "kind": "mcq"
     },
     "naturalqs": {
       "instances": 3610,
       "choices": 1,
       "split": "validation",
-      "metrics": ["f1", "accuracy"]
+      "metrics": [
+        "f1",
+        "accuracy"
+      ],
+      "kind": "generative"
     },
     "jeopardy": {
       "instances": 2117,
       "choices": 1,
       "split": "train",
-      "metrics": ["f1", "accuracy"]
+      "metrics": [
+        "f1",
+        "accuracy"
+      ],
+      "kind": "generative"
     }
   },
   "aliases": {

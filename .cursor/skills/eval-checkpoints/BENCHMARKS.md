@@ -8,11 +8,54 @@ The short version of the recurring question: the skill runs the complete
 designated **evaluation** split for every benchmark, and the parts it leaves out
 are left out because they are unlabeled or because they are training data.
 
+## Scope: what ships today
+
+The registry holds seven benchmarks, organized into groups. **Running with no
+flags gets the `default` group: the five multiple-choice reasoning tasks.** They
+need no setup beyond the skill itself — no API keys, no new task code, no data
+sourcing.
+
+| Group | Benchmarks | Status |
+|---|---|---|
+| `default` / `reasoning` | `csqa` `hellaswag` `piqa` `socialiqa` `arc_easy` | ready, API-free |
+| `fact_proxy` | `naturalqs` `jeopardy` | ready, API-free; generative, see the metric notes |
+| `all` | all seven | ready |
+
+`fact_proxy` is separated because those two are *proxies* for fact recall rather
+than purpose-built fact benchmarks. They work today and cost nothing extra, so
+they are a reasonable first read on whether a model recalls facts, but they are
+not what a fact-recall study would report.
+
+### What is deliberately not here yet
+
+A fact-recall suite (TriviaQA, PopQA, SimpleQA, T-REx exact-match, FactScore) is
+the eventual target. None of it is wired, and the gap is larger than it looks:
+
+- **TriviaQA, PopQA, T-REx, FactScore have no task file in olmo-eval at all.**
+  Each needs writing, and T-REx additionally needs a data source chosen, since
+  there is no canonical evaluation split.
+- **SimpleQA exists but the bare task scores nothing.** `Task.metrics` defaults to
+  `()` and `simpleqa.py` never sets it; the only metric is attached by the
+  `simpleqa:judge` variant. Running `-t simpleqa` would do full inference and
+  report no score. Use `-t simpleqa:judge`.
+- **SimpleQA and FactScore are LLM-judge graded**, via `build_openai_judge_fn`, so
+  they need an API key in the container, outbound network access, and a per-call
+  budget. FactScore additionally needs a retrieval corpus. This is a different
+  operational posture from the API-free tasks above.
+- **The prompt-count heuristic below does not transfer to them.** Generative tasks
+  send one prompt per instance rather than one per answer choice, but generate
+  many tokens instead of scoring a fixed continuation, so they are cheaper in
+  prompt count and considerably slower per prompt.
+
+When those land, add registry entries and extend a `factual` group. Until then
+they can be run with `--allow-any-task`, which skips validation and gives no cost
+estimate.
+
 ## The registry
 
 `scripts/benchmarks.json` is the only place benchmark names appear in the skill's
-code. `run_eval_sweep.sh` reads it to expand an empty `--benchmarks` to
-everything known, reject typos before any spend, and total up the cost estimate.
+code. `run_eval_sweep.sh` reads it to resolve `--group` and `--benchmarks`, reject
+typos before any spend, and total up the cost estimate.
 
 Each entry carries:
 
@@ -24,14 +67,21 @@ Each entry carries:
   be checked against the task definition.
 - `metrics` — the metric keys the task emits. Entries with more than one get
   qualified column names in `accuracy_wide.csv`.
+- `kind` — `mcq` or `generative`. Affects how to read the score and how the prompt
+  count relates to the instance count.
 
-Two side tables: `aliases` maps common wrong names to the real task name purely
-to produce a helpful error, and `limit_unsafe` flags tasks whose split selection
-changes when `--limit` is set.
+Three side tables: `groups` names selectable sets (`default` is what runs when
+neither `--group` nor `--benchmarks` is given), `aliases` maps common wrong names
+to the real task name purely to produce a helpful error, and `limit_unsafe` flags
+tasks whose split selection changes when `--limit` is set.
 
-**To add a benchmark**, add an entry and nothing else. To run a task that is not
-in the registry, pass `--allow-any-task`; it will run, but no cost estimate is
-available for it.
+**To add a benchmark**, add an entry and put it in a group. Nothing else changes —
+no shell edits, no `SKILL.md` edits. To run a task that is not in the registry,
+pass `--allow-any-task`; it will run, but no cost estimate is available for it.
+
+Which selection was used is recorded in each run's `run_provenance.json` as
+`benchmark_selection`, and printed in the sweep log, so a result set is always
+traceable to how it was requested.
 
 ## Task names
 
