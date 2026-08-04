@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-03T19:35:44.267589+00:00",
+  "purpose": "scenario-level OOS k-fold estimator recovery (real engine on held-out models)",
+  "bank": "data/TutorEval/rubrics_qmatrix_final_unidim_fitted.jsonl",
+  "matrix": "runs/judge/TutorEval/response_matrix.csv",
+  "dims": [
+    "ability"
+  ],
+  "k": 5,
+  "seed": 20260729,
+  "n_models": 52,
+  "config": {
+    "fit_grid": 7,
+    "ridge": 0.01,
+    "eap_grid": 61,
+    "max_se": 0.3,
+    "min_evals_per_skill": 20,
+    "max_scenarios": 50
+  },
+  "mean_criteria_administered": 20.384615384615383,
+  "mean_scenarios_administered": 12.923076923076923,
+  "oos_recovery": {
+    "online": {
+      "ability": {
+        "slope": 0.5794695231433129,
+        "r": 0.9135086713533848,
+        "gap_worst12": 1.3244880463001725,
+        "n": 52
+      }
+    },
+    "batch": {
+      "ability": {
+        "slope": 0.6966617635776621,
+        "r": 0.9477447597556823,
+        "gap_worst12": 0.8769224085859726,
+        "n": 52
+      }
+    },
+    "mwle": {
+      "ability": {
+        "slope": 0.7478546718587833,
+        "r": 0.9559870567695382,
+        "gap_worst12": 0.7091826651477894,
+        "n": 52
+      }
+    }
+  }
+}

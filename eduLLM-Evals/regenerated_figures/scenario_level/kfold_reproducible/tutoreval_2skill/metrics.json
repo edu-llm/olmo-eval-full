@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-08-03T20:08:45.741927+00:00",
+  "purpose": "scenario-level OOS k-fold estimator recovery (real engine on held-out models)",
+  "bank": "data/TutorEval/rubrics_qmatrix_final_2skill_fitted.jsonl",
+  "matrix": "runs/judge/TutorEval/response_matrix.csv",
+  "dims": [
+    "conceptual_understanding",
+    "quantitative_procedural"
+  ],
+  "k": 5,
+  "seed": 20260729,
+  "n_models": 52,
+  "config": {
+    "fit_grid": 7,
+    "ridge": 0.01,
+    "eap_grid": 61,
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50
+  },
+  "mean_criteria_administered": 34.23076923076923,
+  "mean_scenarios_administered": 19.21153846153846,
+  "oos_recovery": {
+    "online": {
+      "conceptual_understanding": {
+        "slope": 0.4302470871690902,
+        "r": 0.850585407551783,
+        "gap_worst12": 1.7763620933969746,
+        "n": 52
+      },
+      "quantitative_procedural": {
+        "slope": 0.7502513184521763,
+        "r": 0.957221644649582,
+        "gap_worst12": 0.4699150393084491,
+        "n": 52
+      }
+    },
+    "batch": {
+      "conceptual_understanding": {
+        "slope": 0.5726628208839075,
+        "r": 0.9062649267371832,
+        "gap_worst12": 1.2527440710958566,
+        "n": 52
+      },
+      "quantitative_procedural": {
+        "slope": 0.8461191073533093,
+        "r": 0.9739483784277843,
+        "gap_worst12": 0.15895428811495627,
+        "n": 52
+      }
+    },
+    "mwle": {
+      "conceptual_understanding": {
+        "slope": 0.6699015114478254,
+        "r": 0.9122363811258083,
+        "gap_worst12": 0.9274359209591846,
+        "n": 52
+      },
+      "quantitative_procedural": {
+        "slope": 0.9356530722490979,
+        "r": 0.9721259213264611,
+        "gap_worst12": -0.08822444859629096,
+        "n": 52
+      }
+    }
+  }
+}
