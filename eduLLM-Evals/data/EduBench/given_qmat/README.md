@@ -1,1 +1,0 @@
-This one generates rubrics/scenarios based on the q-matrix given in the paper.
