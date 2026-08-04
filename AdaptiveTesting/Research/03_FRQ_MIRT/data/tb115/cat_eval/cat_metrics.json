@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-02T20:34:49.724220+00:00",
+  "generated_at": "2026-08-02T22:32:07.257172+00:00",
   "config": {
-    "bank": "AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/calibration_mirt_115_2skill.csv",
-    "matrix": "AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/response_matrix_115.csv",
+    "bank": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/calibration_mirt_115_2skill.csv",
+    "matrix": "/Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Research/03_FRQ_MIRT/data/tb115/response_matrix_115.csv",
     "kfold_dir": "/Users/arhant/Documents/EDLM/olmo-eval-full/eduLLM-Evals/staging/kfold_full",
     "grid": 7,
     "se_target": 0.3,
