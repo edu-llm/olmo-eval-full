@@ -197,3 +197,6 @@ data/TutorEval/scenarios_reworded.jsonl
 
 # cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
 biggen_results_cache.parquet
+
+# Large merged judge-verdict dumps (hundreds of MB; live in S3 / regenerable from raw shards)
+tutorbench_tb33_grading/verdicts_merged/verdicts.jsonl

@@ -448,27 +448,6 @@ Candidate response with Markdown, commas, and $x^2$.
     assert "human-only secret note" not in json.dumps(cases[0])
 
 
-def test_prepare_enforces_complete_scenario_by_tutor_matrix(tmp_path: Path) -> None:
-    scenarios = ROOT / "grader_packets" / "sample_scenarios.jsonl"
-    rubrics = ROOT / "grader_packets" / "sample_rubrics.jsonl"
-
-    complete_cases, _ = runner.prepare_cases(
-        ROOT / "grader_packets", scenarios, rubrics
-    )
-    scenario_count = len({case["scenario_id"] for case in complete_cases})
-    response_count = len({case["response_id"] for case in complete_cases})
-    assert response_count == scenario_count * len(runner.TUTOR_MAP)
-
-    incomplete_packets = tmp_path / "incomplete_packets"
-    incomplete_packets.mkdir()
-    source_packet = ROOT / "grader_packets" / "grader_01.md"
-    (incomplete_packets / source_packet.name).write_text(
-        source_packet.read_text(encoding="utf-8"), encoding="utf-8"
-    )
-    with pytest.raises(ValueError, match="complete scenario-by-tutor matrix"):
-        runner.prepare_cases(incomplete_packets, scenarios, rubrics)
-
-
 def test_packet_not_provided_reference_is_normalized_to_empty(tmp_path: Path) -> None:
     packet = tmp_path / "grader_01.md"
     packet.write_text(

@@ -82,7 +82,7 @@ from tutor_cat.schemas import Rubric, Scenario  # noqa: E402
 DEFAULT_STAGING = ROOT / "staging"
 DEFAULT_JUDGE_CONFIG = ROOT / "judge_frozen.yaml"
 DEFAULT_APP_CONFIG = ROOT / "config.yaml"
-TEAMMATE_RUNNER = ROOT / "aws_judge_handoff" / "scripts" / "run_judge_validation.py"
+TEAMMATE_RUNNER = ROOT / "scripts" / "run_judge_validation.py"
 
 JUDGE_INPUTS_NAME = "judge_inputs.jsonl"
 JUDGE_INPUTS_MANIFEST_NAME = "judge_inputs_manifest.json"
