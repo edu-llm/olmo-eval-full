@@ -284,10 +284,10 @@ def main() -> None:
     ax.set_aspect("equal", adjustable="box")
     bank_note = os.environ.get(
         "ATLAS_TITLE_NOTE",
-        "0-shot responses × 25-shot bank",
+        "0-shot responses, 25-shot bank",
     )
     ax.set_title(
-        f"ATLAS 3PL params → {len(held)} held-out models (not in ATLAS)\n"
+        f"ATLAS 3PL params on {len(held)} held-out models (not in ATLAS)\n"
         f"Pearson r={r:.3f}  MAE={mae:.3f}  RMSE={rmse:.3f}  "
         f"avg {avg_items:.0f} items  |  {bank_note}"
     )

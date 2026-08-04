@@ -249,10 +249,10 @@ def make_figures(df: pd.DataFrame, agg: dict, A: np.ndarray, b: np.ndarray,
         ax.plot([lo, hi], [lo, hi], ls="--", color="gray", lw=1, label="y = x")
         ax.set_xlim(lo, hi)
         ax.set_ylim(lo, hi)
-        ax.set_xlabel(f"full-bank EAP ability ({dim})")
-        ax.set_ylabel(f"CAT ability ({dim})")
-        ax.set_title(f"TutorBench CAT recovery: {dim}\nPearson r = {r:.3f} "
-                     f"(n = {len(df)} models)")
+        ax.set_xlabel(f"full-bank ability, {dim} (logits)")
+        ax.set_ylabel(f"CAT ability, {dim} (logits)")
+        ax.set_title(f"CAT recovers {dim} ability\n"
+                     f"r = {r:.3f} (n = {len(df)} models)")
         ax.legend(loc="upper left", fontsize=9)
         _save(fig, f"recovery_scatter_{dim}.png")
 
@@ -266,11 +266,11 @@ def make_figures(df: pd.DataFrame, agg: dict, A: np.ndarray, b: np.ndarray,
         ax.axvline(mean_v, color="crimson", ls="--", lw=1.5, label=f"mean = {mean_v:.1f}")
         ax.axvline(med_v, color="green", ls=":", lw=1.5, label=f"median = {med_v:.0f}")
         ax.legend()
-    ax.set_xlabel(f"# items to reach correctness SE < {se_target}")
-    ax.set_ylabel("# models")
+    ax.set_xlabel(f"items to reach correctness SE < {se_target}")
+    ax.set_ylabel("models")
     conv = int(df["n_cross_correctness"].notna().sum())
-    ax.set_title(f"TutorBench CAT length (correctness axis)\n"
-                 f"{conv}/{len(df)} models converged; cap = {max_items} items")
+    ax.set_title(f"Items to reach correctness SE < {se_target}\n"
+                 f"{conv}/{len(df)} models converged (cap {max_items} items)")
     _save(fig, "cat_length_hist.png")
 
     # --- SE reduction curve (mean SE vs #items, both dimensions) ---
@@ -286,9 +286,9 @@ def make_figures(df: pd.DataFrame, agg: dict, A: np.ndarray, b: np.ndarray,
                 xs.append(step + 1)
         ax.plot(xs, means, label=f"{dim} (mean SE)", color=color, lw=2)
     ax.axhline(se_target, color="gray", ls="--", lw=1, label=f"SE target = {se_target}")
-    ax.set_xlabel("# items administered")
-    ax.set_ylabel("mean posterior SE")
-    ax.set_title("TutorBench CAT: mean SE reduction by dimension")
+    ax.set_xlabel("items administered")
+    ax.set_ylabel("mean posterior SE (logits)")
+    ax.set_title("Posterior SE falls as items are administered")
     ax.legend()
     _save(fig, "se_reduction_curve.png")
 
@@ -303,9 +303,9 @@ def make_figures(df: pd.DataFrame, agg: dict, A: np.ndarray, b: np.ndarray,
     ax.plot([lo, hi], [lo, hi], ls="--", color="gray", lw=1, label="y = x")
     ax.set_xlim(lo, hi)
     ax.set_ylim(lo, hi)
-    ax.set_xlabel("actual observed pass-rate")
-    ax.set_ylabel("predicted accuracy (from CAT ability)")
-    ax.set_title(f"TutorBench pIRT calibration\nMAE = {mae:.4f} (n = {len(df)} models)")
+    ax.set_xlabel("observed pass-rate")
+    ax.set_ylabel("predicted pass-rate (from CAT ability)")
+    ax.set_title(f"CAT predicts observed pass-rate\nMAE = {mae:.4f} (n = {len(df)} models)")
     ax.legend(loc="upper left", fontsize=9)
     _save(fig, "pirt_calibration.png")
 
@@ -319,8 +319,8 @@ def make_figures(df: pd.DataFrame, agg: dict, A: np.ndarray, b: np.ndarray,
     ax.hist(a_scaff, bins=bins, alpha=0.6, label=f"a_scaffolding (n={a_scaff.size}, "
             f"med={np.median(a_scaff):.2f})", color="#dd8452")
     ax.set_xlabel("discrimination loading a (non-zero loadings only)")
-    ax.set_ylabel("# items")
-    ax.set_title("TutorBench item discrimination by skill axis")
+    ax.set_ylabel("items")
+    ax.set_title("Item discrimination by skill axis")
     ax.legend()
     _save(fig, "item_info_by_skill.png")
 

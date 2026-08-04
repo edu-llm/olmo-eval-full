@@ -1,0 +1,30 @@
+# 26 previously-FAILED models: staged in S3 hf-cache/hub, have a queue-level
+# full200/done/<cache_dir> marker (were processed), but have NO
+# full200/results/Outputs/_manifests/pedagogy__<slug>.done (pedagogy never scored).
+# Derived from live S3 state (staged - pedagogy_scored) intersect done/.
+Deci/DeciLM-7B
+Deci/DeciLM-7B-instruct
+HuggingFaceH4/zephyr-7b-gemma-v0.1
+HuggingFaceTB/SmolLM-1.7B-Instruct
+HuggingFaceTB/SmolLM-360M-Instruct
+HuggingFaceTB/SmolLM2-1.7B-Instruct
+HuggingFaceTB/SmolLM2-360M-Instruct
+Intel/neural-chat-7b-v3-2
+MBZUAI/LaMini-GPT-774M
+Nexusflow/Starling-LM-7B-beta
+Open-Orca/Mistral-7B-OpenOrca
+Qwen/Qwen1.5-4B
+Salesforce/codegen-2B-mono
+Salesforce/codegen-350M-mono
+argilla/DistilabelBeagle14-7B
+argilla/notus-7b-v1
+bigscience/bloom-1b1
+bigscience/bloom-1b7
+bigscience/bloom-560m
+facebook/opt-350m
+facebook/xglm-1.7B
+facebook/xglm-564M
+ibm/merlinite-7b
+openai-community/gpt2-large
+openai-community/gpt2-medium
+tiiuae/Falcon3-1B-Base

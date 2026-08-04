@@ -1,0 +1,33 @@
+# 30 NEVER-ATTEMPTED models: staged in S3 hf-cache/hub, NOT pedagogy-scored, and
+# NOT present in full200/done/ (the queue never processed them).
+# Derived from live S3 state (staged - pedagogy_scored) minus done/.
+HuggingFaceTB/SmolLM3-3B
+MBZUAI/LaMini-GPT-1.5B
+Qwen/Qwen1.5-4B-Chat
+Qwen/Qwen2-1.5B-Instruct
+Qwen/Qwen2-1.5B
+Qwen/Qwen2.5-1.5B-Instruct
+Qwen/Qwen2.5-3B-Instruct
+Qwen/Qwen2.5-3B
+Qwen/Qwen3-4B
+Writer/Palmyra-3B
+allenai/OLMo-2-1124-7B-Instruct
+bigcode/starcoder2-3b
+bigscience/bloom-3b
+deepseek-ai/deepseek-coder-1.3b-base
+deepseek-ai/deepseek-llm-7b-chat
+facebook/xglm-2.9B
+facebook/xglm-4.5B
+kyutai/helium-1-preview-2b
+microsoft/BioGPT-Large
+microsoft/Phi-3-mini-4k-instruct
+microsoft/Phi-3.5-mini-instruct
+microsoft/Phi-4-mini-instruct
+nvidia/Llama-3.1-Minitron-4B-Depth-Base
+nvidia/Minitron-4B-Base
+nvidia/Nemotron-Mini-4B-Instruct
+openai-community/gpt2-xl
+openbmb/MiniCPM3-4B
+princeton-nlp/Sheared-LLaMA-1.3B
+princeton-nlp/Sheared-LLaMA-2.7B
+stabilityai/stablelm-3b-4e1t
