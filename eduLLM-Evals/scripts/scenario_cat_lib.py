@@ -134,6 +134,41 @@ def mwle_subset(y, idx, A, b, theta0, ridge=1e-6, bound=12.0):
     return res.x, bool(res.success)
 
 
+def ols_ci_band(x, y, xs, B: int = 2000, seed: int = 0, ci: float = 0.95):
+    """Bootstrap the OLS line ``y ~ x`` over resampled pairs (rows = models).
+
+    Returns the point slope/intercept/r, their percentile (lo, hi) CIs, and the
+    (band_lo, band_hi) envelope of the predicted y at each grid point in ``xs`` -- used to
+    shade fit-line uncertainty on recovery / calibration scatters. Fixed-seed generator so
+    the band is reproducible; callers map (xs, band) onto whichever axis orientation they use."""
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    ok = np.isfinite(x) & np.isfinite(y)
+    x, y = x[ok], y[ok]
+    xs = np.asarray(xs, dtype=float)
+    s, c = np.polyfit(x, y, 1)
+    r = float(np.corrcoef(x, y)[0, 1])
+    n = x.size
+    rng = np.random.default_rng(seed)
+    preds = np.empty((B, xs.size))
+    slopes = np.empty(B)
+    rs = np.empty(B)
+    for t in range(B):
+        idx = rng.integers(0, n, n)
+        st, ct = np.polyfit(x[idx], y[idx], 1)
+        preds[t] = st * xs + ct
+        slopes[t] = st
+        rs[t] = np.corrcoef(x[idx], y[idx])[0, 1]
+    a = (1.0 - ci) / 2.0
+    band_lo, band_hi = np.percentile(preds, [100.0 * a, 100.0 * (1.0 - a)], axis=0)
+    slo, shi = np.percentile(slopes, [100.0 * a, 100.0 * (1.0 - a)])
+    rlo, rhi = np.percentile(rs, [100.0 * a, 100.0 * (1.0 - a)])
+    return {"slope": float(s), "intercept": float(c), "r": r,
+            "slope_lo": float(slo), "slope_hi": float(shi),
+            "r_lo": float(rlo), "r_hi": float(rhi),
+            "band_lo": band_lo, "band_hi": band_hi}
+
+
 # ---------------------------------------------------------------------------
 # fitted-bank IO (modeled-skill keys) + negative-loading policy
 # ---------------------------------------------------------------------------

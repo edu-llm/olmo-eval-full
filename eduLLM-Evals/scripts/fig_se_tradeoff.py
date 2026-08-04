@@ -45,9 +45,12 @@ def main() -> int:
     p.add_argument("--out", type=Path,
                    default=ROOT / "regenerated_figures" / "scenario_level_115_min12"
                    / "figures" / "se_tradeoff.png")
+    p.add_argument("--banks", nargs="+", default=["2_skills"],
+                   help="banks to panel; default 2-skill only (the SE-target decision is "
+                        "introduced after 3-skill is already ruled out).")
     args = p.parse_args()
 
-    banks = [b for b in ("2_skills", "3_skills") if (args.sweep_dir / b).exists()]
+    banks = [b for b in args.banks if (args.sweep_dir / b).exists()]
     if not banks:
         raise SystemExit(f"no se_sweep bank dirs under {args.sweep_dir}")
 

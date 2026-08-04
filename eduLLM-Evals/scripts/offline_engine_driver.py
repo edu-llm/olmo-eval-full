@@ -234,14 +234,59 @@ def administered_from_log(run_dir: Path) -> list[str]:
     return out
 
 
+ESTIMATORS = {"theta_cat": "production online", "theta_batch": "batch EAP",
+              "theta_mwle": "batch EAP + MWLE"}
+
+
+def draw_recovery_scatters(df: pd.DataFrame, dims: list[str], fig_dir: Path) -> None:
+    """CAT-vs-full-bank theta recovery scatter per (estimator, skill).
+
+    Each panel keeps the identity (y = x) and the solid OLS fit line, and ADDS a bootstrap
+    CI band around the fit (resample the model pairs, refit, shade the 2.5-97.5 pct envelope)
+    plus r / slope 95% CIs in the title."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    for prefix, label in ESTIMATORS.items():
+        for d in dims:
+            x = df[f"theta_full_{d}"].to_numpy()
+            y = df[f"{prefix}_{d}"].to_numpy()
+            xs = np.linspace(float(np.min(x)), float(np.max(x)), 60)
+            fit = scat.ols_ci_band(x, y, xs, B=2000, seed=0)
+            fig, ax = plt.subplots(figsize=(4.8, 4.7))
+            ax.scatter(x, y, s=28, alpha=0.75, edgecolor="k", linewidth=0.3)
+            lo, hi = min(x.min(), y.min()) - 0.3, max(x.max(), y.max()) + 0.3
+            ax.plot([lo, hi], [lo, hi], ls="--", color="gray", lw=1, label="y = x")
+            ax.fill_between(xs, fit["band_lo"], fit["band_hi"], color="#d95f0e", alpha=0.18)
+            ax.plot(xs, fit["slope"] * xs + fit["intercept"], color="#d95f0e", lw=1.4,
+                    label=f"OLS fit (slope = {fit['slope']:.3f})")
+            ax.set_xlim(lo, hi); ax.set_ylim(lo, hi)
+            ax.set_xlabel(f"full-bank EAP ability ({d})")
+            ax.set_ylabel(f"CAT ability ({d})")
+            ax.set_title(f"Production engine CAT recovery: {d} -- {label}\n"
+                         f"r = {fit['r']:.3f} [{fit['r_lo']:.3f}, {fit['r_hi']:.3f}], "
+                         f"slope = {fit['slope']:.3f} "
+                         f"[{fit['slope_lo']:.3f}, {fit['slope_hi']:.3f}] (n = {len(df)})",
+                         fontsize=8.5)
+            ax.legend(loc="upper left", fontsize=9)
+            fig.tight_layout()
+            fig.savefig(fig_dir / f"{prefix}_recovery_{d}.png", dpi=130)
+            plt.close(fig)
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--bank", type=Path, required=True)
-    p.add_argument("--matrix", type=Path, required=True)
+    p.add_argument("--bank", type=Path, default=None)
+    p.add_argument("--matrix", type=Path, default=None)
     p.add_argument("--scenarios", type=Path,
                    default=ROOT / "data" / "TutorBench" / "scenarios.jsonl")
     p.add_argument("--out-dir", type=Path, required=True)
+    p.add_argument("--redraw-figures", action="store_true",
+                   help="redraw the recovery scatters from an existing out-dir/cat_per_model.csv "
+                        "(adds CI bands/annotations) without re-running the CAT engine.")
     p.add_argument("--runs-dir", type=Path, default=ROOT / "staging" / "engine_runs")
     p.add_argument("--negative-policy", choices=("clamp", "keep", "drop"), default="clamp")
     p.add_argument("--models", type=int, default=None, help="limit to first N models (smoke).")
@@ -266,6 +311,19 @@ def main() -> int:
     p.add_argument("--keep-run-logs", action="store_true",
                    help="keep the per-model engine run directories (large).")
     args = p.parse_args()
+
+    if args.redraw_figures:
+        csv = args.out_dir / "cat_per_model.csv"
+        if not csv.is_file():
+            raise SystemExit(f"--redraw-figures needs {csv}")
+        df = pd.read_csv(csv)
+        dims = [c[len("theta_full_"):] for c in df.columns if c.startswith("theta_full_")]
+        draw_recovery_scatters(df, dims, args.out_dir / "figures")
+        print(f"redrew recovery scatters (CI bands) for dims={dims} -> {args.out_dir / 'figures'}")
+        return 0
+
+    if args.bank is None or args.matrix is None:
+        p.error("--bank and --matrix are required unless --redraw-figures is set")
 
     print("=" * 96)
     print("OFFLINE DRIVER FOR THE PRODUCTION CAT ENGINE")
@@ -370,34 +428,11 @@ def main() -> int:
                       "n_distinct_x": int(np.unique(np.round(x, 3)).size)}
         return out
 
-    estimators = {"theta_cat": "production online", "theta_batch": "batch EAP",
-                  "theta_mwle": "batch EAP + MWLE"}
+    estimators = ESTIMATORS
     agg = {p: stats_for(p) for p in estimators}
 
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
     fig_dir = args.out_dir / "figures"
-    fig_dir.mkdir(parents=True, exist_ok=True)
-    for prefix, label in estimators.items():
-        for d in dims:
-            x = df[f"theta_full_{d}"].to_numpy()
-            y = df[f"{prefix}_{d}"].to_numpy()
-            s = agg[prefix][d]
-            fig, ax = plt.subplots(figsize=(4.6, 4.4))
-            ax.scatter(x, y, s=28, alpha=0.75, edgecolor="k", linewidth=0.3)
-            lo, hi = min(x.min(), y.min()) - 0.3, max(x.max(), y.max()) + 0.3
-            ax.plot([lo, hi], [lo, hi], ls="--", color="gray", lw=1, label="y = x")
-            ax.set_xlim(lo, hi); ax.set_ylim(lo, hi)
-            ax.set_xlabel(f"full-bank EAP ability ({d})")
-            ax.set_ylabel(f"CAT ability ({d})")
-            ax.set_title(f"Production engine CAT recovery: {d}\n{label} -- "
-                         f"r = {s['r']:.3f}, slope = {s['slope']:.3f} (n = {len(df)})")
-            ax.legend(loc="upper left", fontsize=9)
-            fig.tight_layout()
-            fig.savefig(fig_dir / f"{prefix}_recovery_{d}.png", dpi=130)
-            plt.close(fig)
+    draw_recovery_scatters(df, dims, fig_dir)
 
     metrics = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

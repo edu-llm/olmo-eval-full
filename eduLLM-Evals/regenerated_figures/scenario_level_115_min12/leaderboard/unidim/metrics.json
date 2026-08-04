@@ -1,8 +1,9 @@
 {
-  "generated_at": "2026-08-02T21:03:46.767645+00:00",
+  "generated_at": "2026-08-03T17:30:59.175155+00:00",
   "driver": "scripts/offline_engine_driver.py",
   "engine": "tutor_cat.engine.run_evaluation (production, unmodified)",
   "selection": "tutor_cat.selector.select_next targeting argmax(se)",
+  "mode": "cat",
   "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_unidim_115_fitted.jsonl",
   "matrix": "staging\\response_matrix_full_nonopt_115.csv",
   "matrix_sha256": "152286b6ded6561aca84e4b90cb0abbf065634d374217f91c9edcc783cccc0eb",
@@ -44,25 +45,25 @@
   "recovery": {
     "theta_cat": {
       "overall": {
-        "slope": 0.5894891242124992,
-        "r": 0.9180698211081889,
-        "gap_worst12": 2.713178383943496,
+        "slope": 0.5894891242124985,
+        "r": 0.9180698211081885,
+        "gap_worst12": 2.713178383943504,
         "n_distinct_x": 86
       }
     },
     "theta_batch": {
       "overall": {
-        "slope": 0.7304381560398382,
-        "r": 0.9499268126649045,
-        "gap_worst12": 1.896263989974921,
+        "slope": 0.7304381560398372,
+        "r": 0.949926812664904,
+        "gap_worst12": 1.8962639899749298,
         "n_distinct_x": 86
       }
     },
     "theta_mwle": {
       "overall": {
-        "slope": 0.9007926208199277,
-        "r": 0.9647564116208152,
-        "gap_worst12": 0.852421905463185,
+        "slope": 0.9007926208199265,
+        "r": 0.9647564116208148,
+        "gap_worst12": 0.8524219054631934,
         "n_distinct_x": 86
       }
     }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T15:38:22.310881+00:00",
+  "generated_at": "2026-08-03T17:26:35.864399+00:00",
   "driver": "scripts/offline_engine_driver.py",
   "engine": "tutor_cat.engine.run_evaluation (production, unmodified)",
   "selection": "tutor_cat.selector.select_next targeting argmax(se)",
@@ -23,66 +23,66 @@
     "top_n": 5,
     "max_se": 0.3,
     "min_evals_per_skill": 15,
-    "max_scenarios": 50,
+    "max_scenarios": 662,
     "unmapped_criteria": "judge",
     "grid_nodes_per_dim": 61,
     "range": 8.0
   },
   "n_models": 115,
   "stop_reasons": {
-    "max_scenarios_reached": 115
+    "precision_reached": 115
   },
   "scenarios_administered": {
-    "mean": 50.0,
-    "median": 50.0,
-    "max": 50
+    "mean": 181.7478260869565,
+    "median": 179.0,
+    "max": 473
   },
   "criteria_administered": {
-    "mean": 274.25217391304346,
-    "median": 275.0,
-    "max": 320
+    "mean": 991.591304347826,
+    "median": 975.0,
+    "max": 2535
   },
-  "precision_reached": 0,
+  "precision_reached": 115,
   "recovery": {
     "theta_cat": {
       "correctness": {
-        "slope": 0.6727310074662529,
-        "r": 0.95184120853269,
-        "gap_worst12": 2.767609993161051,
+        "slope": 0.7860519229082361,
+        "r": 0.9765110161452916,
+        "gap_worst12": 1.8743559931610496,
         "n_distinct_x": 97
       },
       "scaffolding": {
-        "slope": 0.674949875632043,
-        "r": 0.8460709691843527,
-        "gap_worst12": 0.524587246623406,
+        "slope": 0.8591673166089616,
+        "r": 0.960096644957022,
+        "gap_worst12": 0.23657574662333083,
         "n_distinct_x": 112
       }
     },
     "theta_batch": {
       "correctness": {
-        "slope": 0.7363161859273759,
-        "r": 0.9631701408268211,
-        "gap_worst12": 2.2999997752295607,
+        "slope": 0.8845084933684959,
+        "r": 0.9890019872912232,
+        "gap_worst12": 1.0220519383954316,
         "n_distinct_x": 97
       },
       "scaffolding": {
-        "slope": 0.6858133662625692,
-        "r": 0.857511415181542,
-        "gap_worst12": 0.41442737556708037,
+        "slope": 0.8754439504980575,
+        "r": 0.964652771740739,
+        "gap_worst12": 0.1551299904838743,
         "n_distinct_x": 112
       }
     },
     "theta_mwle": {
       "correctness": {
-        "slope": 1.0981564630564673,
-        "r": 0.9699981390524112,
-        "gap_worst12": -0.819678384723368,
+        "slope": 1.1574183636468378,
+        "r": 0.9715051786198573,
+        "gap_worst12": -1.6996706438710285,
         "n_distinct_x": 97
       },
       "scaffolding": {
-        "slope": 1.009068004096404,
-        "r": 0.8488171100905079,
-        "gap_worst12": 0.06324093175158474,
+        "slope": 1.0295953736440389,
+        "r": 0.9670247969146145,
+        "gap_worst12": -0.017797506386425643,
         "n_distinct_x": 112
       }
     }
