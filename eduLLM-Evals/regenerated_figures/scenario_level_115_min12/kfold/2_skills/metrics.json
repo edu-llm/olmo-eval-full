@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-02T21:12:08.960345+00:00",
+  "generated_at": "2026-08-03T15:41:26.145844+00:00",
   "purpose": "scenario-level OOS k-fold estimator recovery (real engine on held-out models)",
   "bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill_115_fitted.jsonl",
   "matrix": "staging\\response_matrix_full_nonopt_115.csv",

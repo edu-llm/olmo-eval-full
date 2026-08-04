@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-08-03T16:38:05.851442+00:00",
+  "purpose": "TutorEval leaderboard reporting the online information-filter SE (sqrt diag U), analog of TutorBench's online-SE leaderboard; complements the batch-EAP + bootstrap leaderboard.",
+  "data_provenance": "reused persisted seed=42 trace runs (no engine re-run)",
+  "sources": {
+    "online_se": "regenerated_figures/scenario_level/selection/tutoreval_{unidim,2skill}/per_model_trace.csv (final_se_*, theta_online_*)",
+    "batch_eap_bootstrap": "regenerated_figures/scenario_level/param_uncertainty/tutoreval_{unidim,2skill}/leaderboard_se_components.csv (se_posterior_*, se_total_*)"
+  },
+  "config": {
+    "max_se": 0.3,
+    "min_evals_per_skill": 15,
+    "max_scenarios": 50,
+    "selection": "trace",
+    "seed": 42,
+    "eap_grid": 61
+  },
+  "axes": {
+    "unidim": {
+      "skills": [
+        "ability"
+      ],
+      "n_models": 52,
+      "leaderboard_csv": "regenerated_figures/scenario_level/online_se_leaderboard/leaderboard_online_se_unidim.csv",
+      "figures": [
+        "regenerated_figures/scenario_level/online_se_leaderboard/figures/leaderboard_bars_online_se_ability.png"
+      ],
+      "se_comparison": [
+        {
+          "axis": "unidim",
+          "skill": "ability",
+          "n_models": 52,
+          "mean_se_online": 0.19385411538461542,
+          "mean_se_posterior_batch": 0.27182561353438317,
+          "mean_se_total_batch": 0.30251748101241555,
+          "median_se_online": 0.20517849999999999,
+          "median_se_posterior_batch": 0.24435923441684795,
+          "median_se_total_batch": 0.27228871315608516,
+          "ratio_mean_online_over_total": 0.6408030198316358,
+          "ratio_mean_online_over_posterior": 0.7131561770947492,
+          "mean_per_model_ratio_online_over_total": 0.6999320702424926,
+          "mean_diff_total_minus_online": 0.1086633656278002,
+          "theta_online_vs_batch_pearson": 0.9830634579981901
+        }
+      ]
+    },
+    "2skill": {
+      "skills": [
+        "conceptual_understanding",
+        "quantitative_procedural"
+      ],
+      "n_models": 52,
+      "leaderboard_csv": "regenerated_figures/scenario_level/online_se_leaderboard/leaderboard_online_se_2skill.csv",
+      "figures": [
+        "regenerated_figures/scenario_level/online_se_leaderboard/figures/leaderboard_bars_online_se_conceptual_understanding.png",
+        "regenerated_figures/scenario_level/online_se_leaderboard/figures/leaderboard_bars_online_se_quantitative_procedural.png"
+      ],
+      "se_comparison": [
+        {
+          "axis": "2skill",
+          "skill": "conceptual_understanding",
+          "n_models": 52,
+          "mean_se_online": 0.24327565384615382,
+          "mean_se_posterior_batch": 0.3409651840606891,
+          "mean_se_total_batch": 0.38797991973039003,
+          "median_se_online": 0.262484,
+          "median_se_posterior_batch": 0.3243968463351165,
+          "median_se_total_batch": 0.36245889902755,
+          "ratio_mean_online_over_total": 0.6270315587858458,
+          "ratio_mean_online_over_posterior": 0.7134911868387498,
+          "mean_per_model_ratio_online_over_total": 0.6622171747775465,
+          "mean_diff_total_minus_online": 0.1447042658842361,
+          "theta_online_vs_batch_pearson": 0.9697137740192148
+        },
+        {
+          "axis": "2skill",
+          "skill": "quantitative_procedural",
+          "n_models": 52,
+          "mean_se_online": 0.25210892307692306,
+          "mean_se_posterior_batch": 0.3316146740027955,
+          "mean_se_total_batch": 0.36483281864834266,
+          "median_se_online": 0.2726095,
+          "median_se_posterior_batch": 0.3211963856040534,
+          "median_se_total_batch": 0.3552587333569427,
+          "ratio_mean_online_over_total": 0.6910258896415988,
+          "ratio_mean_online_over_posterior": 0.7602465838854822,
+          "mean_per_model_ratio_online_over_total": 0.7211608946381658,
+          "mean_diff_total_minus_online": 0.11272389557141958,
+          "theta_online_vs_batch_pearson": 0.987245810785582
+        }
+      ]
+    }
+  }
+}

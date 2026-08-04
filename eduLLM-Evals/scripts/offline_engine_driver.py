@@ -256,6 +256,8 @@ def main() -> int:
     p.add_argument("--unmapped-criteria", choices=("judge", "skip"), default="judge")
     p.add_argument("--selection", choices=("trace", "dopt"), default="trace",
                    help="scenario selection rule: trace (PRD) or D-optimality (uncertainty-aware).")
+    p.add_argument("--mode", choices=("cat", "baseline"), default="cat",
+                   help="engine mode: cat (adaptive selection) or baseline (seeded-random order).")
     p.add_argument("--workers", type=int, default=1,
                    help="parallel worker processes across models (1 = serial).")
     # reference / post-hoc estimator grid
@@ -308,10 +310,10 @@ def main() -> int:
         min_evals_per_skill=args.min_evals_per_skill,
         min_scenarios=args.min_scenarios,
         max_scenarios=args.max_scenarios, unmapped_criteria=args.unmapped_criteria,
-        selection=args.selection, runs_dir=str(args.runs_dir),
+        selection=args.selection, mode=args.mode, runs_dir=str(args.runs_dir),
     )
     print(f"running the production engine for {len(models)} models "
-          f"(selection={args.selection}, workers={args.workers}) ...")
+          f"(mode={args.mode}, selection={args.selection}, workers={args.workers}) ...")
     results = scat.run_models(models, args.bank, args.matrix, args.scenarios,
                               args.negative_policy, dims, spec, workers=args.workers)
 
@@ -402,6 +404,7 @@ def main() -> int:
         "driver": "scripts/offline_engine_driver.py",
         "engine": "tutor_cat.engine.run_evaluation (production, unmodified)",
         "selection": "tutor_cat.selector.select_next targeting argmax(se)",
+        "mode": args.mode,
         "bank": str(args.bank), "matrix": str(args.matrix),
         "matrix_sha256": mat_sha, "provenance_aligned": bool(aligned),
         "dims": dims, "negatives": neg_stats,
