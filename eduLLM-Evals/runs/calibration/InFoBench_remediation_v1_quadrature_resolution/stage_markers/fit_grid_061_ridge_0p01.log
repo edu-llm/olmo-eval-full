@@ -1,0 +1,5 @@
+COMMAND
+["/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python", "scripts/run_infobench_quadrature_resolution.py", "--config", "configs/infobench_quadrature_resolution_v1.json", "--out-dir", "runs/calibration/InFoBench_remediation_v1_quadrature_resolution", "--worker", "fit-ridge", "--fit-grid", "61", "--ridge", "0.01"]
+
+OUTPUT
+cached fit grid 61 ridge 0.01 -> /Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_quadrature_resolution/fit_cache/grid_061/ridge_0p01

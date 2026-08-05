@@ -1,0 +1,122 @@
+{
+  "benchmark": "InFoBench",
+  "blinding": {
+    "analysis_key_must_not_be_given_to_graders": true,
+    "grader_order_is_independently_shuffled": true,
+    "grader_sheets_exclude_qwen_verdict": true,
+    "grader_sheets_exclude_tutor_model_identity": true
+  },
+  "distribution": {
+    "constraint_tag_membership": {
+      "content": 110,
+      "format": 96,
+      "linguistic": 78,
+      "number": 87,
+      "style": 79
+    },
+    "distinct_criteria": 352,
+    "distinct_model_families": 23,
+    "distinct_models": 52,
+    "distinct_scenarios": 292,
+    "is_qwen_family": {
+      "False": 291,
+      "True": 69
+    },
+    "length_bin": {
+      "long": 120,
+      "medium": 120,
+      "short": 120
+    },
+    "model_pass_rate_quartile": {
+      "high": 88,
+      "low": 91,
+      "mid_high": 91,
+      "mid_low": 90
+    },
+    "primary_tag": {
+      "content": 77,
+      "format": 73,
+      "linguistic": 70,
+      "number": 70,
+      "style": 70
+    },
+    "qwen_verdict": {
+      "fail": 167,
+      "no_decision": 27,
+      "pass": 166
+    },
+    "risk_flags": {
+      "no_decision": 27,
+      "nonpositive_discrimination": 9,
+      "universally_failed_criterion": 145
+    },
+    "subset": {
+      "Easy": 168,
+      "Hard": 192
+    }
+  },
+  "estimand_warning": {
+    "allowed_interpretation": "Metrics test the preregistered risk-enriched audit gate only; they are not estimates of accuracy over all 117,000 matrix cells.",
+    "population_representative": false,
+    "reason": "All no-decisions and one cell from every universally failed criterion are intentionally oversampled; inclusion probabilities are not defined.",
+    "sample_type": "deterministic_risk_enriched_audit_sample"
+  },
+  "frozen_qwen_provenance": {
+    "adapter": "generic-binary",
+    "evidence_policy_version": "criterion-evidence-gate-v1",
+    "judge_model": "Qwen/Qwen3.5-9B",
+    "judge_name": "qwen",
+    "judge_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "normalization_version": "judge-normalization-v3",
+    "prompt_variant": "canonical",
+    "prompt_version": "judge-validation-v3",
+    "replicate_id": "r1"
+  },
+  "input_hashes": {
+    "generator_sha256": "c73bba7a91faf1bff2dd02870ac86c597110aaef093b45f8511cb2b74a195a5e",
+    "phase0_archive_sha256": "b033f86f0e206197bfff80c057a5793563989b04ab4062f4e7aa476718c62ca3",
+    "rubrics_jsonl_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scenarios_jsonl_sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+  },
+  "output_hashes": {
+    "adjudication.csv": "a079e41e6e80c6b474f87e264fd056c5aadd97b0b458fd6e2acdb965c8090e32",
+    "audit_analysis_key.csv": "cc00e2524d855956e5fbd84ee7d448cbfd8e997f38286810ca0b963f8763e822",
+    "grader_a.csv": "af2ace0795817bc0a035720ef41d9a26e626855da80c7dc02ebe82613f3c180a",
+    "grader_b.csv": "433be6181707e57563129b84c6c58d1ee6ca3453dddaa8f155fcb8a7f1d2f9e4",
+    "qwen_repeat_cases.jsonl": "50397f3f147ff2c781838a43ee942d5d8f297188169031bbe0916b9aef4adb70",
+    "qwen_repeat_results_template.csv": "eb1d22a4bdf1919b424a99be9c5a39f1e78c7697dd60123cff3bfabb8f068c22"
+  },
+  "repeat_runner_contract": {
+    "adapter_glue_present": true,
+    "interpretation": "The JSONL can be run by the retained generic-binary adapter, but a result is not an acceptance-grade repeat until its non-wave configuration is proven identical to the original run.",
+    "known_frozen_configuration_hash": "1430098374debc217ba8d3394a0a1c70a2ecfcd9a4b0f1a5c6c3a47197c4bf19",
+    "known_frozen_configuration_hash_excluding_wave_ids": "0a3acef09eef3a00316d14f2541c04eda9a73726702fbbe9020926c0974963f7",
+    "machine_readable_cases": "qwen_repeat_cases.jsonl",
+    "missing_for_exact_reproduction": [
+      "original run_judge_validation.py runner_sha256",
+      "original generation/runtime configuration manifest"
+    ],
+    "schema_compatible_runner": "scripts/run_judge_validation.py run --judge qwen",
+    "schema_compatible_runner_sha256": "2d8289512f84e47bdb1a50a859738585867a80758397d2003ec6c33a9c40b152",
+    "strict_frozen_repeat_status": "blocked_by_incomplete_phase0_runtime_provenance"
+  },
+  "repo_commit": "c321919f8b6ba5b79e74e1a06f01d9bbdc16deb3",
+  "response_length_words_tertile_cutpoints": {
+    "medium_max": 316,
+    "short_max": 102
+  },
+  "sample_size": 360,
+  "schema_version": "infobench-judge-audit-packet-v1",
+  "seed": "infobench-judge-audit-v1",
+  "selection_policy": {
+    "all_no_decisions": true,
+    "auto_fail_cells_eligible": false,
+    "one_cell_per_nonpositive_discrimination_criterion": true,
+    "one_cell_per_universally_failed_criterion": true,
+    "remaining_cells": "greedy deterministic marginal balancing",
+    "repeat_subset_cases": 40,
+    "targeted_all_fail_criteria": 145,
+    "targeted_nonpositive_criteria": 9
+  },
+  "source_response_shards": 52
+}

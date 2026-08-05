@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-08-05T02:55:30.549694+00:00",
+  "worker": "fit-grid",
+  "fit_grid": 81,
+  "eap_grid": null,
+  "ridge": 0.1,
+  "structure": "overall_1d",
+  "fold_manifest": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/configs/infobench_remediation_splits_v1.manifest.json",
+  "fold_manifest_sha256": "3662ad502585799afa6d0e665a08f94f480f41c09c78ce472a20e209e5f14f95",
+  "scopes": [
+    {
+      "scope": "full",
+      "n_train": 52,
+      "converged": true,
+      "n_iter": 35,
+      "loglik": -36221.00406385687,
+      "n_items": 2105,
+      "n_exportable": 2097,
+      "cache_reused": false,
+      "fit_path": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_dense_followup/fit_cache/grid_081/ridge_0p1/full/fit.npz",
+      "fit_sha256": "928592b9e04b9ffc64abcc46ba636a789f869d20b52a98ee339ea884ff5df24b"
+    },
+    {
+      "scope": "outer_0",
+      "n_train": 41,
+      "converged": true,
+      "n_iter": 17,
+      "loglik": -26528.32836925681,
+      "n_items": 2093,
+      "n_exportable": 2087,
+      "cache_reused": false,
+      "fit_path": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_dense_followup/fit_cache/grid_081/ridge_0p1/outer_0/fit.npz",
+      "fit_sha256": "339d6805b38bf7a2bc774de2c211221038f0ae1c65ef9ba2b563d61f33a2d587"
+    },
+    {
+      "scope": "outer_1",
+      "n_train": 42,
+      "converged": true,
+      "n_iter": 91,
+      "loglik": -29541.235706888503,
+      "n_items": 2098,
+      "n_exportable": 2086,
+      "cache_reused": false,
+      "fit_path": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_dense_followup/fit_cache/grid_081/ridge_0p1/outer_1/fit.npz",
+      "fit_sha256": "5bc4c478a3489833e567a21a3741e5cea27910644c5c4bd06a69e6365d493396"
+    },
+    {
+      "scope": "outer_2",
+      "n_train": 42,
+      "converged": true,
+      "n_iter": 33,
+      "loglik": -29669.120233210037,
+      "n_items": 2092,
+      "n_exportable": 2079,
+      "cache_reused": false,
+      "fit_path": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_dense_followup/fit_cache/grid_081/ridge_0p1/outer_2/fit.npz",
+      "fit_sha256": "cbbd603ca7af82df157dbeba803fa8ba242aedbb61e4d398db7e5061dc0c8b44"
+    },
+    {
+      "scope": "outer_3",
+      "n_train": 42,
+      "converged": true,
+      "n_iter": 43,
+      "loglik": -28628.372592078456,
+      "n_items": 2102,
+      "n_exportable": 2094,
+      "cache_reused": false,
+      "fit_path": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_dense_followup/fit_cache/grid_081/ridge_0p1/outer_3/fit.npz",
+      "fit_sha256": "4a6e956c008699e9b408885ce18b6ed47ab8e3e119b98e46137368d008fad58c"
+    },
+    {
+      "scope": "outer_4",
+      "n_train": 41,
+      "converged": true,
+      "n_iter": 37,
+      "loglik": -27850.236196056278,
+      "n_items": 2092,
+      "n_exportable": 2083,
+      "cache_reused": false,
+      "fit_path": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_dense_followup/fit_cache/grid_081/ridge_0p1/outer_4/fit.npz",
+      "fit_sha256": "9c176302f5e4338e4c89f4046c8ce7fac87fd1eb32d6837f3f7152ced5f652df"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "config": {
+    "path": "configs/infobench_calibration_remediation_v1.json",
+    "sha256": "7736cd1a7580c5b5192796a5618b96d483b8c43f3edf4c74fc6a446d3e7625de"
+  },
+  "figure_files": {
+    "01_item_parameter_distributions.png": "455129cf0d494406c1fa32f55e0381b9c64d6ba9a4919a31c25c003b48390a48",
+    "02_fit_grid_common_cell_equivalence.png": "fc270452b2dc382aebc8e61ea12b4a41324815a0a845e7aad586d1d0f318beb5",
+    "03_eap_numerical_stability.png": "7dc951db3f65eb7a20867e95d8b3cc3d1aee3cf8836c92beb6d76310cef978e8",
+    "04_nested_ridge_selection.png": "796f90ff43b4e6a325edb44cb696510f35bfc55380bcb59aa3832914cd0e0eb1",
+    "05_cat_gate_outcomes.png": "75fd935245af373c06434a924355a09dfe7ac06ac63e93ab58601143ee85f51c",
+    "06_inner_cv_cat_tradeoff_landscape.png": "ebeed08a5d8becad56e5b477376d0ccad6209f2db01556465a634e11cb9d164a",
+    "07_minimum_scenario_sweep_DIAGNOSTIC.png": "ade8ebd464894db2522ce0b01a908b77a63c6e166993445822037d290feb574a",
+    "08_se_target_sweep_DIAGNOSTIC.png": "6f58f8ed9d265dcb89dbdeb50f8a16c61a78b37800fa653e9043c387598a5d8a",
+    "09_partial_outer_recovery_INCOMPLETE.png": "704b5599d0375a195b9b8ba45f635ff5faf6bff1c091a93c2356b5daff7881b4",
+    "10_partial_outer_cat_vs_random_INCOMPLETE.png": "003e6617b62723d170145a053a8a0e2313028ed12806007b9f2b560826f77fb4"
+  },
+  "final_cat_policy_frozen": false,
+  "generated_at_utc": "2026-08-05T15:34:28.082350+00:00",
+  "outer_model_support": {
+    "scored": 32,
+    "total": 52
+  },
+  "phase2_status": "complete",
+  "phase3_status": "incomplete_3_of_5_folds_with_finalists",
+  "phase4_status": "not_run",
+  "renderer": "scripts/plot_infobench_remediation_figures.py",
+  "renderer_sha256": "6e66a99bd35d23994b5be58c540804cdd3ba9112d276e3beceb0062237d7a1c0",
+  "run_dir": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+  "schema_version": "infobench-remediation-figure-manifest-v1",
+  "source_files": {
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/common_support/common_cell_gate.json": "b77b1a17af89e02ea4c4f49dd0c68fdf12b7bd812b48c6a42e89369198ec0861",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/fit_cache/grid_061/ridge_0p1/full/item_params.csv": "0a79f332482d7cd9fb712d9d0b92c54a0c941bd1a74e984f5a3b03016f624d96",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/disjoint_prediction_metrics.csv": "7b9c46e5dec8dbefe2ff30e0553afe5b6a48b800b161919a964ac186a451336f",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/inner_candidate_results.csv": "b35ab7f10aebe3f108c4e9704e034079e8d7740f27b37d0cbfefd8116dd9e646",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/inner_ridge_results.csv": "a5d57cc8ad5a714a5a00b9590e2fdce9b6574d4624e2a07481412a228ba9e325",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/outer_fold_finalists.json": "c1ff22f19918a14f8cba68dda1ac0e180973abd6a1b1ab6879b7694603d6a795",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/outer_metrics.json": "f9abb14265ce09aaea218e06810499463fc7dc7d7f12e543db904d6a15c1a921",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/outer_oof_per_model.csv": "aa685e2e0e33e8657be389b0c02e5f90d81bb3e8a235695534faf9f5baaf2cbe",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/numerical_gates/bound_check.json": "24930fa45c1c59f548f698e3e7a14ccc60d2ac3e573fb2aac81edbba2355d772",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/numerical_gates/cross_family_check.json": "913063a19ed3914f26ba9a9d55ec48ac3aa83498c1af6e2113b7e05b6edb0410",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/numerical_gates/primary_grid_gate.json": "bc7d111a427859ee8175b02ae34206188c83a1eb5b515226dfe4a6974001f568",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/numerical_gates/primary_grid_summary.csv": "7a4e8633069548ab42cfe5da6bb71c264b523d08681a542ae57139c1822624a5"
+  }
+}

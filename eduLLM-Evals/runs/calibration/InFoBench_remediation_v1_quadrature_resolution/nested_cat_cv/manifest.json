@@ -1,0 +1,282 @@
+{
+  "candidate_count": 48,
+  "candidate_ids": [
+    "floor_00__se_0p20__selector_trace",
+    "floor_00__se_0p20__selector_dopt",
+    "floor_00__se_0p25__selector_trace",
+    "floor_00__se_0p25__selector_dopt",
+    "floor_00__se_0p30__selector_trace",
+    "floor_00__se_0p30__selector_dopt",
+    "floor_00__se_0p35__selector_trace",
+    "floor_00__se_0p35__selector_dopt",
+    "floor_05__se_0p20__selector_trace",
+    "floor_05__se_0p20__selector_dopt",
+    "floor_05__se_0p25__selector_trace",
+    "floor_05__se_0p25__selector_dopt",
+    "floor_05__se_0p30__selector_trace",
+    "floor_05__se_0p30__selector_dopt",
+    "floor_05__se_0p35__selector_trace",
+    "floor_05__se_0p35__selector_dopt",
+    "floor_08__se_0p20__selector_trace",
+    "floor_08__se_0p20__selector_dopt",
+    "floor_08__se_0p25__selector_trace",
+    "floor_08__se_0p25__selector_dopt",
+    "floor_08__se_0p30__selector_trace",
+    "floor_08__se_0p30__selector_dopt",
+    "floor_08__se_0p35__selector_trace",
+    "floor_08__se_0p35__selector_dopt",
+    "floor_12__se_0p20__selector_trace",
+    "floor_12__se_0p20__selector_dopt",
+    "floor_12__se_0p25__selector_trace",
+    "floor_12__se_0p25__selector_dopt",
+    "floor_12__se_0p30__selector_trace",
+    "floor_12__se_0p30__selector_dopt",
+    "floor_12__se_0p35__selector_trace",
+    "floor_12__se_0p35__selector_dopt",
+    "floor_15__se_0p20__selector_trace",
+    "floor_15__se_0p20__selector_dopt",
+    "floor_15__se_0p25__selector_trace",
+    "floor_15__se_0p25__selector_dopt",
+    "floor_15__se_0p30__selector_trace",
+    "floor_15__se_0p30__selector_dopt",
+    "floor_15__se_0p35__selector_trace",
+    "floor_15__se_0p35__selector_dopt",
+    "floor_20__se_0p20__selector_trace",
+    "floor_20__se_0p20__selector_dopt",
+    "floor_20__se_0p25__selector_trace",
+    "floor_20__se_0p25__selector_dopt",
+    "floor_20__se_0p30__selector_trace",
+    "floor_20__se_0p30__selector_dopt",
+    "floor_20__se_0p35__selector_trace",
+    "floor_20__se_0p35__selector_dopt"
+  ],
+  "code_provenance": {
+    "canonical_sha256": "0fb3627d5cdc9687ce7deff3eeac623739b85ded88afb96b533f7e8a9b48b536",
+    "files": {
+      "scripts/calibrate_mirt.py": "d7a118ed15f36daeb0430d4e6bce638a85ff24c03b9097288aafa07f1d31d351",
+      "scripts/calibrate_partial.py": "4fb26c5a3c99f028a17b4aa3d1d236ab996f76834fac2ee25edd00bfd0734bef",
+      "scripts/kfold_cv_mirt.py": "d775e54aa1be24747b8e61bd279dc55763394c99e0f34a909fdc12108172ff7a",
+      "scripts/nested_scenario_cat_cv.py": "5daf09484647299e24c1d5abbbd60bcbb162c36c6fec0bfb285914af45b3703b",
+      "scripts/scenario_cat_lib.py": "3c1ff26efd81926a3bc775ee6f88a9718322a03292a3d2002684631135f4f8f5",
+      "scripts/scenario_kfold_estimator_cv.py": "77e5629b6b1675102d99aa9d2635814dafd6f681efca631598889e76b5a44a9d",
+      "tutor_cat/__init__.py": "44b2c8b4c704bc4b43d80a3bdb5619a2a50ac8f213404daf8795fb6cf5a32aef",
+      "tutor_cat/dataio.py": "aeb802fb6a8b0e291a754a303002f0d7048f1a3b6f950cd70c8010385299ae39",
+      "tutor_cat/engine.py": "954af676226fa93248d02fe4af5351020bdcb7c41e2ae0e59f016b65c20c079d",
+      "tutor_cat/mcq_irt/__init__.py": "0e7ccb35385f201e5744682ed281dcad9d7d030b853d665dc9762cfc28f47277",
+      "tutor_cat/mcq_irt/calibrate.py": "8cafce1bfad949b32fa666a49ca7f73448c4c8d7b47f07f480510c602a8e5f6e",
+      "tutor_cat/mirt.py": "620b58682967e825e2dc330eb7d987837610622e251abf21b829d5153409175c",
+      "tutor_cat/schemas.py": "12545560ec2339dc5d04ef3c0e1c7f3ad0faf8e01ee46a59d8293fe2ca78d29f",
+      "tutor_cat/selector.py": "913155ccf52fb98990e4e3f28b59a5cc9a41cd53fb18c2585a29e2be27a6b7bd",
+      "tutor_cat/skill_structure.py": "7f6b600e9675f6fc58b82abcf01fbf176cc62f4897a675e50ee23ae37501a6ee"
+    }
+  },
+  "command": [
+    "scripts/nested_scenario_cat_cv.py",
+    "--dense-grid-manifest",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/dense_grid/grid_lock.json",
+    "--out-dir",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv",
+    "--fresh"
+  ],
+  "completed_at": "2026-08-05T04:35:08.959129+00:00",
+  "created_at": "2026-08-05T04:35:08.945378+00:00",
+  "cross_validation": {
+    "administration_scenarios": 400,
+    "evaluation_outcome_usage": "disjoint prediction metrics only",
+    "evaluation_scenarios": 100,
+    "grouped_model_families": true,
+    "inner_folds": 4,
+    "outer_folds": 5,
+    "outer_test_used_for_selection": false,
+    "recovery_reference": "administration-pool full EAP"
+  },
+  "deferred_outputs": {
+    "outer_order_stability.csv": "not produced in Phase 3; requires Phase-4 parameter/order study",
+    "outer_total_se.csv": "not produced in Phase 3; requires Phase-4 parameter/order study"
+  },
+  "dense_grid_lock": {
+    "eap_grid": 401,
+    "effective_node_count": 401,
+    "fit_grid": 61,
+    "linear_bound": 8.0,
+    "manifest_ridge_field_ignored": null,
+    "native_lock_verified": true,
+    "quadrature_axis_sha256": "be4a64bbd7df356641cba0f2b144ca6f235ce5cdb473464940e1a0546589c6bf",
+    "quadrature_log_prior_sha256": "1878878bced24f3dc2cc5c462dea20ed8e0176df070053254b56927e57827a22",
+    "quadrature_method": "normal_trapezoid",
+    "source": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/dense_grid/grid_lock.json",
+    "source_sha256": "0c1fd1c9e337d6aff32f6e1b2679df37f24840230c6d13a0b190dbecc7c00847"
+  },
+  "dense_settings_selection_policy": "fit/EAP grids are pre-nested explicit/locked inputs; never inferred from outer results",
+  "environment": {
+    "canonical_dependency_versions_sha256": "01fcfdd219850296ae4a255f09619a722c96ba6f645a3a15d82f630d455a6803",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "python": "3.13.13",
+    "scipy": "1.18.0"
+  },
+  "git_commit": "c321919f8b6ba5b79e74e1a06f01d9bbdc16deb3",
+  "inputs": {
+    "config": {
+      "path": "configs/infobench_calibration_remediation_v1.json",
+      "sha256": "7736cd1a7580c5b5192796a5618b96d483b8c43f3edf4c74fc6a446d3e7625de"
+    },
+    "response_matrix": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+      "sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "rubrics": {
+      "path": "data/InFoBench/rubrics.jsonl",
+      "sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10"
+    },
+    "scenarios": {
+      "path": "data/InFoBench/scenarios.jsonl",
+      "sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+    },
+    "split_manifest": {
+      "path": "configs/infobench_remediation_splits_v1.manifest.json",
+      "sha256": "3662ad502585799afa6d0e665a08f94f480f41c09c78ce472a20e209e5f14f95"
+    }
+  },
+  "outputs": {
+    "config_finalist_frequency.csv": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/config_finalist_frequency.csv",
+      "sha256": "261c38064fc4374384eedc42e3d584af7fe7939fb1635df632c26de6010d817a"
+    },
+    "disjoint_prediction_metrics.csv": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/disjoint_prediction_metrics.csv",
+      "sha256": "7b9c46e5dec8dbefe2ff30e0553afe5b6a48b800b161919a964ac186a451336f"
+    },
+    "fold_assignments.json": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/fold_assignments.json",
+      "sha256": "10b77c35c8c6735cb7787af06391003d7ed4618606e6605519481dbbd2504f45"
+    },
+    "inner_candidate_results.csv": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/inner_candidate_results.csv",
+      "sha256": "b35ab7f10aebe3f108c4e9704e034079e8d7740f27b37d0cbfefd8116dd9e646"
+    },
+    "inner_ridge_results.csv": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/inner_ridge_results.csv",
+      "sha256": "a5d57cc8ad5a714a5a00b9590e2fdce9b6574d4624e2a07481412a228ba9e325"
+    },
+    "outer_fold_finalists.json": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/outer_fold_finalists.json",
+      "sha256": "c1ff22f19918a14f8cba68dda1ac0e180973abd6a1b1ab6879b7694603d6a795"
+    },
+    "outer_metrics.json": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/outer_metrics.json",
+      "sha256": "f9abb14265ce09aaea218e06810499463fc7dc7d7f12e543db904d6a15c1a921"
+    },
+    "outer_oof_per_model.csv": {
+      "path": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/outer_oof_per_model.csv",
+      "sha256": "aa685e2e0e33e8657be389b0c02e5f90d81bb3e8a235695534faf9f5baaf2cbe"
+    }
+  },
+  "phase3_finalist_handoff": {
+    "applied_in_phase3": [
+      "absolute_gates",
+      "lowest_p90_scenario_count",
+      "lowest_mean_scenario_count"
+    ],
+    "artifact": "outer_fold_finalists.json",
+    "artifact_schema_version": "infobench-phase3-finalist-shortlist-v2",
+    "configured_selection_order": [
+      "lowest_p90_scenario_count",
+      "lowest_mean_scenario_count",
+      "lowest_total_uncertainty",
+      "prefer_trace"
+    ],
+    "cross_fold_candidate_id_comparison_authorized": false,
+    "deferred_to_phase4": [
+      "lowest_total_uncertainty",
+      "prefer_trace"
+    ],
+    "final_policy_freeze_authorized": false,
+    "length_tie_policy": "exact_numeric_equality",
+    "outer_evaluation_panel": "each fold-local exact-tie finalist set, evaluated only on that fold's outer-test models",
+    "phase3_declares_winner": false
+  },
+  "ridge_selection": {
+    "candidates": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "debug_override": false,
+    "headline_eligible": true,
+    "metric": "per-model disjoint-scenario EAP prediction log loss",
+    "outer_outcomes_used": false,
+    "rule": "strongest regularization within one SE of minimum mean loss",
+    "scope": "four inner folds inside each outer-training set",
+    "warning": null
+  },
+  "runtime": {
+    "allow_unconverged_fit": false,
+    "debug_allow_explicit_numerical_settings": false,
+    "estimate_latent_corr": true,
+    "max_grid_nodes": 50000,
+    "max_iter": 200,
+    "maximum_adaptive_scenarios": 50,
+    "metric_bootstrap_replicates": 2000,
+    "minimum_scored_criteria": 15,
+    "mwle_ridge": 1e-06,
+    "negative_policy": "drop",
+    "require_complete_bank": false,
+    "seed": 20260729,
+    "tol": 0.0001,
+    "top_n": 5
+  },
+  "schema_version": "infobench-nested-scenario-cat-cv-v3",
+  "script": "scripts/nested_scenario_cat_cv.py",
+  "shortlist_summary": {
+    "cross_fold_candidate_id_comparison_authorized": false,
+    "deferred_selection_fields": [
+      "lowest_total_uncertainty",
+      "prefer_trace"
+    ],
+    "final_policy_freeze_authorized": false,
+    "finalist_counts": {
+      "floor_08__se_0p25__selector_dopt": 1,
+      "floor_12__se_0p20__selector_trace": 1,
+      "floor_15__se_0p20__selector_trace": 1
+    },
+    "folds_with_finalists": 3,
+    "folds_without_finalists": 2,
+    "headline_eligible": true,
+    "no_fallback_used": true,
+    "phase3_declared_winner": false,
+    "ridge_choices_used_outer_outcomes": false,
+    "selected_ridges_by_outer_fold": {
+      "0": 0.1,
+      "1": 0.1,
+      "2": 0.1,
+      "3": 0.1,
+      "4": 0.1
+    }
+  },
+  "status": "phase3_finalists_complete",
+  "structure": {
+    "dimensions": [
+      {
+        "label": "instruction_following",
+        "members": [
+          "content",
+          "format",
+          "number",
+          "style",
+          "linguistic"
+        ]
+      }
+    ],
+    "name": "infobench_overall_1d",
+    "source_skills": [
+      "content",
+      "format",
+      "number",
+      "style",
+      "linguistic"
+    ]
+  },
+  "study_signature": "9a46e3a99a0956e3796b473d0ecf438ec5fc0419e2c2a776d22a3d602cbd4d1a"
+}

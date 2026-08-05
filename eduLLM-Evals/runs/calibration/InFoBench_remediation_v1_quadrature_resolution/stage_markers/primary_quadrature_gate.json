@@ -1,0 +1,17 @@
+{
+  "stage": "primary_quadrature_gate",
+  "kind": "deterministic_analysis",
+  "command": [
+    "internal-analysis",
+    "primary_quadrature_gate"
+  ],
+  "outputs": [
+    "numerical_gates/primary_grid_summary.csv",
+    "numerical_gates/primary_grid_gate.json"
+  ],
+  "completed_at": "2026-08-05T03:35:57.663563+00:00",
+  "output_sha256": {
+    "numerical_gates/primary_grid_summary.csv": "7a4e8633069548ab42cfe5da6bb71c264b523d08681a542ae57139c1822624a5",
+    "numerical_gates/primary_grid_gate.json": "bc7d111a427859ee8175b02ae34206188c83a1eb5b515226dfe4a6974001f568"
+  }
+}

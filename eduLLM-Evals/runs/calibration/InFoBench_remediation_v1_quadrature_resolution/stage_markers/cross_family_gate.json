@@ -1,0 +1,17 @@
+{
+  "stage": "cross_family_gate",
+  "kind": "deterministic_analysis",
+  "command": [
+    "internal-analysis",
+    "cross_family_gate"
+  ],
+  "outputs": [
+    "numerical_gates/cross_family_per_model.csv",
+    "numerical_gates/cross_family_check.json"
+  ],
+  "completed_at": "2026-08-05T03:36:04.137715+00:00",
+  "output_sha256": {
+    "numerical_gates/cross_family_per_model.csv": "1bb283aec2de5d128b9083248cf9860813a5069132558c156048791a4122d9ff",
+    "numerical_gates/cross_family_check.json": "913063a19ed3914f26ba9a9d55ec48ac3aa83498c1af6e2113b7e05b6edb0410"
+  }
+}

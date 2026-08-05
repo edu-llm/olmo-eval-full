@@ -1,0 +1,289 @@
+{
+  "allow_fallback_if_none_pass": false,
+  "applied_in_phase3": [
+    "absolute_gates",
+    "lowest_p90_scenario_count",
+    "lowest_mean_scenario_count"
+  ],
+  "artifact_schema_version": "infobench-phase3-finalist-shortlist-v2",
+  "configured_selection_order": [
+    "lowest_p90_scenario_count",
+    "lowest_mean_scenario_count",
+    "lowest_total_uncertainty",
+    "prefer_trace"
+  ],
+  "cross_fold_candidate_id_comparison_authorized": false,
+  "deferred_to_phase4": [
+    "lowest_total_uncertainty",
+    "prefer_trace"
+  ],
+  "final_policy_freeze_authorized": false,
+  "folds": [
+    {
+      "applied_in_phase3": [
+        "absolute_gates",
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count"
+      ],
+      "configured_selection_order": [
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count",
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "deferred_to_phase4": [
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "final_policy_freeze_authorized": false,
+      "finalist_candidate_ids": [
+        "floor_12__se_0p20__selector_trace"
+      ],
+      "finalists": [
+        {
+          "all_gates_pass": true,
+          "candidate_id": "floor_12__se_0p20__selector_trace",
+          "conditional_se_target": 0.2,
+          "deferred_selection_fields": [
+            "lowest_total_uncertainty",
+            "prefer_trace"
+          ],
+          "mean_scenario_count": 12.0,
+          "minimum_scenarios": 12,
+          "outer_training_fit_cache_key": "7023b8e414ea02888ac72cc4a1dd06cb5164516ed092c8bf592a65e532f62667",
+          "p90_scenario_count": 12.0,
+          "phase3_length_filter_status": "retained_through_p90_and_mean",
+          "selector": "trace"
+        }
+      ],
+      "inner_metrics_sha256": "e8ac4e98bd03c4e6fd8433bad7f1104129c83884ea3ad1017601735a9970c52c",
+      "length_tie_policy": "exact_numeric_equality",
+      "minimum_eligible_p90_scenario_count": 12.0,
+      "minimum_p90_tied_mean_scenario_count": 12.0,
+      "n_after_mean_length_filter": 1,
+      "n_after_p90_length_filter": 1,
+      "n_candidates_evaluated": 48,
+      "n_candidates_passing_all_absolute_gates": 3,
+      "n_finalists": 1,
+      "outer_evaluation_candidate_ids": [
+        "floor_12__se_0p20__selector_trace"
+      ],
+      "outer_evaluation_support": "fold_local_finalists_on_corresponding_outer_test_models_only",
+      "outer_fold": 0,
+      "outer_outcomes_available_at_shortlisting": false,
+      "outer_training_fit_cache_key": "7023b8e414ea02888ac72cc4a1dd06cb5164516ed092c8bf592a65e532f62667",
+      "phase3_declares_winner": false,
+      "ridge_evidence_sha256": "e3cc3ce4a4eff6665ae4778555ce017c0d0e03273a06ecbdba783f8ef1e22b77",
+      "ridge_selected_before_outer_scoring": true,
+      "ridge_selection_rule": "strongest ridge within one SE of minimum inner disjoint log loss",
+      "selected_ridge": 0.1,
+      "shortlist_status": "finalists_ready"
+    },
+    {
+      "applied_in_phase3": [
+        "absolute_gates",
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count"
+      ],
+      "configured_selection_order": [
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count",
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "deferred_to_phase4": [
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "final_policy_freeze_authorized": false,
+      "finalist_candidate_ids": [
+        "floor_08__se_0p25__selector_dopt"
+      ],
+      "finalists": [
+        {
+          "all_gates_pass": true,
+          "candidate_id": "floor_08__se_0p25__selector_dopt",
+          "conditional_se_target": 0.25,
+          "deferred_selection_fields": [
+            "lowest_total_uncertainty",
+            "prefer_trace"
+          ],
+          "mean_scenario_count": 8.0,
+          "minimum_scenarios": 8,
+          "outer_training_fit_cache_key": "da84814b42d87e33a919d1e44885462216764d9c8919891a2a1e14751bfafb32",
+          "p90_scenario_count": 8.0,
+          "phase3_length_filter_status": "retained_through_p90_and_mean",
+          "selector": "dopt"
+        }
+      ],
+      "inner_metrics_sha256": "c74883014109a047f24b029a119e19bb32e7044b5009dff3470ee1f7904e109f",
+      "length_tie_policy": "exact_numeric_equality",
+      "minimum_eligible_p90_scenario_count": 8.0,
+      "minimum_p90_tied_mean_scenario_count": 8.0,
+      "n_after_mean_length_filter": 1,
+      "n_after_p90_length_filter": 1,
+      "n_candidates_evaluated": 48,
+      "n_candidates_passing_all_absolute_gates": 5,
+      "n_finalists": 1,
+      "outer_evaluation_candidate_ids": [
+        "floor_08__se_0p25__selector_dopt"
+      ],
+      "outer_evaluation_support": "fold_local_finalists_on_corresponding_outer_test_models_only",
+      "outer_fold": 1,
+      "outer_outcomes_available_at_shortlisting": false,
+      "outer_training_fit_cache_key": "da84814b42d87e33a919d1e44885462216764d9c8919891a2a1e14751bfafb32",
+      "phase3_declares_winner": false,
+      "ridge_evidence_sha256": "c99b72419c68983bcedf0a93fce36f556a68080fa11dc6b9ce4f3c586945b54f",
+      "ridge_selected_before_outer_scoring": true,
+      "ridge_selection_rule": "strongest ridge within one SE of minimum inner disjoint log loss",
+      "selected_ridge": 0.1,
+      "shortlist_status": "finalists_ready"
+    },
+    {
+      "applied_in_phase3": [
+        "absolute_gates",
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count"
+      ],
+      "configured_selection_order": [
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count",
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "deferred_to_phase4": [
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "final_policy_freeze_authorized": false,
+      "finalist_candidate_ids": [],
+      "finalists": [],
+      "inner_metrics_sha256": "5c00400f65a3430c5ac00e237687782a634f69417bcb19b490b5651a36ea1d5b",
+      "length_tie_policy": "exact_numeric_equality",
+      "minimum_eligible_p90_scenario_count": null,
+      "minimum_p90_tied_mean_scenario_count": null,
+      "n_after_mean_length_filter": 0,
+      "n_after_p90_length_filter": 0,
+      "n_candidates_evaluated": 48,
+      "n_candidates_passing_all_absolute_gates": 0,
+      "n_finalists": 0,
+      "outer_evaluation_candidate_ids": [],
+      "outer_evaluation_support": "fold_local_finalists_on_corresponding_outer_test_models_only",
+      "outer_fold": 2,
+      "outer_outcomes_available_at_shortlisting": false,
+      "outer_training_fit_cache_key": null,
+      "phase3_declares_winner": false,
+      "ridge_evidence_sha256": "15359fa9151cf1cb2dc18825aa181b626d7887785671f1ba9c0157df00df68e1",
+      "ridge_selected_before_outer_scoring": true,
+      "ridge_selection_rule": "strongest ridge within one SE of minimum inner disjoint log loss",
+      "selected_ridge": 0.1,
+      "shortlist_status": "no_candidate_passed_absolute_gates"
+    },
+    {
+      "applied_in_phase3": [
+        "absolute_gates",
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count"
+      ],
+      "configured_selection_order": [
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count",
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "deferred_to_phase4": [
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "final_policy_freeze_authorized": false,
+      "finalist_candidate_ids": [],
+      "finalists": [],
+      "inner_metrics_sha256": "75c0f0157df7807e690abb4957d9b99b44c0e4d64cb24c1d118b6971dc82c93d",
+      "length_tie_policy": "exact_numeric_equality",
+      "minimum_eligible_p90_scenario_count": null,
+      "minimum_p90_tied_mean_scenario_count": null,
+      "n_after_mean_length_filter": 0,
+      "n_after_p90_length_filter": 0,
+      "n_candidates_evaluated": 48,
+      "n_candidates_passing_all_absolute_gates": 0,
+      "n_finalists": 0,
+      "outer_evaluation_candidate_ids": [],
+      "outer_evaluation_support": "fold_local_finalists_on_corresponding_outer_test_models_only",
+      "outer_fold": 3,
+      "outer_outcomes_available_at_shortlisting": false,
+      "outer_training_fit_cache_key": null,
+      "phase3_declares_winner": false,
+      "ridge_evidence_sha256": "da5c86a0d6e0535009b46cf8571ebcd28bd912e7a89d69486a19508ffa994894",
+      "ridge_selected_before_outer_scoring": true,
+      "ridge_selection_rule": "strongest ridge within one SE of minimum inner disjoint log loss",
+      "selected_ridge": 0.1,
+      "shortlist_status": "no_candidate_passed_absolute_gates"
+    },
+    {
+      "applied_in_phase3": [
+        "absolute_gates",
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count"
+      ],
+      "configured_selection_order": [
+        "lowest_p90_scenario_count",
+        "lowest_mean_scenario_count",
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "deferred_to_phase4": [
+        "lowest_total_uncertainty",
+        "prefer_trace"
+      ],
+      "final_policy_freeze_authorized": false,
+      "finalist_candidate_ids": [
+        "floor_15__se_0p20__selector_trace"
+      ],
+      "finalists": [
+        {
+          "all_gates_pass": true,
+          "candidate_id": "floor_15__se_0p20__selector_trace",
+          "conditional_se_target": 0.2,
+          "deferred_selection_fields": [
+            "lowest_total_uncertainty",
+            "prefer_trace"
+          ],
+          "mean_scenario_count": 15.0,
+          "minimum_scenarios": 15,
+          "outer_training_fit_cache_key": "8a2153e5f0097364740e0b41a681fcd8e1940a24edc6688e15f394e8c2679dc2",
+          "p90_scenario_count": 15.0,
+          "phase3_length_filter_status": "retained_through_p90_and_mean",
+          "selector": "trace"
+        }
+      ],
+      "inner_metrics_sha256": "85ce32d6d856aeb414deee105d56db6f5296cd8fdcf213f25616b9a9ce267393",
+      "length_tie_policy": "exact_numeric_equality",
+      "minimum_eligible_p90_scenario_count": 15.0,
+      "minimum_p90_tied_mean_scenario_count": 15.0,
+      "n_after_mean_length_filter": 1,
+      "n_after_p90_length_filter": 1,
+      "n_candidates_evaluated": 48,
+      "n_candidates_passing_all_absolute_gates": 1,
+      "n_finalists": 1,
+      "outer_evaluation_candidate_ids": [
+        "floor_15__se_0p20__selector_trace"
+      ],
+      "outer_evaluation_support": "fold_local_finalists_on_corresponding_outer_test_models_only",
+      "outer_fold": 4,
+      "outer_outcomes_available_at_shortlisting": false,
+      "outer_training_fit_cache_key": "8a2153e5f0097364740e0b41a681fcd8e1940a24edc6688e15f394e8c2679dc2",
+      "phase3_declares_winner": false,
+      "ridge_evidence_sha256": "b3fd07f4a75ae98b8beb36c89ee99f71cac82bbef9802cbaa0e4a81b02f34f71",
+      "ridge_selected_before_outer_scoring": true,
+      "ridge_selection_rule": "strongest ridge within one SE of minimum inner disjoint log loss",
+      "selected_ridge": 0.1,
+      "shortlist_status": "finalists_ready"
+    }
+  ],
+  "length_tie_policy": "exact_numeric_equality",
+  "outer_evaluation_support": "each fold-local finalist set on only that fold's outer-test models",
+  "outer_outcomes_used_for_shortlisting": false,
+  "phase3_declares_winner": false,
+  "schema_version": "infobench-nested-scenario-cat-cv-v3",
+  "selection_source": "inner-fold metrics only"
+}

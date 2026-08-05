@@ -1,0 +1,81 @@
+{
+  "n_lower_cells": 21329,
+  "n_upper_cells": 21329,
+  "n_common_cells": 21329,
+  "common_cell_keys_identical_after_explicit_intersection": true,
+  "common_cell_labels_identical": true,
+  "cluster_unit": "model_family",
+  "bootstrap_replicates": 5000,
+  "bootstrap_seed": 20260804,
+  "metrics": {
+    "log_loss": {
+      "pooled_shift_upper_minus_lower": -0.000642138816875484,
+      "absolute_pooled_shift": 0.000642138816875484,
+      "family_cluster_bootstrap_ci_95": [
+        -0.0015595424481383846,
+        0.0003280769947134269
+      ],
+      "equivalence_margin": 0.005,
+      "pooled_shift_within_margin": true,
+      "ci_wholly_within_equivalence_bounds": true,
+      "passed": true
+    },
+    "brier": {
+      "pooled_shift_upper_minus_lower": -9.355936957751757e-05,
+      "absolute_pooled_shift": 9.355936957751757e-05,
+      "family_cluster_bootstrap_ci_95": [
+        -0.00023646310772096652,
+        5.471212615111793e-05
+      ],
+      "equivalence_margin": 0.005,
+      "pooled_shift_within_margin": true,
+      "ci_wholly_within_equivalence_bounds": true,
+      "passed": true
+    }
+  },
+  "passed": true,
+  "comparison": "41_vs_61",
+  "theta_support": "identical common administration criteria",
+  "fold_support": [
+    {
+      "comparison": "41_vs_61",
+      "outer_fold": 0,
+      "n_common_items": 2086,
+      "n_common_administration_items": 1677,
+      "n_common_evaluation_items": 409,
+      "n_common_observed_evaluation_cells": 4499
+    },
+    {
+      "comparison": "41_vs_61",
+      "outer_fold": 1,
+      "n_common_items": 2086,
+      "n_common_administration_items": 1674,
+      "n_common_evaluation_items": 412,
+      "n_common_observed_evaluation_cells": 4119
+    },
+    {
+      "comparison": "41_vs_61",
+      "outer_fold": 2,
+      "n_common_items": 2079,
+      "n_common_administration_items": 1670,
+      "n_common_evaluation_items": 409,
+      "n_common_observed_evaluation_cells": 4089
+    },
+    {
+      "comparison": "41_vs_61",
+      "outer_fold": 3,
+      "n_common_items": 2094,
+      "n_common_administration_items": 1682,
+      "n_common_evaluation_items": 412,
+      "n_common_observed_evaluation_cells": 4116
+    },
+    {
+      "comparison": "41_vs_61",
+      "outer_fold": 4,
+      "n_common_items": 2083,
+      "n_common_administration_items": 1673,
+      "n_common_evaluation_items": 410,
+      "n_common_observed_evaluation_cells": 4506
+    }
+  ]
+}

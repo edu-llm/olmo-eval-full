@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-08-05T03:36:57.035406+00:00",
+  "fit_grid": 61,
+  "quadrature_method": "normal_trapezoid",
+  "eap_grid": 401,
+  "linear_bound": 8.0,
+  "candidates": [
+    0.001,
+    0.01,
+    0.1
+  ],
+  "production_selection_deferred_to_nested_cv": true
+}

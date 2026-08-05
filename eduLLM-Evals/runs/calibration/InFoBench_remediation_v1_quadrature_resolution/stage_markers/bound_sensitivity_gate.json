@@ -1,0 +1,17 @@
+{
+  "stage": "bound_sensitivity_gate",
+  "kind": "deterministic_analysis",
+  "command": [
+    "internal-analysis",
+    "bound_sensitivity_gate"
+  ],
+  "outputs": [
+    "numerical_gates/bound_check_per_model.csv",
+    "numerical_gates/bound_check.json"
+  ],
+  "completed_at": "2026-08-05T03:36:01.052880+00:00",
+  "output_sha256": {
+    "numerical_gates/bound_check_per_model.csv": "78f2e153e1c0de47b95284e117236c19f537c8d30be92cde7ad397f7b03c9227",
+    "numerical_gates/bound_check.json": "24930fa45c1c59f548f698e3e7a14ccc60d2ac3e573fb2aac81edbba2355d772"
+  }
+}
