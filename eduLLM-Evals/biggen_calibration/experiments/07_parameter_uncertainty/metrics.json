@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-08-04T22:42:45.825523+00:00",
+  "purpose": "scenario-level parameter-uncertainty inflation of ability SEs",
+  "bank": "staging\\biggen_unidim_modeled.jsonl",
+  "matrix": "staging\\biggen_response_matrix.csv",
+  "dims": [
+    "general"
+  ],
+  "config": {
+    "fit_nodes": 7,
+    "eap_grid": 61,
+    "n_boot": 150,
+    "max_se": 0.12
+  },
+  "n_models": 52,
+  "median_item_param_se": {
+    "general": 0.4201772237431717
+  },
+  "se_components": {
+    "general": {
+      "median_se_posterior": 0.13229073791086826,
+      "median_se_param": 0.07351666120056136,
+      "median_se_total": 0.15101649676470302,
+      "median_bar_inflation": 1.1435874946485522,
+      "max_bar_inflation": 1.2645247305535998
+    }
+  }
+}
