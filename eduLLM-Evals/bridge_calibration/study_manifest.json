@@ -1,6 +1,6 @@
 {
   "benchmark": "Bridge",
-  "generated_at": "2026-08-05T00:54:07.038561+00:00",
+  "generated_at": "2026-08-05T13:50:36.831032+00:00",
   "method": "unidimensional-2pl-mml-em (calibrate_mirt.fit_m2pl_em, Q=1)",
   "preliminary": true,
   "inputs": {
@@ -25,12 +25,9 @@
     "n_source_groups": 162
   },
   "recovery": {
-    "method": "held-out 5-fold CAT-MWLE vs full-bank EAP",
-    "locked_config": {"se_target": 0.15, "min_items": 20},
-    "theta_r": 0.9440911352827492,
-    "theta_slope": 0.866091279695149,
-    "theta_mae": 0.26661367024057037,
-    "pass_r": 0.9098122381719349,
-    "pass_mae": 0.04852348354489596
+    "k": 5,
+    "r": 0.22560267363343892,
+    "slope": 0.2011036488790999,
+    "mae": 1.0105879952791337
   }
 }

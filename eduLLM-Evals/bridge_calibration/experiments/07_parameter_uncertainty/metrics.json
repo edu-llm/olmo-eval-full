@@ -1,0 +1,8 @@
+{
+  "n_models": 51,
+  "n_items": 2684,
+  "mean_se_ability": 0.043826355341476615,
+  "mean_se_param": 0.4998977449123122,
+  "mean_se_total": 0.5140514130650581,
+  "note": "SE_param (calibration) dominates SE_ability at this N; total-SE bars are the honest ones."
+}

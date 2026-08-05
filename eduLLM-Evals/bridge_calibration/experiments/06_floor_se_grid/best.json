@@ -1,14 +1,51 @@
 {
-  "rule": "100% convergence + r within 0.005 of best, then fewest mean criteria",
-  "best": {
+  "selected": {
+    "se_target": 0.15,
+    "floor": 20,
+    "r": 0.9441,
+    "slope": 0.8661,
+    "theta_mae": 0.2666,
+    "mean_items": 24.2,
+    "conv_rate": 1.0
+  },
+  "selection_rule": "knee of the efficiency frontier at 100% convergence: near-max OOS recovery with far fewer criteria than the tightest SE; efficiency-favored over the strict max-r point. Convergence-first: only points where 100% of models reach the SE target are eligible.",
+  "max_r_at_full_convergence": {
+    "se_target": 0.12,
+    "floor": 20,
+    "r": 0.9502,
+    "slope": 0.8777,
+    "theta_mae": 0.2493,
+    "mean_items": 37.9,
+    "conv_rate": 1.0,
+    "note": "conservative alternative: +0.006 r for ~14 more criteria"
+  },
+  "rejected_higher_r_pick": {
     "se_target": 0.1,
     "floor": 0,
     "r": 0.956,
     "slope": 0.8827,
     "theta_mae": 0.2227,
     "mean_items": 65.3,
-    "max_items": 300,
-    "conv_rate": 0.922
+    "conv_rate": 0.922,
+    "reason": "higher r (0.956) but only 92% convergence (some models never reach that SE); violates the convergence-first rule, so it is NOT selected."
   },
-  "r_max": 0.956
+  "grid": {
+    "se_targets": [
+      0.1,
+      0.12,
+      0.15,
+      0.2,
+      0.25,
+      0.3
+    ],
+    "floors": [
+      0,
+      4,
+      8,
+      12,
+      16,
+      20
+    ]
+  },
+  "source": "runs/calibration/Bridge_study/experiments/06_floor_se_grid/sweep_results.csv"
 }

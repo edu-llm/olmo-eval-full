@@ -1,0 +1,75 @@
+{
+  "rule": "lowest held-out marginal log-loss, keep within 1 SE, then fewest dimensions",
+  "selected": "overall_1d",
+  "selected_n_dims": 1,
+  "best_ll_structure": "overall_1d",
+  "one_se_threshold": 0.526,
+  "note": "EXPLORATORY at N=51: higher-D confirmatory M2PL is not identifiable; large max|latent corr| indicates collapse toward 1D. Affective axis is expected to fail to identify (pilot disc <= 0).",
+  "structures": [
+    {
+      "structure": "overall_1d",
+      "n_dims": 1,
+      "n_items": 2684,
+      "loglik": -54007.9,
+      "n_params": 5368,
+      "aic": 118751.8,
+      "bic": 171502.5,
+      "oos_logloss_mean": 0.5109,
+      "oos_logloss_se": 0.0151,
+      "max_latent_corr_offdiag": 0.0,
+      "converged": true
+    },
+    {
+      "structure": "correlation_2d",
+      "n_dims": 2,
+      "n_items": 2684,
+      "loglik": -53735.3,
+      "n_params": 5879,
+      "aic": 119228.6,
+      "bic": 177000.8,
+      "oos_logloss_mean": 0.5114,
+      "oos_logloss_se": 0.0151,
+      "max_latent_corr_offdiag": 0.77,
+      "converged": true
+    },
+    {
+      "structure": "correlation_3d",
+      "n_dims": 3,
+      "n_items": 2684,
+      "loglik": -53567.8,
+      "n_params": 6044,
+      "aic": 119223.6,
+      "bic": 178617.3,
+      "oos_logloss_mean": 0.5131,
+      "oos_logloss_se": 0.0164,
+      "max_latent_corr_offdiag": 0.795,
+      "converged": true
+    },
+    {
+      "structure": "merge_affective_communication_4d",
+      "n_dims": 4,
+      "n_items": 2684,
+      "loglik": -53218.5,
+      "n_params": 6125,
+      "aic": 118687.0,
+      "bic": 178876.7,
+      "oos_logloss_mean": 0.5131,
+      "oos_logloss_se": 0.0164,
+      "max_latent_corr_offdiag": 0.886,
+      "converged": true
+    },
+    {
+      "structure": "full_5d",
+      "n_dims": 5,
+      "n_items": 2684,
+      "loglik": -52517.2,
+      "n_params": 6275,
+      "aic": 117584.4,
+      "bic": 179248.1,
+      "oos_logloss_mean": 0.511,
+      "oos_logloss_se": 0.0165,
+      "max_latent_corr_offdiag": 0.967,
+      "converged": true
+    }
+  ]
+}

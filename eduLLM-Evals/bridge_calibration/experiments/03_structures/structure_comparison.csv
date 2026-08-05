@@ -1,0 +1,6 @@
+structure,n_dims,n_items,loglik,n_params,aic,bic,oos_logloss_mean,oos_logloss_se,max_latent_corr_offdiag,converged
+overall_1d,1,2684,-54007.9,5368,118751.8,171502.5,0.5109,0.0151,0.0,True
+correlation_2d,2,2684,-53735.3,5879,119228.6,177000.8,0.5114,0.0151,0.77,True
+correlation_3d,3,2684,-53567.8,6044,119223.6,178617.3,0.5131,0.0164,0.795,True
+merge_affective_communication_4d,4,2684,-53218.5,6125,118687.0,178876.7,0.5131,0.0164,0.886,True
+full_5d,5,2684,-52517.2,6275,117584.4,179248.1,0.511,0.0165,0.967,True

@@ -1,0 +1,4 @@
+{ "matrix": "runs/judge_open4/Bridge/response_matrix.csv", "rubrics": "data/Bridge/rubrics.jsonl", "scenarios": "data/Bridge/scenarios.jsonl",
+  "operating_point": {"se_target": 0.15, "floor": 20}, "ridge": 0.01,
+  "fit_grid": 41, "k_folds": 5,
+  "generated_at": "2026-08-05T13:49:24Z" }
