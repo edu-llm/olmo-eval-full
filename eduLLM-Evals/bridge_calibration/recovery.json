@@ -1,0 +1,38 @@
+{
+  "method": "held-out 5-fold OOS: CAT-MWLE theta vs full-bank EAP theta (+ p-IRT pass-rate)",
+  "note": "locked operating point SE=0.15 / floor 20 (from the SE x floor sweep, experiments/06_floor_se_grid); supersedes the earlier crude EAP-pooling recovery (r=0.226)",
+  "locked_config": {
+    "structure": "unidimensional",
+    "estimator": "MWLE",
+    "selection": "trace",
+    "se_target": 0.15,
+    "min_items": 20,
+    "k": 5
+  },
+  "theta_recovery": {
+    "r": 0.9440911352827492,
+    "r_ci": [
+      0.9107723521148285,
+      0.9662217963814079
+    ],
+    "slope": 0.866091279695149,
+    "slope_ci": [
+      0.7752689316854893,
+      0.96357719140683
+    ],
+    "theta_mae": 0.26661367024057037
+  },
+  "pass_rate": {
+    "r": 0.9098122381719349,
+    "r_ci": [
+      0.8625853526486892,
+      0.945304535471524
+    ],
+    "pass_mae": 0.04852348354489596,
+    "slope": 1.179590039885426
+  },
+  "n_models": 51,
+  "k": 5,
+  "se_target": 0.15,
+  "min_items": 20
+}

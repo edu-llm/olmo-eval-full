@@ -1,0 +1,12 @@
+{
+  "n_models": 51,
+  "n_criteria_fit": 2684,
+  "dropped_all_fail": 400,
+  "dropped_all_pass": 22,
+  "source_id_grouping": {
+    "applied": true,
+    "kept_columns": 3106,
+    "dropped_duplicate_source": 1689,
+    "n_source_groups": 162
+  }
+}

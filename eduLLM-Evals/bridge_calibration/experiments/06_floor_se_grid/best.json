@@ -1,0 +1,14 @@
+{
+  "rule": "100% convergence + r within 0.005 of best, then fewest mean criteria",
+  "best": {
+    "se_target": 0.1,
+    "floor": 0,
+    "r": 0.956,
+    "slope": 0.8827,
+    "theta_mae": 0.2227,
+    "mean_items": 65.3,
+    "max_items": 300,
+    "conv_rate": 0.922
+  },
+  "r_max": 0.956
+}

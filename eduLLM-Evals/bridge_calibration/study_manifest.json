@@ -1,0 +1,36 @@
+{
+  "benchmark": "Bridge",
+  "generated_at": "2026-08-05T00:54:07.038561+00:00",
+  "method": "unidimensional-2pl-mml-em (calibrate_mirt.fit_m2pl_em, Q=1)",
+  "preliminary": true,
+  "inputs": {
+    "matrix": "runs/judge_open4/Bridge/response_matrix.csv",
+    "rubrics": "data/Bridge/rubrics.jsonl",
+    "scenarios": "data/Bridge/scenarios.jsonl"
+  },
+  "fit": {
+    "grid": 41,
+    "ridge": 0.01,
+    "loglik": -52940.960521922316,
+    "converged": true,
+    "n_iter": 11
+  },
+  "n_models": 51,
+  "n_criteria_fit": 2684,
+  "n_criteria_updated_in_bank": 2684,
+  "source_id_grouping": {
+    "applied": true,
+    "kept_columns": 3106,
+    "dropped_duplicate_source": 1689,
+    "n_source_groups": 162
+  },
+  "recovery": {
+    "method": "held-out 5-fold CAT-MWLE vs full-bank EAP",
+    "locked_config": {"se_target": 0.15, "min_items": 20},
+    "theta_r": 0.9440911352827492,
+    "theta_slope": 0.866091279695149,
+    "theta_mae": 0.26661367024057037,
+    "pass_r": 0.9098122381719349,
+    "pass_mae": 0.04852348354489596
+  }
+}
