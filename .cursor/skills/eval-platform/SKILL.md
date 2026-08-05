@@ -264,9 +264,10 @@ prompts out of 103,253.
 hellaswag is too big to pair with anything, so it becomes the floor. The same
 split on `--group default` is worse still: hellaswag is 61% of that set's 65,315
 prompts, so three jobs buy only about 1.6x. Fan-out pays on `all` and barely pays
-on `default`. Splitting hellaswag itself is not available — `--limit` samples a
-subset, it does not shard one, so a limited run scores a different population
-rather than part of the same one.
+on `default`. Splitting hellaswag itself is not available — `--limit` draws a
+random subsample of the split, it does not shard it, so two half-limit jobs would
+overlap on some instances and miss others, and no combination of them adds back
+up to the full run.
 
 Treat those prompt counts as a proxy and not a measurement. A generative prompt
 runs a decode loop of up to 32 tokens while a multiple-choice prompt is a single

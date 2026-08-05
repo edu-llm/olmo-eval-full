@@ -90,7 +90,7 @@
 # waits for a team lead. That is deliberate. The bound is a hard timeout the job is killed
 # at, not a budget it is refunded from, and before this job scores its first
 # prompt it apt-gets git, pip-installs olmo-eval and transformers, downloads the
-# checkpoint, and pulls the benchmark data -- roughly 90k rows on a cold HF_HOME
+# checkpoint, and pulls the benchmark data -- roughly 17k rows on a cold HF_HOME
 # even for a 36-prompt smoke run. The workload profile allows one attempt, so a
 # run killed at the ceiling is not retried; it writes _FAILED and the money is
 # gone. Buying automatic approval would mean asking for under an hour on the

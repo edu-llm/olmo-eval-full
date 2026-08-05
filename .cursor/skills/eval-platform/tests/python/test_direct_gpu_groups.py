@@ -80,8 +80,45 @@ check("naturalqs is excluded", "naturalqs" not in names, str(names))
 check("jeopardy is excluded", "jeopardy" not in names, str(names))
 
 totals = lines[1].split() if len(lines) > 1 else []
-check("70 instances / 200 prompts / 0 unknown", totals == ["70", "200", "0"], str(totals))
+check("506 instances / 1005 prompts / 0 unknown", totals == ["506", "1005", "0"], str(totals))
 check("a description is emitted", len(lines) > 2 and lines[2].strip() != "", str(lines[2:]))
+
+
+print("\nsmoke's prompt budget gives each benchmark its own instance cap:")
+
+# The whole point of a budget is that the caps differ, so a bug that emitted one
+# uniform cap would still total correctly if the total were all that was checked
+# -- 506 instances is not reachable by any single cap, but a future budget's
+# might be. The caps themselves are read out of the resolver's fourth line and
+# recomputed here from the registry, which is a second implementation of the
+# division over the same input rather than a copy of the answer.
+registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
+bench = registry["benchmarks"]
+budget = registry["groups"]["smoke"]["prompt_budget"]
+caps = [int(n) for n in lines[3].split()] if len(lines) > 3 else []
+check("one cap per benchmark", len(caps) == len(names), f"{len(caps)} caps for {len(names)} names")
+check("the caps are not all the same value", len(set(caps)) > 1, str(caps))
+
+share = budget / len(names)
+expected_caps = [max(1, min(bench[n]["instances"], round(share / bench[n]["choices"])))
+                 for n in names]
+check("each cap is the benchmark's even share of the budget, in instances",
+      caps == expected_caps, f"{caps} vs {expected_caps}")
+# What the budget is actually for: near-equal prompt counts, from unequal
+# instance counts. Nothing else in the suite would notice if the division ran
+# the wrong way round and made the instances equal instead.
+issued = [cap * bench[n]["choices"] for cap, n in zip(caps, names)]
+# Rounding to a whole instance can miss the share by at most half an instance,
+# which is half a benchmark's choices in prompts. Anything wider means the
+# division ran the wrong way round -- equal instances rather than equal prompts
+# would put csqa five times over its share.
+check("every benchmark issues within half an instance of an even share",
+      all(abs(p - share) <= bench[n]["choices"] / 2 + 1e-9 for p, n in zip(issued, names)),
+      str(dict(zip(names, issued))))
+check("the realised total is near the budget without claiming to hit it",
+      abs(sum(issued) - budget) <= len(names), f"{sum(issued)} against a budget of {budget}")
+check("no cap exceeds its split", all(c <= bench[n]["instances"] for c, n in zip(caps, names)),
+      str([(n, c, bench[n]["instances"]) for c, n in zip(caps, names)]))
 
 
 print("\nexcluding does not perturb the groups it derives from:")
@@ -94,7 +131,6 @@ for group, count in (("all", 9), ("default", 5), ("reasoning", 5), ("factual", 2
 
 print("\nthe registry is what decides, not a hardcoded list:")
 
-registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
 with tempfile.TemporaryDirectory() as tmp:
     # A tenth benchmark added to `all` must reach smoke with no edit to smoke. This is
     # the whole reason `like`/`exclude` name groups instead of listing benchmarks.
@@ -143,11 +179,46 @@ with tempfile.TemporaryDirectory() as tmp:
     check("and reported as inheriting from itself", "itself" in err, err.strip()[:120])
 
 
-print("\nan explicit --limit still overrides the group's own:")
+print("\nan explicit --limit overrides the group's budget, uniformly:")
 
+# A caller who names a number should get that number on every benchmark rather
+# than a share of a budget they never mentioned, so this also has to flatten the
+# caps back out -- 21 instances is reachable both ways, the equal caps are not.
 rc, out, _ = resolve(group="smoke", limit="3")
-totals = out.strip().split("\n")[1].split() if rc == 0 else []
+budgeted_lines = out.strip().split("\n") if rc == 0 else []
+totals = budgeted_lines[1].split() if len(budgeted_lines) > 1 else []
 check("--limit 3 gives 21 instances / 60 prompts", totals[:2] == ["21", "60"], str(totals))
+override_caps = budgeted_lines[3].split() if len(budgeted_lines) > 3 else []
+check("and puts the same 3 on every benchmark", override_caps == ["3"] * 7, str(override_caps))
+
+
+print("\nthe budget's edges:")
+
+with tempfile.TemporaryDirectory() as tmp:
+    # Two ways to say how big a group is. Preferring one silently would leave the
+    # other sitting in the registry as a false statement about what runs.
+    both = json.loads(json.dumps(registry))
+    both["groups"]["smoke"]["limit"] = 10
+    path = Path(tmp) / "both.json"
+    path.write_text(json.dumps(both), encoding="utf-8")
+    rc, _, err = resolve(group="smoke", registry=path)
+    check("limit and prompt_budget together are refused", rc != 0, f"rc={rc}")
+    check("and the message names both keys",
+          "limit" in err and "prompt_budget" in err, err.strip()[:160])
+
+    # A budget large enough to outrun a split must cap at the split rather than
+    # asking olmo-eval for rows that do not exist.
+    huge = json.loads(json.dumps(registry))
+    huge["groups"]["smoke"]["prompt_budget"] = 10_000_000
+    path = Path(tmp) / "huge.json"
+    path.write_text(json.dumps(huge), encoding="utf-8")
+    rc, out, err = resolve(group="smoke", registry=path)
+    hlines = out.strip().split("\n") if rc == 0 else []
+    hnames = hlines[0].split() if hlines else []
+    hcaps = [int(n) for n in hlines[3].split()] if len(hlines) > 3 else []
+    check("an unreachable budget resolves rather than failing", rc == 0, f"rc={rc} {err.strip()}")
+    check("and caps every benchmark at its own split size",
+          hcaps == [bench[n]["instances"] for n in hnames], str(dict(zip(hnames, hcaps))))
 
 
 print()

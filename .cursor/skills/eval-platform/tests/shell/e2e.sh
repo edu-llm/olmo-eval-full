@@ -203,24 +203,53 @@ if not isinstance(spec, list):
 print(' '.join(spec))" "${REGISTRY}" "$1" | tr -d '\r'
 }
 registry_cost() {
-  # registry_cost "<names>" [cap] -- "<instances> <prompts>", priced as the sweep
-  # prices it: a cap replaces each split size rather than trimming the total.
+  # registry_cost "<names>" ["<caps>"] -- "<instances> <prompts>", priced as the
+  # sweep prices it: a cap replaces a split size rather than trimming the total.
+  # Caps are one per name, in order, because the two registries no longer agree
+  # that a limited group has a single cap -- see registry_group_caps.
   python3 -c "
 import json, sys
 bench = json.load(open(sys.argv[1], encoding='utf-8'))['benchmarks']
-cap = int(sys.argv[3]) if sys.argv[3] else None
-counts = [(min(bench[b]['instances'], cap) if cap else bench[b]['instances'],
-           bench[b]['choices']) for b in sys.argv[2].split()]
+caps = sys.argv[3].split()
+counts = [(min(bench[b]['instances'], int(caps[i])) if caps else bench[b]['instances'],
+           bench[b]['choices']) for i, b in enumerate(sys.argv[2].split())]
 print(sum(n for n, _ in counts), sum(n * c for n, c in counts))" \
     "${REGISTRY}" "$1" "${2:-}" | tr -d '\r'
 }
-registry_group_limit() {
-  # registry_group_limit <group> -- the cap a group sets on itself, if any
+registry_group_caps() {
+  # registry_group_caps <group> "<names>" -- the instance cap the registry implies
+  # for each name, in order, or empty when the group sets none.
+  #
+  # A second implementation of the resolver's rule over the same input, not a copy
+  # of its answer. One registry's smoke group sets a flat `limit`; the other sets a
+  # `prompt_budget`, an even share of which becomes a different instance cap per
+  # benchmark because prompts are instances times choices. Priced only against a
+  # total, a bug that emitted one uniform cap for a budgeted group could still add
+  # up, so the caps themselves are compared below.
   python3 -c "
 import json, sys
-spec = json.load(open(sys.argv[1], encoding='utf-8'))['groups'][sys.argv[2]]
-print(spec.get('limit', '') if isinstance(spec, dict) else '')" \
-    "${REGISTRY}" "$1" | tr -d '\r'
+reg = json.load(open(sys.argv[1], encoding='utf-8'))
+bench, spec = reg['benchmarks'], reg['groups'][sys.argv[2]]
+names = sys.argv[3].split()
+budget = spec.get('prompt_budget') if isinstance(spec, dict) else None
+flat = spec.get('limit') if isinstance(spec, dict) else None
+if budget is not None:
+    share = budget / len(names)
+    print(' '.join(str(max(1, min(bench[n]['instances'], round(share / bench[n]['choices']))))
+                   for n in names))
+elif flat is not None:
+    print(' '.join(str(flat) for _ in names))
+else:
+    print('')" "${REGISTRY}" "$1" "$2" | tr -d '\r'
+}
+registry_unsafe() {
+  # registry_unsafe -- the names the registry flags as scoring a different
+  # population when limited. Empty today; the assertions below branch on it so
+  # they keep testing the warning if one is ever put back.
+  python3 -c "
+import json, sys
+print(' '.join(json.load(open(sys.argv[1], encoding='utf-8')).get('limit_unsafe', {})))" \
+    "${REGISTRY}" | tr -d '\r'
 }
 
 read -r -a DEFAULT_BENCH <<< "$(registry_members default)"
@@ -229,8 +258,8 @@ read -r -a ALL_BENCH <<< "$(registry_members all)"
 read -r _ ALL_PROMPTS <<< "$(registry_cost "${ALL_BENCH[*]}")"
 read -r -a FACT_BENCH <<< "$(registry_members fact_proxy)"
 read -r CSQA_INSTANCES CSQA_PROMPTS <<< "$(registry_cost csqa)"
-SMOKE_LIMIT="$(registry_group_limit smoke)"
-echo "registry: default=${#DEFAULT_BENCH[@]} all=${#ALL_BENCH[@]} smoke_limit=${SMOKE_LIMIT}"
+read -r -a UNSAFE_BENCH <<< "$(registry_unsafe)"
+echo "registry: default=${#DEFAULT_BENCH[@]} all=${#ALL_BENCH[@]} limit_unsafe=${#UNSAFE_BENCH[@]}"
 
 echo "======================================================================"
 echo "CASE A: --dry-run prints the cost estimate and spends nothing"
@@ -428,9 +457,28 @@ OUT_GS="${SANDBOX}/gs.log"
 "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
   --group smoke --dry-run > "${OUT_GS}" 2>&1
 SMOKE_BENCH="$(sed -n 's/.*benchmarks ([0-9]*) from .*: //p' "${OUT_GS}" | head -1 | tr -d '\r')"
-read -r SMOKE_INSTANCES SMOKE_PROMPTS <<< "$(registry_cost "${SMOKE_BENCH}" "${SMOKE_LIMIT}")"
-check "--group smoke applies the cap the registry sets on it (${SMOKE_LIMIT})" \
-  "$(has "capped at ${SMOKE_LIMIT} instances per benchmark" "${OUT_GS}")"
+SMOKE_CAPS="$(registry_group_caps smoke "${SMOKE_BENCH}")"
+read -r -a SMOKE_CAP_LIST <<< "${SMOKE_CAPS}"
+read -r -a SMOKE_NAMES <<< "${SMOKE_BENCH}"
+read -r SMOKE_INSTANCES SMOKE_PROMPTS <<< "$(registry_cost "${SMOKE_BENCH}" "${SMOKE_CAPS}")"
+DISTINCT_CAPS="$(printf '%s\n' "${SMOKE_CAP_LIST[@]}" | sort -u | wc -l | tr -d ' \r')"
+if [[ "${DISTINCT_CAPS}" -eq 1 ]]; then
+  check "--group smoke applies the single cap the registry sets on it (${SMOKE_CAP_LIST[0]})" \
+    "$(has "capped at ${SMOKE_CAP_LIST[0]} instances per benchmark" "${OUT_GS}")"
+else
+  # A prompt budget, so the caps differ and the log has to name them one by one:
+  # "capped at N instances per benchmark" would state a cap no benchmark got. Each
+  # is checked by name, which is what a bug emitting one uniform cap would fail --
+  # the total alone can be right for the wrong reason.
+  check "--group smoke says its caps vary rather than naming one" \
+    "$(lacks 'capped at ' "${OUT_GS}")"
+  for i in "${!SMOKE_NAMES[@]}"; do
+    check "--group smoke caps ${SMOKE_NAMES[i]} at ${SMOKE_CAP_LIST[i]}" \
+      "$(has "${SMOKE_NAMES[i]}: ${SMOKE_CAP_LIST[i]}" "${OUT_GS}")"
+  done
+  check "--group smoke's caps are genuinely per benchmark, not one value repeated" \
+    "$([[ "${DISTINCT_CAPS}" -gt 1 ]] && echo 1 || echo 0)" "${SMOKE_CAPS}"
+fi
 check "--group smoke prices the capped set it resolved (${SMOKE_INSTANCES} instances)" \
   "$(has "~${SMOKE_INSTANCES} instances / ~${SMOKE_PROMPTS} vLLM prompts per checkpoint" "${OUT_GS}")"
 # An unknown group must be rejected, not silently treated as empty.
@@ -447,17 +495,31 @@ OUT_GB="${SANDBOX}/gb.log"
 RC_GB=$?
 check "--group with --benchmarks exits 2" "$([[ ${RC_GB} -eq 2 ]] && echo 1 || echo 0)" "rc=${RC_GB}"
 check "--group with --benchmarks explains" "$(has 'not both' "${OUT_GB}")"
-# --limit must name only the registry-flagged tasks, driven by limit_unsafe.
+# --limit must name only the registry-flagged tasks, driven by limit_unsafe. That
+# table is empty in both registries today -- hellaswag and socialiqa were in it
+# until their loaders were changed to sample the split they score -- so what can be
+# asserted depends on the registry the script under test will read, and is read
+# from it rather than written down here. If a name is ever put back, the first
+# branch starts running again without an edit.
 OUT_G2="${SANDBOX}/g2.log"
 "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
   --benchmarks "hellaswag arc_easy" --limit 50 --dry-run > "${OUT_G2}" 2>&1
-check "limit warning fires for a flagged task" "$(has 'hellaswag: loads validation AND train' "${OUT_G2}")"
-check "limit warning omits an unflagged task" "$(lacks 'arc_easy: loads' "${OUT_G2}")"
+if [[ ${#UNSAFE_BENCH[@]} -gt 0 ]]; then
+  check "limit warning fires for a flagged task" "$(has "${UNSAFE_BENCH[0]}: " "${OUT_G2}")"
+  check "limit warning omits an unflagged task" "$(lacks 'arc_easy: loads' "${OUT_G2}")"
+else
+  check "a limited run still reports the cap it applied" \
+    "$(has 'capped at 50 instances per benchmark' "${OUT_G2}")"
+  check "and warns about no benchmark, because none is flagged" \
+    "$(lacks 'score a different population when limited' "${OUT_G2}")"
+  check "hellaswag in particular is no longer called out" \
+    "$(lacks 'hellaswag: loads' "${OUT_G2}")"
+fi
 OUT_G3="${SANDBOX}/g3.log"
 "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
   --benchmarks "arc_easy csqa" --limit 50 --dry-run > "${OUT_G3}" 2>&1
 check "no limit warning when no flagged task requested" \
-  "$(lacks 'Limiting is not a valid measurement' "${OUT_G3}")"
+  "$(lacks 'score a different population when limited' "${OUT_G3}")"
 # A subset must produce a smaller estimate than the full set.
 OUT_G4="${SANDBOX}/g4.log"
 "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \

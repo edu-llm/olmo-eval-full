@@ -359,8 +359,9 @@ log "cost estimate: ~${TOTAL_INSTANCES} instances / ~${TOTAL_PROMPTS} vLLM promp
 log "               ~${SWEEP_INSTANCES} instances / ~${SWEEP_PROMPTS} vLLM prompts for the whole sweep"
 if [[ -n "${LIMIT}" ]]; then
   log "NOTE: capped at ${LIMIT} instances per benchmark; the estimate above reflects that."
-  # Some tasks change which split they load once a limit is set, which makes a
-  # limited run score a different population. The registry flags those.
+  # Some tasks change which rows they load once a limit is set, which makes a
+  # limited run score a population the unlimited run never touches. The registry
+  # flags those; the table is absent when none do.
   AFFECTED="$(
     BENCHES="${BENCH_LIST[*]}" REGISTRY="${REGISTRY}" python3 - <<'PY'
 import json, os

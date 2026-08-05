@@ -21,7 +21,7 @@ sourcing.
 | `fact_proxy` | `naturalqs` `jeopardy` | ready, API-free; generative, see the metric notes |
 | `factual` | `popqa` `triviaqa` | ready, API-free; purpose-built fact recall |
 | `all` | all nine | ready |
-| `smoke` | `all` minus `fact_proxy` — seven benchmarks at 10 instances each | plumbing check only — **not a measurement** |
+| `smoke` | `all` minus `fact_proxy` — seven benchmarks sharing a budget of 1,000 prompts, so 506 instances and 1,005 prompts | plumbing check only — **not a measurement** |
 
 `fact_proxy` is separated because those two are *proxies* for fact recall rather
 than purpose-built fact benchmarks. They work today and cost nothing extra, so
@@ -85,7 +85,9 @@ Each entry carries:
 Three side tables: `groups` names selectable sets (`default` is what runs when
 neither `--group` nor `--benchmarks` is given), `aliases` maps common wrong names
 to the real task name purely to produce a helpful error, and `limit_unsafe` flags
-tasks whose split selection changes when `--limit` is set.
+tasks that read rows outside the split they score once `--limit` is set. That last
+table is optional and currently absent — see [the `--limit` trap](#the---limit-trap)
+for what emptied it.
 
 A group is either a plain list of benchmark names or an object, which lets a
 group carry settings as well as membership:
@@ -96,6 +98,7 @@ group carry settings as well as membership:
 | `like` | inherit another group's list, so the two cannot drift apart |
 | `exclude` | drop another group's members from the inherited list |
 | `limit` | instances per benchmark, applied unless `--limit` is passed |
+| `prompt_budget` | total prompts for the group, split evenly across its members; each member's share becomes an instance limit. Mutually exclusive with `limit` |
 | `description` | appended to the log line and to `benchmark_selection` |
 
 `smoke` is `like: all` with `exclude: fact_proxy`, rather than a list of seven
@@ -104,6 +107,14 @@ without a second edit: a benchmark added to `all` is smoke-tested automatically,
 and one added to `fact_proxy` is automatically left out. A literal list would
 have to be remembered, and the point of a plumbing check is that it covers the
 paths that exist rather than the ones someone last wrote down.
+
+`prompt_budget` is there for the same reason, one level down. A prompt count is
+instances times `choices`, so a single `limit` does not buy equal coverage: at 20
+instances each, `csqa` issues 100 prompts and `popqa` issues 20. A budget divides
+by each benchmark's own `choices` instead, and — like `like` and `exclude` — it
+keeps meaning the same thing when membership changes. Seven hand-written limits
+would stop being an even split the moment a benchmark was added or a `choices`
+corrected, and nothing would say so.
 
 **To add a benchmark**, add an entry and put it in a group. Nothing else changes —
 no shell edits, no `SKILL.md` edits. To run a task that is not in the registry,
@@ -453,24 +464,56 @@ anything spends. Use `--latest N` to cap a trial run.
 
 ## The `--limit` trap
 
-`--limit N` is **not** a safe way to shrink a trial run. On `hellaswag` and
-`socialiqa` a limit switches the task to loading validation *and* train and
-sampling from the union, so a limited run scores a different population than an
-unlimited one — in both directions, since the sampled set is neither the
-evaluation split nor a superset of it.
+`--limit N` is **not** a way to shrink a measurement. Every benchmark here now
+samples the split it scores, so a limited run is an honest random subset of the
+full one — but a subset of a few dozen instances still cannot separate two
+checkpoints, and reporting one as a score is the mistake this section exists to
+prevent. Use `--latest 1` to pilot a real measurement instead.
 
-Those two are flagged in the registry's `limit_unsafe` table, and the script
-names them in its output whenever a limit is combined with an affected
-benchmark. Use `--latest 1` to pilot a real measurement instead.
+It used to be worse. On `hellaswag` and `socialiqa` a limit switched the task to
+loading validation *and* train and sampling from the union, so a limited run
+scored a population that was neither the evaluation split nor a superset of it.
+Those two were flagged in the registry's `limit_unsafe` table for exactly that.
+Their loaders now read `config.split` alone unless the task's
+`limit_reads_all_splits` class flag is set, which nothing here sets, so the table
+is empty and has been removed. The machinery that reads it is still in place —
+every reader does `registry.get("limit_unsafe", {})` — and the script still names
+any flagged benchmark whenever a limit is combined with one, so putting a name
+back is a registry edit and nothing more.
+
+What that gave up is fidelity to oe-eval-internal's *limited* runs, which is
+narrower than it sounds: a subsample was never comparable to a published OLMES
+figure either way. Reproducing one means running the task unlimited. Upstream
+does register limited reproduction variants for that purpose — `hellaswag:xlarge`
+at limit 10,000 and similar — and **none of them is in this registry**, which is
+what made the change safe to make.
 
 ### Why `smoke` exists anyway
 
-`--group smoke` deliberately walks into this trap: it applies a limit of 10, so
-it triggers exactly the warning above on `hellaswag` and `socialiqa`. That is the
-intended behavior. Its purpose is to prove the machinery works — checkpoint
+`--group smoke` is the cheapest way to prove the machinery works — checkpoint
 fetched, converted, vLLM booted, all seven tasks scored, results uploaded,
-summary written — at 70 instances and 200 prompts per checkpoint instead of
+summary written — at 506 instances and 1,005 prompts per checkpoint instead of
 55,369 and 103,253.
+
+It spends that as a `prompt_budget` of 1,000 rather than a flat instance limit,
+because a prompt count is instances times `choices` and a flat limit therefore
+buys wildly unequal coverage. An even share of the budget is about 143 prompts
+each, which works out as:
+
+| Benchmark | `choices` | Instances | Prompts |
+|---|---|---|---|
+| `csqa` | 5 | 29 | 145 |
+| `hellaswag` | 4 | 36 | 144 |
+| `arc_easy` | 4 | 36 | 144 |
+| `socialiqa` | 3 | 48 | 144 |
+| `piqa` | 2 | 71 | 142 |
+| `popqa` | 1 | 143 | 143 |
+| `triviaqa` | 1 | 143 | 143 |
+| | | **506** | **1,005** |
+
+1,005 rather than 1,000 because each share is rounded to a whole instance, and
+the rounding error is multiplied back up by `choices`. The resolver reports what
+it actually resolved; nothing claims to hit the budget exactly.
 
 It reaches past `default` because the failure modes are not shared. Generative
 tasks fetch different datasets, generate tokens instead of scoring a fixed
@@ -484,17 +527,20 @@ already cover, and including them would add about 5,700 rows of download to
 every smoke run for no additional coverage. They are excluded as a group rather
 than by name so that the reason survives in the registry.
 
-The scores it produces are not measurements of anything and must never be
-reported or plotted. Ten instances does not change that: it is still far too
-small a sample to separate two checkpoints, and on `hellaswag` and `socialiqa`
-it is drawn from a population that is not the evaluation split. Use it to answer
-"does this run at all", then re-run without it to answer "how good is this
-checkpoint".
+**Its scores are not measurements and must never be reported or plotted.** A
+thousand prompts is a better plumbing check than two hundred and is no more a
+measurement — if anything the rounder, larger number invites more confidence than
+it earns. Twenty-nine `csqa` instances cannot distinguish two checkpoints from
+each other or from a coin, and 143 is not much better. The sample is now honestly
+drawn from each benchmark's own evaluation split, which removes one reason the
+numbers were meaningless without supplying a reason they are meaningful. Use it
+to answer "does this run at all", then re-run without it to answer "how good is
+this checkpoint".
 
 **A limit shrinks inference, not the download.** The two mechanisms differ per
 task, and neither avoids reading the dataset:
 
-| Benchmark | How the limit is applied | Sampled from | Rows read to pick 10 |
+| Benchmark | How the limit is applied | Sampled from | Rows read |
 |---|---|---|---|
 | `csqa` | generic sampler in `runners/asynq/preparation.py`, seed 42 | validation | 1,221 |
 | `piqa` | same generic sampler | validation | 1,838 |
@@ -503,19 +549,21 @@ task, and neither avoids reading the dataset:
 | `jeopardy` | same generic sampler | train | 2,117 |
 | `popqa` | same generic sampler | test | 14,267 |
 | `triviaqa` | same generic sampler | validation | 17,944 |
-| `hellaswag` | in-task, `random.Random(1234)` | validation **+ train** | 49,947 |
-| `socialiqa` | in-task, `random.Random(1234)` | validation **+ train** | 35,364 |
+| `hellaswag` | in-task, `random.Random(1234)` | validation | 10,042 |
+| `socialiqa` | in-task, `random.Random(1234)` | validation | 1,954 |
 
-Only those last two reach for a second split, so only those two are in
-`limit_unsafe`. The four generative tasks load whatever `config.split` names and
-nothing else, whether or not a limit is in force.
+The rows-read column is the split size, and it does not vary with the limit: the
+split is read in full either way, so reading 10,042 HellaSwag rows to pick 36
+costs exactly what reading them to pick 10 did. What changed the last two figures
+is the loader, not the budget — they were 49,947 and 35,364 when a limit pulled in
+the train split as well.
 
-So a smoke run issues 200 prompts but still reads roughly 123k rows on a cold
-`HF_HOME`, most of it HellaSwag and SocialIQA train data that exists only to be
-sampled away. (`naturalqs` and `jeopardy` are in the table because a limit
-applies to them the same way, but `smoke` excludes them, so their rows are not
-part of that figure.) Budget for the download on
-a fresh box; it is cached for subsequent runs. Both samplers are seeded, so
+So a smoke run issues 1,005 prompts and reads roughly **50k rows** on a cold
+`HF_HOME` — 49,642, which is now simply the sum of the seven splits, since none of
+them reaches past what it scores. It was about 123k. (`naturalqs` and `jeopardy`
+are in the table because a limit applies to them the same way, but `smoke`
+excludes them, so their rows are not part of that figure.) Budget for the download
+on a fresh box; it is cached for subsequent runs. Both samplers are seeded, so
 repeated smoke runs score the same instances.
 
 ## Reading the output

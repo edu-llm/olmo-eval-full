@@ -101,7 +101,9 @@ Each entry carries:
 Three side tables: `groups` names selectable sets (`default` is what runs when
 neither `--group` nor `--benchmarks` is given), `aliases` maps common wrong names
 to the real task name purely to produce a helpful error, and `limit_unsafe` flags
-tasks whose split selection changes when `--limit` is set.
+tasks that read rows outside the split they score once `--limit` is set. That last
+table is optional and currently absent — see [the `--limit` trap](#the---limit-trap)
+for what emptied it.
 
 A group is either a plain list of benchmark names or an object, which lets a
 group carry settings as well as membership:
@@ -629,48 +631,68 @@ anything spends. Use `--latest N` to cap a trial run.
 
 ## The `--limit` trap
 
-`--limit N` is **not** a safe way to shrink a trial run. On `hellaswag` and
-`socialiqa` a limit switches the task to loading validation *and* train and
-sampling from the union, so a limited run scores a different population than an
-unlimited one — in both directions, since the sampled set is neither the
-evaluation split nor a superset of it.
+`--limit N` is **not** a way to shrink a measurement. Every benchmark here now
+samples the split it scores, so a limited run is an honest random subset of the
+full one — but a subset of a handful of instances still cannot separate two
+checkpoints, and reporting one as a score is the mistake this section exists to
+prevent. Use `--latest 1` to pilot a real measurement instead.
 
-`socialiqa:mc` is affected too, and is flagged separately: a variant changes the
+It used to be worse. On `hellaswag` and `socialiqa` a limit switched the task to
+loading validation *and* train and sampling from the union, so a limited run
+scored a population that was neither the evaluation split nor a superset of it.
+`socialiqa:mc` was flagged separately for the same reason — a variant changes the
 prompt, not the loader, and the registry matches on the exact name it was given.
+All three were in the registry's `limit_unsafe` table.
 
-Those three are flagged in the registry's `limit_unsafe` table, and the script
-names them in its output whenever a limit is combined with an affected
-benchmark. Use `--latest 1` to pilot a real measurement instead.
+Those loaders now read `config.split` alone unless the task's
+`limit_reads_all_splits` class flag is set, which nothing here sets, so the table
+is empty and has been removed. The machinery that reads it is still in place —
+every reader does `registry.get("limit_unsafe", {})`, and `resolve_benchmarks.py`
+still emits the key with nothing in it — so putting a name back is a registry edit
+and nothing more. If you do, remember that a `:mc` variant shares its base task's
+loader and needs its own entry.
+
+What that gave up is fidelity to oe-eval-internal's *limited* runs, which is
+narrower than it sounds: a subsample was never comparable to a published OLMES
+figure either way. Reproducing one means running the task unlimited. Upstream
+does register limited reproduction variants for that purpose — `hellaswag:xlarge`
+at limit 10,000 and similar — and **none of them is in this registry**, which is
+what made the change safe to make.
 
 ### Why `smoke` exists anyway
 
-`--group smoke` deliberately walks into this trap: it is `default` with a limit
-of 2, so it triggers exactly the warning above on `hellaswag` and `socialiqa`.
-That is the intended behavior. Its purpose is to prove the machinery works —
-checkpoint fetched, converted, vLLM booted, all five tasks scored, results
-uploaded, summary written — at roughly 10 instances and 36 prompts per
-checkpoint instead of 17,431 and 65,315.
+`--group smoke` is `default` with a limit of 2. Its purpose is to prove the
+machinery works — checkpoint fetched, converted, vLLM booted, all five tasks
+scored, results uploaded, summary written — at roughly 10 instances and 36
+prompts per checkpoint instead of 17,431 and 65,315.
 
 The scores it produces are not measurements of anything and must never be
-reported or plotted. Use it to answer "does this run at all", then re-run
-without it to answer "how good is this checkpoint".
+reported or plotted. That the sample is now honestly drawn from each benchmark's
+own evaluation split removes one reason the numbers were meaningless without
+supplying a reason they are meaningful: two instances is two instances. Use it to
+answer "does this run at all", then re-run without it to answer "how good is this
+checkpoint".
 
 **A limit shrinks inference, not the download.** The two mechanisms differ per
 task, and neither avoids reading the dataset:
 
-| Benchmark | How the limit is applied | Sampled from | Rows read to pick 2 |
+| Benchmark | How the limit is applied | Sampled from | Rows read |
 |---|---|---|---|
 | `csqa` | generic sampler in `runners/asynq/preparation.py`, seed 42 | validation | 1,221 |
 | `piqa` | same generic sampler | validation | 1,838 |
 | `arc_easy` | same generic sampler | test | 2,376 |
-| `hellaswag` | in-task, `random.Random(1234)` | validation **+ train** | 49,947 |
-| `socialiqa` | in-task, `random.Random(1234)` | validation **+ train** | 35,364 |
+| `hellaswag` | in-task, `random.Random(1234)` | validation | 10,042 |
+| `socialiqa` | in-task, `random.Random(1234)` | validation | 1,954 |
 
-So a smoke run issues 36 prompts but still downloads and processes roughly 90k
-rows on a cold `HF_HOME`, most of it HellaSwag and SocialIQA train data that
-exists only to be sampled away. Budget for the download on a fresh box; it is
-cached for subsequent runs. Both samplers are seeded, so repeated smoke runs
-score the same instances.
+The rows-read column is the split size, and it does not vary with the limit: the
+split is read in full either way. What changed the last two figures is the loader
+— they were 49,947 and 35,364 when a limit pulled in the train split as well.
+
+So a smoke run issues 36 prompts and downloads roughly **17k rows** on a cold
+`HF_HOME` — 17,431, which is now simply the sum of the five splits and therefore
+identical to what an unlimited `default` run reads. It was about 90k. Budget for
+the download on a fresh box; it is cached for subsequent runs. Both samplers are
+seeded, so repeated smoke runs score the same instances.
 
 ## Reading the output
 

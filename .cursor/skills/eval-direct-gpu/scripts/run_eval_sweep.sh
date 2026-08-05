@@ -28,8 +28,8 @@
 #
 # Optional -- what to run:
 #   --group NAME                    a named benchmark set (default: "default").
-#                                   "smoke" runs seven benchmarks at 10 instances
-#                                   each -- a plumbing check only.
+#                                   "smoke" runs seven benchmarks sharing a budget
+#                                   of 1000 prompts -- a plumbing check only.
 #   --benchmarks "a b c"            explicit tasks; conflicts with --group
 #   --allow-any-task                permit tasks outside the registry
 # Optional -- which checkpoints:
@@ -243,8 +243,10 @@ if [[ -n "${BENCHMARKS}" && -n "${GROUP}" ]]; then
     if [[ "${GROUP}" == "smoke" ]]; then
       echo
       echo "For a smoke test over your own list, drop --group and cap the instances:"
-      echo "  --benchmarks \"${BENCHMARKS}\" --limit 10"
-      echo "That is what --group smoke does, over its own set of seven benchmarks."
+      echo "  --benchmarks \"${BENCHMARKS}\" --limit 20"
+      echo "--group smoke is close but not identical: over its own seven benchmarks it"
+      echo "splits a prompt budget rather than applying one instance cap, so each gets a"
+      echo "different number of instances. See BENCHMARKS.md."
     fi
   } >&2
   exit 2
@@ -302,7 +304,16 @@ def group_members(name, _seen=None):
     return members
 
 
+def positive_int(group_name, key, value):
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        print(f"group '{group_name}' has an invalid {key} {value!r}; want a positive integer",
+              file=sys.stderr)
+        raise SystemExit(2)
+    return value
+
+
 group_limit = None
+group_budget = None
 if explicit:
     requested, source = explicit, "explicit --benchmarks"
 else:
@@ -317,15 +328,19 @@ else:
     source = f"group '{name}'" + ("" if group else " (registry default)")
     if isinstance(spec, dict):
         group_limit = spec.get("limit")
-        if group_limit is not None and (
-            isinstance(group_limit, bool) or not isinstance(group_limit, int) or group_limit < 1
-        ):
-            print(
-                f"group '{name}' has an invalid limit {group_limit!r}; "
-                "want a positive integer",
-                file=sys.stderr,
-            )
+        group_budget = spec.get("prompt_budget")
+        # Both would be two answers to "how big is this group", and silently
+        # preferring one would make the other a lie sitting in the registry.
+        if group_limit is not None and group_budget is not None:
+            print(f"group '{name}' sets both limit and prompt_budget; they are two ways "
+                  "to say how big the group is, so it must set one or the other",
+                  file=sys.stderr)
             raise SystemExit(2)
+        if group_limit is not None:
+            positive_int(name, "limit", group_limit)
+        if group_budget is not None:
+            positive_int(name, "prompt_budget", group_budget)
+            budget_group = name
         if spec.get("description"):
             source += f" -- {spec['description']}"
 
@@ -356,27 +371,7 @@ if blocked:
     print("See BENCHMARKS.md for what ships today.", file=sys.stderr)
     raise SystemExit(2)
 
-# An explicit --limit beats the group's, so a group's cap is a default rather
-# than a cage. Empty string means the flag was not passed at all.
-cli_limit = os.environ["CLI_LIMIT"].strip()
-effective_limit = int(cli_limit) if cli_limit else group_limit
-
-instances = prompts = 0
-unknown = []
-for name in requested:
-    entry = known.get(name)
-    if entry is None:
-        unknown.append(name)
-        continue
-    # With a limit in force the estimate is the limited count, not the split
-    # size; reporting 17k instances for a 10-instance smoke run would be worse
-    # than useless.
-    n = entry["instances"]
-    if effective_limit is not None:
-        n = min(n, effective_limit)
-    instances += n
-    prompts += n * entry["choices"]
-
+unknown = [n for n in requested if n not in known]
 if unknown and not allow_any:
     print("unknown benchmark(s): " + " ".join(unknown), file=sys.stderr)
     for name in unknown:
@@ -401,10 +396,52 @@ if unknown and not allow_any:
     )
     raise SystemExit(2)
 
+# One instance cap per requested benchmark, positionally aligned with the list
+# printed below, or no caps at all. A single number would not survive a prompt
+# budget, which is the whole point of the budget: prompts are instances times
+# choices, so one uniform cap makes a five-option benchmark issue five times the
+# requests of a generative one.
+cli_limit = os.environ["CLI_LIMIT"].strip()
+if cli_limit:
+    # An explicit --limit is a cap the caller named, so it beats a group's own
+    # setting -- a group's cap is a default rather than a cage -- and it beats a
+    # budget too, uniformly. Someone asking for N instances per benchmark should
+    # get N, not a share of a budget they never mentioned.
+    limits = [int(cli_limit)] * len(requested)
+elif group_budget is not None:
+    # Every member gets an equal share of the prompt budget, converted into
+    # instances by its own request-per-instance count. Rounded to the nearest
+    # whole instance, so the realised total lands near the budget rather than on
+    # it; clamped to at least one instance and at most the split, so a large
+    # budget caps rather than asking for rows that do not exist.
+    if unknown:
+        print(f"group '{budget_group}' sets prompt_budget but has no registry entry for "
+              + " ".join(unknown) + ", so there is no choices count to divide by",
+              file=sys.stderr)
+        raise SystemExit(2)
+    share = group_budget / len(requested)
+    limits = [max(1, min(known[n]["instances"], round(share / known[n]["choices"])))
+              for n in requested]
+elif group_limit is not None:
+    limits = [group_limit] * len(requested)
+else:
+    limits = []
+
+# With caps in force the estimate is the capped count, not the split size;
+# reporting 17k instances for a smoke run would be worse than useless.
+instances = prompts = 0
+for i, name in enumerate(requested):
+    entry = known.get(name)
+    if entry is None:
+        continue
+    n = min(entry["instances"], limits[i]) if limits else entry["instances"]
+    instances += n
+    prompts += n * entry["choices"]
+
 print(" ".join(requested))
 print(instances, prompts, len(unknown))
 print(source)
-print(effective_limit if effective_limit is not None else "")
+print(" ".join(str(n) for n in limits))
 PY
 )"; then
   exit 2
@@ -418,10 +455,12 @@ readarray -t RESOLVED_LINES < <(printf '%s' "${RESOLVED}" | tr -d '\r')
 read -r -a BENCH_LIST <<< "${RESOLVED_LINES[0]}"
 read -r TOTAL_INSTANCES TOTAL_PROMPTS N_UNKNOWN <<< "${RESOLVED_LINES[1]}"
 BENCH_SOURCE="${RESOLVED_LINES[2]}"
-# The resolver already applied the precedence rule (an explicit --limit beats a
-# group's), so whatever it returns is the effective limit. An empty trailing
-# line is dropped by command substitution, hence the default.
-LIMIT="${RESOLVED_LINES[3]:-}"
+# One cap per benchmark, in the same order as BENCH_LIST, or none at all. The
+# resolver already applied every precedence rule -- an explicit --limit beats a
+# group's limit and a group's prompt budget alike -- so these are the caps that
+# apply, and a uniform --limit simply arrives as the same number repeated. An
+# empty trailing line is dropped by command substitution, hence the default.
+read -r -a TASK_LIMITS <<< "${RESOLVED_LINES[3]:-}"
 
 WORK="$(mktemp -d)"
 LOG="${WORK}/sweep.log"
@@ -520,10 +559,26 @@ SWEEP_INSTANCES=$((TOTAL_INSTANCES * ${#CKPT_LIST[@]}))
 SWEEP_PROMPTS=$((TOTAL_PROMPTS * ${#CKPT_LIST[@]}))
 log "cost estimate: ~${TOTAL_INSTANCES} instances / ~${TOTAL_PROMPTS} vLLM prompts per checkpoint"
 log "               ~${SWEEP_INSTANCES} instances / ~${SWEEP_PROMPTS} vLLM prompts for the whole sweep"
-if [[ -n "${LIMIT}" ]]; then
-  log "NOTE: capped at ${LIMIT} instances per benchmark; the estimate above reflects that."
-  # Some tasks change which split they load once a limit is set, which makes a
-  # limited run score a different population. The registry flags those.
+if [[ ${#TASK_LIMITS[@]} -gt 0 ]]; then
+  # A single sentence when every benchmark got the same cap, the list when a
+  # prompt budget gave them different ones. "capped at N instances per benchmark"
+  # would name a cap that applies to no benchmark in a budgeted run.
+  UNIFORM_LIMIT=1
+  for l in "${TASK_LIMITS[@]}"; do
+    [[ "${l}" == "${TASK_LIMITS[0]}" ]] || UNIFORM_LIMIT=0
+  done
+  if [[ "${UNIFORM_LIMIT}" == "1" ]]; then
+    log "NOTE: capped at ${TASK_LIMITS[0]} instances per benchmark; the estimate above reflects that."
+  else
+    log "NOTE: capped per benchmark so each contributes about the same number of prompts;"
+    log "      the estimate above reflects that. Instances per benchmark:"
+    for i in "${!BENCH_LIST[@]}"; do
+      log "        ${BENCH_LIST[i]}: ${TASK_LIMITS[i]}"
+    done
+  fi
+  # Some tasks change which rows they load once a limit is set, which makes a
+  # limited run score a population the unlimited run never touches. The registry
+  # flags those; the table is absent when none do.
   AFFECTED="$(
     BENCHES="${BENCH_LIST[*]}" REGISTRY="${REGISTRY}" python3 - <<'PY'
 import json, os
@@ -570,19 +625,24 @@ write_provenance() {
   RUN_ID="${RUN_ID}" CKPT="${CKPT}" DEST="${DEST}" OUT="${OUT}" \
   BENCHES="${BENCH_LIST[*]}" BENCH_SOURCE="${BENCH_SOURCE}" STATUS="${status}" \
   GIT_SHA="$(git -C "${REPO_ROOT}" rev-parse HEAD 2>/dev/null || echo unknown)" \
-  LIMIT="${LIMIT}" TP="${TP}" GPU_MEM="${GPU_MEM}" \
+  LIMITS="${TASK_LIMITS[*]+${TASK_LIMITS[*]}}" TP="${TP}" GPU_MEM="${GPU_MEM}" \
   python3 - <<'PY' || log "WARNING: could not write run_provenance.json"
 import json, os
 from pathlib import Path
 env = os.environ
+benchmarks = env["BENCHES"].split()
+# A mapping rather than the single number this used to be, because a prompt
+# budget gives each benchmark its own cap and one number could only ever be one
+# of them. Null when the run was not limited at all.
+caps = [int(n) for n in env["LIMITS"].split()]
 prov = {
     "run_id": env["RUN_ID"],
     "checkpoint": env["CKPT"],
     "s3_dest": env["DEST"],
-    "benchmarks": env["BENCHES"].split(),
+    "benchmarks": benchmarks,
     "benchmark_selection": env["BENCH_SOURCE"],
     "status": env["STATUS"],
-    "limit": int(env["LIMIT"]) if env["LIMIT"] else None,
+    "limits": dict(zip(benchmarks, caps)) if caps else None,
     "tensor_parallel_size": int(env["TP"]),
     "gpu_memory_utilization": float(env["GPU_MEM"]) if env["GPU_MEM"] else None,
     "git_sha": env["GIT_SHA"],
@@ -677,10 +737,13 @@ for CKPT in "${CKPT_LIST[@]}"; do
   if [[ -n "${GPU_MEM}" ]]; then
     args+=(-o "provider.kwargs.gpu_memory_utilization=${GPU_MEM}")
   fi
-  for b in "${BENCH_LIST[@]}"; do
-    args+=(-t "${b}")
-    if [[ -n "${LIMIT}" ]]; then
-      args+=(-o "limit=${LIMIT}")
+  # Each -o binds to the -t before it, so a per-benchmark cap needs nothing from
+  # olmo-eval that a uniform one did not already need: the same loop, emitting
+  # this benchmark's own number instead of one shared value.
+  for i in "${!BENCH_LIST[@]}"; do
+    args+=(-t "${BENCH_LIST[i]}")
+    if [[ ${#TASK_LIMITS[@]} -gt 0 ]]; then
+      args+=(-o "limit=${TASK_LIMITS[i]}")
     fi
   done
 

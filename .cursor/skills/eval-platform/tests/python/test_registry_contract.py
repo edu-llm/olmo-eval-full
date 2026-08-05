@@ -6,6 +6,7 @@ exist upstream -- otherwise validation passes and `olmo-eval run` fails later,
 after the expensive fetch and conversion the check exists to protect.
 """
 
+import ast
 import json
 import re
 import sys
@@ -121,9 +122,74 @@ for name, reason in sorted(unsupported.items()):
               name in real or name in variants, "reason implies it exists but it does not")
 
 print()
-print("5. limit_unsafe entries refer to defined benchmarks")
-for name in reg.get("limit_unsafe", {}):
+print("5. limit_unsafe agrees with what the loaders actually do when limited")
+# The table is empty today, so "every entry is defined" would assert nothing. What
+# it stood for is the property worth pinning: a task that reads rows outside the
+# split it scores once a limit is set must be flagged, and one that does not must
+# not be. hellaswag and socialiqa each carry a `limit_reads_all_splits` class flag
+# saying which they are, and a ':mc' variant shares its base task's loader, so the
+# base task's answer is the variant's answer too.
+unsafe = reg.get("limit_unsafe", {})
+for name in unsafe:
     check(f"limit_unsafe '{name}' is defined", name in known)
+
+reads_union: dict[str, bool] = {}
+ungated: dict[str, list[str]] = {}
+for py in tasks_dir.rglob("*.py"):
+    tree = ast.parse(py.read_text(encoding="utf-8", errors="replace"))
+    in_file = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and any(
+            isinstance(t, ast.Name) and t.id == "splits" for t in node.targets
+        ):
+            dumped = ast.dump(node.value)
+            if "attr='limit'" in dumped and "attr='limit_reads_all_splits'" not in dumped:
+                ungated.setdefault(py.name, [])
+        if not isinstance(node, ast.ClassDef):
+            continue
+        registered = [
+            d.args[0].value
+            for d in node.decorator_list
+            if isinstance(d, ast.Call)
+            and getattr(d.func, "id", "") == "register"
+            and d.args
+            and isinstance(d.args[0], ast.Constant)
+        ]
+        in_file += registered
+        for stmt in node.body:
+            if (
+                isinstance(stmt, ast.Assign)
+                and any(getattr(t, "id", None) == "limit_reads_all_splits" for t in stmt.targets)
+                and isinstance(stmt.value, ast.Constant)
+            ):
+                for task_name in registered:
+                    reads_union[task_name] = bool(stmt.value.value)
+    if py.name in ungated:
+        ungated[py.name] = in_file
+
+check("the flag is declared by the tasks that had the behaviour",
+      set(reads_union) == {"hellaswag", "socialiqa"}, str(sorted(reads_union)))
+# A `splits` list that varies with the limit and is not gated on the flag is the old
+# behaviour, in a task the flag cannot describe. That is a failure only for a task
+# this registry offers -- upstream has others, and they are reported rather than
+# silently tolerated so that adding one to the registry cannot pass unnoticed.
+for filename, task_names in sorted(ungated.items()):
+    offered = [n for n in task_names if n in {b.split(":", 1)[0] for b in known}]
+    if offered:
+        check(f"{filename} gates its limited split choice on the flag", False,
+              "offered by this registry as " + " ".join(offered))
+    else:
+        print(f"  note {filename} still samples across splits when limited "
+              f"({' '.join(task_names) or 'no @register'}), and this registry does not offer it")
+
+for name in sorted(known):
+    base = name.split(":", 1)[0]
+    if base not in reads_union:
+        continue
+    should_flag = reads_union[base]
+    check(f"'{name}' is flagged exactly when {base} samples outside its split",
+          (name in unsafe) == should_flag,
+          f"flag={should_flag}, listed={name in unsafe}")
 
 print()
 print("6. cost-estimate fields are present and sane")

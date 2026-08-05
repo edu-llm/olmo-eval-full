@@ -168,10 +168,22 @@ for name in MC:
     check(f"{name} reports the same metric key as {base}",
           entry["metrics"] == base_entry["metrics"] == ["accuracy"], str(entry["metrics"]))
 
-check("socialiqa:mc inherits socialiqa's unsafe limit behaviour, and is flagged for it",
-      "socialiqa:mc" in reg.get("limit_unsafe", {}))
-check("the flag reaches the resolver's output",
-      "socialiqa:mc" in resolve(benchmarks="socialiqa:mc", cli_limit=2)["limit_unsafe"])
+# socialiqa:mc used to be flagged limit_unsafe, because it shares socialiqa's
+# loader and that loader sampled validation and train together whenever a limit was
+# set. The loader now samples the split it scores, so the base task is not flagged
+# and neither is the variant -- the inheritance is the same fact, read the other
+# way. The resolver is still asked rather than assumed silent, and then asked again
+# over a doctored registry, so an empty table is distinguished from a broken path.
+check("socialiqa:mc is not flagged, because its base task no longer samples outside its split",
+      "socialiqa:mc" not in reg.get("limit_unsafe", {}))
+check("and the resolver reports nothing flagged for it under a limit",
+      resolve(benchmarks="socialiqa:mc", cli_limit=2)["limit_unsafe"] == {})
+doctored = json.loads(json.dumps(reg))
+doctored["limit_unsafe"] = {"socialiqa:mc": "a reason invented by this test"}
+check("a flag put back would still reach the resolver's output",
+      "socialiqa:mc" in resolver.resolve(
+          doctored, group=None, benchmarks="socialiqa:mc", cli_limit=2, allow_any_task=False
+      )["limit_unsafe"])
 
 print()
 print("5. the colon survives olmo-eval's argv")

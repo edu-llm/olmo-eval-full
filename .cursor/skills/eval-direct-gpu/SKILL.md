@@ -68,8 +68,10 @@ Then confirm these, stating the default so the user can accept it:
    not olmo-eval's, so it cannot run a task that does not exist.
 
    For a smoke test over the user's own list rather than the whole registry, use
-   `--benchmarks "a b c" --limit 10`. `--group smoke` always covers every
-   benchmark, and combining it with `--benchmarks` is rejected.
+   `--benchmarks "a b c" --limit 20`. `--group smoke` always covers every
+   benchmark, and combining it with `--benchmarks` is rejected. It is also not
+   quite the same thing: smoke splits a prompt budget rather than applying one
+   instance cap, so its benchmarks get different instance counts.
 4. **How many checkpoints.** Default is all of them. Recommend `--latest 1` for a
    first run, since a full sweep multiplies cost by the number of checkpoints.
 5. **Whether the box is already set up.** If this is a fresh GPU box, add
@@ -83,11 +85,12 @@ Then follow this order, which exists so a mistake is cheap:
 - Show the user the dry-run output — particularly the discovered checkpoints and
   the prompt-count estimate — and get confirmation before running for real.
 - If the skill has not been pointed at this training run before, do a real run of
-  `--group smoke --latest 1` next. It evaluates 10 instances of seven benchmarks,
-  so it exercises the entire path — fetch, convert, vLLM boot, both scoring
-  paths, upload, summary — in minutes, and surfaces a bad
+  `--group smoke --latest 1` next. It evaluates seven benchmarks at 506 instances
+  and 1,005 prompts in total, so it exercises the entire path — fetch, convert,
+  vLLM boot, both scoring paths, upload, summary — in minutes, and surfaces a bad
   checkpoint or a wrong tokenizer before a full sweep spends hours discovering
-  the same thing. **Its scores are meaningless. Never report them.**
+  the same thing. **Its scores are meaningless. Never report them.** A thousand
+  prompts is a better plumbing check than a hundred and is no more a measurement.
 - Only then drop `--dry-run` and `--group smoke`.
 
 If the dry-run finds no checkpoints, the path is almost certainly at the wrong
@@ -114,13 +117,17 @@ Pass `--group NAME` for a named set, or `--benchmarks "a b c"` for an explicit
 list. To pilot on the most recent checkpoint before committing to a sweep, use
 `--latest 1`.
 
-`--group smoke` runs seven benchmarks at 10 instances each — everything except
-the `fact_proxy` pair, `naturalqs` and `jeopardy`, which add download time
-without exercising a path `popqa` and `triviaqa` do not already cover. It is the
+`--group smoke` runs seven benchmarks sharing a budget of 1,000 prompts — 506
+instances and 1,005 prompts in total — covering everything except the
+`fact_proxy` pair, `naturalqs` and `jeopardy`, which add download time without
+exercising a path `popqa` and `triviaqa` do not already cover. A budget rather
+than one instance cap because prompts are instances times answer choices, so a
+flat cap would give `csqa` five times `popqa`'s coverage; an even share is about
+143 prompts each, which is 29 `csqa` instances and 143 `triviaqa` ones. It is the
 cheapest way to prove the whole path works end to end, and a plumbing check
-rather than a measurement: ten instances is nowhere near enough to score
-anything. See the `--limit` trap in [BENCHMARKS.md](BENCHMARKS.md) for why its
-numbers cannot be reported.
+rather than a measurement: 29 instances is nowhere near enough to score anything,
+and neither is 143. See the `--limit` trap in [BENCHMARKS.md](BENCHMARKS.md) for
+why its numbers cannot be reported.
 
 ## Inputs
 
@@ -146,11 +153,11 @@ a supplied path for free before spending GPU time.
 | Flag | Default | Meaning |
 |---|---|---|
 | `--s3-out` | required | `s3://bucket/prefix` root for results |
-| `--group NAME` | the registry's `default` group | run a named set of benchmarks; `smoke` is the 10-instance plumbing check over seven of them |
+| `--group NAME` | the registry's `default` group | run a named set of benchmarks; `smoke` is the 1,000-prompt plumbing check over seven of them |
 | `--benchmarks` | (see `--group`) | space-separated olmo-eval task names; mutually exclusive with `--group` |
 | `--pattern` | (none) | regex filter on the checkpoint directory name |
 | `--latest N` | (all) | keep only the N highest-step checkpoints |
-| `--limit N` | (none, or the group's own) | cap instances per task; overrides a group's limit. Smoke tests only, see BENCHMARKS.md |
+| `--limit N` | (none, or the group's own) | cap instances per task; overrides a group's own limit or prompt budget, uniformly. Smoke tests only, see BENCHMARKS.md |
 | `--tp` | `1` | vLLM tensor-parallel size |
 | `--gpu-memory-utilization` | vLLM default (~0.9) | fraction of VRAM vLLM may claim; lower it to share a GPU |
 | `--tokenizer` | (from config) | HF tokenizer id, if the checkpoint config does not resolve one |

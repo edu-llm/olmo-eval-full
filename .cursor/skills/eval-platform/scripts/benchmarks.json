@@ -42,6 +42,16 @@
     "           task olmo-eval does not define. Without this table the run would",
     "           fail only after the checkpoint was fetched, converted and booted,",
     "           taking every valid benchmark in the same request down with it.",
+    "limit_unsafe: optional, and currently absent because nothing trips it. It",
+    "           flags a task whose loader reads a different set of rows once a",
+    "           limit is set, so a limited run scores a population the unlimited",
+    "           run never touches. hellaswag, socialiqa and socialiqa:mc were",
+    "           listed here until the hellaswag and socialiqa loaders were changed",
+    "           to sample the split they score; every reader does",
+    "           registry.get('limit_unsafe', {}) and resolve_benchmarks.py still",
+    "           emits the key, empty, so an absent table means nothing is flagged.",
+    "           Put a name back if a task ever reaches for a second split again,",
+    "           and remember a ':mc' variant shares its base task's loader.",
     "",
     "See BENCHMARKS.md for where these numbers come from and why these splits."
   ],
@@ -222,10 +232,5 @@
     "trex": "no task file exists, and no canonical evaluation split has been chosen",
     "factscore": "no task file exists; also needs an LLM judge and a retrieval corpus",
     "simpleqa": "the bare task sets no metrics and would score nothing; use the 'simpleqa:judge' variant, which needs an OpenAI key and outbound network"
-  },
-  "limit_unsafe": {
-    "hellaswag": "loads validation AND train when limited, then samples from the union",
-    "socialiqa": "loads validation AND train when limited, then samples from the union",
-    "socialiqa:mc": "loads validation AND train when limited, then samples from the union -- the variant changes the prompt, not the loader"
   }
 }

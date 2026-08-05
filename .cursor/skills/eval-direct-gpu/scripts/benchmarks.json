@@ -26,6 +26,18 @@
     "                           still tracks a new benchmark added to its parent",
     "             limit      -- instances per benchmark, applied unless --limit",
     "                           is passed explicitly",
+    "             prompt_budget -- total prompts the group should issue, split",
+    "                           evenly across its members and then divided by each",
+    "                           benchmark's own 'choices' to give that benchmark an",
+    "                           instance limit. Prompts are instances times choices,",
+    "                           so one uniform limit spreads the prompt count 5x",
+    "                           across this registry; a budget levels it. Stated as",
+    "                           a budget rather than a table of per-benchmark limits",
+    "                           for the same reason 'like' and 'exclude' name groups:",
+    "                           the split stays even when membership changes or a",
+    "                           'choices' is corrected, where a written-out table",
+    "                           would quietly stop being even. Mutually exclusive",
+    "                           with 'limit'; --limit overrides either",
     "             description-- shown in the log when the group is selected",
     "aliases:   common wrong names, mapped to the real olmo-eval task name. Used",
     "           only to produce a helpful error; they are never runnable.",
@@ -35,6 +47,14 @@
     "           task olmo-eval does not define. Without this table the run would",
     "           fail only after the checkpoint was fetched, converted and booted,",
     "           taking every valid benchmark in the same request down with it.",
+    "limit_unsafe: optional, and currently absent because nothing trips it. It",
+    "           flags a task whose loader reads a different set of rows once a",
+    "           limit is set, so a limited run scores a population the unlimited",
+    "           run never touches. hellaswag and socialiqa were listed here until",
+    "           their loaders were changed to sample the split they score; every",
+    "           reader does registry.get('limit_unsafe', {}), so an absent table",
+    "           means nothing is flagged. Put a name back if a task ever reaches",
+    "           for a second split again.",
     "",
     "See BENCHMARKS.md for where these numbers come from and why these splits."
   ],
@@ -75,8 +95,8 @@
     "smoke": {
       "like": "all",
       "exclude": "fact_proxy",
-      "limit": 10,
-      "description": "plumbing check: every benchmark except the fact_proxy pair, at 10 instances each, not a measurement"
+      "prompt_budget": 1000,
+      "description": "plumbing check: every benchmark except the fact_proxy pair, sharing a budget of 1000 prompts -- 506 instances, 1005 prompts, and not a measurement"
     }
   },
   "benchmarks": {
@@ -181,9 +201,5 @@
     "trex": "no task file exists, and no canonical evaluation split has been chosen",
     "factscore": "no task file exists; also needs an LLM judge and a retrieval corpus",
     "simpleqa": "the bare task sets no metrics and would score nothing; use the 'simpleqa:judge' variant, which needs an OpenAI key and outbound network"
-  },
-  "limit_unsafe": {
-    "hellaswag": "loads validation AND train when limited, then samples from the union",
-    "socialiqa": "loads validation AND train when limited, then samples from the union"
   }
 }

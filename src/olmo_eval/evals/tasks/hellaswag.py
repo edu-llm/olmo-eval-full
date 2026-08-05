@@ -68,6 +68,29 @@ class HellaSwag(Task):
     fewshot_split = "train"
     sampling_params = SamplingParams(temperature=0.0)
 
+    #: Whether a limit samples the union of every split instead of the scored one.
+    #:
+    #: oe-eval-internal's limited HellaSwag variants declare split="all", so a limit
+    #: there samples test -> validation -> train (for HellaSwag, validation -> train).
+    #: We default to False because that union is not the evaluation split, and a
+    #: sample of it is neither a subset of validation nor a superset: a limited run
+    #: would then be incomparable to the full run it is standing in for, which is the
+    #: one thing a cheap trial run has to avoid being.
+    #:
+    #: What that gives up is fidelity to another harness's *limited* runs, not to any
+    #: published figure -- a subsample was never comparable to one. Reproducing a
+    #: published OLMES number means running this task unlimited over its own split.
+    #: Set this True on the class only to diff against oe-eval-internal's limited
+    #: output instance by instance; it is deliberately not a TaskConfig field,
+    #: because nothing here sets it and a config knob would advertise the union as an
+    #: ordinary choice rather than the compatibility shim it is.
+    #:
+    #: The ``xlarge`` and ``olmo3base`` variants below are where that matters most:
+    #: their limit of 10,000 used to draw from 49,947 union rows and now draws from
+    #: validation's 10,042, so they score all but 42 of the split. Neither is
+    #: registered in either skill's benchmarks.json, so nothing here runs them.
+    limit_reads_all_splits = False
+
     @property
     def instances(self) -> Iterator[Instance]:
         if self._instances_cache is None:
@@ -78,10 +101,11 @@ class HellaSwag(Task):
         loader = DataLoader()
         instances: list[Instance] = []
 
-        # When limit is set, load all splits (validation first, then train)
-        # to match oe-eval-internal's split="all" ordering: test -> validation -> train.
-        # HellaSwag has no test split, so: validation -> train.
-        splits = ["validation", "train"] if self.config.limit else [self.config.split.value]
+        splits = (
+            ["validation", "train"]
+            if self.config.limit and self.limit_reads_all_splits
+            else [self.config.split.value]
+        )
 
         index = 0
         for split in splits:
