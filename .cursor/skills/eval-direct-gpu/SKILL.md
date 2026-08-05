@@ -1,11 +1,14 @@
 ---
-name: eval-checkpoints
+name: eval-direct-gpu
 description: >-
   Evaluate a sweep of training checkpoints from S3 on full benchmarks and report
-  accuracy per checkpoint per benchmark. Use when a training team wants to measure
-  model ability across checkpoints of a run, plot accuracy against training step,
-  or score checkpoints stored on S3. The set of available benchmarks is data-driven
-  and documented in BENCHMARKS.md.
+  accuracy per checkpoint per benchmark, running on a GPU machine you control. Use
+  when you have a Linux CUDA box available to you -- your own EC2 instance or
+  similar -- and want to sweep many checkpoints under a prefix, booting vLLM on that
+  box and writing results to an S3 path you choose. If instead the work has to be
+  submitted as an AWS Batch job through the eduLLM platform, because you have no GPU
+  of your own, use the eval-platform skill. The set of available benchmarks is
+  data-driven and documented in BENCHMARKS.md.
 ---
 
 # Evaluate a sweep of training checkpoints
@@ -56,16 +59,17 @@ Then confirm these, stating the default so the user can accept it:
 
    If the user names benchmarks explicitly, **check them against
    [BENCHMARKS.md](BENCHMARKS.md) before running anything and tell the user
-   about any that cannot run.** Several commonly requested ones — TriviaQA,
-   PopQA, SimpleQA, T-REx, FactScore — produce no score today. The script now
-   refuses them outright, but raising it in your first reply is much better than
-   surfacing it after the user has waited. **Do not reach for
+   about any that cannot run.** Three commonly requested ones — SimpleQA, T-REx
+   and FactScore — produce no score today. The script refuses them outright, but
+   raising it in your first reply is much better than surfacing it after the user
+   has waited. TriviaQA and PopQA are *not* among them: both are registered and
+   run, and sit in the `factual` group. **Do not reach for
    `--allow-any-task`** to force them through: it bypasses this skill's registry,
    not olmo-eval's, so it cannot run a task that does not exist.
 
-   For a smoke test over the user's own list rather than the default set, use
-   `--benchmarks "a b c" --limit 2`. `--group smoke` only caps the default set,
-   and combining it with `--benchmarks` is rejected.
+   For a smoke test over the user's own list rather than the whole registry, use
+   `--benchmarks "a b c" --limit 10`. `--group smoke` always covers every
+   benchmark, and combining it with `--benchmarks` is rejected.
 4. **How many checkpoints.** Default is all of them. Recommend `--latest 1` for a
    first run, since a full sweep multiplies cost by the number of checkpoints.
 5. **Whether the box is already set up.** If this is a fresh GPU box, add
@@ -79,11 +83,11 @@ Then follow this order, which exists so a mistake is cheap:
 - Show the user the dry-run output — particularly the discovered checkpoints and
   the prompt-count estimate — and get confirmation before running for real.
 - If the skill has not been pointed at this training run before, do a real run of
-  `--group smoke --latest 1` next. It evaluates 2 instances per benchmark, so it
-  exercises the entire path — fetch, convert, vLLM boot, upload, summary — in
-  minutes, and surfaces a bad checkpoint or a wrong tokenizer before a full sweep
-  spends hours discovering the same thing. **Its scores are meaningless. Never
-  report them.**
+  `--group smoke --latest 1` next. It evaluates 10 instances of seven benchmarks,
+  so it exercises the entire path — fetch, convert, vLLM boot, both scoring
+  paths, upload, summary — in minutes, and surfaces a bad
+  checkpoint or a wrong tokenizer before a full sweep spends hours discovering
+  the same thing. **Its scores are meaningless. Never report them.**
 - Only then drop `--dry-run` and `--group smoke`.
 
 If the dry-run finds no checkpoints, the path is almost certainly at the wrong
@@ -95,7 +99,7 @@ not probe neighbouring prefixes looking for one that lists.
 ## Quick start
 
 ```bash
-bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+bash .cursor/skills/eval-direct-gpu/scripts/run_eval_sweep.sh \
   --checkpoint-root s3://YOUR_BUCKET/checkpoints/EXP \
   --s3-out s3://YOUR_BUCKET/evals/EXP \
   --dry-run
@@ -110,10 +114,13 @@ Pass `--group NAME` for a named set, or `--benchmarks "a b c"` for an explicit
 list. To pilot on the most recent checkpoint before committing to a sweep, use
 `--latest 1`.
 
-`--group smoke` runs the same benchmarks as `default` but only 2 instances of
-each, which is the cheapest way to prove the whole path works end to end. It is
-a plumbing check, not a measurement — see the `--limit` trap in
-[BENCHMARKS.md](BENCHMARKS.md) for why its numbers cannot be reported.
+`--group smoke` runs seven benchmarks at 10 instances each — everything except
+the `fact_proxy` pair, `naturalqs` and `jeopardy`, which add download time
+without exercising a path `popqa` and `triviaqa` do not already cover. It is the
+cheapest way to prove the whole path works end to end, and a plumbing check
+rather than a measurement: ten instances is nowhere near enough to score
+anything. See the `--limit` trap in [BENCHMARKS.md](BENCHMARKS.md) for why its
+numbers cannot be reported.
 
 ## Inputs
 
@@ -139,7 +146,7 @@ a supplied path for free before spending GPU time.
 | Flag | Default | Meaning |
 |---|---|---|
 | `--s3-out` | required | `s3://bucket/prefix` root for results |
-| `--group NAME` | the registry's `default` group | run a named set of benchmarks; `smoke` is the 2-instance plumbing check |
+| `--group NAME` | the registry's `default` group | run a named set of benchmarks; `smoke` is the 10-instance plumbing check over seven of them |
 | `--benchmarks` | (see `--group`) | space-separated olmo-eval task names; mutually exclusive with `--group` |
 | `--pattern` | (none) | regex filter on the checkpoint directory name |
 | `--latest N` | (all) | keep only the N highest-step checkpoints |
@@ -191,7 +198,7 @@ be evaluated repeatedly**, since conversion then happens once instead of per
 sweep, and the `olmo_core` extra stops being needed at all:
 
 ```bash
-python .cursor/skills/eval-checkpoints/scripts/convert_to_hf.py \
+python .cursor/skills/eval-direct-gpu/scripts/convert_to_hf.py \
   -i "${NATIVE_CKPT}" -o "${HF_CKPT}" --skip-validation
 ```
 
@@ -206,7 +213,7 @@ platform image, and it does not need the environment provisioned in advance. On 
 bare box, bootstrap once:
 
 ```bash
-bash .cursor/skills/eval-checkpoints/scripts/bootstrap.sh
+bash .cursor/skills/eval-direct-gpu/scripts/bootstrap.sh
 export PATH="${HOME}/.local/bin:${PATH}"   # only if uv was just installed
 ```
 
@@ -258,6 +265,7 @@ Nothing is uploaded to the HuggingFace Hub. "HF" refers to the on-disk format.
     logs/                            # vLLM server log
     run_provenance.json              # checkpoint, git sha, benchmarks, status
     _READY | _FAILED                 # terminal marker, always written
+    _IN_PROGRESS                     # heartbeat while evaluating; gone once terminal
   accuracy.csv                       # long: one row per checkpoint/benchmark/metric
   accuracy_wide.csv                  # wide: one row per checkpoint  <- plot this
   accuracy.json
@@ -282,21 +290,40 @@ checkpoint is always explainable. The sweep exits non-zero if any checkpoint
 failed. Poll for either marker — `_READY` alone is ambiguous, since its absence
 cannot distinguish a failure from a run still in progress.
 
+### What a dying box leaves
+
+A checkpoint's directory is synced up every `--sync-interval` seconds (default 180)
+while it is still evaluating, not only when it finishes, so a box lost partway keeps the
+instances it had already scored. `--sync-interval 0` restores sync-only-at-the-end.
+
+Both terminal markers are written by this script, so a box that dies — out of memory, a
+spot reclaim, a dropped session — writes neither. `_IN_PROGRESS` carries the time of the
+last sync, so a stale one dates the loss and marks that checkpoint's directory as holding
+everything that survived rather than everything there was.
+
+A benchmark still running when the box died leaves
+`<name>-predictions.partial.jsonl` instead of its ordinary predictions file, and no
+`metrics.json` entry: a mean over whichever instances the queue reached is not that
+benchmark's accuracy. **Its final line is usually cut off**, because the sync copies the
+file while it is still being appended to. That is expected, not corruption. The
+`eval-platform` skill ships `scripts/salvage_partial.py`, which reads these files, drops
+a truncated tail with a note, and reports what each one scored.
+
 ## Verify locally (no GPU, no AWS)
 
 ```bash
 # Preview a sweep, including the cost estimate
-bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+bash .cursor/skills/eval-direct-gpu/scripts/run_eval_sweep.sh \
   --checkpoint-root s3://b/ck \
   --s3-out s3://b/evals --dry-run
 
 # Price the smoke group against one checkpoint
-bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+bash .cursor/skills/eval-direct-gpu/scripts/run_eval_sweep.sh \
   --checkpoint s3://b/ck/step1000 --s3-out s3://b/evals \
   --group smoke --dry-run
 
 # Confirm an invalid benchmark name is caught before anything spends
-bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+bash .cursor/skills/eval-direct-gpu/scripts/run_eval_sweep.sh \
   --checkpoint s3://b/ck/step1 --s3-out s3://b/evals \
   --benchmarks "not_a_real_task" --dry-run
 ```

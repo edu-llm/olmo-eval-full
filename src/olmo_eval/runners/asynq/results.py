@@ -20,6 +20,7 @@ from olmo_eval.runners.asynq.types import (
     TaskTracker,
 )
 from olmo_eval.runners.common.types import TaskResult
+from olmo_eval.runners.io.builders import build_predictions
 from olmo_eval.runners.processing.aggregation import compute_suite_aggregations
 from olmo_eval.runners.processing.utils import compute_task_hash
 
@@ -30,6 +31,13 @@ if TYPE_CHECKING:
     from olmo_eval.evals.tasks.common import Task
 
 logger = get_logger(__name__)
+
+# How much scored work a crash may cost. Rows are buffered rather than written one at
+# a time because a 10,000-instance benchmark would otherwise pay a syscall per instance
+# for insurance it will usually not need; whichever bound is reached first wins, so a
+# slow task still flushes on the clock rather than waiting to fill a buffer.
+PARTIAL_FLUSH_ROWS = 50
+PARTIAL_FLUSH_SECONDS = 30.0
 
 
 def _format_scoring_error(exc: Exception, *, phase: str) -> dict[str, str]:
@@ -81,6 +89,9 @@ async def process_results(
     write_predictions_fn: Any,
     save_requests: bool,
     write_requests_fn: Any,
+    append_partial_fn: Any = None,
+    discard_partial_fn: Any = None,
+    write_partial_metrics_fn: Any = None,
 ) -> dict[str, TaskResult]:
     """Process results from workers with inline async scoring.
 
@@ -98,6 +109,13 @@ async def process_results(
         model_name: Model name for reporting.
         save_predictions: Whether to save predictions.
         write_predictions_fn: Function to write predictions.
+        append_partial_fn: Optional function appending scored rows to a task's partial
+            file, so an interrupted run leaves the instances it did finish. Omitted by
+            callers that have nowhere to put them.
+        discard_partial_fn: Optional function removing a task's partial file once the
+            complete one has been written.
+        write_partial_metrics_fn: Optional function rewriting metrics.json from the
+            tasks finished so far, called as each one completes.
 
     Returns:
         Dict mapping task spec to TaskResult.
@@ -108,6 +126,50 @@ async def process_results(
     # Track scored responses per task: spec -> {idx: scored_response}
     scored_responses: dict[str, dict[int, Response]] = {spec: {} for spec in trackers}
     instances_scored: dict[str, int] = {spec: 0 for spec in trackers}
+
+    save_partial = save_predictions and append_partial_fn is not None
+    partial_buffer: dict[str, list[dict]] = {spec: [] for spec in trackers}
+    partial_last_flush: dict[str, float] = {spec: time.time() for spec in trackers}
+
+    def flush_partial(spec: str) -> None:
+        """Write this task's buffered rows out, if it has any."""
+        rows = partial_buffer[spec]
+        if not rows:
+            return
+        tracker = trackers[spec]
+        assert tracker.task is not None
+        try:
+            append_partial_fn(
+                model_name,
+                spec,
+                rows,
+                compute_task_hash(tracker.task.config.to_dict()),
+            )
+        except Exception as error:  # noqa: BLE001 - insurance must never break the run
+            logger.warning(f"Could not append partial predictions for {spec}: {error}")
+        partial_buffer[spec] = []
+        partial_last_flush[spec] = time.time()
+
+    def record_partial(spec: str, instance_idx: int, scored: Response, task: Task) -> None:
+        """Buffer one scored row against the possibility that this run does not finish."""
+        try:
+            row = build_predictions([scored], metrics=task.config.metrics)[0]
+        except Exception as error:  # noqa: BLE001 - insurance must never break the run
+            logger.warning(f"Could not build partial prediction for {spec}: {error}")
+            return
+        # build_predictions numbers rows by position within the list it was handed, so a
+        # row built alone would always claim doc_id 0. The instance index is what the
+        # complete file's ordering is derived from anyway, and unlike a position it stays
+        # correct when only some of the task's instances were reached.
+        row["doc_id"] = instance_idx
+        partial_buffer[spec].append(row)
+
+        due = (
+            len(partial_buffer[spec]) >= PARTIAL_FLUSH_ROWS
+            or time.time() - partial_last_flush[spec] >= PARTIAL_FLUSH_SECONDS
+        )
+        if due:
+            flush_partial(spec)
 
     # Progress tracking for scoring
     scoring_progress = ProgressLogger(
@@ -154,6 +216,23 @@ async def process_results(
                 write_predictions_fn(
                     model_name, task_result.spec, task_result.predictions, task_hash
                 )
+                # The complete file now says everything the partial one did, and says it
+                # in the canonical order. Dropping it here is what makes a leftover
+                # partial file mean "interrupted" rather than "ran normally".
+                if save_partial and discard_partial_fn is not None:
+                    partial_buffer[spec] = []
+                    try:
+                        discard_partial_fn(model_name, task_result.spec, task_hash)
+                    except Exception as error:  # noqa: BLE001
+                        logger.warning(f"Could not discard partial for {spec}: {error}")
+            if write_partial_metrics_fn is not None:
+                # Only completed tasks are ever in `results`, so a benchmark the run
+                # never finished is absent from this file rather than reported at a
+                # score drawn from whichever instances happened to be reached.
+                try:
+                    write_partial_metrics_fn(results)
+                except Exception as error:  # noqa: BLE001 - insurance, never fatal
+                    logger.warning(f"Could not write partial metrics after {spec}: {error}")
             if save_requests and task_result.requests:
                 task_hash = compute_task_hash(task_result.config)
                 write_requests_fn(model_name, task_result.spec, task_result.requests, task_hash)
@@ -185,6 +264,8 @@ async def process_results(
 
         scored_responses[spec][instance_idx] = scored
         instances_scored[spec] += 1
+        if save_partial:
+            record_partial(spec, instance_idx, scored, task)
         scoring_progress.update(1)
         check_task_completion(spec)
 
@@ -286,6 +367,13 @@ async def process_results(
     # Wait for all in-flight scoring to complete
     if in_flight_scoring:
         await asyncio.gather(*in_flight_scoring, return_exceptions=True)
+
+    # Any task that never completed keeps its partial file, so its buffered rows have to
+    # reach disk before we stop: they are the only record of instances that were scored
+    # but whose task never finished.
+    if save_partial:
+        for spec in trackers:
+            flush_partial(spec)
 
     # Final check — all tasks should be complete
     if tasks_complete < total_tasks:

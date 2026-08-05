@@ -1087,7 +1087,32 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
             write_predictions_fn=self._write_predictions,
             save_requests=self.save_requests,
             write_requests_fn=self._write_requests,
+            append_partial_fn=self._append_partial_predictions,
+            discard_partial_fn=self._discard_partial_predictions,
+            # trackers is keyed by expanded spec, so its keys are the expanded task list
+            # that aggregation needs; taking it from here avoids threading the same list
+            # down a second path where the two could disagree.
+            write_partial_metrics_fn=lambda done: self._write_partial_metrics(
+                done, list(trackers.keys())
+            ),
         )
+
+    def _write_partial_metrics(
+        self, results_so_far: dict[str, Any], expanded_tasks: list[str]
+    ) -> None:
+        """Rewrite metrics.json from the tasks finished so far.
+
+        Runs as each task completes, so a run that dies later still reports the
+        benchmarks that did finish. The final write at the end supersedes this with the
+        same content plus the experiment identifiers, which are only known then.
+        """
+        if not results_so_far:
+            return
+        try:
+            results_dict = self._aggregate_results(dict(results_so_far), expanded_tasks)
+            self._write_metrics_json(results=results_dict)
+        except Exception as error:  # noqa: BLE001 - insurance must never break the run
+            logger.warning(f"Could not write partial metrics: {error}")
 
     def _aggregate_results(
         self,

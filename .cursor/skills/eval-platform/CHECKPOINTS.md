@@ -28,6 +28,27 @@ If the user does not have it to hand, the thing to ask them for is the value the
 training run exposed as `EDULLM_CHECKPOINT_DIR`, copied verbatim. Asking them to
 copy that one string is reliable; anything reconstructed from parts is not.
 
+## On the platform, the location is also a permission
+
+**A checkpoint the platform can evaluate must live under
+`s3://sbsandbox-intern-edullm-outputs/teams/<team>/runs/<run-id>/`.** Not a
+convention — the only read grant the GPU workload role holds is
+`s3:GetObject` on `outputs/teams/*/runs/*`, so a checkpoint anywhere else is
+unreadable no matter who submits the job.
+
+That failure is expensive because it arrives late: the submission compiles, a
+lead approves it, a machine is allocated, an image is pulled, and *then* the
+first read is denied. The platform's own tests record this costing a real run.
+`submit_eval_run.sh` therefore refuses a path outside that prefix before
+dispatching anything.
+
+The good news is that this is where training runs already write. A checkpoint
+from any team's run is readable — the grant is `teams/*/runs/*` rather than one
+team's prefix, deliberately widened so a run can read back what it wrote.
+
+If a checkpoint lives somewhere else, it has to be copied in before it can be
+evaluated, and that copy is not something the eval job can do for itself.
+
 ## What to ask for
 
 A single S3 prefix whose **immediate children are the individual checkpoint
@@ -54,13 +75,19 @@ The two neighbouring levels are the common mix-ups, and neither fails cleanly:
 
 ## Checking a path you were given
 
+Both scripts take `--dry-run`; the rest of this section, and the one after it,
+are about `run_eval_sweep.sh`, whose `--s3-out`, `--checkpoint-root`, `--latest`
+and `--pattern` do not exist on the platform path. On the platform path,
+`submit_eval_run.sh --dry-run` validates the same checkpoint prefix and dispatches
+nothing.
+
 `--dry-run` confirms the path for free. It needs only S3 **read**, exits before
 any download, conversion, GPU work or upload, and validates four things at once:
 the path exists, your credentials can read it, the `aws` CLI is present, and the
 discovered checkpoints are the ones the user expected.
 
 ```bash
-bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+bash .cursor/skills/eval-direct-gpu/scripts/run_eval_sweep.sh \
   --checkpoint-root s3://.../<run>/checkpoints \
   --s3-out s3://.../evals/scratch \
   --dry-run
@@ -102,16 +129,23 @@ Prefer `--latest` over `--limit` for shrinking a trial run. `--limit` caps
 instances per benchmark and, on some tasks, changes which split is loaded — see
 [BENCHMARKS.md](BENCHMARKS.md).
 
-## Permissions
+## Permissions on your own machine
 
-The box running the sweep needs:
+**Nothing in this section applies to the platform path.** `submit_eval_run.sh`
+needs no AWS credentials from you and has no `--s3-out`: the platform assumes its
+own roles and picks the output prefix itself. What that path requires of a
+checkpoint is the read grant described in
+[On the platform, the location is also a permission](#on-the-platform-the-location-is-also-a-permission),
+and nothing else.
+
+The box running `run_eval_sweep.sh` is the case with permissions to arrange. It
+needs:
 
 - **read** on the checkpoint prefix, to list and download weights;
 - **`s3:PutObject`** on the `--s3-out` prefix, to upload results and markers.
 
-Those are often granted by different roles. On a managed platform, a job's role
-is usually scoped to write only inside that job's own output directory, so
-`--s3-out` may not be freely chosen — ask the user what their platform exposes as
-the run's output root rather than picking a bucket. Running the eval under the
-same team that owns the checkpoints keeps both permissions inside one role and
-avoids cross-team access entirely.
+Those are often granted by different roles. A job's role is usually scoped to
+write only inside that job's own output directory, so `--s3-out` may not be
+freely chosen — ask the user what exposes the run's output root rather than
+picking a bucket. Running the eval under the same team that owns the checkpoints
+keeps both permissions inside one role and avoids cross-team access entirely.

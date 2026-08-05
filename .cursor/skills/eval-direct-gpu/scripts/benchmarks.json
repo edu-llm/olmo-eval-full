@@ -1,6 +1,6 @@
 {
   "_comment": [
-    "Benchmark registry for the eval-checkpoints skill. This is the only place",
+    "Benchmark registry for the eval-direct-gpu skill. This is the only place",
     "benchmark names appear in the skill's code, so adding one is a data edit.",
     "",
     "instances: size of the scored split, used for cost estimation.",
@@ -20,6 +20,10 @@
     "             benchmarks -- the list, or",
     "             like       -- inherit another group's list, so the two cannot",
     "                           drift apart when one is edited",
+    "             exclude    -- drop another group's members from the inherited",
+    "                           list. Names a group rather than benchmarks, for",
+    "                           the same reason: a set defined by subtraction",
+    "                           still tracks a new benchmark added to its parent",
     "             limit      -- instances per benchmark, applied unless --limit",
     "                           is passed explicitly",
     "             description-- shown in the log when the group is selected",
@@ -69,9 +73,10 @@
       "triviaqa"
     ],
     "smoke": {
-      "like": "default",
-      "limit": 2,
-      "description": "plumbing check: the default set at 2 instances per benchmark, not a measurement"
+      "like": "all",
+      "exclude": "fact_proxy",
+      "limit": 10,
+      "description": "plumbing check: every benchmark except the fact_proxy pair, at 10 instances each, not a measurement"
     }
   },
   "benchmarks": {

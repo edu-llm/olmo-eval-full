@@ -1,6 +1,6 @@
 # Checkpoint eval smoke test — what happened
 
-This bundle contains the results of a **smoke test** that ran the `eval-checkpoints`
+This bundle contains the results of a **smoke test** that ran the `eval-direct-gpu`
 skill against a single model checkpoint stored in S3, on a rented AWS GPU, and wrote
 the benchmark outputs back to S3. Everything under `results/` was downloaded verbatim
 from S3; this README explains how it was produced.
@@ -34,7 +34,7 @@ This was the last step in a short chain of work:
    `s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step{100,200,300}/`.
    To keep that run free/offline, the "model" is a **tiny random GPT-2** (HF format:
    `config.json` + `model.safetensors` ~170 KB + a byte-level tokenizer), not a real model.
-3. **This smoke test:** pointed the `eval-checkpoints` skill at `step300/` of that mock run.
+3. **This smoke test:** pointed the `eval-direct-gpu` skill at `step300/` of that mock run.
 
 So the checkpoint evaluated here is that placeholder GPT-2 — hence meaningless scores.
 
@@ -42,8 +42,10 @@ So the checkpoint evaluated here is that placeholder GPT-2 — hence meaningless
 
 ## What exactly was run
 
-**Skill:** `eval-checkpoints`, from the `p3-tickets` branch of the `olmo-eval-full` repo
-(`.cursor/skills/eval-checkpoints/`). It discovers a checkpoint, stages the weights,
+**Skill:** `eval-direct-gpu`, from the `p3-tickets` branch of the `olmo-eval-full` repo
+(`.cursor/skills/eval-direct-gpu/`). It was called `eval-checkpoints` when this ran, and
+took its present name once the platform submission path split off into its own skill.
+It discovers a checkpoint, stages the weights,
 shells out to `uv run olmo-eval` once per checkpoint (one vLLM boot, one `-t` per
 benchmark), parses the returned `metrics.json`, and writes accuracy tables. It does not
 contain any eval logic of its own.
@@ -62,7 +64,7 @@ contain any eval logic of its own.
 **Command (real run, on the GPU box):**
 
 ```bash
-bash .cursor/skills/eval-checkpoints/scripts/run_eval_sweep.sh \
+bash .cursor/skills/eval-direct-gpu/scripts/run_eval_sweep.sh \
   --checkpoint s3://edullm-adaptive-inference-056956104102/checkpoints/mock-owner/mock-20260804-142414/step300/ \
   --s3-out    s3://edullm-adaptive-inference-056956104102/mock-checkpoint-eval/mock-20260804-142414/ \
   --group smoke \

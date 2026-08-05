@@ -10,7 +10,7 @@ are left out because they are unlabeled or because they are training data.
 
 ## Scope: what ships today
 
-The registry holds nine benchmarks, organized into groups. **Running with no
+The registry holds twelve benchmarks, organized into groups. **Running with no
 flags gets the `default` group: the five multiple-choice reasoning tasks.** They
 need no setup beyond the skill itself — no API keys, no new task code, no data
 sourcing.
@@ -20,8 +20,15 @@ sourcing.
 | `default` / `reasoning` | `csqa` `hellaswag` `piqa` `socialiqa` `arc_easy` | ready, API-free |
 | `fact_proxy` | `naturalqs` `jeopardy` | ready, API-free; generative, see the metric notes |
 | `factual` | `popqa` `triviaqa` | ready, API-free; purpose-built fact recall |
-| `all` | all nine | ready |
+| `all` | the nine above | ready |
 | `smoke` | same as `default`, capped at 2 instances each | plumbing check only — **not a measurement** |
+| `mc_format` | `arc_easy:mc` `csqa:mc` `socialiqa:mc` | ready, API-free; three of the above re-asked in the A/B/C/D format — a cross-check, not part of a sweep |
+
+`all` is the nine, not the twelve. The three `mc_format` entries are the same
+questions on the same splits as `arc_easy`, `csqa` and `socialiqa`, asked a
+different way, so folding them into `all` would inflate a sweep's cost by a third
+to score three benchmarks twice. Ask for them by name. See
+[`rc` and `mc`](#rc-and-mc-two-ways-to-put-the-same-question-to-a-model).
 
 `fact_proxy` is separated because those two are *proxies* for fact recall rather
 than purpose-built fact benchmarks. They work today and cost nothing extra, so
@@ -30,14 +37,17 @@ not what a fact-recall study would report.
 
 ### What is deliberately not here yet
 
-`popqa` has landed; the rest of the fact-recall suite (TriviaQA, SimpleQA, T-REx
-exact-match, FactScore) has not, and the gap is larger than it looks:
+`popqa` and `triviaqa` have both landed and are in the `factual` group above. The
+rest of the fact-recall suite (SimpleQA, T-REx exact-match, FactScore) has not,
+and the gap is larger than it looks:
 
-- **TriviaQA, T-REx and FactScore have no task file in olmo-eval at all.** Each
-  needs writing, and T-REx additionally needs a data source chosen, since there
-  is no canonical evaluation split. TriviaQA is the easy one — it is the same
-  shape as `popqa`, and its `answer.aliases` field maps straight onto the
-  multi-reference handling the SQuAD-family scorers already do.
+- **T-REx and FactScore have no task file in olmo-eval at all.** Each needs
+  writing, and T-REx additionally needs a data source chosen, since there is no
+  canonical evaluation split. TriviaQA used to be listed here as the easy one, on
+  the grounds that it is the same shape as `popqa` and its `answer.aliases` field
+  maps straight onto the multi-reference handling the SQuAD-family scorers
+  already do. That turned out to be true, and it is now written: see
+  [`triviaqa`](#triviaqa-closed-book-and-a-deliberate-mirror-of-co-lmlm).
 - **SimpleQA exists but the bare task scores nothing.** `Task.metrics` defaults to
   `()` and `simpleqa.py` never sets it; the only metric is attached by the
   `simpleqa:judge` variant. Running `-t simpleqa` would do full inference and
@@ -51,10 +61,12 @@ exact-match, FactScore) has not, and the gap is larger than it looks:
   many tokens instead of scoring a fixed continuation, so they are cheaper in
   prompt count and considerably slower per prompt.
 
-When those land, add registry entries and extend a `factual` group.
+When those land, add registry entries and extend the `factual` group, which is
+what `popqa` and `triviaqa` did.
 
-Until then they are listed in the registry's `unsupported` table and **refused
-outright**, with the reason printed. That refusal survives `--allow-any-task` on
+Until then all three — `simpleqa`, `trex` and `factscore` — are listed in the
+registry's `unsupported` table and **refused outright**, with the reason
+printed. That refusal survives `--allow-any-task` on
 purpose: the flag skips this registry, not olmo-eval's task registry, so it
 cannot run a task that has no task file. Allowing it through would only move the
 failure to after the checkpoint had been fetched, converted and booted — and
@@ -65,15 +77,20 @@ and unsupported names, the error prints the runnable subset ready to paste back.
 ## The registry
 
 `scripts/benchmarks.json` is the only place benchmark names appear in the skill's
-code. `run_eval_sweep.sh` reads it to resolve `--group` and `--benchmarks`, reject
-typos before any spend, and total up the cost estimate.
+code. **Both entry points read it**, through the one shared
+`scripts/resolve_benchmarks.py`: `run_eval_sweep.sh` to resolve `--group` and
+`--benchmarks`, reject typos before any spend, and total up the cost estimate,
+and `submit_eval_run.sh` to do the same before a submission costs a queue slot.
+A name valid on one path is valid on the other because there is only one
+resolver.
 
 Each entry carries:
 
 - `instances` — size of the scored split, for cost estimation.
-- `choices` — vLLM prompts issued per instance. Multiple-choice log-likelihood
-  scoring sends one prompt per answer choice; generative tasks send one per
-  instance, so `choices` is 1 for them.
+- `choices` — inference requests issued per instance, on either provider. On the
+  platform path these are `olmo_core` forward passes rather than vLLM prompts.
+  Multiple-choice log-likelihood scoring sends one per answer choice; generative
+  tasks send one per instance, so `choices` is 1 for them.
 - `split` — which split the olmo-eval task scores, recorded so the estimate can
   be checked against the task definition.
 - `metrics` — the metric keys the task emits. Entries with more than one get
@@ -94,7 +111,7 @@ group carry settings as well as membership:
 | `benchmarks` | the list, same as the plain-list form |
 | `like` | inherit another group's list, so the two cannot drift apart |
 | `limit` | instances per benchmark, applied unless `--limit` is passed |
-| `description` | appended to the log line and to `benchmark_selection` |
+| `description` | appended to the resolver's source line, which both paths print |
 
 `smoke` uses `like: default` rather than repeating the five names, so editing
 `default` keeps the smoke check honest automatically.
@@ -103,9 +120,14 @@ group carry settings as well as membership:
 no shell edits, no `SKILL.md` edits. To run a task that is not in the registry,
 pass `--allow-any-task`; it will run, but no cost estimate is available for it.
 
-Which selection was used is recorded in each run's `run_provenance.json` as
-`benchmark_selection`, and printed in the sweep log, so a result set is always
-traceable to how it was requested.
+Which selection was used is traceable afterwards, though the two paths record it
+differently. The sweep writes `run_provenance.json` with a `benchmark_selection`
+key and prints the same string in `sweep.log`. The platform path writes
+`eval_provenance.json`, which has no `benchmark_selection` key at all. It records
+the resolved list under `benchmarks` and the invocation under
+`olmo_eval_command`, so what ran is recoverable there; how it was *asked for* is
+recoverable only from the submitted command, which the submitter prints and the
+platform stores in the run's manifest.
 
 ## Task names
 
@@ -145,10 +167,19 @@ involved, but the eval box needs Hub access and an `HF_HOME` with room.
 | `jeopardy` | train | ~2,117 | 1 | `f1` (primary) + `accuracy` |
 | `popqa` | test | 14,267 | 1 | `accuracy` under two scorers: `containment` (primary) + `squad_exact_match` |
 | `triviaqa` | validation | 17,944 | 1 | `accuracy` under two scorers: `windowed_containment` (primary) + `squad_exact_match` |
+| `arc_easy:mc` | test | 2,376 | ~4 | `accuracy` |
+| `csqa:mc` | validation | 1,221 | 5 | `accuracy` |
+| `socialiqa:mc` | validation | 1,954 | 3 | `accuracy` |
 
 Five of the nine are multiple choice and report a single accuracy. Four are
 generative and report **two** scores each, because a single number cannot say
 both "was it right" and "how close was it".
+
+The three `:mc` rows repeat their base task's split, instance count and choice
+count exactly, because the variant overrides the prompt format and nothing else.
+That is asserted against the real `register_variant` call in
+`tests/python/test_mc_variants.py`, so the day someone adds a `limit=` upstream
+the registry is told rather than left quietly wrong.
 
 ### What is excluded, and why
 
@@ -230,6 +261,9 @@ there are no demonstrations to source. TriviaQA does publish a train split of
 | `arc_easy` | `accuracy` | `logprob` | ~4 choices |
 | `csqa` | `accuracy` | `logprob` | 5 choices |
 | `socialiqa` | `accuracy` | `logprob` | per-char normalized, 3 choices |
+| `arc_easy:mc` | `accuracy` | `logprob` | argmax over one label per option, usually `A`–`D`; inherits unnormalized |
+| `csqa:mc` | `accuracy` | `logprob` | labels `A`–`E`; inherits unnormalized |
+| `socialiqa:mc` | `accuracy` | `logprob` | labels `A`–`C`; inherits per-char, which the equal-length labels make a no-op |
 | `naturalqs` | `f1` (primary) | `drop_f1` | generative |
 | | `accuracy` | `drop_exact_match` | |
 | `jeopardy` | `f1` (primary) | `f1` | generative, SQuAD-style |
@@ -239,15 +273,129 @@ there are no demonstrations to source. TriviaQA does publish a train split of
 | `triviaqa` | `accuracy` (primary) | `windowed_containment` | generative; gold answer in the first 100 characters, lowercase only |
 | | `accuracy` | `squad_exact_match` | same metric name, second scorer |
 
-All five multiple-choice tasks serialize under the metric name `accuracy`
-regardless of their normalization variant. `LogprobMCAccuracyMetric`,
-`LogprobPerTokenMCAccuracyMetric` and `LogprobPerCharMCAccuracyMetric` all set
-`name = "accuracy"` and apply normalization inside `compute()`, so no per-task
-key mapping is needed when reading results.
+Every multiple-choice task here serializes under the metric name `accuracy`
+regardless of its normalization variant, and under the scorer name `logprob`
+regardless of which. `LogprobMCAccuracyMetric`, `LogprobPerTokenMCAccuracyMetric`
+and `LogprobPerCharMCAccuracyMetric` all set `name = "accuracy"`, all use
+`LogprobScorer`, and apply their normalization inside `compute()`, so no per-task
+key mapping is needed when reading results. The benchmark name is therefore the
+only thing separating one MCQ column from another — which is why the `:mc`
+entries keep their full name, colon included, all the way into the CSV header.
 
 **Do not look for `acc_norm`.** That is lm-eval and Open LLM Leaderboard
 nomenclature. It appears in `AdaptiveTesting/Inputs/OpenLM/download_openlm_responses.py`,
 which is why it turns up in greps, but olmo-eval never emits it.
+
+### `rc` and `mc`: two ways to put the same question to a model
+
+Everything above scores what olmo-eval calls the **`rc`** format, after reading
+comprehension, and what the literature calls cloze scoring. The options never
+appear in the prompt. Each one is scored as a separate continuation of the
+question, in full, and the answer is whichever continuation the model found most
+likely. Four options means four requests, each carrying the whole option text.
+
+The **`mc`** format asks the same question the way a person would see it on a
+test paper: the options are listed in the prompt, labelled `A.`, `B.`, `C.`, and
+the request scores a single label token. Four options still means four requests —
+this is argmax over `" A"`, `" B"`, `" C"`, `" D"`, not one generation. What
+shrinks is only the continuation; the prompt grows to hold every option, so a
+request is *longer* than its cloze counterpart. But a single-token label is
+dropped from the model input entirely, which leaves all four requests carrying
+byte-identical input, and the provider forwards it once — so the longer prompt is
+paid for once rather than four times. See
+[`mc_format` costs less than its request count says](#mc_format-costs-less-than-its-request-count-says).
+The switch is the `is_mc` branch in each task's `format_request`, reached by the
+variant setting a `MultipleChoiceFormatter`.
+
+This is *multiple choice prompting* from Robinson & Wingate, **"Leveraging Large
+Language Models for Multiple Choice Question Answering"** (ICLR 2023), which also
+names the ability it depends on: **multiple choice symbol binding**, associating
+a bare symbol with the option text sitting beside it. Its failure mode is
+documented by Zheng et al., **"Large Language Models Are Not Robust Multiple
+Choice Selectors"** (ICLR 2024): a model that cannot bind falls back on a prior
+over the labels themselves, so the score reports where the answer was placed as
+much as what it was.
+
+| Name | Select it with |
+|---|---|
+| `arc_easy:mc` | `--group mc_format`, or `--benchmarks "arc_easy:mc csqa:mc socialiqa:mc"` |
+| `csqa:mc` | as above, or on its own with `--benchmarks "csqa:mc"` |
+| `socialiqa:mc` | as above |
+
+**These are a cross-check, not a training curve.** Symbol binding is emergent:
+it appears at some scale and some amount of training and is simply absent before
+that, so an early pretraining checkpoint reads at or near chance — 25%, 20%, 33%
+for these three — while its `rc` score is already moving. A flat `mc` line over
+the first half of a run is the expected result and says nothing about the model
+beyond "not yet". Plot the default group as the curve; run `mc_format` at a
+handful of steps to see whether the format has started to work at all, and near
+the end to check that an `rc` gain is a real gain rather than an artifact of
+continuation scoring.
+
+All three inherit `num_fewshot = 0` from their base task, so this is zero-shot
+multiple choice prompting, which is a harder ask than the setting the result was
+published in — nothing in the prompt demonstrates that a bare letter is the
+expected answer. Expect these to lag a few-shot number from the literature, and
+do not read a low score as the model failing the questions until it has answered
+a few in the format. Neither of those is a reason to distrust multiple choice
+prompting itself; both are consequences of asking for it zero-shot, this early.
+
+**The answer for a first sweep is still no, but for one reason rather than two.**
+The group is expected to read at or near chance until symbol binding appears, so on
+an early checkpoint it buys a number that says nothing about the model. Cost is no
+longer part of the argument — one forward pass per instance makes `mc` the cheaper
+of the two formats. Run it once binding is plausible, or near the end of a run as a
+check that an `rc` gain is real, and leave it out of the first pass.
+
+Stacking a shot count on is not available: `arc_easy:mc:full`
+parses, but `arc_easy` has no five-shot `mc` variant at all, and the two that do
+exist — `csqa:mc_olmo3base` and `socialiqa:mc_olmo3base` — also switch to
+`validation+train` and subsample to 10,000, so they are not the same population
+as the entries here and are not offered as if they were.
+
+What `mc` is good for is that it **cannot be gamed by option length or option
+prior**, because every continuation is one letter. Those two biases are what the
+normalized metrics in the table above exist to correct, and they are only a
+problem because cloze scoring compares whole option texts against each other:
+`LogprobPerCharMCAccuracyMetric` divides by continuation length so a long option
+is not penalised for having more tokens to be unlikely about, and
+`LogprobUncondMCAccuracyMetric` — which `csqa:rc` uses, though the registered
+`csqa` does not — subtracts each option's unconditional logprob so a phrase the
+model finds plausible on its own does not win on that alone, at the cost of a
+second request per option. Under `mc` both corrections are no-ops: the labels are
+the same length and, being bare letters, carry no content prior. What replaces
+them is label-position bias, which is Zheng et al.'s subject and which no metric
+here corrects for. The bias does not disappear; it changes shape.
+
+The metric key does not change. All three inherit their base task's metric, and
+every one of those serializes as `accuracy` under the `logprob` scorer, so
+`accuracy_wide.csv` gains three columns named for the benchmarks —
+`arc_easy:mc`, `csqa:mc`, `socialiqa:mc` — sitting beside the base task's own.
+`socialiqa:mc` inherits `LogprobPerCharMCAccuracyMetric` specifically, which is
+harmless rather than wrong: dividing every option by the same two characters
+leaves the argmax where it was.
+
+**`hellaswag:mc` and `piqa:mc` exist upstream and are deliberately not
+registered.** Both are one `register_variant` call away, in
+`evals/tasks/hellaswag.py` and `evals/tasks/piqa.py`, and nothing here changes
+their behaviour — they are simply not offered, because the format does not suit
+them:
+
+- **HellaSwag has no question.** Its loader builds the query from
+  `activity_label + ": " + ctx` and the options from `endings`, so the four
+  options are sentence continuations of that context rather than answers to
+  anything. Labelling them `A.` to `D.` and asking for a letter discards the one
+  signal the task is built on — which ending reads as a natural continuation —
+  and replaces it with a matching exercise the dataset was not written for.
+- **PIQA is binary, and its stem is a goal rather than a question.** Two options
+  means chance is 50%, so the range a real result has to stand out from is half
+  as wide, and label bias eats a larger share of what is left. A 3-point move on
+  a 50-point range is much harder to distinguish from a preference for `A` than
+  the same move on `arc_easy`'s 75.
+
+Both would still run under `--allow-any-task`, without a cost estimate, if
+someone wants to look. Registering them would mean standing behind the number,
+which is a different thing.
 
 ### F1 versus exact match on the generative pair
 
@@ -427,20 +575,54 @@ informative than either number alone.
 
 ## Cost
 
-A full nine-benchmark sweep is roughly **55,400 instances and about 103,300 vLLM
-prompts** per checkpoint. Prompts exceed instances because multiple-choice scoring
-sends one prompt per answer choice, and HellaSwag alone accounts for about 40,000
-of the total (10,042 instances at four choices). The prompt count is what drives
-runtime, and it multiplies by every checkpoint in the sweep.
+A full nine-benchmark sweep is roughly **55,400 instances and about 103,300
+inference requests** per checkpoint — vLLM prompts on the sweep, `olmo_core`
+forward passes on the platform. Requests exceed instances because multiple-choice
+scoring sends one per answer choice, and HellaSwag alone accounts for about
+40,000 of the total (10,042 instances at four choices). The request count is what
+drives runtime, and it multiplies by every checkpoint in the sweep.
 
 The two `factual` benchmarks are the largest by instance count — `triviaqa` at
 17,944 and `popqa` at 14,267 — but being generative they issue one prompt each,
 so they add less runtime than their share of the instances suggests. `--group
 factual` runs just those two, at 32,211 instances and the same 32,211 prompts.
 
-Generative prompts are not directly comparable to multiple-choice ones, though:
+### `mc_format` costs less than its request count says
+
+`--group mc_format` is 5,551 instances and 21,471 requests: the same instances and
+the same request count as `arc_easy`, `csqa` and `socialiqa` under `rc`, because
+a variant changes the prompt and not the number of options to score.
+
+**Read as cost, that parity is wrong, and it is wrong in the cheap direction.** The
+four requests of an `mc` instance are identical to one another. A row's model input
+is `(context + continuation)[:-1]`, and for a single-token label that expression
+drops the label, so every row of a four-option instance holds byte-identical input:
+the same question asked four times. `OlmoCoreProvider` forwards each distinct input
+once and reads all four labels out of the one distribution, so 21,471 requests are
+**5,551 forward passes**, one per instance.
+
+That makes `mc` the cheaper format rather than the more expensive one. Cloze cannot
+share, because each of its requests appends a different option and the inputs
+genuinely differ. A four-option instance forwards roughly four questions and four
+options under `rc`, against one question and four options under `mc`.
+
+**The sharing is exact, not an approximation.** Identical input means identical
+logits at every position the scorer reads, and the per-label log-probs come out
+bit-identical to the unshared path — it is the same arithmetic, done once. It
+applies to `olmo_core` and `huggingface`, which compute a full-vocabulary
+distribution. The vLLM, vLLM-server and LiteLLM providers request a bounded number
+of prompt log-probs and so cannot read an arbitrary label out of a single pass; they
+still forward per request. `mc` is cheap on `vllm_server` for a different reason,
+prefix caching, which is on by default there.
+
+Two consequences. A `--batch-size` tuned against the old profile is now conservative
+for this group, since its effective batches are several times smaller — safe, but
+stale. And a request count is no longer a proxy for forward passes here, which
+matters when comparing observed runtime against the estimate.
+
+Generative requests are not directly comparable to multiple-choice ones either:
 each one generates tokens rather than scoring a fixed continuation, so it is
-slower per prompt. Treat the prompt count as a within-kind comparison.
+slower per request. Treat the request count as a within-kind comparison.
 
 `--dry-run` prints both figures, per checkpoint and for the whole sweep, before
 anything spends. Use `--latest N` to cap a trial run.
@@ -453,7 +635,10 @@ sampling from the union, so a limited run scores a different population than an
 unlimited one — in both directions, since the sampled set is neither the
 evaluation split nor a superset of it.
 
-Those two are flagged in the registry's `limit_unsafe` table, and the script
+`socialiqa:mc` is affected too, and is flagged separately: a variant changes the
+prompt, not the loader, and the registry matches on the exact name it was given.
+
+Those three are flagged in the registry's `limit_unsafe` table, and the script
 names them in its output whenever a limit is combined with an affected
 benchmark. Use `--latest 1` to pilot a real measurement instead.
 
@@ -504,6 +689,11 @@ popqa.accuracy.containment  popqa.accuracy.squad_exact_match
 triviaqa.accuracy.windowed_containment  triviaqa.accuracy.squad_exact_match
 ```
 
+A `mc_format` run adds `arc_easy:mc`, `csqa:mc` and `socialiqa:mc`, each a bare
+benchmark name like the other single-score tasks. The colon is part of the
+benchmark name rather than a separator, so it needs no escaping in the header and
+cannot collide with the `.metric.scorer` qualification, which only ever appends.
+
 `accuracy.csv` is the same data in long form, with the `scorer` that produced
 each number, an `is_primary` flag, and `num_instances`. Watch `num_instances`: it
 is `len(responses)`, the count of successfully scored responses rather than the
@@ -513,6 +703,68 @@ were dropped and the accuracy is over a smaller denominator.
 Failed checkpoints appear with a `status` other than `ok` and no score, rather
 than being omitted, so a checkpoint missing from the curve should always be
 explainable from the table.
+
+## Two inference backends, and their numbers are not interchangeable
+
+The same benchmark scored through a different provider can give a different
+number, so which one produced a score belongs beside it.
+
+| Path | Provider | Why |
+|---|---|---|
+| `submit_eval_run.sh` (platform) | `olmo_core` | The OLMo-core image carries CUDA torch and `ai2-olmo-core` and not vLLM |
+| `run_eval_sweep.sh` (own machine) | `vllm_server` | vLLM is installed there, and is far faster per prompt |
+
+For the five multiple-choice benchmarks the risk is low: scoring is
+log-likelihood argmax over fixed continuations, and two correct implementations
+should agree. For the four generative ones it is real — sampling, stop-sequence
+handling and tokenisation details all differ between backends, and every metric
+here is computed on the generated string.
+
+So compare a checkpoint against itself across steps on **one** path, and treat a
+cross-path comparison as a different experiment. `eval_provenance.json` records
+which provider ran, which is what makes that checkable after the fact.
+
+The `olmo_core` provider also reads a native OLMo-core checkpoint directly, so
+the platform path never converts to HF. That removes a step, and it means a
+checkpoint that only exists in HF format is not evaluable on that path.
+
+### Why the platform path cannot simply use vLLM too
+
+This gets asked, reasonably, because `VLLM_SETUP.md` at the repo root documents a
+vLLM run that provably worked on AWS. It worked on a *Deep Learning AMI*, which is
+a different thing from a Batch container: drivers and CUDA pre-baked, `uv`
+available, a repo checkout on disk, and a large NVMe scratch. Three things block
+carrying it into a platform job, and each is sufficient alone.
+
+**Torch.** The OLMo-core image ships torch 2.9.0+cu128 on Python 3.12.13. Our
+`uv.lock` resolves `vllm 0.19.1` against torch 2.10.0. vLLM's wheels link against
+a specific torch C++ ABI, so a minor-version gap means pip must replace the
+image's torch — gigabytes, and it overwrites the CUDA build the image exists to
+provide.
+
+**Disk.** `gpu-1xa10g` has no launch template, so it takes the ECS GPU AMI default
+of 30 GiB and has roughly 13 GiB free once the OS and the 4.4 GB image are
+accounted for. torch plus vLLM plus a native checkpoint plus its HF conversion
+does not fit. Only `gpu-8xa100` and `gpu-8xh100` carry 500 GiB, and `capacity.yaml`
+marks both as placing unreliably.
+
+**Time.** `olmo-core-check` is bounded at one hour, and the platform's own guidance
+for `olmo-eval-full` warns that installing a backend at runtime spends that hour
+on a download.
+
+Building an eval image with vLLM baked in is the only route past these, and it is
+not free either: the ECR scan gate lists `image_scan_findings_unreviewed` under
+`denied_outright`, so every unreviewed critical in the newly added dependency tree
+refuses the run until someone writes a per-vulnerability justification.
+
+Worth keeping for whoever revisits this. The argument *for* vLLM is real and
+specific: multiple-choice scoring issues one request per option over a shared
+question prefix, `vllm_server` enables prefix caching by default, and caching
+applies to the log-likelihood path because both providers score through
+`prompt_logprobs` with `max_tokens=1` rather than by generating. The pin set known
+to work together is vLLM 0.19.1, torch 2.10.0+cu128, transformers 5.7.0,
+ai2-olmo-core 2.4.0, CPython 3.12.13. And vLLM does not conflict with `olmo_core`
+— `pyproject.toml`'s `conflicts` block names `openhands` on one side of every pair.
 
 ## The command this produces
 

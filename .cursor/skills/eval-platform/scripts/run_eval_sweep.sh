@@ -105,6 +105,7 @@ REGION="${AWS_REGION:-us-east-1}"
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="${OLMO_EVAL_ROOT:-$(cd "${SKILL_DIR}/../../.." && pwd)}"
 REGISTRY="${SKILL_DIR}/scripts/benchmarks.json"
+RESOLVER="${SKILL_DIR}/scripts/resolve_benchmarks.py"
 BUNDLED_CONVERT="${SKILL_DIR}/scripts/convert_to_hf.py"
 
 # $OLMO_CORE_CONVERT overrides; otherwise the bundled library-only converter is
@@ -221,182 +222,43 @@ fi
 # matters because olmo-eval only does so after the checkpoint has been downloaded
 # and possibly converted, by which point the time is already spent.
 #
-# Emits three lines: the resolved benchmark names, then
-# "<instances> <prompts> <unknown_count>", then a description of what was chosen.
-if [[ -n "${BENCHMARKS}" && -n "${GROUP}" ]]; then
-  {
-    echo "pass --benchmarks or --group, not both: a group already names its benchmarks."
-    # "smoke test on this specific list" is a natural request that no single flag
-    # expresses, since smoke is a group. Say so here rather than leaving the
-    # caller to infer that the limit is what they actually wanted.
-    if [[ "${GROUP}" == "smoke" ]]; then
-      echo
-      echo "For a smoke test over your own list, drop --group and cap the instances:"
-      echo "  --benchmarks \"${BENCHMARKS}\" --limit 2"
-      echo "That is exactly what --group smoke does to the default set."
-    fi
-  } >&2
-  exit 2
-fi
-if ! RESOLVED="$(
-  BENCHMARKS="${BENCHMARKS}" GROUP="${GROUP}" ALLOW_ANY="${ALLOW_ANY_TASK}" \
-  REGISTRY="${REGISTRY}" CLI_LIMIT="${LIMIT}" \
-  python3 - <<'PY'
-import json, os, sys
+# THE RESOLUTION ITSELF LIVES IN scripts/resolve_benchmarks.py, AND IT IS SHARED.
+# submit_eval_run.sh has to make the same judgement before dispatching a platform
+# job, and two implementations would be two answers to "is this benchmark real"
+# -- which is the one thing the registry exists to make single. It emits a JSON
+# document, and the fields read below are its whole interface.
+resolver_args=(--registry "${REGISTRY}")
+if [[ -n "${GROUP}" ]]; then resolver_args+=(--group "${GROUP}"); fi
+if [[ -n "${BENCHMARKS}" ]]; then resolver_args+=(--benchmarks "${BENCHMARKS}"); fi
+if [[ -n "${LIMIT}" ]]; then resolver_args+=(--limit "${LIMIT}"); fi
+if [[ "${ALLOW_ANY_TASK}" != "0" ]]; then resolver_args+=(--allow-any-task); fi
 
-reg = json.load(open(os.environ["REGISTRY"], encoding="utf-8"))
-known = reg["benchmarks"]
-groups = reg.get("groups", {})
-aliases = reg.get("aliases", {})
-allow_any = os.environ["ALLOW_ANY"] == "1"
-
-explicit = os.environ["BENCHMARKS"].split()
-group = os.environ["GROUP"].strip()
-
-
-def group_members(name, _seen=None):
-    """A group's benchmark list, following one 'like' reference at a time.
-
-    _seen guards against a cycle in the registry turning into infinite
-    recursion; a malformed registry should produce a message, not a hang.
-    """
-    _seen = _seen or []
-    if name in _seen:
-        print(f"group '{name}' inherits from itself: {' -> '.join(_seen + [name])}",
-              file=sys.stderr)
-        raise SystemExit(2)
-    spec = groups[name]
-    if isinstance(spec, list):
-        return list(spec)
-    if "benchmarks" in spec:
-        return list(spec["benchmarks"])
-    parent = spec.get("like")
-    if parent not in groups:
-        print(f"group '{name}' inherits unknown group '{parent}'", file=sys.stderr)
-        raise SystemExit(2)
-    return group_members(parent, _seen + [name])
-
-
-group_limit = None
-if explicit:
-    requested, source = explicit, "explicit --benchmarks"
-else:
-    name = group or "default"
-    if name not in groups:
-        print(f"unknown group '{name}'", file=sys.stderr)
-        print("known groups: " + " ".join(sorted(groups)), file=sys.stderr)
-        print("See BENCHMARKS.md for what each group covers.", file=sys.stderr)
-        raise SystemExit(2)
-    requested = group_members(name)
-    spec = groups[name]
-    source = f"group '{name}'" + ("" if group else " (registry default)")
-    if isinstance(spec, dict):
-        group_limit = spec.get("limit")
-        if group_limit is not None and (
-            isinstance(group_limit, bool) or not isinstance(group_limit, int) or group_limit < 1
-        ):
-            print(
-                f"group '{name}' has an invalid limit {group_limit!r}; "
-                "want a positive integer",
-                file=sys.stderr,
-            )
-            raise SystemExit(2)
-        if spec.get("description"):
-            source += f" -- {spec['description']}"
-
-if not requested:
-    print("nothing to run: the resolved benchmark list is empty", file=sys.stderr)
-    raise SystemExit(2)
-
-# Names the registry positively knows cannot produce a score. Refused even under
-# --allow-any-task: that flag bypasses *this* registry, not olmo-eval's, so it
-# cannot make a task that does not exist run. Letting these through would fail
-# after the checkpoint was fetched, converted and booted, and would take every
-# valid benchmark in the same invocation down with it.
-unsupported = reg.get("unsupported", {})
-blocked = [n for n in requested if n in unsupported]
-if blocked:
-    print("cannot run: " + " ".join(blocked), file=sys.stderr)
-    for name in blocked:
-        print(f"  {name}: {unsupported[name]}", file=sys.stderr)
-    print(file=sys.stderr)
-    print(
-        "--allow-any-task does not help here; it skips this registry, not olmo-eval's.",
-        file=sys.stderr,
-    )
-    runnable = [n for n in requested if n not in unsupported]
-    if runnable:
-        print("The rest of the request is runnable:", file=sys.stderr)
-        print("  --benchmarks \"" + " ".join(runnable) + "\"", file=sys.stderr)
-    print("See BENCHMARKS.md for what ships today.", file=sys.stderr)
-    raise SystemExit(2)
-
-# An explicit --limit beats the group's, so a group's cap is a default rather
-# than a cage. Empty string means the flag was not passed at all.
-cli_limit = os.environ["CLI_LIMIT"].strip()
-effective_limit = int(cli_limit) if cli_limit else group_limit
-
-instances = prompts = 0
-unknown = []
-for name in requested:
-    entry = known.get(name)
-    if entry is None:
-        unknown.append(name)
-        continue
-    # With a limit in force the estimate is the limited count, not the split
-    # size; reporting 17k instances for a 10-instance smoke run would be worse
-    # than useless.
-    n = entry["instances"]
-    if effective_limit is not None:
-        n = min(n, effective_limit)
-    instances += n
-    prompts += n * entry["choices"]
-
-if unknown and not allow_any:
-    print("unknown benchmark(s): " + " ".join(unknown), file=sys.stderr)
-    for name in unknown:
-        target = aliases.get(name)
-        if target:
-            print(
-                f"  '{name}' is a dataset name; the olmo-eval task is '{target}'",
-                file=sys.stderr,
-            )
-    print("known: " + " ".join(sorted(known)), file=sys.stderr)
-    print("known groups: " + " ".join(sorted(groups)), file=sys.stderr)
-    print("See BENCHMARKS.md for what each one scores.", file=sys.stderr)
-    # Deliberately worded to say what the flag *is* for. The looser "run any
-    # other task" reads as a way to force through a benchmark olmo-eval has
-    # never heard of, which only defers the failure until after the checkpoint
-    # has been fetched and converted.
-    print(
-        "If olmo-eval registers one of these and this registry simply omits it, "
-        "--allow-any-task will run it without a cost estimate. That flag cannot "
-        "run a task olmo-eval does not define.",
-        file=sys.stderr,
-    )
-    raise SystemExit(2)
-
-print(" ".join(requested))
-print(instances, prompts, len(unknown))
-print(source)
-print(effective_limit if effective_limit is not None else "")
-PY
-)"; then
+if ! RESOLVED="$(python3 "${RESOLVER}" "${resolver_args[@]}")"; then
   exit 2
 fi
 
-# tr -d '\r': python writes CRLF when stdout is a pipe on a Windows host, and
-# `readarray -t` strips only the LF. A surviving CR would ride along on the last
-# benchmark name (producing a `-t name<CR>` argument) and on N_UNKNOWN (breaking
-# the numeric comparison below).
-readarray -t RESOLVED_LINES < <(printf '%s' "${RESOLVED}" | tr -d '\r')
-read -r -a BENCH_LIST <<< "${RESOLVED_LINES[0]}"
-read -r TOTAL_INSTANCES TOTAL_PROMPTS N_UNKNOWN <<< "${RESOLVED_LINES[1]}"
-BENCH_SOURCE="${RESOLVED_LINES[2]}"
-# The resolver already applied the precedence rule (an explicit --limit beats a
-# group's), so whatever it returns is the effective limit. An empty trailing
-# line is dropped by command substitution, hence the default.
-LIMIT="${RESOLVED_LINES[3]:-}"
+# tr -d '\r': python writes CRLF when stdout is a pipe on a Windows host, and a
+# surviving CR would ride along on the last benchmark name -- producing a
+# `-t name<CR>` argument -- and break every numeric comparison below.
+_resolved_field() {
+  printf '%s' "${RESOLVED}" |
+    python3 -c "import json,sys;v=json.load(sys.stdin).get(sys.argv[1]);print('' if v is None else v)" "$1" |
+    tr -d '\r'
+}
+read -r -a BENCH_LIST <<< "$(
+  printf '%s' "${RESOLVED}" |
+    python3 -c "import json,sys;print(' '.join(json.load(sys.stdin)['benchmarks']))" | tr -d '\r'
+)"
+TOTAL_INSTANCES="$(_resolved_field instances)"
+TOTAL_PROMPTS="$(_resolved_field prompts)"
+N_UNKNOWN="$(
+  printf '%s' "${RESOLVED}" |
+    python3 -c "import json,sys;print(len(json.load(sys.stdin)['unknown']))" | tr -d '\r'
+)"
+BENCH_SOURCE="$(_resolved_field source)"
+# The resolver applied the precedence rule (an explicit --limit beats a group's),
+# so whatever it returns is the effective limit.
+LIMIT="$(_resolved_field effective_limit)"
 
 WORK="$(mktemp -d)"
 LOG="${WORK}/sweep.log"

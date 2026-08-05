@@ -74,6 +74,7 @@ class OlmoCoreProvider(InferenceProvider):
         cache_dir: str | None = None,
         local_files_only: bool = False,
         add_bos_token: bool = False,
+        share_logprob_forwards: bool = True,
         **kwargs: object,
     ) -> None:
         max_model_len = core_utils._resolve_max_model_len_alias(max_model_len, kwargs)
@@ -141,6 +142,7 @@ class OlmoCoreProvider(InferenceProvider):
         if getattr(self.tokenizer, "eos_token_id", None) is None:
             self.tokenizer.eos_token_id = resolved_eos_token_id
         self.use_cache = use_cache
+        self.share_logprob_forwards = share_logprob_forwards
         self.batch_size = batch_size
         self.chat_template = chat_template
         self.max_length = core_utils._resolve_max_length(
@@ -746,7 +748,10 @@ class OlmoCoreProvider(InferenceProvider):
         import torch
 
         rows_by_request = [self._logprob_inputs_for_request(request) for request in requests]
-        token_inputs = [row.input_ids for rows in rows_by_request for row in rows]
+        token_inputs, forward_index = core_utils._plan_logprob_forwards(
+            [row for rows in rows_by_request for row in rows],
+            share_identical_inputs=self.share_logprob_forwards,
+        )
 
         if token_inputs:
             batched_inputs = self._right_pad(token_inputs)
@@ -755,12 +760,15 @@ class OlmoCoreProvider(InferenceProvider):
         else:
             batch_logits = []
 
-        output_iter = iter(batch_logits)
+        index_iter = iter(forward_index)
         results: list[list[LMOutput]] = []
 
         for rows in rows_by_request:
             results.append(
-                [self._logprob_output_from_logits(row, next(output_iter)) for row in rows]
+                [
+                    self._logprob_output_from_logits(row, batch_logits[next(index_iter)])
+                    for row in rows
+                ]
             )
 
         return results

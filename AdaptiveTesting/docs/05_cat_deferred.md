@@ -8,8 +8,9 @@ Nothing in `src/olmo_eval/adaptive/`, the vendored banks, or the `atlas_*` tasks
 evals was removed. What was removed is one skill,
 `.cursor/skills/run-checkpoint-evals/`, which orchestrated a per-checkpoint CAT
 sweep. That directory was never tracked in git, so this document is the only record
-of what it knew. Its replacement is `.cursor/skills/eval-checkpoints/`, which runs
-full benchmarks and reports accuracy.
+of what it knew. Its replacement is a pair of skills that run full benchmarks and
+report accuracy: `.cursor/skills/eval-direct-gpu/` on a GPU box you control, and
+`.cursor/skills/eval-platform/` as an AWS Batch job through the eduLLM platform.
 
 Read [`04_implementation_and_phase3_handoff.md`](04_implementation_and_phase3_handoff.md)
 first for what the integration is. This doc covers what was learned after it.
@@ -316,7 +317,8 @@ arc/openbookqa/sciq data with k-fold validation.
 
 `.cursor/skills/run-checkpoint-evals/` was verified working before removal. If a CAT
 sweep is rebuilt, these were the non-obvious parts, all of which the replacement skill
-`.cursor/skills/eval-checkpoints/` also needs and therefore carries:
+`.cursor/skills/eval-direct-gpu/` also needs and therefore carries. They are all sweep
+concerns, which is why they live there and not in the single-checkpoint platform skill:
 
 - **S3 checkpoint enumeration does not exist in olmo-eval.** Discovery was
   `aws s3 ls` filtered to `PRE` lines. `data/backends/s3.py` has listing code but it is

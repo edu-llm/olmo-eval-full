@@ -59,12 +59,22 @@ class HuggingFaceProvider(InferenceProvider):
         }
     )
 
-    def __init__(self, model_name: str, tokenizer: str | None = None, **model_kwargs) -> None:
+    def __init__(
+        self,
+        model_name: str,
+        tokenizer: str | None = None,
+        *,
+        share_logprob_forwards: bool = True,
+        **model_kwargs,
+    ) -> None:
         """Initialize the provider.
 
         Args:
             model_name: HuggingFace model identifier or local path.
             tokenizer: Tokenizer path/identifier. If not specified, uses the model path.
+            share_logprob_forwards: Let consecutive continuations that are scored
+                against the same prefix reuse one forward pass. Off is the
+                one-forward-per-continuation behavior.
             **model_kwargs: Additional arguments passed to from_pretrained.
         """
         try:
@@ -80,6 +90,7 @@ class HuggingFaceProvider(InferenceProvider):
             model_kwargs.pop(key, None)
 
         super().__init__(model_name)
+        self.share_logprob_forwards = share_logprob_forwards
         tokenizer_path = tokenizer or model_name
         tokenizer_kwargs = {
             key: value for key, value in model_kwargs.items() if key in self._TOKENIZER_KWARGS
@@ -239,6 +250,14 @@ class HuggingFaceProvider(InferenceProvider):
         import torch
 
         results = []
+        # Scoring below reads no position past the second-to-last token, so all of it
+        # is fixed by every token but the last. Continuations that agree there -- the
+        # single-token labels of a multiple-choice request, which share one prompt --
+        # can therefore be read off one forward instead of one each. Remembering only
+        # the latest prefix keeps peak memory at one distribution, as it was before,
+        # for the requests where nothing is shareable.
+        cached_prefix: tuple[int, ...] | None = None
+        cached_log_probs: Any = None
         for request in requests:
             request_outputs = []
             cont_prompts = request.continuation_prompts
@@ -251,13 +270,21 @@ class HuggingFaceProvider(InferenceProvider):
 
                 # Build full sequence as tensor
                 full_ids = context_enc + continuation_enc
-                full_enc = torch.tensor([full_ids], device=self.device)
                 ctx_len = len(context_enc)
 
-                with torch.no_grad():
-                    logits = self.model(full_enc).logits
-
-                log_probs = torch.log_softmax(logits, dim=-1)[0]
+                prefix = tuple(full_ids[:-1])
+                # An empty prefix leaves the one readable position dependent on the
+                # continuation token itself, so there is nothing to share.
+                shareable = self.share_logprob_forwards and len(prefix) > 0
+                if shareable and prefix == cached_prefix:
+                    log_probs = cached_log_probs
+                else:
+                    full_enc = torch.tensor([full_ids], device=self.device)
+                    with torch.no_grad():
+                        logits = self.model(full_enc).logits
+                    log_probs = torch.log_softmax(logits, dim=-1)[0]
+                    cached_prefix = prefix if shareable else None
+                    cached_log_probs = log_probs if shareable else None
 
                 logprob_entries: list[LogProbEntry] = []
                 total = 0.0

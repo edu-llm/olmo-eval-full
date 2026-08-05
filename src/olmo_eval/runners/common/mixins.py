@@ -28,7 +28,12 @@ from olmo_eval.runners.io.formatting import (  # noqa: F401
     sanitize_model_name,
 )
 from olmo_eval.runners.io.storage import save_results, upload_to_s3
-from olmo_eval.runners.io.writers import write_predictions_jsonl, write_requests_jsonl
+from olmo_eval.runners.io.writers import (
+    append_partial_predictions_jsonl,
+    discard_partial_predictions,
+    write_predictions_jsonl,
+    write_requests_jsonl,
+)
 from olmo_eval.runners.processing.metrics import (
     build_multi_model_metrics,
     build_single_model_metrics,
@@ -297,3 +302,17 @@ class RunnerResultsMixin:
     ) -> None:
         """Write per-instance requests to JSONL (oe-eval compatible format)."""
         write_requests_jsonl(self.output_dir, spec, requests, model_name, task_hash=task_hash)
+
+    def _append_partial_predictions(
+        self, model_name: str, spec: str, predictions: list[dict], task_hash: str | None = None
+    ) -> None:
+        """Append scored rows to the file an interrupted run would leave behind."""
+        append_partial_predictions_jsonl(
+            self.output_dir, spec, predictions, model_name, task_hash=task_hash
+        )
+
+    def _discard_partial_predictions(
+        self, model_name: str, spec: str, task_hash: str | None = None
+    ) -> None:
+        """Remove a task's partial file once its complete predictions exist."""
+        discard_partial_predictions(self.output_dir, spec, model_name, task_hash=task_hash)

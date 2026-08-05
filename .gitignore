@@ -7,26 +7,29 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+# Anchored with a leading slash. Unanchored, these match at every depth, which is
+# how `results/step300/logs/` in the committed vLLM evidence went missing: the
+# directory was tracked, the logs it existed to preserve were not.
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
+/.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# PyInstaller
+# PyInstaller. Its spec sits beside the entry point at the project root.
 *.manifest
-*.spec
+/*.spec
 
 # Installer logs
 pip-log.txt
@@ -78,10 +81,11 @@ dmypy.json
 Thumbs.db
 
 # uv
-logs/
+/logs/
 
-# Eval output
-main/
+# Eval output. `main` is an ordinary word, so unanchored this swallowed any
+# directory of that name anywhere in the tree.
+/main/
 
 # HELM Classic downloaded response CSVs + caches/logs
 HELM/*/

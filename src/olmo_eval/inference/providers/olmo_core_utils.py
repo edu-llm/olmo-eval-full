@@ -149,6 +149,43 @@ class LogprobInput:
     continuation: str
 
 
+def _plan_logprob_forwards(
+    rows: Sequence[LogprobInput],
+    *,
+    share_identical_inputs: bool = True,
+) -> tuple[list[list[int]], list[int]]:
+    """Decide which model inputs to forward, and which forward each row reads.
+
+    Two rows with identical ``input_ids`` ask the model the same question. A
+    causal LM's logits at a position depend only on the tokens at or before it,
+    and scoring never reads past the end of ``input_ids``, so a single forward
+    serves every row that shares them.
+
+    Labelled multiple choice is the case this matters for. Its continuations are
+    single label tokens over one shared prompt, and ``input_ids`` drops the
+    continuation's final token, so all N rows collapse to one copy of the prompt
+    and the whole request costs one forward instead of N. Rows that differ in any
+    way -- multi-token continuations, per-continuation prompts -- keep their own
+    forward, which is the unshared behavior.
+
+    Returns the inputs to forward, in order, and for each row the index of the
+    forward whose logits it should be scored against.
+    """
+    if not share_identical_inputs:
+        return [row.input_ids for row in rows], list(range(len(rows)))
+
+    forward_inputs: list[list[int]] = []
+    forward_index: list[int] = []
+    first_seen: dict[tuple[int, ...], int] = {}
+    for row in rows:
+        key = tuple(row.input_ids)
+        if key not in first_seen:
+            first_seen[key] = len(forward_inputs)
+            forward_inputs.append(row.input_ids)
+        forward_index.append(first_seen[key])
+    return forward_inputs, forward_index
+
+
 def _import_olmo_core() -> OlmoCoreImports:
     try:
         import torch
