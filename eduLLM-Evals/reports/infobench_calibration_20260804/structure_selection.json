@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-08-04T22:40:09.770935+00:00",
+  "rule": "one_standard_error_then_fewest_dimensions",
+  "primary_metric": "heldout-person, disjoint-scenario OOS log loss",
+  "selected_structure": "overall_1d",
+  "selected_dimensions": {
+    "name": "overall_1d",
+    "source_skills": [
+      "content",
+      "format",
+      "number",
+      "style",
+      "linguistic"
+    ],
+    "dimensions": [
+      {
+        "label": "instruction_following",
+        "members": [
+          "content",
+          "format",
+          "number",
+          "style",
+          "linguistic"
+        ]
+      }
+    ]
+  },
+  "one_standard_error_threshold": 0.42053230294444854,
+  "structures_within_threshold": [
+    "full_5d",
+    "merge_content_style_4d",
+    "merge_number_linguistic_4d",
+    "merge_format_linguistic_4d",
+    "correlation_3d",
+    "correlation_2d",
+    "overall_1d"
+  ],
+  "override_used": false,
+  "note": "The five native InFoBench tags remain unchanged. This selects only the latent ability structure used for calibration and CAT."
+}

@@ -1,0 +1,45 @@
+{
+  "source": "plans+prds/Calibration Playbook - Cross-Benchmark.md",
+  "stages": {
+    "response_matrix_and_policy": {
+      "status": "reused_and_hash_verified",
+      "artifact": "runs/calibration/InFoBench_full_20260804/inputs/judge_manifest.json"
+    },
+    "native_q_matrix": {
+      "status": "preserved",
+      "artifact": "data/InFoBench/rubrics.jsonl",
+      "note": "Reduced structures are in-memory OR partitions only."
+    },
+    "core_m2pl_and_dimensionality": "completed",
+    "person_kfold_cell_prediction": "completed",
+    "oos_theta_recovery_eap_mwle": "completed",
+    "grid_and_ridge_sensitivity": "completed",
+    "min_scenarios_and_se_sweeps": "completed",
+    "trace_vs_dopt": "completed",
+    "order_seed_dependence": "completed",
+    "parameter_uncertainty_and_total_se": "completed",
+    "cat_vs_seeded_random": "completed",
+    "model_bootstrap_confidence_intervals": "completed",
+    "fitted_bank_safety_export": {
+      "status": "completed",
+      "policy": "Exclude unfitted, nonpositive-loading, and extreme-loading criteria; never substitute synthetic parameters."
+    },
+    "predeclared_reverse_item_exclusions": {
+      "status": "none_in_current_source_bank",
+      "note": "calibrate_mirt honors exclude_from_fit when present. The current InFoBench bank has no such flags, so unstable items are removed at the fitted-bank export gate rather than retroactively changing the frozen source Q-matrix."
+    },
+    "efa": {
+      "status": "not_used_for_selection",
+      "reason": "With 52 persons and more than 2,000 binary criteria, an item-level EFA is underidentified; reduced structures are instead decided by disjoint-scenario OOS performance."
+    },
+    "within_scenario_local_dependence": {
+      "status": "known_limitation_not_modeled_as_testlets",
+      "mitigation": "Primary validation holds out whole scenarios, but the core criterion-level M2PL still assumes conditional independence."
+    },
+    "infobench_specific_human_judge_audit": {
+      "status": "pending",
+      "note": "Qwen was selected on TutorBench; its agreement should also be audited on a stratified InFoBench sample before production claims. This does not alter the response matrix during the calibration study."
+    }
+  },
+  "completed_at": "2026-08-04T23:06:13.612564+00:00"
+}

@@ -1,0 +1,4 @@
+grid,ridge,cv_log_loss_mean,cv_log_loss_se,core_converged,all_fold_fits_converged,fit_dir,one_se_eligible,selected
+5,0.001,0.41813638940768694,0.01591462283050584,True,True,runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p001/fit,False,False
+5,0.01,0.40699016955787765,0.013542133386570884,True,True,runs/calibration/InFoBench_playbook_full/structures/overall_1d/fit,True,False
+5,0.1,0.39572001199357565,0.012390819834770453,True,True,runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p1/fit,True,True

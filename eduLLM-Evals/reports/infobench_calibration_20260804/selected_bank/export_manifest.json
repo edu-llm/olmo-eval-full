@@ -1,0 +1,1042 @@
+{
+  "generated_at": "2026-08-04T23:02:57.491882+00:00",
+  "schema_version": "fitted-bank-export-v1",
+  "purpose": "Fitted-only calibrated CAT bank. No synthetic or placeholder item parameters are present.",
+  "skills_order": [
+    "instruction_following"
+  ],
+  "skill_structure": {
+    "name": "overall_1d",
+    "source_skills": [
+      "content",
+      "format",
+      "number",
+      "style",
+      "linguistic"
+    ],
+    "dimensions": [
+      {
+        "label": "instruction_following",
+        "members": [
+          "content",
+          "format",
+          "number",
+          "style",
+          "linguistic"
+        ]
+      }
+    ]
+  },
+  "latent_correlation": [
+    [
+      1.0
+    ]
+  ],
+  "latent_correlation_source": "estimated_in_calibration_manifest",
+  "source_q_field": "q_mapping",
+  "policies": {
+    "unfitted": "exclude",
+    "nonpositive": "exclude",
+    "extreme": "exclude",
+    "invalid": "error",
+    "extreme_a_threshold": 6.0,
+    "off_q_tolerance": 1e-10,
+    "empty_scenarios": "drop"
+  },
+  "counts": {
+    "source_criteria": 2250,
+    "calibration_rows": 2105,
+    "exported_criteria": 2096,
+    "excluded_criteria": 154,
+    "source_scenarios": 500,
+    "exported_scenarios": 500,
+    "dropped_empty_scenarios": 0
+  },
+  "per_skill_items": {
+    "instruction_following": 2096
+  },
+  "per_skill_single_load_anchors": {
+    "instruction_following": 2096
+  },
+  "exclusion_reason_counts": {
+    "nonpositive_a": 9,
+    "unfitted": 145
+  },
+  "excluded_criteria": [
+    {
+      "criterion_id": "ifb_0009_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0010_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0031_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0031_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0050_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0051_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0060_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0061_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0077_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0080_c02",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0090_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0092_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0109_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0115_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0134_c02",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0135_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0156_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0158_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0159_c03",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0159_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0166_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0172_c01",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0172_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0177_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0177_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0177_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0188_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0217_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0217_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0219_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0252_c04",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0253_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0260_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0260_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0260_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0261_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0261_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0262_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0267_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0267_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0269_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0271_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0272_c09",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0276_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0278_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0285_c04",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0286_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0287_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0288_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0291_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0291_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0291_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0291_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0291_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0291_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0294_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0294_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0297_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0297_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0306_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0309_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0322_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0324_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0326_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0328_c05",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0332_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0335_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0336_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0336_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0340_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0343_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0343_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0343_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0343_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0345_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0345_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0345_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0347_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0348_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0350_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0353_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0357_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0357_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0362_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0363_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0363_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0365_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0369_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0370_c11",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0375_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0381_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0388_c01",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0388_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0389_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0390_c05",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0394_c02",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0395_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0398_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0398_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0399_c01",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0402_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0402_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0402_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0405_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0410_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0410_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0410_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0412_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0414_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0414_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0416_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0419_c13",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0419_c14",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0420_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0428_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0428_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0428_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0428_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0430_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0433_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0435_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0435_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0435_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0436_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0443_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0443_c10",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0444_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0447_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0447_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0455_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0463_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0464_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0470_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0470_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0472_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0476_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0478_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0482_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0482_c12",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0485_c02",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0486_c09",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0487_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0487_c05",
+      "reasons": [
+        "nonpositive_a"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0490_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0490_c12",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0491_c06",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0491_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0491_c08",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0493_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0496_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0497_c07",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0499_c03",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0499_c04",
+      "reasons": [
+        "unfitted"
+      ]
+    },
+    {
+      "criterion_id": "ifb_0499_c05",
+      "reasons": [
+        "unfitted"
+      ]
+    }
+  ],
+  "dropped_scenario_ids": [],
+  "calibration_manifest_summary": {
+    "method": "confirmatory-m2pl-mml-em",
+    "skills_order": [
+      "instruction_following"
+    ],
+    "grid_nodes_per_dim": 5,
+    "grid_total_nodes": 5,
+    "ridge": 0.1,
+    "estimate_latent_corr": true,
+    "n_items_fit": 2105,
+    "n_persons_fit": 52,
+    "latent_correlation": [
+      [
+        1.0
+      ]
+    ]
+  },
+  "inputs": {
+    "calibration_csv": "runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p1/fit/calibration_mirt.csv",
+    "rubrics": "data/InFoBench/rubrics.jsonl",
+    "scenarios": "data/InFoBench/scenarios.jsonl",
+    "calibration_manifest": "runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p1/fit/calibration_mirt_manifest.json",
+    "sha256": {
+      "calibration_csv": "e208958180d9b916f232fa9af27dd683d26d649c1cd0f7003ff3a9c04f55a27d",
+      "rubrics": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+      "scenarios": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b",
+      "calibration_manifest": "905728b26659e0c2c53e6952cf8d1770a4e77867b55c7d8fc4c07ebcf82dff5f"
+    }
+  },
+  "outputs": {
+    "rubrics": "runs/calibration/InFoBench_playbook_full/selected_bank/rubrics_fitted_only.jsonl",
+    "scenarios": "runs/calibration/InFoBench_playbook_full/selected_bank/scenarios_fitted_only.jsonl",
+    "manifest": "runs/calibration/InFoBench_playbook_full/selected_bank/export_manifest.json",
+    "sha256": {
+      "rubrics": "fda3fd9c4e45752c7cd0b9dc057448410a114d15c02c8a7de33ad18896562e06",
+      "scenarios": "b33c038501ce205a5a27728d4c241dd52124dd3851ec026eaec6ac89ee65bdc1"
+    }
+  },
+  "invariants": {
+    "source_files_unchanged": true,
+    "fitted_only": true,
+    "contains_synthetic_parameters": false,
+    "scenario_criterion_ids_exactly_match_exported_rubrics": true,
+    "all_active_loadings_positive_and_within_threshold": true,
+    "all_inactive_loadings_zero": true
+  },
+  "provenance": {
+    "script": "scripts/export_fitted_bank.py",
+    "calibration_method": "confirmatory-m2pl-mml-em"
+  }
+}

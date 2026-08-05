@@ -1,0 +1,347 @@
+{
+  "structures": [
+    {
+      "name": "full_5d",
+      "n_dims": 5,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/full_5d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/full_5d/kfold"
+    },
+    {
+      "name": "merge_content_style_4d",
+      "n_dims": 4,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/merge_content_style_4d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/merge_content_style_4d/kfold"
+    },
+    {
+      "name": "merge_number_linguistic_4d",
+      "n_dims": 4,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/merge_number_linguistic_4d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/merge_number_linguistic_4d/kfold"
+    },
+    {
+      "name": "merge_format_linguistic_4d",
+      "n_dims": 4,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/merge_format_linguistic_4d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/merge_format_linguistic_4d/kfold"
+    },
+    {
+      "name": "correlation_3d",
+      "n_dims": 3,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/correlation_3d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/correlation_3d/kfold"
+    },
+    {
+      "name": "correlation_2d",
+      "n_dims": 2,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/correlation_2d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/correlation_2d/kfold"
+    },
+    {
+      "name": "overall_1d",
+      "n_dims": 1,
+      "core_manifest": "runs/calibration/InFoBench_playbook_full/structures/overall_1d/fit/calibration_mirt_manifest.json",
+      "kfold_dir": "runs/calibration/InFoBench_playbook_full/structures/overall_1d/kfold"
+    }
+  ],
+  "cat_sweeps": [
+    {
+      "name": "floor_0",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_0/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 0
+      }
+    },
+    {
+      "name": "floor_12",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_12/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 12
+      }
+    },
+    {
+      "name": "floor_15",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_15/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 15
+      }
+    },
+    {
+      "name": "floor_20",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_20/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 20
+      }
+    },
+    {
+      "name": "se_0p2",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p2/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.2
+      }
+    },
+    {
+      "name": "se_0p25",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p25/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.25
+      }
+    },
+    {
+      "name": "se_0p3",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p3/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.3
+      }
+    },
+    {
+      "name": "se_0p35",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p35/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.35
+      }
+    },
+    {
+      "name": "selection_trace",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selection/trace/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "selection",
+        "value": "trace"
+      }
+    },
+    {
+      "name": "selection_dopt",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selection/dopt/per_model.csv",
+      "group": "diagnostic_sweeps",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "selection",
+        "value": "dopt"
+      }
+    },
+    {
+      "name": "selected_configuration",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selected_configuration/per_model.csv",
+      "group": "final_cat_vs_random",
+      "baseline": false,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "final",
+        "min_scenarios": 0,
+        "max_se": 0.25,
+        "selection": "trace"
+      }
+    },
+    {
+      "name": "random_baseline",
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/random_baseline/per_model.csv",
+      "group": "final_cat_vs_random",
+      "baseline": true,
+      "reference_prefix": "theta_full_eap_",
+      "estimate_prefixes": [
+        "theta_online_",
+        "theta_eap_",
+        "theta_mwle_"
+      ],
+      "skills": [
+        "instruction_following"
+      ],
+      "metadata": {
+        "sweep": "baseline",
+        "value": "seeded_random",
+        "min_scenarios": 0,
+        "max_se": 0.25,
+        "selection": "trace"
+      }
+    }
+  ],
+  "estimator_oos_kfold": {
+    "dir": "runs/calibration/InFoBench_playbook_full/estimator_oos_kfold"
+  },
+  "order_stability": {
+    "dir": "runs/calibration/InFoBench_playbook_full/order_stability"
+  },
+  "parameter_uncertainty": {
+    "name": "multi_target",
+    "dir": "runs/calibration/InFoBench_playbook_full/parameter_uncertainty"
+  },
+  "sensitivity": [
+    {
+      "name": "grid5_ridge0p01",
+      "dir": "runs/calibration/InFoBench_playbook_full/structures/overall_1d",
+      "grid": 5,
+      "ridge": 0.01
+    },
+    {
+      "name": "grid3_ridge0p001",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid3_ridge0p001",
+      "grid": 3,
+      "ridge": 0.001
+    },
+    {
+      "name": "grid3_ridge0p01",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid3_ridge0p01",
+      "grid": 3,
+      "ridge": 0.01
+    },
+    {
+      "name": "grid3_ridge0p1",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid3_ridge0p1",
+      "grid": 3,
+      "ridge": 0.1
+    },
+    {
+      "name": "grid5_ridge0p001",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p001",
+      "grid": 5,
+      "ridge": 0.001
+    },
+    {
+      "name": "grid5_ridge0p1",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p1",
+      "grid": 5,
+      "ridge": 0.1
+    },
+    {
+      "name": "grid7_ridge0p001",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid7_ridge0p001",
+      "grid": 7,
+      "ridge": 0.001
+    },
+    {
+      "name": "grid7_ridge0p01",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid7_ridge0p01",
+      "grid": 7,
+      "ridge": 0.01
+    },
+    {
+      "name": "grid7_ridge0p1",
+      "dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid7_ridge0p1",
+      "grid": 7,
+      "ridge": 0.1
+    }
+  ]
+}

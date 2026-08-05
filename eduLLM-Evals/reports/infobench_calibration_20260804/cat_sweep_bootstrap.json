@@ -1,0 +1,262 @@
+{
+  "generated_at": "2026-08-04T23:06:12.551566+00:00",
+  "method": "paired model bootstrap percentile 95% CI",
+  "bootstrap_B": 2000,
+  "bootstrap_seed": 0,
+  "pairing": "Within each comparison group, model IDs are intersected and one shared bootstrap index matrix is used for every run and paired difference.",
+  "groups": {
+    "diagnostic_sweeps": {
+      "runs": [
+        "floor_0",
+        "floor_12",
+        "floor_15",
+        "floor_20",
+        "se_0p2",
+        "se_0p25",
+        "se_0p3",
+        "se_0p35",
+        "selection_trace",
+        "selection_dopt"
+      ],
+      "baseline": null,
+      "n_common_models": 52,
+      "common_models": [
+        "01-ai/Yi-1.5-6B",
+        "01-ai/Yi-1.5-6B-Chat",
+        "01-ai/Yi-6B",
+        "01-ai/Yi-6B-200K",
+        "01-ai/Yi-6B-Chat",
+        "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+        "BEE-spoke-data/smol_llama-220M-openhermes",
+        "BSC-LT/salamandra-2b",
+        "BSC-LT/salamandra-2b-instruct",
+        "BSC-LT/salamandra-7b",
+        "BSC-LT/salamandra-7b-instruct",
+        "HuggingFaceTB/SmolLM2-360M",
+        "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+        "OpenBMB/MiniCPM4-0.5B",
+        "Qwen/Qwen1.5-1.8B",
+        "Qwen/Qwen1.5-1.8B-Chat",
+        "Qwen/Qwen2-0.5B",
+        "Qwen/Qwen2.5-0.5B-Instruct",
+        "ai-forever/mGPT",
+        "allenai/OLMo-1B-hf",
+        "allenai/OLMo-2-0425-1B",
+        "allenai/OLMo-2-0425-1B-DPO",
+        "allenai/OLMo-2-0425-1B-Instruct",
+        "arcee-ai/raspberry-3B",
+        "google/gemma-2-2b",
+        "google/gemma-2b",
+        "h2oai/h2o-danube-1.8b-chat",
+        "h2oai/h2o-danube2-1.8b-base",
+        "h2oai/h2o-danube2-1.8b-chat",
+        "ibm-granite/granite-3.0-2b-base",
+        "ibm-granite/granite-3.1-2b-base",
+        "ibm-granite/granite-3.1-2b-instruct",
+        "ibm-granite/granite-7b-instruct",
+        "ibm/PowerLM-3b",
+        "meta-llama/Llama-3.2-1B",
+        "meta-llama/Llama-3.2-1B-Instruct",
+        "meta-llama/Llama-3.2-3B-Instruct",
+        "microsoft/phi-1_5",
+        "nvidia/AceInstruct-1.5B",
+        "openbmb/MiniCPM-1B-sft-bf16",
+        "openbmb/MiniCPM-2B-sft-bf16",
+        "openlm-research/open_llama_3b",
+        "pankajmathur/orca_mini_3b",
+        "pankajmathur/orca_mini_v9_5_3B-Instruct",
+        "stabilityai/stablelm-2-1_6b-chat",
+        "stabilityai/stablelm-2-zephyr-1_6b",
+        "stabilityai/stablelm-zephyr-3b",
+        "tiiuae/Falcon3-1B-Instruct",
+        "tiiuae/Falcon3-3B-Base",
+        "tiiuae/Falcon3-3B-Instruct",
+        "utter-project/EuroLLM-1.7B",
+        "utter-project/EuroLLM-1.7B-Instruct"
+      ],
+      "excluded_models_by_run": {
+        "floor_0": [],
+        "floor_12": [],
+        "floor_15": [],
+        "floor_20": [],
+        "se_0p2": [],
+        "se_0p25": [],
+        "se_0p3": [],
+        "se_0p35": [],
+        "selection_trace": [],
+        "selection_dopt": []
+      },
+      "paired_draw_seed": 0
+    },
+    "final_cat_vs_random": {
+      "runs": [
+        "selected_configuration",
+        "random_baseline"
+      ],
+      "baseline": "random_baseline",
+      "n_common_models": 52,
+      "common_models": [
+        "01-ai/Yi-1.5-6B",
+        "01-ai/Yi-1.5-6B-Chat",
+        "01-ai/Yi-6B",
+        "01-ai/Yi-6B-200K",
+        "01-ai/Yi-6B-Chat",
+        "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+        "BEE-spoke-data/smol_llama-220M-openhermes",
+        "BSC-LT/salamandra-2b",
+        "BSC-LT/salamandra-2b-instruct",
+        "BSC-LT/salamandra-7b",
+        "BSC-LT/salamandra-7b-instruct",
+        "HuggingFaceTB/SmolLM2-360M",
+        "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+        "OpenBMB/MiniCPM4-0.5B",
+        "Qwen/Qwen1.5-1.8B",
+        "Qwen/Qwen1.5-1.8B-Chat",
+        "Qwen/Qwen2-0.5B",
+        "Qwen/Qwen2.5-0.5B-Instruct",
+        "ai-forever/mGPT",
+        "allenai/OLMo-1B-hf",
+        "allenai/OLMo-2-0425-1B",
+        "allenai/OLMo-2-0425-1B-DPO",
+        "allenai/OLMo-2-0425-1B-Instruct",
+        "arcee-ai/raspberry-3B",
+        "google/gemma-2-2b",
+        "google/gemma-2b",
+        "h2oai/h2o-danube-1.8b-chat",
+        "h2oai/h2o-danube2-1.8b-base",
+        "h2oai/h2o-danube2-1.8b-chat",
+        "ibm-granite/granite-3.0-2b-base",
+        "ibm-granite/granite-3.1-2b-base",
+        "ibm-granite/granite-3.1-2b-instruct",
+        "ibm-granite/granite-7b-instruct",
+        "ibm/PowerLM-3b",
+        "meta-llama/Llama-3.2-1B",
+        "meta-llama/Llama-3.2-1B-Instruct",
+        "meta-llama/Llama-3.2-3B-Instruct",
+        "microsoft/phi-1_5",
+        "nvidia/AceInstruct-1.5B",
+        "openbmb/MiniCPM-1B-sft-bf16",
+        "openbmb/MiniCPM-2B-sft-bf16",
+        "openlm-research/open_llama_3b",
+        "pankajmathur/orca_mini_3b",
+        "pankajmathur/orca_mini_v9_5_3B-Instruct",
+        "stabilityai/stablelm-2-1_6b-chat",
+        "stabilityai/stablelm-2-zephyr-1_6b",
+        "stabilityai/stablelm-zephyr-3b",
+        "tiiuae/Falcon3-1B-Instruct",
+        "tiiuae/Falcon3-3B-Base",
+        "tiiuae/Falcon3-3B-Instruct",
+        "utter-project/EuroLLM-1.7B",
+        "utter-project/EuroLLM-1.7B-Instruct"
+      ],
+      "excluded_models_by_run": {
+        "selected_configuration": [],
+        "random_baseline": []
+      },
+      "paired_draw_seed": 1
+    }
+  },
+  "inputs": {
+    "floor_0": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_0/per_model.csv",
+      "sha256": "f4ed96d94936c362946f8f5390d43f11812ab9a957ab764f6c9ef0d52ceae929",
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 0
+      }
+    },
+    "floor_12": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_12/per_model.csv",
+      "sha256": "8ea115f7c40bb3c507babb85161760bd22766a185675962f1c61a7e38cfed3a9",
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 12
+      }
+    },
+    "floor_15": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_15/per_model.csv",
+      "sha256": "2bc273f401fda9d9625a603acc6e429df6eb01ec60f07dd735f3b650580882ef",
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 15
+      }
+    },
+    "floor_20": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/min_scenarios/floor_20/per_model.csv",
+      "sha256": "904d4a117d05fe4e94357a2d6782006f93474336f7f82a82ec13a062a40a6665",
+      "metadata": {
+        "sweep": "min_scenarios",
+        "value": 20
+      }
+    },
+    "se_0p2": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p2/per_model.csv",
+      "sha256": "21387534371ec9e056b717d85bb9b47aeb96adcc0617e60ce9166047a3c1c336",
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.2
+      }
+    },
+    "se_0p25": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p25/per_model.csv",
+      "sha256": "5acbda3d6c40a0434c95797b4bc303edf8acb3590d96546ed7861823b4888ab9",
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.25
+      }
+    },
+    "se_0p3": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p3/per_model.csv",
+      "sha256": "f4ed96d94936c362946f8f5390d43f11812ab9a957ab764f6c9ef0d52ceae929",
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.3
+      }
+    },
+    "se_0p35": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/se_target/se_0p35/per_model.csv",
+      "sha256": "c9ea83c54c19518178aab59bb849201879597dc1988f13744cebff3ce530cfab",
+      "metadata": {
+        "sweep": "se_target",
+        "value": 0.35
+      }
+    },
+    "selection_trace": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selection/trace/per_model.csv",
+      "sha256": "5acbda3d6c40a0434c95797b4bc303edf8acb3590d96546ed7861823b4888ab9",
+      "metadata": {
+        "sweep": "selection",
+        "value": "trace"
+      }
+    },
+    "selection_dopt": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selection/dopt/per_model.csv",
+      "sha256": "5f523f044455a2c0994ead4aecea0ae909a19104eff02d22d619ea01b00f16ba",
+      "metadata": {
+        "sweep": "selection",
+        "value": "dopt"
+      }
+    },
+    "selected_configuration": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selected_configuration/per_model.csv",
+      "sha256": "5acbda3d6c40a0434c95797b4bc303edf8acb3590d96546ed7861823b4888ab9",
+      "metadata": {
+        "sweep": "final",
+        "min_scenarios": 0,
+        "max_se": 0.25,
+        "selection": "trace"
+      }
+    },
+    "random_baseline": {
+      "csv": "runs/calibration/InFoBench_playbook_full/cat_sweeps/random_baseline/per_model.csv",
+      "sha256": "911409bac43a8936056bb9b188d72b0039895efc14746d0f47043aa6693cc10e",
+      "metadata": {
+        "sweep": "baseline",
+        "value": "seeded_random",
+        "min_scenarios": 0,
+        "max_se": 0.25,
+        "selection": "trace"
+      }
+    }
+  }
+}

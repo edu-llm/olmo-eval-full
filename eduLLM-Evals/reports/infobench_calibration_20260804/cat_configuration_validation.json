@@ -1,0 +1,19 @@
+{
+  "status": "validated",
+  "selection": "trace",
+  "policy": {
+    "required_precision": 0.95,
+    "minimum_mwle_convergence": 0.95,
+    "maximum_recovery_drop": 0.01,
+    "maximum_slope_error_increase": 0.05
+  },
+  "metrics": {
+    "value": "trace",
+    "precision_rate": 1.0,
+    "mean_scenarios": 5.288461538461538,
+    "mwle_convergence_rate": 1.0,
+    "mwle_recovery_r": 0.9687837259792256,
+    "mwle_recovery_slope": 1.0487454191989187
+  },
+  "matched_selector_sweep": true
+}
