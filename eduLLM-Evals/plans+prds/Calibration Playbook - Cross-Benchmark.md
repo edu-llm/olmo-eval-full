@@ -273,3 +273,85 @@ slope 0.64–0.76; MWLE restores slope ≈ 1.0 without losing r); locked **min_s
 `scenario_param_uncertainty.py`, `scenario_order_experiment.py`, `analyze_collinearity.py`,
 `fig_composite_vs_axes.py`, `fig_se_tradeoff.py`, `fig_total_se_vs_target.py`,
 `cat_eval_tutorbench_multiskill.py`, and the `regenerated_figures/` outputs.
+
+---
+
+## 8. Cross-benchmark lessons & recommended defaults
+
+Hard-won rules that generalize across benchmarks. Follow them by default; deviate only with a
+recorded reason. Numbers in parentheses are worked examples (mostly Bridge, N≈51 models) — treat
+them as illustrations of the failure mode, not as targets.
+
+### 8.1 Response matrix & folds
+- **Fit and score on a dense matrix, and re-filter zero-variance items *within every fold*.** An item
+  that varies across the full sample can be all-pass or all-fail *inside a given train fold*; such items
+  carry no information there and, if left in, silently corrupt that fold's fit. Apply the same
+  all-NaN / all-pass / all-fail / all-zero-`q_modeled` drop **independently on each fold's training rows**,
+  not once globally. Skipping this is the single most damaging small-N bug we hit: it produced a bogus
+  headline held-out recovery of **r = 0.226** that reconciled to **r ≈ 0.967** once within-fold filtering
+  was applied consistently. If your OOS number is wildly worse than in-sample, suspect this first.
+- **Use source-grouped, leakage-safe folds.** Partition so that responses sharing a leakage channel —
+  the same underlying prompt/source, model family, or judge instance — never straddle the train/test
+  boundary. Random cell-level splits leak and inflate OOS; group by the person (model) and by source.
+- **Audit the input matrix before fitting.** Print and check its dimensions (rows × cols), the missingness
+  pattern ("holes"), and the **judge / frozen-config hash** that produced it. Confirm `no_decision` maps to
+  NaN (not 0) and that the optional/gating split is what you expect. Fitting a matrix you have not audited
+  is how silent shape and provenance bugs enter the leaderboard.
+
+### 8.2 Standard errors & uncertainty
+- **Report `SE_total = SE_ability ⊕ SE_param` (quadrature) on every leaderboard**, never ability-only SE.
+  At small N the **calibration (parameter) term dominates** — item parameters are themselves poorly pinned,
+  so an ability-only SE is badly overconfident. Ranking and "is model A ≠ model B" claims must use SE_total.
+- **Estimate `SE_param` with an observed-information / parametric bootstrap, not jackknife.** Jackknife
+  (leave-one-model-out) goes **degenerate at small N** — it produced zero or near-zero `se_param` for a large
+  fraction of models (e.g. 13 of 51 Bridge models), which then vanish from SE_total and fake precision.
+  A resampling/observed-information bootstrap stays well-defined in the same regime.
+
+### 8.3 OOS / recovery discipline
+- **Headline recovery must be held-out.** Never quote an in-sample recovery r (fit and score the same
+  models) as the validity number; it is optimistic by construction.
+- **Keep two distinct OOS artifacts and make them reconcile.** (a) a *simple EAP full-bank k-fold sanity
+  check* (refit per fold, EAP-score held-out models on all items) and (b) the *deployed MWLE-CAT recovery*
+  (the estimator + selection + stop rule you actually ship). These answer different questions but **must
+  use identical within-fold filtering and the identical operating point** (same folds/seed, same item
+  drops, same `min_scenarios`/SE target). When they do, they line up (Bridge: EAP sanity r ≈ 0.967,
+  deployed MWLE-CAT recovery in the same neighborhood); when they diverge, you have a filtering or
+  operating-point mismatch, not two legitimately different truths.
+- **Distinguish deployment length from k-fold length.** The number of scenarios/criteria the CAT
+  administers under the deployed stop rule is *not* the same quantity as the fixed length used inside a
+  k-fold recovery experiment. Label every "test length" number with which regime produced it; do not
+  compare a k-fold length against a deployed length.
+
+### 8.4 Dimensionality at small N
+- **Do not choose dimensionality by AIC alone.** AIC's penalty is too weak at small N and will
+  over-select dimensions. Decide with **BIC + held-out log-loss + a parsimony bias**; add an axis only if
+  it earns its keep out of sample.
+- **Watch for latent-correlation collapse toward 1 as you add dimensions.** The diagnostic failure mode at
+  small N is that the estimated inter-axis correlations run to ±1 — the axes are not separately identified
+  (Bridge: max off-diagonal latent correlation climbed **0.77 → 0.967 as dims went 2 → 5**). This
+  collapse, **not** "missing anchor items", is the identification problem to name in the writeup.
+- **Report the per-axis discriminations (`a_k`) before making any (non-)identification claim.** Whether an
+  axis is real is a statement about its loadings; show them (and their spread/CIs) to support or retract the
+  claim rather than asserting it from fit indices alone.
+
+### 8.5 Order/seed robustness & figures
+- **Assess order/seed robustness from the production start, not a random first item.** Seed the CAT with
+  the real **max-information first-item** rule you deploy, then perturb order/seed; a random first item
+  measures a device you never ship and overstates instability.
+- **Put CI bands on every line figure, and report slope/bias — not just r.** A high r can hide a
+  compressed (slope < 1) or biased estimator; recovery figures must show the band and the slope/intercept,
+  and leaderboard figures must show SE_total error bars.
+
+### 8.6 Reproducibility & study layout
+- **Record config-decision provenance and commit the runner.** Persist every locked choice
+  (dims, ridge, estimator, floors, SE target, folds/seed, judge hash) to a `study_config.json` /
+  `study_manifest.json`, and commit the driver script (`run_<bench>_study.sh` + the per-experiment scripts)
+  so the whole study **reproduces from the committed tree** — not from an uncommitted working copy.
+- **Use the standard study folder convention.** A benchmark study is a base package
+  (`<bench>_calibration/` with `study_config.json`, `study_manifest.json`, top-level
+  `model_leaderboard.csv` / `recovery.json`, a `scripts/` dir, and a `README.md`) plus numbered
+  `experiments/` directories `03_structures`, `04_efficiency_vs_random`, `05_oos_recovery`,
+  `06_floor_se_grid`, `07_parameter_uncertainty`, `08_leaderboard`, `10_estimator_comparison`,
+  `11_order_seed` (03..12). Each experiment writes its metrics/CSVs at its own root and its plots under a
+  `figures/` subdirectory. Keeping this layout stable is what lets one review script and this playbook
+  apply unchanged to a new benchmark.
