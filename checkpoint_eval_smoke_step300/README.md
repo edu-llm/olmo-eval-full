@@ -21,6 +21,14 @@ Date: 2026-08-04. AWS account: `056956104102` (sbsandbox), region `us-east-1`.
 - The GPU instance was terminated afterward. Total cost was a small fraction of the
   $15 cap.
 
+> **This is a record of one run, not a description of current behaviour.** It is
+> accurate for 2026-08-04. Since then the skill has been renamed `eval-direct-gpu`
+> and its default provider changed to `olmo_core`, which reads a native checkpoint
+> without converting it and splits each checkpoint into two invocations so
+> multiple-choice and generative work get their own batch size. vLLM is still
+> available via `--provider vllm_server`, which is the path this run took. For how it
+> works now, read the skill; read this only for what happened that day.
+
 ---
 
 ## The bigger picture (how we got here)

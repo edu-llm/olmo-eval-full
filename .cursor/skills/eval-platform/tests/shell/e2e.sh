@@ -179,6 +179,20 @@ if bash "${SWEEP}" --help 2>/dev/null | grep -qF -- '--sync-interval'; then
   SWEEP_CMD+=(--sync-interval 0)
 fi
 
+# Whether this copy can choose a provider. Where it can, the default is olmo_core:
+# it reads a native checkpoint as it stands and splits the run so multiple-choice and
+# generative work get their own batch size, which means two model loads rather than
+# one and no conversion at all. Conversion, tensor parallelism and the VRAM fraction
+# are vLLM-only there, so the cases that exercise them ask for vllm_server explicitly
+# through SWEEP_VLLM. A copy without --provider is vLLM-only and both arrays are the
+# same command, so those cases keep testing exactly what they tested before.
+HAS_PROVIDER=0
+SWEEP_VLLM=("${SWEEP_CMD[@]}")
+if bash "${SWEEP}" --help 2>/dev/null | grep -qF -- '--provider'; then
+  HAS_PROVIDER=1
+  SWEEP_VLLM+=(--provider vllm_server)
+fi
+
 # --- what the registry under test says ---------------------------------------
 # Read out of the registry the script will read, never written down here. The two
 # differ where it counts: eval-platform registers three ':mc' variants that
@@ -329,14 +343,49 @@ check "step9 got _READY" "$(has 's3://bucket/evals/step9/_READY' "${AWSLOG}")"
 check "step10 got _READY" "$(has 's3://bucket/evals/step10/_READY' "${AWSLOG}")"
 check "native step2000 got _READY, not _FAILED" "$(has 's3://bucket/evals/step2000/_READY' "${AWSLOG}")"
 check "no converter complaint" "$(lacks 'no_converter' "${OUT_C}")"
-check "the native one was converted" "$(has 'convert_to_hf.py' "${AWSLOG}")"
-check "one vLLM boot per checkpoint (3 eval calls)" \
-  "$([[ "$(grep -c '^uv run olmo-eval' "${AWSLOG}")" == "3" ]] && echo 1 || echo 0)" \
-  "$(grep -c '^uv run olmo-eval' "${AWSLOG}") calls"
-check "all 3 benchmarks in one invocation" \
-  "$(grep '^uv run olmo-eval' "${AWSLOG}" | head -1 | grep -qF -- '-t hellaswag -t naturalqs -t jeopardy' && echo 1 || echo 0)"
-check "provider override before first -t" \
-  "$(grep '^uv run olmo-eval' "${AWSLOG}" | head -1 | grep -qF -- '--harness default -o provider.kind=vllm_server -t' && echo 1 || echo 0)"
+EVAL_CALLS="$(grep -c '^uv run olmo-eval' "${AWSLOG}")"
+if [[ "${HAS_PROVIDER}" == "1" ]]; then
+  # Default provider, so the native checkpoint is read as it stands and each of the
+  # three checkpoints is split in two: hellaswag by itself at the multiple-choice
+  # batch size, naturalqs and jeopardy together at the generative one.
+  check "nothing was converted on the native path" "$(lacks 'convert_to_hf.py' "${AWSLOG}")"
+  check "two loads per checkpoint (6 eval calls)" \
+    "$([[ "${EVAL_CALLS}" == "6" ]] && echo 1 || echo 0)" "${EVAL_CALLS} calls"
+  check "provider override before first -t" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | head -1 | grep -qF -- '--harness default -o provider.kind=olmo_core' && echo 1 || echo 0)"
+  check "the multiple-choice half carries only hellaswag" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -F 'batch_size=512' | head -1 |
+        grep -qE -- '-t hellaswag( |$)' && echo 1 || echo 0)"
+  check "and not the generative pair" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -F 'batch_size=512' | head -1 |
+        grep -qF -- '-t naturalqs' && echo 0 || echo 1)"
+  check "the generative half carries naturalqs and jeopardy" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -F 'batch_size=192' | head -1 |
+        grep -qF -- '-t naturalqs' && echo 1 || echo 0)"
+  # The whole reason for two invocations: one batch_size cannot serve both halves.
+  check "the two halves really do differ in batch size" \
+    "$([[ "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -oE 'batch_size=[0-9]+' | sort -u | wc -l)" == "2" ]] && echo 1 || echo 0)" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -oE 'batch_size=[0-9]+' | sort -u | tr '\n' ' ')"
+  # None would put every request in one padded chunk; _iter_chunks treats it as one.
+  check "batch_size is never left unset" \
+    "$([[ "$(grep -c '^uv run olmo-eval' "${AWSLOG}")" == "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -c 'batch_size=')" ]] && echo 1 || echo 0)"
+  # The halves write two metrics.json files, and write_metrics_json opens with "w", so
+  # without the merge the summary would show one half and silently lose the other.
+  # One checkpoint reporting a benchmark from each half is the merge working.
+  SUMMARY="$(sed -n '/RUN_ID/,/^$/p' "${OUT_C}")"
+  check "the summary shows step9's multiple-choice half" \
+    "$(printf '%s\n' "${SUMMARY}" | grep -qE '^ *step9 +hellaswag' && echo 1 || echo 0)"
+  check "and step9's generative half, from the same merged file" \
+    "$(printf '%s\n' "${SUMMARY}" | grep -qE '^ *step9 +jeopardy' && echo 1 || echo 0)"
+else
+  check "the native one was converted" "$(has 'convert_to_hf.py' "${AWSLOG}")"
+  check "one vLLM boot per checkpoint (3 eval calls)" \
+    "$([[ "${EVAL_CALLS}" == "3" ]] && echo 1 || echo 0)" "${EVAL_CALLS} calls"
+  check "all 3 benchmarks in one invocation" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | head -1 | grep -qF -- '-t hellaswag -t naturalqs -t jeopardy' && echo 1 || echo 0)"
+  check "provider override before first -t" \
+    "$(grep '^uv run olmo-eval' "${AWSLOG}" | head -1 | grep -qF -- '--harness default -o provider.kind=vllm_server -t' && echo 1 || echo 0)"
+fi
 check "accuracy.csv uploaded" "$(has 's3://bucket/evals/accuracy.csv' "${AWSLOG}")"
 check "accuracy_wide.csv uploaded" "$(has 's3://bucket/evals/accuracy_wide.csv' "${AWSLOG}")"
 check "sweep.log uploaded" "$(has 's3://bucket/evals/sweep.log' "${AWSLOG}")"
@@ -380,9 +429,11 @@ echo
 echo "======================================================================"
 echo "CASE E: --tp emits the harness-scoped kwargs path"
 echo "======================================================================"
+# Tensor parallelism is a vLLM engine setting, so this asks for that provider where
+# the copy under test has a choice. OlmoCoreProvider requires 1 and refuses --tp.
 : > "${AWSLOG}"
 OUT_E="${SANDBOX}/e.log"
-"${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --benchmarks hellaswag \
+"${SWEEP_VLLM[@]}" --checkpoint "${CKPTS}/step9" --benchmarks hellaswag \
   --s3-out s3://bucket/evals --tp 2 > "${OUT_E}" 2>&1
 check "uses provider.kwargs.tensor_parallel_size" \
   "$(grep '^uv ' "${AWSLOG}" | grep -qF -- '-o provider.kwargs.tensor_parallel_size=2' && echo 1 || echo 0)"
@@ -397,7 +448,7 @@ echo "CASE F: bad numeric flag rejected up front, before any spend"
 echo "======================================================================"
 : > "${AWSLOG}"
 OUT_F="${SANDBOX}/f.log"
-"${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
+"${SWEEP_VLLM[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
   --tp abc > "${OUT_F}" 2>&1
 RC=$?
 check "exits 2" "$([[ ${RC} -eq 2 ]] && echo 1 || echo 0)" "rc=${RC}"
@@ -565,10 +616,12 @@ check "--bootstrap announced" "$(has 'running bootstrap' "${OUT_H3}")"
 check "bootstrap invoked uv sync" "$(grep -q '^uv sync' "${AWSLOG}" && echo 1 || echo 0)"
 
 # Converter: bundled script used with OLMO_CORE_CONVERT unset. step2000 is native.
+# Conversion exists only to feed vLLM, so these ask for that provider explicitly;
+# the native provider reads step2000 as it stands and converts nothing.
 : > "${AWSLOG}"
 OUT_H4="${SANDBOX}/h4.log"
 unset OLMO_CORE_CONVERT
-"${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step2000" --benchmarks hellaswag \
+"${SWEEP_VLLM[@]}" --checkpoint "${CKPTS}/step2000" --benchmarks hellaswag \
   --s3-out s3://bucket/evals > "${OUT_H4}" 2>&1
 check "native checkpoint no longer fails for want of a converter" \
   "$(lacks 'no_converter' "${OUT_H4}")"
@@ -582,7 +635,7 @@ check "checkpoint reached _READY" "$(has 's3://bucket/evals/step2000/_READY' "${
 # A broken override must still fail cleanly rather than silently skipping.
 : > "${AWSLOG}"
 OUT_H5="${SANDBOX}/h5.log"
-OLMO_CORE_CONVERT=/nonexistent/conv.py "${SWEEP_CMD[@]}" \
+OLMO_CORE_CONVERT=/nonexistent/conv.py "${SWEEP_VLLM[@]}" \
   --checkpoint "${CKPTS}/step2000" --benchmarks hellaswag \
   --s3-out s3://bucket/evals > "${OUT_H5}" 2>&1
 check "missing override reports no_converter" "$(has 'no_converter' "${OUT_H5}")"
@@ -591,14 +644,15 @@ check "and marks _FAILED" "$(has 's3://bucket/evals/step2000/_FAILED' "${AWSLOG}
 # A failing conversion is distinct from a missing converter.
 : > "${AWSLOG}"
 OUT_H6="${SANDBOX}/h6.log"
-CONVERT_RC=1 "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step2000" --benchmarks hellaswag \
+CONVERT_RC=1 "${SWEEP_VLLM[@]}" --checkpoint "${CKPTS}/step2000" --benchmarks hellaswag \
   --s3-out s3://bucket/evals > "${OUT_H6}" 2>&1
 check "failing conversion reports conversion_failed" "$(has 'conversion_failed' "${OUT_H6}")"
 
-# --gpu-memory-utilization must reach the harness group, before the first -t.
+# --gpu-memory-utilization must reach the harness group, before the first -t. Another
+# vLLM engine setting, so another vllm_server case.
 : > "${AWSLOG}"
 OUT_H7="${SANDBOX}/h7.log"
-"${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --benchmarks hellaswag \
+"${SWEEP_VLLM[@]}" --checkpoint "${CKPTS}/step9" --benchmarks hellaswag \
   --s3-out s3://bucket/evals --gpu-memory-utilization 0.4 > "${OUT_H7}" 2>&1
 check "gpu_memory_utilization passed via provider.kwargs" \
   "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -qF -- '-o provider.kwargs.gpu_memory_utilization=0.4' && echo 1 || echo 0)"
@@ -606,10 +660,50 @@ check "and precedes the first -t" \
   "$(grep '^uv run olmo-eval' "${AWSLOG}" | grep -qF -- 'gpu_memory_utilization=0.4 -t hellaswag' && echo 1 || echo 0)"
 # Out-of-range values are rejected up front.
 OUT_H8="${SANDBOX}/h8.log"
-"${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
+"${SWEEP_VLLM[@]}" --checkpoint "${CKPTS}/step9" --s3-out s3://bucket/evals \
   --gpu-memory-utilization 2 --dry-run > "${OUT_H8}" 2>&1
 RC=$?
 check "gpu-memory-utilization > 1 rejected" "$([[ ${RC} -eq 2 ]] && echo 1 || echo 0)" "rc=${RC}"
+
+if [[ "${HAS_PROVIDER}" == "1" ]]; then
+  echo
+  echo "======================================================================"
+  echo "CASE H9: the native provider, on the copy that offers one"
+  echo "======================================================================"
+  # A native checkpoint the vLLM path would have had to convert. The point of this
+  # provider is that it does not: conversion is architecture-gated, so a model it
+  # refuses can still be scored here.
+  : > "${AWSLOG}"
+  OUT_H9="${SANDBOX}/h9.log"
+  unset OLMO_CORE_CONVERT
+  "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step2000" --benchmarks "hellaswag naturalqs" \
+    --s3-out s3://bucket/evals > "${OUT_H9}" 2>&1
+  check "a native checkpoint is scored without conversion" \
+    "$(lacks 'convert_to_hf.py' "${AWSLOG}")"
+  check "and reaches _READY" "$(has 's3://bucket/evals/step2000/_READY' "${AWSLOG}")"
+  check "no converter is needed, so none is complained about" \
+    "$(lacks 'no_converter' "${OUT_H9}")"
+  # A mixed request splits; a single-kind one must not, or every generative-only run
+  # would pay a second model load for an empty half.
+  check "a mixed request costs two loads" \
+    "$([[ "$(grep -c '^uv run olmo-eval' "${AWSLOG}")" == "2" ]] && echo 1 || echo 0)" \
+    "$(grep -c '^uv run olmo-eval' "${AWSLOG}") calls"
+  : > "${AWSLOG}"
+  "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --benchmarks hellaswag \
+    --s3-out s3://bucket/evals > "${SANDBOX}/h10.log" 2>&1
+  check "a multiple-choice-only request costs one" \
+    "$([[ "$(grep -c '^uv run olmo-eval' "${AWSLOG}")" == "1" ]] && echo 1 || echo 0)" \
+    "$(grep -c '^uv run olmo-eval' "${AWSLOG}") calls"
+  # Refused rather than forwarded: ProviderConfig.from_dict drops keys it does not
+  # know, so a vLLM-only setting accepted here would look honoured and do nothing.
+  : > "${AWSLOG}"
+  "${SWEEP_CMD[@]}" --checkpoint "${CKPTS}/step9" --benchmarks hellaswag \
+    --s3-out s3://bucket/evals --tp 2 > "${SANDBOX}/h11.log" 2>&1
+  RC=$?
+  check "--tp is refused on the native path" "$([[ ${RC} -eq 2 ]] && echo 1 || echo 0)" "rc=${RC}"
+  check "and names the provider that takes it" "$(has 'vllm_server' "${SANDBOX}/h11.log")"
+  check "nothing spent on the refusal" "$([[ ! -s "${AWSLOG}" ]] && echo 1 || echo 0)"
+fi
 
 echo
 echo "======================================================================"

@@ -4,11 +4,12 @@ description: >-
   Evaluate a sweep of training checkpoints from S3 on full benchmarks and report
   accuracy per checkpoint per benchmark, running on a GPU machine you control. Use
   when you have a Linux CUDA box available to you -- your own EC2 instance or
-  similar -- and want to sweep many checkpoints under a prefix, booting vLLM on that
-  box and writing results to an S3 path you choose. If instead the work has to be
-  submitted as an AWS Batch job through the eduLLM platform, because you have no GPU
-  of your own, use the eval-platform skill. The set of available benchmarks is
-  data-driven and documented in BENCHMARKS.md.
+  similar -- and want to sweep many checkpoints under a prefix, writing results to
+  an S3 path you choose. Reads native OLMo-core checkpoints directly by default, so
+  no conversion step is needed; vLLM remains available for HF-format checkpoints. If
+  instead the work has to be submitted as an AWS Batch job through the eduLLM
+  platform, because you have no GPU of your own, use the eval-platform skill. The set
+  of available benchmarks is data-driven and documented in BENCHMARKS.md.
 ---
 
 # Evaluate a sweep of training checkpoints
@@ -86,9 +87,9 @@ Then follow this order, which exists so a mistake is cheap:
   the prompt-count estimate — and get confirmation before running for real.
 - If the skill has not been pointed at this training run before, do a real run of
   `--group smoke --latest 1` next. It evaluates seven benchmarks at 506 instances
-  and 1,005 prompts in total, so it exercises the entire path — fetch, convert,
-  vLLM boot, both scoring paths, upload, summary — in minutes, and surfaces a bad
-  checkpoint or a wrong tokenizer before a full sweep spends hours discovering
+  and 1,005 prompts in total, so it exercises the entire path — fetch, model load,
+  both scoring paths, both batch sizes, upload, summary — in minutes, and surfaces a
+  bad checkpoint or a wrong tokenizer before a full sweep spends hours discovering
   the same thing. **Its scores are meaningless. Never report them.** A thousand
   prompts is a better plumbing check than a hundred and is no more a measurement.
 - Only then drop `--dry-run` and `--group smoke`.
@@ -158,8 +159,11 @@ a supplied path for free before spending GPU time.
 | `--pattern` | (none) | regex filter on the checkpoint directory name |
 | `--latest N` | (all) | keep only the N highest-step checkpoints |
 | `--limit N` | (none, or the group's own) | cap instances per task; overrides a group's own limit or prompt budget, uniformly. Smoke tests only, see BENCHMARKS.md |
-| `--tp` | `1` | vLLM tensor-parallel size |
-| `--gpu-memory-utilization` | vLLM default (~0.9) | fraction of VRAM vLLM may claim; lower it to share a GPU |
+| `--provider` | `olmo_core` | inference backend: `olmo_core` reads native checkpoints directly, `vllm_server` needs HF format and converts first |
+| `--batch-size-mcq` | `512` | requests per forward pass for multiple-choice benchmarks (`olmo_core` only) |
+| `--batch-size-gen` | `192` | requests per forward pass for generative benchmarks (`olmo_core` only) |
+| `--tp` | `1` | vLLM tensor-parallel size (`vllm_server` only; refused on the native path) |
+| `--gpu-memory-utilization` | vLLM default (~0.9) | fraction of VRAM vLLM may claim; lower it to share a GPU (`vllm_server` only) |
 | `--tokenizer` | (from config) | HF tokenizer id, if the checkpoint config does not resolve one |
 | `--run-id-prefix` | (none) | prefix for result subdirectories |
 | `--allow-any-task` | off | permit task names outside the registry, without a cost estimate |
@@ -177,11 +181,62 @@ saves real time. Which groups exist and what each covers is in
 recorded in each checkpoint's `run_provenance.json` as `benchmark_selection`, so a
 result set carries a record of how its benchmark list was chosen.
 
-### Checkpoint format, and why pre-converting is easier
+### Choosing a provider
+
+Two inference backends, and the choice decides whether a conversion step exists
+at all.
+
+**`olmo_core` (default) reads a native OLMo-core checkpoint as it stands.** Nothing
+is converted, which is the reason it is the default: conversion is
+architecture-gated, and `get_hf_config` refuses anything that is not standard dense
+OLMo-2/OLMo-3 — a memory-split model, for instance — no matter which OLMo-core
+version is installed. A checkpoint the vLLM path cannot accept at all is still
+scored here.
+
+**`vllm_server` is faster per prompt but only loads HF-format weights.** Prefer it
+when your checkpoints are already HF format, or when a conversion is known to
+succeed and the same checkpoints will be swept repeatedly. It is also the path with
+tensor parallelism, via `--tp`.
+
+Pick with `--provider`. The vLLM-only flags (`--tp`,
+`--gpu-memory-utilization`) are **refused** rather than ignored on the native path,
+because `ProviderConfig.from_dict` drops keys it does not recognise, so a silently
+accepted one would look honoured and do nothing. `OlmoCoreProvider` requires
+`tensor_parallel_size` of 1; run several single-GPU sweeps rather than one
+tensor-parallel sweep.
+
+### Batching on the native path
+
+vLLM schedules its own batches continuously, so it takes no batch size. The native
+provider does, and leaving it unset is a trap worth knowing about:
+`_iter_chunks` treats `batch_size=None` as **one chunk holding every request**,
+which for a full sweep means an immediate out-of-memory. The sweep therefore always
+sets it explicitly.
+
+It sets two different values, because one number cannot serve both kinds of work:
+
+- **Multiple choice** is a single forward pass per prompt with no KV-cache growth,
+  so a large batch is straightforwardly better. Default `--batch-size-mcq 512`.
+- **Generation** pads every sequence in a batch out to the longest one, so past a
+  point the padding costs more than the parallelism buys. Default
+  `--batch-size-gen 192`.
+
+`batch_size` is a provider setting bound to the harness, so one invocation carries
+one value. The sweep consequently splits each checkpoint into **two invocations**,
+one per kind, and pays a second model load to do it. Where a run is entirely one
+kind, only one invocation is issued and there is no second load.
+
+Both defaults suit a ~1B model on a 24GB card. Scale them down for a larger model
+or a smaller card: roughly halve both each time parameter count doubles, and drop
+them if you see an out-of-memory in the logs. They are a throughput knob only —
+no metric depends on them, so a conservative value costs time and nothing else.
+
+### Checkpoint format, and pre-converting for the vLLM path
 
 A checkpoint may be either **HF format** (`config.json` + `*.safetensors`) or a
 **native OLMo-core directory** (`config.json` + `model_and_optim/`, or a
-`.metadata` file). The script detects which and only converts when it has to.
+`.metadata` file). The script detects which, and converts only on the vLLM path
+and only when it has to. **On the default native path nothing below applies.**
 
 vLLM can only load HF-format weights, so native checkpoints must be converted
 first. **The skill converts them itself, with no external setup**, using the
@@ -267,9 +322,13 @@ Nothing is uploaded to the HuggingFace Hub. "HF" refers to the on-disk format.
 ```
 <s3-out>/
   <run-id>/                          # one per checkpoint
-    metrics.json                     # olmo-eval's standard output, one entry per task
-    predictions/..., requests/...    # per-instance predictions and requests
-    logs/                            # vLLM server log
+    metrics.json                     # every task, both halves merged  <- read this
+    mcq/                             # native path only: the multiple-choice half
+      metrics.json                   #   that half alone
+      predictions/..., requests/...  #   per-instance predictions and requests
+    generative/                      # native path only: the generative half
+      metrics.json, predictions/, requests/
+    logs/                            # provider log
     run_provenance.json              # checkpoint, git sha, benchmarks, status
     _READY | _FAILED                 # terminal marker, always written
     _IN_PROGRESS                     # heartbeat while evaluating; gone once terminal
@@ -278,6 +337,17 @@ Nothing is uploaded to the HuggingFace Hub. "HF" refers to the on-disk format.
   accuracy.json
   sweep.log
 ```
+
+On the native path the two invocations each write their own `metrics.json`, and
+`write_metrics_json` opens with `"w"`, so the sweep merges them into the run-root
+`metrics.json` rather than letting the second overwrite the first. **Read the
+run-root file**; the per-half copies are kept only so a crash between the halves
+leaves the finished one legible. The merge runs after *each* half, so a run that
+scores the multiple-choice benchmarks and then dies still leaves a usable
+`metrics.json` covering them.
+
+On the `vllm_server` path there is one invocation, so there are no subdirectories
+and `predictions/` and `requests/` sit directly under the run directory.
 
 `accuracy_wide.csv` is the deliverable: one row per checkpoint, sorted by step,
 one column per score. Column names are qualified only as far as they need to be:
@@ -341,22 +411,25 @@ This skill owns no evaluation logic. It discovers checkpoints, stages weights,
 shells out to olmo-eval once per checkpoint, and parses the JSON that comes back.
 Everything between the invocation and `metrics.json` is upstream code.
 
-Per checkpoint the whole eval is a single `olmo-eval run` with one `-t` per
-benchmark, so they share a single vLLM boot. `-t` accepts several values while
-`-m` is single-model, which is why checkpoints are the loop.
+`-t` accepts several benchmarks while `-m` is single-model, which is why
+checkpoints are the loop. On `vllm_server` a checkpoint is one `olmo-eval run` with
+one `-t` per benchmark, sharing a single boot. On `olmo_core` it is two, split by
+kind, because `batch_size` is a harness-scoped provider setting and one invocation
+can carry only one value.
 
 Argument order is not cosmetic. `run` has no top-level `--provider`; it goes
 through `--harness`. Each `-o` binds to the *preceding* `--harness` or `-t`, and
 the two accept disjoint key sets, so a `provider.*` key after `-t` is a usage
-error and a `limit=` before the first `-t` is too. Tensor parallelism is
-`-o provider.kwargs.tensor_parallel_size=N` in the harness group: `ProviderConfig`
-has no such field and `ProviderConfig.from_dict` drops keys it does not know, so
-the shorter `provider.tensor_parallel_size=N` would be accepted and then silently
-ignored.
+error and a `limit=` before the first `-t` is too. Both the batch size and tensor
+parallelism go through `provider.kwargs.*` in the harness group:
+`ProviderConfig` has no such fields and `ProviderConfig.from_dict` drops keys it
+does not know, so the shorter `provider.batch_size=N` would be accepted and then
+silently ignored — leaving `batch_size` at `None`, which `_iter_chunks` reads as one
+chunk holding everything.
 
-Checkpoints are synced from S3 to local disk first. olmo-eval has no S3 download
-on the vLLM path, so passing an `s3://` path straight to `-m` fails inside the
-model loader rather than at argument parsing.
+Checkpoints are synced from S3 to local disk first. olmo-eval has no S3 download on
+either provider, so passing an `s3://` path straight to `-m` fails inside the model
+loader rather than at argument parsing.
 
 Scores are read from `tasks[].metrics` in `metrics.json`, not from the top-level
 `summary` block — `summary` carries only each task's primary metric, which would

@@ -58,10 +58,10 @@ exactly `trex`, `factscore` and `simpleqa` — and **refused outright**, with th
 reason printed. That refusal survives `--allow-any-task` on
 purpose: the flag skips this registry, not olmo-eval's task registry, so it
 cannot run a task that has no task file. Allowing it through would only move the
-failure to after the checkpoint had been fetched, converted and booted — and
-because all benchmarks share one `olmo-eval run` invocation, it would take every
-valid benchmark in the same request down with it. When a request mixes supported
-and unsupported names, the error prints the runnable subset ready to paste back.
+failure to after the checkpoint had been fetched and the model loaded — and because
+benchmarks of the same kind share one `olmo-eval run` invocation, it would take
+every valid benchmark in that half down with it. When a request mixes supported and
+unsupported names, the error prints the runnable subset ready to paste back.
 
 ## The registry
 
@@ -72,9 +72,11 @@ typos before any spend, and total up the cost estimate.
 Each entry carries:
 
 - `instances` — size of the scored split, for cost estimation.
-- `choices` — vLLM prompts issued per instance. Multiple-choice log-likelihood
-  scoring sends one prompt per answer choice; generative tasks send one per
-  instance, so `choices` is 1 for them.
+- `choices` — inference requests issued per instance. Multiple-choice
+  log-likelihood scoring sends one request per answer choice; generative tasks send
+  one per instance, so `choices` is 1 for them.
+- `kind` — `mcq` or `generative`. Read at run time to split the run in two on the
+  native provider, so each half gets the batch size that suits its work.
 - `split` — which split the olmo-eval task scores, recorded so the estimate can
   be checked against the task definition.
 - `metrics` — the metric keys the task emits. Entries with more than one get
@@ -444,8 +446,8 @@ informative than either number alone.
 
 ## Cost
 
-A full nine-benchmark sweep is roughly **55,400 instances and about 103,300 vLLM
-prompts** per checkpoint. Prompts exceed instances because multiple-choice scoring
+A full nine-benchmark sweep is roughly **55,400 instances and about 103,300
+inference requests** per checkpoint. Requests exceed instances because multiple-choice scoring
 sends one prompt per answer choice, and HellaSwag alone accounts for about 40,000
 of the total (10,042 instances at four choices). The prompt count is what drives
 runtime, and it multiplies by every checkpoint in the sweep.
@@ -491,9 +493,9 @@ what made the change safe to make.
 ### Why `smoke` exists anyway
 
 `--group smoke` is the cheapest way to prove the machinery works — checkpoint
-fetched, converted, vLLM booted, all seven tasks scored, results uploaded,
-summary written — at 506 instances and 1,005 prompts per checkpoint instead of
-55,369 and 103,253.
+fetched, model loaded, all seven tasks scored across both halves and both batch
+sizes, the two `metrics.json` files merged, results uploaded, summary written — at
+506 instances and 1,005 requests per checkpoint instead of 55,369 and 103,253.
 
 It spends that as a `prompt_budget` of 1,000 rather than a flat instance limit,
 because a prompt count is instances times `choices` and a flat limit therefore
@@ -595,8 +597,30 @@ explainable from the table.
 
 ## The command this produces
 
-For reference, a full sweep runs this per checkpoint — one vLLM boot covering
-every benchmark:
+For reference, a full sweep on the default native provider runs this per
+checkpoint — two invocations, split by kind so each gets the batch size that suits
+it, with the multiple-choice half first:
+
+```bash
+uv run olmo-eval run -m "${NATIVE_CKPT}" \
+  --harness default -o provider.kind=olmo_core \
+  -o provider.kwargs.batch_size=512 \
+  -t hellaswag -t piqa -t arc_easy -t csqa -t socialiqa \
+  -O "${OUT}/mcq"
+
+uv run olmo-eval run -m "${NATIVE_CKPT}" \
+  --harness default -o provider.kind=olmo_core \
+  -o provider.kwargs.batch_size=192 \
+  -t naturalqs -t jeopardy -t popqa -t triviaqa \
+  -O "${OUT}/generative"
+```
+
+The two `metrics.json` files are then merged into `${OUT}/metrics.json`, because
+`write_metrics_json` opens with `"w"` and the second would otherwise overwrite the
+first.
+
+On `--provider vllm_server` it is instead a single invocation over every benchmark,
+sharing one boot, against a checkpoint converted to HF format first:
 
 ```bash
 uv run olmo-eval run -m "${HF_CKPT}" \

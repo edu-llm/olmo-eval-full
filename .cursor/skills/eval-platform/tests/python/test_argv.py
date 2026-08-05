@@ -189,6 +189,60 @@ check("tp + gpu-mem + limit all bind correctly",
 
 print()
 print("=" * 70)
+print("CASE 7: the native provider's two invocations")
+print("=" * 70)
+# eval-direct-gpu's default path. batch_size travels the same provider.kwargs route as
+# tensor_parallel_size, and ProviderConfig.from_dict drops keys it does not recognise
+# without complaining, so a wrong route here would look honoured and silently leave
+# batch_size None -- which _iter_chunks reads as "one chunk holding everything".
+MCQ = ["hellaswag", "piqa", "arc_easy", "csqa", "socialiqa"]
+GEN = ["naturalqs", "jeopardy"]
+
+
+def build_native(batch_size, benches, limit=None):
+    """Mirror build_args() on the olmo_core path, for one half of the run."""
+    args = ["--harness", "default", "-o", "provider.kind=olmo_core",
+            "-o", f"provider.kwargs.batch_size={batch_size}"]
+    for b in benches:
+        args += ["-t", b]
+        if limit is not None:
+            args += ["-o", f"limit={limit}"]
+    return ["-m", "/tmp/ck", *args, "-O", "/tmp/out"]
+
+
+argv = build_native(512, MCQ)
+print("  mcq argv:", " ".join(argv))
+task_ov, harness_ov = parse(argv)
+check("batch_size lands in HARNESS overrides",
+      "provider.kwargs.batch_size=512" in harness_ov, str(harness_ov))
+check("provider.kind=olmo_core is accepted",
+      "provider.kind=olmo_core" in harness_ov, str(harness_ov))
+check("batch_size did not leak into a task",
+      not any("batch_size" in v for vals in task_ov.values() for v in vals),
+      str(dict(task_ov)))
+check("the multiple-choice half carries only its own benchmarks",
+      sorted(task_ov) == sorted(MCQ) or not task_ov, str(sorted(task_ov)))
+
+argv = build_native(192, GEN, limit=20)
+print("  generative argv:", " ".join(argv))
+task_ov, harness_ov = parse(argv)
+check("the generative half carries its own batch size",
+      sorted(harness_ov) == ["provider.kind=olmo_core",
+                             "provider.kwargs.batch_size=192"],
+      str(sorted(harness_ov)))
+check("and its own per-benchmark caps",
+      all(task_ov[b] == ["limit=20"] for b in GEN), str(dict(task_ov)))
+check("and none of the multiple-choice benchmarks",
+      not any(b in task_ov for b in MCQ), str(sorted(task_ov)))
+# Overrides arrive from argv as strings, and _validate_batch_size demands a real int:
+# "512" would be rejected at provider construction. So the coercion is load-bearing,
+# not cosmetic, and worth asserting against the real function rather than assumed.
+coerced = utils._coerce_value("512")
+check("batch_size is coerced to an int, not left a string",
+      coerced == 512 and isinstance(coerced, int), f"{coerced!r} ({type(coerced).__name__})")
+
+print()
+print("=" * 70)
 print("CONTROL: the two mistakes the predecessor made must still be errors")
 print("=" * 70)
 # The predecessor emitted this: a provider key after -t. It is rejected outright.

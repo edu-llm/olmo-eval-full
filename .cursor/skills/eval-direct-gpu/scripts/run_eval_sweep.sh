@@ -36,6 +36,15 @@
 #   --latest N                      keep the N highest-step checkpoints
 #   --pattern REGEX                 filter on the checkpoint directory name
 # Optional -- how to run:
+#   --provider KIND                 olmo_core (default) reads a native OLMo-core
+#                                   checkpoint as-is. vllm_server is faster but
+#                                   needs HF format, so it converts first -- and
+#                                   conversion is architecture-gated to standard
+#                                   dense OLMo-2/OLMo-3. See SKILL.md.
+#   --batch-size-mcq N              prompts per forward pass for multiple-choice
+#                                   tasks (default 512). olmo_core only
+#   --batch-size-gen N              same for generative tasks (default 192, lower
+#                                   because padding waste grows with batch size)
 #   --tp N                          vLLM tensor-parallel size (default 1)
 #   --gpu-memory-utilization 0.N    VRAM fraction; lower it to share a GPU
 #   --limit N                       cap instances per task; overrides a group's
@@ -96,6 +105,11 @@ S3_OUT=""
 LIMIT=""
 TP="1"
 GPU_MEM=""
+PROVIDER="olmo_core"
+TP_SET="0"
+GPU_MEM_SET="0"
+BATCH_MCQ="512"
+BATCH_GEN="192"
 SYNC_INTERVAL="180"
 TOKENIZER=""
 PATTERN=""
@@ -131,8 +145,11 @@ while [[ $# -gt 0 ]]; do
     --group) GROUP="$2"; shift 2 ;;
     --s3-out) S3_OUT="$2"; shift 2 ;;
     --limit) LIMIT="$2"; shift 2 ;;
-    --tp) TP="$2"; shift 2 ;;
-    --gpu-memory-utilization) GPU_MEM="$2"; shift 2 ;;
+    --tp) TP="$2"; TP_SET="1"; shift 2 ;;
+    --gpu-memory-utilization) GPU_MEM="$2"; GPU_MEM_SET="1"; shift 2 ;;
+    --provider) PROVIDER="$2"; shift 2 ;;
+    --batch-size-mcq) BATCH_MCQ="$2"; shift 2 ;;
+    --batch-size-gen) BATCH_GEN="$2"; shift 2 ;;
     --sync-interval) SYNC_INTERVAL="$2"; shift 2 ;;
     --tokenizer) TOKENIZER="$2"; shift 2 ;;
     --pattern) PATTERN="$2"; shift 2 ;;
@@ -172,6 +189,35 @@ integer() { [[ "$2" =~ ^[0-9]+$ ]] || { echo "$1 must be an integer, got '$2'" >
 integer --tp "${TP}"
 [[ -z "${LIMIT}" ]] || integer --limit "${LIMIT}"
 [[ -z "${LATEST}" ]] || integer --latest "${LATEST}"
+
+case "${PROVIDER}" in
+  olmo_core|vllm_server) ;;
+  *) echo "--provider must be olmo_core or vllm_server, got '${PROVIDER}'" >&2; exit 2 ;;
+esac
+
+# Refused rather than ignored. Both are vLLM engine settings with no counterpart in
+# OlmoCoreProvider -- it rejects a tensor_parallel_size other than 1 outright, and
+# ProviderConfig.from_dict drops keys it does not recognize without complaint, so a
+# forwarded --gpu-memory-utilization would vanish and look like it had been honoured.
+if [[ "${PROVIDER}" == "olmo_core" ]]; then
+  if [[ "${TP_SET}" == "1" ]]; then
+    {
+      echo "--tp applies only to --provider vllm_server; OlmoCoreProvider requires 1."
+      echo "Drop --tp, or pass --provider vllm_server (which needs an HF-convertible checkpoint)."
+    } >&2
+    exit 2
+  fi
+  if [[ "${GPU_MEM_SET}" == "1" ]]; then
+    {
+      echo "--gpu-memory-utilization applies only to --provider vllm_server."
+      echo "The olmo_core provider has no VRAM fraction to set; size the work with"
+      echo "--batch-size-mcq and --batch-size-gen instead."
+    } >&2
+    exit 2
+  fi
+  integer --batch-size-mcq "${BATCH_MCQ}"
+  integer --batch-size-gen "${BATCH_GEN}"
+fi
 # Zero is meaningful here (interim syncs off), so this allows it where --latest does not.
 [[ "${SYNC_INTERVAL}" =~ ^[0-9]+$ ]] || {
   echo "--sync-interval must be a whole number of seconds, got '${SYNC_INTERVAL}'" >&2
@@ -438,10 +484,18 @@ for i, name in enumerate(requested):
     instances += n
     prompts += n * entry["choices"]
 
+# One kind per requested benchmark, positionally aligned like the caps. Emitted
+# here rather than re-read in the shell so there is a single reader of the
+# registry: a second one would be a second chance to disagree about it. A name
+# only --allow-any-task let through has no entry, so it is reported "unknown" and
+# batched with the generative tasks, which is the conservative half.
+kinds = [(known[n]["kind"] if n in known else "unknown") for n in requested]
+
 print(" ".join(requested))
 print(instances, prompts, len(unknown))
 print(source)
 print(" ".join(str(n) for n in limits))
+print(" ".join(kinds))
 PY
 )"; then
   exit 2
@@ -461,6 +515,9 @@ BENCH_SOURCE="${RESOLVED_LINES[2]}"
 # apply, and a uniform --limit simply arrives as the same number repeated. An
 # empty trailing line is dropped by command substitution, hence the default.
 read -r -a TASK_LIMITS <<< "${RESOLVED_LINES[3]:-}"
+# mcq | generative | unknown, one per benchmark in BENCH_LIST order. Used to split
+# the run in two so each half gets the batch size that suits it.
+read -r -a TASK_KINDS <<< "${RESOLVED_LINES[4]:-}"
 
 WORK="$(mktemp -d)"
 LOG="${WORK}/sweep.log"
@@ -597,7 +654,29 @@ PY
 fi
 
 if [[ "${DRY_RUN}" == "1" ]]; then
-  log "DRY_RUN would run, per checkpoint, one vLLM boot covering: ${BENCH_LIST[*]}"
+  # Say how many model loads the plan costs, since that is the part the provider
+  # choice changes and the part a caller cannot infer from the benchmark list.
+  if [[ "${PROVIDER}" == "vllm_server" ]]; then
+    log "DRY_RUN would run, per checkpoint, one vllm_server boot covering: ${BENCH_LIST[*]}"
+    log "DRY_RUN a native OLMo-core checkpoint is converted to HF first"
+  else
+    DRY_MCQ=()
+    DRY_GEN=()
+    for i in "${!BENCH_LIST[@]}"; do
+      case "${TASK_KINDS[i]:-unknown}" in
+        mcq) DRY_MCQ+=("${BENCH_LIST[i]}") ;;
+        *) DRY_GEN+=("${BENCH_LIST[i]}") ;;
+      esac
+    done
+    log "DRY_RUN would run, per checkpoint, two olmo_core loads:"
+    if [[ ${#DRY_MCQ[@]} -gt 0 ]]; then
+      log "DRY_RUN   batch ${BATCH_MCQ}: ${DRY_MCQ[*]}"
+    fi
+    if [[ ${#DRY_GEN[@]} -gt 0 ]]; then
+      log "DRY_RUN   batch ${BATCH_GEN}: ${DRY_GEN[*]}"
+    fi
+    log "DRY_RUN no conversion: the checkpoint is read in its native format"
+  fi
   log "DRY_RUN results -> ${S3_ROOT}/<run-id>/metrics.json"
   log "DRY_RUN summary -> ${S3_ROOT}/accuracy.{csv,json} and accuracy_wide.csv"
   exit 0
@@ -677,8 +756,10 @@ for CKPT in "${CKPT_LIST[@]}"; do
 
   log "=== ${RUN_ID} :: ${CKPT}"
 
-  # Fetch locally. vLLM cannot load an s3:// path directly (olmo-eval has no S3
-  # download on the vLLM path), so materialize the weights first.
+  # Fetch locally either way. vLLM has no S3 loader at all, so it must be local;
+  # the olmo_core provider can resolve an s3:// path itself, but one sync here is
+  # cheaper than letting it fetch and cache per invocation, and it keeps the two
+  # providers taking the same path up to this point.
   if [[ "${CKPT}" == s3://* ]]; then
     STAGED_CKPT="${WORK}/ckpt/${RUN_ID}"
     mkdir -p "${STAGED_CKPT}"
@@ -694,7 +775,12 @@ for CKPT in "${CKPT_LIST[@]}"; do
   fi
 
   MODEL="${LOCAL_CKPT}"
-  if is_native_olmo_core "${LOCAL_CKPT}"; then
+  # Conversion exists only to satisfy vLLM, which loads HF format and nothing else.
+  # The olmo_core provider reads a native checkpoint as it stands, which is the whole
+  # reason it is the default: `get_hf_config` is architecture-gated to standard dense
+  # OLMo-2/OLMo-3, so conversion refuses anything else -- a memory-split model, for
+  # instance -- no matter which OLMo-core version is installed.
+  if [[ "${PROVIDER}" == "vllm_server" ]] && is_native_olmo_core "${LOCAL_CKPT}"; then
     # CONVERT_SCRIPT defaults to the bundled library-only converter, so this only
     # trips if that file is missing or an $OLMO_CORE_CONVERT override points
     # somewhere that does not exist.
@@ -721,32 +807,118 @@ for CKPT in "${CKPT_LIST[@]}"; do
     MODEL="${CONVERTED_DIR}"
   fi
 
-  # Every benchmark goes in one invocation so they share a single vLLM boot.
-  #
   # `run` has no top-level --provider, and each -o binds to the *preceding*
   # --harness or -t. So provider overrides must sit between --harness and the
   # first -t, and each task's overrides directly after its own -t. Tensor
   # parallelism goes through provider.kwargs: ProviderConfig has no
   # tensor_parallel_size field, and ProviderConfig.from_dict silently drops
   # keys it does not recognize, so the shorter path would vanish without error.
-  log "[${RUN_ID}] evaluating: ${BENCH_LIST[*]}"
-  args=(--harness default -o provider.kind=vllm_server)
-  if [[ "${TP}" != "1" ]]; then
-    args+=(-o "provider.kwargs.tensor_parallel_size=${TP}")
-  fi
-  if [[ -n "${GPU_MEM}" ]]; then
-    args+=(-o "provider.kwargs.gpu_memory_utilization=${GPU_MEM}")
-  fi
-  # Each -o binds to the -t before it, so a per-benchmark cap needs nothing from
-  # olmo-eval that a uniform one did not already need: the same loop, emitting
-  # this benchmark's own number instead of one shared value.
-  for i in "${!BENCH_LIST[@]}"; do
-    args+=(-t "${BENCH_LIST[i]}")
-    if [[ ${#TASK_LIMITS[@]} -gt 0 ]]; then
-      args+=(-o "limit=${TASK_LIMITS[i]}")
+  #
+  # Build the argv for a subset of BENCH_LIST. $1 is the provider batch size, empty
+  # to omit it; the rest are indices into BENCH_LIST.
+  build_args() {
+    local bs="$1"; shift
+    ARGS=(--harness default -o "provider.kind=${PROVIDER}")
+    if [[ -n "${bs}" ]]; then
+      ARGS+=(-o "provider.kwargs.batch_size=${bs}")
     fi
-  done
+    if [[ "${TP}" != "1" ]]; then
+      ARGS+=(-o "provider.kwargs.tensor_parallel_size=${TP}")
+    fi
+    if [[ -n "${GPU_MEM}" ]]; then
+      ARGS+=(-o "provider.kwargs.gpu_memory_utilization=${GPU_MEM}")
+    fi
+    local i
+    for i in "$@"; do
+      ARGS+=(-t "${BENCH_LIST[i]}")
+      if [[ ${#TASK_LIMITS[@]} -gt 0 ]]; then
+        ARGS+=(-o "limit=${TASK_LIMITS[i]}")
+      fi
+    done
+  }
 
+  # One invocation. $1 output dir, $2 batch size (empty to omit), rest are indices.
+  run_subset() {
+    local out="$1" bs="$2"; shift 2
+    build_args "${bs}" "$@"
+    mkdir -p "${out}"
+    (cd "${REPO_ROOT}" && uv run olmo-eval run -m "${MODEL}" "${ARGS[@]}" -O "${out}")
+  }
+
+  # Fold each invocation's metrics.json into one at the run root, because
+  # write_metrics_json opens with "w" and a second invocation into the same -O would
+  # overwrite the first. Called after *each* half rather than once at the end: a run
+  # that scores the multiple-choice benchmarks and then dies would otherwise leave a
+  # run directory with no metrics.json at all, even though those benchmarks finished
+  # and were synced. summarize_accuracy.py reads <run>/metrics.json, so that is the
+  # one file whose location matters; predictions/ and requests/ stay in their own
+  # halves, where salvage_partial.py's rglob still finds them.
+  merge_metrics() {
+    python3 - "${OUT}" <<'PY' || log "[${RUN_ID}] metrics merge failed; per-half files remain"
+import json, os, sys
+
+root = sys.argv[1]
+merged = None
+tasks = []
+summary = {}
+duration = 0.0
+seen = False
+
+for half in ("mcq", "generative"):
+    path = os.path.join(root, half, "metrics.json")
+    if not os.path.exists(path):
+        continue
+    try:
+        with open(path, encoding="utf-8") as fh:
+            doc = json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        continue
+    seen = True
+    if merged is None:
+        merged = {k: v for k, v in doc.items() if k not in ("tasks", "summary")}
+    tasks.extend(doc.get("tasks") or [])
+    got = doc.get("summary")
+    if isinstance(got, dict):
+        summary.update(got)
+    got = doc.get("experiment_duration_seconds")
+    if isinstance(got, (int, float)):
+        duration += float(got)
+
+if not seen:
+    raise SystemExit(0)
+
+merged["tasks"] = tasks
+if summary:
+    merged["summary"] = summary
+# Summed rather than taken from one half: the halves run in sequence, so their
+# durations add up to what the checkpoint actually cost.
+if duration:
+    merged["experiment_duration_seconds"] = duration
+
+with open(os.path.join(root, "metrics.json"), "w", encoding="utf-8") as fh:
+    json.dump(merged, fh, indent=2)
+PY
+  }
+
+  # Split the run so each half gets the batch size that suits it. batch_size is a
+  # provider kwarg bound to --harness, and _iter_chunks applies the same value to
+  # both generation and log-likelihood, so one invocation can only carry one number.
+  # Multiple choice is a single forward pass per prompt with no KV growth, so a large
+  # batch is straightforwardly better; generation pads every sequence in a batch to
+  # the longest, so past a point the padding costs more than the parallelism buys.
+  #
+  # Only olmo_core needs this. vLLM schedules its own batches continuously and takes
+  # no batch_size, so it keeps running every benchmark in one boot, exactly as before.
+  MCQ_IDX=()
+  GEN_IDX=()
+  for i in "${!BENCH_LIST[@]}"; do
+    case "${TASK_KINDS[i]:-unknown}" in
+      mcq) MCQ_IDX+=("${i}") ;;
+      # generative, and anything --allow-any-task let through without a registry
+      # entry: the smaller batch is the safe half to guess into.
+      *) GEN_IDX+=("${i}") ;;
+    esac
+  done
   # Sync what has been scored so far while the eval runs, so a box that dies partway
   # -- OOM, a spot reclaim, a dropped session -- still leaves its finished instances in
   # S3. olmo-eval appends each task's rows to a *-predictions.partial.jsonl as they are
@@ -770,13 +942,46 @@ for CKPT in "${CKPT_LIST[@]}"; do
     SYNC_PID=""
   }
 
+  # Started once and stopped once, around both halves rather than around each. The
+  # interval between them is the second model load, which is exactly the dead time a
+  # crash would otherwise leave unrecorded.
   SYNC_PID=""
   start_interim_sync
-  if (cd "${REPO_ROOT}" && uv run olmo-eval run \
-        -m "${MODEL}" "${args[@]}" -O "${OUT}"); then
-    STATUS="ok"
+  STATUS="ok"
+  if [[ "${PROVIDER}" == "vllm_server" ]]; then
+    log "[${RUN_ID}] evaluating (vllm_server, one boot): ${BENCH_LIST[*]}"
+    if ! run_subset "${OUT}" "" "${!BENCH_LIST[@]}"; then
+      STATUS="failed"
+    fi
   else
-    STATUS="failed"
+    # Each half is attempted even if the other failed: half a checkpoint's benchmarks
+    # scored is worth more than none, and the terminal marker still reports failure.
+    # Name each half's own benchmarks, not the whole list: when a run dies the log has
+    # to say which half was in flight, and "all of them" twice does not.
+    if [[ ${#MCQ_IDX[@]} -gt 0 ]]; then
+      names=()
+      for i in "${MCQ_IDX[@]}"; do names+=("${BENCH_LIST[i]}"); done
+      log "[${RUN_ID}] evaluating multiple choice (batch ${BATCH_MCQ}): ${names[*]}"
+      if ! run_subset "${OUT}/mcq" "${BATCH_MCQ}" "${MCQ_IDX[@]}"; then
+        STATUS="failed"
+        log "[${RUN_ID}] multiple-choice half failed"
+      fi
+      merge_metrics
+    fi
+    if [[ ${#GEN_IDX[@]} -gt 0 ]]; then
+      names=()
+      for i in "${GEN_IDX[@]}"; do names+=("${BENCH_LIST[i]}"); done
+      log "[${RUN_ID}] evaluating generative (batch ${BATCH_GEN}): ${names[*]}"
+      if ! run_subset "${OUT}/generative" "${BATCH_GEN}" "${GEN_IDX[@]}"; then
+        STATUS="failed"
+        log "[${RUN_ID}] generative half failed"
+      fi
+      merge_metrics
+    fi
+  fi
+  # One place for both paths, so the sweep's contract -- a failing checkpoint does not
+  # stop the sweep -- reads the same however the run was split.
+  if [[ "${STATUS}" == "failed" ]]; then
     log "[${RUN_ID}] eval failed (continuing to next checkpoint)"
   fi
   stop_interim_sync
