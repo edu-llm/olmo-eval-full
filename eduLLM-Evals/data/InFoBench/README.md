@@ -7,13 +7,12 @@ Built by [`scripts/ingest_infobench.py`](../../scripts/ingest_infobench.py); the
 synthetic IRT parameters are appended by
 [`scripts/assign_irt_params.py`](../../scripts/assign_irt_params.py).
 
-> **Status: candidate benchmark — not confirmed for the bank.** InFoBench is a *potential*
-> option under evaluation, not a committed part of the calibration set. Whether it is used
-> still needs further review. Its presence in `data/` does not mean it is wired into any
-> run — the default bank in `config.yaml` remains TutorBench, and InFoBench only loads when
-> you explicitly flip `SKILLS` to its 5-type axis and point `config.yaml` at these files.
-> Like IFEval, InFoBench is an instruction-following benchmark; weigh whether that dimension
-> belongs in the bank before committing to it.
+> **Status: selected for calibration.** The tracked source bank still contains
+> synthetic difficulty/discrimination placeholders. A provisional fitted-only 1D bank
+> was produced by the 2026-08-04 study, but it is not written back into these source
+> files. Use only an explicitly versioned fitted-bank artifact for CAT. Core calibration
+> must use the five-type source axis shown below; the package-wide CAT defaults still use
+> TutorBench's three-skill axis and are not an InFoBench runtime configuration.
 
 ## What's in this folder
 

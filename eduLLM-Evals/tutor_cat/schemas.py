@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -35,7 +36,7 @@ class Scenario:
     system_prompt: str = ""
 
     @classmethod
-    def from_json(cls, obj: dict[str, Any]) -> "Scenario":
+    def from_json(cls, obj: dict[str, Any]) -> Scenario:
         return cls(
             scenario_id=obj["scenario_id"],
             prompt=obj["prompt"],
@@ -59,8 +60,8 @@ class Rubric:
     criterion_id: str
     scenario_id: str
     criterion: str
-    q: np.ndarray          # (3,) ints in {0,1}, order = SKILLS; `adaptation` is ignored
-    a: np.ndarray          # (3,) calibrated discrimination, order = SKILLS (frozen)
+    q: np.ndarray          # (K,) ints in {0,1}, explicit bank skill order
+    a: np.ndarray          # (K,) calibrated discrimination on the same order
     b: float               # calibrated difficulty (frozen)
     primary_skill: str = ""
     scoring_type: str = "binary"
@@ -78,15 +79,29 @@ class Rubric:
     verifier: dict[str, Any] | None = None
 
     @classmethod
-    def from_json(cls, obj: dict[str, Any]) -> "Rubric":
+    def from_json(
+        cls,
+        obj: dict[str, Any],
+        skills: Sequence[str] | None = None,
+    ) -> Rubric:
+        """Build a rubric on an explicitly ordered latent-skill axis.
+
+        ``skills`` defaults to the historical TutorBench package axis so existing
+        callers remain unchanged.  Calibration/CAT studies for another benchmark
+        must pass their frozen axis explicitly; silently borrowing TutorBench's
+        three dimensions would reorder or discard that benchmark's parameters.
+        """
+        axis = tuple(skills) if skills is not None else tuple(SKILLS)
+        if not axis or len(set(axis)) != len(axis):
+            raise ValueError(f"skills must be a non-empty unique ordered axis, got {axis!r}")
         q_map = obj["q_mapping"]
         a_map = obj["discrimination"]
         return cls(
             criterion_id=obj["criterion_id"],
             scenario_id=obj["scenario_id"],
             criterion=obj["criterion"],
-            q=np.array([int(q_map[s]) for s in SKILLS], dtype=int),
-            a=np.array([float(a_map[s]) for s in SKILLS], dtype=float),
+            q=np.array([int(q_map[s]) for s in axis], dtype=int),
+            a=np.array([float(a_map[s]) for s in axis], dtype=float),
             b=float(obj["difficulty"]),
             primary_skill=obj.get("primary_skill", ""),
             scoring_type=obj.get("scoring_type", "binary"),

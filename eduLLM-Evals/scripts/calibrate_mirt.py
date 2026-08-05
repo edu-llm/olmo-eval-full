@@ -1,5 +1,5 @@
-"""Confirmatory MULTIDIMENSIONAL 2PL (M2PL) calibration from the (partial) response
-matrix, with the frozen 3-skill Q-matrix.
+"""Confirmatory MULTIDIMENSIONAL 2PL (M2PL) calibration from a response matrix
+and an explicitly ordered Q-matrix skill axis.
 
 Context
 -------
@@ -17,8 +17,8 @@ cleanly when absent.
 
 Model
 -----
-For person ``i`` with a 3-dim latent ability ``theta_i ~ MVN(0, R)`` and item ``j``
-with loading vector ``a_j`` (3-vector, masked by the Q row) and scalar difficulty
+For person ``i`` with a K-dimensional latent ability ``theta_i ~ MVN(0, R)`` and
+item ``j`` with loading vector ``a_j`` (a K-vector masked by the Q row) and scalar difficulty
 ``b_j``::
 
     P(y_ij = 1 | theta_i) = sigmoid( a_j . theta_i - b_j )
@@ -31,8 +31,8 @@ both the uni and multi fits so their log-likelihoods are directly comparable.
 Estimation
 ----------
 Marginal maximum likelihood by the Bock--Aitkin EM algorithm over a FIXED
-Gauss--Hermite quadrature grid (``--grid`` nodes per dimension; total ``grid**3``
-nodes for the 3-d model -- cost scales as grid^3):
+Gauss--Hermite quadrature grid (``--grid`` nodes per dimension; total
+``grid**K`` nodes -- cost grows exponentially with the number of skills):
 
 * E-step: posterior over the latent grid per person, using ONLY the observed
   (non-NaN) cells for that person -> holes are handled natively (marginalised).
@@ -41,7 +41,7 @@ nodes for the 3-d model -- cost scales as grid^3):
   counts at each grid node.
 
 The latent correlation ``R`` starts at the identity. ``--estimate-latent-corr``
-re-estimates the 3x3 latent *correlation* matrix from the posterior second moments
+re-estimates the KxK latent *correlation* matrix from the posterior second moments
 each EM iteration (variances fixed to 1 for identifiability; the loadings carry the
 scale). The off-diagonals of ``R`` are the "are the 3 skills distinguishable?"
 evidence: near +/-1 correlations mean the model is collapsing toward
@@ -59,22 +59,21 @@ consume holes, so it is a dense-block cross-check only, never the primary baseli
 
 Identifiability WARNING
 -----------------------
-A 3-dim confirmatory M2PL needs a healthy person sample to be identified. On the
-current ~1/4-filled fleet (~20 strict-judge persons) the 3-dim model is NOT
-identifiable -- run this on the FULL graded matrix. The script prints and records a
+A multidimensional confirmatory M2PL needs a healthy person sample to be identified.
+The script prints and records a
 WARNING whenever the fitted person count is below ``--min-persons-identifiable``
 (default 150). It still RUNS on tiny data (and on the synthetic tests) so the
 machinery can be exercised now; just do not trust tiny-N numbers.
 
 Outputs
 -------
-* ``staging/calibration_mirt.csv``     -- per fitted criterion: a_content,
-  a_diagnosis, a_scaffolding (0 where q=0), b, n_persons, flags.
+* ``staging/calibration_mirt.csv``     -- per fitted criterion: one ``a_<skill>``
+  column for each configured skill (0 where q=0), b, n_persons, flags.
 * ``staging/calibration_mirt_manifest.json`` -- method, grid, fit dimensions,
   dropped zero-variance items, loglik/AIC/BIC for uni & multi, latent corr, and the
   identifiability warning.
 * ``--write-params`` -> a NEW file ``data/rubrics_qmatrix_mirt.jsonl`` with the
-  masked 3-vector ``discrimination``, scalar ``difficulty``, and
+  masked K-vector ``discrimination``, scalar ``difficulty``, and
   ``irt_params.source = "calibrated-m2pl"`` + provenance. The frozen
   ``data/rubrics_qmatrix_final.jsonl`` is NEVER overwritten.
 
@@ -83,8 +82,22 @@ Usage
     # coverage report only (no fit):
     python scripts/calibrate_mirt.py --report-only
 
-    # fit on the full matrix later (7 nodes/dim = 343 nodes), estimate latent corr:
+    # TutorBench's historical 3-skill fit (7 nodes/dim = 343 nodes):
     python scripts/calibrate_mirt.py --estimate-latent-corr
+
+    # InFoBench's 5-skill fit (3 nodes/dim = 243 nodes):
+    python scripts/calibrate_mirt.py \
+      --matrix runs/judge/InFoBench/response_matrix.csv \
+      --rubrics data/InFoBench/rubrics.jsonl \
+      --skills content,format,number,style,linguistic --grid 3
+
+    # Compare a reduced two-dimensional InFoBench structure without rewriting Q:
+    python scripts/calibrate_mirt.py \
+      --matrix runs/judge/InFoBench/response_matrix.csv \
+      --rubrics data/InFoBench/rubrics.jsonl \
+      --source-skills content,format,number,style,linguistic \
+      --dimensions semantic=content+style,constraints=format+number+linguistic \
+      --structure-name infobench_2d --grid 5
 
     # smaller/faster grid + optional EFA scree:
     python scripts/calibrate_mirt.py --grid 5 --efa
@@ -102,8 +115,8 @@ Usage
 
 Skill-collapse decision instrument
 ----------------------------------
-The content<->diagnosis collinearity question is answered by three numbers read
-side by side. ``--collapse content,diagnosis`` fits the collapsed 2-dim model
+The historical TutorBench content<->diagnosis collinearity question is answered by
+three numbers read side by side. ``--collapse content,diagnosis`` fits the collapsed 2-dim model
 ALONGSIDE the full 3-dim model (both share the unidimensional baseline), so a
 SINGLE run reports unidimensional vs collapsed-2-dim vs full-3-dim (loglik, k,
 AIC, BIC) and names the AIC/BIC winner. The collapse is a pure in-memory Q-matrix
@@ -117,9 +130,11 @@ diagnostic.
 from __future__ import annotations
 
 import argparse
+import csv
 import importlib.util
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -130,7 +145,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tutor_cat import SKILLS  # noqa: E402  (order: content, diagnosis, scaffolding)
+from tutor_cat import SKILLS as PACKAGE_SKILLS  # noqa: E402
+from tutor_cat.skill_structure import SkillStructure, parse_dimension_spec  # noqa: E402
 
 # Reuse the sibling script's IO / coverage / zero-variance helpers verbatim so the
 # two calibrators stay behaviourally identical (same loader, same coverage report,
@@ -142,6 +158,9 @@ cp = importlib.util.module_from_spec(_spec)
 sys.modules.setdefault("calibrate_partial", cp)
 _spec.loader.exec_module(cp)
 
+# Preserve the historical TutorBench axis by default. The CLI's explicit
+# ``--skills`` value may replace these process-local globals for another bank.
+SKILLS = tuple(PACKAGE_SKILLS)
 N_SKILLS = len(SKILLS)
 
 DEFAULT_MATRIX = ROOT / "staging" / "response_matrix.csv"
@@ -157,9 +176,109 @@ CALIBRATION_SOURCE = "calibrated-m2pl"
 # Loadings above this are treated as unstable (thin-sample / near-separation).
 EXTREME_A = 6.0
 
+# The tensor-product quadrature cost is exponential in the number of skills. This
+# guard keeps an omitted ``--grid`` on a 5-skill bank from silently requesting the
+# historical 7**5 = 16,807-node fit. It can be overridden deliberately.
+DEFAULT_MAX_GRID_NODES = 5_000
+IGNORED_Q_KEYS = {"adaptation"}  # historical, intentionally outside tutor_cat.SKILLS
+
 
 class CalibrationError(RuntimeError):
     pass
+
+
+def configure_skills(value: str | None) -> tuple[str, ...]:
+    """Set the ordered Q-matrix axis for this calibration process only."""
+    global SKILLS, N_SKILLS
+    if value is None:
+        skills = tuple(PACKAGE_SKILLS)
+    else:
+        skills = tuple(part.strip() for part in value.split(",") if part.strip())
+    if not skills:
+        raise ValueError("--skills must contain at least one non-empty skill name")
+    if len(set(skills)) != len(skills):
+        raise ValueError(f"--skills contains duplicates: {list(skills)}")
+    SKILLS = skills
+    N_SKILLS = len(skills)
+    return SKILLS
+
+
+def load_matrix_strict(path: Path) -> pd.DataFrame:
+    """Load a binary response matrix without silently coercing bad cells to holes."""
+    if not path.is_file():
+        raise FileNotFoundError(f"response matrix not found: {path}")
+    try:
+        with path.open(encoding="utf-8", newline="") as f:
+            header = next(csv.reader(f), None)
+    except OSError as e:
+        raise FileNotFoundError(f"could not read response matrix {path}: {e}") from e
+    if not header or header[0] != "model":
+        raise CalibrationError("response matrix must begin with a 'model' column")
+    duplicates = sorted(name for name, count in Counter(header).items() if count > 1)
+    if duplicates:
+        raise CalibrationError(f"response matrix has duplicate column names: {duplicates[:10]}")
+
+    try:
+        raw = pd.read_csv(path, dtype=str, keep_default_na=False)
+    except Exception as e:
+        raise CalibrationError(f"could not parse response matrix CSV: {e}") from e
+    if raw.empty:
+        raise CalibrationError("response matrix has no model rows")
+    models = raw["model"].astype(str).str.strip()
+    if (models == "").any():
+        raise CalibrationError("response matrix contains a blank model id")
+    duplicate_models = sorted(models[models.duplicated(keep=False)].unique().tolist())
+    if duplicate_models:
+        raise CalibrationError(f"response matrix has duplicate model rows: {duplicate_models[:10]}")
+
+    values = raw.drop(columns=["model"])
+    allowed = {"", "0", "1", "0.0", "1.0"}
+    bad: list[str] = []
+    for col in values.columns:
+        stripped = values[col].astype(str).str.strip()
+        invalid = stripped[~stripped.isin(allowed)]
+        for row_idx, value in invalid.head(max(0, 10 - len(bad))).items():
+            bad.append(f"model={models.iloc[row_idx]!r}, criterion={col!r}, value={value!r}")
+        if len(bad) >= 10:
+            break
+    if bad:
+        raise CalibrationError(
+            "response matrix contains non-binary, non-empty cells; examples: " + "; ".join(bad)
+        )
+
+    numeric = values.replace({"": np.nan, "0": 0.0, "1": 1.0, "0.0": 0.0, "1.0": 1.0})
+    numeric = numeric.astype(float)
+    numeric.index = models.tolist()
+    numeric.index.name = "model"
+    return numeric
+
+
+def validate_matrix_bank_alignment(
+    matrix: pd.DataFrame, q_by: dict[str, np.ndarray], require_complete: bool
+) -> dict:
+    """Check criterion identity across the response matrix and active Q bank."""
+    matrix_cols = list(matrix.columns)
+    matrix_set = set(matrix_cols)
+    bank_set = set(q_by)
+    unknown = [cid for cid in matrix_cols if cid not in bank_set]
+    missing = [cid for cid in q_by if cid not in matrix_set]
+    if unknown:
+        raise CalibrationError(
+            f"matrix has {len(unknown)} criterion column(s) absent from the active Q bank; "
+            f"first: {unknown[:10]}"
+        )
+    if require_complete and missing:
+        raise CalibrationError(
+            f"matrix is missing {len(missing)} active bank criterion column(s); "
+            f"first: {missing[:10]}"
+        )
+    return {
+        "n_matrix_criteria": len(matrix_cols),
+        "n_active_bank_criteria": len(q_by),
+        "n_bank_criteria_missing_from_matrix": len(missing),
+        "bank_criteria_missing_from_matrix": missing,
+        "complete_bank_alignment": not missing,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -167,11 +286,22 @@ class CalibrationError(RuntimeError):
 # ---------------------------------------------------------------------------
 
 
-def load_q_matrix(rubrics_path: Path) -> dict[str, np.ndarray]:
-    """Map criterion_id -> (3,) 0/1 Q row (order = SKILLS) from the rubric bank."""
+def load_q_matrix(
+    rubrics_path: Path,
+    structure: SkillStructure | None = None,
+) -> dict[str, np.ndarray]:
+    """Map criterion_id to a 0/1 Q row in configured modeled-skill order.
+
+    With ``structure=None``, the configured ``SKILLS`` must be literal keys in the
+    source bank (the historical behavior).  A ``SkillStructure`` instead OR-merges
+    its source-skill columns into one or more modeled dimensions in memory.  The
+    rubric file is never rewritten.
+    """
     if not rubrics_path.is_file():
         raise FileNotFoundError(f"rubric bank not found: {rubrics_path}")
     q_by: dict[str, np.ndarray] = {}
+    seen_keys: set[str] = set()
+    positive_unconfigured: set[str] = set()
     for rec in cp.read_jsonl(rubrics_path):
         cid = rec.get("criterion_id")
         qmap = rec.get("q_mapping")
@@ -184,7 +314,45 @@ def load_q_matrix(rubrics_path: Path) -> dict[str, np.ndarray]:
         # them; honoured by all future fits (incl. the 200-run) without touching math.
         if rec.get("exclude_from_fit"):
             continue
-        q_by[cid] = np.array([int(qmap.get(s, 0)) for s in SKILLS], dtype=int)
+        if cid in q_by:
+            raise CalibrationError(f"duplicate criterion_id in rubric bank: {cid}")
+        expected_source = structure.source_skills if structure is not None else SKILLS
+        missing = [skill for skill in expected_source if skill not in qmap]
+        if missing:
+            raise CalibrationError(
+                f"criterion {cid} is missing configured q_mapping key(s) {missing}."
+            )
+        parsed_q: dict[str, int] = {}
+        for key, value in qmap.items():
+            if value not in (0, 1, "0", "1", False, True):
+                raise CalibrationError(
+                    f"criterion {cid} has non-binary q_mapping[{key!r}]={value!r}; "
+                    "Q values must be 0 or 1."
+                )
+            parsed_q[str(key)] = int(value)
+        seen_keys.update(str(key) for key in qmap)
+        for key, value in parsed_q.items():
+            if key not in expected_source and key not in IGNORED_Q_KEYS and value != 0:
+                positive_unconfigured.add(str(key))
+        source_row = np.array([parsed_q[s] for s in expected_source], dtype=int)
+        q_by[cid] = (
+            structure.transform_q(source_row[None, :])[0]
+            if structure is not None
+            else source_row
+        )
+    if positive_unconfigured:
+        raise CalibrationError(
+            "rubric bank has positively mapped Q dimensions that are not configured: "
+            f"{sorted(positive_unconfigured)}. Pass the complete native axis with "
+            "--skills, or with --source-skills when using --dimensions."
+        )
+    expected_source = structure.source_skills if structure is not None else SKILLS
+    absent = [skill for skill in expected_source if skill not in seen_keys]
+    if absent:
+        raise CalibrationError(
+            f"configured skill(s) absent from every q_mapping: {absent}; "
+            f"source axis is {list(expected_source)}."
+        )
     return q_by
 
 
@@ -264,10 +432,11 @@ def collapse_q_matrix(
             new_cols.append(Q[:, i].astype(int))
             labels.append(s)
 
-    if new_cols:
-        Q_collapsed = np.stack(new_cols, axis=1)
-    else:  # pragma: no cover - defensive; requires an empty skills list
-        Q_collapsed = np.zeros((Q.shape[0], 0), dtype=int)
+    Q_collapsed = (
+        np.stack(new_cols, axis=1)
+        if new_cols
+        else np.zeros((Q.shape[0], 0), dtype=int)
+    )
 
     info = {
         "merged_skills": [skills[m] for m in merge_idx],
@@ -323,11 +492,18 @@ def prior_log_weights(grid: np.ndarray, base_logw: np.ndarray, R: np.ndarray) ->
     normalisers and leaves ``-0.5 theta' (R^-1 - I) theta - 0.5 log|R|``).
     """
     n_dims = grid.shape[1]
+    R = np.asarray(R, dtype=float)
+    if R.shape != (n_dims, n_dims) or not np.allclose(R, R.T, atol=1e-10):
+        raise CalibrationError("latent correlation matrix has the wrong shape or is not symmetric")
     if np.allclose(R, np.eye(n_dims)):
         logw = base_logw
     else:
+        if float(np.min(np.linalg.eigvalsh(R))) <= 0:
+            raise CalibrationError("latent correlation matrix is not positive definite")
         Rinv = np.linalg.inv(R)
         sign, logdet = np.linalg.slogdet(R)
+        if sign <= 0 or not np.isfinite(logdet):
+            raise CalibrationError("latent correlation matrix has a non-positive determinant")
         quad = np.einsum("gi,ij,gj->g", grid, (Rinv - np.eye(n_dims)), grid)
         logw = base_logw - 0.5 * quad - 0.5 * logdet
     logw = logw - logsumexp(logw)
@@ -337,6 +513,35 @@ def prior_log_weights(grid: np.ndarray, base_logw: np.ndarray, R: np.ndarray) ->
 # ---------------------------------------------------------------------------
 # M2PL EM
 # ---------------------------------------------------------------------------
+
+
+def _project_correlation(matrix: np.ndarray, eigen_floor: float = 1e-6) -> np.ndarray:
+    """Return a symmetric positive-definite correlation matrix.
+
+    Posterior moment updates can become nearly singular when latent dimensions are
+    highly correlated. Eigenvalue flooring followed by diagonal normalization keeps
+    the next quadrature reweighting numerically defined without changing the unit-
+    variance identification convention.
+    """
+    sym = (np.asarray(matrix, dtype=float) + np.asarray(matrix, dtype=float).T) / 2.0
+    vals, vecs = np.linalg.eigh(sym)
+    vals = np.maximum(vals, eigen_floor)
+    pd = (vecs * vals) @ vecs.T
+    scale = np.sqrt(np.clip(np.diag(pd), eigen_floor, None))
+    corr = pd / np.outer(scale, scale)
+    corr = (corr + corr.T) / 2.0
+    np.fill_diagonal(corr, 1.0)
+    # Normalization can reintroduce a tiny numerical negative eigenvalue. One more
+    # projection is cheap at the small K used here.
+    vals, vecs = np.linalg.eigh(corr)
+    if float(vals.min()) <= 0:
+        vals = np.maximum(vals, eigen_floor)
+        corr = (vecs * vals) @ vecs.T
+        scale = np.sqrt(np.clip(np.diag(corr), eigen_floor, None))
+        corr = corr / np.outer(scale, scale)
+        corr = (corr + corr.T) / 2.0
+        np.fill_diagonal(corr, 1.0)
+    return corr
 
 
 def _item_neg_loglik(beta, X, r, N, ridge):
@@ -413,6 +618,29 @@ def fit_m2pl_em(
     fitted ``A`` (n_items, n_dims; 0 exactly off-mask), ``b`` (n_items,), ``R``, the
     marginal ``loglik``, ``n_params``, ``n_iter`` and ``converged``.
     """
+    Y = np.asarray(Y, dtype=float)
+    M = np.asarray(M, dtype=bool)
+    Q_raw = np.asarray(Q)
+    if Y.ndim != 2 or M.shape != Y.shape:
+        raise CalibrationError(f"Y and M must be same-shape 2-D arrays; got {Y.shape}, {M.shape}")
+    if Q_raw.ndim != 2 or Q_raw.shape[0] != Y.shape[1] or Q_raw.shape[1] < 1:
+        raise CalibrationError(
+            f"Q must have shape (n_items, n_dims>=1); got {Q_raw.shape} for Y {Y.shape}"
+        )
+    if nodes_per_dim < 2:
+        raise CalibrationError("nodes_per_dim must be at least 2")
+    if not np.isin(Q_raw, (0, 1)).all():
+        raise CalibrationError("Q must contain only 0/1 values")
+    Q = Q_raw.astype(int)
+    if np.any(Q.sum(axis=0) == 0):
+        empty = np.where(Q.sum(axis=0) == 0)[0].tolist()
+        raise CalibrationError(f"Q has latent dimension(s) with no loading items: {empty}")
+    if np.any(Q.sum(axis=1) == 0):
+        raise CalibrationError("Q has item row(s) with no configured loading")
+    observed_values = Y[M]
+    if observed_values.size and not np.isin(observed_values, (0.0, 1.0)).all():
+        raise CalibrationError("observed Y values must be binary 0/1")
+
     n_persons, n_items = Y.shape
     n_dims = Q.shape[1]
     grid = build_grid(n_dims, nodes_per_dim)
@@ -432,10 +660,14 @@ def fit_m2pl_em(
     b = -np.log(pass_rate / (1.0 - pass_rate))
     R = np.eye(n_dims)
 
-    # Precompute per-item free-dim column indices and design matrices over the grid.
+    # Cache one design matrix per distinct Q pattern rather than per item. InFoBench
+    # has 2,250 items but at most 31 non-zero patterns on its five-skill axis.
     free_dims = [np.where(Q[j] == 1)[0] for j in range(n_items)]
     ones_col = np.ones((n_nodes, 1))
-    designs = [np.hstack([grid[:, fd], ones_col]) for fd in free_dims]
+    designs = {
+        tuple(fd.tolist()): np.hstack([grid[:, fd], ones_col])
+        for fd in free_dims
+    }
 
     prev_ll = -np.inf
     converged = False
@@ -458,7 +690,7 @@ def fit_m2pl_em(
         r_jg = YM.T @ posterior                    # (n_items, n_nodes)
         N_jg = Mf.T @ posterior                    # (n_items, n_nodes)
         for j in range(n_items):
-            beta = _fit_item(designs[j], r_jg[j], N_jg[j], ridge)
+            beta = _fit_item(designs[tuple(free_dims[j].tolist())], r_jg[j], N_jg[j], ridge)
             A[j] = 0.0
             A[j, free_dims[j]] = beta[:-1]
             b[j] = -beta[-1]
@@ -468,9 +700,7 @@ def fit_m2pl_em(
             w = posterior.sum(axis=0)              # (n_nodes,)
             Sigma = (grid.T * w) @ grid / n_persons
             d = np.sqrt(np.clip(np.diag(Sigma), 1e-8, None))
-            R = Sigma / np.outer(d, d)
-            R = np.clip(R, -0.999, 0.999)
-            np.fill_diagonal(R, 1.0)
+            R = _project_correlation(Sigma / np.outer(d, d))
 
         if abs(marg_ll - prev_ll) < tol:
             converged = True
@@ -512,6 +742,22 @@ def aic_bic(loglik: float, n_params: int, n_obs: int) -> tuple[float, float]:
     return float(aic), float(bic)
 
 
+def json_finite(value):
+    """Recursively replace NaN/Inf numpy or Python values with JSON null."""
+    if isinstance(value, dict):
+        return {str(key): json_finite(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_finite(item) for item in value]
+    if isinstance(value, np.ndarray):
+        return json_finite(value.tolist())
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, (np.floating, float)):
+        number = float(value)
+        return number if np.isfinite(number) else None
+    return value
+
+
 # ---------------------------------------------------------------------------
 # optional girth cross-check + EFA
 # ---------------------------------------------------------------------------
@@ -545,8 +791,9 @@ def girth_crosscheck(block: pd.DataFrame, internal_items, internal_a, internal_b
     }
 
 
-def run_efa(block: np.ndarray, n_factors: int = 3) -> dict:
+def run_efa(block: np.ndarray, n_factors: int | None = None) -> dict:
     """Optional EFA / scree on the variant-item block. Skips cleanly if absent."""
+    n_factors = N_SKILLS if n_factors is None else int(n_factors)
     try:
         from factor_analyzer import FactorAnalyzer
     except Exception:
@@ -572,7 +819,7 @@ def run_efa(block: np.ndarray, n_factors: int = 3) -> dict:
 def prepare_block(mat: pd.DataFrame, q_by: dict[str, np.ndarray]) -> tuple:
     """Drop empty rows/cols, zero-variance items, and Q-less items; align Q rows.
 
-    Returns (Y, M, Q, items, diag). Holes stay in-place (marginalised by the E-step);
+    Returns (Y, M, Q, items, block_df, diag). Holes stay in-place (marginalised by the E-step);
     only fully-empty rows and unfittable columns are removed.
     """
     sub, sel_diag = cp.select_sparse(mat)
@@ -587,6 +834,20 @@ def prepare_block(mat: pd.DataFrame, q_by: dict[str, np.ndarray]) -> tuple:
     Y = np.nan_to_num(sub.to_numpy(dtype=float), nan=0.0)
     M = sub.notna().to_numpy()
 
+    per_skill_items = {
+        skill: int(Q[:, k].sum()) if Q.size else 0 for k, skill in enumerate(SKILLS)
+    }
+    per_skill_single_load_anchors = {
+        skill: int(np.sum((Q[:, k] == 1) & (Q.sum(axis=1) == 1))) if Q.size else 0
+        for k, skill in enumerate(SKILLS)
+    }
+    empty_skills = [skill for skill, count in per_skill_items.items() if count == 0]
+    if empty_skills:
+        raise CalibrationError(
+            "no surviving variant items load on configured skill(s) "
+            f"{empty_skills}; those dimensions cannot be calibrated."
+        )
+
     diag = {
         **sel_diag,
         "dropped_all_fail": len(all_fail),
@@ -599,6 +860,8 @@ def prepare_block(mat: pd.DataFrame, q_by: dict[str, np.ndarray]) -> tuple:
         "n_items_fit": int(sub.shape[1]),
         "n_persons_fit": int(sub.shape[0]),
         "q_pattern_counts": _q_pattern_counts(Q),
+        "per_skill_items_fit": per_skill_items,
+        "per_skill_single_load_anchors": per_skill_single_load_anchors,
     }
     return Y, M, Q, items, sub, diag
 
@@ -615,11 +878,15 @@ def per_item_n_persons(M: np.ndarray) -> np.ndarray:
     return M.sum(axis=0).astype(int)
 
 
-def item_flags(A: np.ndarray, Q: np.ndarray, n_persons_item: np.ndarray, min_ident: int) -> list[str]:
+def item_flags(
+    A: np.ndarray, Q: np.ndarray, n_persons_item: np.ndarray, min_ident: int
+) -> list[str]:
     flags = []
     for j in range(A.shape[0]):
         f = []
         free_vals = A[j][Q[j] == 1]
+        if np.any(free_vals <= 0):
+            f.append("nonpositive_a")
         if np.any(~np.isfinite(free_vals)) or np.any(np.abs(free_vals) > EXTREME_A):
             f.append("extreme_a")
         if n_persons_item[j] < min_ident:
@@ -651,7 +918,7 @@ def write_csv(frame: pd.DataFrame, out_dir: Path) -> Path:
 
 
 def _collapse_manifest(
-    collapsed, collapse_info, multi, n_obs, multi_aic, multi_bic, uni, uni_aic, uni_bic
+    collapsed, collapse_info, multi, bic_n, multi_aic, multi_bic, uni, uni_aic, uni_bic
 ) -> dict | None:
     """The collapsed-model block for the manifest (a clean 3-way comparison).
 
@@ -660,7 +927,7 @@ def _collapse_manifest(
     """
     if collapsed is None or collapse_info is None:
         return None
-    coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], n_obs)
+    coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], bic_n)
     return {
         "requested": True,
         "merged_skills": collapse_info["merged_skills"],
@@ -719,25 +986,30 @@ def write_manifest(
     collapse_info: dict | None = None,
 ) -> Path:
     path = out_dir / CALIBRATION_MANIFEST_NAME
-    multi_aic, multi_bic = aic_bic(multi["loglik"], multi["n_params"], n_obs)
-    uni_aic, uni_bic = aic_bic(uni["loglik"], uni["n_params"], n_obs)
+    bic_n = int(diag["n_persons_fit"])
+    multi_aic, multi_bic = aic_bic(multi["loglik"], multi["n_params"], bic_n)
+    uni_aic, uni_bic = aic_bic(uni["loglik"], uni["n_params"], bic_n)
+    _, multi_bic_cells = aic_bic(multi["loglik"], multi["n_params"], n_obs)
+    _, uni_bic_cells = aic_bic(uni["loglik"], uni["n_params"], n_obs)
     warning = None
     if not identifiable:
         warning = (
             f"n_persons_fit={diag['n_persons_fit']} < "
-            f"--min-persons-identifiable={args.min_persons_identifiable}: the 3-dim "
-            "confirmatory M2PL is NOT identifiable at this sample size. Numbers are "
-            "for machinery-exercise only -- run on the FULL graded matrix."
+            f"--min-persons-identifiable={args.min_persons_identifiable}: the "
+            f"{N_SKILLS}-dim "
+            "confirmatory M2PL is below the configured heuristic person-count "
+            "threshold. Treat parameters as provisional and check held-out stability."
         )
     manifest = {
         "generated_at": cp._utcnow(),
         "note": (
             "CONFIRMATORY MULTIDIMENSIONAL 2PL (M2PL) fit, pure numpy/scipy, "
             "Bock-Aitkin EM over a Gauss-Hermite grid. Loadings masked by the "
-            "3-skill Q-matrix (a_k free iff q_k==1, else exactly 0)."
+            f"{N_SKILLS}-skill Q-matrix (a_k free iff q_k==1, else exactly 0)."
         ),
         "method": "confirmatory-m2pl-mml-em",
         "skills_order": list(SKILLS),
+        "skill_structure": diag.get("skill_structure"),
         "grid_nodes_per_dim": args.grid,
         "grid_total_nodes": multi["grid_nodes"],
         "ridge": args.ridge,
@@ -777,9 +1049,15 @@ def write_manifest(
             "multi_beats_uni_bic": bool(multi_bic < uni_bic),
             "delta_aic_uni_minus_multi": float(uni_aic - multi_aic),
             "delta_bic_uni_minus_multi": float(uni_bic - multi_bic),
-            "bic_sample_size_convention": "n_observed_cells",
+            "bic_sample_size_convention": "n_persons_fit",
+            "bic_sensitivity_observed_cells": {
+                "sample_size": n_obs,
+                "multi_bic": multi_bic_cells,
+                "uni_bic": uni_bic_cells,
+                "multi_beats_uni": bool(multi_bic_cells < uni_bic_cells),
+            },
         },
-        "collapse": _collapse_manifest(collapsed, collapse_info, multi, n_obs,
+        "collapse": _collapse_manifest(collapsed, collapse_info, multi, bic_n,
                                        multi_aic, multi_bic, uni, uni_aic, uni_bic),
         "latent_correlation": (
             np.round(np.asarray(latent_corr), 6).tolist() if latent_corr is not None else None
@@ -788,6 +1066,9 @@ def write_manifest(
         "efa": efa,
         "identifiability": {
             "min_persons_identifiable": args.min_persons_identifiable,
+            "threshold_kind": "heuristic person-count warning, not a proof of identifiability",
+            "meets_person_count_threshold": identifiable,
+            # Backward-compatible key retained for older report readers.
             "identifiable": identifiable,
             "warning": warning,
         },
@@ -795,7 +1076,7 @@ def write_manifest(
         "provenance": {"script": "scripts/calibrate_mirt.py", "argv": sys.argv[1:]},
     }
     with path.open("w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2)
+        json.dump(json_finite(manifest), f, indent=2, allow_nan=False)
     return path
 
 
@@ -809,9 +1090,9 @@ def write_mirt_rubrics(
     matrix_prov: dict,
     latent_corr,
 ) -> tuple[Path, int]:
-    """Write a COPY of the rubric bank with the fitted masked 3-vector + scalar b.
+    """Write a COPY of the rubric bank with the fitted masked K-vector + scalar b.
 
-    Fitted criteria get ``discrimination`` = the masked 3-vector (0 where q=0),
+    Fitted criteria get ``discrimination`` = the masked K-vector (0 where q=0),
     ``difficulty`` = b, and ``irt_params.source = 'calibrated-m2pl'`` + provenance.
     Non-fitted criteria keep all synthetic values. Never mutates the input; refuses
     to write over ``rubrics_qmatrix_final.jsonl`` or the input path.
@@ -830,6 +1111,8 @@ def write_mirt_rubrics(
     provenance = {
         "source": CALIBRATION_SOURCE,
         "method": "confirmatory-m2pl-mml-em",
+        "skills_order": list(SKILLS),
+        "n_dimensions": N_SKILLS,
         "grid_nodes_per_dim": args.grid,
         "estimate_latent_corr": args.estimate_latent_corr,
         "ridge": args.ridge,
@@ -870,19 +1153,73 @@ def main() -> int:
                    help=f"response matrix CSV (default: {DEFAULT_MATRIX}).")
     p.add_argument("--rubrics", type=Path, default=DEFAULT_RUBRICS,
                    help=f"rubric bank JSONL for the Q-matrix (default: {DEFAULT_RUBRICS}).")
+    p.add_argument(
+        "--require-complete-bank",
+        action="store_true",
+        help="fail unless the matrix contains every active criterion in --rubrics.",
+    )
+    p.add_argument(
+        "--skills",
+        default=None,
+        metavar="SKILL,SKILL[,...]",
+        help=(
+            "ordered Q-matrix dimensions. Defaults to the package axis "
+            f"{list(PACKAGE_SKILLS)}. InFoBench uses "
+            "content,format,number,style,linguistic."
+        ),
+    )
+    p.add_argument(
+        "--source-skills",
+        default=None,
+        metavar="SKILL,SKILL[,...]",
+        help=(
+            "ordered native Q-matrix axis when --dimensions defines a reduced "
+            "latent structure. Example: content,format,number,style,linguistic."
+        ),
+    )
+    p.add_argument(
+        "--dimensions",
+        default=None,
+        metavar="LABEL=SKILL[+SKILL],...",
+        help=(
+            "validated partition of --source-skills used to compare reduced latent "
+            "structures. Q columns in each group are OR-merged in memory; the source "
+            "bank is not changed. Example: semantic=content+style,constraints="
+            "format+number+linguistic."
+        ),
+    )
+    p.add_argument(
+        "--structure-name",
+        default="custom",
+        help="provenance label recorded for --dimensions (default: custom).",
+    )
     p.add_argument("--grid", type=int, default=7,
-                   help="Gauss-Hermite nodes per latent dim (default 7 -> 343 nodes; "
-                        "cost scales as grid^3).")
+                   help="Gauss-Hermite nodes per latent dimension (default 7; "
+                        "total nodes = grid ** number_of_skills).")
+    p.add_argument(
+        "--max-grid-nodes",
+        type=int,
+        default=DEFAULT_MAX_GRID_NODES,
+        help=(
+            "safety cap on grid ** number_of_skills (default 5000); "
+            "use --allow-large-grid to override deliberately."
+        ),
+    )
+    p.add_argument(
+        "--allow-large-grid",
+        action="store_true",
+        help="allow a quadrature grid above --max-grid-nodes (may be slow or memory-heavy).",
+    )
     p.add_argument("--estimate-latent-corr", action="store_true",
-                   help="estimate the 3x3 latent correlation from the posterior "
+                   help="estimate the KxK latent correlation from the posterior "
                         "(default: fixed identity).")
     p.add_argument("--collapse", type=str, default=None, metavar="SKILL,SKILL[,...]",
                    help="comma-separated skill names to MERGE into a single latent "
                         "dimension (fit-time, in-memory Q-matrix transform ONLY; the "
                         "rubric bank is never touched). E.g. --collapse content,diagnosis "
-                        "fits a collapsed 2-dim model (content+diagnosis merged via "
-                        "logical-OR of the Q columns, scaffolding separate) ALONGSIDE the "
-                        "full 3-dim model for a 3-way uni/collapsed/full comparison.")
+                        "fits a collapsed model (content+diagnosis merged via "
+                        "logical-OR of the Q columns) ALONGSIDE the full K-dimensional "
+                        "model for a uni/collapsed/full comparison.")
     p.add_argument("--ridge", type=float, default=1e-2,
                    help="L2 ridge on loadings in the M-step for stability (default 1e-2; "
                         "adopted 2026-07-31 per the Scaffolding Hygiene audit plateau — "
@@ -891,7 +1228,7 @@ def main() -> int:
     p.add_argument("--tol", type=float, default=1e-4,
                    help="EM convergence tol on marginal loglik (default 1e-4).")
     p.add_argument("--min-persons-identifiable", type=int, default=150,
-                   help="warn if persons < this (3-dim M2PL identifiability; default 150).")
+                   help="warn if persons < this (M2PL identifiability; default 150).")
     p.add_argument("--efa", action="store_true",
                    help="optional EFA/scree diagnostic (needs factor_analyzer; guarded).")
     p.add_argument("--report-only", action="store_true",
@@ -899,12 +1236,89 @@ def main() -> int:
     p.add_argument("--dry-run", action="store_true",
                    help="print the plan (block shape, grid) and exit without fitting.")
     p.add_argument("--write-params", action="store_true",
-                   help="also write a calibrated COPY of the rubric bank (OFF by default).")
-    p.add_argument("--out-rubrics", type=Path, default=DEFAULT_MIRT_RUBRICS,
-                   help=f"output rubric JSONL for --write-params (default: {DEFAULT_MIRT_RUBRICS}).")
+                   help="write a calibrated COPY only when the fit converged and every "
+                        "active item has a finite positive/stable fit (OFF by default).")
+    p.add_argument(
+        "--out-rubrics",
+        type=Path,
+        default=DEFAULT_MIRT_RUBRICS,
+        help=f"output rubric JSONL for --write-params (default: {DEFAULT_MIRT_RUBRICS}).",
+    )
     p.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR,
                    help=f"directory for calibration outputs (default: {DEFAULT_OUT_DIR}).")
     args = p.parse_args()
+
+    structure: SkillStructure | None = None
+    try:
+        if args.dimensions:
+            if not args.source_skills:
+                raise ValueError("--dimensions requires --source-skills")
+            if args.skills:
+                raise ValueError(
+                    "use --source-skills plus --dimensions for a reduced structure; "
+                    "do not also pass --skills"
+                )
+            source_axis = tuple(
+                skill.strip() for skill in args.source_skills.split(",") if skill.strip()
+            )
+            structure = parse_dimension_spec(
+                args.dimensions,
+                source_axis,
+                name=args.structure_name,
+            )
+            configure_skills(",".join(structure.labels))
+        else:
+            if args.source_skills:
+                raise ValueError("--source-skills is only meaningful with --dimensions")
+            configure_skills(args.skills)
+    except ValueError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 2
+
+    if structure is not None and args.collapse:
+        print(
+            "ERROR: --collapse and --dimensions are alternative structure transforms; "
+            "use one or the other.",
+            file=sys.stderr,
+        )
+        return 2
+    if structure is not None and args.write_params:
+        print(
+            "ERROR: --write-params is disabled for transformed structures. Fit first, "
+            "then use scripts/export_fitted_bank.py so unfitted/unstable items and "
+            "scenario links are handled explicitly.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.grid < 2:
+        print("ERROR: --grid must be at least 2.", file=sys.stderr)
+        return 2
+    if args.max_iter < 1:
+        print("ERROR: --max-iter must be positive.", file=sys.stderr)
+        return 2
+    if args.tol <= 0:
+        print("ERROR: --tol must be positive.", file=sys.stderr)
+        return 2
+    if args.ridge < 0:
+        print("ERROR: --ridge cannot be negative.", file=sys.stderr)
+        return 2
+    if args.min_persons_identifiable < 1:
+        print("ERROR: --min-persons-identifiable must be positive.", file=sys.stderr)
+        return 2
+    if args.max_grid_nodes < 1:
+        print("ERROR: --max-grid-nodes must be positive.", file=sys.stderr)
+        return 2
+    grid_total = args.grid ** N_SKILLS
+    if grid_total > args.max_grid_nodes and not args.allow_large_grid and not args.report_only:
+        print(
+            f"ERROR: requested {args.grid}^{N_SKILLS} = {grid_total:,} quadrature nodes, "
+            f"above the safety cap {args.max_grid_nodes:,}. Lower --grid "
+            "(InFoBench should start with --grid 3), raise --max-grid-nodes, or pass "
+            "--allow-large-grid after checking memory/runtime.",
+            file=sys.stderr,
+        )
+        return 2
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -922,8 +1336,8 @@ def main() -> int:
             return 2
 
     try:
-        mat = cp.load_matrix(args.matrix)
-    except FileNotFoundError as e:
+        mat = load_matrix_strict(args.matrix)
+    except (FileNotFoundError, CalibrationError) as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
 
@@ -937,12 +1351,28 @@ def main() -> int:
         return 0
 
     try:
-        q_by = load_q_matrix(args.rubrics)
-    except FileNotFoundError as e:
+        q_by = load_q_matrix(args.rubrics, structure=structure)
+    except (FileNotFoundError, CalibrationError) as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
 
-    Y, M, Q, items, block_df, diag = prepare_block(mat, q_by)
+    try:
+        alignment = validate_matrix_bank_alignment(mat, q_by, args.require_complete_bank)
+    except CalibrationError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 3
+
+    try:
+        Y, M, Q, items, block_df, diag = prepare_block(mat, q_by)
+    except CalibrationError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 3
+    diag["matrix_bank_alignment"] = alignment
+    diag["skill_structure"] = (
+        structure.as_dict()
+        if structure is not None
+        else SkillStructure.identity(SKILLS, name="identity").as_dict()
+    )
 
     n_items = diag["n_items_fit"]
     n_persons = diag["n_persons_fit"]
@@ -955,12 +1385,16 @@ def main() -> int:
           f"({diag['dropped_all_fail']} all-fail, {diag['dropped_all_pass']} all-pass)")
     print(f"dropped missing Q-row : {diag['dropped_missing_qrow']}")
     print(f"Q pattern counts      : {diag['q_pattern_counts']}")
+    print(f"items per skill       : {diag['per_skill_items_fit']}")
+    print(f"single-load anchors   : {diag['per_skill_single_load_anchors']}")
+    print(f"bank alignment        : {alignment['n_matrix_criteria']}/"
+          f"{alignment['n_active_bank_criteria']} criteria present")
 
     identifiable = n_persons >= args.min_persons_identifiable
     if not identifiable:
         print(f"WARNING: n_persons={n_persons} < {args.min_persons_identifiable}; the "
-              "3-dim M2PL is NOT identifiable at this N. Run on the FULL matrix; "
-              "treating this as a machinery-exercise run.")
+              f"{N_SKILLS}-dim M2PL is below the configured heuristic person-count "
+              "threshold. Treat the fit as provisional and validate out of sample.")
 
     if args.dry_run:
         print("\n--dry-run: not fitting. Re-run without --dry-run to calibrate.")
@@ -1002,8 +1436,9 @@ def main() -> int:
     n_persons_item = per_item_n_persons(M)
     flags = item_flags(A, Q, n_persons_item, args.min_persons_identifiable)
 
-    multi_aic, multi_bic = aic_bic(multi["loglik"], multi["n_params"], n_obs)
-    uni_aic, uni_bic = aic_bic(uni["loglik"], uni["n_params"], n_obs)
+    bic_n = n_persons
+    multi_aic, multi_bic = aic_bic(multi["loglik"], multi["n_params"], bic_n)
+    uni_aic, uni_bic = aic_bic(uni["loglik"], uni["n_params"], bic_n)
 
     print("\n" + "=" * 72)
     print("uni vs multi" if collapsed is None else "uni vs collapsed vs multi")
@@ -1011,19 +1446,21 @@ def main() -> int:
     print(f"unidim    : loglik={uni['loglik']:.2f}  k={uni['n_params']}  "
           f"AIC={uni_aic:.2f}  BIC={uni_bic:.2f}")
     if collapsed is not None:
-        coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], n_obs)
+        coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], bic_n)
         label = "+".join(collapse_info["merged_skills"])
         print(f"collapsed : loglik={collapsed['loglik']:.2f}  k={collapsed['n_params']}  "
               f"AIC={coll_aic:.2f}  BIC={coll_bic:.2f}  "
               f"({collapse_info['n_dims']}-dim, merged {label})")
     print(f"multi     : loglik={multi['loglik']:.2f}  k={multi['n_params']}  "
           f"AIC={multi_aic:.2f}  BIC={multi_bic:.2f}  ({multi['n_dims']}-dim, full)")
+    print(f"BIC sample size: {bic_n} tutor models (cell-count BIC retained in manifest only)")
     print(f"multi beats uni : AIC={multi_aic < uni_aic}  BIC={multi_bic < uni_bic}")
     if collapsed is not None:
-        coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], n_obs)
+        coll_aic, coll_bic = aic_bic(collapsed["loglik"], collapsed["n_params"], bic_n)
         # Winner by each criterion across the 3 candidate models.
-        cand_aic = {"unidim": uni_aic, "collapsed": coll_aic, "full-3-dim": multi_aic}
-        cand_bic = {"unidim": uni_bic, "collapsed": coll_bic, "full-3-dim": multi_bic}
+        full_label = f"full-{N_SKILLS}-dim"
+        cand_aic = {"unidim": uni_aic, "collapsed": coll_aic, full_label: multi_aic}
+        cand_bic = {"unidim": uni_bic, "collapsed": coll_bic, full_label: multi_bic}
         best_aic = min(cand_aic, key=cand_aic.get)
         best_bic = min(cand_bic, key=cand_bic.get)
         print(f"collapsed beats full : AIC={coll_aic < multi_aic}  "
@@ -1032,7 +1469,7 @@ def main() -> int:
               f"delta_BIC={multi_bic - coll_bic:+.2f})")
         print(f"AIC winner : {best_aic}   BIC winner : {best_bic}")
     if latent_corr is not None:
-        print("latent correlation (content, diagnosis, scaffolding):")
+        print(f"latent correlation ({', '.join(SKILLS)}):")
         for row in np.round(latent_corr, 3):
             print("   ", row.tolist())
 
@@ -1058,6 +1495,34 @@ def main() -> int:
     print(f"wrote calibration manifest -> {manifest_path}")
 
     if args.write_params:
+        unfitted_active = sorted(set(q_by) - set(items))
+        unstable_items = [
+            item for item, flag in zip(items, flags, strict=True)
+            if "nonpositive_a" in flag or "extreme_a" in flag
+        ]
+        blockers: list[str] = []
+        if not multi["converged"]:
+            blockers.append("the multidimensional EM fit did not converge")
+        if unfitted_active:
+            blockers.append(
+                f"{len(unfitted_active)} active bank item(s) were not fitted "
+                "(for example all-pass/all-fail or absent from the matrix)"
+            )
+        if unstable_items:
+            blockers.append(
+                f"{len(unstable_items)} fitted item(s) have nonpositive/nonfinite/extreme loadings"
+            )
+        if blockers:
+            print(
+                "\nERROR: refusing --write-params because " + "; ".join(blockers) + ".",
+                file=sys.stderr,
+            )
+            print(
+                "Write the calibration CSV/manifest first, review exclusions, then build a "
+                "fitted-only CAT bank rather than mixing calibrated and synthetic values.",
+                file=sys.stderr,
+            )
+            return 4
         try:
             out_path, n_updated = write_mirt_rubrics(
                 args.rubrics, args.out_rubrics, items, A, b, args, matrix_prov, latent_corr
@@ -1070,7 +1535,8 @@ def main() -> int:
         print(f"(input {args.rubrics} left untouched)")
 
     if not identifiable:
-        print("\nreminder: tiny-N run -- 3-dim M2PL NOT identifiable. FULL matrix only.")
+        print(f"\nreminder: {N_SKILLS}-dim fit is below the configured person-count "
+              "warning threshold; report it as provisional.")
     return 0
 
 

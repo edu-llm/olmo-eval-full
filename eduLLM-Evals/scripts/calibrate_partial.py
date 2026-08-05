@@ -600,21 +600,30 @@ def _utcnow() -> str:
 
 
 def _matrix_manifest_prov(matrix_path: Path) -> dict:
-    """Best-effort provenance of the source matrix (path, sha256, manifest time)."""
+    """Best-effort provenance of the source matrix (path, sha256, manifest time).
+
+    The single-benchmark pipeline writes ``response_matrix_manifest.json`` while
+    the multi-benchmark driver writes ``manifest.json`` beside its matrix. Accept
+    both names so calibration keeps the grading provenance in either workflow.
+    """
     prov: dict = {"csv": str(matrix_path)}
     try:
         prov["sha256"] = hashlib.sha256(matrix_path.read_bytes()).hexdigest()
     except OSError:
         prov["sha256"] = None
-    mpath = matrix_path.parent / DEFAULT_MATRIX_MANIFEST.name
-    if mpath.is_file():
+    for manifest_name in (DEFAULT_MATRIX_MANIFEST.name, "manifest.json"):
+        mpath = matrix_path.parent / manifest_name
+        if not mpath.is_file():
+            continue
         try:
             with mpath.open(encoding="utf-8") as f:
                 mm = json.load(f)
             prov["manifest"] = mpath.name
             prov["manifest_generated_at"] = mm.get("generated_at")
+            prov["manifest_sha256"] = hashlib.sha256(mpath.read_bytes()).hexdigest()
         except (OSError, json.JSONDecodeError):
             pass
+        break
     return prov
 
 

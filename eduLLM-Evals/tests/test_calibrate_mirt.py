@@ -139,6 +139,230 @@ def test_prior_reweight_identity_matches_base():
     assert np.allclose(lp, base, atol=1e-10)
 
 
+def test_json_finite_normalizes_numpy_and_nonfinite_values():
+    value = {
+        "nan": float("nan"),
+        "inf": np.float64("inf"),
+        "array": np.array([1.0, np.nan]),
+        "integer": np.int64(3),
+    }
+    assert cm.json_finite(value) == {
+        "nan": None,
+        "inf": None,
+        "array": [1.0, None],
+        "integer": 3,
+    }
+
+
+def test_five_skill_configuration_is_ordered_and_resets(tmp_path: Path):
+    five = ("content", "format", "number", "style", "linguistic")
+    try:
+        assert cm.configure_skills(",".join(five)) == five
+        assert five == cm.SKILLS
+        assert cm.N_SKILLS == 5
+
+        bank = tmp_path / "infobench_rubrics.jsonl"
+        qmap = {skill: int(skill in {"format", "number"}) for skill in five}
+        bank.write_text(
+            json.dumps({"criterion_id": "ifb_0000_c01", "q_mapping": qmap}) + "\n",
+            encoding="utf-8",
+        )
+        loaded = cm.load_q_matrix(bank)
+        assert loaded["ifb_0000_c01"].tolist() == [0, 1, 1, 0, 0]
+    finally:
+        cm.configure_skills(None)
+
+    assert tuple(SKILLS) == cm.SKILLS
+    assert len(SKILLS) == cm.N_SKILLS
+
+
+def test_reduced_skill_structure_or_merges_source_q_without_mutating_bank(tmp_path: Path):
+    source = ("content", "format", "number", "style", "linguistic")
+    structure = cm.parse_dimension_spec(
+        "semantic=content+style,constraints=format+number+linguistic",
+        source,
+        name="two_dim",
+    )
+    bank = tmp_path / "infobench_rubrics.jsonl"
+    record = {
+        "criterion_id": "ifb_0000_c01",
+        "q_mapping": {
+            "content": 0,
+            "format": 1,
+            "number": 0,
+            "style": 1,
+            "linguistic": 0,
+        },
+    }
+    original = json.dumps(record) + "\n"
+    bank.write_text(original, encoding="utf-8")
+    try:
+        cm.configure_skills(",".join(structure.labels))
+        loaded = cm.load_q_matrix(bank, structure=structure)
+        assert loaded["ifb_0000_c01"].tolist() == [1, 1]
+        assert bank.read_text(encoding="utf-8") == original
+    finally:
+        cm.configure_skills(None)
+
+
+def test_load_q_matrix_rejects_missing_nonbinary_and_unconfigured_keys(tmp_path: Path):
+    five = ("content", "format", "number", "style", "linguistic")
+    try:
+        cm.configure_skills(",".join(five))
+        bank = tmp_path / "bad.jsonl"
+
+        missing = {skill: 0 for skill in five if skill != "linguistic"}
+        bank.write_text(json.dumps({"criterion_id": "missing", "q_mapping": missing}) + "\n")
+        with pytest.raises(cm.CalibrationError, match="missing configured"):
+            cm.load_q_matrix(bank)
+
+        nonbinary = {skill: 0 for skill in five}
+        nonbinary["number"] = 2
+        bank.write_text(json.dumps({"criterion_id": "nonbinary", "q_mapping": nonbinary}) + "\n")
+        with pytest.raises(cm.CalibrationError, match="non-binary"):
+            cm.load_q_matrix(bank)
+
+        extra = {skill: 0 for skill in five}
+        extra["format"] = 1
+        extra["other"] = 1
+        bank.write_text(json.dumps({"criterion_id": "extra", "q_mapping": extra}) + "\n")
+        with pytest.raises(cm.CalibrationError, match="not configured"):
+            cm.load_q_matrix(bank)
+    finally:
+        cm.configure_skills(None)
+
+
+def test_five_dim_prepare_fit_and_positive_definite_corr():
+    five = ("content", "format", "number", "style", "linguistic")
+    rng = np.random.default_rng(20260804)
+    try:
+        cm.configure_skills(",".join(five))
+        n_persons, n_items = 80, 15
+        Q = np.zeros((n_items, 5), dtype=int)
+        for j in range(n_items):
+            Q[j, j % 5] = 1
+        theta = rng.standard_normal((n_persons, 5))
+        A = Q * rng.uniform(0.8, 1.6, size=Q.shape)
+        b = rng.normal(0, 0.4, size=n_items)
+        prob = 1.0 / (1.0 + np.exp(-(theta @ A.T - b)))
+        Yraw = (rng.random(prob.shape) < prob).astype(float)
+        items = [f"five_{j:02d}" for j in range(n_items)]
+        frame = pd.DataFrame(Yraw, columns=items, index=[f"m{i}" for i in range(n_persons)])
+        q_by = {item: Q[j] for j, item in enumerate(items)}
+
+        Y, M, Qa, aligned, _, diag = cm.prepare_block(frame, q_by)
+        assert aligned == items
+        assert Qa.shape == (n_items, 5)
+        assert diag["per_skill_items_fit"] == {skill: 3 for skill in five}
+        assert diag["per_skill_single_load_anchors"] == {skill: 3 for skill in five}
+
+        result = cm.fit_m2pl_em(
+            Y, M, Qa, nodes_per_dim=3, estimate_corr=True,
+            ridge=1e-2, max_iter=3, tol=1e-3,
+        )
+        assert result["A"].shape == (n_items, 5)
+        assert np.all(result["A"][Qa == 0] == 0.0)
+        assert np.all(np.isfinite(result["A"]))
+        assert np.all(np.isfinite(result["b"]))
+        assert result["R"].shape == (5, 5)
+        assert np.allclose(result["R"], result["R"].T)
+        assert np.allclose(np.diag(result["R"]), 1.0)
+        assert float(np.min(np.linalg.eigvalsh(result["R"]))) > 0
+    finally:
+        cm.configure_skills(None)
+
+
+def test_five_dim_default_grid_is_blocked_before_allocation(monkeypatch, capsys):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(SCRIPT_PATH),
+            "--skills", "content,format,number,style,linguistic",
+            "--matrix", "/definitely/not/read.csv",
+        ],
+    )
+    try:
+        assert cm.main() == 2
+        assert "16,807 quadrature nodes" in capsys.readouterr().err
+    finally:
+        cm.configure_skills(None)
+
+
+def test_strict_matrix_loader_rejects_silent_corruption(tmp_path: Path):
+    valid = tmp_path / "valid.csv"
+    valid.write_text("model,c1,c2\nm1,1,\nm2,0,1\n", encoding="utf-8")
+    frame = cm.load_matrix_strict(valid)
+    assert frame.shape == (2, 2)
+    assert pd.isna(frame.loc["m1", "c2"])
+
+    duplicate_header = tmp_path / "duplicate_header.csv"
+    duplicate_header.write_text("model,c1,c1\nm1,1,0\n", encoding="utf-8")
+    with pytest.raises(cm.CalibrationError, match="duplicate column"):
+        cm.load_matrix_strict(duplicate_header)
+
+    duplicate_model = tmp_path / "duplicate_model.csv"
+    duplicate_model.write_text("model,c1\nm1,1\nm1,0\n", encoding="utf-8")
+    with pytest.raises(cm.CalibrationError, match="duplicate model"):
+        cm.load_matrix_strict(duplicate_model)
+
+    bad_cell = tmp_path / "bad_cell.csv"
+    bad_cell.write_text("model,c1\nm1,pass\n", encoding="utf-8")
+    with pytest.raises(cm.CalibrationError, match="non-binary"):
+        cm.load_matrix_strict(bad_cell)
+
+
+def test_complete_bank_alignment_is_explicit():
+    matrix = pd.DataFrame({"c1": [0.0, 1.0]}, index=["m1", "m2"])
+    q_by = {
+        "c1": np.array([1, 0, 0]),
+        "c2": np.array([0, 1, 0]),
+    }
+    partial = cm.validate_matrix_bank_alignment(matrix, q_by, require_complete=False)
+    assert partial["n_bank_criteria_missing_from_matrix"] == 1
+    with pytest.raises(cm.CalibrationError, match="missing 1"):
+        cm.validate_matrix_bank_alignment(matrix, q_by, require_complete=True)
+
+
+def test_manifest_bic_uses_person_count_and_retains_cell_sensitivity(tmp_path: Path):
+    class _Args:
+        grid = 3
+        ridge = 1e-2
+        estimate_latent_corr = False
+        max_iter = 10
+        tol = 1e-4
+        min_persons_identifiable = 5
+
+    diag = {
+        "n_items_fit": 20,
+        "n_persons_fit": 10,
+        "dropped_zero_variance_total": 0,
+        "dropped_all_fail": 0,
+        "dropped_all_pass": 0,
+        "dropped_missing_qrow": 0,
+    }
+    multi = {
+        "n_dims": 3, "loglik": -100.0, "n_params": 12, "grid_nodes": 27,
+        "n_iter": 4, "converged": True,
+    }
+    uni = {
+        "n_dims": 1, "loglik": -110.0, "n_params": 8, "grid_nodes": 3,
+        "n_iter": 3, "converged": True,
+    }
+    path = cm.write_manifest(
+        tmp_path, _Args(), diag, multi, uni, n_obs=200,
+        latent_corr=None, crosscheck={}, efa={}, matrix_prov={}, identifiable=True,
+    )
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    comparison = manifest["comparison"]
+    assert comparison["bic_sample_size_convention"] == "n_persons_fit"
+    assert manifest["identifiability"]["threshold_kind"].startswith("heuristic")
+    assert comparison["multi"]["bic"] == pytest.approx(cm.aic_bic(-100, 12, 10)[1])
+    sensitivity = comparison["bic_sensitivity_observed_cells"]
+    assert sensitivity["sample_size"] == 200
+    assert sensitivity["multi_bic"] == pytest.approx(cm.aic_bic(-100, 12, 200)[1])
+
+
 # --- confirmatory mask + recovery -----------------------------------------
 
 
@@ -341,8 +565,11 @@ def test_write_params_new_file_no_mutation(tmp_path: Path):
     assert rubrics_in.read_text() == original  # input untouched
     assert n_updated == len(items)
 
-    recs = {json.loads(l)["criterion_id"]: json.loads(l)
-            for l in out_path.read_text().splitlines() if l.strip()}
+    recs = {
+        json.loads(line)["criterion_id"]: json.loads(line)
+        for line in out_path.read_text().splitlines()
+        if line.strip()
+    }
     fitted = recs[items[0]]
     assert fitted["irt_params"]["source"] == "calibrated-m2pl"
     # Masked 3-vector: 0 exactly where q == 0.
@@ -358,7 +585,8 @@ def test_write_params_refuses_inplace_and_final(tmp_path: Path):
     df, Q, A_true, b_true, items, _ = _simulate(n_persons=40, corr=0.0, seed=9)
     rubrics_in = tmp_path / "rubrics_in.jsonl"
     _write_rubrics(items, Q, rubrics_in)
-    A = np.zeros((len(items), 3)); A[Q == 1] = 1.0
+    A = np.zeros((len(items), 3))
+    A[Q == 1] = 1.0
     b = np.zeros(len(items))
 
     class _Args:

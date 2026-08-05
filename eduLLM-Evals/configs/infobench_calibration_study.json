@@ -1,0 +1,136 @@
+{
+  "schema_version": "calibration-study-v1",
+  "benchmark": "InFoBench",
+  "inputs": {
+    "matrix": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+    "rubrics": "data/InFoBench/rubrics.jsonl",
+    "scenarios": "data/InFoBench/scenarios.jsonl",
+    "judge_manifest": "runs/calibration/InFoBench_full_20260804/inputs/judge_manifest.json"
+  },
+  "input_expectations": {
+    "models": 52,
+    "criteria": 2250,
+    "scenarios": 500,
+    "judge_name": "qwen",
+    "judge_model": "Qwen/Qwen3.5-9B",
+    "judge_adapter": "generic-binary",
+    "no_decision_policy": "missing"
+  },
+  "source_skills": [
+    "content",
+    "format",
+    "number",
+    "style",
+    "linguistic"
+  ],
+  "structures": [
+    {
+      "name": "full_5d",
+      "dimensions": "content=content,format=format,number=number,style=style,linguistic=linguistic",
+      "status": "confirmatory"
+    },
+    {
+      "name": "merge_content_style_4d",
+      "dimensions": "content_style=content+style,format=format,number=number,linguistic=linguistic",
+      "status": "exploratory_from_full_fit"
+    },
+    {
+      "name": "merge_number_linguistic_4d",
+      "dimensions": "content=content,format=format,number_linguistic=number+linguistic,style=style",
+      "status": "exploratory_from_full_fit"
+    },
+    {
+      "name": "merge_format_linguistic_4d",
+      "dimensions": "content=content,format_linguistic=format+linguistic,number=number,style=style",
+      "status": "exploratory_from_full_fit"
+    },
+    {
+      "name": "correlation_3d",
+      "dimensions": "content_style=content+style,format=format,number_linguistic=number+linguistic",
+      "status": "exploratory_from_full_fit"
+    },
+    {
+      "name": "correlation_2d",
+      "dimensions": "content_style=content+style,constraint_details=format+number+linguistic",
+      "status": "exploratory_from_full_fit"
+    },
+    {
+      "name": "overall_1d",
+      "dimensions": "instruction_following=content+format+number+style+linguistic",
+      "status": "confirmatory_baseline"
+    }
+  ],
+  "fit": {
+    "grid": 5,
+    "ridge": 0.01,
+    "estimate_latent_correlation": true,
+    "max_iterations": 200,
+    "tolerance": 0.0001,
+    "max_grid_nodes": 5000,
+    "minimum_person_warning": 150
+  },
+  "kfold": {
+    "folds": 5,
+    "seed": 20260729,
+    "strategy": "stratified",
+    "evaluation_scenario_fraction": 0.2,
+    "evaluation_split_seed": 20260729
+  },
+  "structure_selection": {
+    "rule": "one_standard_error_then_fewest_dimensions",
+    "primary_metric": "disjoint_oos_log_loss",
+    "secondary_metrics": [
+      "disjoint_oos_brier",
+      "aic",
+      "bic",
+      "item_parameter_stability"
+    ],
+    "selected_structure_override": null
+  },
+  "sensitivity": {
+    "ridge_values": [0.001, 0.01, 0.1],
+    "grid_values": [3, 5, 7],
+    "production_grid": 5,
+    "ridge_selection_rule": "one_standard_error_then_strongest_regularization",
+    "grid_values_are_numerical_sensitivity_only": true
+  },
+  "estimator": {
+    "methods": ["online", "eap", "mwle"],
+    "quadrature_grid": 5,
+    "max_grid_nodes": 50000,
+    "mwle_ridge": 0.000001
+  },
+  "cat": {
+    "seed": 42,
+    "top_n": 5,
+    "min_evals_per_skill": 15,
+    "adaptive_max_scenarios": 50,
+    "random_max_scenarios": 0,
+    "min_scenarios_values": [0, 12, 15, 20],
+    "se_target_values": [0.2, 0.25, 0.3, 0.35],
+    "selection_rules": ["trace", "dopt"],
+    "minimum_precision_rate": 0.95,
+    "minimum_mwle_convergence_rate": 0.95,
+    "maximum_recovery_drop": 0.01,
+    "maximum_slope_error_increase": 0.05,
+    "selector_minimum_length_reduction": 0.05,
+    "selector_maximum_recovery_drop": 0.01,
+    "order_seeds": [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007]
+  },
+  "uncertainty": {
+    "parameter_bootstrap_replicates": 100,
+    "metric_bootstrap_replicates": 2000,
+    "seed": 0
+  },
+  "export": {
+    "unfitted_policy": "exclude",
+    "nonpositive_discrimination_policy": "exclude",
+    "extreme_discrimination_policy": "exclude",
+    "extreme_discrimination_threshold": 6.0,
+    "never_mix_synthetic_parameters": true
+  },
+  "external_validation": {
+    "infobench_specific_human_judge_audit": "pending",
+    "note": "Qwen was selected on TutorBench; its agreement should also be audited on a stratified InFoBench sample before production claims. This does not alter the response matrix during the calibration study."
+  }
+}

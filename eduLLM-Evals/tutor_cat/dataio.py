@@ -1,8 +1,9 @@
-"""Load and validate the preprocessed dataset (data/TutorBench/scenarios.jsonl, data/TutorBench/rubrics.jsonl)."""
+"""Load and validate a preprocessed scenario/rubric dataset."""
 
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -24,6 +25,7 @@ class ValidationReport:
 class ItemBank:
     scenarios: dict[str, Scenario]
     rubrics: dict[str, Rubric]
+    skills: tuple[str, ...] = tuple(SKILLS)
 
     def rubrics_for(self, scenario_id: str) -> list[Rubric]:
         """Criteria of a scenario in criterion_id order (fixed, recorded update order)."""
@@ -48,7 +50,21 @@ def _load_jsonl(path: Path) -> list[dict]:
     return rows
 
 
-def load_bank(scenarios_path: str | Path, rubrics_path: str | Path) -> tuple[ItemBank, ValidationReport]:
+def load_bank(
+    scenarios_path: str | Path,
+    rubrics_path: str | Path,
+    *,
+    skills: Sequence[str] | None = None,
+) -> tuple[ItemBank, ValidationReport]:
+    """Load a bank using its explicitly ordered skill axis.
+
+    Existing TutorBench callers may omit ``skills``.  Other benchmarks should
+    always supply it so Q rows and discrimination vectors are constructed in the
+    same order used during calibration.
+    """
+    axis = tuple(skills) if skills is not None else tuple(SKILLS)
+    if not axis or len(set(axis)) != len(axis):
+        raise ValueError(f"skills must be a non-empty unique ordered axis, got {axis!r}")
     report = ValidationReport()
     scenarios: dict[str, Scenario] = {}
     rubrics: dict[str, Rubric] = {}
@@ -65,7 +81,7 @@ def load_bank(scenarios_path: str | Path, rubrics_path: str | Path) -> tuple[Ite
 
     for obj in _load_jsonl(Path(rubrics_path)):
         try:
-            r = Rubric.from_json(obj)
+            r = Rubric.from_json(obj, skills=axis)
         except (KeyError, TypeError, ValueError) as e:
             report.errors.append(f"rubric {obj.get('criterion_id', '?')}: {e!r}")
             continue
@@ -73,14 +89,23 @@ def load_bank(scenarios_path: str | Path, rubrics_path: str | Path) -> tuple[Ite
             report.errors.append(f"duplicate criterion_id {r.criterion_id}")
         rubrics[r.criterion_id] = r
 
-    _validate(scenarios, rubrics, report)
-    return ItemBank(scenarios, rubrics), report
+    _validate(scenarios, rubrics, report, skills=axis)
+    return ItemBank(scenarios, rubrics, axis), report
 
 
-def _validate(scenarios: dict[str, Scenario], rubrics: dict[str, Rubric], report: ValidationReport) -> None:
+def _validate(
+    scenarios: dict[str, Scenario],
+    rubrics: dict[str, Rubric],
+    report: ValidationReport,
+    *,
+    skills: Sequence[str] = SKILLS,
+) -> None:
+    axis = tuple(skills)
     for s in scenarios.values():
         if s.modality != "text":
-            report.warnings.append(f"{s.scenario_id}: modality '{s.modality}' (pipeline is text-only for now)")
+            report.warnings.append(
+                f"{s.scenario_id}: modality '{s.modality}' (pipeline is text-only for now)"
+            )
         if not s.criterion_ids:
             report.errors.append(f"{s.scenario_id}: no criterion_ids")
         for cid in s.criterion_ids:
@@ -91,7 +116,9 @@ def _validate(scenarios: dict[str, Scenario], rubrics: dict[str, Rubric], report
         if r.scenario_id not in scenarios:
             report.errors.append(f"{r.criterion_id}: unknown scenario_id {r.scenario_id}")
         if not set(r.q.tolist()) <= {0, 1}:
-            report.errors.append(f"{r.criterion_id}: q_mapping entries must be 0/1, got {r.q.tolist()}")
+            report.errors.append(
+                f"{r.criterion_id}: q_mapping entries must be 0/1, got {r.q.tolist()}"
+            )
         if int(r.q.sum()) == 0:
             # Legal but skill-inert: contributes nothing to theta/SE/counts.
             # Judged only for the critical-failure report (run.unmapped_criteria).
@@ -99,22 +126,25 @@ def _validate(scenarios: dict[str, Scenario], rubrics: dict[str, Rubric], report
         if (r.a < 0).any():
             report.errors.append(f"{r.criterion_id}: negative discrimination {r.a.tolist()}")
         if r.scoring_type != "binary":
-            report.errors.append(f"{r.criterion_id}: scoring_type '{r.scoring_type}' unsupported (binary only)")
+            report.errors.append(
+                f"{r.criterion_id}: scoring_type '{r.scoring_type}' unsupported (binary only)"
+            )
         if r.status != "approved":
             report.warnings.append(f"{r.criterion_id}: status '{r.status}' (not approved)")
         # a > 0 where q = 0 is harmless (the mask zeroes it) but suggests a calibration mismatch.
-        for k, skill in enumerate(SKILLS):
+        for k, skill in enumerate(axis):
             if r.q[k] == 0 and r.a[k] > 0:
                 report.warnings.append(
-                    f"{r.criterion_id}: discrimination {r.a[k]:.3f} on '{skill}' will be Q-masked to 0"
+                    f"{r.criterion_id}: discrimination {r.a[k]:.3f} on '{skill}' "
+                    "will be Q-masked to 0"
                 )
 
 
 def summarize(bank: ItemBank) -> str:
-    per_skill = {s: 0 for s in SKILLS}
+    per_skill = {s: 0 for s in bank.skills}
     critical = 0
     for r in bank.rubrics.values():
-        for k, s in enumerate(SKILLS):
+        for k, s in enumerate(bank.skills):
             per_skill[s] += int(r.q[k])
         critical += r.criticality.startswith("critical")
     lines = [
