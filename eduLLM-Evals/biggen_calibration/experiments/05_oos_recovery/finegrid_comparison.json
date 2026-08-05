@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-08-05T22:25:32.720148+00:00",
+  "task": "B -- de-quantize the full-bank EAP reference (coarse uniform -> fine uniform)",
+  "diagnosis": {
+    "quantized": true,
+    "where": "exp-05 recovery reference theta (full-bank EAP). The full-bank posterior is razor-sharp, so EAP on a 0.2-spaced grid collapses onto nodes -> visible 0.2 banding on the recovery X-axis.",
+    "coarse_grid": {
+      "eap_grid": 61,
+      "range": 6.0,
+      "node_spacing": 0.2,
+      "source_script": "scripts/scenario_kfold_estimator_cv.py (default --eap-grid 61 --range 6)"
+    },
+    "fine_grid": {
+      "eap_grid": 3201,
+      "range": 8.0,
+      "node_spacing": 0.005,
+      "prior": "standard-normal",
+      "mirrors": "Bridge scenario_recovery_final fine uniform EAP reference"
+    }
+  },
+  "recovery_exp05": {
+    "before_coarse_grid": {
+      "eap_grid": 61,
+      "range": 6.0,
+      "r": 0.9703,
+      "slope": 0.812,
+      "theta_mae": 0.3407,
+      "n": 52,
+      "reference_banding": {
+        "n": 52,
+        "n_unique_round4": 47,
+        "frac_within_tol_of_0p2_grid": 0.596,
+        "mean_abs_dist_to_0p2_grid": 0.01967,
+        "median_abs_dist_to_0p2_grid": 0.00324
+      }
+    },
+    "after_fine_grid": {
+      "eap_grid": 3201,
+      "range": 8.0,
+      "r": 0.9715,
+      "slope": 0.8131,
+      "theta_mae": 0.332,
+      "n": 52,
+      "reference_banding": {
+        "n": 52,
+        "n_unique_round4": 52,
+        "frac_within_tol_of_0p2_grid": 0.096,
+        "mean_abs_dist_to_0p2_grid": 0.0523,
+        "median_abs_dist_to_0p2_grid": 0.05731
+      }
+    },
+    "mwle_theta_unchanged_max_abs_diff": 0.0,
+    "reference_theta_max_abs_shift": 0.0747,
+    "reference_theta_mean_abs_shift": 0.0326
+  },
+  "leaderboard_exp08": {
+    "note": "exp-08 leaderboard theta is the CAT-ADMINISTERED-set EAP (n_admin ~30-68 criteria), NOT the full-bank reference; its posterior is not razor-sharp, so it is already continuous (not banded). The fine grid mainly refines the per-model SE (the coarse 0.2 spacing slightly under-resolved SE_param).",
+    "theta_max_abs_delta": 0.0034,
+    "theta_mean_abs_delta": 0.0005,
+    "se_total_max_abs_delta": 0.0176,
+    "se_total_mean_abs_delta": 0.0037,
+    "rank_spearman_coarse_vs_fine": 1.0,
+    "n_ranks_changed": 0,
+    "max_rank_move": 0
+  },
+  "verdict": "Banding CONFIRMED on the coarse full-bank reference and REMOVED on the fine grid (unique reference values 47 -> 52 of 52; fraction snapped to the 0.2 grid 0.596 -> 0.096). The MWLE recovery HEADLINE is robust: r 0.9703 -> 0.9715, slope 0.812 -> 0.8131, theta-MAE 0.3407 -> 0.332 (MWLE is grid-free; max |dtheta_mwle| 0.0). The exp-08 leaderboard ranking is essentially unchanged (Spearman 1.0)."
+}

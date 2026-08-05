@@ -44,8 +44,12 @@ reach SE 0.12 (see README experiment 07b).
 
 - Fit: `calibrate_mirt.fit_m2pl_em`, skill=`general`, ridge=0.01, n_models=52.
 - Matrix sha256: `86e9516fcb123df7df761743d35286079325b360a7db4236d4594369016fccd7`.
-- OOS of record @ locked config: **r = 0.970, slope = 0.812**, 100% convergence (n=52).
+- OOS of record @ locked config: **r = 0.971, slope = 0.813**, theta-MAE 0.332, 100% convergence (n=52).
+  (Recovery reference theta uses the fine de-quantized EAP grid; the earlier coarse-grid r=0.970
+  is archived for provenance. Item params/bank are unchanged — the reference grid does not affect them.)
 - p-IRT pass-rate MAE **0.047**; parameter uncertainty SE_total ~0.197 (SE_param ~0.094).
+- Dimensionality: checked post-grading — **unidimensional confirmed** (single "general" skill; a
+  data-driven 2-D candidate did not beat 1-D out-of-sample or on BIC at N=52). No multi-skill Q authored.
 - Caveats: N=52 is provisional; leaderboard adjacent-pair SE bands overlap (only coarse
   ability bands distinguishable); across-seed theta SD ~0.179. See `README.md` for the full
   experiment log (01-10).

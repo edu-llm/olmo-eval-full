@@ -1,0 +1,125 @@
+{
+  "task": "A -- dimensionality (feasibility gate + exploratory diagnostic)",
+  "exploratory": true,
+  "decision": {
+    "status": "FINAL -- KEEP UNIDIMENSIONAL",
+    "confirmed": "2026-08-05 (user decision)",
+    "authored_multi_skill_q": false,
+    "detail": "BiGGen stays 1-D ('general' skill). The exploratory data-driven diagnostic below is the recorded evidence. No multi-skill Q-matrix was authored; doing so is a DEFERRED, OPTIONAL future step (not done) -- see deferred_optional_future_step."
+  },
+  "feasibility_gate": {
+    "multi_skill_q_present": false,
+    "detail": "BiGGen bank/rubrics have q_mapping=null, primary_skill='general', q_modeled={'general':1} for every criterion. No named multi-skill Q-matrix exists, so the confirmatory 1..5 sweep is NOT run; a data-driven diagnostic is run instead and the sweep is STOPPED short."
+  },
+  "n_models": 52,
+  "n_modeled_atoms": 2389,
+  "pca": {
+    "pc1_variance_share": 0.2992,
+    "pc2_variance_share": 0.0477,
+    "pc1_over_pc2_ratio": 6.267,
+    "parallel_analysis_n_factors": 4,
+    "top_eigenvalues": [
+      714.7222,
+      114.0516,
+      75.0127,
+      63.3443,
+      56.6827,
+      51.7958,
+      49.5587,
+      47.8895,
+      45.9332,
+      45.3928,
+      44.3105,
+      43.557,
+      42.2399,
+      41.3025,
+      40.403
+    ],
+    "parallel_analysis_null_p95": [
+      61.7093,
+      60.1921,
+      59.1668,
+      58.3085,
+      57.4589,
+      56.8418,
+      56.2171,
+      55.5372,
+      54.9329,
+      54.3659,
+      53.8331,
+      53.2746,
+      52.7437,
+      52.2831,
+      51.783
+    ],
+    "note": "n<<p makes the correlation matrix rank-deficient, so eigenvalue ABSOLUTE scale is uninformative; the reference is the parallel-analysis permutation null (same n, p, structure broken column-wise). n_factors counts components exceeding that null's 95th percentile."
+  },
+  "capability_composites": {
+    "capabilities": [
+      "grounding",
+      "instruction_following",
+      "planning",
+      "reasoning",
+      "refinement",
+      "safety",
+      "theory_of_mind",
+      "tool_usage"
+    ],
+    "mean_offdiag_r": 0.9286,
+    "min_pair": [
+      "safety",
+      "tool_usage",
+      0.844
+    ],
+    "safety_mean_r_vs_others": 0.899,
+    "n_atoms_per_capability": {
+      "grounding": 304,
+      "instruction_following": 333,
+      "planning": 354,
+      "reasoning": 270,
+      "refinement": 274,
+      "safety": 243,
+      "theory_of_mind": 367,
+      "tool_usage": 244
+    },
+    "note": "SKILL_AXIS_NOTES Finding 1 recomputed on our binary atoms: high capability collinearity => general ability dominates; safety is the capability that separates most."
+  },
+  "m2pl_1v2_probe": {
+    "available": true,
+    "structures": [
+      {
+        "structure": "unidim_1d",
+        "n_dims": 1,
+        "loglik": -45166.7,
+        "n_params": 4778,
+        "aic": 99889.4,
+        "bic": 146378.2,
+        "oos_logloss_mean": 0.4652,
+        "oos_logloss_se": 0.01617,
+        "max_latent_corr_offdiag": 0.0,
+        "converged": true
+      },
+      {
+        "structure": "general_plus_normative_2d",
+        "n_dims": 2,
+        "loglik": -44742.9,
+        "n_params": 5022,
+        "aic": 99529.9,
+        "bic": 148392.7,
+        "oos_logloss_mean": 0.46587,
+        "oos_logloss_se": 0.01671,
+        "max_latent_corr_offdiag": 0.609,
+        "converged": true
+      }
+    ],
+    "selected_by_oos_logloss_within_1se_then_parsimony": "unidim_1d",
+    "note": "EXPLORATORY only. The 2-D probe loads a normative axis on capability=='safety' atoms (cross-loading; non-safety atoms anchor general). It uses the existing capability field, not a fabricated Q."
+  },
+  "verdict": {
+    "multidim_confirmatory_supported_at_n52": false,
+    "recommendation": "Keep UNIDIMENSIONAL. A dominant general factor drives the atoms (PC1/PC2 ~ 6.3; capability composite mean|r| ~ 0.93), and the notes' strongest 2-D candidate (general + normative/safety) does NOT win out-of-sample (held-out log-loss ties/loses vs 1-D) and loses on BIC -- only AIC, which overfits at N=52, favors it (latent corr ~0.6, so the axes are not independent). Safety is the one capability that separates, echoing SKILL_AXIS_NOTES.",
+    "parallel_analysis_reconciliation": "Horn parallel analysis flags 4 components above the permutation null. This is EXPECTED and LIBERAL at n_atoms >> n_models and reflects the weak residual cross-cutting structure SKILL_AXIS_NOTES Finding 3 describes (the A/B/C demand clusters under the general factor). It is NOT evidence for a confirmatory multi-skill model: that structure does not survive cross-validation here, and no named Q-matrix exists to test it.",
+    "deferred_optional_future_step": "A named, labeled multi-skill Q-matrix (per-criterion q_mapping / primary_skill) does not exist for BiGGen and was NOT authored (user decision: keep 1-D). Should a future run want a confirmatory 1..5 sweep, someone would first have to author such a Q (e.g. the 'general + normative restraint' 2-D or the demand-based A/B/C 3-D axis discussed in data/BiGGen/SKILL_AXIS_NOTES.md); that is an OPTIONAL future step, not a pending blocker for this study."
+  },
+  "generated_at": "2026-08-05T22:20:11.173355+00:00"
+}

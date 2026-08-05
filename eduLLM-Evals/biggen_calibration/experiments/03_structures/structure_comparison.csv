@@ -1,0 +1,3 @@
+structure,n_dims,loglik,n_params,aic,bic,oos_logloss_mean,oos_logloss_se,max_latent_corr_offdiag,converged
+unidim_1d,1,-45166.7,4778,99889.4,146378.2,0.4652,0.01617,0.0,True
+general_plus_normative_2d,2,-44742.9,5022,99529.9,148392.7,0.46587,0.01671,0.609,True

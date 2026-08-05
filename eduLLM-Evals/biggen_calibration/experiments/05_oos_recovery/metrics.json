@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-04T22:57:08.077733+00:00",
+  "generated_at": "2026-08-05T22:47:48.055043+00:00",
   "purpose": "scenario-level OOS k-fold estimator recovery (real engine on held-out models)",
-  "bank": "staging\\biggen_unidim_modeled.jsonl",
-  "matrix": "staging\\biggen_response_matrix.csv",
+  "bank": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\biggen_unidim_modeled.jsonl",
+  "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\staging\\biggen_response_matrix.csv",
   "dims": [
     "general"
   ],
@@ -12,7 +12,7 @@
   "config": {
     "fit_grid": 7,
     "ridge": 0.01,
-    "eap_grid": 61,
+    "eap_grid": 3201,
     "max_se": 0.12,
     "min_evals_per_skill": 15,
     "max_scenarios": 50
@@ -22,25 +22,25 @@
   "oos_recovery": {
     "online": {
       "general": {
-        "slope": 0.6263107852177963,
-        "r": 0.936550387367528,
-        "gap_worst12": 0.9623624295605374,
+        "slope": 0.6272240567925377,
+        "r": 0.9377347341363642,
+        "gap_worst12": 0.9630404485772224,
         "n": 52
       }
     },
     "batch": {
       "general": {
-        "slope": 0.7710957920188223,
-        "r": 0.9619796681853497,
-        "gap_worst12": 0.5142428960236732,
+        "slope": 0.772272436671426,
+        "r": 0.9630252370969334,
+        "gap_worst12": 0.5141321152411539,
         "n": 52
       }
     },
     "mwle": {
       "general": {
-        "slope": 0.8119788296397851,
-        "r": 0.970327641079982,
-        "gap_worst12": 0.40424224402728126,
+        "slope": 0.8131032234960385,
+        "r": 0.9714834744554794,
+        "gap_worst12": 0.404920261975614,
         "n": 52
       }
     }
