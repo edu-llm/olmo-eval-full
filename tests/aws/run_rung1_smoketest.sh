@@ -77,8 +77,11 @@ TASK="${TASK:-arc_easy}"                        # small logprob-scored MCQ
 LIMIT="${LIMIT:-10}"                            # `-o limit=N` task override
 
 # --- S3 destination for results (team bucket already exists) -----------------
+# S3_PREFIX defaults to 'smoke' because the EswManagedInstance role's existing
+# s3:PutObject grant covers only smoke/* (+ smoke_split/*, full200/*); results and
+# tar-staging both land under smoke/ so auto-upload succeeds with no IAM change.
 S3_BUCKET="${S3_BUCKET:-edullm-adaptive-inference-056956104102}"
-S3_PREFIX="${S3_PREFIX:-smoketest}"
+S3_PREFIX="${S3_PREFIX:-smoke}"
 S3_GROUP="${S3_GROUP:-rung1}"
 
 # --- How the repo reaches the node (staging mode) ----------------------------
@@ -577,7 +580,13 @@ info "eval launched; logging to ${NODE_LOG}"
 # SECTION 6b — POLL the on-node log until the eval finishes (or times out)
 # ══════════════════════════════════════════════════════════════════════════════
 log "Poll on-node log for completion (runbook Section 6)"
-TAIL_CMD="tail -n 200 ${NODE_LOG} 2>/dev/null || true"
+# The completion sentinel MUST survive SSM's ~24 KB StandardOutputContent cap.
+# olmo-eval's log is full of large Rich tables, so a plain `tail -n 200` can exceed
+# 24 KB and be truncated BEFORE the trailing "${DONE_SENTINEL}=N" line — which makes a
+# finished eval look like it never completes (the poll loop then spins to EVAL_TIMEOUT).
+# Fix: emit the sentinel line FIRST (always within the first bytes, so it can't be
+# truncated away), then a small byte-bounded tail purely for a human heartbeat.
+TAIL_CMD="{ grep -aE \"${DONE_SENTINEL}=[0-9]+\" ${NODE_LOG} 2>/dev/null | tail -n 1; tail -c 1500 ${NODE_LOG} 2>/dev/null; } 2>/dev/null || true"
 
 if [ "$DRY_RUN" = true ]; then
   info "(dry-run) would repeatedly SSM: ${TAIL_CMD} and wait for '${DONE_SENTINEL}=0'"

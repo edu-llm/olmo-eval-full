@@ -61,14 +61,14 @@ stage olmo-eval onto the node (S3 + presigned URL + SSM)  →  uv sync (installs
 olmo-eval run  -m Qwen/Qwen2.5-0.5B-Instruct  -t arc_easy  -o limit=10  → uploads to S3
       │
       ▼
-verify metrics.json in s3://edullm-adaptive-inference-056956104102/smoketest/…
+verify metrics.json in s3://edullm-adaptive-inference-056956104102/smoke/…
       │
       ▼
 TERMINATE the instance (belt-and-suspenders; the timer also self-terminates)
 ```
 
 **✅ Definition of done:** you can run `aws s3 ls` on the team bucket and see a
-`metrics.json` (plus `predictions/` and `requests/`) under the `smoketest/rung1/…`
+`metrics.json` (plus `predictions/` and `requests/`) under the `smoke/rung1/…`
 prefix, containing an accuracy number for `arc_easy`. When you see your results in S3,
 Rung 1 passes.
 
@@ -295,12 +295,12 @@ tar czf olmo-eval.tgz -C /Users/cat/alpha-projects olmo-eval-full
 
 # 2. Upload to the team bucket under a smoke-test staging path.
 aws s3 cp olmo-eval.tgz \
-  s3://edullm-adaptive-inference-056956104102/smoketest/staging/olmo-eval.tgz \
+  s3://edullm-adaptive-inference-056956104102/smoke/staging/olmo-eval.tgz \
   --profile sbsandbox --region us-east-1
 
 # 3. Presign a 1-hour download URL (do this via the sb_aws MCP / broker creds).
 aws s3 presign \
-  s3://edullm-adaptive-inference-056956104102/smoketest/staging/olmo-eval.tgz \
+  s3://edullm-adaptive-inference-056956104102/smoke/staging/olmo-eval.tgz \
   --expires-in 3600 --profile sbsandbox --region us-east-1
 #   → copy the long https://… URL it prints; use it as <PRESIGNED_URL> below.
 
@@ -368,7 +368,7 @@ uv run olmo-eval run \
   -t arc_easy -o limit=10 \
   -O /opt/dlami/nvme/rung1/results \
   --s3-bucket edullm-adaptive-inference-056956104102 \
-  --s3-prefix smoketest \
+  --s3-prefix smoke \
   --s3-group rung1 \
   --s3-region us-east-1
 ```
@@ -392,7 +392,7 @@ so fully detach with `setsid nohup … &` and check the log separately):
 aws ssm send-command \
   --instance-ids i-XXXXXXXXXXXXXXXXX \
   --document-name AWS-RunShellScript \
-  --parameters 'commands=["cd /opt/dlami/nvme/rung1/olmo-eval-full && export HOME=/root && export PATH=\"$HOME/.local/bin:$PATH\" && export UV_CACHE_DIR=/opt/dlami/nvme/rung1/uv-cache && export HF_HOME=/opt/dlami/nvme/rung1/hf && mkdir -p \"$UV_CACHE_DIR\" \"$HF_HOME\" && setsid nohup uv run olmo-eval run -m Qwen/Qwen2.5-0.5B-Instruct -t arc_easy -o limit=10 -O /opt/dlami/nvme/rung1/results --s3-bucket edullm-adaptive-inference-056956104102 --s3-prefix smoketest --s3-group rung1 --s3-region us-east-1 > /opt/dlami/nvme/rung1/smoketest.log 2>&1 &"]' \
+  --parameters 'commands=["cd /opt/dlami/nvme/rung1/olmo-eval-full && export HOME=/root && export PATH=\"$HOME/.local/bin:$PATH\" && export UV_CACHE_DIR=/opt/dlami/nvme/rung1/uv-cache && export HF_HOME=/opt/dlami/nvme/rung1/hf && mkdir -p \"$UV_CACHE_DIR\" \"$HF_HOME\" && setsid nohup uv run olmo-eval run -m Qwen/Qwen2.5-0.5B-Instruct -t arc_easy -o limit=10 -O /opt/dlami/nvme/rung1/results --s3-bucket edullm-adaptive-inference-056956104102 --s3-prefix smoke --s3-group rung1 --s3-region us-east-1 > /opt/dlami/nvme/rung1/smoketest.log 2>&1 &"]' \
   --profile sbsandbox --region us-east-1
 ```
 
@@ -411,7 +411,7 @@ and starting the vLLM engine, then scores 10 instances in seconds. Total: **a fe
 minutes**.
 
 **What success looks like in the log:** a printed **Run Configuration** panel, a vLLM
-startup banner, a line like `S3 uploads enabled: s3://edullm-adaptive-inference-056956104102/smoketest/rung1/...`,
+startup banner, a line like `S3 uploads enabled: s3://edullm-adaptive-inference-056956104102/smoke/rung1/...`,
 and at the end an `arc_easy` accuracy number with no traceback. If the process exits 0
 and you saw the "S3 uploads enabled" line, move to verification.
 
@@ -433,15 +433,15 @@ s3://{bucket}/{prefix}/{group}/{model}_{model_hash_last6}/{experiment_id}/
 ```
 
 So for this run, look under
-`s3://edullm-adaptive-inference-056956104102/smoketest/rung1/`.
+`s3://edullm-adaptive-inference-056956104102/smoke/rung1/`.
 
 ```bash
 # List everything under the smoke-test group (expect a Qwen2.5-0.5B-Instruct_<hash>/… tree)
-aws s3 ls s3://edullm-adaptive-inference-056956104102/smoketest/rung1/ \
+aws s3 ls s3://edullm-adaptive-inference-056956104102/smoke/rung1/ \
   --recursive --profile sbsandbox --region us-east-1
 
 # Pull the results down to your laptop to eyeball metrics.json
-aws s3 sync s3://edullm-adaptive-inference-056956104102/smoketest/rung1/ \
+aws s3 sync s3://edullm-adaptive-inference-056956104102/smoke/rung1/ \
   ./rung1-results --profile sbsandbox --region us-east-1
 
 cat ./rung1-results/*/*/metrics.json
@@ -474,7 +474,7 @@ aws ec2 describe-instances --instance-ids i-XXXXXXXXXXXXXXXXX \
 > all charges. For a smoke test, **always terminate.**
 >
 > ⚠️ Also clean up the staging object if you like:
-> `aws s3 rm s3://edullm-adaptive-inference-056956104102/smoketest/staging/olmo-eval.tgz --profile sbsandbox`.
+> `aws s3 rm s3://edullm-adaptive-inference-056956104102/smoke/staging/olmo-eval.tgz --profile sbsandbox`.
 
 **Cost check.** From the team's cost reference, a single g5/g6-class box for a few minutes
 is **well under ~$1** if you terminate promptly (their 56-model, ~2-hour mixed-GPU run
@@ -491,7 +491,7 @@ being billed.
 | Metadata / `ami-launch-index` fetches return blank on the node | **IMDSv2 token required.** The DLAMI enforces IMDSv2, so metadata needs a token first: `TOKEN=$(curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")` then pass `-H "X-aws-ec2-metadata-token: $TOKEN"` on the metadata `curl`. (Not needed for the smoke test itself, but bites any node self-configuration script.) |
 | SSM command sits at `InProgress` forever | SSM stays InProgress until **all** child processes exit. You launched a long-running eval — that's why we use `setsid nohup … &`. Don't wait on the SSM status; `tail` the log file instead (Section 6). |
 | `--s3-bucket is required` / `--s3-prefix is required` / `--s3-group is required` | You passed some but not all three S3 flags. They are **required together**. Pass all of `--s3-bucket`, `--s3-prefix`, `--s3-group`. |
-| `AccessDenied` on S3 PutObject when uploading results | The shared `EswManagedInstance` role may lack write to your exact prefix. **Don't modify the role globally.** Add a *scoped* permission for `…/smoketest/*` — a bucket policy allowing that role `s3:PutObject` on the `smoketest/*` prefix, or a scoped inline policy. Ask the agent (via `sb_aws`) to add it. |
+| `AccessDenied` on S3 PutObject when uploading results | The shared `EswManagedInstance` role only has `s3:PutObject` on `smoke/*` (+ `smoke_split/*`, `full200/*`). The defaults now write to `smoke/rung1/`, which is covered — so this should not occur. If you overrode `S3_PREFIX` to something outside those (e.g. `smoketest`), your writes will be denied: either use a covered prefix, or have an admin add a *scoped* grant (bucket policy / inline policy) for your prefix. **Don't modify the role globally.** |
 | Out-of-memory (OOM) on model load | Almost impossible with a 0.5B model on a 24 GB A10G, but if you swapped in something bigger: **use a smaller model** — do **not** upsize past `g6.xlarge`. You can also cap context with `-o` overrides, but the right Rung-1 move is a smaller model. |
 | vLLM crashes on model load with architecture/config errors | That model's architecture isn't supported by vLLM (team has hit this with `gemma-3-*`, `OpenELM-*`, `mamba-*`). For Rung 1, **stick with `Qwen/Qwen2.5-0.5B-Instruct`**, which vLLM supports. Exotic architectures need an HF-transformers fallback path, out of scope here. |
 | `uv: command not found` on the node after install | `uv` installs to `~/.local/bin`. Ensure it's on PATH in the same command: `export PATH="$HOME/.local/bin:$PATH"`. |
@@ -510,7 +510,7 @@ being billed.
 | `i-XXXXXXXXXXXXXXXXX` | the InstanceId returned by `run-instances` (Section 4) |
 | `<PRESIGNED_URL>` | the `https://…` URL from `aws s3 presign` (Section 5) |
 | `N` in `shutdown -h +N` | minutes until auto-terminate (use `90` for this smoke test) |
-| S3 smoke-test prefix | `smoketest` / group `rung1` → `s3://edullm-adaptive-inference-056956104102/smoketest/rung1/` |
+| S3 smoke-test prefix | `smoke` / group `rung1` → `s3://edullm-adaptive-inference-056956104102/smoke/rung1/` |
 
 **Fixed team values (don't change):** account `sbsandbox` (`056956104102`), region
 `us-east-1`, bucket `edullm-adaptive-inference-056956104102`, AMI `ami-0b6f2229ad14c9323`,
@@ -519,7 +519,7 @@ SG `sg-087218d8c87aa8576`, subnet `subnet-0a4235fb98b63930f`, instance profile
 `g6.xlarge`).
 
 **Recommended smoke-test choice, restated:**
-`uv run olmo-eval run -m Qwen/Qwen2.5-0.5B-Instruct -t arc_easy -o limit=10 -O /opt/dlami/nvme/rung1/results --s3-bucket edullm-adaptive-inference-056956104102 --s3-prefix smoketest --s3-group rung1 --s3-region us-east-1`
+`uv run olmo-eval run -m Qwen/Qwen2.5-0.5B-Instruct -t arc_easy -o limit=10 -O /opt/dlami/nvme/rung1/results --s3-bucket edullm-adaptive-inference-056956104102 --s3-prefix smoke --s3-group rung1 --s3-region us-east-1`
 
 A copy-pasteable on-node helper that does the install + run is provided alongside this
 file: **`rung1_smoketest.sh`**.

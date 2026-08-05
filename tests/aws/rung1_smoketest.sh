@@ -28,7 +28,8 @@ set -euo pipefail
 # ── Config (override by exporting before launch; defaults match the RUNBOOK) ──
 # The team bucket already exists. Leave as-is unless you know why you're changing it.
 S3_BUCKET="${S3_BUCKET:-edullm-adaptive-inference-056956104102}"
-S3_PREFIX="${S3_PREFIX:-smoketest}"
+# 'smoke' matches the EswManagedInstance role's existing s3:PutObject grant (smoke/*).
+S3_PREFIX="${S3_PREFIX:-smoke}"
 S3_GROUP="${S3_GROUP:-rung1}"
 S3_REGION="${S3_REGION:-us-east-1}"
 

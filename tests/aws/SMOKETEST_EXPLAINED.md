@@ -52,7 +52,7 @@ checkpoints). This "prove the pipe before building the factory" is called **de-r
 
 You run one command to list the team's cloud folder, and you see a file named
 `metrics.json` with an `arc_easy` accuracy number in it, under a path ending in
-`smoketest/rung1/…`. That's the entire definition of done. (Section 6 below is the exact
+`smoke/rung1/…`. That's the entire definition of done. (Section 6 below is the exact
 success criteria.)
 
 ---
@@ -103,7 +103,7 @@ Here is the whole flow as a short story, with no AWS jargon yet:
   │  (4) │  uv sync --frozen (vLLM…)    │                               │
   │  (5) │  olmo-eval run … --s3-*  ────┼──►  writes metrics.json to S3  │
   │      └──────────────────────────────┘                               │
-  │                                          s3://…/smoketest/rung1/…    │
+  │                                          s3://…/smoke/rung1/…    │
   │   (6) terminate-instances  (timer would also self-terminate)        │
   └─────────────────────────────────────────────────────────────────────┘
       │
@@ -282,7 +282,7 @@ This is the team's hard safety rule. **Before every launch, all three must be tr
 
 ### Step 4 — Stage the code onto the node (runbook §5)
 - **Intent:** get the `olmo-eval` code onto a machine you can't SSH into.
-- **The pattern:** tar the repo → `aws s3 cp` it to the bucket under a `smoketest/staging/`
+- **The pattern:** tar the repo → `aws s3 cp` it to the bucket under a `smoke/staging/`
   path → `aws s3 presign` a 1-hour download link → `aws ssm send-command` telling the node
   to `curl` the link and untar it into the fast local disk at `/opt/dlami/nvme/rung1`.
 - **Important detail:** do the `presign` step through the `sb_aws` broker, because the
@@ -315,7 +315,7 @@ This is the team's hard safety rule. **Before every launch, all three must be tr
 - **Intent:** run the tiny eval and have olmo-eval upload results to S3.
 - **The command** (conceptually):
   `olmo-eval run -m Qwen/Qwen2.5-0.5B-Instruct -t arc_easy -o limit=10 -O <local out>
-  --s3-bucket … --s3-prefix smoketest --s3-group rung1 --s3-region us-east-1`.
+  --s3-bucket … --s3-prefix smoke --s3-group rung1 --s3-region us-east-1`.
 - **Key correctness details:**
   - `-o limit=10` must come **right after** `-t arc_easy` — the override applies to the
     preceding task. There is no top-level `--limit` flag.
@@ -330,20 +330,22 @@ This is the team's hard safety rule. **Before every launch, all three must be tr
 - **Expected runtime:** a minute or two to download the model + dataset and start vLLM,
   then a few seconds to score 10 questions. A few minutes total.
 - **What success looks like in the log:** a "Run Configuration" panel, a vLLM startup
-  banner, a line like `S3 uploads enabled: s3://…/smoketest/rung1/…`, and a final
+  banner, a line like `S3 uploads enabled: s3://…/smoke/rung1/…`, and a final
   `arc_easy` accuracy number with no traceback.
 - **What could go wrong:** vLLM crashing on an unsupported architecture (stick to Qwen for
   Rung 1); OOM (near-impossible with a 0.5B model on 24 GB — if it happens you swapped in
   something too big; use a smaller model, don't upsize); `AccessDenied` on S3 upload (the
-  shared role may lack write to your exact prefix — add a *scoped* policy for
-  `smoketest/*`, never modify the role globally).
+  shared `EswManagedInstance` role only grants `s3:PutObject` on `smoke/*` — the default
+  `smoke/rung1/` prefix is covered, so this shouldn't happen unless you override
+  `S3_PREFIX` to an uncovered prefix; if you do, use a covered prefix or add a *scoped*
+  policy for it, and never modify the role globally).
 
 ### Step 7 — Verify results in S3 (runbook §7)
 - **Intent:** confirm the results landed in cloud storage.
 - **olmo-eval's output layout:**
   `s3://{bucket}/{prefix}/{group}/{model}_{hash}/{experiment_id}/` containing
   `metrics.json` (the scores), plus `predictions/` and `requests/` folders.
-- **What you do:** `aws s3 ls …/smoketest/rung1/ --recursive` to see the tree, then
+- **What you do:** `aws s3 ls …/smoke/rung1/ --recursive` to see the tree, then
   `aws s3 sync` it to your laptop and `cat` the `metrics.json`.
 
 ### Step 8 — Teardown (runbook §8)
@@ -390,8 +392,8 @@ Rung 1 **passes** when all of these are true:
 
 - The `olmo-eval run` process exited cleanly (exit code 0), with **no Python traceback**
   in `smoketest.log`.
-- The log contained the `S3 uploads enabled: s3://…/smoketest/rung1/…` line.
-- `aws s3 ls s3://edullm-adaptive-inference-056956104102/smoketest/rung1/ --recursive`
+- The log contained the `S3 uploads enabled: s3://…/smoke/rung1/…` line.
+- `aws s3 ls s3://edullm-adaptive-inference-056956104102/smoke/rung1/ --recursive`
   shows a tree under `Qwen2.5-0.5B-Instruct_<hash>/<experiment_id>/` containing:
   - **`metrics.json`** ← the actual proof (has an `arc_easy` accuracy value),
   - `predictions/arc_easy-predictions.jsonl`,
@@ -490,7 +492,7 @@ All pulled directly from the runbook; these are real team resources, not placeho
 | Instance type | `g5.xlarge` (smoke tests only; never above `g6.xlarge`) |
 | Model | `Qwen/Qwen2.5-0.5B-Instruct` (public, ungated) |
 | Task | `arc_easy`, capped `-o limit=10` |
-| S3 result path | `s3://edullm-adaptive-inference-056956104102/smoketest/rung1/…` |
+| S3 result path | `s3://edullm-adaptive-inference-056956104102/smoke/rung1/…` |
 | Self-terminate timer | `shutdown -h +90` (+ `--instance-initiated-shutdown-behavior terminate`) |
 
 **Values that are genuinely per-run placeholders (you fill them in):**
