@@ -119,6 +119,8 @@ supplement_v2/
 # ---------------------------------------------------------------------------
 *.png
 !plots/*.png
+# Bridge scenario calibration study figures ARE tracked (small, part of the committed study)
+!bridge_calibration/**/*.png
 
 # ---------------------------------------------------------------------------
 # Data: the benchmark dataset IS tracked (needed on every machine that runs the
