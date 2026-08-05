@@ -15,6 +15,8 @@ def test_atlas_suite_resolves() -> None:
         "atlas_csqa",
         "atlas_piqa",
         "atlas_gsm8k",
+        "atlas_ifeval",
+        "atlas_math",
     )
 
 
