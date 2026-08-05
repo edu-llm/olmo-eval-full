@@ -1,7 +1,26 @@
 {
-  "r_target": 0.9,
-  "adaptive_items_to_r": 12,
-  "random_items_to_r": 28,
-  "full_bank_items": 2684,
-  "se_target": 0.15
+  "generated_at": "2026-08-05T20:25:24.074799+00:00",
+  "purpose": "adaptive vs random scenario-selection efficiency",
+  "n_models": 51,
+  "lengths": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    12,
+    15,
+    20
+  ],
+  "locked_length": 12,
+  "locked_point_recovery": {
+    "cat_r": 0.9823,
+    "random_r": 0.9747,
+    "cat_minus_random_r": 0.0076
+  },
+  "random_scenarios_to_match_cat_at_locked": 15,
+  "adaptive_beats_random": true,
+  "mean_r_gap_over_lengths": 0.0228
 }

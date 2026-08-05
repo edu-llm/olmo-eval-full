@@ -1,51 +1,54 @@
 {
-  "selected": {
-    "se_target": 0.15,
-    "floor": 20,
-    "r": 0.9441,
-    "slope": 0.8661,
-    "theta_mae": 0.2666,
-    "mean_items": 24.2,
-    "conv_rate": 1.0
+  "purpose": "re-derived scenario-level operating point (SUPERSEDES item-level SE 0.15 / floor 20 CRITERIA, which is VOID)",
+  "bank": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\bridge_calibration\\bridge_scenario_fitted_1d.jsonl",
+  "dims": [
+    "overall"
+  ],
+  "n_models": 51,
+  "bank_scenarios_max": 250,
+  "floors_swept": [
+    0,
+    12,
+    15,
+    20
+  ],
+  "se_targets_swept": [
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4
+  ],
+  "config": {
+    "min_evals_per_skill": 15,
+    "top_n": 5,
+    "selection": "trace",
+    "seed": 42
   },
-  "selection_rule": "knee of the efficiency frontier at 100% convergence: near-max OOS recovery with far fewer criteria than the tightest SE; efficiency-favored over the strict max-r point. Convergence-first: only points where 100% of models reach the SE target are eligible.",
-  "max_r_at_full_convergence": {
-    "se_target": 0.12,
-    "floor": 20,
-    "r": 0.9502,
-    "slope": 0.8777,
-    "theta_mae": 0.2493,
-    "mean_items": 37.9,
-    "conv_rate": 1.0,
-    "note": "conservative alternative: +0.006 r for ~14 more criteria"
-  },
-  "rejected_higher_r_pick": {
-    "se_target": 0.1,
-    "floor": 0,
-    "r": 0.956,
-    "slope": 0.8827,
-    "theta_mae": 0.2227,
-    "mean_items": 65.3,
-    "conv_rate": 0.922,
-    "reason": "higher r (0.956) but only 92% convergence (some models never reach that SE); violates the convergence-first rule, so it is NOT selected."
-  },
-  "grid": {
-    "se_targets": [
-      0.1,
-      0.12,
-      0.15,
-      0.2,
-      0.25,
-      0.3
-    ],
-    "floors": [
-      0,
-      4,
-      8,
-      12,
-      16,
-      20
-    ]
-  },
-  "source": "runs/calibration/Bridge_study/experiments/06_floor_se_grid/sweep_results.csv"
+  "achievability_note": "On a 250-scenario bank at N=51 with ~19-20 criteria per scenario, the minimum median final SE achievable is 0.0763. Each administered scenario is a heavy ~19-item testlet, so SE drops fast; the binding constraint is usually the min_scenarios floor / min_evals_per_skill, not the SE target. NOTE: this ability SE ignores calibration (SE_param) uncertainty, which dominates at N=51 and is computed downstream (param-uncertainty bootstrap); the final lock must be checked against that SE_param floor before deployment.",
+  "recommendation": {
+    "se_param_floor_assumed": 0.22,
+    "recommended_provisional": {
+      "min_scenarios": 12,
+      "se_target": 0.25,
+      "convergence_rate": 1.0,
+      "scenarios_mean": 12.0,
+      "criteria_mean": 224.3,
+      "final_se_median": 0.0933,
+      "rationale": "floor=12 guarantees a minimum test length (~224 criteria) that guards against 1-2 scenario tests dominated by within-scenario local dependence; at this floor the SE target does not bind (achieved SE floored by length), so the run is robust to the SE choice. SE target 0.25 matches the anticipated SE_param floor so ability precision is not chased below parameter noise."
+    },
+    "alternative_no_floor": {
+      "min_scenarios": 0,
+      "se_target": 0.25,
+      "scenarios_mean": 2.35,
+      "criteria_mean": 44.4,
+      "final_se_median": 0.2167,
+      "note": "shortest adaptive test at the SE_param floor; risks very short (1-3 scenario) tests with strong testlet local dependence."
+    },
+    "all_cells_converge_100pct": true,
+    "floor_binds_when_ge": 12,
+    "tightest_se_swept": 0.15,
+    "min_achievable_final_se_median": 0.0763
+  }
 }

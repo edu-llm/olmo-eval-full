@@ -1,28 +1,78 @@
 {
-  "theta_recovery": {
-    "r": 0.9440911352827492,
-    "r_ci": [
-      0.9107723521148285,
-      0.9662217963814079
-    ],
-    "slope": 0.866091279695149,
-    "slope_ci": [
-      0.7752689316854893,
-      0.96357719140683
-    ],
-    "theta_mae": 0.26661367024057037
+  "generated_at": "2026-08-05T20:21:48.253287+00:00",
+  "purpose": "definitive OOS model-fold recovery at the locked scenario operating point",
+  "operating_point": {
+    "min_scenarios": 12,
+    "max_se": 0.15,
+    "selection": "trace",
+    "estimator_headline": "mwle"
   },
-  "pass_rate": {
-    "r": 0.9098122381719349,
-    "r_ci": [
-      0.8625853526486892,
-      0.945304535471524
-    ],
-    "pass_mae": 0.04852348354489596,
-    "slope": 1.179590039885426
-  },
+  "cv": "OOS k=5 MODEL folds, seed 20260729",
   "n_models": 51,
-  "k": 5,
-  "se_target": 0.15,
-  "min_items": 20
+  "eap_reference_grid": {
+    "nodes": 321,
+    "range": 8.0,
+    "type": "fine uniform (continuous)"
+  },
+  "mean_scenarios_administered": 12.0,
+  "mean_criteria_administered": 211.6,
+  "headline_recovery_mwle": {
+    "r": 0.9517,
+    "r_lo": 0.9226,
+    "r_hi": 0.9735,
+    "slope": 0.8766,
+    "slope_lo": 0.8014,
+    "slope_hi": 0.97,
+    "mae": 0.2845,
+    "gap_worst12": 0.0212
+  },
+  "pass_rate_recovery": {
+    "r": 0.9349,
+    "r_lo": 0.8947,
+    "r_hi": 0.9624,
+    "slope": 0.744,
+    "pass_mae": 0.047
+  },
+  "recovery_by_estimator": {
+    "online": {
+      "r": 0.9398,
+      "r_lo": 0.9093,
+      "r_hi": 0.9661,
+      "slope": 0.8098,
+      "slope_lo": 0.7293,
+      "slope_hi": 0.9241,
+      "mae": 0.307,
+      "gap_worst12": 0.222
+    },
+    "batch_eap": {
+      "r": 0.9518,
+      "r_lo": 0.9231,
+      "r_hi": 0.9734,
+      "slope": 0.8664,
+      "slope_lo": 0.7921,
+      "slope_hi": 0.9588,
+      "mae": 0.2861,
+      "gap_worst12": 0.0494
+    },
+    "mwle": {
+      "r": 0.9517,
+      "r_lo": 0.9226,
+      "r_hi": 0.9735,
+      "slope": 0.8766,
+      "slope_lo": 0.8014,
+      "slope_hi": 0.97,
+      "mae": 0.2845,
+      "gap_worst12": 0.0212
+    },
+    "mle": {
+      "r": 0.9521,
+      "r_lo": 0.9231,
+      "r_hi": 0.9737,
+      "slope": 0.8793,
+      "slope_lo": 0.8047,
+      "slope_hi": 0.9727,
+      "mae": 0.2844,
+      "gap_worst12": 0.0138
+    }
+  }
 }

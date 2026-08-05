@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-08-05T20:27:12.350586+00:00",
+  "min_theta_corr_vs_base": 0.98837,
+  "best_oos": {
+    "ridge": 0.1,
+    "grid": 9,
+    "loglik": -83020.1,
+    "aic": 182828.1,
+    "bic": 269067.6,
+    "n_extreme_a": 0,
+    "theta_r_vs_base": 0.99859,
+    "oos_5fold_r": 0.9935,
+    "converged": true
+  },
+  "recommendation": "keep ridge=1e-2, grid=7",
+  "conclusion": "theta rank is highly stable across ridge/grid (min corr vs baseline = 0.9884); best OOS 5-fold r = 0.9935 at ridge=0.1 grid=9. Ridge 1e-2 (baseline) is within noise of the best and keeps extreme_a low -> KEEP ridge=1e-2; no re-tune needed.",
+  "rows": [
+    {
+      "ridge": 0.001,
+      "grid": 5,
+      "loglik": -83866.5,
+      "aic": 184521.0,
+      "bic": 270760.5,
+      "n_extreme_a": 115,
+      "theta_r_vs_base": 0.98837,
+      "oos_5fold_r": 0.9747,
+      "converged": true
+    },
+    {
+      "ridge": 0.001,
+      "grid": 7,
+      "loglik": -83908.9,
+      "aic": 184605.9,
+      "bic": 270845.4,
+      "n_extreme_a": 108,
+      "theta_r_vs_base": 0.99191,
+      "oos_5fold_r": 0.9779,
+      "converged": true
+    },
+    {
+      "ridge": 0.001,
+      "grid": 9,
+      "loglik": -82972.3,
+      "aic": 182732.6,
+      "bic": 268972.1,
+      "n_extreme_a": 116,
+      "theta_r_vs_base": 0.9979,
+      "oos_5fold_r": 0.9824,
+      "converged": true
+    },
+    {
+      "ridge": 0.01,
+      "grid": 5,
+      "loglik": -83871.9,
+      "aic": 184531.8,
+      "bic": 270771.3,
+      "n_extreme_a": 1,
+      "theta_r_vs_base": 0.99089,
+      "oos_5fold_r": 0.9785,
+      "converged": true
+    },
+    {
+      "ridge": 0.01,
+      "grid": 7,
+      "loglik": -83342.3,
+      "aic": 183472.6,
+      "bic": 269712.1,
+      "n_extreme_a": 11,
+      "theta_r_vs_base": 1.0,
+      "oos_5fold_r": 0.985,
+      "converged": true
+    },
+    {
+      "ridge": 0.01,
+      "grid": 9,
+      "loglik": -82976.9,
+      "aic": 182741.8,
+      "bic": 268981.4,
+      "n_extreme_a": 3,
+      "theta_r_vs_base": 0.9983,
+      "oos_5fold_r": 0.9838,
+      "converged": true
+    },
+    {
+      "ridge": 0.1,
+      "grid": 5,
+      "loglik": -83916.5,
+      "aic": 184621.0,
+      "bic": 270860.5,
+      "n_extreme_a": 0,
+      "theta_r_vs_base": 0.99243,
+      "oos_5fold_r": 0.9906,
+      "converged": true
+    },
+    {
+      "ridge": 0.1,
+      "grid": 7,
+      "loglik": -83028.1,
+      "aic": 182844.1,
+      "bic": 269083.6,
+      "n_extreme_a": 0,
+      "theta_r_vs_base": 0.99839,
+      "oos_5fold_r": 0.9869,
+      "converged": true
+    },
+    {
+      "ridge": 0.1,
+      "grid": 9,
+      "loglik": -83020.1,
+      "aic": 182828.1,
+      "bic": 269067.6,
+      "n_extreme_a": 0,
+      "theta_r_vs_base": 0.99859,
+      "oos_5fold_r": 0.9935,
+      "converged": true
+    }
+  ]
+}

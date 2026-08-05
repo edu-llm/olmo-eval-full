@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-08-05T18:40:33.910686+00:00",
+  "note": "core scenario-level M2PL fit (testlet; per-criterion items grouped by scenario). Ridge is the item-level default 1e-2; RE-SWEPT later.",
+  "ridge": 0.01,
+  "grid_1d": 7,
+  "grid_5d": 5,
+  "n_models": 51,
+  "n_observed_cells": 214046,
+  "fits": {
+    "overall_1d": {
+      "n_dims": 1,
+      "loglik": -83342.28256991821,
+      "n_params": 8394,
+      "aic": 183472.56513983643,
+      "bic": 269712.0697455687,
+      "n_items": 4197,
+      "converged": true,
+      "n_iter": 19
+    },
+    "full_5d": {
+      "n_dims": 5,
+      "loglik": -81489.78930747946,
+      "n_params": 9807,
+      "aic": 182593.5786149589,
+      "bic": 283350.1692354517,
+      "n_items": 4197,
+      "converged": true,
+      "n_iter": 14,
+      "max_latent_corr_offdiag": 0.9670282171693768,
+      "latent_correlation": [
+        [
+          1.0,
+          0.7152,
+          0.6567,
+          0.967,
+          0.6483
+        ],
+        [
+          0.7152,
+          1.0,
+          0.6505,
+          0.7248,
+          0.6511
+        ],
+        [
+          0.6567,
+          0.6505,
+          1.0,
+          0.7267,
+          0.347
+        ],
+        [
+          0.967,
+          0.7248,
+          0.7267,
+          1.0,
+          0.6118
+        ],
+        [
+          0.6483,
+          0.6511,
+          0.347,
+          0.6118,
+          1.0
+        ]
+      ],
+      "per_axis_discrimination": {
+        "diagnosis": {
+          "n_anchor_items": 828,
+          "median_disc": 0.9415,
+          "mean_disc": 1.1909,
+          "frac_disc_le_0": 0.0906
+        },
+        "strategy": {
+          "n_anchor_items": 1421,
+          "median_disc": 0.9785,
+          "mean_disc": 1.1835,
+          "frac_disc_le_0": 0.1274
+        },
+        "math": {
+          "n_anchor_items": 991,
+          "median_disc": 0.8156,
+          "mean_disc": 0.941,
+          "frac_disc_le_0": 0.116
+        },
+        "communication": {
+          "n_anchor_items": 1182,
+          "median_disc": 0.9828,
+          "mean_disc": 1.1669,
+          "frac_disc_le_0": 0.033
+        },
+        "affective": {
+          "n_anchor_items": 1178,
+          "median_disc": 0.8336,
+          "mean_disc": 0.9874,
+          "frac_disc_le_0": 0.2046
+        }
+      }
+    }
+  },
+  "fitted_banks": {
+    "overall_1d": "bridge_scenario_fitted_1d.jsonl",
+    "full_5d": "bridge_scenario_fitted_5d.jsonl"
+  }
+}

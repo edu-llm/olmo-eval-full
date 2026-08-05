@@ -1,6 +1,34 @@
 {
-  "EAP": 0.9372180569273297,
-  "MWLE": 0.8819372504338113,
-  "MLE": 0.9206170228467196,
-  "n": 51
+  "generated_at": "2026-08-05T20:21:48.254456+00:00",
+  "purpose": "estimator comparison on the identical locked-point administered sets",
+  "operating_point": {
+    "min_scenarios": 12,
+    "max_se": 0.15
+  },
+  "n_models": 51,
+  "estimators": {
+    "online": {
+      "r": 0.9398,
+      "slope": 0.8098,
+      "mae": 0.307
+    },
+    "batch_eap": {
+      "r": 0.9518,
+      "slope": 0.8664,
+      "mae": 0.2861
+    },
+    "mwle": {
+      "r": 0.9517,
+      "slope": 0.8766,
+      "mae": 0.2845
+    },
+    "mle": {
+      "r": 0.9521,
+      "slope": 0.8793,
+      "mae": 0.2844
+    }
+  },
+  "slope_closest_to_1": "mle",
+  "recommended_estimator": "mwle",
+  "rationale": "Pick the estimator whose recovery slope is closest to 1. MLE has the nominally-closest slope (0.879) but MWLE (0.877) is within 0.003 (noise); MWLE is chosen as the deployment estimator because plain MLE diverges on all-pass/all-fail administrations (Warm's penalty keeps MWLE finite), matching the item-level study's headline."
 }

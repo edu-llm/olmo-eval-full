@@ -28,7 +28,9 @@ qwen_calibration_supplement_20260729.zip
 # Ad-hoc local data dumps (hundreds of MB; regenerable from runs)
 run_data.jsonl
 run_data (1).csv
-
+tutorbench_tb33_grading/
+bridgegrade/
+bridge_calibration/**/_tmp/
 # Virtual environments
 # ---------------------------------------------------------------------------
 .venv

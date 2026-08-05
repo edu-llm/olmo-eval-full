@@ -1,8 +1,35 @@
 {
+  "generated_at": "2026-08-05T19:20:53.783589+00:00",
+  "purpose": "scenario-level calibration-noise floor (SE_param) via observed-info parametric bootstrap over the FULL administrable CAT pool (maximal info).",
+  "method": "observed-information parametric bootstrap (NOT jackknife)",
+  "bank": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\bridge_calibration\\bridge_scenario_fitted_1d_catpool.jsonl",
+  "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\bridgegrade\\response_matrix.csv",
+  "dims": [
+    "overall"
+  ],
+  "config": {
+    "fit_nodes": 7,
+    "eap_grid": 61,
+    "range": 6.0,
+    "n_boot": 300,
+    "ridge": 0.01
+  },
   "n_models": 51,
-  "n_items": 2684,
-  "mean_se_ability": 0.043826355341476615,
-  "mean_se_param": 0.4998977449123122,
-  "mean_se_total": 0.5140514130650581,
-  "note": "SE_param (calibration) dominates SE_ability at this N; total-SE bars are the honest ones."
+  "n_admin_criteria": 3961,
+  "median_item_param_se_a": 0.40410437613251743,
+  "se_param_floor": {
+    "mean": 0.03305926401761997,
+    "median": 0.026833520462910567,
+    "min": 3.199104505948557e-06,
+    "max": 0.09439829008646664
+  },
+  "se_posterior_full_bank": {
+    "mean": 0.03683168915661374,
+    "median": 0.028918069675088597
+  },
+  "se_total_full_bank": {
+    "mean": 0.05439131012595162,
+    "median": 0.05335325460393903
+  },
+  "comparison_note": "Item-level Bridge SE_param was ~0.02 (per-criterion, wrong administration + dimensionality). TutorBench scenario-level SE_param floor was ~0.21-0.25. This scenario-level Bridge floor is the honest calibration-noise floor at N=51."
 }

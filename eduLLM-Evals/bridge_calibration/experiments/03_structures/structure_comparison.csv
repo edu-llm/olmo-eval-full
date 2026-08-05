@@ -1,6 +1,6 @@
-structure,n_dims,n_items,loglik,n_params,aic,bic,oos_logloss_mean,oos_logloss_se,max_latent_corr_offdiag,converged
-overall_1d,1,2684,-54007.9,5368,118751.8,171502.5,0.5109,0.0151,0.0,True
-correlation_2d,2,2684,-53735.3,5879,119228.6,177000.8,0.5114,0.0151,0.77,True
-correlation_3d,3,2684,-53567.8,6044,119223.6,178617.3,0.5131,0.0164,0.795,True
-merge_affective_communication_4d,4,2684,-53218.5,6125,118687.0,178876.7,0.5131,0.0164,0.886,True
-full_5d,5,2684,-52517.2,6275,117584.4,179248.1,0.511,0.0165,0.967,True
+structure,n_dims,n_criteria,loglik,n_params,aic,bic,oos_logloss_mean,oos_logloss_se,max_latent_corr_offdiag,converged
+overall_1d,1,4197,-83871.9,8394,184531.8,270771.3,0.51242,0.01251,0.0,True
+cognitive_vs_relational_2d,2,4197,-83356.5,9193,185098.9,279547.3,0.51112,0.01267,0.777,True
+correlation_3d,3,4197,-82878.9,9454,184665.7,281795.6,0.51227,0.01412,0.791,True
+merge_affect_comm_4d,4,4197,-82592.8,9575,184335.6,282708.7,0.51268,0.01347,0.873,True
+full_5d,5,4197,-81489.8,9807,182593.6,283350.2,0.50976,0.01417,0.967,True

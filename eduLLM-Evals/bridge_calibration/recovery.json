@@ -1,8 +1,0 @@
-{
-  "method": "held-out k-fold over models (EAP)",
-  "k": 5,
-  "recovery_r": 0.22560267363343892,
-  "slope": 0.2011036488790999,
-  "mae": 1.0105879952791337,
-  "n_models": 51
-}
