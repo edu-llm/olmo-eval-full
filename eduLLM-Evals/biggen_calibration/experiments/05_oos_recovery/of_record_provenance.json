@@ -4,7 +4,7 @@
   "eap_grid": 3201,
   "eap_range": 8.0,
   "eap_prior": "standard-normal (uniform product grid)",
-  "reason": "fine uniform grid is the de-quantized reference; the coarse GH-scale grid (61/[-6,6], spacing 0.2) quantized the razor-sharp full-bank posterior -> 0.2 banding on the recovery reference. Coarse mode kept behind --eap-mode gh.",
+  "reason": "EAP-posterior stop adopted as of-record (floor 8 / SE 0.12); replaces the online normal-approx stop. Bank UNCHANGED (no re-fit). Prior online-SE recovery archived under experiments/archive_onlineSE/.",
   "locked_config": {
     "max_se": 0.12,
     "min_scenarios": 8,
@@ -14,9 +14,11 @@
     "estimator": "mwle"
   },
   "recovery_headline_mwle": {
-    "r": 0.9715,
-    "slope": 0.8131,
-    "theta_mae": 0.332
+    "r": 0.9823,
+    "r_lo": 0.9757,
+    "r_hi": 0.9905,
+    "slope": 0.9209,
+    "theta_mae": 0.2539
   },
   "leaderboard_rank_vs_coarse": {
     "spearman_vs_coarse": 1.0,
@@ -31,5 +33,6 @@
     "experiments\\08_leaderboard\\results.csv": "results_coarse.csv",
     "experiments\\08_leaderboard\\figures\\leaderboard_general.png": "leaderboard_general_coarse.png"
   },
-  "generated_by": "biggen_calibration/scripts/biggen_regen_of_record.py"
+  "generated_by": "biggen_calibration/scripts/biggen_adopt_eap.py",
+  "stop_rule": "eap"
 }

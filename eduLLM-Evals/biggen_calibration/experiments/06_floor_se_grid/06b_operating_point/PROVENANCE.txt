@@ -1,0 +1,1 @@
+Of-record operating-point grid under the EAP-posterior stop (floor 8 / SE 0.12 locked). Promoted from the Phase-A study experiments/12_eap_stop_grid/ (biggen_eap_stop_grid.py --stop-se eap). The prior online-SE grid is archived under experiments/archive_onlineSE/06b_operating_point/.

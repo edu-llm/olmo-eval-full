@@ -171,7 +171,7 @@ data/TutorEval/rubrics_qmatrix_verified.json
 data/TutorEval/rubrics_qmatrix_verified.jsonl
 data/TutorEval/review_queue.jsonl
 data/TutorEval/review_queue*.tsv
-
+WildBenchGrade/
 # ---------------------------------------------------------------------------
 # reports/ = TRACKED deliverables (CAT figures + summary tables). The global
 # *.png rule above (and any other broad ignore) must NOT swallow these, so

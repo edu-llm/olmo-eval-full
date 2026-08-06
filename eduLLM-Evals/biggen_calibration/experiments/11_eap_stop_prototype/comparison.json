@@ -1,0 +1,113 @@
+{
+  "generated_at": "2026-08-06T21:14:39.261043+00:00",
+  "status": "PROTOTYPE / Phase A exploratory -- NOT adopted. of-record 04/05/07/08/09/10 untouched.",
+  "design": {
+    "stop_rule_eap": "EAP posterior SD <= 0.12 AND n_scenarios >= 8, else forced cap",
+    "stop_rule_online": "engine online normal-approx SE <= 0.12 AND floor 8",
+    "selection": "unchanged (production engine max-info scenario selection)",
+    "seed": 20260729,
+    "l_max_cap": 40,
+    "eap_grid": 3201,
+    "eap_range": 8.0,
+    "estimator": "mwle",
+    "se_param": "fresh observed-info parametric bootstrap over each rule's admin set"
+  },
+  "n_models": 52,
+  "length_deployed_full_data": {
+    "online": {
+      "scenarios": {
+        "median": 11.5,
+        "mean": 13.5577,
+        "q1": 8.0,
+        "q3": 14.0
+      },
+      "criteria": {
+        "median": 49.5,
+        "mean": 54.8462,
+        "q1": 34.75,
+        "q3": 60.25
+      }
+    },
+    "eap": {
+      "scenarios": {
+        "median": 16.0,
+        "mean": 19.2692,
+        "q1": 10.0,
+        "q3": 27.25
+      },
+      "criteria": {
+        "median": 68.5,
+        "mean": 76.3846,
+        "q1": 41.75,
+        "q3": 104.75
+      }
+    }
+  },
+  "pct_reaching_eap_sd_le_0.12": {
+    "online_rule": {
+      "n": 15,
+      "pct": 28.8
+    },
+    "eap_rule": {
+      "n": 46,
+      "pct": 88.5,
+      "n_hit_cap": 6
+    }
+  },
+  "se_ability_distribution_deployed": {
+    "online": {
+      "median": 0.1329,
+      "mean": 0.1632,
+      "q1": 0.1184,
+      "q3": 0.1568
+    },
+    "eap": {
+      "median": 0.1174,
+      "mean": 0.1299,
+      "q1": 0.1144,
+      "q3": 0.1188
+    }
+  },
+  "se_total_distribution_deployed": {
+    "online": {
+      "median": 0.1522,
+      "mean": 0.1867,
+      "q1": 0.1358,
+      "q3": 0.2009
+    },
+    "eap": {
+      "median": 0.1332,
+      "mean": 0.1482,
+      "q1": 0.1293,
+      "q3": 0.138
+    }
+  },
+  "oos_recovery": {
+    "eap_rule": {
+      "r": 0.9823,
+      "r_lo": 0.9757,
+      "r_hi": 0.9911,
+      "slope": 0.9209,
+      "theta_mae": 0.2539,
+      "mean_scenarios": 13.44,
+      "mean_criteria": 53.2
+    },
+    "online_rule": {
+      "r": 0.9715,
+      "r_lo": 0.9565,
+      "r_hi": 0.9853,
+      "slope": 0.8131,
+      "theta_mae": 0.332,
+      "mean_scenarios": 9.37,
+      "mean_criteria": 37.4
+    }
+  },
+  "models_that_still_cap_under_eap": [
+    "01-ai/Yi-6B-200K",
+    "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+    "BEE-spoke-data/smol_llama-220M-openhermes",
+    "HuggingFaceTB/SmolLM2-360M",
+    "ai-forever/mGPT",
+    "allenai/OLMo-1B-hf"
+  ]
+}

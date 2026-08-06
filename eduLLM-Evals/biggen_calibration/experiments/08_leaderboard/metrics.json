@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-08-06T22:13:05.995416+00:00",
+  "purpose": "full-bank ability leaderboard with SE_total bars (NOT the locked CAT)",
+  "scoring": "full modeled bank, 1D fine-EAP theta (stop-independent)",
+  "se_bars": "SE_total = sqrt(SE_ability_posterior^2 + SE_param^2) from exp-07 (EAP deployed)",
+  "n_models": 52,
+  "n_criteria_scored": 2389,
+  "theta_range": [
+    -5.356782803449555,
+    2.636843215283836
+  ],
+  "se_total_range": [
+    0.11187262368850245,
+    0.4411693268134404
+  ],
+  "top5": [
+    {
+      "model": "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+      "theta": 2.636843215283836,
+      "se_total": 0.13788098199256865
+    },
+    {
+      "model": "ibm-granite/granite-3.1-2b-instruct",
+      "theta": 2.531494318251561,
+      "se_total": 0.13788768155004022
+    },
+    {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "theta": 2.385377346843716,
+      "se_total": 0.13977397809585784
+    },
+    {
+      "model": "01-ai/Yi-1.5-6B-Chat",
+      "theta": 2.104230132924674,
+      "se_total": 0.14367179423229542
+    },
+    {
+      "model": "tiiuae/Falcon3-3B-Instruct",
+      "theta": 2.0906653335093157,
+      "se_total": 0.1344405813669501
+    }
+  ],
+  "bottom5": [
+    {
+      "model": "HuggingFaceTB/SmolLM2-360M",
+      "theta": -2.3018077934713888,
+      "se_total": 0.1390422606895783
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -2.791857821940064,
+      "se_total": 0.1494249848283187
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -4.848698083971636,
+      "se_total": 0.39773640978354896
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -4.853189902247372,
+      "se_total": 0.3692426274942592
+    },
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -5.356782803449555,
+      "se_total": 0.4411693268134404
+    }
+  ],
+  "weakly_identified_source": "EAP-native deployed caps at 8/0.12 (posterior SD>0.12 within L=40)",
+  "weakly_identified_models": [
+    {
+      "model": "01-ai/Yi-6B-200K",
+      "theta": -2.0351296653165423,
+      "se_total": 0.1307419099197316
+    },
+    {
+      "model": "HuggingFaceTB/SmolLM2-360M",
+      "theta": -2.3018077934713888,
+      "se_total": 0.1390422606895783
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -2.791857821940064,
+      "se_total": 0.1494249848283187
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -4.848698083971636,
+      "se_total": 0.39773640978354896
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -4.853189902247372,
+      "se_total": 0.3692426274942592
+    },
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -5.356782803449555,
+      "se_total": 0.4411693268134404
+    }
+  ],
+  "n_weakly_identified": 6,
+  "spearman_vs_catadmin_ranking": 0.98421
+}

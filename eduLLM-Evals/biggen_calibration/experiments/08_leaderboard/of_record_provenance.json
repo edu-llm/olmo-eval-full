@@ -1,35 +1,11 @@
 {
   "of_record": true,
-  "eap_mode": "fine",
+  "leaderboard_theta": "full-bank fine-EAP (stop-independent)",
   "eap_grid": 3201,
   "eap_range": 8.0,
-  "eap_prior": "standard-normal (uniform product grid)",
-  "reason": "fine uniform grid is the de-quantized reference; the coarse GH-scale grid (61/[-6,6], spacing 0.2) quantized the razor-sharp full-bank posterior -> 0.2 banding on the recovery reference. Coarse mode kept behind --eap-mode gh.",
-  "locked_config": {
-    "max_se": 0.12,
-    "min_scenarios": 8,
-    "ridge": 0.01,
-    "k": 5,
-    "seed": 20260729,
-    "estimator": "mwle"
-  },
-  "recovery_headline_mwle": {
-    "r": 0.9715,
-    "slope": 0.8131,
-    "theta_mae": 0.332
-  },
-  "leaderboard_rank_vs_coarse": {
-    "spearman_vs_coarse": 1.0,
-    "n_ranks_changed": 0,
-    "max_rank_move": 0
-  },
-  "archived_coarse": {
-    "experiments\\05_oos_recovery\\metrics.json": "metrics_coarse.json",
-    "experiments\\05_oos_recovery\\oos_per_model.csv": "oos_per_model_coarse.csv",
-    "experiments\\05_oos_recovery\\figures\\oos_recovery_general.png": "oos_recovery_general_coarse.png",
-    "experiments\\05_oos_recovery\\figures\\oos_recovery_scatter_general.png": "oos_recovery_scatter_general_coarse.png",
-    "experiments\\08_leaderboard\\results.csv": "results_coarse.csv",
-    "experiments\\08_leaderboard\\figures\\leaderboard_general.png": "leaderboard_general_coarse.png"
-  },
-  "generated_by": "biggen_calibration/scripts/biggen_regen_of_record.py"
+  "se_bars_from": "exp-07 EAP-deployed leaderboard_se_components.csv",
+  "weakly_identified": "EAP-native deployed caps at 8/0.12",
+  "note": "Mirrors WildBench: leaderboard theta is FULL-BANK (does not use the CAT stop). The prior CAT-administered-theta leaderboard is archived under experiments/archive_onlineSE/08_leaderboard_catadmin/.",
+  "spearman_vs_catadmin_ranking": 0.98421,
+  "generated_by": "biggen_calibration/scripts/biggen_adopt_eap.py"
 }

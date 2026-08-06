@@ -1,2 +1,2 @@
-oos_r,oos_slope,mean_scen,mean_crit,conv_pct,n,min_scenarios,se_target,ridge
-0.970327641079982,0.8119788296397851,9.365384615384615,37.44230769230769,100.0,52,8,0.12,0.01
+oos_r,oos_slope,mean_scen,mean_crit,conv_pct,n,min_scenarios,se_target,ridge,stop_rule
+0.9822550455127227,0.9208750543300969,13.442307692307692,53.25,94.2,52,8,0.12,0.01,eap

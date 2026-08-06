@@ -19,8 +19,11 @@ mirroring `diagnostics/mcq_cat/`) before committing into `flow/uni-frq`.
 ## Locked CAT config
 
 `SE target = 0.12`, `min_scenarios (floor) = 8`, `ridge = 0.01`, estimator = **MWLE**,
-selection = trace, `k = 5` CV, seed `20260729`. Deployed test length ~13.6 scenarios to
-reach SE 0.12 (see README experiment 07b).
+selection = trace, `k = 5` CV, seed `20260729`. **Deployed CAT stop = EAP-posterior SD**
+(adopted 2026-08-06; stop at posterior SD ≤ 0.12 over the fine θ grid, not the engine's online
+normal-approx SE). Deployed test length ~**19.3 scenarios** (median 16) to reach the honest
+posterior SD 0.12; ~88.5% of models reach it and the ~6 lowest-ability tiny base models cap.
+The **fitted bank is UNCHANGED** by this stop-rule change (no re-fit), so it remains a drop-in.
 
 ## Payload
 
@@ -42,17 +45,15 @@ reach SE 0.12 (see README experiment 07b).
 
 ## Provenance + headline metrics
 
-- Fit: `calibrate_mirt.fit_m2pl_em`, skill=`general`, ridge=0.01, n_models=52.
+- Fit: `calibrate_mirt.fit_m2pl_em`, skill=`general`, ridge=0.01, n_models=52. (Bank unchanged by the EAP stop adoption — stop-rule change only, no re-fit.)
 - Matrix sha256: `86e9516fcb123df7df761743d35286079325b360a7db4236d4594369016fccd7`.
-- OOS of record @ locked config: **r = 0.971, slope = 0.813**, theta-MAE 0.332, 100% convergence (n=52).
-  (Recovery reference theta uses the fine de-quantized EAP grid; the earlier coarse-grid r=0.970
-  is archived for provenance. Item params/bank are unchanged — the reference grid does not affect them.)
-- p-IRT pass-rate MAE **0.047**; parameter uncertainty SE_total ~0.197 (SE_param ~0.094).
+- OOS of record @ locked config (**EAP-posterior stop**): **r = 0.982, slope = 0.921**, theta-MAE 0.254, mean 13.4 OOS scen (deployed ~19.3), OOS convergence 94.2% (n=52). Deployed honest **% reaching SE 0.12 ~88.5%** (vs only ~28.8% under the old online normal-approx stop — the EAP stop **resolves the online-vs-posterior estimator mismatch**). Recovery reference theta = fine de-quantized EAP grid; the prior online-SE of-record (r 0.9715) is archived under `experiments/archive_onlineSE/`.
+- p-IRT pass-rate MAE **0.042**; parameter-uncertainty SE_total ~**0.148** (SE_ability ~0.130, SE_param ~0.069; deployed on the EAP-administered sets). Full-bank SE_param floor unchanged.
 - Dimensionality: checked post-grading — **unidimensional confirmed** (single "general" skill; a
   data-driven 2-D candidate did not beat 1-D out-of-sample or on BIC at N=52). No multi-skill Q authored.
 - Caveats: N=52 is provisional; leaderboard adjacent-pair SE bands overlap (only coarse
-  ability bands distinguishable); across-seed theta SD ~0.179. See `README.md` for the full
-  experiment log (01-10).
+  ability bands distinguishable); across-seed theta SD ~**0.087** (EAP; the longer EAP tests are more order-stable than the old online ~0.179). See `README.md` for the full experiment log (01-12).
+- Migration status: BiGGen and **WildBench** are on the EAP-posterior stop; **Bridge / TutorBench / InfoBench are pending migration**.
 
 ## Rerun / swap protocol (~150 models)
 
