@@ -8,6 +8,12 @@ S3/DB output instead of the hand-rolled `eduLLM-Evals/scripts/` pipeline.
 
 Repo root: `/Users/cat/alpha-projects/olmo-eval-full`.
 
+> **Execution model (2026-08-05):** these evals run **retroactively, batched over saved
+> training checkpoints** on AWS (not during training) — see `AWS_CHECKPOINT_EVAL_PLAN.md` §7 and
+> `tests/aws/CHECKPOINT_LAUNCHER_SCOPING.md` §3.5. This is purely *when/where* `olmo-eval run`
+> is invoked; it does **not** change *what* this doc scopes — the tasks, Qwen judge, and MCQ
+> CAT still need registering exactly as described below.
+
 ---
 
 ## 1. Summary & current state
@@ -75,6 +81,33 @@ There are **two things** to integrate:
   criteria (`eduLLM-Evals/tutor_cat/`) has **no equivalent** in
   `src/olmo_eval/adaptive/`, which is strictly **unidimensional 3PL over whole
   items**. These are different IRT models (see §5, §6).
+
+### Reconciliation update (2026-08-04): a standalone MCQ CAT package now exists
+
+A teammate landed **`diagnostics/mcq_cat/`** (plan: `Plan/mcq_cat_diagnostics/README.md`), a
+standalone, **offline, per-checkpoint** MCQ CAT engine that is **decoupled from `olmo_eval`**.
+This is a **third** CAT implementation alongside the two this doc contrasts
+(`src/olmo_eval/adaptive/` unidimensional 3PL, and `eduLLM-Evals/tutor_cat/` multidimensional
+M2PL), and it updates the framing below:
+
+- **One contract spans uni + MIRT.** `diagnostics/mcq_cat/base.py` defines a `CatStyle` ABC
+  where ability/discrimination are scalars for unidimensional models and **tuples for MIRT**
+  (`IRTBank.dimensions`), driven by a generic engine (`common/cat_loop.py`). So
+  **multidimensional MCQ CAT is explicitly in-scope here** — but **offline and outside
+  `olmo-eval run`**, as a fresh standalone engine, *not* a port into `src/olmo_eval/adaptive/`
+  nor a lift of `tutor_cat/`.
+- **It does not reuse olmo-eval's CAT or scoring.** It rolls its own log-likelihood MCQ scorer
+  (`common/inference.py`, HF `from_pretrained`) and IRT loader (`common/irt_params.py`), driven
+  by `python -m diagnostics.mcq_cat.runner` — **not** `olmo-eval run-external`/ATLAS.
+  `common/benchmark_download.from_olmo_eval_task` is a **stub extension point** if a style later
+  wants to source items from an olmo-eval MCQ task (`src/olmo_eval/evals/tasks`).
+- **Impact on the phases below.** Phase 4/5 (add a `pedagogy` olmo-eval task, then reuse
+  olmo-eval's unidimensional ATLAS CAT) is now **one of two possible homes** for MCQ CAT.
+  **Decision needed (open question):** is MCQ/pedagogy CAT delivered as an **offline
+  `diagnostics/mcq_cat/` style**, as **live olmo-eval `run-external` ATLAS CAT**, or both? The
+  "keep multidimensional CAT offline" guidance (§5.4, §6) still holds — the new package **is**
+  that offline home, just built fresh rather than ported from `tutor_cat`. Styles are not yet
+  implemented (`diagnostics/mcq_cat/styles/` is currently empty); the scaffolding is frozen.
 
 ### 1.1 Which benchmark is "the MCQ one"?
 
@@ -200,6 +233,12 @@ CAT is generic over "any task whose primary metric yields a 0/1 cell keyed on
 The **open-response multidimensional CAT** (TutorBench skill θ over rubric
 criteria) does **not** map onto the current unidimensional 3PL core and is
 proposed as out-of-scope for phase 1 (see §5, §6, §4-Phase 6).
+
+> **Reconciliation (2026-08-04):** MCQ CAT may instead be delivered **offline** via the new
+> standalone `diagnostics/mcq_cat/` package (one `CatStyle` contract spanning uni **and** MIRT),
+> which is decoupled from this ATLAS path. Whether pedagogy MCQ CAT lives in that package, in
+> live olmo-eval `run-external` ATLAS CAT, or both, is an open decision — see the
+> "Reconciliation update" note in §1.
 
 ---
 

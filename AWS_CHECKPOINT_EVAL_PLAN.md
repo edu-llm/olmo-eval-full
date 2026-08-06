@@ -40,6 +40,14 @@ learns) using **AWS**, because we do not have access to AI2's "Beaker" system. T
 result should feel the same as today: point the evaluator at a checkpoint, run some
 tasks, and get scores back — just powered by the team's AWS pipeline instead of Beaker.
 
+> **Decision (2026-08-05): evals run retroactively, in a batch — not during training.**
+> Training's only job is to **write checkpoints to S3**. Full evals run **afterward, batched
+> over all saved `step_N` checkpoints** — the **retroactive back-fill flow (§7)** is now the
+> chosen path. The **inline "fire an eval per checkpoint during training" hook (§6) is
+> de-emphasized** (kept for reference, off the eval critical path). The unit of work is
+> unchanged — "eval one checkpoint on AWS → results to S3" — it is just driven by the
+> **shard-index / back-fill fleet (§7)** rather than a training-loop hook.
+
 ---
 
 ## 2. How it works today (Beaker), in plain terms
@@ -147,46 +155,55 @@ applied.
 ## 5. End-to-end flow
 
 ```
-  [ Training run ]
+  [ Training run ]  ──(1) saves each checkpoint to S3, then finishes──►
         |
-        |  (1) saves a checkpoint to S3
         v
-  s3://<bucket>/checkpoints/step_50000/
+  s3://<bucket>/checkpoints/<run>/step_1000/, step_2000/, ...   (all checkpoints)
         |
-        |  (2) a small "hook" fires and calls `aws ec2 run-instances`,
-        |      passing the checkpoint's S3 path into a user-data bootstrap
+        |  (2) RETROACTIVELY (§7): a back-fill driver enumerates the step_N
+        |      checkpoints and launches ≤3 self-terminating g6.xlarge workers
+        |      (one `run-instances --count K`); each shard self-assigns a slice
         v
-  [ one self-terminating g6.xlarge GPU instance ]   (team AMI/SG/subnet/instance-profile)
+  [ ≤3 self-terminating g6.xlarge GPU workers ]   (team AMI/SG/subnet/instance-profile)
         |
-        |  (3) user-data arms `shutdown -h +N`; the node stages olmo-eval
+        |  (3) user-data arms `shutdown -h +N`; each node stages olmo-eval
         |      (S3 + presigned URL + SSM, or install-on-DLAMI) and installs deps
         v
-  [ olmo-eval on the L4 GPU ]
+  [ olmo-eval on the L4 GPU — once per assigned checkpoint ]
         |  (4) `olmo-eval run -m <checkpoint> -t <tasks> --s3-*`
         |      - downloads the checkpoint from S3
         |      - runs the eval tasks
         |      - writes results back up to S3
         v
-        |  (5) `shutdown -h` fires → instance self-terminates, billing stops
+        |  (5) `shutdown -h` fires → worker self-terminates, billing stops
         v
-  s3://<bucket>/olmo-eval-results/...
+  s3://<bucket>/olmo-eval-results/<run>/step_N/...
 ```
 
-In one sentence: **training saves a checkpoint to S3 → a hook calls `run-instances` for
-one self-terminating `g6.xlarge` → the node stages olmo-eval from S3 over SSM and runs
-`olmo-eval run -m <checkpoint> -t <tasks> --s3-*` on the L4 → results are written back to
-S3 → the box turns itself off.** No Batch, no queue, no warm pool, no container registry.
+In one sentence: **training saves all checkpoints to S3 → afterward a back-fill driver
+enumerates them and launches ≤3 self-terminating `g6.xlarge` workers → each worker stages
+olmo-eval from S3 over SSM and runs `olmo-eval run -m <checkpoint> -t <tasks> --s3-*` on the L4
+for each checkpoint in its slice → results are written back to S3 → the workers turn themselves
+off.** No Batch, no queue, no warm pool, no container registry, **and no during-training hook.**
 
 ---
 
-## 6. Flow 1 — live per-checkpoint eval (the hook)
+## 6. Flow 1 — inline per-checkpoint hook (DE-EMPHASIZED — not the chosen eval path)
 
-**Idea in words:** training already writes each checkpoint to S3. Right after it does, we
-add a tiny step that **launches one self-terminating GPU box to evaluate that checkpoint,
-then goes away.** This is exactly how you get an "on-demand node that creates itself,
-runs, and tears down" — the pay-per-use behavior — **without AWS Batch.** The single
-`run-instances` call *is* the whole "temp agency": it hires one machine, and the machine
-fires itself.
+> **Status (2026-08-05):** this inline "fire an eval during training" hook is **no longer the
+> eval path.** Evals run **retroactively** via the back-fill fleet (§7). This section is kept
+> for reference because it documents the **per-checkpoint atom** (launch one self-terminating
+> box → `olmo-eval run -m <checkpoint>` → results to S3 → self-terminate), which §7 reuses
+> unchanged — just **driven by a batch driver over saved checkpoints instead of by the training
+> loop.** Ignore the "training script adds this" framing below; read it as "how to evaluate one
+> checkpoint."
+
+**Idea in words:** the unit of work is **launch one self-terminating GPU box to evaluate a
+single checkpoint, then go away.** This is exactly how you get an "on-demand node that creates
+itself, runs, and tears down" — the pay-per-use behavior — **without AWS Batch.** The single
+`run-instances` call *is* the whole "temp agency": it hires one machine, and the machine fires
+itself. (Originally imagined as a training-loop hook; per the decision above it is now invoked
+by the retroactive driver in §7.)
 
 **What the training script adds (illustrative only — a few lines, not production code):**
 
@@ -227,15 +244,32 @@ lives in the bootstrap/staging script and in `olmo-eval` itself.
 > Apply §4 before every launch: `g6.xlarge` only, ≤3 running GPU boxes, `shutdown -h +N`
 > present.
 
+> **Companion on-node commands (added 2026-08-04):** the eval step isn't only `olmo-eval run`.
+> Two standalone, self-contained diagnostics now live in the repo and take a checkpoint
+> `s3://…` URI just like this flow: `diagnostics/mcq_cat/runner.py` (MCQ Computerized Adaptive
+> Testing; plan `Plan/mcq_cat_diagnostics/README.md`) and the Flow-1 test
+> `tests/OnNode/checkpoint_infer.py`. They **do not depend on `olmo_eval`** — they download the
+> checkpoint and upload results through their own `boto3` S3 helpers. The launcher can drive
+> any of these commands; they obey the same §4 rules and hit the **same shared-role S3 grant
+> constraint** (§3, §9): their write prefixes (`mcq_cat`'s `--s3-out`, `checkpoint_infer`'s
+> `checkpoint-infer/`) must be covered by the `EswManagedInstance` grant or use a scoped
+> bucket-policy grant. Note both currently load only **HF-format** checkpoints (their
+> `olmo_core` path is an unimplemented integration point).
+
 ---
 
-## 7. Flow 2 — retroactive back-fill (the shard-index fleet)
+## 7. Flow 2 — retroactive back-fill (the shard-index fleet) — **PRIMARY DESIGN**
 
-**Idea in words:** sometimes you already have a folder full of past checkpoints and want
-to score all of them. Instead of a Batch "array job", we use the team's **shard-index
-fleet pattern**: launch several identical `g6.xlarge` workers at once, and each one reads
-its own number from **`ami-launch-index`** (via IMDSv2) to decide **which checkpoints are
-mine.**
+> **This is the chosen eval flow (2026-08-05).** Training writes checkpoints to S3; **all**
+> evals happen here, retroactively, over the full set of saved checkpoints. It is the central
+> orchestration on top of the §6 per-checkpoint atom.
+
+**Idea in words:** training has finished (or is well ahead) and there is a folder full of
+checkpoints to score. Instead of a Batch "array job", we use the team's **shard-index fleet
+pattern**: launch several identical `g6.xlarge` workers at once, and each one reads its own
+number from **`ami-launch-index`** (via IMDSv2) to decide **which checkpoints are mine.** For a
+small run, a **sequential** loop over checkpoints (one box at a time) is the simplest form of
+the same driver; the sharded fleet is the throughput version.
 
 **How it maps:**
 
@@ -327,16 +361,19 @@ or modify it.
    `olmo-eval run … --s3-*`. Model it on the smoke-test runbook's staging + run commands.
    - *Status:* New. The smoke-test runbook already proves every step of this on a single
      box — generalize it from one model to "the checkpoint I was handed."
-8. **The per-checkpoint hook (Flow 1).** A few lines added to the training script that
-   call `run-instances` (with the user-data bootstrap) each time a checkpoint is saved.
-   - *Status:* New, small.
-9. **The back-fill fan-out (Flow 2).** A launcher that starts ≤3 `g6.xlarge` workers with
-   `--count K` and an on-node script that self-assigns checkpoints via the IMDSv2 shard
-   index.
-   - *Status:* New, but the shard-index pattern is already proven in the team's 200-model
-     sweep — reuse it.
+8. **The back-fill driver (Flow 2) — PRIMARY.** The retroactive orchestrator: enumerate a
+   run's `step_N` checkpoints in S3, then evaluate each with the per-checkpoint atom —
+   **sequential** (one box at a time) first, then the **≤3-worker `--count K` IMDSv2
+   shard-index fleet** where each worker self-assigns a slice of checkpoints.
+   - *Status:* New — **this is the core eval mechanism.** The shard-index pattern is already
+     proven in the team's 200-model sweep — reuse it.
+9. **The inline per-checkpoint hook (Flow 1) — DE-EMPHASIZED / optional.** A few lines that
+   `run-instances` when a checkpoint is saved during training.
+   - *Status:* **Not on the eval critical path** (per the §1 decision). Skip unless a live
+     during-training signal is later wanted; the retroactive driver (item 8) covers evals.
 10. **(Later) olmo-eval-side wiring.** Any convenience flags/glue inside `olmo-eval` for
-    checkpoint paths and S3 grouping. Deferred; not required to get Flow 1 working.
+    checkpoint paths and S3 grouping. Deferred; not required to get the retroactive back-fill
+    (Flow 2, item 8) working.
 
 > **What we explicitly do NOT build anymore:** no Batch compute environment, no job queue,
 > no job definition, no warm pool, and **no ECR container image.** The DLAMI + S3-staging
@@ -355,7 +392,7 @@ or modify it.
   nothing stays up.
 - **Cold start is the accepted cost.** Each fresh box pays a **few-minute boot + model-load
   cold start** (instance boot, dependency install/cache, model download, vLLM engine
-  start) before the eval proper begins. For per-checkpoint evals during training this is
+  start) before the eval proper begins. For a retroactive per-checkpoint back-fill this is
   fine; it's the price of not keeping a machine idle. (If checkpoints ever come so fast
   and close together that cold starts dominate, revisit — but do **not** solve it by
   keeping a forbidden always-on GPU.)
@@ -392,6 +429,13 @@ or modify it.
   matching the team's existing prefix conventions.
 - **Back-fill concurrency:** with the hard **≤3 GPU workers** cap, how many checkpoints
   should each worker loop over, and is a spot-instance back-fill worth pursuing later?
+- **Which eval command per family (added 2026-08-04):** MCQ CAT now has a standalone home
+  (`diagnostics/mcq_cat/`, offline, no `olmo_eval` dependency) separate from the `olmo-eval run`
+  core used for tasks + the LLM judge. Decide whether MCQ/pedagogy CAT is delivered via that
+  offline package, via live `olmo-eval run-external` CAT, or both, and standardize the S3
+  result-key convention across the two invocation shapes. See
+  `OLMO_EVAL_INTEGRATION_PLAN.md` (2026-08-04 reconciliation note) and
+  `tests/aws/CHECKPOINT_LAUNCHER_SCOPING.md` §1.5.
 - **Persistent polling worker (future only):** instead of a hook per checkpoint, a
   long-running worker could watch S3 for new checkpoints and launch evals. We're **not**
   designing this now — noting it as a possible future fallback (and it would still obey the

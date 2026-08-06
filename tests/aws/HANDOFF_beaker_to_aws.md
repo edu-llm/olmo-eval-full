@@ -12,6 +12,14 @@ We want to evaluate **training checkpoints** of our model using the `eduLLM-Eval
 tasks (TutorEval, TutorBench, the Pedagogy MCQ benchmark) **plus a Qwen LLM judge**,
 and we want to run this on **our team's AWS account**, NOT on **AI2 Beaker**.
 
+> **Decision (2026-08-05): evals run retroactively, in a batch — not during training.**
+> Training only writes checkpoints to S3; **all evals run afterward, batched over the saved
+> `step_N` checkpoints** via the **retroactive back-fill fleet** (`AWS_CHECKPOINT_EVAL_PLAN.md`
+> §7 / `CHECKPOINT_LAUNCHER_SCOPING.md` §3.5). The unit of work is unchanged — "eval one
+> checkpoint on AWS → results to S3" — but it is driven by a **batch driver over saved
+> checkpoints**, not an inline during-training hook. The inline per-checkpoint hook (Flow 1) is
+> **de-emphasized and off the eval critical path** (kept for reference, not deleted).
+
 - `olmo-eval` (this repo) already has a checkpoint-eval concept ("CheckpointFlows").
 - Its two run paths today are:
   - `olmo-eval run ...`  → runs the eval pipeline **inline** on whatever machine you're on.
@@ -189,6 +197,13 @@ policy-edit routes.
   broker role can apply it (shared-infra mutation is gated by auto-review and needs
   approval). Extending the inline role policy `AdaptiveSmokeTemp20260731` is a third option
   (touches the shared ESW role; least preferred).
+- **Applies to the newly-pulled diagnostic paths too (2026-08-04).**
+  `diagnostics/mcq_cat/common/s3_io.py` and `tests/OnNode/checkpoint_infer.py` upload results
+  with **raw `boto3` `put_object`** (not olmo-eval's storage layer, not the `--s3-*` flags), so
+  they are subject to the **same `EswManagedInstance` grant**. Their write locations —
+  `mcq_cat`'s `--s3-out` and `checkpoint_infer`'s default `checkpoint-infer/` prefix — are
+  **not** under `smoke/*`, so a real run there will hit the same `AccessDenied` unless pointed
+  at a granted prefix (e.g. `smoke/…`) or covered by the scoped bucket-policy grant above.
 
 ---
 
@@ -238,7 +253,16 @@ policy-edit routes.
    auto-upload — this unblocks unattended runs.
 2. **Wire the AWS EC2+SSM launcher into the checkpoint flow** as the Beaker replacement
    (reuse `olmo-eval run` core; orchestrate launch/stage/run/teardown like the smoke test).
+   *(2026-08-05: evals are now **retroactive/batched**, not during training. Build order:
+   prove the **single-checkpoint atom** first, then promote the **batch / back-fill driver**
+   (enumerate saved `step_N` checkpoints → sequential loop → ≤3-worker shard-index fleet) to the
+   core mechanism. The inline during-training hook (Flow 1) is de-emphasized. See
+   `CHECKPOINT_LAUNCHER_SCOPING.md` §3.5 / §9 and `AWS_CHECKPOINT_EVAL_PLAN.md` §7.)*
 3. **Register the custom evals** per `OLMO_EVAL_INTEGRATION_PLAN.md`: Qwen judge as an
    LLM-judge scorer, Pedagogy MCQ as a task. Keep the **multidimensional CAT offline** for now.
+   *(2026-08-04: a standalone offline MCQ CAT — uni + MIRT — is now taking shape in
+   `diagnostics/mcq_cat/` (plan `Plan/mcq_cat_diagnostics/README.md`), decoupled from
+   `olmo_eval`. It's a candidate home for MCQ/pedagogy CAT instead of the olmo-eval ATLAS path —
+   see the `OLMO_EVAL_INTEGRATION_PLAN.md` reconciliation note.)*
 4. Account for the **24 GB / sequential model-then-judge** constraint in the flow design.
 5. Update the smoke-test scripts' in-file path defaults now that they live in `tests/aws/`.
