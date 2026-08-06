@@ -11,7 +11,6 @@ import yaml
 
 from .dataio import load_bank, summarize
 from .engine import RunConfig, run_evaluation
-from .ifeval_verifier import IFEvalVerifier
 from .judge import OpenAICompatibleJudge, RESULT_PASS_THRESHOLD_DEFAULT
 from .tutors import build_tutor
 
@@ -85,6 +84,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     if backend == "ifeval_verifier":
         # Deterministic code verifier for IFEval; no LLM/endpoint needed. Used only when
         # the bank is IFEval (single-axis run) — see data/IFEval/README.md.
+        from .ifeval_verifier import IFEvalVerifier
+
         judge = IFEvalVerifier(seed=jcfg.get("seed", 42))
     elif backend == "prometheus":
         judge = OpenAICompatibleJudge(
@@ -146,6 +147,11 @@ def _resolve_benchmarks(args: argparse.Namespace) -> list[tuple[str, str]] | Non
     if not args.benchmarks:
         if only:
             print("--only requires --benchmarks <registry.yaml>", file=sys.stderr)
+            return None
+        if not args.scenarios:
+            print("generate: provide --scenarios <scenarios.jsonl> or --benchmarks "
+                  "<registry.yaml>; this toolchain ships no default benchmark data",
+                  file=sys.stderr)
             return None
         return [("TutorBench", args.scenarios)]
     try:
@@ -266,9 +272,11 @@ def main(argv: list[str] | None = None) -> int:
     p_gen.add_argument("--only", default=None,
                        help="comma-separated benchmark names to run from --benchmarks "
                             "(e.g. 'IFEval,Bridge'); overrides each entry's enabled flag")
-    p_gen.add_argument("--scenarios", default="data/TutorBench/scenarios.jsonl",
+    p_gen.add_argument("--scenarios", default=None,
                        help="single-benchmark shortcut (labeled TutorBench) when "
-                            "--benchmarks is not given")
+                            "--benchmarks is not given. Required in that mode: this "
+                            "parent toolchain ships no benchmark data - point it at a "
+                            "checked-out benchmark's scenarios.jsonl.")
     p_gen.add_argument("--out-dir", default="runs/responses",
                        help="one JSONL shard per (benchmark, model) is written under "
                             "<out-dir>/<benchmark>/<model>.jsonl")

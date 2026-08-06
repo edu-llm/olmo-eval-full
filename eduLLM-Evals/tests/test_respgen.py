@@ -752,8 +752,14 @@ def test_shipped_benchmarks_yaml_loads():
 
     root = Path(__file__).resolve().parent.parent  # tutor_cat/
     specs = load_benchmarks(root / "benchmarks.yaml")
-    names = {s.name for s in specs}
-    assert {"TutorBench", "IFEval", "InFoBench", "TutorEval", "WildBench", "Bridge"} <= names
+    assert specs == [
+        BenchmarkSpec(
+            "InFoBench",
+            "data/InFoBench/scenarios.jsonl",
+            enabled=True,
+        )
+    ]
+    assert (root / specs[0].scenarios).is_file()
 
 
 # --- multi-benchmark: per-benchmark system prompts -------------------------
