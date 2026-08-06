@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # Development Commands
 
 - Use `uv run` for Python commands
