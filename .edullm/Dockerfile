@@ -76,12 +76,25 @@ RUN set -eux; \
 # GPU that is being billed while it downloads, and it puts a resolution nothing
 # reviewed inside a job that is meant to be reproducible. Paying once per image is the
 # cheaper half of that trade for anything run more than a handful of times.
+# --extra vllm RATHER THAN --group vllm, AND THE DIFFERENCE IS NOT COSMETIC. The group
+# is a one-line mirror of the extra, `vllm = ["olmo-eval[vllm]"]`, so it reaches vLLM
+# only through the project referring to itself. This layer passes --no-install-project,
+# the project is therefore not in the environment, and that self-reference resolves to
+# nothing. uv also carries `conflicts` for this extra, so the vllm edge in uv.lock is
+# guarded by `extra == 'extra-9-olmo-eval-vllm'`, which only an --extra turns on.
+#
+# ASKING FOR THE GROUP HERE FAILS IN THE WORST AVAILABLE WAY, WHICH IS QUIETLY AND
+# EXPENSIVELY. Measured on run 31078390731: it installed 24 packages, among them torch
+# and every CUDA library, because `torch-c-dlpack-ext` and `opencv-python-headless` are
+# plain members of the extra and pull them. vLLM itself was not among the 24. That is a
+# multi-gigabyte image that looks like it can self-host and cannot, and nothing but the
+# import check below would have said so.
 ARG INSTALL_TORCH_AND_VLLM=1
 RUN set -eux; \
     if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
     uv sync --frozen --no-default-groups --no-install-project --no-cache \
         --extra beaker --extra hf --extra s3 --extra clients \
-        --group vllm; \
+        --extra vllm; \
     uv cache clean
 
 COPY . .
