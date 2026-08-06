@@ -8,7 +8,9 @@ import numpy as np
 import pytest
 
 from tutor_cat import SKILLS
+from tutor_cat.dataio import ItemBank
 from tutor_cat.engine import RunConfig, derive_seed, run_evaluation
+from tutor_cat.schemas import JudgeVerdict, Rubric, Scenario
 
 from conftest import SimJudge, SimTutor, make_bank
 
@@ -189,3 +191,71 @@ def test_manifest_records_data_provenance(tmp_path, bank):
     assert m["data_scenarios"] == "data/scenarios.jsonl"
     assert m["data_rubrics"] == "data/rubrics_qmatrix_final.jsonl"
     assert "calibration_version" in m
+
+
+def test_eap_stop_continues_when_online_se_is_optimistic(tmp_path):
+    scenarios = {}
+    rubrics = {}
+    for index in range(5):
+        sid = f"high_info_{index}"
+        cid = f"{sid}_c01"
+        scenarios[sid] = Scenario(scenario_id=sid, prompt=sid, criterion_ids=[cid])
+        rubrics[cid] = Rubric(
+            criterion_id=cid,
+            scenario_id=sid,
+            criterion=cid,
+            q=np.array([1]),
+            a=np.array([5.0]),
+            b=0.0,
+        )
+    one_dimensional_bank = ItemBank(
+        scenarios=scenarios,
+        rubrics=rubrics,
+        skills=("ability",),
+    )
+
+    class AlwaysPassJudge:
+        name = "always-pass"
+        prompt_version = "test"
+        seed = 0
+
+        def evaluate(self, scenario, rubric, response):
+            return JudgeVerdict(verdict="pass", rationale="fixed test outcome")
+
+    nodes = np.linspace(-8.0, 8.0, 801)
+    step = float(nodes[1] - nodes[0])
+    weights = np.exp(-0.5 * nodes**2) * step
+    weights[[0, -1]] *= 0.5
+    weights /= weights.sum()
+    common = dict(
+        seed=17,
+        top_n=1,
+        max_se={"ability": 0.40},
+        min_evals_per_skill=1,
+        min_scenarios=1,
+        max_scenarios=5,
+        skills=("ability",),
+        write_logs=False,
+        eap_stop_grid=nodes[:, None],
+        eap_stop_log_prior=np.log(weights),
+    )
+    online = run_evaluation(
+        one_dimensional_bank,
+        SimTutor(),
+        AlwaysPassJudge(),
+        RunConfig(**common, stop_se_method="online"),
+        mode="cat",
+    )
+    eap = run_evaluation(
+        one_dimensional_bank,
+        SimTutor(),
+        AlwaysPassJudge(),
+        RunConfig(**common, stop_se_method="eap"),
+        mode="cat",
+    )
+
+    assert online["scenarios_administered"] == 1
+    assert eap["scenarios_administered"] > online["scenarios_administered"]
+    assert eap["administered_criteria"][:1] == online["administered_criteria"]
+    assert online["se_stop"] == online["se_online"]
+    assert eap["se_stop"] == eap["se_eap"]

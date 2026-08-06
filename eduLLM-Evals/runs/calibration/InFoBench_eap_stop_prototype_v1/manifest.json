@@ -1,0 +1,391 @@
+{
+  "schema_version": "infobench-eap-stop-prototype-v1",
+  "status": "complete",
+  "started_at": "2026-08-06T21:48:28.831547+00:00",
+  "finished_at": "2026-08-06T21:51:24.678355+00:00",
+  "elapsed_seconds": 175.846808,
+  "git_head": "16ca22e7e7a4c058806384a9e92534941db18356",
+  "config": {
+    "path": "configs/infobench_eap_stop_prototype_v1.json",
+    "sha256": "5da222cc465a48baa45e289e12dcf067f60c5533f50dd00b2296b8c0cd7e7bb6"
+  },
+  "inputs": {
+    "parent_config": {
+      "path": "configs/infobench_calibration_cat_2pl_only_v1.json",
+      "sha256": "f0fa7def908f27b846d489ebc2d292aead091ae8fa7d0ee4191f01b2e1362383"
+    },
+    "split_manifest": {
+      "path": "configs/infobench_v2_splits.manifest.json",
+      "sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f"
+    },
+    "response_matrix": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+      "sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "rubrics": {
+      "path": "data/InFoBench/rubrics.jsonl",
+      "sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10"
+    },
+    "scenarios": {
+      "path": "data/InFoBench/scenarios.jsonl",
+      "sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+    },
+    "selected_calibration_specs": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/selected_calibration_specs.json",
+      "sha256": "2c773fbedf97825ae9d989b2f227c6239b14182aa5f9c2528bb23fb8013bf21c"
+    },
+    "fold_assignments": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/fold_assignments.json",
+      "sha256": "80ba6b4803acbe88677363d5bfc52316c0e062ce2724e79ded55a0f17c0cc206"
+    },
+    "phase3_decision": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/phase3_decision.json",
+      "sha256": "d1fcd9c4f9ad17a586d792ee5ed7ee75e4136b0aca0116f994422fda83ec2c8b"
+    },
+    "historical_outer_rows": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/outer_oof_per_model.csv",
+      "sha256": "da108af1ab38ad2d26d9d4ca5b848c0ff5243c25678358635f86ac8d406483db"
+    },
+    "numerical_lock": {
+      "path": "runs/calibration/InFoBench_v2_numerical_followup_v4/numerical_followup_lock.json",
+      "sha256": "2bdc6abcc01b0ef97542673ffdd09374577e1eaaf1dd5fea5c05126f6f723994"
+    }
+  },
+  "code_sha256": {
+    "tutor_cat/mirt.py": "43494494b5166d65404ec6d4853cf8f7870ee3a85ae9cd244ed9a75cb7ea0682",
+    "tutor_cat/engine.py": "253c18ad17847b6c14dc526d7bf790f23fc56feae9ac5bcb23b43fcf1c3b46c9",
+    "scripts/scenario_cat_lib.py": "0eda7a7b290dbd969a1db0b9d64d1af340a7ce15c05fa4fc12eb76657b610e53",
+    "scripts/run_infobench_eap_stop_prototype.py": "30d4f85d8938d77e052801b4ac2bfc2a1ceb77a7418738f1679b1cc223c48b07"
+  },
+  "panel_provenance": [
+    {
+      "panel_id": "repeat_00_outer_00",
+      "repeat": 0,
+      "outer_fold": 0,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "791b0aea9db4a4bea10b82007c6d15a2dc47a593319a96fd98d91cb5f09cc1f1",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "09a919bf6d0770a4f9c9c7db5d4bfde2641965d2024071c43e7d7be09fb5e1a1",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "dfc7f03e9fe654305b8cd78ce5aaba6bb76034eadf65d10594be296c277775fd",
+      "n_items": 2093
+    },
+    {
+      "panel_id": "repeat_00_outer_01",
+      "repeat": 0,
+      "outer_fold": 1,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "c7a6844437b828ff737a0802db95e251f7c65784461e0ee733f989e16ca932d6",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "2bee8ff957342fa24cebc75c101f9743f95ba6c3fcfbb72e9e9ec486e1abd22b",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "b8167a0ca329a3a31efd97bed08b0335ada5812e5e7a75489007de372f5ff9ed",
+      "n_items": 2098
+    },
+    {
+      "panel_id": "repeat_00_outer_02",
+      "repeat": 0,
+      "outer_fold": 2,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "02540cdfaf15e3bfe0673e0c481641b25c9914130845101eb4ecfe6f01c68859",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "7ee37ea95deb53b0d72fd05d777bef01ddd9b9985deac9e2e4613e6ec22fe21c",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "db6b9f1322e24131e4f8ff945cbbaadae3e2a5c15c970685f044c304224d6056",
+      "n_items": 2092
+    },
+    {
+      "panel_id": "repeat_00_outer_03",
+      "repeat": 0,
+      "outer_fold": 3,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "804642e36d2f7825432b7d36d78a828d89a7b119a295e832726e37b47abd7e55",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "1e2b39d6e33d3dafce7764824ddac8d8b582621d0213ee4abb2138feb181e4b5",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "073d70653e7a83e0b71c803e3feec0a9c61688c3a2871aa447aa3c6a76a6dd81",
+      "n_items": 2102
+    },
+    {
+      "panel_id": "repeat_00_outer_04",
+      "repeat": 0,
+      "outer_fold": 4,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "1834683c2d86e7b3554506b89bc6de7e4cb0bbdef2f8edd9ea3e1963886772e0",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "2265d78f15de45c62f54aa85185a98d93763e158db04762b61dec91da5b026c0",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_00/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "82b12cee61b7339aea9323722c4f7cd6971cc2470a09b05c5ecc6ab4902f11e0",
+      "n_items": 2092
+    },
+    {
+      "panel_id": "repeat_01_outer_00",
+      "repeat": 1,
+      "outer_fold": 0,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "da7452d82d4234787d34e32f11c9ab0fc3c4d9a50b56794c8764021a8edf3408",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "06d1bd13db0f4d55fdee97a24ec00eeb7bab14b236d71431193d53ff4939494d",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "49e7991d669d46ee637e30945b8c3e6503d4d636843063dfea6ee95bb0f7328b",
+      "n_items": 2088
+    },
+    {
+      "panel_id": "repeat_01_outer_01",
+      "repeat": 1,
+      "outer_fold": 1,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "620df20816a9007e3d3b58c03a6a7400dbdb0e12cd51a16a010a99d298e6e67a",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "13fd35451aa86da2b2b61cea8d9c350f2676c3e056f41067e81a19791395bfa8",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "d5ebc94e71a44428c67313f8a57a78ceb10234c38b20168c0b106427a1072bbe",
+      "n_items": 2092
+    },
+    {
+      "panel_id": "repeat_01_outer_02",
+      "repeat": 1,
+      "outer_fold": 2,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "9209752fddbed015b211fc1cba2e86ad796ff3b37c3c6cb0dd308f2e6f9f8bfa",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "7b02c174bb00a943351815b8f7eae7f0c87c3b838c480bb9bbfe697de42a6d1d",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "520c8650d025e005aa4fba6db6b4c5a1e1353c84e0ca6847aad5e62110e543b2",
+      "n_items": 2100
+    },
+    {
+      "panel_id": "repeat_01_outer_03",
+      "repeat": 1,
+      "outer_fold": 3,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "3320b384dcaf25ceaf4511b8f9691b89ec01273d0a9797e481e72de7d825ccbd",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "8978bb998bb624a8932394fda9570b958132cfaa4c4b0ab1d87e599d8e851a10",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "8dad910a01d6689410688c5486b234d1c02546cc8c958f993448538951585bc6",
+      "n_items": 2100
+    },
+    {
+      "panel_id": "repeat_01_outer_04",
+      "repeat": 1,
+      "outer_fold": 4,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "c5a81f423c37fbc9f5ab1e81095492647afed4f6645cbf90c89cacd10a0a97f4",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "e4ee582c8ce35cda040c16b833a52af392f5e687a606b9855689493ef941eb07",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_01/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "60a4a844446e2f6dbba02e9c732b7d8925ef1e11815f16e891e9cc342a130075",
+      "n_items": 2098
+    },
+    {
+      "panel_id": "repeat_02_outer_00",
+      "repeat": 2,
+      "outer_fold": 0,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "967612357e73a5578e290a74a2170d503cc12bc6a579de37d9b9c4d814aef56a",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "b09e8df7ed33ca7fe709361473782b252b992eccba8824a00a3fdf69bd7e6413",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "921e9f51b60e55207b829246e0ea4bbf929daa581c16803ad58cd56a42e9fdfd",
+      "n_items": 2099
+    },
+    {
+      "panel_id": "repeat_02_outer_01",
+      "repeat": 2,
+      "outer_fold": 1,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "cf1223746f82e391fdb42bbf9b458b6a6ddf1d8e7db1b639c10be8fe98e4cbc0",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "df1a8a9f10d98e4fb977d1f8354293e732656509bbc144e843f037f93650e3b2",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "13a86743c6642b7e8bb5295205e84f998186982bb74f318bb7630848d83a544e",
+      "n_items": 2098
+    },
+    {
+      "panel_id": "repeat_02_outer_02",
+      "repeat": 2,
+      "outer_fold": 2,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "d204db28ad2caebe3566c3c66651a4cc5d5f3fce979e7053b633d95b67465d51",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "08f8a1a6694539bd9abe758288cbf7f4b4f9b0eccd97ab7a06e468fdccc9b217",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "7969e6f69af831af085926b9449569db2f5402adc6683c85ba8e7fac5b5bac3c",
+      "n_items": 2098
+    },
+    {
+      "panel_id": "repeat_02_outer_03",
+      "repeat": 2,
+      "outer_fold": 3,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "e5b9b0e2fbaee19de1e04adffb488a8d5932f6aa4733eafe5fd58d5edce41296",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "4b2babde5211be17ec44f7a12f90cd441adc25a854daec1d41ace581308decd1",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "0b5d98b0c0eae2bf064fd3215774d8565d29d1267859c1df16fd3c7514f3c03b",
+      "n_items": 2092
+    },
+    {
+      "panel_id": "repeat_02_outer_04",
+      "repeat": 2,
+      "outer_fold": 4,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "8802aee095c6b5bceb4dacfe2eddfeb20992e0db996071a3a37e7c8318ef1443",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "0fe8e97d3b168ac11dc72febb272605452ae038b4fd6be15015137c2a06d7490",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_02/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "16a864f467b023ac6ddcab39b304c147b844d630a6a24426f9a4c0e151b537e9",
+      "n_items": 2088
+    },
+    {
+      "panel_id": "repeat_03_outer_00",
+      "repeat": 3,
+      "outer_fold": 0,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "68ecfc06f85de54f0bcb03c7d699f0c6ba1fab68e658d421c5634eca79104558",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "de6504b87220c7f4fcabe33603f6ece43bfaa510e64a065b55fd29f4c2483c3d",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "cf08f5a94ec54ef70defe330587e9e667c2e5ab12aa20cd37f78a0f6932f87df",
+      "n_items": 2092
+    },
+    {
+      "panel_id": "repeat_03_outer_01",
+      "repeat": 3,
+      "outer_fold": 1,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "83fca64d948b2ed81df26de8116ef2f691744665a319d0af991b4479201421f5",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "993d6db918309eb94eacfb50c0e4b1fdfcae6eee7d42581b39b7045c0e49308d",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "2c19f61715fcf36c1ddb4f66667a192c75e17e609334317aaf99be8411a5211b",
+      "n_items": 2096
+    },
+    {
+      "panel_id": "repeat_03_outer_02",
+      "repeat": 3,
+      "outer_fold": 2,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "e899f858184e811088a8ffd0530c3f5289fd53cbdd26ba8820703e38e86a35c7",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "3225efbd1516622aa5c89e1447bdc8de887121dc5560f3b3bf638ad4173125fa",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "00d07790c45e2e6ffc43886bf4f6b7f3460af171ab92d72d33d2690a2fb5b44d",
+      "n_items": 2100
+    },
+    {
+      "panel_id": "repeat_03_outer_03",
+      "repeat": 3,
+      "outer_fold": 3,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "1010fbc69a3c6356016ef567c548a3aa2b89b1655d2bf25861eead8f3bc730c0",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "8ed3c9cea4d55c907d29a016c3320f511f61013116beb19c7c66f20bdac57227",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "806a57cd956eba7e00680effbc9532bedca654cccd720f42a2b2f14fad8705bd",
+      "n_items": 2098
+    },
+    {
+      "panel_id": "repeat_03_outer_04",
+      "repeat": 3,
+      "outer_fold": 4,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "c8466093b1e8d4263e07b118eb194923fd4ce6b021f1935f611364a03826e004",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "8c5abef0a314f49d2606db1e48d44ee430b346c63244510435eee03261e2e310",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_03/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "1fdf2e6d5cdb727631c619ae5be238b6ccf538d9720ecc92f1d660f123275012",
+      "n_items": 2087
+    },
+    {
+      "panel_id": "repeat_04_outer_00",
+      "repeat": 4,
+      "outer_fold": 0,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "b6889965225b6a0d7bd624fda0fdd79410fba7ded7a30e435564c4ebb8420d6f",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "5612b9787ea6136249e3356e9ad715993e6388529d1885007e97416ccc860ebb",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_00/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "7dadd49b568ee5310fc4fba534371dff51514d45805fd43668c5c89ba2f3de73",
+      "n_items": 2083
+    },
+    {
+      "panel_id": "repeat_04_outer_01",
+      "repeat": 4,
+      "outer_fold": 1,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "ab748b1279d6294cc4250d949d1ea6d19a1d5f84a4c539921e9bb10055424d45",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "43d84513cdf124e9e027f2b0b867f5cdafc399bd48366db373da070e97f20058",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_01/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "82bd5a1ca8a90a5cc8a85149c9eb30c999f113b81c27dfa3f2555869883af107",
+      "n_items": 2096
+    },
+    {
+      "panel_id": "repeat_04_outer_02",
+      "repeat": 4,
+      "outer_fold": 2,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "edbe1b57deeeccdf713a851a9f3084dedd40fea02ba0852d70ae469082973352",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "4c57d2729687973878cddae860cd1c91df71abaf4d635f24fd2bbb6cfb6db2ec",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_02/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "806a57cd956eba7e00680effbc9532bedca654cccd720f42a2b2f14fad8705bd",
+      "n_items": 2098
+    },
+    {
+      "panel_id": "repeat_04_outer_03",
+      "repeat": 4,
+      "outer_fold": 3,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "f18510ba85e7fc79f21b4f447985683ea24fef863a1a08586c1f423877ab0710",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "59336278e632b97e7ac70e62d76e43513cfd47e102b064c24f96946f433bec49",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_03/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "ad0530c30afb2747f055478a0da46a030acf5beb8e691237125956f567aa611f",
+      "n_items": 2096
+    },
+    {
+      "panel_id": "repeat_04_outer_04",
+      "repeat": 4,
+      "outer_fold": 4,
+      "selected_spec_id": "log_shrinkage_2pl_lambda16",
+      "fit_cache_key": "c9643e5fb7d8a6bf0d195594ad6b30f4d7feec531ad07669f2712d6627903d73",
+      "fit_manifest": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_manifest.json",
+      "fit_manifest_sha256": "b90bfbbc6560c6f7f270f16970abd467bc24dd17e20b402cc5b663ed5261b465",
+      "fit_arrays": "runs/calibration/InFoBench_2pl_only_v1/phase3/two_pl_only_v1_fit_cache/repeat_04/outer_04/outer_fit/log_shrinkage_2pl_lambda16/fit_arrays.npz",
+      "fit_arrays_sha256": "5e01a5f0937fe48c2076f3ad5236c76c576c46f0f4d749fcdabbcc7a5646ea84",
+      "n_items": 2097
+    }
+  ],
+  "outputs": {
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/per_model_repeat.csv": "b21be3a1fbb6aeb038fbe4f3123649a2de22c4d7b3543085c0d882483e8ec207",
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/per_model_aggregated.csv": "73755c7b2d1002e4d6b98a7883db23d644d187d4782672c54ca5de90f27f4f0e",
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/paired_online_vs_eap.csv": "ee0418a4faa6070daa1511928a3e90f94d9121b388734142804beae7c33419b8",
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/online_reproduction.csv": "690297724071c960bf1ca124c34651ce2a1c35f9d2e1a3d394971646bbd67e33",
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/eap_801_vs_1601.csv": "6db243c0c83b1e4acdee44f002246be8fbc322c77ab051a01bd3b1a8056f4122",
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/panel_provenance.json": "cee1b2e98e9c9e9696d345b5611a141e0a9ce7a553f9276cc321ca1a899009fd",
+    "runs/calibration/InFoBench_eap_stop_prototype_v1/metrics.json": "55ed129da7482216031f1488e7f3ac11eaf59317e2111e1a65a4f9e4f73a9bcd",
+    "reports/infobench_eap_stop_prototype_v1/EAP_STOP_PROTOTYPE_SUMMARY.md": "5827a539ce668ac562ae80143a3deca9f0d53bdcf58b3671aa285f15b9814827",
+    "reports/infobench_eap_stop_prototype_v1/figures/01_paired_test_length.png": "903801d6277ee78ff54b72fceda209a72ef768c61fbf2888673a258fd6716605",
+    "reports/infobench_eap_stop_prototype_v1/figures/02_final_eap_se_distribution.png": "47d0077572fef276a221ae3d7a6e2b48017d4368bee10cd517c0f2340b7c73dd",
+    "reports/infobench_eap_stop_prototype_v1/figures/03_oos_recovery.png": "1d7f7bd7c999f747a4ddaf27b180504f2670f72f46d54a508bc8d815bb0061be"
+  },
+  "acceptance": {
+    "gates": {
+      "online_reproduction_exact": true,
+      "honest_target_rate_strictly_higher": true,
+      "honest_target_improvement_ci_nonnegative": true,
+      "recovery_r_noninferior": true,
+      "theta_mae_noninferior": true,
+      "eap_recovery_slope_in_range": true,
+      "median_length_not_increased": false,
+      "dense_grid_stop_agreement": true,
+      "dense_grid_final_se_stable": true
+    },
+    "all_passed": false,
+    "decision": "do_not_adopt",
+    "note": "Even a passing prototype would not authorize deployment because the underlying CAT policy previously failed Phase-3 validation."
+  }
+}

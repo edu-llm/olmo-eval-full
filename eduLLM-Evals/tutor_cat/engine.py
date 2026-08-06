@@ -29,7 +29,14 @@ import numpy as np
 
 from . import SKILLS, __version__
 from .dataio import ItemBank
-from .mirt import initial_state, standard_errors, update
+from .mirt import (
+    PosteriorMoments,
+    initial_state,
+    masked_discrimination,
+    posterior_moments,
+    standard_errors,
+    update,
+)
 from .schemas import JudgeVerdict, Rubric, Scenario
 from .selector import SelectionResult, select_next
 
@@ -87,6 +94,14 @@ class RunConfig:
     # All-zero q_mapping criteria carry no skill information; "judge" grades them
     # anyway so critical failures are still caught, "skip" saves the judge calls.
     unmapped_criteria: str = "judge"  # "judge" | "skip"
+    # Precision statistic used only for stopping. The online theta/U state remains the
+    # selection state in both modes, isolating the stop-rule experiment.
+    stop_se_method: str = "online"  # "online" | "eap"
+    # Explicit fixed quadrature used for EAP posterior SD. It may also be supplied in
+    # online mode to record the honest post-hoc EAP SD at the online stopping point.
+    eap_stop_grid: np.ndarray | None = field(default=None, repr=False)
+    eap_stop_log_prior: np.ndarray | None = field(default=None, repr=False)
+    eap_stop_metadata: dict[str, Any] | None = None
 
 
 def derive_seed(master_seed: int, tutor_name: str, mode: str) -> int:
@@ -131,6 +146,27 @@ def run_evaluation(
     skills = tuple(cfg.skills) if cfg.skills else SKILLS
     n_skills = len(skills)
     write_logs = cfg.write_logs
+    if cfg.stop_se_method not in {"online", "eap"}:
+        raise ValueError("stop_se_method must be 'online' or 'eap'")
+    if (cfg.eap_stop_grid is None) != (cfg.eap_stop_log_prior is None):
+        raise ValueError("eap_stop_grid and eap_stop_log_prior must be supplied together")
+    eap_grid = (
+        None if cfg.eap_stop_grid is None else np.asarray(cfg.eap_stop_grid, dtype=float)
+    )
+    eap_log_prior = (
+        None
+        if cfg.eap_stop_log_prior is None
+        else np.asarray(cfg.eap_stop_log_prior, dtype=float)
+    )
+    if cfg.stop_se_method == "eap" and eap_grid is None:
+        raise ValueError("EAP stopping requires an explicit fixed quadrature grid")
+    if eap_grid is not None and (
+        eap_grid.ndim != 2
+        or eap_grid.shape[1] != n_skills
+        or eap_log_prior is None
+        or eap_log_prior.shape != (eap_grid.shape[0],)
+    ):
+        raise ValueError("EAP stopping quadrature does not match the modeled dimensions")
 
     run_seed = derive_seed(cfg.seed, tutor.name, mode)
     rng = np.random.default_rng(run_seed)
@@ -145,6 +181,9 @@ def run_evaluation(
     administered: list[str] = []
     administered_criteria: list[str] = []  # criterion ids in grading order (returned)
     critical_failures: list[dict[str, Any]] = []
+    stop_loadings: list[np.ndarray] = []
+    stop_difficulties: list[float] = []
+    stop_responses: list[int] = []
 
     # Calibration marker for the manifest: the distinct calibration_version(s)
     # carried by the loaded rubrics (single string if uniform, list if mixed,
@@ -174,6 +213,8 @@ def run_evaluation(
         "min_evals_per_skill": cfg.min_evals_per_skill,
         "min_scenarios": cfg.min_scenarios,
         "max_scenarios": cfg.max_scenarios,
+        "stop_se_method": cfg.stop_se_method,
+        "eap_stop_metadata": cfg.eap_stop_metadata if eap_grid is not None else None,
         "n_scenarios_in_bank": len(bank.scenarios),
         "data_scenarios": cfg.data_scenarios,
         "data_rubrics": cfg.data_rubrics,
@@ -193,9 +234,42 @@ def run_evaluation(
     if mode == "baseline":
         baseline_order = [str(s) for s in rng.permutation(sorted(bank.scenarios))]
 
+    cached_eap_n = -1
+    cached_eap: PosteriorMoments | None = None
+
+    def eap_state() -> PosteriorMoments | None:
+        nonlocal cached_eap_n, cached_eap
+        if eap_grid is None or eap_log_prior is None:
+            return None
+        if cached_eap_n != len(stop_responses):
+            loadings = (
+                np.vstack(stop_loadings)
+                if stop_loadings
+                else np.empty((0, n_skills), dtype=float)
+            )
+            cached_eap = posterior_moments(
+                np.asarray(stop_responses, dtype=float),
+                loadings,
+                np.asarray(stop_difficulties, dtype=float),
+                eap_grid,
+                eap_log_prior,
+            )
+            cached_eap_n = len(stop_responses)
+        return cached_eap
+
+    def active_standard_errors() -> np.ndarray:
+        if cfg.stop_se_method == "online":
+            return standard_errors(U)
+        state = eap_state()
+        if state is None:  # guarded during configuration validation
+            raise RuntimeError("EAP stopping state is unavailable")
+        return state.se
+
     def precision_reached() -> bool:
-        se = standard_errors(U)
-        return bool((se < max_se).all() and (counts >= cfg.min_evals_per_skill).all())
+        return bool(
+            (active_standard_errors() < max_se).all()
+            and (counts >= cfg.min_evals_per_skill).all()
+        )
 
     stop_reason = None
     try:
@@ -249,6 +323,9 @@ def run_evaluation(
                 theta, U, p = update(theta, U, rubric.a, rubric.q, rubric.b, y)
                 counts += rubric.q  # scorable evaluation for every skill with q=1
                 administered_criteria.append(rubric.criterion_id)
+                stop_loadings.append(masked_discrimination(rubric.a, rubric.q).copy())
+                stop_difficulties.append(float(rubric.b))
+                stop_responses.append(int(y))
 
                 # dataset uses both "critical" and "critical_negative"
                 if rubric.criticality.startswith("critical") and y == 0:
@@ -292,13 +369,29 @@ def run_evaluation(
                 )
 
             administered.append(sid)
+            online_step_se = standard_errors(U)
+            eap_step = (
+                eap_state()
+                if cfg.stop_se_method == "eap" or write_logs
+                else None
+            )
+            stop_step_se = eap_step.se if cfg.stop_se_method == "eap" else online_step_se
             step_log.write(
                 {
                     "step": len(administered),
                     "scenario_id": sid,
                     "selection": selection_info,
                     "theta": [round(float(x), 6) for x in theta],
-                    "se": [round(float(x), 6) for x in standard_errors(U)],
+                    # Historical field remains the online covariance SE.
+                    "se": [round(float(x), 6) for x in online_step_se],
+                    "se_online": [round(float(x), 6) for x in online_step_se],
+                    "se_eap": (
+                        [round(float(x), 6) for x in eap_step.se]
+                        if eap_step is not None
+                        else None
+                    ),
+                    "se_stop": [round(float(x), 6) for x in stop_step_se],
+                    "stop_se_method": cfg.stop_se_method,
                     "counts": counts.tolist(),
                 }
             )
@@ -308,21 +401,40 @@ def run_evaluation(
         step_log.close()
 
     se = standard_errors(U)
+    eap_final = eap_state()
+    stop_se = eap_final.se if cfg.stop_se_method == "eap" else se
+    final_precision = bool(
+        (stop_se < max_se).all() and (counts >= cfg.min_evals_per_skill).all()
+    )
     final = {
         "run_id": run_id,
         "mode": mode,
         "candidate_model": tutor.model,
         "stop_reason": stop_reason,
-        "precision_reached": precision_reached(),
+        "precision_reached": final_precision,
         # PRD: if stopped early, state that precision was not reached.
         "note": (
             None
-            if precision_reached()
+            if final_precision
             else "Evaluation ended without reaching the required measurement precision."
         ),
         "scenarios_administered": len(administered),
         "theta": {s: round(float(theta[k]), 6) for k, s in enumerate(skills)},
+        "stop_se_method": cfg.stop_se_method,
+        # ``se`` remains the historical online field for backward compatibility.
         "se": {s: round(float(se[k]), 6) for k, s in enumerate(skills)},
+        "se_online": {s: round(float(se[k]), 6) for k, s in enumerate(skills)},
+        "se_eap": (
+            {s: round(float(eap_final.se[k]), 6) for k, s in enumerate(skills)}
+            if eap_final is not None
+            else None
+        ),
+        "theta_eap": (
+            {s: round(float(eap_final.theta[k]), 6) for k, s in enumerate(skills)}
+            if eap_final is not None
+            else None
+        ),
+        "se_stop": {s: round(float(stop_se[k]), 6) for k, s in enumerate(skills)},
         "scorable_evaluations": {s: int(counts[k]) for k, s in enumerate(skills)},
         "critical_failure_count": len(critical_failures),
         "administered_criteria": administered_criteria,

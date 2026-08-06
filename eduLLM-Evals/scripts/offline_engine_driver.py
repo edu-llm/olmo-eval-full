@@ -178,6 +178,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--skills", default=None, help="ordered comma-separated skill names")
     parser.add_argument("--mode", choices=("cat", "baseline", "both"), default="cat")
     parser.add_argument("--selection", choices=("trace", "dopt"), default="trace")
+    parser.add_argument(
+        "--stop-se",
+        choices=("online", "eap"),
+        default="online",
+        help="precision statistic used for stopping; online preserves historical behavior",
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--top-n", type=int, default=5)
     parser.add_argument("--max-se", type=float, default=0.30)
@@ -191,6 +197,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="random-arm cap; 0 means all available scenarios (recommended)",
     )
     parser.add_argument("--grid", type=int, default=5, help="GH nodes per latent dimension")
+    parser.add_argument(
+        "--quadrature-method",
+        choices=("gauss_hermite", "gauss_hermite_scipy", "normal_trapezoid"),
+        default="gauss_hermite",
+    )
+    parser.add_argument("--linear-bound", type=float, default=8.0)
     parser.add_argument("--max-grid-nodes", type=int, default=50_000)
     parser.add_argument("--mwle-ridge", type=float, default=1e-6)
     parser.add_argument(
@@ -252,6 +264,8 @@ def run(args: argparse.Namespace) -> int:
         args.grid,
         fitted.latent_correlation,
         max_nodes=args.max_grid_nodes,
+        method=args.quadrature_method,
+        linear_bound=args.linear_bound,
     )
 
     models = list(matrix.index)
@@ -284,6 +298,7 @@ def run(args: argparse.Namespace) -> int:
             max_scenarios=cap,
             selection=args.selection,
             mode=mode,
+            stop_se_method=args.stop_se,
         )
         for pos, model in enumerate(models, 1):
             print(f"[{mode} {pos}/{len(models)}] {model}", flush=True)
@@ -341,6 +356,7 @@ def run(args: argparse.Namespace) -> int:
             "n_models": len(models),
             "modes": list(modes),
             "selection": args.selection,
+            "stop_se_method": args.stop_se,
             "seed": args.seed,
             "top_n": args.top_n,
             "max_se": args.max_se,
@@ -354,6 +370,9 @@ def run(args: argparse.Namespace) -> int:
             ),
             "grid_nodes_per_dim": args.grid,
             "grid_total_nodes": int(quadrature.grid.shape[0]),
+            "quadrature_method": quadrature.method,
+            "quadrature_lower_bound": quadrature.lower_bound,
+            "quadrature_upper_bound": quadrature.upper_bound,
             "mwle_ridge": args.mwle_ridge,
         },
     }

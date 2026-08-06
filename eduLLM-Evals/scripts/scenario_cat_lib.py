@@ -24,6 +24,7 @@ five-dimensional InFoBench bank can use the same engine without repurposing skil
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import sys
@@ -716,12 +717,22 @@ class RunSpec:
     max_scenarios: int = 50
     selection: str = "trace"
     mode: str = "cat"
+    stop_se_method: str = "online"
 
-    def to_config(self, dims: Sequence[str]) -> RunConfig:
+    def to_config(
+        self,
+        dims: Sequence[str],
+        *,
+        quadrature: Quadrature | None = None,
+    ) -> RunConfig:
         if self.selection not in {"trace", "dopt"}:
             raise ValueError("selection must be 'trace' or 'dopt'")
         if self.mode not in {"cat", "baseline"}:
             raise ValueError("mode must be 'cat' or 'baseline'")
+        if self.stop_se_method not in {"online", "eap"}:
+            raise ValueError("stop_se_method must be 'online' or 'eap'")
+        if self.stop_se_method == "eap" and quadrature is None:
+            raise ValueError("EAP stopping requires an explicit quadrature")
         max_se = (
             {d: float(self.max_se) for d in dims}
             if isinstance(self.max_se, (int, float))
@@ -738,6 +749,31 @@ class RunSpec:
             selection=self.selection,
             write_logs=False,
             unmapped_criteria="skip",
+            stop_se_method=self.stop_se_method,
+            eap_stop_grid=(quadrature.grid if quadrature is not None else None),
+            eap_stop_log_prior=(
+                quadrature.log_prior if quadrature is not None else None
+            ),
+            eap_stop_metadata=(
+                {
+                    "method": quadrature.method,
+                    "nodes_per_dim": quadrature.nodes_per_dim,
+                    "total_nodes": int(quadrature.grid.shape[0]),
+                    "dimensions": int(quadrature.grid.shape[1]),
+                    "lower_bound": quadrature.lower_bound,
+                    "upper_bound": quadrature.upper_bound,
+                    "grid_sha256": hashlib.sha256(
+                        np.ascontiguousarray(quadrature.grid, dtype=np.float64).tobytes()
+                    ).hexdigest(),
+                    "log_prior_sha256": hashlib.sha256(
+                        np.ascontiguousarray(
+                            quadrature.log_prior, dtype=np.float64
+                        ).tobytes()
+                    ).hexdigest(),
+                }
+                if quadrature is not None
+                else None
+            ),
         )
 
 
@@ -770,7 +806,7 @@ def run_recorded_model(
         engine_bank,
         tutor,
         judge,
-        spec.to_config(fitted.dims),
+        spec.to_config(fitted.dims, quadrature=quadrature),
         mode=spec.mode,
         run_id=f"offline_{tutor.name}_{spec.mode}_{spec.selection}_s{spec.seed}",
     )
@@ -804,6 +840,7 @@ def run_recorded_model(
         "model": model,
         "mode": spec.mode,
         "selection": spec.selection,
+        "stop_se_method": final["stop_se_method"],
         "seed": spec.seed,
         "stop_reason": final["stop_reason"],
         "precision_reached": bool(final["precision_reached"]),
@@ -814,6 +851,7 @@ def run_recorded_model(
         "judge_lookups": judge.n_lookups,
         "theta_online": {d: float(final["theta"][d]) for d in fitted.dims},
         "se_online": {d: float(final["se"][d]) for d in fitted.dims},
+        "se_stop": {d: float(final["se_stop"][d]) for d in fitted.dims},
         "theta_eap": {d: float(eap.theta[k]) for k, d in enumerate(fitted.dims)},
         "se_eap": {d: float(eap.se[k]) for k, d in enumerate(fitted.dims)},
         "theta_mwle": {d: float(weighted.theta[k]) for k, d in enumerate(fitted.dims)},
@@ -837,6 +875,7 @@ def flatten_result(result: Mapping[str, Any], dims: Sequence[str]) -> dict[str, 
             "model",
             "mode",
             "selection",
+            "stop_se_method",
             "seed",
             "stop_reason",
             "precision_reached",
@@ -858,6 +897,7 @@ def flatten_result(result: Mapping[str, Any], dims: Sequence[str]) -> dict[str, 
     for prefix in (
         "theta_online",
         "se_online",
+        "se_stop",
         "theta_eap",
         "se_eap",
         "theta_mwle",

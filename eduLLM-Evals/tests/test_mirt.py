@@ -3,7 +3,13 @@
 import numpy as np
 import pytest
 
-from tutor_cat.mirt import initial_state, pass_probability, standard_errors, update
+from tutor_cat.mirt import (
+    initial_state,
+    pass_probability,
+    posterior_moments,
+    standard_errors,
+    update,
+)
 
 # PRD worked example inputs
 THETA = np.array([0.50, 0.00, -0.20])
@@ -63,3 +69,49 @@ def test_initial_state_defaults():
     theta, U0 = initial_state()
     assert (theta == 0).all()
     assert np.allclose(U0, np.eye(3))
+
+
+def test_grid_posterior_moments_match_direct_irt_calculation():
+    nodes = np.linspace(-8.0, 8.0, 801)
+    step = float(nodes[1] - nodes[0])
+    trapezoid = np.full(len(nodes), step)
+    trapezoid[[0, -1]] *= 0.5
+    log_prior = -0.5 * nodes**2 - 0.5 * np.log(2.0 * np.pi) + np.log(trapezoid)
+    log_prior -= np.logaddexp.reduce(log_prior)
+    responses = np.array([1.0, 0.0, 1.0])
+    loadings = np.array([[1.4], [0.8], [1.1]])
+    difficulties = np.array([-0.3, 0.5, 0.1])
+
+    result = posterior_moments(
+        responses,
+        loadings,
+        difficulties,
+        nodes[:, None],
+        log_prior,
+    )
+
+    eta = nodes[:, None] @ loadings.T - difficulties[None, :]
+    direct = log_prior + (
+        responses[None, :] * -np.logaddexp(0.0, -eta)
+        + (1.0 - responses[None, :]) * -np.logaddexp(0.0, eta)
+    ).sum(axis=1)
+    weights = np.exp(direct - np.logaddexp.reduce(direct))
+    expected_theta = float(weights @ nodes)
+    expected_se = float(np.sqrt(weights @ ((nodes - expected_theta) ** 2)))
+    assert result.theta[0] == pytest.approx(expected_theta, abs=1e-12)
+    assert result.se[0] == pytest.approx(expected_se, abs=1e-12)
+
+
+def test_grid_posterior_returns_prior_moments_without_responses():
+    nodes = np.linspace(-6.0, 6.0, 1201)
+    log_prior = -0.5 * nodes**2
+    log_prior -= np.logaddexp.reduce(log_prior)
+    result = posterior_moments(
+        np.empty(0),
+        np.empty((0, 1)),
+        np.empty(0),
+        nodes[:, None],
+        log_prior,
+    )
+    assert result.theta[0] == pytest.approx(0.0, abs=1e-12)
+    assert result.se[0] == pytest.approx(1.0, abs=1e-7)
