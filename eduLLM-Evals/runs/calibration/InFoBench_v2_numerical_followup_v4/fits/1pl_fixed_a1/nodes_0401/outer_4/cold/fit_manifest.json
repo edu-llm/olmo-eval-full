@@ -1,0 +1,136 @@
+{
+  "continuation_source_sha256": null,
+  "family": "1pl",
+  "fit_sha256": "f3514282803532f745dc9d08e37beb937f218eb5d0bd30ac05889542878f0890",
+  "fit_validity": {
+    "all_item_optimizers_finished": true,
+    "arrays_and_objective_finite": true,
+    "converged": true,
+    "final_exact_recomputation": true,
+    "fit_valid": true,
+    "inner_gradient_within_tolerance": true,
+    "loadings_valid": true,
+    "maximum_allowed_inner_gradient": 1e-06,
+    "maximum_observed_inner_gradient": 3.552713678800501e-15,
+    "penalized_objective_monotone": true,
+    "returned_iterate_matches_last_trace": true,
+    "stopped_before_extra_mstep": true
+  },
+  "historical_fit_or_checkpoint_artifacts_reused": 0,
+  "loglik": -30287.28838483103,
+  "n_exportable": 2092,
+  "n_items": 2092,
+  "n_iter": 785,
+  "n_observed_train_cells": 85754,
+  "nodes": 401,
+  "parameter_csv_sha256": "ad4ab65fcc7dba154f36ed1c96b95ea6d492d40989db6cb585e3834616f3e5bb",
+  "penalized_objective": -30287.28838483103,
+  "schema_version": "infobench-v2-numerical-followup-run-v4",
+  "scope": "outer_4",
+  "spec_id": "1pl_fixed_a1",
+  "stage_inputs": {
+    "canonical_specification": {
+      "cache_key": "calibration-spec-v1-4a3d3f341a3ff53bfa0d15b90992c4d8c6fc5907a3bf9a920aa4dda0c896b2f6",
+      "difficulty": {
+        "mode": "estimated",
+        "parameterization": "unpenalized-offset-b"
+      },
+      "discrimination": {
+        "constraint": "a=1 for every active Q loading",
+        "fixed_a": 1.0,
+        "mode": "fixed",
+        "parameterization": "fixed-loading"
+      },
+      "estimation": "bock-aitkin-marginal-maximum-likelihood-em",
+      "family": "1pl",
+      "regularization": {
+        "kind": "none-fixed-loading",
+        "log_a_prior_sd": null,
+        "log_a_shrinkage": null,
+        "ridge": null
+      },
+      "schema_version": 1
+    },
+    "continuation_source_sha256": null,
+    "convergence": {
+      "consecutive_convergence_passes": 2,
+      "fit_max_iter": 1500,
+      "maximum_inner_gradient": 1e-06,
+      "mode": "returned_iterate",
+      "objective_tolerance": 0.0001,
+      "parameter_tolerance": 5e-05,
+      "require_all_item_optimizers_finished": true,
+      "require_monotone_penalized_objective": true,
+      "require_returned_iterate_matches_trace": true
+    },
+    "fit_integration": {
+      "cold_nodes": [
+        401,
+        801
+      ],
+      "comparison": "401_vs_801",
+      "continuation_nodes": [
+        801
+      ],
+      "fit_nodes": [
+        401,
+        801
+      ],
+      "linear_bound": 8.0,
+      "method": "normal_trapezoid"
+    },
+    "nodes": 401,
+    "response_matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "rubrics_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scope": "outer_4",
+    "spec_id": "1pl_fixed_a1",
+    "split_manifest_sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f",
+    "start": "cold",
+    "train_model_ids": [
+      "01-ai/Yi-1.5-6B",
+      "01-ai/Yi-1.5-6B-Chat",
+      "01-ai/Yi-6B",
+      "01-ai/Yi-6B-200K",
+      "01-ai/Yi-6B-Chat",
+      "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "BEE-spoke-data/smol_llama-220M-openhermes",
+      "BSC-LT/salamandra-2b",
+      "BSC-LT/salamandra-2b-instruct",
+      "BSC-LT/salamandra-7b",
+      "BSC-LT/salamandra-7b-instruct",
+      "HuggingFaceTB/SmolLM2-360M",
+      "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+      "OpenBMB/MiniCPM4-0.5B",
+      "Qwen/Qwen1.5-1.8B",
+      "Qwen/Qwen1.5-1.8B-Chat",
+      "Qwen/Qwen2-0.5B",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "allenai/OLMo-1B-hf",
+      "allenai/OLMo-2-0425-1B",
+      "allenai/OLMo-2-0425-1B-DPO",
+      "allenai/OLMo-2-0425-1B-Instruct",
+      "arcee-ai/raspberry-3B",
+      "ibm-granite/granite-3.0-2b-base",
+      "ibm-granite/granite-3.1-2b-base",
+      "ibm-granite/granite-3.1-2b-instruct",
+      "ibm-granite/granite-7b-instruct",
+      "ibm/PowerLM-3b",
+      "meta-llama/Llama-3.2-1B",
+      "meta-llama/Llama-3.2-1B-Instruct",
+      "meta-llama/Llama-3.2-3B-Instruct",
+      "microsoft/phi-1_5",
+      "nvidia/AceInstruct-1.5B",
+      "openbmb/MiniCPM-1B-sft-bf16",
+      "openbmb/MiniCPM-2B-sft-bf16",
+      "openlm-research/open_llama_3b",
+      "stabilityai/stablelm-2-1_6b-chat",
+      "stabilityai/stablelm-2-zephyr-1_6b",
+      "stabilityai/stablelm-zephyr-3b",
+      "utter-project/EuroLLM-1.7B",
+      "utter-project/EuroLLM-1.7B-Instruct"
+    ]
+  },
+  "stage_inputs_sha256": "8491acdd5c092223ee1f8d7b97229a9625ce6b8a8194b5ea8af97ff9c616adb9",
+  "start": "cold",
+  "trace_sha256": "cd01252f5b5767672713b1a5a5074a0b1a8a09177461473f4de3c0dab8eef6da"
+}

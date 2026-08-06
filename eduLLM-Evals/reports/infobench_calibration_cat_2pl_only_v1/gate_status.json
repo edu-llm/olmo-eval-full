@@ -1,0 +1,37 @@
+{
+  "final_policy_valid": false,
+  "gates": {
+    "final_fit_export_and_replay": {
+      "status": "not_run_not_authorized"
+    },
+    "phase3_repeated_nested_cat": {
+      "candidate_spec_ids": [
+        "log_shrinkage_2pl_lambda16",
+        "log_shrinkage_2pl_lambda4"
+      ],
+      "inner_spec_fold_blocks_expected": 200,
+      "phase4_authorized": false,
+      "status": "failed_or_not_run"
+    },
+    "phase4_total_uncertainty_and_order": {
+      "status": "not_run_not_authorized"
+    },
+    "v4_numerical_verification": {
+      "spec_ids": [
+        "1pl_fixed_a1",
+        "log_shrinkage_2pl_lambda16",
+        "log_shrinkage_2pl_lambda4"
+      ],
+      "status": "passed"
+    }
+  },
+  "generated_at_utc": "2026-08-06T18:34:37.478737+00:00",
+  "limitations": [
+    "secondary same-cohort internal-development follow-up after V3",
+    "conditional on frozen Qwen labels not human-validated on InFoBench",
+    "no unseen-family or independent-confirmation claim is authorized"
+  ],
+  "overall_status": "blocked_after_phase3_validation",
+  "release_claims_authorized": false,
+  "schema_version": "infobench-2pl-only-v1-terminal-report-v1"
+}

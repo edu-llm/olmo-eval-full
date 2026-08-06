@@ -1,0 +1,79 @@
+{
+  "schema_version": "infobench-v2-numerical-followup-v3",
+  "status": "preregistered_before_followup_results",
+  "created_date": "2026-08-05",
+  "benchmark": "InFoBench",
+  "purpose": "Append-only rerun of the unchanged all-six numerical follow-up after v2 became non-promotable because its runner file changed while its process was active. V3 uses the audited corrected orchestration, recomputes all 72 grid-101/grid-121 fits, and reuses no v1-aborted or v2-terminal fit artifact.",
+  "scientific_design_source": {
+    "config": "configs/infobench_v2_numerical_followup_v2.json",
+    "config_sha256": "27111a697129f33dfa7bbad6f66e49df7193731452bab088291c96aef399dece",
+    "frozen_contract_sha256": "25e6db82f534492dfdb82448ea5bb6fb00fed5237ae9e7b607a9b05e89b9a809",
+    "inheritance_policy": "The six specifications, grids, comparison schedule, bootstrap settings, thresholds, EAP profiles, runtime settings, and lock rules are unchanged from v2. Only versioned provenance, schemas, and the append-only output leaf differ."
+  },
+  "orchestration_source": {
+    "runner": "scripts/run_infobench_v2_numerical_followup_v2.py",
+    "runner_sha256": "a5877befbea3aa0f74262c46dc9dc5b7a3dc79e7f16caf307a759e9f28c79819",
+    "required_corrections": {
+      "dynamic_common_cell_labels": true,
+      "full_parent_exact_spec_contract_match": true,
+      "append_only_no_fresh_mode": true,
+      "terminal_evidence_is_immutable": true,
+      "resume_requires_identical_signature_and_checkpoints": true,
+      "all_material_preregistration_fields_fail_closed": true,
+      "top_level_decisions_carry_v3_schema": true,
+      "stored_fit_decision_provenance_is_validated": true
+    }
+  },
+  "historical_evidence": {
+    "v1_aborted": {
+      "run_dir": "runs/calibration/InFoBench_v2_numerical_followup_v1",
+      "aborted_marker": "runs/calibration/InFoBench_v2_numerical_followup_v1/ABORTED.json",
+      "aborted_marker_sha256": "3a6ba15f8ca0d9daebe560a73c92b763b5923bf740178dc97509a2198180d583",
+      "output_file_count": 295,
+      "output_tree_sha256": "d6663e5ab17a6d07f5f012a6d5de145b31aa350a250525b078d203e5b2a5ba3c",
+      "required_status": "aborted_before_fit_comparison",
+      "promotable": false
+    },
+    "v2_terminal": {
+      "run_dir": "runs/calibration/InFoBench_v2_numerical_followup_v2",
+      "output_file_count": 544,
+      "output_tree_sha256": "739089f8a1d58fdfb65b141cc03c3c9ff496ddefe02c703f9ed7d35fa8f5b77f",
+      "manifest": "runs/calibration/InFoBench_v2_numerical_followup_v2/study_manifest.json",
+      "manifest_sha256": "ecda2f8712412baf438ae7c5e7fefffecaa4ab8493954d271d08cfe5113fc482",
+      "required_manifest_status": "blocked_numerical_followup",
+      "required_study_signature_sha256": "73ff31abb580efba70cb4c9a03f56880543d8483e5a12009f9b1979f01850c3e",
+      "decision": "runs/calibration/InFoBench_v2_numerical_followup_v2/numerical_followup_decision.json",
+      "decision_sha256": "89741c6920dcdd04a24bd657a7212cc80925df502ca8c42f1545e43ffaed243e",
+      "required_decision_status": "blocked_numerical_followup",
+      "required_decision_passed": false,
+      "fit_decision": "runs/calibration/InFoBench_v2_numerical_followup_v2/common_fit_grid_decision.json",
+      "fit_decision_sha256": "28155403558356362ab47aeed85fb247255d7bd9d069646e1d079ad8742cf122",
+      "eap_decision": "runs/calibration/InFoBench_v2_numerical_followup_v2/common_eap_profile_decision.json",
+      "eap_decision_sha256": "d5e1431848cb942f6a81bbaf692a1a95faf6e9cb9a4a862e2bbfa591fb1ea0a9",
+      "launched_runner_snapshot": "docs/provenance/run_infobench_v2_numerical_followup_v2_launched_192ae5b4.py",
+      "launched_runner_sha256": "192ae5b4159ea46c4c101d8ca574cc5b3ceea09c9673e3df26fb1e602ea1925c",
+      "current_runner_sha256": "a5877befbea3aa0f74262c46dc9dc5b7a3dc79e7f16caf307a759e9f28c79819",
+      "required_lock_absent": true,
+      "promotable": false,
+      "non_promotable_reason": "The runner changed while the process was active, so the terminal artifacts are retained as evidence but cannot authorize Phase 3."
+    },
+    "reuse_policy": {
+      "v1_fit_or_checkpoint_artifacts_reused": 0,
+      "v2_fit_or_checkpoint_artifacts_reused": 0,
+      "required_new_grid101_fits": 36,
+      "required_new_grid121_fits": 36,
+      "required_total_new_fits": 72,
+      "parent_grid81_imports": 36
+    }
+  },
+  "code_freeze": {
+    "status": "declared_before_v3_results",
+    "runner": "scripts/run_infobench_v2_numerical_followup_v3.py",
+    "runner_sha256": "d40136718bd1a6e787c9a4e1ea2b6121d5fa43ff162396a5bb3039dc376e2949",
+    "policy": "After the final runner SHA is inserted and preflight tests pass, the v3 config and runner are frozen. Any subsequent change requires a new versioned config, runner, and output leaf."
+  },
+  "output_dir": "runs/calibration/InFoBench_v2_numerical_followup_v3",
+  "lock_path": "runs/calibration/InFoBench_v2_numerical_followup_v3/numerical_followup_lock.json",
+  "threshold_change_policy": "No scientific threshold, candidate, comparison, support, scope, seed, replicate count, runtime tolerance, EAP profile, or lock rule may differ from the hash-frozen v2 scientific contract.",
+  "selection_policy": "This is numerical verification only. It performs no CAT or calibration-specification selection, and it cannot reuse or promote any v1-aborted or v2-terminal partial/result artifact."
+}

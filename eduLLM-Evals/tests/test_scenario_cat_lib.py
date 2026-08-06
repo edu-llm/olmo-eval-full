@@ -185,6 +185,50 @@ def test_loader_requires_explicit_policy_for_nonpositive_discrimination(tmp_path
     assert dropped.dropped_negative_items == (rows[0]["criterion_id"],)
 
 
+def test_normal_trapezoid_quadrature_is_normalized_and_symmetric():
+    quadrature = scat.build_quadrature(
+        1,
+        801,
+        np.eye(1),
+        max_nodes=1000,
+        method="normal_trapezoid",
+        linear_bound=8.0,
+    )
+    assert quadrature.method == "normal_trapezoid"
+    assert quadrature.lower_bound == -8.0
+    assert quadrature.upper_bound == 8.0
+    assert quadrature.grid.shape == (801, 1)
+    assert np.isclose(np.exp(quadrature.log_prior).sum(), 1.0)
+    assert np.allclose(quadrature.grid[:, 0], -quadrature.grid[::-1, 0])
+    assert np.allclose(quadrature.log_prior, quadrature.log_prior[::-1])
+
+
+def test_normal_trapezoid_quadrature_rejects_multidimensional_use():
+    with pytest.raises(scat.OfflineStudyError, match="only for 1D"):
+        scat.build_quadrature(
+            2,
+            21,
+            np.eye(2),
+            method="normal_trapezoid",
+        )
+
+
+def test_scipy_gauss_hermite_supports_high_order_crosscheck():
+    quadrature = scat.build_quadrature(
+        1,
+        1601,
+        np.eye(1),
+        max_nodes=2000,
+        method="gauss_hermite_scipy",
+    )
+    assert quadrature.method == "gauss_hermite_scipy"
+    assert quadrature.nodes_per_dim == 1601
+    assert 0 < len(quadrature.grid) <= 1601
+    assert np.isfinite(quadrature.grid).all()
+    assert np.isfinite(quadrature.log_prior).all()
+    assert np.isclose(np.exp(quadrature.log_prior).sum(), 1.0)
+
+
 def test_offline_driver_writes_shareable_cat_and_random_artifacts(tmp_path):
     _, _, bank_path, scenario_path, row = _five_dim_fixture(tmp_path)
     matrix_path = tmp_path / "matrix.csv"

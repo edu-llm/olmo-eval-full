@@ -1,0 +1,295 @@
+{
+  "schema_version": "infobench-calibration-cat-v3-v1",
+  "status": "frozen_pre_run",
+  "frozen_date": "2026-08-05",
+  "benchmark": "InFoBench",
+  "purpose": "Same-cohort internal-development Phase-3 test consuming only a valid V4 dense-fitter numerical lock; selects among three eligible calibration specifications using inner folds and evaluates the frozen CAT policies out of sample.",
+  "code_dependencies": [
+    "scripts/nested_scenario_cat_cv_v3.py",
+    "scripts/nested_scenario_cat_cv.py",
+    "scripts/calibrate_mirt.py",
+    "scripts/kfold_cv_mirt.py",
+    "scripts/scenario_cat_lib.py",
+    "scripts/scenario_kfold_estimator_cv.py",
+    "tutor_cat/dataio.py",
+    "tutor_cat/engine.py",
+    "tutor_cat/mirt.py",
+    "tutor_cat/schemas.py",
+    "tutor_cat/selector.py"
+  ],
+  "baseline": {
+    "historical_result_status": "valid_failed_validation_preserved",
+    "historical_config": "configs/infobench_calibration_remediation_v1.json",
+    "historical_report": "reports/infobench_calibration_remediation/remediation_execution_summary_20260805.md",
+    "response_matrix": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+    "response_matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "judge_manifest": "runs/calibration/InFoBench_full_20260804/inputs/judge_manifest.json",
+    "judge_manifest_sha256": "d2f19c55b8ebb8f3ebe0c641485e0b694ce861f2740835da760b7b51b40698e7",
+    "rubrics": "data/InFoBench/rubrics.jsonl",
+    "rubrics_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scenarios": "data/InFoBench/scenarios.jsonl",
+    "scenarios_sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b",
+    "models": 52,
+    "model_families": 22,
+    "source_scenarios": 500,
+    "source_criteria": 2250,
+    "judge": "frozen Qwen zero-shot binary labels"
+  },
+  "limitations": {
+    "infobench_human_judge_audit_performed": false,
+    "additional_tutor_models_added": false,
+    "same_cohort_reused_after_v1": true,
+    "permitted_interpretation": "internal robustness conditional on frozen Qwen labels",
+    "independent_confirmation": false,
+    "unseen_family_generalization_claim_allowed": false
+  },
+  "latent_structure": {
+    "name": "overall_1d",
+    "source_skills": [
+      "content",
+      "format",
+      "number",
+      "style",
+      "linguistic"
+    ],
+    "dimensions": [
+      {
+        "label": "instruction_following",
+        "members": [
+          "content",
+          "format",
+          "number",
+          "style",
+          "linguistic"
+        ]
+      }
+    ],
+    "reopen_structure_selection": false
+  },
+  "calibration_specifications": [
+    {
+      "spec_id": "1pl_fixed_a1",
+      "simplicity_rank": 0,
+      "family": "1pl",
+      "ridge": null,
+      "log_a_shrinkage": null,
+      "log_a_prior_sd": null,
+      "fixed_discrimination": 1,
+      "canonical_cache_key": "calibration-spec-v1-4a3d3f341a3ff53bfa0d15b90992c4d8c6fc5907a3bf9a920aa4dda0c896b2f6"
+    },
+    {
+      "spec_id": "log_shrinkage_2pl_lambda16",
+      "simplicity_rank": 1,
+      "family": "log-shrinkage-2pl",
+      "ridge": null,
+      "log_a_shrinkage": 16,
+      "log_a_prior_sd": 0.25,
+      "fixed_discrimination": null,
+      "canonical_cache_key": "calibration-spec-v1-a143fc732de9abd69f65262642bddde579c9d23003f2622104671f075e18066a"
+    },
+    {
+      "spec_id": "log_shrinkage_2pl_lambda4",
+      "simplicity_rank": 2,
+      "family": "log-shrinkage-2pl",
+      "ridge": null,
+      "log_a_shrinkage": 4,
+      "log_a_prior_sd": 0.5,
+      "fixed_discrimination": null,
+      "canonical_cache_key": "calibration-spec-v1-6b09265e28950832a6c55d104f53718089faf55aa2b79cd517247efb340c5c65"
+    }
+  ],
+  "calibration_selection": {
+    "scope": "four inner folds within each outer-training panel",
+    "primary_metric": "mean_per_model_disjoint_scenario_log_loss",
+    "common_item_and_response_cell_support_required": true,
+    "uncertainty_unit": "tutor_model_family",
+    "uncertainty_method": "deterministic_leave_one_family_out_jackknife_se",
+    "rule": "minimum mean log loss; simplest exact specification within one standard error",
+    "outer_outcomes_used": false,
+    "cat_outcomes_used": false,
+    "require_all_specs_every_inner_fold": true,
+    "survivor_selection_allowed": false,
+    "minimum_exact_spec_modal_fraction_across_outer_panels": 0.8,
+    "allow_fallback": false
+  },
+  "numerical_lock": {
+    "fit_quadrature_method": "normal_trapezoid",
+    "fit_linear_bound": 8,
+    "fit_grid": 401,
+    "fit_grid_comparator": 801,
+    "convergence_mode": "returned_iterate",
+    "objective_tolerance": 0.0001,
+    "parameter_tolerance": 0.00005,
+    "consecutive_convergence_passes": 2,
+    "eap_quadrature_method": "normal_trapezoid",
+    "eap_linear_bound": 8,
+    "eap_grid": 801,
+    "eap_grid_comparator": 1601,
+    "tail_region": 7.5,
+    "verification_required_for_every_exact_specification": true,
+    "eligible_spec_ids": [
+      "1pl_fixed_a1",
+      "log_shrinkage_2pl_lambda16",
+      "log_shrinkage_2pl_lambda4"
+    ],
+    "expected_followup_config": "configs/infobench_v2_numerical_followup_v4.json",
+    "expected_lock": "runs/calibration/InFoBench_v2_numerical_followup_v4/numerical_followup_lock.json",
+    "require_all_fits_converged": true,
+    "require_returned_iterate_convergence": true,
+    "historical_fit_or_checkpoint_artifacts_reused": 0
+  },
+  "cross_validation": {
+    "repetitions": 5,
+    "outer_folds_per_repetition": 5,
+    "inner_folds_per_outer_panel": 4,
+    "group_related_model_families": true,
+    "split_config": "configs/infobench_v2_splits.json",
+    "split_config_sha256": "d297351d3931bdf889e3a821c4b797185d1001157eba4bbe84990f6f0f31ed66",
+    "split_manifest": "configs/infobench_v2_splits.manifest.json",
+    "split_manifest_sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f",
+    "model_assignments": "configs/infobench_v2_splits.models.csv",
+    "model_assignments_sha256": "1c185c46a8dcf0a6c7aa4e3fc2a13fd46310a67cb18c7d0d17a2d85f20c75bfa",
+    "scenario_assignments": "configs/infobench_v2_splits.scenarios.csv",
+    "scenario_assignments_sha256": "10075f8de40cd6677ae233c27e52de803fd9288773fe605a3d52a2159d2d2e4b",
+    "aggregate_repeated_predictions_per_model": true,
+    "family_cluster_bootstrap": true,
+    "treat_model_repeat_rows_as_independent": false
+  },
+  "cat_policies": {
+    "primary": {
+      "policy_id": "primary_floor15_se0p20_trace",
+      "role": "primary",
+      "minimum_scenarios": 15,
+      "conditional_se_target": 0.2,
+      "selector": "trace"
+    },
+    "sensitivities": [
+      {
+        "policy_id": "sensitivity_floor12_se0p20_trace",
+        "role": "sensitivity_floor",
+        "minimum_scenarios": 12,
+        "conditional_se_target": 0.2,
+        "selector": "trace"
+      },
+      {
+        "policy_id": "sensitivity_floor15_se0p20_dopt",
+        "role": "sensitivity_selector",
+        "minimum_scenarios": 15,
+        "conditional_se_target": 0.2,
+        "selector": "dopt"
+      }
+    ],
+    "sensitivities_can_replace_primary": false,
+    "detect_identical_paths": true,
+    "estimator": "mwle",
+    "top_n": 5,
+    "maximum_adaptive_scenarios": 50,
+    "minimum_scored_criteria": 15,
+    "random_baseline": "paired_same_seed_and_stopping_settings"
+  },
+  "selection_gates": {
+    "apply_to_primary_only": true,
+    "allow_fallback_if_primary_fails": false,
+    "minimum_replay_success_rate": 0.99,
+    "minimum_mwle_convergence_rate": 0.95,
+    "minimum_nominal_precision_rate": 0.95,
+    "minimum_nominal_precision_lower_95_ci": 0.9,
+    "minimum_recovery_correlation_lower_95_ci": 0.85,
+    "minimum_recovery_slope": 0.9,
+    "maximum_recovery_slope": 1.1,
+    "maximum_disjoint_pass_rate_mae": 0.07,
+    "maximum_absolute_disjoint_pass_rate_bias": 0.03,
+    "minimum_scenario_reduction_vs_random": 0.5,
+    "require_paired_family_bootstrap_ci_favors_cat": true,
+    "minimum_valid_parameter_bootstrap_rate": 0.9,
+    "require_every_outer_panel": true,
+    "require_every_repetition_pooled_gate": true,
+    "outer_panel_applied_gate_names": [
+      "replay_success_rate",
+      "mwle_convergence_rate",
+      "nominal_precision_rate",
+      "recovery_slope",
+      "disjoint_pass_rate_mae",
+      "absolute_disjoint_pass_rate_bias",
+      "scenario_reduction_vs_random"
+    ],
+    "outer_panel_diagnostic_gate_names": [
+      "nominal_precision_lower_95_ci",
+      "recovery_correlation_lower_95_ci",
+      "paired_ci_favors_cat"
+    ],
+    "outer_panel_inference_unit": "unique_outer_test_tutor_within_panel; confidence intervals diagnostic only",
+    "repetition_applied_gate_names": [
+      "replay_success_rate",
+      "mwle_convergence_rate",
+      "nominal_precision_rate",
+      "nominal_precision_lower_95_ci",
+      "recovery_correlation_lower_95_ci",
+      "recovery_slope",
+      "disjoint_pass_rate_mae",
+      "absolute_disjoint_pass_rate_bias",
+      "scenario_reduction_vs_random",
+      "paired_ci_favors_cat"
+    ],
+    "repetition_inference_unit": "52_unique_out_of_fold_tutors_once_per_repetition",
+    "repetition_expected_unique_oof_tutors": 52,
+    "cross_repeat_gate_role": "diagnostic_only_after_per_model_aggregation",
+    "treat_260_model_repeat_rows_as_independent": false
+  },
+  "uncertainty": {
+    "phase4_runs_only_after_complete_phase3_pass": true,
+    "parameter_bootstrap_replicates": 100,
+    "parameter_bootstrap_unit": "outer_training_model_family",
+    "minimum_valid_parameter_bootstrap_rate": 0.9,
+    "total_variance_method": "law_of_total_variance",
+    "absolute_p90_total_se_maximum": 0.5,
+    "total_se_scale": "identified theta N(0,1)",
+    "full_administration_total_se_ratio_is_diagnostic_only": true,
+    "order_seeds": [
+      1000,
+      1001,
+      1002,
+      1003,
+      1004,
+      1005,
+      1006,
+      1007,
+      1008,
+      1009,
+      1010,
+      1011,
+      1012,
+      1013,
+      1014,
+      1015,
+      1016,
+      1017,
+      1018,
+      1019
+    ],
+    "maximum_median_order_path_sd": 0.2,
+    "require_every_seed_present_and_valid": true
+  },
+  "runtime": {
+    "fit_max_iter": 1500,
+    "fit_tolerance": 0.0001,
+    "fit_parameter_tolerance": 0.00005,
+    "fit_consecutive_convergence_passes": 2,
+    "fit_convergence_mode": "returned_iterate",
+    "fit_quadrature_method": "normal_trapezoid",
+    "fit_linear_bound": 8,
+    "mwle_ridge": 0.000001,
+    "negative_loading_policy": "drop",
+    "metric_family_bootstrap_replicates": 2000,
+    "master_seed": 20260805,
+    "resume_requires_exact_study_signature": true
+  },
+  "outputs": {
+    "numerical_checks": "runs/calibration/InFoBench_v2_numerical_followup_v4",
+    "phase3": "runs/calibration/InFoBench_v3/phase3",
+    "phase4": "runs/calibration/InFoBench_v3/phase4",
+    "final_fit": "runs/calibration/InFoBench_v3/final_fit",
+    "report": "reports/infobench_calibration_cat_v3",
+    "never_overwrite_v1_or_v2": true
+  }
+}

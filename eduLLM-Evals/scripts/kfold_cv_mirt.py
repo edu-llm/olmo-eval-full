@@ -48,7 +48,7 @@ import argparse
 import importlib.util
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -169,6 +169,27 @@ def fit_structure(
         Y, M, q_modeled, args.grid,
         estimate_corr=args.estimate_latent_corr,
         ridge=args.ridge, max_iter=args.max_iter, tol=args.tol,
+        calibration_model=getattr(
+            args, "calibration_model", cm.DEFAULT_CALIBRATION_MODEL
+        ),
+        log_a_shrinkage=getattr(
+            args, "log_a_shrinkage", cm.DEFAULT_LOG_A_SHRINKAGE
+        ),
+        quadrature_method=getattr(
+            args, "quadrature_method", cm.DEFAULT_CALIBRATION_QUADRATURE
+        ),
+        linear_bound=getattr(
+            args, "linear_bound", cm.DEFAULT_QUADRATURE_LINEAR_BOUND
+        ),
+        convergence_mode=getattr(
+            args, "convergence_mode", cm.LEGACY_PRE_MSTEP_CONVERGENCE
+        ),
+        parameter_tol=getattr(args, "parameter_tol", None),
+        consecutive_convergence_passes=getattr(
+            args, "consecutive_convergence_passes", 1
+        ),
+        initial_A=getattr(args, "initial_A", None),
+        initial_b=getattr(args, "initial_b", None),
     )
     modeled_pattern_counts: dict[str, int] = {}
     for row in q_modeled:
@@ -187,7 +208,7 @@ def fit_structure(
             for index, label in enumerate(structure.labels)
         },
     }
-    return {
+    result = {
         "items": items,
         "A": fit["A"],
         "b": fit["b"],
@@ -199,8 +220,19 @@ def fit_structure(
         "n_params": fit["n_params"],
         "n_iter": fit["n_iter"],
         "converged": fit["converged"],
+        "calibration_specification": fit["calibration_specification"],
         "diag": diag,
     }
+    for key in (
+        "quadrature_method",
+        "quadrature_linear_bound",
+        "convergence_mode",
+        "penalized_objective",
+        "convergence_diagnostics",
+    ):
+        if key in fit:
+            result[key] = fit[key]
+    return result
 
 
 def fit_2skill(
@@ -310,7 +342,11 @@ def eap_predict_disjoint(
         dtype=int,
     )
     scoring_index = np.array(
-        [index for index, scenario in enumerate(scenario_ids) if scenario not in evaluation_scenarios],
+        [
+            index
+            for index, scenario in enumerate(scenario_ids)
+            if scenario not in evaluation_scenarios
+        ],
         dtype=int,
     )
     if scoring_index.size == 0 or evaluation_index.size == 0:
@@ -389,6 +425,67 @@ def _spread(values: list[float]) -> dict:
         "std": float(arr.std(ddof=0)),
         "min": float(arr.min()),
         "max": float(arr.max()),
+    }
+
+
+def select_calibration_spec_one_se(
+    candidates: list[dict],
+    simplicity_order: list[str],
+) -> dict:
+    """Apply a predeclared one-standard-error rule to inner-CV candidates.
+
+    Each candidate must contain ``mean_log_loss``, ``family_cluster_se``,
+    ``eligible``, and a complete ``calibration_specification`` with a ``cache_key``.
+    The cutoff is the best mean loss plus *that best candidate's* family-clustered
+    standard error. The first within-cutoff cache key in ``simplicity_order`` wins.
+    No outer-fold outcome is accepted by this helper, which keeps model selection
+    isolated from outer CAT performance.
+    """
+    if not candidates:
+        raise ValueError("one-SE selection requires at least one candidate")
+    eligible = [row for row in candidates if bool(row.get("eligible", False))]
+    if not eligible:
+        raise ValueError("one-SE selection has no eligible calibration specification")
+    by_key: dict[str, dict] = {}
+    for row in candidates:
+        spec = row.get("calibration_specification")
+        if not isinstance(spec, dict) or not isinstance(spec.get("cache_key"), str):
+            raise ValueError("every candidate needs a complete calibration_specification")
+        key = spec["cache_key"]
+        if key in by_key:
+            raise ValueError(f"duplicate calibration specification cache key: {key}")
+        by_key[key] = row
+    if len(set(simplicity_order)) != len(simplicity_order):
+        raise ValueError("simplicity_order contains duplicate cache keys")
+    eligible_keys = {row["calibration_specification"]["cache_key"] for row in eligible}
+    if not eligible_keys.issubset(set(simplicity_order)):
+        missing = sorted(eligible_keys - set(simplicity_order))
+        raise ValueError(f"simplicity_order is missing eligible specification(s): {missing}")
+
+    for row in eligible:
+        mean = row.get("mean_log_loss")
+        se = row.get("family_cluster_se")
+        if not isinstance(mean, (int, float)) or not np.isfinite(mean):
+            raise ValueError("eligible candidate mean_log_loss must be finite")
+        if not isinstance(se, (int, float)) or not np.isfinite(se) or se < 0:
+            raise ValueError("eligible candidate family_cluster_se must be finite and non-negative")
+    best = min(eligible, key=lambda row: float(row["mean_log_loss"]))
+    cutoff = float(best["mean_log_loss"]) + float(best["family_cluster_se"])
+    within = {
+        row["calibration_specification"]["cache_key"]
+        for row in eligible
+        if float(row["mean_log_loss"]) <= cutoff + 1e-15
+    }
+    selected_key = next((key for key in simplicity_order if key in within), None)
+    if selected_key is None:  # guarded by the subset validation above
+        raise ValueError("no within-one-SE candidate appears in simplicity_order")
+    return {
+        "selected": by_key[selected_key],
+        "selected_cache_key": selected_key,
+        "empirical_best_cache_key": best["calibration_specification"]["cache_key"],
+        "one_se_cutoff": cutoff,
+        "within_one_se_cache_keys": [key for key in simplicity_order if key in within],
+        "selection_basis": "inner-family-clustered-disjoint-log-loss",
     }
 
 
@@ -478,7 +575,7 @@ def cross_fold_stability(fold_fits: list[dict]) -> tuple[dict, dict[str, pd.Data
 
 
 def _utcnow() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def run(args: argparse.Namespace) -> int:
@@ -498,6 +595,15 @@ def run(args: argparse.Namespace) -> int:
         raise ValueError("--grid must be at least 2")
     if args.ridge < 0:
         raise ValueError("--ridge cannot be negative")
+    calibration_model = getattr(args, "calibration_model", cm.DEFAULT_CALIBRATION_MODEL)
+    log_a_shrinkage = getattr(
+        args, "log_a_shrinkage", cm.DEFAULT_LOG_A_SHRINKAGE
+    )
+    calibration_spec = cm.calibration_specification(
+        calibration_model,
+        ridge=args.ridge,
+        log_a_shrinkage=log_a_shrinkage,
+    )
     if args.max_iter < 1:
         raise ValueError("--max-iter must be positive")
     if args.tol <= 0:
@@ -524,6 +630,8 @@ def run(args: argparse.Namespace) -> int:
     print(f"loaded matrix: {n_models} models x {mat.shape[1]} criteria")
     print(f"Q-matrix source: {args.rubrics} ({len(q_by)} criteria with q_mapping)")
     print(f"modeled structure: {structure.name} -> {structure.groups}")
+    print(f"calibration specification: {calibration_spec['family']} "
+          f"({calibration_spec['cache_key']})")
 
     # Shared quadrature grid (same GH nodes/weights as the fitter).
     grid = cm.build_grid(structure.n_dims, args.grid)
@@ -718,6 +826,7 @@ def _write_outputs(
         "generated_at": _utcnow(),
         "k": args.k, "grid": args.grid, "seed": args.seed,
         "estimate_latent_corr": args.estimate_latent_corr,
+        "calibration_specification": full_fit["calibration_specification"],
         "metric_kind": "heldout_person_disjoint_scenario_prediction",
         "pooled_oos": pooled,
         "pooled_oos_reconstruction": pooled_reconstruction,
@@ -774,6 +883,9 @@ def _write_outputs(
                            "matrix": str(args.matrix), "rubrics": str(args.rubrics)},
             "config": {"k": args.k, "grid": args.grid, "seed": args.seed,
                        "ridge": args.ridge, "max_iter": args.max_iter, "tol": args.tol,
+                       "calibration_specification": full_fit[
+                           "calibration_specification"
+                       ],
                        "estimate_latent_corr": args.estimate_latent_corr,
                        "fold_strategy": getattr(args, "fold_strategy", "stratified"),
                        "evaluation_scenario_fraction": getattr(
@@ -802,6 +914,9 @@ def _write_outputs(
                 "n_params": full_fit["n_params"],
                 "n_iter": full_fit["n_iter"],
                 "converged": full_fit["converged"],
+                "calibration_specification": full_fit[
+                    "calibration_specification"
+                ],
                 "diagnostics": full_fit["diag"],
             },
             "item_param_stability": stability,
@@ -882,7 +997,25 @@ def build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--estimate-latent-corr", action="store_true",
                    help="re-estimate the latent correlation each EM iteration (default off).")
     p.add_argument("--ridge", type=float, default=1e-3,
-                   help="L2 ridge on loadings in the M-step (default 1e-3; matches Run 1).")
+                   help="L2 ridge on free-2pl loadings (default 1e-3; matches Run 1).")
+    p.add_argument(
+        "--calibration-model",
+        choices=cm.CALIBRATION_MODELS,
+        default=cm.DEFAULT_CALIBRATION_MODEL,
+        help=(
+            "item discrimination family: historical free-2pl (default), "
+            "fixed-a=1 1pl, or strictly-positive log-shrinkage-2pl."
+        ),
+    )
+    p.add_argument(
+        "--log-a-shrinkage",
+        type=float,
+        default=cm.DEFAULT_LOG_A_SHRINKAGE,
+        help=(
+            "log(a) penalty precision for log-shrinkage-2pl; equivalent prior "
+            "SD is 1/sqrt(value)."
+        ),
+    )
     p.add_argument("--max-iter", type=int, default=200, help="max EM iterations.")
     p.add_argument("--tol", type=float, default=1e-4, help="EM convergence tol on loglik.")
     p.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR,

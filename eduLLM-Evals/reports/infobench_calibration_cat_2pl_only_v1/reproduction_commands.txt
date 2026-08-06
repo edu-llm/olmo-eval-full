@@ -1,0 +1,28 @@
+# Run from the eduLLM-Evals repository root.
+
+# V4 fresh run (use --resume for a partially completed identical run).
+uv run --frozen --extra irt python scripts/run_infobench_v2_numerical_followup_v4.py \
+  --config configs/infobench_v2_numerical_followup_v4.json \
+  --out-dir runs/calibration/InFoBench_v2_numerical_followup_v4
+
+# Resume an interrupted, hash-identical V4 run.
+uv run --frozen --extra irt python scripts/run_infobench_v2_numerical_followup_v4.py \
+  --config configs/infobench_v2_numerical_followup_v4.json \
+  --out-dir runs/calibration/InFoBench_v2_numerical_followup_v4 --resume
+
+# Phase 3 (only after the valid V4 lock).
+uv run --frozen --extra irt python scripts/nested_scenario_cat_cv_2pl_only_v1.py \
+  --config configs/infobench_calibration_cat_2pl_only_v1.json \
+  --split-manifest configs/infobench_v2_splits.manifest.json \
+  --out-dir runs/calibration/InFoBench_2pl_only_v1/phase3 \
+  --numerical-followup-config configs/infobench_v2_numerical_followup_v4.json \
+  --numerical-lock runs/calibration/InFoBench_v2_numerical_followup_v4/numerical_followup_lock.json
+
+# Phase 4 and final fit are not authorized by this terminal state.
+
+# Render the terminal state after V4 blocks or Phase 3 completes.
+uv run --frozen --extra irt python scripts/render_infobench_2pl_only_v1_terminal.py \
+  --config configs/infobench_calibration_cat_2pl_only_v1.json \
+  --v4-dir runs/calibration/InFoBench_v2_numerical_followup_v4 \
+  --phase3-dir runs/calibration/InFoBench_2pl_only_v1/phase3 \
+  --out-dir reports/infobench_calibration_cat_2pl_only_v1

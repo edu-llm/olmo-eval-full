@@ -1,0 +1,200 @@
+{
+  "schema_version": "infobench-v2-numerical-followup-v1",
+  "status": "preregistered_before_followup_results",
+  "created_date": "2026-08-05",
+  "benchmark": "InFoBench",
+  "purpose": "Append-only numerical follow-up after the original v2 preflight correctly blocked Phase 3. This study adds the omitted common-support refit-grid theta gate, tests denser fit quadrature for all six exact calibration specifications, and tests scoring-bound sensitivity without changing any acceptance threshold.",
+  "historical_evidence_policy": "The original blocked run and every failed gate remain valid, immutable evidence. A follow-up pass qualifies a new numerical profile; it does not relabel, overwrite, or delete the original failures.",
+  "parent_study": {
+    "config": "configs/infobench_calibration_cat_v2.json",
+    "config_sha256": "71f9bb50c26e2487dfa2ab53b7fa87c318d838b811a13ed6d02e5c5038bfa03f",
+    "runner": "scripts/run_infobench_v2_numerical_checks.py",
+    "runner_sha256": "346eae4a1559bdd2dace43b93d8efff509042d79a48f033ad699e4cbd7795e2c",
+    "run_dir": "runs/calibration/InFoBench_v2_numerical_checks",
+    "study_manifest": "runs/calibration/InFoBench_v2_numerical_checks/study_manifest.json",
+    "study_manifest_sha256": "e8cb89cf0ea0d3429e5df070af4fb3d9a6f949a59feab2baecd6daf02bca7981",
+    "required_status": "blocked_numerical_equivalence",
+    "decision": "runs/calibration/InFoBench_v2_numerical_checks/numerical_decision.json",
+    "decision_sha256": "98f98020ec5c716f8751e6dc86dcdc6a6f5aad7869e467cc27d5ddae7fe65fbb",
+    "required_decision_passed": false,
+    "required_study_signature_sha256": "e2853648c457229f5606628fa6066b81ea2de23e7fb9b2733eba8a3d0ce66206",
+    "grid81_checkpoint_sha256": {
+      "1pl_fixed_a1/full": "3299f18fed0a020771e3076e7d269fa0e530ae2e9aceb12da2556ca9accc93b5",
+      "1pl_fixed_a1/outer_0": "fe7fe85bd2fa53e148c582696335e930bb28f67d7110201179f7204585913998",
+      "1pl_fixed_a1/outer_1": "ba4152d47883f6aae25103ac1adfd155df2f82051b5904077ef9d3ad33ad38fc",
+      "1pl_fixed_a1/outer_2": "3d526ace644341db330f9a335011f8c6bf54bf905849fe4c9061a158ec60d35c",
+      "1pl_fixed_a1/outer_3": "951a8e5f3291d50798f3a873420be1db4a0e120e34b56f2663e57e4ba36f0a21",
+      "1pl_fixed_a1/outer_4": "ef17db2a19d6270fd7411fbcb19b244c97b130b1ffcbde0867b93a49f392b5ea",
+      "log_shrinkage_2pl_lambda16/full": "23d11b5cfc0a551bc54350038b60dc395e98ad482787dce34e67dee5b8443ac1",
+      "log_shrinkage_2pl_lambda16/outer_0": "bdc5236c1476317e73fb9872a55c9b97d079d4063e0269c6597ced2f209be745",
+      "log_shrinkage_2pl_lambda16/outer_1": "6d8e5a534ad0d736138a19b7a7caa44f8e188d966d8e6e833854ceb9328894bc",
+      "log_shrinkage_2pl_lambda16/outer_2": "7158f9ff41a8c8dad5c88c4db55873ce261d3b860f0dbe58cc9b9652438b969d",
+      "log_shrinkage_2pl_lambda16/outer_3": "5bbe1cea79eef6388ce8d9c965738bbb59ae1f0658d60f825f6b3940778678e9",
+      "log_shrinkage_2pl_lambda16/outer_4": "564ea539a7c486b6221f84470b446e9202f2e5a91db49de7562198bced9d2d8e",
+      "log_shrinkage_2pl_lambda4/full": "817fc37f060a7d7e0bf9c6d96c647deff5c0dc045c9677cc9847041c5074b229",
+      "log_shrinkage_2pl_lambda4/outer_0": "96a9cb900a8c3332adfb0003b642282d74b1c8bb12abdb5febc3a0f6bcbe1c5e",
+      "log_shrinkage_2pl_lambda4/outer_1": "b34915709cb64c5e9e0825da434f03c3af28d85fdcd6b2f65f6c18476d76d0c8",
+      "log_shrinkage_2pl_lambda4/outer_2": "dec8d7a2822a304e5511652a350a72c8fdb990626b5e20830549ef4beb8dd978",
+      "log_shrinkage_2pl_lambda4/outer_3": "dbbf7063ab4accf33a1cfb7f5076147f1f0967a611730d489aaf68bd973a3644",
+      "log_shrinkage_2pl_lambda4/outer_4": "09c534372c01f725138384dc553b91b7ac12a93025a17e7d39412595902e36d4",
+      "free_2pl_ridge_0p1/full": "8d4ba60c1a3d6272c1f719caf48f7996b9024639772661856fa21d658d2ad9d9",
+      "free_2pl_ridge_0p1/outer_0": "c304e3e64aa024a9b1469e43620c57978a5859538af1abe4c9904a6c5e92652d",
+      "free_2pl_ridge_0p1/outer_1": "6680452263bee298e17bf20dc30ed6040953e40a96c527ca3087202643cae075",
+      "free_2pl_ridge_0p1/outer_2": "81d96cde4fbeb6de97555b170690fb64c3c7e2f80ed967b0fc7b4db7085bcd40",
+      "free_2pl_ridge_0p1/outer_3": "b959e6a175a9f0b0a480ca9f2d3e0c31098b61ce950f941446e0d215c1be81d5",
+      "free_2pl_ridge_0p1/outer_4": "3a5123974043b9c98984f9394b521afb62d7206cf592120c0f20b2bcc0b18607",
+      "free_2pl_ridge_0p01/full": "a37da6e21e71944afb52480ee53db9097b667e713ddade7b6913a39fb983ec1d",
+      "free_2pl_ridge_0p01/outer_0": "9ce21993939942af2dfc038f4cec5f7a7e6aeb11d5f85d83255bfb6cbf9bfd3f",
+      "free_2pl_ridge_0p01/outer_1": "e4f8ced52b601be7635cd5900a97c32ca30162996d20dd385750b76ff72b2a3a",
+      "free_2pl_ridge_0p01/outer_2": "59fb899e6f764b76f88031031302c837ce69d48792402ed3d7d0a8ee65db3fdc",
+      "free_2pl_ridge_0p01/outer_3": "3a28e226c024f37a6992a3b26e1a0fc3e632d052066712915e387449d55e3743",
+      "free_2pl_ridge_0p01/outer_4": "e4f230093117272081a40b4692f4205c8ea4c71e372e81178b3fcf0d20fbc9a8",
+      "free_2pl_ridge_0p001/full": "76b885c1277ce08bfe07664a45b8340901987bc9edfb90cf4f8e38a1e84c2206",
+      "free_2pl_ridge_0p001/outer_0": "468f1bfb98dd1610aac0c3d7f618cb4e194ced27e13227e3367decfefd29ae47",
+      "free_2pl_ridge_0p001/outer_1": "841d3cc4e1347f7eb097143c8b3b35a2c355bdcd8a7adfa40360e4a2d0790cb8",
+      "free_2pl_ridge_0p001/outer_2": "f56ff05a1f09f90008e0e3f655c63279767a83d3740d1fec03afd22d599f549a",
+      "free_2pl_ridge_0p001/outer_3": "7618f719d2d8159107cb8d3e58187837d6c29e6caef2c0b1a7585d72904c0d14",
+      "free_2pl_ridge_0p001/outer_4": "3e4bbdefb50485cd90be5d79278a13fef65d16d8e0711500be04495cda53a935"
+    }
+  },
+  "audit_disclosure": {
+    "no_inherited_passes": true,
+    "omitted_original_gate": "The parent 61-vs-81 fit-grid gate checked parameters, exportability, and held-out predictions but did not check theta stability across refitted banks, despite the plan requiring it.",
+    "manual_common_support_61_vs_81_max_absolute_theta_shift": {
+      "1pl_fixed_a1": 0.3156,
+      "log_shrinkage_2pl_lambda16": 0.2466,
+      "log_shrinkage_2pl_lambda4": 0.3881,
+      "free_2pl_ridge_0p1": 0.5673,
+      "free_2pl_ridge_0p01": 0.4273,
+      "free_2pl_ridge_0p001": 0.4394
+    },
+    "consequence": "No exact specification inherits a numerical pass. All six must pass this follow-up under a common fit grid and common scoring profile.",
+    "v1_v2_tail_scope_difference": "The earlier v1 bound check used only each model's outer-fold bank (mGPT fold 4: 2,083 items, theta approximately -5.679, tail approximately 1.09e-7). The v2 preflight additionally scored the full-cohort bank (mGPT: 2,097 items, theta approximately -6.044, tail approximately 6.27e-5), which exposed the failure.",
+    "grid81_bound_diagnostic_used_to_choose_followup_scorer": "A read-only check of existing grid-81 full fits found bound-8/EAP-801 versus bound-10/EAP-1001 maximum theta shifts no larger than 2.4e-9 for every specification and maximum bound-8 tail mass 8.44e-7. Therefore bound-8/EAP-801 is not boundary-sensitive at the grid-81 follow-up starting point and is retained for isolated refit-grid theta comparison."
+  },
+  "exact_specifications": [
+    {
+      "spec_id": "1pl_fixed_a1",
+      "family": "1pl",
+      "ridge": null,
+      "log_a_shrinkage": null,
+      "canonical_cache_key": "calibration-spec-v1-4a3d3f341a3ff53bfa0d15b90992c4d8c6fc5907a3bf9a920aa4dda0c896b2f6"
+    },
+    {
+      "spec_id": "log_shrinkage_2pl_lambda16",
+      "family": "log-shrinkage-2pl",
+      "ridge": null,
+      "log_a_shrinkage": 16.0,
+      "canonical_cache_key": "calibration-spec-v1-a143fc732de9abd69f65262642bddde579c9d23003f2622104671f075e18066a"
+    },
+    {
+      "spec_id": "log_shrinkage_2pl_lambda4",
+      "family": "log-shrinkage-2pl",
+      "ridge": null,
+      "log_a_shrinkage": 4.0,
+      "canonical_cache_key": "calibration-spec-v1-6b09265e28950832a6c55d104f53718089faf55aa2b79cd517247efb340c5c65"
+    },
+    {
+      "spec_id": "free_2pl_ridge_0p1",
+      "family": "free-2pl",
+      "ridge": 0.1,
+      "log_a_shrinkage": null,
+      "canonical_cache_key": "calibration-spec-v1-5fa61720810ffcd353a40f39e8e3dd8f4bc6e1a329adea99d045f46a2abce76f"
+    },
+    {
+      "spec_id": "free_2pl_ridge_0p01",
+      "family": "free-2pl",
+      "ridge": 0.01,
+      "log_a_shrinkage": null,
+      "canonical_cache_key": "calibration-spec-v1-0cad2da74135783e7d930967bacf1b7090c41e636c2f26d45d340c5ef511bf6c"
+    },
+    {
+      "spec_id": "free_2pl_ridge_0p001",
+      "family": "free-2pl",
+      "ridge": 0.001,
+      "log_a_shrinkage": null,
+      "canonical_cache_key": "calibration-spec-v1-fe9d96017a6b9cff83220ac6909b7a16e2d49ec46d1649ab36572c5e31b4a51d"
+    }
+  ],
+  "fit_grid_followup": {
+    "common_grid_required_for_all_exact_specifications": true,
+    "grid_candidates": [81, 101, 121],
+    "first_comparison": "81_vs_101",
+    "second_comparison": "101_vs_121",
+    "always_run_both_fit_comparisons": true,
+    "required_comparisons": ["81_vs_101", "101_vs_121"],
+    "lock_rule": {
+      "both_comparisons_pass_all_six": 81,
+      "first_fails_second_passes_all_six": 101,
+      "otherwise": null
+    },
+    "lock_rule_description": "Always fit grids 101 and 121 and run both successive comparisons for all six specifications. Lock common grid 81 only if both all-six panels pass. If 81-vs-101 fails but 101-vs-121 passes across all six, lock common grid 101. Otherwise emit no fit-grid lock.",
+    "grid81_reuse_policy": "Hash-verify every frozen parent checkpoint and its three output files, then copy the fit bundle into the append-only follow-up without refitting grid 81.",
+    "scopes": ["full", "outer_0", "outer_1", "outer_2", "outer_3", "outer_4"],
+    "require_all_fits_converged": true,
+    "minimum_item_parameter_spearman": 0.99,
+    "minimum_exportability_agreement": 0.995,
+    "heldout_common_cell_equivalence": {
+      "metrics": ["log_loss", "brier"],
+      "equivalence_margin": 0.005,
+      "require_absolute_pooled_shift_within_margin": true,
+      "require_family_cluster_bootstrap_ci_within_margin": true,
+      "bootstrap_replicates": 2000,
+      "bootstrap_seed": 20260805
+    },
+    "common_support_theta_stability": {
+      "quadrature_method": "normal_trapezoid",
+      "quadrature_nodes": 801,
+      "linear_bound": 8.0,
+      "supports": ["full_bank", "administration_only"],
+      "scopes": ["full", "outer_0", "outer_1", "outer_2", "outer_3", "outer_4"],
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05,
+      "maximum_absolute_theta_shift": 0.005,
+      "require_identical_model_scope_support_keys": true
+    }
+  },
+  "eap_bound_followup": {
+    "run_only_after_common_fit_grid_lock": true,
+    "run_for_every_exact_specification": true,
+    "bound8_density": {
+      "lower": {"method": "normal_trapezoid", "nodes": 401, "bound": 8.0, "step": 0.04, "tail_region": 7.5},
+      "upper": {"method": "normal_trapezoid", "nodes": 801, "bound": 8.0, "step": 0.02, "tail_region": 7.5}
+    },
+    "equal_step_cross_bound": {
+      "lower": {"method": "normal_trapezoid", "nodes": 401, "bound": 8.0, "step": 0.04, "tail_region": 7.5},
+      "upper": {"method": "normal_trapezoid", "nodes": 501, "bound": 10.0, "step": 0.04, "tail_region": 9.5}
+    },
+    "bound10_density": {
+      "lower": {"method": "normal_trapezoid", "nodes": 501, "bound": 10.0, "step": 0.04, "tail_region": 9.5},
+      "upper": {"method": "normal_trapezoid", "nodes": 1001, "bound": 10.0, "step": 0.02, "tail_region": 9.5}
+    },
+    "theta_stability_thresholds": {
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05,
+      "maximum_absolute_theta_shift": 0.005
+    },
+    "maximum_posterior_tail_mass": 0.00001,
+    "common_bound_lock_rule": "All three comparisons and all six specifications must pass theta stability. Retain common bound 8 / EAP 401 only if every bound-8 401/801 tail mass passes. Otherwise lock common bound 10 / EAP 501 only if every bound-10 501/1001 tail mass passes. Otherwise emit no lock.",
+    "tail_region_interpretation": "Tail mass is measured within 0.5 theta units of the active numerical boundary: abs(theta)>=7.5 for bound 8 and abs(theta)>=9.5 for bound 10. The 1e-5 acceptance threshold is unchanged."
+  },
+  "frozen_inputs": {
+    "response_matrix": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+    "response_matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "rubrics": "data/InFoBench/rubrics.jsonl",
+    "rubrics_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scenarios": "data/InFoBench/scenarios.jsonl",
+    "scenarios_sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b",
+    "split_manifest": "configs/infobench_v2_splits.manifest.json",
+    "split_manifest_sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f"
+  },
+  "runtime": {
+    "fit_max_iter": 200,
+    "fit_tolerance": 0.0001,
+    "master_seed": 20260805
+  },
+  "output_dir": "runs/calibration/InFoBench_v2_numerical_followup_v1",
+  "lock_path": "runs/calibration/InFoBench_v2_numerical_followup_v1/numerical_followup_lock.json",
+  "threshold_change_policy": "No threshold, candidate, comparison, support, or scope may be added, removed, or relaxed after follow-up outputs are generated.",
+  "selection_policy": "This is numerical verification only. It cannot select a calibration specification, inspect CAT outcomes, or promote a subset of specifications."
+}

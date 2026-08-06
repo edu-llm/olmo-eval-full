@@ -9,7 +9,8 @@ The public pieces are:
 ``load_fitted_bank``
     Load a fitted-only rubric bank with any number of named latent dimensions.
 ``build_quadrature`` / ``batch_eap``
-    Gauss-Hermite batch EAP using the fitted latent correlation matrix.
+    Explicitly configured numerical batch EAP using the fitted latent correlation
+    matrix (historical Gauss-Hermite or a bounded 1D normal-trapezoid rule).
 ``mwle``
     Multidimensional Warm/Firth weighted-likelihood estimation.
 ``engine_bank_for_row`` / ``run_recorded_model``
@@ -26,14 +27,15 @@ from __future__ import annotations
 import json
 import math
 import sys
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from scipy.special import expit, log_expit, logsumexp
+from scipy.special import expit, log_expit, logsumexp, roots_hermite
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -88,12 +90,15 @@ class FittedBank:
 
 @dataclass(frozen=True)
 class Quadrature:
-    """Tensor-product Gauss-Hermite grid and normalized correlated-prior weights."""
+    """Numerical ability grid and normalized prior-integration weights."""
 
     grid: np.ndarray
     log_prior: np.ndarray
     correlation: np.ndarray
     nodes_per_dim: int
+    method: str = "gauss_hermite"
+    lower_bound: float | None = None
+    upper_bound: float | None = None
 
 
 @dataclass
@@ -307,15 +312,33 @@ def build_quadrature(
     correlation: np.ndarray | None = None,
     *,
     max_nodes: int = 50_000,
+    method: str = "gauss_hermite",
+    linear_bound: float = 8.0,
 ) -> Quadrature:
-    """Build a correlated-normal Gauss-Hermite quadrature rule.
+    """Build an explicit numerical rule for a standard-normal latent prior.
 
-    The tensor grid grows as ``nodes_per_dim ** n_dims``.  The explicit guard prevents
-    accidentally requesting historical two-dimensional defaults such as ``61**5``.
+    ``gauss_hermite`` preserves the historical NumPy tensor-product
+    implementation. ``gauss_hermite_scipy`` uses SciPy's stable high-order root
+    construction as an explicit cross-family numerical check.
+    ``normal_trapezoid`` is an explicitly bounded, evenly spaced one-dimensional
+    rule for posteriors that are much narrower than practical Gauss-Hermite node
+    spacing.  Its method and bound must be recorded with the numerical settings.
+
+    The tensor Gauss-Hermite grid grows as ``nodes_per_dim ** n_dims``.  The
+    explicit guard prevents accidentally requesting defaults such as ``61**5``.
     """
 
     if n_dims < 1 or nodes_per_dim < 2:
         raise ValueError("n_dims must be >=1 and nodes_per_dim must be >=2")
+    if method not in {
+        "gauss_hermite",
+        "gauss_hermite_scipy",
+        "normal_trapezoid",
+    }:
+        raise ValueError(
+            "quadrature method must be gauss_hermite, gauss_hermite_scipy, "
+            "or normal_trapezoid"
+        )
     total = nodes_per_dim**n_dims
     if total > max_nodes:
         raise OfflineStudyError(
@@ -326,7 +349,50 @@ def build_quadrature(
         np.eye(n_dims) if correlation is None else np.asarray(correlation, dtype=float),
         n_dims,
     )
-    nodes, weights = np.polynomial.hermite.hermgauss(nodes_per_dim)
+    if method == "normal_trapezoid":
+        if n_dims != 1:
+            raise OfflineStudyError("normal_trapezoid quadrature is supported only for 1D")
+        if not math.isfinite(linear_bound) or linear_bound <= 0:
+            raise ValueError("linear_bound must be a finite positive number")
+        axis = np.linspace(-linear_bound, linear_bound, nodes_per_dim, dtype=float)
+        step = float(axis[1] - axis[0])
+        trapezoid = np.full(nodes_per_dim, step, dtype=float)
+        trapezoid[[0, -1]] *= 0.5
+        logw = (
+            -0.5 * axis * axis
+            - 0.5 * math.log(2.0 * math.pi)
+            + np.log(trapezoid)
+        )
+        logw -= logsumexp(logw)
+        return Quadrature(
+            grid=axis[:, None],
+            log_prior=logw,
+            correlation=corr,
+            nodes_per_dim=nodes_per_dim,
+            method=method,
+            lower_bound=-float(linear_bound),
+            upper_bound=float(linear_bound),
+        )
+
+    if method == "gauss_hermite_scipy":
+        nodes, weights = roots_hermite(nodes_per_dim)
+        # Very high-order tail weights can underflow to exact zero. They have no
+        # numerical contribution and cannot be logged, so remove only those
+        # nodes while retaining the requested order in provenance.
+        positive = weights > 0
+        nodes = nodes[positive]
+        weights = weights[positive]
+    else:
+        nodes, weights = np.polynomial.hermite.hermgauss(nodes_per_dim)
+    if (
+        not np.all(np.isfinite(nodes))
+        or not np.all(np.isfinite(weights))
+        or np.any(weights <= 0)
+    ):
+        raise OfflineStudyError(
+            "Gauss-Hermite construction produced non-finite/nonpositive weights; "
+            "use a supported node count or an explicitly configured method"
+        )
     axis = math.sqrt(2.0) * nodes
     one_logw = np.log(weights) - 0.5 * math.log(math.pi)
     meshes = np.meshgrid(*([axis] * n_dims), indexing="ij")
@@ -343,7 +409,13 @@ def build_quadrature(
         # Importance reweighting: correlated MVN density / independent MVN density.
         logw = logw - 0.5 * ratio_quad - 0.5 * logdet
     logw = logw - logsumexp(logw)
-    return Quadrature(grid=grid, log_prior=logw, correlation=corr, nodes_per_dim=nodes_per_dim)
+    return Quadrature(
+        grid=grid,
+        log_prior=logw,
+        correlation=corr,
+        nodes_per_dim=nodes_per_dim,
+        method=method,
+    )
 
 
 def _observed_subset(

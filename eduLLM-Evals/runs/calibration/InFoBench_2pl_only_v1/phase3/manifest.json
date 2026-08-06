@@ -1,0 +1,467 @@
+{
+  "calibration_specifications": [
+    {
+      "complete_specification": {
+        "cache_key": "calibration-spec-v1-a143fc732de9abd69f65262642bddde579c9d23003f2622104671f075e18066a",
+        "difficulty": {
+          "mode": "estimated",
+          "parameterization": "unpenalized-offset-b"
+        },
+        "discrimination": {
+          "constraint": "strictly-positive",
+          "mode": "estimated",
+          "parameterization": "a=exp(log_a)"
+        },
+        "estimation": "bock-aitkin-marginal-maximum-likelihood-em",
+        "family": "log-shrinkage-2pl",
+        "regularization": {
+          "center": "log(a)=0 (a=1)",
+          "kind": "zero-mean-gaussian-prior-on-log-a",
+          "log_a_prior_sd": 0.25,
+          "log_a_shrinkage": 16.0,
+          "penalty": "0.5 * log_a_shrinkage * sum(log(a)^2)",
+          "ridge": null
+        },
+        "schema_version": 1
+      },
+      "simplicity_rank": 0,
+      "spec_id": "log_shrinkage_2pl_lambda16"
+    },
+    {
+      "complete_specification": {
+        "cache_key": "calibration-spec-v1-6b09265e28950832a6c55d104f53718089faf55aa2b79cd517247efb340c5c65",
+        "difficulty": {
+          "mode": "estimated",
+          "parameterization": "unpenalized-offset-b"
+        },
+        "discrimination": {
+          "constraint": "strictly-positive",
+          "mode": "estimated",
+          "parameterization": "a=exp(log_a)"
+        },
+        "estimation": "bock-aitkin-marginal-maximum-likelihood-em",
+        "family": "log-shrinkage-2pl",
+        "regularization": {
+          "center": "log(a)=0 (a=1)",
+          "kind": "zero-mean-gaussian-prior-on-log-a",
+          "log_a_prior_sd": 0.5,
+          "log_a_shrinkage": 4.0,
+          "penalty": "0.5 * log_a_shrinkage * sum(log(a)^2)",
+          "ridge": null
+        },
+        "schema_version": 1
+      },
+      "simplicity_rank": 1,
+      "spec_id": "log_shrinkage_2pl_lambda4"
+    }
+  ],
+  "cat_policies": [
+    {
+      "conditional_se_target": 0.2,
+      "minimum_scenarios": 15,
+      "policy_id": "primary_floor15_se0p20_trace",
+      "role": "primary",
+      "selector": "trace"
+    },
+    {
+      "conditional_se_target": 0.2,
+      "minimum_scenarios": 12,
+      "policy_id": "sensitivity_floor12_se0p20_trace",
+      "role": "sensitivity",
+      "selector": "trace"
+    },
+    {
+      "conditional_se_target": 0.2,
+      "minimum_scenarios": 15,
+      "policy_id": "sensitivity_floor15_se0p20_dopt",
+      "role": "sensitivity",
+      "selector": "dopt"
+    }
+  ],
+  "code_provenance": {
+    "canonical_sha256": "d01c716ad71bff6a47bd235cea6b46fc693363bf0d4c1e3911fb6a0c95cc4a79",
+    "dependency_inventory": [
+      "scripts/nested_scenario_cat_cv_2pl_only_v1.py",
+      "scripts/nested_scenario_cat_cv.py",
+      "scripts/calibrate_mirt.py",
+      "scripts/kfold_cv_mirt.py",
+      "scripts/scenario_cat_lib.py",
+      "scripts/scenario_kfold_estimator_cv.py",
+      "tutor_cat/dataio.py",
+      "tutor_cat/engine.py",
+      "tutor_cat/mirt.py",
+      "tutor_cat/schemas.py",
+      "tutor_cat/selector.py"
+    ],
+    "files": {
+      "scripts/calibrate_mirt.py": "e0c296869838062c72c1ea73c9a7bee62800e1069f1f6657a815689189be4272",
+      "scripts/kfold_cv_mirt.py": "ab1b5ac5dbc3c89705dc16723e9b1742392b97c6b89878365bcb7e9115ec426c",
+      "scripts/nested_scenario_cat_cv.py": "5daf09484647299e24c1d5abbbd60bcbb162c36c6fec0bfb285914af45b3703b",
+      "scripts/nested_scenario_cat_cv_2pl_only_v1.py": "b1e0565b150604a2f2a501432e48834edb3a88540b110fc441d81d712e4cef56",
+      "scripts/scenario_cat_lib.py": "3c1ff26efd81926a3bc775ee6f88a9718322a03292a3d2002684631135f4f8f5",
+      "scripts/scenario_kfold_estimator_cv.py": "77e5629b6b1675102d99aa9d2635814dafd6f681efca631598889e76b5a44a9d",
+      "tutor_cat/dataio.py": "aeb802fb6a8b0e291a754a303002f0d7048f1a3b6f950cd70c8010385299ae39",
+      "tutor_cat/engine.py": "954af676226fa93248d02fe4af5351020bdcb7c41e2ae0e59f016b65c20c079d",
+      "tutor_cat/mirt.py": "620b58682967e825e2dc330eb7d987837610622e251abf21b829d5153409175c",
+      "tutor_cat/schemas.py": "12545560ec2339dc5d04ef3c0e1c7f3ad0faf8e01ee46a59d8293fe2ca78d29f",
+      "tutor_cat/selector.py": "913155ccf52fb98990e4e3f28b59a5cc9a41cd53fb18c2585a29e2be27a6b7bd"
+    }
+  },
+  "command": [
+    "scripts/nested_scenario_cat_cv_2pl_only_v1.py",
+    "--resume"
+  ],
+  "completed_at": "2026-08-06T18:33:13.674830+00:00",
+  "created_at": "2026-08-06T17:55:50.398750+00:00",
+  "cross_validation": {
+    "bootstrap_unit": "tutor_family",
+    "inner_folds_per_outer": 4,
+    "outer_folds_per_repeat": 5,
+    "repeated_rows_treated_as_independent": false,
+    "repetitions": 5
+  },
+  "environment": {
+    "canonical_sha256": "e46eadfc3e4c12a1d44d0ef42258b624aa94ca4fc2bd1be6cc7125ee375f53a0",
+    "executable": "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python3",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "python": "3.13.13",
+    "pythonhashseed": null,
+    "scipy": "1.18.0"
+  },
+  "gate_scope_contract": {
+    "cross_repeat": {
+      "decision_role": "diagnostic_only_after_per_model_aggregation",
+      "inference_unit": "52_unique_tutors_after_within_tutor_mean_across_5_repetitions",
+      "raw_model_repeat_rows": 260,
+      "raw_model_repeat_rows_treated_as_independent": false
+    },
+    "outer_panel": {
+      "applied_gate_names": [
+        "replay_success_rate",
+        "mwle_convergence_rate",
+        "nominal_precision_rate",
+        "recovery_slope",
+        "disjoint_pass_rate_mae",
+        "absolute_disjoint_pass_rate_bias",
+        "scenario_reduction_vs_random"
+      ],
+      "confidence_intervals_affect_decision": false,
+      "decision_role": "applied_point_estimate_gates",
+      "diagnostic_only_gate_names": [
+        "nominal_precision_lower_95_ci",
+        "recovery_correlation_lower_95_ci",
+        "paired_ci_favors_cat"
+      ],
+      "inference_unit": "unique_outer_test_tutor_within_panel; confidence intervals diagnostic only"
+    },
+    "repetition": {
+      "applied_gate_names": [
+        "replay_success_rate",
+        "mwle_convergence_rate",
+        "nominal_precision_rate",
+        "nominal_precision_lower_95_ci",
+        "recovery_correlation_lower_95_ci",
+        "recovery_slope",
+        "disjoint_pass_rate_mae",
+        "absolute_disjoint_pass_rate_bias",
+        "scenario_reduction_vs_random",
+        "paired_ci_favors_cat"
+      ],
+      "decision_role": "applied_all_absolute_gates",
+      "diagnostic_only_gate_names": [],
+      "expected_unique_oof_tutors": 52,
+      "inference_unit": "52_unique_out_of_fold_tutors_once_per_repetition",
+      "nominal_precision_lower_95_ci_threshold": 0.9
+    }
+  },
+  "git_commit": "c4c0aaa9ad98a714c7d54d7adc0201906b9810ac",
+  "inner_selection_fail_closed": {
+    "expected_spec_fold_combinations_per_panel": 8,
+    "outer_outcomes_opened_only_after_all_panel_selections_locked": true,
+    "require_all_specs_every_inner_fold": true,
+    "survivor_selection_allowed": false
+  },
+  "inputs": {
+    "config": {
+      "path": "configs/infobench_calibration_cat_2pl_only_v1.json",
+      "sha256": "f0fa7def908f27b846d489ebc2d292aead091ae8fa7d0ee4191f01b2e1362383"
+    },
+    "judge_manifest": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/judge_manifest.json",
+      "sha256": "d2f19c55b8ebb8f3ebe0c641485e0b694ce861f2740835da760b7b51b40698e7"
+    },
+    "response_matrix": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+      "sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "rubrics": {
+      "path": "data/InFoBench/rubrics.jsonl",
+      "sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10"
+    },
+    "scenarios": {
+      "path": "data/InFoBench/scenarios.jsonl",
+      "sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+    },
+    "split_manifest": {
+      "path": "configs/infobench_v2_splits.manifest.json",
+      "sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f"
+    }
+  },
+  "limitations": [
+    "same 52-model cohort is internal development, not independent confirmation",
+    "results are conditional on frozen Qwen labels not human-validated on InFoBench"
+  ],
+  "numerical_lock": {
+    "eap_grid": 801,
+    "eligible_spec_ids": [
+      "1pl_fixed_a1",
+      "log_shrinkage_2pl_lambda16",
+      "log_shrinkage_2pl_lambda4"
+    ],
+    "evidence_sha256": {
+      "fit/1pl_fixed_a1/full/401/cold": "9b59f451eb76581b3372f7dd3ea2e6717ac66cebc7f90cd293fa8a3a6aa46e2d",
+      "fit/1pl_fixed_a1/full/801/cold": "fa998f965aea67cece917066df65833c134e9b68ae9bea48ec6f501587d9a078",
+      "fit/1pl_fixed_a1/full/801/continuation": "b5817ef8265504d096cbdcd468caad1b55cbdebf3ebd8fccd911f60fe10c6a15",
+      "fit/1pl_fixed_a1/outer_0/401/cold": "a7a784618ccf365a85b7bb572381960530b69f4d1eb9c8ce50e59dc806cd1ca1",
+      "fit/1pl_fixed_a1/outer_0/801/cold": "5896af933db44b8a3e955a6b8dc301eb0d37205add0d3072facfa70a761a1685",
+      "fit/1pl_fixed_a1/outer_0/801/continuation": "0e51ca67ae700e7152c2b3cc987c9c24354dc9cba2b9350d5414c01c46f13879",
+      "fit/1pl_fixed_a1/outer_1/401/cold": "e4054bc83d19809503055857d6148e5fef6b3c764e43a86ca9efaff62dec3b2d",
+      "fit/1pl_fixed_a1/outer_1/801/cold": "113da28f65f5056a4b3e576656f4b5e129bbd877d3af6ec10a2f5424bfb3bab8",
+      "fit/1pl_fixed_a1/outer_1/801/continuation": "14a82e4c1faa54ff6e22e315e6a3aa197ee4742144db0940682a26a0ec5769f9",
+      "fit/1pl_fixed_a1/outer_2/401/cold": "5444215acea971af7d86f525008e62f9d87380f0f4d7950f6aa8c1aa6e1a9b59",
+      "fit/1pl_fixed_a1/outer_2/801/cold": "72f5381e6d9f4d792dfeda869a4bbd26a4e8ce88272113c1bf358c26defddbf6",
+      "fit/1pl_fixed_a1/outer_2/801/continuation": "ecae5dd88ace3550bfa2ac27a4aab52ac9a6a98e5cb5b93e7637940f4a10b18f",
+      "fit/1pl_fixed_a1/outer_3/401/cold": "0936a92e39395bac4c4efcb0debbad6fb6fda61a8ab0d0e1c4620892db546e68",
+      "fit/1pl_fixed_a1/outer_3/801/cold": "e0d7e3d76a3b0ae2109b93e773097b1659e78f59a0aa6af2f04074ec1dbfe44f",
+      "fit/1pl_fixed_a1/outer_3/801/continuation": "31d444160e7a39d2ee10e7ffc5978dd8904e2689e6a1351027ae6e25c32e7527",
+      "fit/1pl_fixed_a1/outer_4/401/cold": "4b8de41c33215d485fc2a462368ff9a0faf5e0f98da5ca340b364d7f0a50ed2d",
+      "fit/1pl_fixed_a1/outer_4/801/cold": "5c525d6df7f5c7e2d866e6523ac60910752dddf8d4a21d5dc2110e525a2d33f5",
+      "fit/1pl_fixed_a1/outer_4/801/continuation": "12ac64b84ee6fd6e9d1b24407992f9c020a4d9dc8f1e93d22fb7fbfaed14fd5c",
+      "fit/log_shrinkage_2pl_lambda16/full/401/cold": "060fca59c8a9625f95536a4b3f9fd12b38ac430f212a2d2fb81c161f5ef7f59b",
+      "fit/log_shrinkage_2pl_lambda16/full/801/cold": "7a5d0d1807bae6918b8dd22a513e768e1683e1186b8ed4444acb488383a68a58",
+      "fit/log_shrinkage_2pl_lambda16/full/801/continuation": "1a49db1287308b135216bc0f8812edd547b84a04ca67b8a2b132b19e3bf47ca9",
+      "fit/log_shrinkage_2pl_lambda16/outer_0/401/cold": "3d82de77bec59ccdb3c1075d91ae72bdb7c9eda1fceed4bb0faa266552052735",
+      "fit/log_shrinkage_2pl_lambda16/outer_0/801/cold": "380da78ba2892888187abc703bc1b678056b3f127f27c9a868d56e9338a98d77",
+      "fit/log_shrinkage_2pl_lambda16/outer_0/801/continuation": "14a2868736445cfdb5071d51c9a0fa994d6ad2dccf337807437039d6a1b7eab5",
+      "fit/log_shrinkage_2pl_lambda16/outer_1/401/cold": "f26629c1c0f01bbb9c649be60ec727ead04d2d3afeba9d78b2f97d7cff1df7ff",
+      "fit/log_shrinkage_2pl_lambda16/outer_1/801/cold": "c00089edb2f7f821630ac68124a7134e08b50b4b4d2d7929c998f5feb8a66658",
+      "fit/log_shrinkage_2pl_lambda16/outer_1/801/continuation": "c61a3837b55e69e03ed297753d0598115115948b8b3a1a348a9591470d3679a0",
+      "fit/log_shrinkage_2pl_lambda16/outer_2/401/cold": "164607c77454507f0e5e0d44e3a7b5b6ba3bcaff7f4a614f4895e5afd104861d",
+      "fit/log_shrinkage_2pl_lambda16/outer_2/801/cold": "c99b78b14ca55e405d4b77fc8022b7fcae5ffc30698c9b8aa3f3aeb29264f6d3",
+      "fit/log_shrinkage_2pl_lambda16/outer_2/801/continuation": "e93a150eac9b2d76db8729086ee820ab5ab83b15e15243ae1f76e125992761bb",
+      "fit/log_shrinkage_2pl_lambda16/outer_3/401/cold": "866fc5ace5d4ba926b2c130bc9168e463f2145d6e635af55ca9e72d0379bc12b",
+      "fit/log_shrinkage_2pl_lambda16/outer_3/801/cold": "835871e03769975adbd2ff417ac3d9283abe55e2cfd214b98a130784d300b5d5",
+      "fit/log_shrinkage_2pl_lambda16/outer_3/801/continuation": "f9e4c31bfbf88f625a386c7af2f9d4cf9e22948d49e8d3e37bdadd1bc5998816",
+      "fit/log_shrinkage_2pl_lambda16/outer_4/401/cold": "1feb3a336f957f6e18d50faffc7e2cf1cc4d1c4e8d1d246b675f1a3f7ba59384",
+      "fit/log_shrinkage_2pl_lambda16/outer_4/801/cold": "b7a7284fe87ff273923ec5c2e39a036ffd474c5eee4100559e49e2c235bd1946",
+      "fit/log_shrinkage_2pl_lambda16/outer_4/801/continuation": "1f60290ff8551d8e91e66bded42e16b15ab774b6dec9aae023d1c606b62753ee",
+      "fit/log_shrinkage_2pl_lambda4/full/401/cold": "0fe72322f67b396ffaee08fdee8405039bc90c0cfccc12e20e505e8ee15488bf",
+      "fit/log_shrinkage_2pl_lambda4/full/801/cold": "04a41709ed608888c93964c9bdda3aa2f2254a65d4028bbc2505ee7feb4feb9e",
+      "fit/log_shrinkage_2pl_lambda4/full/801/continuation": "cf9987ef219a5f6ee02937d96660a06e9909f34e26aa20f5ee9d80b777ccb930",
+      "fit/log_shrinkage_2pl_lambda4/outer_0/401/cold": "bf1224885d33bf5648c81dc05ca10b7f2d1ef18478e0462e8cc119fe18b42036",
+      "fit/log_shrinkage_2pl_lambda4/outer_0/801/cold": "8615ad2011e01cbaf4eecd668d3bd16507768ad8b40f55af6c5102aafe4775f7",
+      "fit/log_shrinkage_2pl_lambda4/outer_0/801/continuation": "eeb299577d73fe76888e5a2d4202b33ec28cec9b80c3c86a5d2744edb0fe35d0",
+      "fit/log_shrinkage_2pl_lambda4/outer_1/401/cold": "6a800c192f7f7f5dc80cb75cf12b3d8dfcd5e4f4f1020ef9393a1c6b9f9f65ac",
+      "fit/log_shrinkage_2pl_lambda4/outer_1/801/cold": "1ff4c818ccfded0d35ac732d1d4870afa1653d2b57e3929a2bc93af47e82c65e",
+      "fit/log_shrinkage_2pl_lambda4/outer_1/801/continuation": "460431100b5c9b1e98c86296c5df03d1226164ea7e002237e5271469fb54927a",
+      "fit/log_shrinkage_2pl_lambda4/outer_2/401/cold": "1ed87b6386614bace493bb37d7bff1e518d4b82c6890e9fe8d483db573f51e7c",
+      "fit/log_shrinkage_2pl_lambda4/outer_2/801/cold": "30be4a47b6dbb803cee6b93edbcf0e7426a6a8127398c09741f98c6fdc3c9903",
+      "fit/log_shrinkage_2pl_lambda4/outer_2/801/continuation": "79a22c57235b6739632b7ab8d8a756af5a038f8ebbe27ba71ebab242f493293e",
+      "fit/log_shrinkage_2pl_lambda4/outer_3/401/cold": "b0a65cbe9444d2faf377205e36e8f8bea89a42d373410bde937beae2fcb308c0",
+      "fit/log_shrinkage_2pl_lambda4/outer_3/801/cold": "35f9d58e01c8f787250c5db5a11b2ae9c64a83896d12d076bca834945d96719b",
+      "fit/log_shrinkage_2pl_lambda4/outer_3/801/continuation": "20bf6ad55de048fa79ac22d322b2481732734b06076cf5cdb2fc05eaf9271fd2",
+      "fit/log_shrinkage_2pl_lambda4/outer_4/401/cold": "22f18cb9aa983fb4509a827389f76d4f657a6c8b0db86643b688a4dea26beefc",
+      "fit/log_shrinkage_2pl_lambda4/outer_4/801/cold": "8b146db42f829d9b4d651f0d950363173a13d945121cbcaaa795f74302de3903",
+      "fit/log_shrinkage_2pl_lambda4/outer_4/801/continuation": "57c206a702f139306910c22a3ce4509469fa80c061e1ef147f518e5a631bc5ac",
+      "fixed_bank/1pl_fixed_a1": "7c4a6c097953961da012960dc3590a49c8aa108f5660bf8b66828ebe3333d94e",
+      "fixed_bank/log_shrinkage_2pl_lambda16": "9aa496347a50707011dc7fcb1ebfd6a9ad2809c1597e0afc3af87d0027a88506",
+      "fixed_bank/log_shrinkage_2pl_lambda4": "79493e508d10128d2b09e629b77a6218ecdf44ff2c217b445600820ba4b36b64",
+      "refit/1pl_fixed_a1": "4a2859d4c36130682bac7c08aa02f80650c97503d281779d3214502fc77dfc3f",
+      "refit/log_shrinkage_2pl_lambda16": "249be843539db2c9db7323f79d41ef13e91a9ded3a1fda4a3df3cd9305118f22",
+      "refit/log_shrinkage_2pl_lambda4": "8a253d97a6da3b15a9b113b458db934eed2b8dd5f13b305a41da4b5080bf2aec",
+      "start/1pl_fixed_a1/full": "b1e4f53f40f99b5b00ef1980a45fa5fc9699425fdc889128916eefe27df471dc",
+      "start/1pl_fixed_a1/outer_0": "d403d8544e1ef0c8e2b6476f1ae6d1b9e9b2b6de94caba5b5424eb1b3ae1dbb6",
+      "start/1pl_fixed_a1/outer_1": "0f4243914f5c51e7da0ecfedb3f4c80884d65cc861625860493efbf40dc123a6",
+      "start/1pl_fixed_a1/outer_2": "1d75a495bfd5eb8ad3a755df53c337580e30b4654a34f16d82f2295afc9ef4e9",
+      "start/1pl_fixed_a1/outer_3": "0c05a48979af9f909a9f615d93a26955566672479cb5ab6090d23661b52280a0",
+      "start/1pl_fixed_a1/outer_4": "82933eebd4949bf3f0c068bd440f4e1b155b923a167d71ed0fc41ab2fc2407b2",
+      "start/log_shrinkage_2pl_lambda16/full": "771e28a10bb287b2ef0774731cff5705c51a272d0d60d4ceaafb97a333d1b56d",
+      "start/log_shrinkage_2pl_lambda16/outer_0": "2a8d982cc6aba8108fce355ebccd0ad3217b22453f6159e29b55715bf6243ac8",
+      "start/log_shrinkage_2pl_lambda16/outer_1": "4e78e414b6dad980c93f46c7cd205c1d73b6de0edf734bc7c17d0e0798edbffe",
+      "start/log_shrinkage_2pl_lambda16/outer_2": "70f534fc39b294c3dd97865898c1ce922bca06b7367e02d7bcc2aeb6d14bf8f8",
+      "start/log_shrinkage_2pl_lambda16/outer_3": "2031300a24087484bb482457ac64c1cd8d474f22efdc5653e98c1149e0114f69",
+      "start/log_shrinkage_2pl_lambda16/outer_4": "27f74cab656b03edd6ea47cf41bfb0840b42fd42f2a6d983ab79ad97d0d0e1ec",
+      "start/log_shrinkage_2pl_lambda4/full": "12493ed1f3bc0d6af5762d454182bc97cd8a75ad76948673d377ee848dff92f5",
+      "start/log_shrinkage_2pl_lambda4/outer_0": "96080c6318da6a26966fa20c3c21013283915355d386a6a5e9b8dd8d86458748",
+      "start/log_shrinkage_2pl_lambda4/outer_1": "c0938410e0fac5fe8d8e7a37dd348720ae84421f9a86d1d31926a3e1094a4c07",
+      "start/log_shrinkage_2pl_lambda4/outer_2": "c473bc67726fd5bc55eae6940af991113e953b5590baafad653c717d46dc8151",
+      "start/log_shrinkage_2pl_lambda4/outer_3": "eab9cf85844a2ae9dc6d483350905e79010a7c53de2d809b4d3d3464f771721a",
+      "start/log_shrinkage_2pl_lambda4/outer_4": "ac0be99e8f55df271b5eb9c225f71e193bb6175bd568544056e04ae4ee069425"
+    },
+    "fit_consecutive_convergence_passes": 2,
+    "fit_convergence_mode": "returned_iterate",
+    "fit_grid": 401,
+    "fit_linear_bound": 8.0,
+    "fit_max_iter": 1500,
+    "fit_objective_tolerance": 0.0001,
+    "fit_parameter_tolerance": 5e-05,
+    "fit_quadrature_method": "normal_trapezoid",
+    "followup_config_path": "configs/infobench_v2_numerical_followup_v4.json",
+    "followup_config_sha256": "0e31973f4b27718e2aaffe5b64fd0a994c5c3a07acb221e05be8cb5cb0bb6290",
+    "followup_decision_sha256": "c16a0c3200cf4b53227a5064fee9f879bc7bfa1f34b5f93ae8677f62eac4f108",
+    "followup_manifest_sha256": "f932831dd8fc20d0c74b19eb23b35a1575b4e1efa9ed524cbc05cfbcbc30640b",
+    "frozen_contract_sha256": "0044a89b24aa0415d16abe123d7d9928c2d30b75a4c947e5d84656a879e7d555",
+    "historical_fit_or_checkpoint_artifacts_reused": 0,
+    "linear_bound": 8.0,
+    "passed_spec_ids": [
+      "1pl_fixed_a1",
+      "log_shrinkage_2pl_lambda16",
+      "log_shrinkage_2pl_lambda4"
+    ],
+    "phase3_candidate_spec_ids": [
+      "log_shrinkage_2pl_lambda16",
+      "log_shrinkage_2pl_lambda4"
+    ],
+    "phase3_subset_of_v4_exact": true,
+    "quadrature_method": "normal_trapezoid",
+    "status": "passed",
+    "study_signature_sha256": "238b06cf04dce8920e58d4de9b36cd2ab6d34e1d2288931f5baf074b38e9b561",
+    "tail_region": 7.5,
+    "verification_path": "runs/calibration/InFoBench_v2_numerical_followup_v4/numerical_followup_lock.json",
+    "verification_sha256": "2bdc6abcc01b0ef97542673ffdd09374577e1eaaf1dd5fea5c05126f6f723994"
+  },
+  "outputs": {
+    "calibration_model_choices.json": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/calibration_model_choices.json",
+      "sha256": "240eed246da61ed7e1f1facbdb76a46785a2ce9758714d63147b3c4cd6d1c09c"
+    },
+    "calibration_spec_selection_frequency.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/calibration_spec_selection_frequency.csv",
+      "sha256": "21e8c59ae30db6b5436fe3d14f914a6850fc0a2e3bc4d0a055fb871988a30038"
+    },
+    "cross_repeat_metrics.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/cross_repeat_metrics.csv",
+      "sha256": "672a26ae31ad97f11ccb5209866c90780542bca96ad09c0bf8ec3b0538f33848"
+    },
+    "cross_repeat_per_model.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/cross_repeat_per_model.csv",
+      "sha256": "0ba59dbf7cd84593f045a4e6bc7292902fdd7a31d9270f725795c86f32f8b98d"
+    },
+    "disjoint_prediction_metrics.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/disjoint_prediction_metrics.csv",
+      "sha256": "2948682afdb3bb752c3efbde84ec8ee0d078bde0d44c593348914e89008ff5be"
+    },
+    "duplicate_cat_paths.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/duplicate_cat_paths.csv",
+      "sha256": "891ab33d7976e8d0544b6d0dd2444be42ab7a3343a7b8c936c7095767b1f5fe4"
+    },
+    "fold_assignments.json": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/fold_assignments.json",
+      "sha256": "80ba6b4803acbe88677363d5bfc52316c0e062ce2724e79ded55a0f17c0cc206"
+    },
+    "inner_calibration_model_results.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/inner_calibration_model_results.csv",
+      "sha256": "93b714f3188bec4507a4c0ebea0e0c461a80e7dc3f63fa34ea9836714f57f655"
+    },
+    "outer_oof_per_model.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/outer_oof_per_model.csv",
+      "sha256": "da108af1ab38ad2d26d9d4ca5b848c0ff5243c25678358635f86ac8d406483db"
+    },
+    "phase3_decision.json": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/phase3_decision.json",
+      "sha256": "d1fcd9c4f9ad17a586d792ee5ed7ee75e4136b0aca0116f994422fda83ec2c8b"
+    },
+    "pre_outer_selection_lock.json": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/pre_outer_selection_lock.json",
+      "sha256": "fd3d0d15d00f3d5e68e25836a7b836ea685b9a964adc4daea5bf549f74712be6"
+    },
+    "repeat_fold_gate_results.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/repeat_fold_gate_results.csv",
+      "sha256": "c8692d8d2cee43d4758f0c2dd5ad983825cd7c082af3a7d0ddad94bbcc3184f0"
+    },
+    "repeat_metrics.csv": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/repeat_metrics.csv",
+      "sha256": "7fca8f271331209f38c967579583e63a501bf419d9982642c5e00c42c0e65fbf"
+    },
+    "selected_calibration_specs.json": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/selected_calibration_specs.json",
+      "sha256": "2c773fbedf97825ae9d989b2f227c6239b14182aa5f9c2528bb23fb8013bf21c"
+    },
+    "v3_decision.json": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/v3_decision.json",
+      "sha256": "d1fcd9c4f9ad17a586d792ee5ed7ee75e4136b0aca0116f994422fda83ec2c8b"
+    }
+  },
+  "parent_config_provenance": {
+    "all_non_allowlisted_fields_equal": true,
+    "allowed_diff_roots": [
+      "schema_version",
+      "frozen_date",
+      "purpose",
+      "parent_config_provenance",
+      "code_dependencies",
+      "calibration_specifications",
+      "calibration_selection",
+      "outputs"
+    ],
+    "observed_diff_paths": [
+      "calibration_selection.candidate_subset_policy",
+      "calibration_selection.excluded_parent_candidate",
+      "calibration_selection.excluded_parent_candidate_role",
+      "calibration_specifications[0].canonical_cache_key",
+      "calibration_specifications[0].family",
+      "calibration_specifications[0].fixed_discrimination",
+      "calibration_specifications[0].log_a_prior_sd",
+      "calibration_specifications[0].log_a_shrinkage",
+      "calibration_specifications[0].spec_id",
+      "calibration_specifications[1].canonical_cache_key",
+      "calibration_specifications[1].log_a_prior_sd",
+      "calibration_specifications[1].log_a_shrinkage",
+      "calibration_specifications[1].spec_id",
+      "calibration_specifications[2]",
+      "code_dependencies[0]",
+      "frozen_date",
+      "outputs.final_fit",
+      "outputs.never_read_or_write_parent_v3_artifacts",
+      "outputs.phase3",
+      "outputs.phase4",
+      "outputs.report",
+      "parent_config_provenance",
+      "purpose",
+      "schema_version"
+    ],
+    "observed_diff_paths_sha256": "47ac323b7e9a9e3fdcf8d909b5c3a3d0f576acd56687032b23038d5c08472268",
+    "path": "configs/infobench_calibration_cat_v3.json",
+    "sha256": "3af71bd01ac40ad6fadc3c71bcb3170acdf2055e3176c28c290e09d72ecc90f4"
+  },
+  "phase3_decision": {
+    "phase3_pass": false,
+    "phase4_authorized": false,
+    "status": "fail"
+  },
+  "primary_policy_only_can_pass_phase3": true,
+  "runtime": {
+    "fit_consecutive_convergence_passes": 2,
+    "fit_convergence_mode": "returned_iterate",
+    "fit_linear_bound": 8.0,
+    "fit_parameter_tolerance": 5e-05,
+    "fit_quadrature_method": "normal_trapezoid",
+    "max_grid_nodes": 50000,
+    "max_iter": 1500,
+    "max_scenarios": 50,
+    "metric_bootstrap_replicates": 2000,
+    "minimum_scored_criteria": 15,
+    "mwle_ridge": 1e-06,
+    "negative_policy": "drop",
+    "seed": 20260805,
+    "tol": 0.0001,
+    "top_n": 5
+  },
+  "schema_version": "infobench-nested-scenario-cat-cv-2pl-only-v1",
+  "script": "scripts/nested_scenario_cat_cv_2pl_only_v1.py",
+  "sensitivity_promotion_allowed": false,
+  "status": "phase3_complete",
+  "study_signature": "45f7f988f1914c88530caac32b313d7ac55081f6fb12d94be43954b485e6d518"
+}

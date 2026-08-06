@@ -1,0 +1,37 @@
+{
+  "agreement_gate": {
+    "cold_fit_valid": true,
+    "continuation_fit_valid": true,
+    "exportability_identical": true,
+    "maximum_absolute_theta_shift_diagnostic": 3.8690994141443724e-05,
+    "maximum_parameter_coordinate_shift": 9.904761719985167e-05,
+    "median_absolute_theta_shift": 3.8606739831248404e-05,
+    "p95_absolute_theta_shift": 3.869086441501413e-05,
+    "passed": true,
+    "penalized_objective_gap": 8.13226870377548e-06,
+    "penalized_objective_gap_per_observed_cell": 9.230829752636783e-11,
+    "thresholds": {
+      "maximum_median_absolute_theta_shift": 0.001,
+      "maximum_p95_absolute_theta_shift": 0.005,
+      "maximum_parameter_coordinate_shift": 0.001,
+      "maximum_penalized_objective_gap_per_observed_cell": 1e-08,
+      "require_identical_exportability": true,
+      "theta_scoring_bound": 8.0,
+      "theta_scoring_method": "normal_trapezoid",
+      "theta_scoring_nodes": 1601
+    }
+  },
+  "calibration_model_selected": false,
+  "cold_penalized_objective": -30468.915369119928,
+  "continuation_cannot_rescue_cold": true,
+  "continuation_penalized_objective": -30468.91536098766,
+  "nodes": 801,
+  "schema_version": "infobench-v2-numerical-followup-run-v4",
+  "scope": "outer_1",
+  "selected_fit": "runs/calibration/InFoBench_v2_numerical_followup_v4/fits/log_shrinkage_2pl_lambda4/nodes_0801/outer_1/continuation/fit.npz",
+  "selected_fit_sha256": "19af0a245edb8562fd748144bdf689fdbfb48d8a0c14a48fd855e41722b497fd",
+  "selected_start": "continuation",
+  "selection_rule": "higher_penalized_objective_exact_tie_to_cold",
+  "selection_valid": true,
+  "spec_id": "log_shrinkage_2pl_lambda4"
+}

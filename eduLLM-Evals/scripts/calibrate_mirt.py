@@ -73,8 +73,8 @@ Outputs
   dropped zero-variance items, loglik/AIC/BIC for uni & multi, latent corr, and the
   identifiability warning.
 * ``--write-params`` -> a NEW file ``data/rubrics_qmatrix_mirt.jsonl`` with the
-  masked K-vector ``discrimination``, scalar ``difficulty``, and
-  ``irt_params.source = "calibrated-m2pl"`` + provenance. The frozen
+  masked K-vector ``discrimination``, scalar ``difficulty``, and family-specific
+  calibrated ``irt_params.source`` + provenance. The frozen
   ``data/rubrics_qmatrix_final.jsonl`` is NEVER overwritten.
 
 Usage
@@ -131,6 +131,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import importlib.util
 import json
 import sys
@@ -139,6 +140,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy.optimize import minimize
 from scipy.special import expit, log_expit, logsumexp
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -173,6 +175,40 @@ CALIBRATION_MANIFEST_NAME = "calibration_mirt_manifest.json"
 
 CALIBRATION_SOURCE = "calibrated-m2pl"
 
+# Calibration-family names are stable provenance values, not presentation labels.
+# ``free-2pl`` is deliberately the default so callers that predate the v2 study
+# continue through the historical fitting path without any numerical changes.
+FREE_2PL = "free-2pl"
+ONE_PL = "1pl"
+LOG_SHRINKAGE_2PL = "log-shrinkage-2pl"
+CALIBRATION_MODELS = (FREE_2PL, ONE_PL, LOG_SHRINKAGE_2PL)
+DEFAULT_CALIBRATION_MODEL = FREE_2PL
+DEFAULT_LOG_A_SHRINKAGE = 1.0
+
+# ``gauss_hermite`` remains the exact historical calibration default.  The
+# bounded trapezoid rule is intentionally restricted to one dimension; unlike a
+# tensor-product rule, its node count is the total number of integration points.
+GAUSS_HERMITE_QUADRATURE = "gauss_hermite"
+NORMAL_TRAPEZOID_QUADRATURE = "normal_trapezoid"
+CALIBRATION_QUADRATURE_METHODS = (
+    GAUSS_HERMITE_QUADRATURE,
+    NORMAL_TRAPEZOID_QUADRATURE,
+)
+DEFAULT_CALIBRATION_QUADRATURE = GAUSS_HERMITE_QUADRATURE
+DEFAULT_QUADRATURE_LINEAR_BOUND = 8.0
+
+# The historical convergence check compares successive E-step likelihoods before
+# returning the following M-step iterate.  Keep it as the default for exact
+# backward compatibility.  Dense-grid studies may opt into a stricter mode that
+# evaluates the actual returned iterate, includes the calibration penalty, and
+# records an auditable objective/parameter trace.
+LEGACY_PRE_MSTEP_CONVERGENCE = "legacy_pre_mstep"
+RETURNED_ITERATE_CONVERGENCE = "returned_iterate"
+CALIBRATION_CONVERGENCE_MODES = (
+    LEGACY_PRE_MSTEP_CONVERGENCE,
+    RETURNED_ITERATE_CONVERGENCE,
+)
+
 # Loadings above this are treated as unstable (thin-sample / near-separation).
 EXTREME_A = 6.0
 
@@ -185,6 +221,109 @@ IGNORED_Q_KEYS = {"adaptation"}  # historical, intentionally outside tutor_cat.S
 
 class CalibrationError(RuntimeError):
     pass
+
+
+def calibration_specification(
+    calibration_model: str = DEFAULT_CALIBRATION_MODEL,
+    *,
+    ridge: float = 1e-3,
+    log_a_shrinkage: float = DEFAULT_LOG_A_SHRINKAGE,
+) -> dict:
+    """Return the complete, canonical item-calibration specification.
+
+    ``log_a_shrinkage`` is the Gaussian-prior precision ``lambda`` in
+    ``0.5 * lambda * sum(log(a)**2)``.  Its equivalent prior standard deviation
+    is ``1 / sqrt(lambda)`` and is recorded explicitly to prevent a precision-vs-
+    standard-deviation interpretation error in configs or caches.
+
+    The returned ``cache_key`` hashes every semantic field in the specification.
+    Numerical integration settings (grid, tolerance, and iteration limit) remain
+    separate fit settings and must accompany this key in any higher-level cache.
+    """
+    if calibration_model not in CALIBRATION_MODELS:
+        raise CalibrationError(
+            f"unknown calibration model {calibration_model!r}; "
+            f"choose one of {list(CALIBRATION_MODELS)}"
+        )
+    if ridge < 0 or not np.isfinite(ridge):
+        raise CalibrationError("ridge must be finite and non-negative")
+    if log_a_shrinkage <= 0 or not np.isfinite(log_a_shrinkage):
+        raise CalibrationError("log_a_shrinkage must be finite and strictly positive")
+
+    if calibration_model == FREE_2PL:
+        discrimination = {
+            "mode": "estimated",
+            "parameterization": "unconstrained-linear-loading",
+            "constraint": None,
+        }
+        regularization = {
+            "kind": "loading-l2-ridge",
+            "ridge": float(ridge),
+            "log_a_shrinkage": None,
+            "log_a_prior_sd": None,
+        }
+    elif calibration_model == ONE_PL:
+        discrimination = {
+            "mode": "fixed",
+            "parameterization": "fixed-loading",
+            "constraint": "a=1 for every active Q loading",
+            "fixed_a": 1.0,
+        }
+        regularization = {
+            "kind": "none-fixed-loading",
+            "ridge": None,
+            "log_a_shrinkage": None,
+            "log_a_prior_sd": None,
+        }
+    else:
+        discrimination = {
+            "mode": "estimated",
+            "parameterization": "a=exp(log_a)",
+            "constraint": "strictly-positive",
+        }
+        regularization = {
+            "kind": "zero-mean-gaussian-prior-on-log-a",
+            "ridge": None,
+            "log_a_shrinkage": float(log_a_shrinkage),
+            "log_a_prior_sd": float(1.0 / np.sqrt(log_a_shrinkage)),
+            "penalty": "0.5 * log_a_shrinkage * sum(log(a)^2)",
+            "center": "log(a)=0 (a=1)",
+        }
+
+    semantic = {
+        "schema_version": 1,
+        "family": calibration_model,
+        "estimation": "bock-aitkin-marginal-maximum-likelihood-em",
+        "discrimination": discrimination,
+        "difficulty": {
+            "mode": "estimated",
+            "parameterization": "unpenalized-offset-b",
+        },
+        "regularization": regularization,
+    }
+    encoded = json.dumps(semantic, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return {
+        **semantic,
+        "cache_key": f"calibration-spec-v1-{hashlib.sha256(encoded).hexdigest()}",
+    }
+
+
+def calibration_method_name(calibration_model: str) -> str:
+    """Stable method label used in manifests and fitted-bank provenance."""
+    return {
+        FREE_2PL: "confirmatory-m2pl-mml-em",
+        ONE_PL: "confirmatory-m1pl-mml-em",
+        LOG_SHRINKAGE_2PL: "confirmatory-positive-log-shrinkage-m2pl-mml-em",
+    }[calibration_model]
+
+
+def calibration_source_name(calibration_model: str) -> str:
+    """Stable fitted-bank source label, preserving the historical default label."""
+    return {
+        FREE_2PL: CALIBRATION_SOURCE,
+        ONE_PL: "calibrated-m1pl",
+        LOG_SHRINKAGE_2PL: "calibrated-positive-log-shrinkage-m2pl",
+    }[calibration_model]
 
 
 def configure_skills(value: str | None) -> tuple[str, ...]:
@@ -483,6 +622,52 @@ def base_log_weights(n_dims: int, nodes_per_dim: int) -> np.ndarray:
     return np.sum(np.stack([m.reshape(-1) for m in mesh], axis=1), axis=1)
 
 
+def build_calibration_quadrature(
+    n_dims: int,
+    nodes_per_dim: int,
+    *,
+    method: str = DEFAULT_CALIBRATION_QUADRATURE,
+    linear_bound: float = DEFAULT_QUADRATURE_LINEAR_BOUND,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Return calibration nodes and normalized standard-normal log weights.
+
+    The default branch calls the historical Gauss--Hermite helpers unchanged.
+    ``normal_trapezoid`` provides a dense, evenly spaced 1D alternative for
+    posteriors that are much narrower than practical Gauss--Hermite spacing.
+    Its finite bound is part of the numerical specification and must therefore
+    be recorded by callers that cache fitted banks.
+    """
+    if n_dims < 1:
+        raise CalibrationError("n_dims must be at least 1")
+    if nodes_per_dim < 2:
+        raise CalibrationError("nodes_per_dim must be at least 2")
+    if method not in CALIBRATION_QUADRATURE_METHODS:
+        raise CalibrationError(
+            f"unknown calibration quadrature {method!r}; "
+            f"choose one of {list(CALIBRATION_QUADRATURE_METHODS)}"
+        )
+    if method == GAUSS_HERMITE_QUADRATURE:
+        # Keep the historical path byte-for-byte at the helper level.
+        return build_grid(n_dims, nodes_per_dim), base_log_weights(n_dims, nodes_per_dim)
+
+    if n_dims != 1:
+        raise CalibrationError("normal_trapezoid calibration quadrature is supported only for 1D")
+    if not np.isfinite(linear_bound) or linear_bound <= 0:
+        raise CalibrationError("linear_bound must be finite and strictly positive")
+
+    axis = np.linspace(-linear_bound, linear_bound, nodes_per_dim, dtype=float)
+    step = float(axis[1] - axis[0])
+    trapezoid = np.full(nodes_per_dim, step, dtype=float)
+    trapezoid[[0, -1]] *= 0.5
+    logw = (
+        -0.5 * axis * axis
+        - 0.5 * np.log(2.0 * np.pi)
+        + np.log(trapezoid)
+    )
+    logw -= logsumexp(logw)
+    return axis[:, None], logw
+
+
 def prior_log_weights(grid: np.ndarray, base_logw: np.ndarray, R: np.ndarray) -> np.ndarray:
     """Log prior weight of each grid node under MVN(0, R), normalised to sum 1.
 
@@ -568,18 +753,42 @@ def _item_neg_loglik(beta, X, r, N, ridge):
     return nll, grad, H
 
 
-def _fit_item(X, r, N, ridge, max_newton=50, tol=1e-8):
-    """Newton-Raphson MLE for one item's [free loadings..., intercept]."""
+def _fit_item(
+    X,
+    r,
+    N,
+    ridge,
+    max_newton=50,
+    tol=1e-8,
+    *,
+    initial=None,
+    return_diagnostics=False,
+):
+    """Newton-Raphson MLE for one item's [free loadings..., intercept].
+
+    ``initial=None`` is the exact historical cold-start path.  The optional
+    current-iterate start is used only by the opt-in returned-iterate fitter.
+    """
     p = X.shape[1]
-    beta = np.zeros(p)
-    # Warm start the intercept from the pooled pass rate at this item.
-    tot = float(N.sum())
-    if tot > 0:
-        pbar = float(r.sum()) / tot
-        pbar = min(max(pbar, 1e-3), 1 - 1e-3)
-        beta[-1] = np.log(pbar / (1.0 - pbar))
+    if initial is None:
+        beta = np.zeros(p)
+        # Historical pooled-pass-rate intercept start.
+        tot = float(N.sum())
+        if tot > 0:
+            pbar = float(r.sum()) / tot
+            pbar = min(max(pbar, 1e-3), 1 - 1e-3)
+            beta[-1] = np.log(pbar / (1.0 - pbar))
+    else:
+        beta = np.asarray(initial, dtype=float)
+        if beta.shape != (p,) or not np.all(np.isfinite(beta)):
+            raise CalibrationError(f"item warm start must be finite with shape {(p,)}")
+        beta = beta.copy()
     nll, grad, H = _item_neg_loglik(beta, X, r, N, ridge)
-    for _ in range(max_newton):
+    converged = False
+    line_search_failed = False
+    n_iter = 0
+    for iteration in range(max_newton):
+        n_iter = iteration + 1
         try:
             step = np.linalg.solve(H, grad)
         except np.linalg.LinAlgError:
@@ -593,12 +802,563 @@ def _fit_item(X, r, N, ridge, max_newton=50, tol=1e-8):
                 break
             alpha *= 0.5
         else:
+            line_search_failed = True
             break
         if abs(nll - new_nll) < tol and np.max(np.abs(beta - cand)) < tol:
             beta, nll, grad, H = cand, new_nll, new_grad, new_H
+            converged = True
             break
         beta, nll, grad, H = cand, new_nll, new_grad, new_H
+    if return_diagnostics:
+        return beta, {
+            "converged": bool(converged),
+            "line_search_failed": bool(line_search_failed),
+            "n_iter": int(n_iter),
+            "objective": float(nll),
+            "max_abs_gradient": float(np.max(np.abs(grad))),
+        }
     return beta
+
+
+def _fit_fixed_loading_item(offset, r, N, max_newton=50, tol=1e-8):
+    """Fit only an item's intercept while every active discrimination is fixed at 1."""
+    offset = np.asarray(offset, dtype=float)
+    r = np.asarray(r, dtype=float)
+    N = np.asarray(N, dtype=float)
+    tot = float(N.sum())
+    if tot <= 0:
+        return 0.0
+    pbar = float(r.sum()) / tot
+    pbar = min(max(pbar, 1e-3), 1 - 1e-3)
+    intercept = float(np.log(pbar / (1.0 - pbar)) - np.average(offset, weights=N))
+
+    def objective(value: float) -> float:
+        eta = offset + value
+        return float(-(np.dot(r, log_expit(eta)) + np.dot(N - r, log_expit(-eta))))
+
+    nll = objective(intercept)
+    for _ in range(max_newton):
+        eta = offset + intercept
+        prob = expit(eta)
+        grad = float(np.dot(N, prob) - r.sum())
+        hess = float(np.dot(N, prob * (1.0 - prob)))
+        if not np.isfinite(hess) or hess <= 1e-14:
+            break
+        step = grad / hess
+        alpha = 1.0
+        for _ in range(30):
+            candidate = intercept - alpha * step
+            candidate_nll = objective(candidate)
+            if np.isfinite(candidate_nll) and candidate_nll <= nll + 1e-12:
+                break
+            alpha *= 0.5
+        else:
+            break
+        if abs(nll - candidate_nll) < tol and abs(intercept - candidate) < tol:
+            intercept = candidate
+            break
+        intercept, nll = candidate, candidate_nll
+    return float(intercept)
+
+
+def _fit_fixed_loading_items_1d(
+    offset,
+    r,
+    N,
+    *,
+    initial_intercepts=None,
+    max_newton=50,
+    tol=1e-8,
+):
+    """Batch all one-dimensional 1PL intercept solves.
+
+    Dense 401/801-node integration makes a Python loop over thousands of items
+    unnecessarily expensive.  This is the same weighted-logistic Newton update as
+    :func:`_fit_fixed_loading_item`, performed item-wise in vectorized arrays with
+    independent step-halving.  It is used only by the opt-in returned-iterate path.
+    """
+    offset = np.asarray(offset, dtype=float)
+    r = np.asarray(r, dtype=float)
+    N = np.asarray(N, dtype=float)
+    if offset.ndim != 1 or r.ndim != 2 or N.shape != r.shape:
+        raise CalibrationError("batched 1PL inputs have incompatible shapes")
+    if r.shape[1] != offset.size:
+        raise CalibrationError("batched 1PL node axis does not match the offset")
+    n_items = r.shape[0]
+    total = N.sum(axis=1)
+
+    if initial_intercepts is None:
+        pbar = np.divide(
+            r.sum(axis=1),
+            total,
+            out=np.full(n_items, 0.5, dtype=float),
+            where=total > 0,
+        )
+        pbar = np.clip(pbar, 1e-3, 1.0 - 1e-3)
+        weighted_offset = np.divide(
+            N @ offset,
+            total,
+            out=np.zeros(n_items, dtype=float),
+            where=total > 0,
+        )
+        intercept = np.log(pbar / (1.0 - pbar)) - weighted_offset
+        intercept[total <= 0] = 0.0
+    else:
+        intercept = np.asarray(initial_intercepts, dtype=float)
+        if intercept.shape != (n_items,) or not np.all(np.isfinite(intercept)):
+            raise CalibrationError(
+                f"batched 1PL warm start must be finite with shape {(n_items,)}"
+            )
+        intercept = intercept.copy()
+        intercept[total <= 0] = 0.0
+
+    def objective(values: np.ndarray) -> np.ndarray:
+        eta = offset[None, :] + values[:, None]
+        return -(
+            (r * log_expit(eta)).sum(axis=1)
+            + ((N - r) * log_expit(-eta)).sum(axis=1)
+        )
+
+    nll = objective(intercept)
+    line_search_failures = np.zeros(n_items, dtype=bool)
+    converged = np.zeros(n_items, dtype=bool)
+    n_iter = 0
+    for iteration in range(max_newton):
+        n_iter = iteration + 1
+        eta = offset[None, :] + intercept[:, None]
+        probability = expit(eta)
+        gradient = (N * probability - r).sum(axis=1)
+        hessian = (N * probability * (1.0 - probability)).sum(axis=1)
+        solvable = np.isfinite(hessian) & (hessian > 1e-14) & (total > 0)
+        line_search_failures |= (total > 0) & ~solvable
+        step = np.divide(
+            gradient,
+            hessian,
+            out=np.zeros_like(gradient),
+            where=solvable,
+        )
+
+        alpha = np.ones(n_items, dtype=float)
+        accepted = ~solvable
+        candidate = intercept.copy()
+        candidate_nll = nll.copy()
+        for _ in range(30):
+            pending = ~accepted
+            if not np.any(pending):
+                break
+            trial = intercept[pending] - alpha[pending] * step[pending]
+            trial_nll = -(
+                (r[pending] * log_expit(offset[None, :] + trial[:, None])).sum(axis=1)
+                + (
+                    (N[pending] - r[pending])
+                    * log_expit(-(offset[None, :] + trial[:, None]))
+                ).sum(axis=1)
+            )
+            pending_indices = np.flatnonzero(pending)
+            good = np.isfinite(trial_nll) & (trial_nll <= nll[pending] + 1e-12)
+            if np.any(good):
+                chosen = pending_indices[good]
+                candidate[chosen] = trial[good]
+                candidate_nll[chosen] = trial_nll[good]
+                accepted[chosen] = True
+            alpha[pending_indices[~good]] *= 0.5
+
+        failed = solvable & ~accepted
+        line_search_failures |= failed
+        candidate[failed] = intercept[failed]
+        candidate_nll[failed] = nll[failed]
+        objective_delta = np.abs(nll - candidate_nll)
+        parameter_delta = np.abs(intercept - candidate)
+        newly_converged = (objective_delta < tol) & (parameter_delta < tol)
+        converged = newly_converged | (total <= 0)
+        intercept, nll = candidate, candidate_nll
+        if bool(np.all(converged | line_search_failures)):
+            break
+
+    final_eta = offset[None, :] + intercept[:, None]
+    final_probability = expit(final_eta)
+    final_gradient = (N * final_probability - r).sum(axis=1)
+    return intercept, {
+        "method": "vectorized_1d_1pl_newton",
+        "n_items": int(n_items),
+        "n_converged": int(converged.sum()),
+        "n_failed": int(line_search_failures.sum()),
+        "max_inner_iterations": int(n_iter),
+        "max_abs_gradient": float(np.max(np.abs(final_gradient))),
+    }
+
+
+def _fit_log_shrinkage_items_1d(
+    offset,
+    r,
+    N,
+    strength,
+    *,
+    initial_log_a=None,
+    initial_intercepts=None,
+    max_newton=50,
+    tol=1e-8,
+):
+    """Batch one-dimensional log-shrinkage 2PL item optimizations.
+
+    The coordinates are ``gamma=log(a)`` and the logistic intercept ``c=-b``.
+    Each item receives an independent damped 2x2 Newton step and independent
+    step-halving, while all node-wise work remains vectorized.
+    """
+    offset = np.asarray(offset, dtype=float)
+    r = np.asarray(r, dtype=float)
+    N = np.asarray(N, dtype=float)
+    if offset.ndim != 1 or r.ndim != 2 or N.shape != r.shape:
+        raise CalibrationError("batched log-shrinkage inputs have incompatible shapes")
+    if r.shape[1] != offset.size:
+        raise CalibrationError("batched log-shrinkage node axis does not match")
+    if not np.isfinite(strength) or strength <= 0:
+        raise CalibrationError("log-shrinkage strength must be strictly positive")
+
+    n_items = r.shape[0]
+    total = N.sum(axis=1)
+    if initial_log_a is None:
+        gamma = np.zeros(n_items, dtype=float)
+    else:
+        gamma = np.asarray(initial_log_a, dtype=float)
+        if gamma.shape != (n_items,) or not np.all(np.isfinite(gamma)):
+            raise CalibrationError(
+                f"batched log-a warm start must be finite with shape {(n_items,)}"
+            )
+        gamma = gamma.copy()
+    if initial_intercepts is None:
+        pbar = np.divide(
+            r.sum(axis=1),
+            total,
+            out=np.full(n_items, 0.5, dtype=float),
+            where=total > 0,
+        )
+        pbar = np.clip(pbar, 1e-3, 1.0 - 1e-3)
+        unit_offset = np.divide(
+            N @ offset,
+            total,
+            out=np.zeros(n_items, dtype=float),
+            where=total > 0,
+        )
+        intercept = np.log(pbar / (1.0 - pbar)) - unit_offset
+        intercept[total <= 0] = 0.0
+    else:
+        intercept = np.asarray(initial_intercepts, dtype=float)
+        if intercept.shape != (n_items,) or not np.all(np.isfinite(intercept)):
+            raise CalibrationError(
+                f"batched intercept warm start must be finite with shape {(n_items,)}"
+            )
+        intercept = intercept.copy()
+        intercept[total <= 0] = 0.0
+    gamma = np.clip(gamma, -20.0, 20.0)
+
+    def objective(
+        gamma_values: np.ndarray,
+        intercept_values: np.ndarray,
+        indices: np.ndarray | None = None,
+    ) -> np.ndarray:
+        selected_r = r if indices is None else r[indices]
+        selected_N = N if indices is None else N[indices]
+        loading = np.exp(gamma_values)
+        eta = loading[:, None] * offset[None, :] + intercept_values[:, None]
+        return -(
+            (selected_r * log_expit(eta)).sum(axis=1)
+            + ((selected_N - selected_r) * log_expit(-eta)).sum(axis=1)
+        ) + 0.5 * strength * gamma_values**2
+
+    nll = objective(gamma, intercept)
+    line_search_failures = np.zeros(n_items, dtype=bool)
+    converged = np.zeros(n_items, dtype=bool)
+    n_iter = 0
+    for iteration in range(max_newton):
+        n_iter = iteration + 1
+        loading = np.exp(gamma)
+        eta = loading[:, None] * offset[None, :] + intercept[:, None]
+        probability = expit(eta)
+        residual = N * probability - r
+        weight = N * probability * (1.0 - probability)
+        grad_gamma = loading * (residual @ offset) + strength * gamma
+        grad_intercept = residual.sum(axis=1)
+        h_gg = (
+            loading * (residual @ offset)
+            + loading**2 * (weight @ (offset**2))
+            + strength
+        )
+        h_gc = loading * (weight @ offset)
+        h_cc = weight.sum(axis=1)
+        determinant = h_gg * h_cc - h_gc**2
+
+        # The exact gamma Hessian can be indefinite far from the solution. Fall
+        # back to the positive Fisher block before solving the 2x2 system.
+        bad_hessian = (
+            ~np.isfinite(determinant)
+            | (determinant <= 1e-12)
+            | (h_gg <= 1e-12)
+            | (h_cc <= 1e-12)
+        )
+        if np.any(bad_hessian):
+            h_gg[bad_hessian] = (
+                loading[bad_hessian] ** 2
+                * (weight[bad_hessian] @ (offset**2))
+                + strength
+            )
+            determinant[bad_hessian] = (
+                h_gg[bad_hessian] * h_cc[bad_hessian]
+                - h_gc[bad_hessian] ** 2
+            )
+        solvable = (
+            np.isfinite(determinant)
+            & (determinant > 1e-12)
+            & (total > 0)
+        )
+        line_search_failures |= (total > 0) & ~solvable
+        step_gamma = np.divide(
+            h_cc * grad_gamma - h_gc * grad_intercept,
+            determinant,
+            out=np.zeros(n_items, dtype=float),
+            where=solvable,
+        )
+        step_intercept = np.divide(
+            h_gg * grad_intercept - h_gc * grad_gamma,
+            determinant,
+            out=np.zeros(n_items, dtype=float),
+            where=solvable,
+        )
+
+        alpha = np.ones(n_items, dtype=float)
+        accepted = ~solvable
+        candidate_gamma = gamma.copy()
+        candidate_intercept = intercept.copy()
+        candidate_nll = nll.copy()
+        for _ in range(30):
+            pending = ~accepted
+            if not np.any(pending):
+                break
+            trial_gamma = np.clip(
+                gamma[pending] - alpha[pending] * step_gamma[pending],
+                -20.0,
+                20.0,
+            )
+            trial_intercept = (
+                intercept[pending] - alpha[pending] * step_intercept[pending]
+            )
+            pending_indices = np.flatnonzero(pending)
+            trial_nll = objective(
+                trial_gamma, trial_intercept, indices=pending_indices
+            )
+            good = np.isfinite(trial_nll) & (trial_nll <= nll[pending] + 1e-12)
+            if np.any(good):
+                chosen = pending_indices[good]
+                candidate_gamma[chosen] = trial_gamma[good]
+                candidate_intercept[chosen] = trial_intercept[good]
+                candidate_nll[chosen] = trial_nll[good]
+                accepted[chosen] = True
+            alpha[pending_indices[~good]] *= 0.5
+
+        failed = solvable & ~accepted
+        line_search_failures |= failed
+        objective_delta = np.abs(nll - candidate_nll)
+        parameter_delta = np.maximum(
+            np.abs(gamma - candidate_gamma),
+            np.abs(intercept - candidate_intercept),
+        )
+        converged = (
+            (objective_delta < tol) & (parameter_delta < tol)
+        ) | (total <= 0)
+        gamma, intercept, nll = candidate_gamma, candidate_intercept, candidate_nll
+        if bool(np.all(converged | line_search_failures)):
+            break
+
+    loading = np.exp(gamma)
+    eta = loading[:, None] * offset[None, :] + intercept[:, None]
+    probability = expit(eta)
+    residual = N * probability - r
+    final_grad_gamma = loading * (residual @ offset) + strength * gamma
+    final_grad_intercept = residual.sum(axis=1)
+    max_gradient = np.maximum(np.abs(final_grad_gamma), np.abs(final_grad_intercept))
+    return loading, intercept, {
+        "method": "vectorized_1d_log_shrinkage_newton",
+        "n_items": int(n_items),
+        "n_converged": int(converged.sum()),
+        "n_failed": int(line_search_failures.sum()),
+        "max_inner_iterations": int(n_iter),
+        "max_abs_gradient": float(np.max(max_gradient)),
+    }
+
+
+def _log_shrinkage_item_objective(params, X_load, r, N, strength):
+    """Penalized weighted-logistic objective for ``a = exp(log_a)`` loadings."""
+    gamma = np.asarray(params[:-1], dtype=float)
+    intercept = float(params[-1])
+    # The finite optimizer bounds below keep this exponentiation numerically safe.
+    loadings = np.exp(gamma)
+    eta = X_load @ loadings + intercept
+    nll = -(np.dot(r, log_expit(eta)) + np.dot(N - r, log_expit(-eta)))
+    nll += 0.5 * strength * float(np.dot(gamma, gamma))
+
+    prob = expit(eta)
+    residual = N * prob - r
+    grad_gamma = loadings * (X_load.T @ residual) + strength * gamma
+    grad_intercept = float(residual.sum())
+    gradient = np.concatenate([grad_gamma, np.array([grad_intercept])])
+    return float(nll), gradient
+
+
+def _fit_item_log_shrinkage(
+    X_load,
+    r,
+    N,
+    strength,
+    max_iter=200,
+    tol=1e-8,
+    *,
+    initial=None,
+    return_diagnostics=False,
+):
+    """Fit strictly-positive loadings with shrinkage toward ``a=1``.
+
+    The optimized coordinates are ``log(a)``.  Consequently every returned
+    loading is positive by construction rather than repaired after fitting.
+    """
+    n_loadings = X_load.shape[1]
+    if initial is None:
+        optimizer_start = np.zeros(n_loadings + 1, dtype=float)
+        tot = float(N.sum())
+        if tot > 0:
+            pbar = min(max(float(r.sum()) / tot, 1e-3), 1 - 1e-3)
+            unit_offset = X_load @ np.ones(n_loadings, dtype=float)
+            optimizer_start[-1] = (
+                np.log(pbar / (1.0 - pbar))
+                - np.average(unit_offset, weights=N)
+            )
+    else:
+        optimizer_start = np.asarray(initial, dtype=float)
+        expected = (n_loadings + 1,)
+        if optimizer_start.shape != expected or not np.all(np.isfinite(optimizer_start)):
+            raise CalibrationError(
+                f"log-shrinkage item warm start must be finite with shape {expected}"
+            )
+        optimizer_start = optimizer_start.copy()
+    # These broad bounds are purely a floating-point safeguard: exp(+/-20) spans
+    # roughly nine orders of magnitude and does not impose the production EXTREME_A
+    # quality gate. The Gaussian penalty should keep valid solutions far inside.
+    bounds = [(-20.0, 20.0)] * n_loadings + [(None, None)]
+    result = minimize(
+        _log_shrinkage_item_objective,
+        optimizer_start,
+        args=(X_load, r, N, strength),
+        method="L-BFGS-B",
+        jac=True,
+        bounds=bounds,
+        options={"maxiter": int(max_iter), "ftol": float(tol), "gtol": float(tol)},
+    )
+    if not np.all(np.isfinite(result.x)):
+        raise CalibrationError("log-shrinkage item optimization returned non-finite parameters")
+    fitted = (np.exp(result.x[:-1]), float(result.x[-1]))
+    if return_diagnostics:
+        return (*fitted, {
+            "converged": bool(result.success),
+            "line_search_failed": bool(result.status == 2),
+            "n_iter": int(result.nit),
+            "objective": float(result.fun),
+            "max_abs_gradient": float(np.max(np.abs(result.jac))),
+            "status": int(result.status),
+            "message": str(result.message),
+        })
+    return fitted
+
+
+def _calibration_penalty(
+    A: np.ndarray,
+    Q: np.ndarray,
+    calibration_model: str,
+    *,
+    ridge: float,
+    log_a_shrinkage: float,
+) -> float:
+    """Penalty subtracted from marginal log likelihood for convergence."""
+    active = np.asarray(A, dtype=float)[np.asarray(Q, dtype=bool)]
+    if calibration_model == FREE_2PL:
+        return float(0.5 * ridge * np.dot(active, active))
+    if calibration_model == LOG_SHRINKAGE_2PL:
+        if np.any(active <= 0):
+            raise CalibrationError("log-shrinkage loadings must remain strictly positive")
+        log_a = np.log(active)
+        return float(0.5 * log_a_shrinkage * np.dot(log_a, log_a))
+    return 0.0
+
+
+def _marginal_e_step(
+    A: np.ndarray,
+    b: np.ndarray,
+    R: np.ndarray,
+    grid: np.ndarray,
+    base_logw: np.ndarray,
+    YM: np.ndarray,
+    NM: np.ndarray,
+) -> tuple[float, np.ndarray]:
+    """Evaluate one E-step and return its likelihood and posterior weights."""
+    log_prior = prior_log_weights(grid, base_logw, R)
+    eta = A @ grid.T - b[:, None]
+    likelihood = YM @ log_expit(eta) + NM @ log_expit(-eta)
+    joint = likelihood + log_prior[None, :]
+    person_ll = logsumexp(joint, axis=1)
+    posterior = np.exp(joint - person_ll[:, None])
+    return float(person_ll.sum()), posterior
+
+
+def _marginal_loglik(
+    A: np.ndarray,
+    b: np.ndarray,
+    R: np.ndarray,
+    grid: np.ndarray,
+    base_logw: np.ndarray,
+    YM: np.ndarray,
+    NM: np.ndarray,
+) -> float:
+    """Evaluate the marginal log likelihood at one fully returned iterate."""
+    return _marginal_e_step(A, b, R, grid, base_logw, YM, NM)[0]
+
+
+def _maximum_parameter_change(
+    old_A: np.ndarray,
+    old_b: np.ndarray,
+    old_R: np.ndarray,
+    A: np.ndarray,
+    b: np.ndarray,
+    R: np.ndarray,
+) -> dict[str, float]:
+    components = {
+        "A": float(np.max(np.abs(A - old_A))),
+        "b": float(np.max(np.abs(b - old_b))),
+        "R": float(np.max(np.abs(R - old_R))),
+    }
+    return {**components, "overall": max(components.values())}
+
+
+def _aggregate_item_optimizer_diagnostics(rows: list[dict]) -> dict:
+    if not rows:
+        return {
+            "method": None,
+            "n_items": 0,
+            "n_converged": 0,
+            "n_failed": 0,
+            "max_inner_iterations": 0,
+            "max_abs_gradient": 0.0,
+        }
+    return {
+        "method": "per_item_warm_started",
+        "n_items": len(rows),
+        "n_converged": int(sum(bool(row["converged"]) for row in rows)),
+        "n_failed": int(
+            sum(
+                bool(row["line_search_failed"]) or not bool(row["converged"])
+                for row in rows
+            )
+        ),
+        "max_inner_iterations": int(max(row["n_iter"] for row in rows)),
+        "max_abs_gradient": float(max(row["max_abs_gradient"] for row in rows)),
+    }
 
 
 def fit_m2pl_em(
@@ -610,13 +1370,34 @@ def fit_m2pl_em(
     ridge: float = 1e-3,
     max_iter: int = 200,
     tol: float = 1e-4,
+    calibration_model: str = DEFAULT_CALIBRATION_MODEL,
+    log_a_shrinkage: float = DEFAULT_LOG_A_SHRINKAGE,
+    quadrature_method: str = DEFAULT_CALIBRATION_QUADRATURE,
+    linear_bound: float = DEFAULT_QUADRATURE_LINEAR_BOUND,
+    convergence_mode: str = LEGACY_PRE_MSTEP_CONVERGENCE,
+    parameter_tol: float | None = None,
+    consecutive_convergence_passes: int = 1,
+    initial_A: np.ndarray | None = None,
+    initial_b: np.ndarray | None = None,
 ) -> dict:
     """Confirmatory M2PL by Bock-Aitkin EM.
 
     ``Y`` (n_persons, n_items) 0/1 (values under holes ignored), ``M`` the observed
     mask (bool), ``Q`` (n_items, n_dims) 0/1 confirmatory mask. Returns a dict with
     fitted ``A`` (n_items, n_dims; 0 exactly off-mask), ``b`` (n_items,), ``R``, the
-    marginal ``loglik``, ``n_params``, ``n_iter`` and ``converged``.
+    marginal ``loglik``, ``n_params``, ``n_iter`` and ``converged``. The default
+    ``free-2pl`` path is the historical implementation. ``1pl`` fixes every active
+    Q loading at exactly 1. ``log-shrinkage-2pl`` estimates ``a=exp(log_a)`` under
+    a zero-centered Gaussian penalty on ``log_a``.
+
+    The historical pre-M-step likelihood stopping rule remains the default.
+    ``convergence_mode="returned_iterate"`` instead evaluates the penalized
+    objective at the parameters actually returned, records an iteration trace,
+    warm-starts each item optimizer from its current value, and uses a vectorized
+    M-step for one-dimensional 1PL fits. ``initial_A`` and ``initial_b`` are
+    optional deterministic starts and are never mutated. Requiring multiple
+    successive objective/parameter passes is available through
+    ``consecutive_convergence_passes``.
     """
     Y = np.asarray(Y, dtype=float)
     M = np.asarray(M, dtype=bool)
@@ -640,11 +1421,38 @@ def fit_m2pl_em(
     observed_values = Y[M]
     if observed_values.size and not np.isin(observed_values, (0.0, 1.0)).all():
         raise CalibrationError("observed Y values must be binary 0/1")
+    if convergence_mode not in CALIBRATION_CONVERGENCE_MODES:
+        raise CalibrationError(
+            f"unknown convergence mode {convergence_mode!r}; "
+            f"choose one of {list(CALIBRATION_CONVERGENCE_MODES)}"
+        )
+    if parameter_tol is not None and (
+        not np.isfinite(parameter_tol) or parameter_tol <= 0
+    ):
+        raise CalibrationError("parameter_tol must be finite and strictly positive")
+    if (
+        isinstance(consecutive_convergence_passes, bool)
+        or not isinstance(consecutive_convergence_passes, (int, np.integer))
+        or consecutive_convergence_passes < 1
+    ):
+        raise CalibrationError("consecutive_convergence_passes must be a positive integer")
+    if convergence_mode == RETURNED_ITERATE_CONVERGENCE and max_iter < 1:
+        raise CalibrationError("returned-iterate convergence requires max_iter >= 1")
+
+    spec = calibration_specification(
+        calibration_model,
+        ridge=ridge,
+        log_a_shrinkage=log_a_shrinkage,
+    )
 
     n_persons, n_items = Y.shape
     n_dims = Q.shape[1]
-    grid = build_grid(n_dims, nodes_per_dim)
-    base_logw = base_log_weights(n_dims, nodes_per_dim)
+    grid, base_logw = build_calibration_quadrature(
+        n_dims,
+        nodes_per_dim,
+        method=quadrature_method,
+        linear_bound=linear_bound,
+    )
     n_nodes = grid.shape[0]
 
     YM = np.where(M, Y, 0.0)          # observed successes
@@ -658,6 +1466,28 @@ def fit_m2pl_em(
     pass_rate = np.where(obs_per_item > 0, YM.sum(axis=0) / np.maximum(obs_per_item, 1), 0.5)
     pass_rate = np.clip(pass_rate, 1e-3, 1 - 1e-3)
     b = -np.log(pass_rate / (1.0 - pass_rate))
+
+    if initial_A is not None:
+        candidate_A = np.asarray(initial_A, dtype=float)
+        if candidate_A.shape != A.shape or not np.all(np.isfinite(candidate_A)):
+            raise CalibrationError(
+                f"initial_A must be finite with shape {A.shape}; got {candidate_A.shape}"
+            )
+        if np.any(candidate_A[Q == 0] != 0.0):
+            raise CalibrationError("initial_A must be exactly zero outside the Q mask")
+        active_initial = candidate_A[Q == 1]
+        if calibration_model == ONE_PL and np.any(active_initial != 1.0):
+            raise CalibrationError("1PL initial_A must equal 1 on every active loading")
+        if calibration_model == LOG_SHRINKAGE_2PL and np.any(active_initial <= 0.0):
+            raise CalibrationError("log-shrinkage initial_A must be positive on active loadings")
+        A = candidate_A.copy()
+    if initial_b is not None:
+        candidate_b = np.asarray(initial_b, dtype=float)
+        if candidate_b.shape != b.shape or not np.all(np.isfinite(candidate_b)):
+            raise CalibrationError(
+                f"initial_b must be finite with shape {b.shape}; got {candidate_b.shape}"
+            )
+        b = candidate_b.copy()
     R = np.eye(n_dims)
 
     # Cache one design matrix per distinct Q pattern rather than per item. InFoBench
@@ -670,70 +1500,282 @@ def fit_m2pl_em(
     }
 
     prev_ll = -np.inf
+    prev_returned_objective: float | None = None
+    initial_returned_evaluation: dict | None = None
+    iteration_trace: list[dict] = []
+    returned_mode = convergence_mode == RETURNED_ITERATE_CONVERGENCE
     converged = False
     n_iter = 0
     posterior = None
-    for it in range(max_iter):
-        n_iter = it + 1
+    pending_parameter_change: dict[str, float] | None = None
+    pending_mstep_diagnostics: dict | None = None
+    consecutive_passes = 0
+
+    while n_iter < max_iter or (returned_mode and n_iter == max_iter):
+        # In returned mode, this evaluates the preceding M-step's parameters and
+        # can stop before doing another M-step. The historical mode retains its
+        # original pre-M-step comparison below.
         log_prior = prior_log_weights(grid, base_logw, R)
-        # E-step: per-person loglik over nodes, then posterior.
-        eta = A @ grid.T - b[:, None]              # (n_items, n_nodes)
+        eta = A @ grid.T - b[:, None]
         logP = log_expit(eta)
         log1mP = log_expit(-eta)
-        LL = YM @ logP + NM @ log1mP               # (n_persons, n_nodes)
+        LL = YM @ logP + NM @ log1mP
         joint = LL + log_prior[None, :]
-        person_ll = logsumexp(joint, axis=1)       # (n_persons,)
+        person_ll = logsumexp(joint, axis=1)
         marg_ll = float(person_ll.sum())
-        posterior = np.exp(joint - person_ll[:, None])  # (n_persons, n_nodes)
+        posterior = np.exp(joint - person_ll[:, None])
+
+        if returned_mode:
+            penalty = _calibration_penalty(
+                A,
+                Q,
+                calibration_model,
+                ridge=ridge,
+                log_a_shrinkage=log_a_shrinkage,
+            )
+            returned_objective = marg_ll - penalty
+            if n_iter == 0:
+                initial_returned_evaluation = {
+                    "marginal_loglik": float(marg_ll),
+                    "penalty": float(penalty),
+                    "penalized_objective": float(returned_objective),
+                }
+            else:
+                assert pending_parameter_change is not None
+                assert pending_mstep_diagnostics is not None
+                assert prev_returned_objective is not None
+                objective_change = returned_objective - prev_returned_objective
+                objective_converged = bool(
+                    objective_change >= -1e-8 and abs(objective_change) < tol
+                )
+                parameter_converged = bool(
+                    parameter_tol is None
+                    or pending_parameter_change["overall"] < parameter_tol
+                )
+                if objective_converged and parameter_converged:
+                    consecutive_passes += 1
+                else:
+                    consecutive_passes = 0
+                iteration_trace.append(
+                    {
+                        "iteration": n_iter,
+                        "marginal_loglik": float(marg_ll),
+                        "penalty": float(penalty),
+                        "penalized_objective": float(returned_objective),
+                        "objective_change": float(objective_change),
+                        "objective_decreased_beyond_tolerance": bool(
+                            objective_change < -1e-8
+                        ),
+                        "max_abs_parameter_change": pending_parameter_change,
+                        "objective_converged": objective_converged,
+                        "parameter_converged": parameter_converged,
+                        "consecutive_passes": int(consecutive_passes),
+                        "required_consecutive_passes": int(
+                            consecutive_convergence_passes
+                        ),
+                        "mstep_optimizer": pending_mstep_diagnostics,
+                    }
+                )
+                if consecutive_passes >= consecutive_convergence_passes:
+                    converged = True
+                    break
+            prev_returned_objective = returned_objective
+            if n_iter >= max_iter:
+                break
+
+            old_A = A.copy()
+            old_b = b.copy()
+            old_R = R.copy()
 
         # M-step: expected counts per item x node.
-        r_jg = YM.T @ posterior                    # (n_items, n_nodes)
-        N_jg = Mf.T @ posterior                    # (n_items, n_nodes)
-        for j in range(n_items):
-            beta = _fit_item(designs[tuple(free_dims[j].tolist())], r_jg[j], N_jg[j], ridge)
-            A[j] = 0.0
-            A[j, free_dims[j]] = beta[:-1]
-            b[j] = -beta[-1]
+        r_jg = YM.T @ posterior
+        N_jg = Mf.T @ posterior
+        item_optimizer_rows: list[dict] = []
+        if returned_mode and calibration_model == ONE_PL and n_dims == 1:
+            intercepts, mstep_diagnostics = _fit_fixed_loading_items_1d(
+                grid[:, 0], r_jg, N_jg, initial_intercepts=-b
+            )
+            A.fill(0.0)
+            A[Q == 1] = 1.0
+            b = -intercepts
+        elif (
+            returned_mode
+            and calibration_model == LOG_SHRINKAGE_2PL
+            and n_dims == 1
+        ):
+            loadings, intercepts, mstep_diagnostics = (
+                _fit_log_shrinkage_items_1d(
+                    grid[:, 0],
+                    r_jg,
+                    N_jg,
+                    log_a_shrinkage,
+                    initial_log_a=np.log(A[:, 0]),
+                    initial_intercepts=-b,
+                )
+            )
+            A[:, 0] = loadings
+            b = -intercepts
+        else:
+            for j in range(n_items):
+                key = tuple(free_dims[j].tolist())
+                if calibration_model == FREE_2PL:
+                    if returned_mode:
+                        beta, optimizer = _fit_item(
+                            designs[key],
+                            r_jg[j],
+                            N_jg[j],
+                            ridge,
+                            initial=np.concatenate(
+                                [A[j, free_dims[j]], np.array([-b[j]])]
+                            ),
+                            return_diagnostics=True,
+                        )
+                        item_optimizer_rows.append(optimizer)
+                    else:
+                        beta = _fit_item(designs[key], r_jg[j], N_jg[j], ridge)
+                    A[j] = 0.0
+                    A[j, free_dims[j]] = beta[:-1]
+                    b[j] = -beta[-1]
+                elif calibration_model == ONE_PL:
+                    A[j] = 0.0
+                    A[j, free_dims[j]] = 1.0
+                    intercept = _fit_fixed_loading_item(
+                        grid[:, free_dims[j]].sum(axis=1), r_jg[j], N_jg[j]
+                    )
+                    b[j] = -intercept
+                else:
+                    if returned_mode:
+                        loadings, intercept, optimizer = _fit_item_log_shrinkage(
+                            grid[:, free_dims[j]],
+                            r_jg[j],
+                            N_jg[j],
+                            log_a_shrinkage,
+                            initial=np.concatenate(
+                                [
+                                    np.log(A[j, free_dims[j]]),
+                                    np.array([-b[j]]),
+                                ]
+                            ),
+                            return_diagnostics=True,
+                        )
+                        item_optimizer_rows.append(optimizer)
+                    else:
+                        loadings, intercept = _fit_item_log_shrinkage(
+                            grid[:, free_dims[j]],
+                            r_jg[j],
+                            N_jg[j],
+                            log_a_shrinkage,
+                        )
+                    A[j] = 0.0
+                    A[j, free_dims[j]] = loadings
+                    b[j] = -intercept
+            mstep_diagnostics = _aggregate_item_optimizer_diagnostics(
+                item_optimizer_rows
+            )
 
         if estimate_corr and n_dims > 1:
-            # Posterior second moment -> covariance -> correlation (var fixed to 1).
-            w = posterior.sum(axis=0)              # (n_nodes,)
+            w = posterior.sum(axis=0)
             Sigma = (grid.T * w) @ grid / n_persons
             d = np.sqrt(np.clip(np.diag(Sigma), 1e-8, None))
             R = _project_correlation(Sigma / np.outer(d, d))
 
-        if abs(marg_ll - prev_ll) < tol:
-            converged = True
+        n_iter += 1
+        if returned_mode:
+            pending_parameter_change = _maximum_parameter_change(
+                old_A, old_b, old_R, A, b, R
+            )
+            pending_mstep_diagnostics = mstep_diagnostics
+        else:
+            if abs(marg_ll - prev_ll) < tol:
+                converged = True
+                prev_ll = marg_ll
+                break
             prev_ll = marg_ll
-            break
-        prev_ll = marg_ll
 
     A[Q == 0] = 0.0  # enforce the confirmatory mask exactly
 
-    # Recompute the marginal loglik with the FINAL params (the in-loop value lags
-    # one M-step behind), so it matches the returned A/b for exact AIC/BIC.
-    log_prior = prior_log_weights(grid, base_logw, R)
-    eta = A @ grid.T - b[:, None]
-    LL = YM @ log_expit(eta) + NM @ log_expit(-eta)
-    final_ll = float(logsumexp(LL + log_prior[None, :], axis=1).sum())
+    # Recompute exactly at the returned parameters for AIC/BIC and to audit the
+    # final returned-iterate trace. The legacy in-loop value lags one M-step.
+    if returned_mode:
+        final_ll = _marginal_loglik(A, b, R, grid, base_logw, YM, NM)
+    else:
+        log_prior = prior_log_weights(grid, base_logw, R)
+        eta = A @ grid.T - b[:, None]
+        LL = YM @ log_expit(eta) + NM @ log_expit(-eta)
+        final_ll = float(logsumexp(LL + log_prior[None, :], axis=1).sum())
 
-    n_free_load = int(Q.sum())
+    n_free_load = 0 if calibration_model == ONE_PL else int(Q.sum())
     n_params = n_free_load + n_items
     if estimate_corr and n_dims > 1:
         n_params += n_dims * (n_dims - 1) // 2
 
-    return {
+    result = {
         "A": A,
         "b": b,
         "R": R,
         "loglik": final_ll,
         "n_params": int(n_params),
         "n_free_loadings": n_free_load,
+        "n_fixed_loadings": int(Q.sum()) if calibration_model == ONE_PL else 0,
         "n_iter": n_iter,
         "converged": converged,
         "n_dims": n_dims,
         "grid_nodes": int(n_nodes),
+        "quadrature_method": quadrature_method,
+        "quadrature_linear_bound": (
+            float(linear_bound) if quadrature_method == NORMAL_TRAPEZOID_QUADRATURE else None
+        ),
+        "calibration_specification": spec,
     }
+    if returned_mode:
+        final_penalty = _calibration_penalty(
+            A,
+            Q,
+            calibration_model,
+            ridge=ridge,
+            log_a_shrinkage=log_a_shrinkage,
+        )
+        objective_changes = [
+            row["objective_change"]
+            for row in iteration_trace
+            if row["objective_change"] is not None
+        ]
+        result.update(
+            {
+                "convergence_mode": RETURNED_ITERATE_CONVERGENCE,
+                "penalized_objective": float(final_ll - final_penalty),
+                "convergence_diagnostics": {
+                    "objective": "penalized_marginal_loglik",
+                    "objective_tolerance": float(tol),
+                    "parameter_tolerance": (
+                        None if parameter_tol is None else float(parameter_tol)
+                    ),
+                    "required_consecutive_passes": int(
+                        consecutive_convergence_passes
+                    ),
+                    "final_consecutive_passes": int(consecutive_passes),
+                    "initial_evaluation": initial_returned_evaluation,
+                    "warm_start": {
+                        "initial_A_supplied": initial_A is not None,
+                        "initial_b_supplied": initial_b is not None,
+                        "per_item_mstep_from_current_iterate": True,
+                    },
+                    "returned_iterate_matches_last_trace": bool(
+                        iteration_trace
+                        and final_ll == iteration_trace[-1]["marginal_loglik"]
+                        and final_ll - final_penalty
+                        == iteration_trace[-1]["penalized_objective"]
+                    ),
+                    "stopped_before_extra_mstep": bool(converged),
+                    "final_exact_recomputation": True,
+                    "all_objective_changes_monotone_within_tolerance": bool(
+                        all(change >= -1e-8 for change in objective_changes)
+                    ),
+                    "trace": iteration_trace,
+                },
+            }
+        )
+    return result
 
 
 def aic_bic(loglik: float, n_params: int, n_obs: int) -> tuple[float, float]:
@@ -986,6 +2028,14 @@ def write_manifest(
     collapse_info: dict | None = None,
 ) -> Path:
     path = out_dir / CALIBRATION_MANIFEST_NAME
+    spec = multi.get("calibration_specification") or calibration_specification(
+        getattr(args, "calibration_model", DEFAULT_CALIBRATION_MODEL),
+        ridge=args.ridge,
+        log_a_shrinkage=getattr(args, "log_a_shrinkage", DEFAULT_LOG_A_SHRINKAGE),
+    )
+    uni_spec = uni.get("calibration_specification", spec)
+    if uni_spec != spec:
+        raise CalibrationError("uni and multi fits used different calibration specifications")
     bic_n = int(diag["n_persons_fit"])
     multi_aic, multi_bic = aic_bic(multi["loglik"], multi["n_params"], bic_n)
     uni_aic, uni_bic = aic_bic(uni["loglik"], uni["n_params"], bic_n)
@@ -1003,11 +2053,13 @@ def write_manifest(
     manifest = {
         "generated_at": cp._utcnow(),
         "note": (
-            "CONFIRMATORY MULTIDIMENSIONAL 2PL (M2PL) fit, pure numpy/scipy, "
+            f"CONFIRMATORY {spec['family']} fit, pure numpy/scipy, "
             "Bock-Aitkin EM over a Gauss-Hermite grid. Loadings masked by the "
-            f"{N_SKILLS}-skill Q-matrix (a_k free iff q_k==1, else exactly 0)."
+            f"{N_SKILLS}-skill Q-matrix; the calibration specification records "
+            "whether active loadings are free, fixed, or positive-log parameterized."
         ),
-        "method": "confirmatory-m2pl-mml-em",
+        "method": calibration_method_name(spec["family"]),
+        "calibration_specification": spec,
         "skills_order": list(SKILLS),
         "skill_structure": diag.get("skill_structure"),
         "grid_nodes_per_dim": args.grid,
@@ -1037,6 +2089,7 @@ def write_manifest(
                 "n_params": multi["n_params"],
                 "aic": multi_aic,
                 "bic": multi_bic,
+                "calibration_specification": spec,
             },
             "uni": {
                 "n_dims": 1,
@@ -1044,6 +2097,7 @@ def write_manifest(
                 "n_params": uni["n_params"],
                 "aic": uni_aic,
                 "bic": uni_bic,
+                "calibration_specification": uni_spec,
             },
             "multi_beats_uni_aic": bool(multi_aic < uni_aic),
             "multi_beats_uni_bic": bool(multi_bic < uni_bic),
@@ -1093,9 +2147,9 @@ def write_mirt_rubrics(
     """Write a COPY of the rubric bank with the fitted masked K-vector + scalar b.
 
     Fitted criteria get ``discrimination`` = the masked K-vector (0 where q=0),
-    ``difficulty`` = b, and ``irt_params.source = 'calibrated-m2pl'`` + provenance.
-    Non-fitted criteria keep all synthetic values. Never mutates the input; refuses
-    to write over ``rubrics_qmatrix_final.jsonl`` or the input path.
+    ``difficulty`` = b, and family-specific calibrated provenance. Non-fitted
+    criteria keep all synthetic values. Never mutates the input; refuses to write
+    over ``rubrics_qmatrix_final.jsonl`` or the input path.
     """
     if out_path.resolve() == rubrics_path.resolve():
         raise CalibrationError("refusing to overwrite the input rubric bank in place.")
@@ -1108,9 +2162,16 @@ def write_mirt_rubrics(
     a_by = {it: A[i] for i, it in enumerate(items)}
     b_by = {it: float(b[i]) for i, it in enumerate(items)}
 
+    spec = calibration_specification(
+        getattr(args, "calibration_model", DEFAULT_CALIBRATION_MODEL),
+        ridge=args.ridge,
+        log_a_shrinkage=getattr(args, "log_a_shrinkage", DEFAULT_LOG_A_SHRINKAGE),
+    )
+
     provenance = {
-        "source": CALIBRATION_SOURCE,
-        "method": "confirmatory-m2pl-mml-em",
+        "source": calibration_source_name(spec["family"]),
+        "method": calibration_method_name(spec["family"]),
+        "calibration_specification": spec,
         "skills_order": list(SKILLS),
         "n_dimensions": N_SKILLS,
         "grid_nodes_per_dim": args.grid,
@@ -1221,9 +2282,28 @@ def main() -> int:
                         "logical-OR of the Q columns) ALONGSIDE the full K-dimensional "
                         "model for a uni/collapsed/full comparison.")
     p.add_argument("--ridge", type=float, default=1e-2,
-                   help="L2 ridge on loadings in the M-step for stability (default 1e-2; "
+                   help="L2 ridge on free-2pl loadings in the M-step (default 1e-2; "
                         "adopted 2026-07-31 per the Scaffolding Hygiene audit plateau — "
                         "best OOS scaffolding+correctness recovery, drains extreme-a).")
+    p.add_argument(
+        "--calibration-model",
+        choices=CALIBRATION_MODELS,
+        default=DEFAULT_CALIBRATION_MODEL,
+        help=(
+            "item discrimination family: historical unconstrained free-2pl "
+            "(default), fixed-a=1 1pl, or strictly-positive log-shrinkage-2pl."
+        ),
+    )
+    p.add_argument(
+        "--log-a-shrinkage",
+        type=float,
+        default=DEFAULT_LOG_A_SHRINKAGE,
+        help=(
+            "penalty precision lambda for log-shrinkage-2pl: "
+            "0.5*lambda*sum(log(a)^2), equivalent prior SD=1/sqrt(lambda). "
+            f"Default {DEFAULT_LOG_A_SHRINKAGE}."
+        ),
+    )
     p.add_argument("--max-iter", type=int, default=200, help="max EM iterations.")
     p.add_argument("--tol", type=float, default=1e-4,
                    help="EM convergence tol on marginal loglik (default 1e-4).")
@@ -1303,6 +2383,10 @@ def main() -> int:
     if args.ridge < 0:
         print("ERROR: --ridge cannot be negative.", file=sys.stderr)
         return 2
+    if args.log_a_shrinkage <= 0 or not np.isfinite(args.log_a_shrinkage):
+        print("ERROR: --log-a-shrinkage must be finite and strictly positive.",
+              file=sys.stderr)
+        return 2
     if args.min_persons_identifiable < 1:
         print("ERROR: --min-persons-identifiable must be positive.", file=sys.stderr)
         return 2
@@ -1381,6 +2465,14 @@ def main() -> int:
     print("=" * 72)
     print(f"fitting {n_items} items x {n_persons} persons, {args.grid} nodes/dim "
           f"({args.grid ** N_SKILLS} grid nodes)")
+    print(f"calibration model     : {args.calibration_model}")
+    if args.calibration_model == FREE_2PL:
+        print(f"loading ridge         : {args.ridge}")
+    elif args.calibration_model == LOG_SHRINKAGE_2PL:
+        print(f"log(a) shrinkage      : {args.log_a_shrinkage} "
+              f"(prior SD={1.0 / np.sqrt(args.log_a_shrinkage):.6g})")
+    else:
+        print("active loadings       : fixed a=1")
     print(f"dropped zero-variance : {diag['dropped_zero_variance_total']} "
           f"({diag['dropped_all_fail']} all-fail, {diag['dropped_all_pass']} all-pass)")
     print(f"dropped missing Q-row : {diag['dropped_missing_qrow']}")
@@ -1407,14 +2499,18 @@ def main() -> int:
 
     n_obs = int(M.sum())
 
-    print("\nfitting UNIDIMENSIONAL 2PL baseline (EM, 1 dim) ...")
+    print(f"\nfitting UNIDIMENSIONAL {args.calibration_model} baseline (EM, 1 dim) ...")
     Q_uni = np.ones((n_items, 1), dtype=int)
     uni = fit_m2pl_em(Y, M, Q_uni, args.grid, estimate_corr=False,
-                      ridge=args.ridge, max_iter=args.max_iter, tol=args.tol)
+                      ridge=args.ridge, max_iter=args.max_iter, tol=args.tol,
+                      calibration_model=args.calibration_model,
+                      log_a_shrinkage=args.log_a_shrinkage)
 
-    print(f"fitting CONFIRMATORY M2PL ({N_SKILLS} dims) ...")
+    print(f"fitting CONFIRMATORY {args.calibration_model} ({N_SKILLS} dims) ...")
     multi = fit_m2pl_em(Y, M, Q, args.grid, estimate_corr=args.estimate_latent_corr,
-                        ridge=args.ridge, max_iter=args.max_iter, tol=args.tol)
+                        ridge=args.ridge, max_iter=args.max_iter, tol=args.tol,
+                        calibration_model=args.calibration_model,
+                        log_a_shrinkage=args.log_a_shrinkage)
 
     # Optional collapsed model: a FIT-TIME, in-memory Q-matrix transform that merges
     # the requested skills into ONE latent dimension. Runs on the SAME data + all the
@@ -1423,11 +2519,13 @@ def main() -> int:
     collapse_info = None
     if collapse_skills is not None:
         Q_collapsed, collapsed_labels, collapse_info = collapse_q_matrix(Q, collapse_skills)
-        print(f"fitting COLLAPSED M2PL ({collapse_info['n_dims']} dims; "
+        print(f"fitting COLLAPSED {args.calibration_model} ({collapse_info['n_dims']} dims; "
               f"merged {'+'.join(collapse_info['merged_skills'])}) ...")
         collapsed = fit_m2pl_em(Y, M, Q_collapsed, args.grid,
                                 estimate_corr=args.estimate_latent_corr,
-                                ridge=args.ridge, max_iter=args.max_iter, tol=args.tol)
+                                ridge=args.ridge, max_iter=args.max_iter, tol=args.tol,
+                                calibration_model=args.calibration_model,
+                                log_a_shrinkage=args.log_a_shrinkage)
         collapse_info["labels"] = collapsed_labels
 
     A, b = multi["A"], multi["b"]
@@ -1473,8 +2571,16 @@ def main() -> int:
         for row in np.round(latent_corr, 3):
             print("   ", row.tolist())
 
-    crosscheck = girth_crosscheck(block_df.dropna(axis=0, how="any"), items,
-                                  uni["A"][:, 0], uni["b"])
+    crosscheck = (
+        girth_crosscheck(
+            block_df.dropna(axis=0, how="any"), items, uni["A"][:, 0], uni["b"]
+        )
+        if args.calibration_model == FREE_2PL
+        else {
+            "available": False,
+            "reason": "girth 2PL cross-check is only comparable to free-2pl",
+        }
+    )
     efa = run_efa(np.nan_to_num(block_df.to_numpy(dtype=float)), N_SKILLS) if args.efa else \
         {"available": False, "reason": "not requested (pass --efa)"}
     if args.efa:
