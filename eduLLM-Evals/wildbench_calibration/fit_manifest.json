@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-08-06T15:32:43.043622+00:00",
+  "note": "core scenario-level 1-skill M2PL fit (testlet; per-criterion items grouped by scenario). Ridge 1e-2 starting point; re-swept later. Full dimensionality comparison in experiments/03_structures.",
+  "ridge": 0.01,
+  "grid_1d": 7,
+  "n_models": 52,
+  "n_observed_cells": 434591,
+  "fits": {
+    "overall_1d": {
+      "n_dims": 1,
+      "loglik": -121594.13139856342,
+      "n_params": 16716,
+      "aic": 276620.26279712684,
+      "bic": 460198.06002013595,
+      "n_items": 8358,
+      "converged": true,
+      "n_iter": 5,
+      "n_extreme_a": 13
+    }
+  },
+  "fitted_banks": {
+    "overall_1d": "wildbench_scenario_fitted_1d.jsonl"
+  }
+}

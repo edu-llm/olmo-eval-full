@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-08-06T15:35:17.426360+00:00",
+  "purpose": "definitive OOS model-fold recovery at the locked scenario operating point",
+  "operating_point": {
+    "min_scenarios": 8,
+    "max_se": 0.12,
+    "selection": "trace",
+    "estimator_headline": "mwle"
+  },
+  "cv": "OOS k=5 MODEL folds, seed 20260729",
+  "n_models": 52,
+  "eap_reference_grid": {
+    "nodes": 321,
+    "range": 8.0,
+    "type": "fine uniform (continuous)"
+  },
+  "mean_scenarios_administered": 8.98,
+  "mean_criteria_administered": 86.2,
+  "headline_recovery_mwle": {
+    "r": 0.9567,
+    "r_lo": 0.9199,
+    "r_hi": 0.9783,
+    "slope": 0.8899,
+    "slope_lo": 0.8236,
+    "slope_hi": 0.969,
+    "mae": 0.4283,
+    "gap_worst12": 0.1674
+  },
+  "pass_rate_recovery": {
+    "r": 0.9374,
+    "r_lo": 0.8866,
+    "r_hi": 0.9699,
+    "slope": 0.8078,
+    "pass_mae": 0.0507
+  },
+  "recovery_by_estimator": {
+    "online": {
+      "r": 0.9264,
+      "r_lo": 0.8739,
+      "r_hi": 0.9584,
+      "slope": 0.699,
+      "slope_lo": 0.6319,
+      "slope_hi": 0.7938,
+      "mae": 0.5761,
+      "gap_worst12": 0.9963
+    },
+    "batch_eap": {
+      "r": 0.9588,
+      "r_lo": 0.9255,
+      "r_hi": 0.978,
+      "slope": 0.8423,
+      "slope_lo": 0.7864,
+      "slope_hi": 0.9217,
+      "mae": 0.4419,
+      "gap_worst12": 0.3743
+    },
+    "mwle": {
+      "r": 0.9567,
+      "r_lo": 0.9199,
+      "r_hi": 0.9783,
+      "slope": 0.8899,
+      "slope_lo": 0.8236,
+      "slope_hi": 0.969,
+      "mae": 0.4283,
+      "gap_worst12": 0.1674
+    },
+    "mle": {
+      "r": 0.89,
+      "r_lo": 0.7978,
+      "r_hi": 0.9781,
+      "slope": 0.9449,
+      "slope_lo": 0.8461,
+      "slope_hi": 1.1088,
+      "mae": 0.512,
+      "gap_worst12": -0.2788
+    }
+  }
+}

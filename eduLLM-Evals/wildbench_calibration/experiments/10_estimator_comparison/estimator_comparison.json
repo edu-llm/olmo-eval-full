@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-08-06T19:52:31.431569+00:00",
+  "purpose": "estimator comparison on the identical locked-point administered sets",
+  "operating_point": {
+    "min_scenarios": 8,
+    "max_se": 0.12
+  },
+  "n_models": 52,
+  "estimators": {
+    "online": {
+      "r": 0.9749,
+      "slope": 0.883,
+      "mae": 0.3712
+    },
+    "batch_eap": {
+      "r": 0.9749,
+      "slope": 0.883,
+      "mae": 0.3712
+    },
+    "mwle": {
+      "r": 0.9752,
+      "slope": 0.9207,
+      "mae": 0.3573
+    },
+    "mle": {
+      "r": 0.9753,
+      "slope": 0.9266,
+      "mae": 0.3567
+    }
+  },
+  "slope_closest_to_1": "mle",
+  "recommended_estimator": "mwle",
+  "rationale": "Pick the estimator whose recovery slope is closest to 1. LOCKED to MWLE (slope=0.921). Slope closest to 1 among the four is 'mle' (slope=0.927); when that is MLE it is REJECTED because plain MLE diverges on all-pass/all-fail administrations (unbounded theta), whereas MWLE's Warm penalty stays finite -- matching the Bridge & BiGGen deployment choice."
+}

@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-08-06T16:11:18.835546+00:00",
+  "purpose": "scenario-level calibration-noise floor (SE_param) via observed-info parametric bootstrap over the FULL administrable CAT pool (maximal info).",
+  "method": "observed-information parametric bootstrap (NOT jackknife)",
+  "bank": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\wildbench_calibration\\wildbench_scenario_fitted_1d_catpool.jsonl",
+  "matrix": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\WildBenchGrade\\response_matrix.csv",
+  "dims": [
+    "overall"
+  ],
+  "config": {
+    "fit_nodes": 7,
+    "eap_grid": 161,
+    "range": 8.0,
+    "n_boot": 200,
+    "ridge": 0.01
+  },
+  "n_models": 52,
+  "n_admin_criteria": 8345,
+  "median_item_param_se_a": 0.495670560952186,
+  "se_param_floor": {
+    "mean": 0.039401569926479765,
+    "median": 0.03847238376886632,
+    "min": 5.015796450448345e-06,
+    "max": 0.10362481057345672
+  },
+  "se_posterior_full_bank": {
+    "mean": 0.04403135444938104,
+    "median": 0.030935077661465388
+  },
+  "se_total_full_bank": {
+    "mean": 0.06317163745832179,
+    "median": 0.04633582832671433
+  },
+  "comparison_note": "Bridge scenario-level SE_param floor: mean 0.033 / median 0.027 (~18-criterion testlets, N=51). TutorBench scenario-level ~0.21-0.25. WildBench uses ~11-criterion testlets over 983 administrable scenarios at N=52 -> compare the floor here to those."
+}

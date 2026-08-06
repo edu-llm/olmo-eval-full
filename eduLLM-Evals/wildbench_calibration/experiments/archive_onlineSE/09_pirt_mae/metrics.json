@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-08-06T15:41:20.262247+00:00",
+  "purpose": "standalone p-IRT pass-rate MAE (parity with BiGGen/Bridge 09_pirt_mae)",
+  "source": "reuses exp-05 OOS per-model p-IRT data (locked op-point, model-fold k=5)",
+  "operating_point": {
+    "min_scenarios": 8,
+    "max_se": 0.12
+  },
+  "pass_r": 0.9374,
+  "pass_mae": 0.0507,
+  "pass_slope": 0.8078,
+  "theta_mae": 0.4283,
+  "n_models": 52
+}

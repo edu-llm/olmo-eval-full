@@ -1,0 +1,3 @@
+metric,mean,sd_across_models,median,n_models,se_target,regime,source
+SE_ability_only,0.10929307692307691,0.05097772749104093,0.10813,52,0.12,deployed_cat_8_0.12,se_post_vs_total.csv
+SE_total,0.1377548076923077,0.08351492912190492,0.12825,52,0.12,deployed_cat_8_0.12,se_post_vs_total.csv

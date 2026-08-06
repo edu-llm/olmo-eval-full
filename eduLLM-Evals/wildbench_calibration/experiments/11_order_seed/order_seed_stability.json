@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-08-06T19:59:35.660959+00:00",
+  "purpose": "across-seed order stability of ability at the locked operating point",
+  "operating_point": {
+    "min_scenarios": 8,
+    "max_se": 0.12,
+    "start": "production max-info top5 seeded pick (not uniform-random)"
+  },
+  "deployment_policy": "FIXED production seed (consistent with Bridge & BiGGen): single-run CAT scoring pins the RNG so first-item/tie-break choices are reproducible; the ~SE measurement uncertainty is still reported. Affects only single-run CAT, not the full-bank leaderboard.",
+  "n_models": 52,
+  "n_seeds": 8,
+  "theta_sd_across_seeds": {
+    "mean": 0.1341684620028905,
+    "median": 0.09933039682582429,
+    "max": 0.6125467770109277
+  },
+  "theta_range_across_seeds": {
+    "mean": 0.38880518945509634,
+    "max": 1.8063036578048113
+  },
+  "se_target": 0.12,
+  "mean_sd_over_se_target": 1.1180705166907543,
+  "mean_scenarios_administered": 13.985576923076923,
+  "interpretation": "mean across-seed theta SD as a fraction of the SE target; <<1 means the adaptive order/seed contributes negligible variance vs measurement error."
+}

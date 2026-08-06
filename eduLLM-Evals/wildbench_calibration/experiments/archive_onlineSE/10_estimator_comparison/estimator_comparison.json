@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-08-06T15:35:17.427417+00:00",
+  "purpose": "estimator comparison on the identical locked-point administered sets",
+  "operating_point": {
+    "min_scenarios": 8,
+    "max_se": 0.12
+  },
+  "n_models": 52,
+  "estimators": {
+    "online": {
+      "r": 0.9264,
+      "slope": 0.699,
+      "mae": 0.5761
+    },
+    "batch_eap": {
+      "r": 0.9588,
+      "slope": 0.8423,
+      "mae": 0.4419
+    },
+    "mwle": {
+      "r": 0.9567,
+      "slope": 0.8899,
+      "mae": 0.4283
+    },
+    "mle": {
+      "r": 0.89,
+      "slope": 0.9449,
+      "mae": 0.512
+    }
+  },
+  "slope_closest_to_1": "mle",
+  "recommended_estimator": "mwle",
+  "rationale": "LOCKED to MWLE (user decision, consistent with Bridge/BiGGen). MLE has the nominally-closest slope (0.945) but is REJECTED: it has the WORST correlation (r=0.89 vs MWLE 0.957) and the WORST theta-MAE (0.512 vs MWLE 0.428) because plain MLE diverges on all-pass/all-fail administrations (unbounded theta), inflating variance. MWLE's Warm penalty keeps it finite and robust, giving the best r and MAE while only slightly shrinking the slope (0.890). MWLE is the deployment instrument; all four estimators are reported."
+}

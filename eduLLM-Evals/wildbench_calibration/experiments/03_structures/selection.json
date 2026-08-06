@@ -1,0 +1,493 @@
+{
+  "rule": "lowest held-out marginal log-loss; keep within 1 SE; then fewest dimensions (BIC tiebreak) + parsimony (NOT AIC). Collapse a group iff latent r >~ 0.9 AND collapsed wins AIC/BIC AND EFA shows no separate factor.",
+  "selected": "overall_1d",
+  "selected_n_dims": 1,
+  "best_ll_structure": "full_11d",
+  "one_se_threshold": 0.55693,
+  "n_within_1se": 6,
+  "aic_best_structure": "full_11d",
+  "bic_best_structure": "full_11d",
+  "collapse_recommendation": "Selection rule -> overall_1d (1d). The 11-skill latent abilities are highly collinear (max|r|=0.984), the first eigenvalue explains 94% of skill-ability variance, and held-out log-loss does not separate the structures beyond 1 SE. At N=52 the skills are not separable -> collapse toward a general-ability structure.",
+  "aic_bic_caveat": "full_11d is AIC/BIC-best on the RAW table, but this is NOT evidence of 11 separable skills. Two artifacts inflate it: (1) full_11d is fit as the block-diagonal INDEPENDENT (identity-R) model, which gives each of the 52 persons 11 free per-skill abilities at the SAME nominal parameter count as 1D (no correlation parameters), so it absorbs more in-sample idiosyncrasy than one shared ability (loglik +1333 vs 1D at equal k) even though the measured inter-skill ability correlation is ~0.98; a correctly-specified CORRELATED 11-factor model would add 55 correlation parameters, is unidentifiable at N=52, and would collapse to ~1 factor. (2) The intermediate correlated 2-4d groupings use a coarse product Gauss-Hermite grid (5 nodes/dim; 5^4 max) while 1D and the independent 11D use 21 nodes/dim, so the collapsed models' marginal likelihood is under-resolved and their AIC/BIC is penalized relative to the two extremes. The HONEST, grid-fair arbiter is out-of-sample marginal log-loss, where full_11d (0.4776) beats 1D (0.4814) by 0.0038 -- ~5% of the +/-0.079 fold SE, i.e. no meaningful generalization gain. Combined with r~0.98, 94% first-eigenvalue variance, and a single Kaiser factor, the parsimonious, well-specified conclusion is UNIDIMENSIONAL collapse (overall_1d). The 11 task categories are reporting labels, not separable latent abilities at this bank size.",
+  "skill_correlation_11x11": [
+    [
+      1.0,
+      0.9322,
+      0.9163,
+      0.9379,
+      0.9291,
+      0.9533,
+      0.9597,
+      0.8485,
+      0.9627,
+      0.9732,
+      0.9413
+    ],
+    [
+      0.9322,
+      1.0,
+      0.9276,
+      0.9706,
+      0.9273,
+      0.9375,
+      0.9003,
+      0.8631,
+      0.9533,
+      0.9518,
+      0.9167
+    ],
+    [
+      0.9163,
+      0.9276,
+      1.0,
+      0.9453,
+      0.947,
+      0.9344,
+      0.9279,
+      0.9406,
+      0.9644,
+      0.9476,
+      0.9133
+    ],
+    [
+      0.9379,
+      0.9706,
+      0.9453,
+      1.0,
+      0.9506,
+      0.9625,
+      0.9127,
+      0.8567,
+      0.9707,
+      0.9573,
+      0.9098
+    ],
+    [
+      0.9291,
+      0.9273,
+      0.947,
+      0.9506,
+      1.0,
+      0.9543,
+      0.9187,
+      0.898,
+      0.9627,
+      0.9465,
+      0.926
+    ],
+    [
+      0.9533,
+      0.9375,
+      0.9344,
+      0.9625,
+      0.9543,
+      1.0,
+      0.9284,
+      0.8715,
+      0.9754,
+      0.9687,
+      0.9353
+    ],
+    [
+      0.9597,
+      0.9003,
+      0.9279,
+      0.9127,
+      0.9187,
+      0.9284,
+      1.0,
+      0.8753,
+      0.9683,
+      0.9734,
+      0.9547
+    ],
+    [
+      0.8485,
+      0.8631,
+      0.9406,
+      0.8567,
+      0.898,
+      0.8715,
+      0.8753,
+      1.0,
+      0.8915,
+      0.8994,
+      0.8852
+    ],
+    [
+      0.9627,
+      0.9533,
+      0.9644,
+      0.9707,
+      0.9627,
+      0.9754,
+      0.9683,
+      0.8915,
+      1.0,
+      0.9838,
+      0.9477
+    ],
+    [
+      0.9732,
+      0.9518,
+      0.9476,
+      0.9573,
+      0.9465,
+      0.9687,
+      0.9734,
+      0.8994,
+      0.9838,
+      1.0,
+      0.9623
+    ],
+    [
+      0.9413,
+      0.9167,
+      0.9133,
+      0.9098,
+      0.926,
+      0.9353,
+      0.9547,
+      0.8852,
+      0.9477,
+      0.9623,
+      1.0
+    ]
+  ],
+  "skill_correlation_max_offdiag": 0.9838,
+  "skill_correlation_mean_offdiag": 0.8491,
+  "scree_efa": {
+    "eigenvalues": [
+      10.3434,
+      0.2158,
+      0.1597,
+      0.0756,
+      0.0664,
+      0.0451,
+      0.0388,
+      0.0245,
+      0.0156,
+      0.0097,
+      0.0054
+    ],
+    "n_eigen_ge_1": 1,
+    "pct_variance_first": 0.9403,
+    "pct_variance_first2": 0.9599,
+    "efa_available": false,
+    "efa_reason": "No module named 'factor_analyzer'"
+  },
+  "efa_derived_grouping": {
+    "structure": {
+      "efa_g1": [
+        "advice_seeking",
+        "brainstorming",
+        "coding_debugging",
+        "creative_writing",
+        "data_analysis",
+        "editing",
+        "information_seeking",
+        "planning",
+        "reasoning",
+        "role_playing"
+      ],
+      "efa_g2": [
+        "math"
+      ]
+    },
+    "assignment": {
+      "advice_seeking": 1,
+      "brainstorming": 1,
+      "coding_debugging": 1,
+      "creative_writing": 1,
+      "data_analysis": 1,
+      "editing": 1,
+      "information_seeking": 1,
+      "math": 2,
+      "planning": 1,
+      "reasoning": 1,
+      "role_playing": 1
+    },
+    "n_clusters": 2
+  },
+  "per_axis_discrimination_full_11d": {
+    "advice_seeking": {
+      "n_anchor_items": 194,
+      "median_disc": 1.4943,
+      "mean_disc": 1.9603,
+      "frac_disc_le_0": 0.0258
+    },
+    "brainstorming": {
+      "n_anchor_items": 231,
+      "median_disc": 1.5804,
+      "mean_disc": 1.9007,
+      "frac_disc_le_0": 0.0087
+    },
+    "coding_debugging": {
+      "n_anchor_items": 1101,
+      "median_disc": 1.3817,
+      "mean_disc": 1.995,
+      "frac_disc_le_0": 0.02
+    },
+    "creative_writing": {
+      "n_anchor_items": 1376,
+      "median_disc": 1.3267,
+      "mean_disc": 1.711,
+      "frac_disc_le_0": 0.0124
+    },
+    "data_analysis": {
+      "n_anchor_items": 231,
+      "median_disc": 1.7124,
+      "mean_disc": 2.0297,
+      "frac_disc_le_0": 0.0216
+    },
+    "editing": {
+      "n_anchor_items": 787,
+      "median_disc": 1.4078,
+      "mean_disc": 1.7671,
+      "frac_disc_le_0": 0.0064
+    },
+    "information_seeking": {
+      "n_anchor_items": 1569,
+      "median_disc": 1.2317,
+      "mean_disc": 1.557,
+      "frac_disc_le_0": 0.0134
+    },
+    "math": {
+      "n_anchor_items": 410,
+      "median_disc": 1.3246,
+      "mean_disc": 2.1574,
+      "frac_disc_le_0": 0.0341
+    },
+    "planning": {
+      "n_anchor_items": 1123,
+      "median_disc": 1.4995,
+      "mean_disc": 1.955,
+      "frac_disc_le_0": 0.0018
+    },
+    "reasoning": {
+      "n_anchor_items": 1071,
+      "median_disc": 1.3328,
+      "mean_disc": 1.5538,
+      "frac_disc_le_0": 0.0168
+    },
+    "role_playing": {
+      "n_anchor_items": 265,
+      "median_disc": 1.4153,
+      "mean_disc": 1.6641,
+      "frac_disc_le_0": 0.0189
+    }
+  },
+  "structures_evaluated": {
+    "overall_1d": {
+      "overall": [
+        "advice_seeking",
+        "brainstorming",
+        "coding_debugging",
+        "creative_writing",
+        "data_analysis",
+        "editing",
+        "information_seeking",
+        "math",
+        "planning",
+        "reasoning",
+        "role_playing"
+      ]
+    },
+    "gen_vs_rest_2d": {
+      "generative": [
+        "creative_writing",
+        "role_playing",
+        "brainstorming"
+      ],
+      "analytic_assist": [
+        "coding_debugging",
+        "math",
+        "data_analysis",
+        "reasoning",
+        "information_seeking",
+        "advice_seeking",
+        "editing",
+        "planning"
+      ]
+    },
+    "gen_tech_info_3d": {
+      "generative": [
+        "creative_writing",
+        "role_playing",
+        "brainstorming"
+      ],
+      "technical": [
+        "coding_debugging",
+        "math",
+        "data_analysis",
+        "reasoning"
+      ],
+      "info_assist": [
+        "information_seeking",
+        "advice_seeking",
+        "editing",
+        "planning"
+      ]
+    },
+    "gen_tech_info_editcreate_4d": {
+      "generative": [
+        "creative_writing",
+        "role_playing",
+        "brainstorming"
+      ],
+      "technical": [
+        "coding_debugging",
+        "math",
+        "data_analysis",
+        "reasoning"
+      ],
+      "info_seeking": [
+        "information_seeking",
+        "advice_seeking"
+      ],
+      "structuring": [
+        "editing",
+        "planning"
+      ]
+    },
+    "full_11d": {
+      "advice_seeking": [
+        "advice_seeking"
+      ],
+      "brainstorming": [
+        "brainstorming"
+      ],
+      "coding_debugging": [
+        "coding_debugging"
+      ],
+      "creative_writing": [
+        "creative_writing"
+      ],
+      "data_analysis": [
+        "data_analysis"
+      ],
+      "editing": [
+        "editing"
+      ],
+      "information_seeking": [
+        "information_seeking"
+      ],
+      "math": [
+        "math"
+      ],
+      "planning": [
+        "planning"
+      ],
+      "reasoning": [
+        "reasoning"
+      ],
+      "role_playing": [
+        "role_playing"
+      ]
+    },
+    "efa_2d": {
+      "efa_g1": [
+        "advice_seeking",
+        "brainstorming",
+        "coding_debugging",
+        "creative_writing",
+        "data_analysis",
+        "editing",
+        "information_seeking",
+        "planning",
+        "reasoning",
+        "role_playing"
+      ],
+      "efa_g2": [
+        "math"
+      ]
+    }
+  },
+  "note": "N=52 persons: multi-dim confirmatory M2PL is not identifiable as a correlated model; the 11-dim fit uses identity-R independence + a plug-in skill-ability correlation. Large max|corr| => collapse toward 1D.",
+  "structures": [
+    {
+      "structure": "overall_1d",
+      "n_dims": 1,
+      "n_criteria": 8358,
+      "fit_path": "1d",
+      "loglik": -118614.4,
+      "n_params": 16716,
+      "aic": 270660.8,
+      "bic": 454238.6,
+      "oos_logloss_mean": 0.48139,
+      "oos_logloss_se": 0.08013,
+      "max_latent_corr_offdiag": 0.0,
+      "converged": true
+    },
+    {
+      "structure": "gen_vs_rest_2d",
+      "n_dims": 2,
+      "n_criteria": 8358,
+      "fit_path": "product_grid",
+      "loglik": -123109.1,
+      "n_params": 16717,
+      "aic": 279652.2,
+      "bic": 463241.0,
+      "oos_logloss_mean": 0.49032,
+      "oos_logloss_se": 0.08021,
+      "max_latent_corr_offdiag": 0.9574,
+      "converged": true
+    },
+    {
+      "structure": "gen_tech_info_3d",
+      "n_dims": 3,
+      "n_criteria": 8358,
+      "fit_path": "product_grid",
+      "loglik": -122633.6,
+      "n_params": 16719,
+      "aic": 278705.1,
+      "bic": 462315.9,
+      "oos_logloss_mean": 0.49094,
+      "oos_logloss_se": 0.07945,
+      "max_latent_corr_offdiag": 0.9742,
+      "converged": true
+    },
+    {
+      "structure": "gen_tech_info_editcreate_4d",
+      "n_dims": 4,
+      "n_criteria": 8358,
+      "fit_path": "product_grid",
+      "loglik": -122667.0,
+      "n_params": 16722,
+      "aic": 278778.1,
+      "bic": 462421.8,
+      "oos_logloss_mean": 0.49074,
+      "oos_logloss_se": 0.07976,
+      "max_latent_corr_offdiag": 0.986,
+      "converged": true
+    },
+    {
+      "structure": "full_11d",
+      "n_dims": 11,
+      "n_criteria": 8358,
+      "fit_path": "independent",
+      "loglik": -117281.1,
+      "n_params": 16716,
+      "aic": 267994.2,
+      "bic": 451572.0,
+      "oos_logloss_mean": 0.47756,
+      "oos_logloss_se": 0.07937,
+      "max_latent_corr_offdiag": 0.9838,
+      "converged": true
+    },
+    {
+      "structure": "efa_2d",
+      "n_dims": 2,
+      "n_criteria": 8358,
+      "fit_path": "product_grid",
+      "loglik": -122642.9,
+      "n_params": 16717,
+      "aic": 278719.8,
+      "bic": 462308.6,
+      "oos_logloss_mean": 0.49009,
+      "oos_logloss_se": 0.07954,
+      "max_latent_corr_offdiag": 0.9063,
+      "converged": true
+    }
+  ]
+}

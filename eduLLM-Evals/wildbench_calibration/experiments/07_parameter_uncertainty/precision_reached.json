@@ -1,0 +1,110 @@
+{
+  "purpose": "deployed-CAT precision-reached rate at locked op-point 8/0.12 (analysis-only)",
+  "source_per_model_se": "se_post_vs_total.csv",
+  "target_se_ability": 0.12,
+  "n_models": 52,
+  "precision_reached_posterior_metric": {
+    "definition": "SE_posterior (honest fine-grid EAP posterior SE) <= 0.12",
+    "n_reached": 45,
+    "pct_reached": 86.5,
+    "n_missed": 7,
+    "pct_missed": 13.5
+  },
+  "engine_online_se_criterion": {
+    "note": "the engine's own stop test uses an online normal-approx SE; it is optimistic vs the honest posterior SE at boundary/low-information theta.",
+    "convergence_rate_f8_se0.12": 0.923,
+    "capped_frac_f8_se0.12": 0.077,
+    "source": "recovery_grid.csv"
+  },
+  "se_ability_distribution": {
+    "median": 0.10813,
+    "mean": 0.10929307692307694,
+    "q1": 0.0817925,
+    "q3": 0.116835,
+    "iqr": 0.03504249999999999,
+    "min": 0.05921,
+    "max": 0.30912
+  },
+  "se_total_distribution": {
+    "median": 0.12825,
+    "mean": 0.1377548076923077,
+    "q1": 0.1059325,
+    "q3": 0.1343075,
+    "iqr": 0.028374999999999997,
+    "min": 0.06984,
+    "max": 0.51479
+  },
+  "missed_target_models": [
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -6.7518,
+      "SE_posterior": 0.3091,
+      "SE_total": 0.5148,
+      "weakly_identified": true
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -5.3229,
+      "SE_posterior": 0.2856,
+      "SE_total": 0.4273,
+      "weakly_identified": true
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -6.2223,
+      "SE_posterior": 0.2495,
+      "SE_total": 0.3711,
+      "weakly_identified": true
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -4.6433,
+      "SE_posterior": 0.2183,
+      "SE_total": 0.2878,
+      "weakly_identified": true
+    },
+    {
+      "model": "google/gemma-2-2b",
+      "theta": -1.5892,
+      "SE_posterior": 0.123,
+      "SE_total": 0.1362,
+      "weakly_identified": false
+    },
+    {
+      "model": "Qwen/Qwen2-0.5B",
+      "theta": -2.3089,
+      "SE_posterior": 0.1219,
+      "SE_total": 0.134,
+      "weakly_identified": false
+    },
+    {
+      "model": "01-ai/Yi-6B-200K",
+      "theta": -2.1667,
+      "SE_posterior": 0.1216,
+      "SE_total": 0.1532,
+      "weakly_identified": false
+    }
+  ],
+  "n_missed_weakly_identified": 4,
+  "n_missed_not_flagged": 3,
+  "missed_not_flagged_models": [
+    {
+      "model": "google/gemma-2-2b",
+      "theta": -1.5892,
+      "SE_posterior": 0.123,
+      "SE_total": 0.1362
+    },
+    {
+      "model": "Qwen/Qwen2-0.5B",
+      "theta": -2.3089,
+      "SE_posterior": 0.1219,
+      "SE_total": 0.134
+    },
+    {
+      "model": "01-ai/Yi-6B-200K",
+      "theta": -2.1667,
+      "SE_posterior": 0.1216,
+      "SE_total": 0.1532
+    }
+  ]
+}

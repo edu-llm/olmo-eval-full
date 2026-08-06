@@ -1,0 +1,46 @@
+{
+  "purpose": "CAT-pool exclusion mask (extreme_a only; WildBench has no A3 safety gate). Excluded from administration + theta scoring ONLY; retained in calibration + reporting.",
+  "provisional": "extreme_a set is from the ridge=1e-2 1D fit; it may shrink when ridge is swept in Phase 2b.",
+  "convention_all_dropped_scenarios": "TutorBench convention (scenario_cat_lib.bank_for_model): a scenario with no administrable criteria is omitted from the per-model ItemBank -> un-administrable. No dedup.",
+  "extreme_a_threshold": 6.0,
+  "n_fitted": 8358,
+  "n_extreme_a": 13,
+  "counts": {
+    "n_criteria_fitted_post_zv": 8358,
+    "n_excluded": 13,
+    "n_administrable_criteria": 8345,
+    "n_scenarios_post_zv": 985,
+    "n_administrable_scenarios": 985,
+    "n_scenarios_all_dropped": 0
+  },
+  "excluded_ids": [
+    "WB_0101_c10",
+    "WB_0110_c02",
+    "WB_0110_c08",
+    "WB_0191_c03",
+    "WB_0204_c12",
+    "WB_0232_c10",
+    "WB_0302_c02",
+    "WB_0302_c08",
+    "WB_0411_c03",
+    "WB_0523_c16",
+    "WB_0524_c04",
+    "WB_0839_c05",
+    "WB_0974_c08"
+  ],
+  "extreme_a_ids": [
+    "WB_0101_c10",
+    "WB_0110_c02",
+    "WB_0110_c08",
+    "WB_0191_c03",
+    "WB_0204_c12",
+    "WB_0232_c10",
+    "WB_0302_c02",
+    "WB_0302_c08",
+    "WB_0411_c03",
+    "WB_0523_c16",
+    "WB_0524_c04",
+    "WB_0839_c05",
+    "WB_0974_c08"
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-08-06T20:29:03.381183+00:00",
+  "purpose": "full-bank ability leaderboard with SE_total bars (NOT the locked CAT)",
+  "scoring": "full administrable bank (extreme_a excluded), 1D fine-EAP theta",
+  "se_bars": "SE_total = sqrt(SE_ability_posterior^2 + SE_param^2), from exp 07",
+  "n_models": 52,
+  "n_criteria_scored": 8345,
+  "theta_range": [
+    -6.751778593273681,
+    2.699102908228435
+  ],
+  "se_total_range": [
+    1.1047605977650404e-05,
+    0.3574266472105558
+  ],
+  "top5": [
+    {
+      "model": "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+      "theta": 2.699102908228435,
+      "se_total": 1.1047605977650404e-05
+    },
+    {
+      "model": "ibm-granite/granite-3.1-2b-instruct",
+      "theta": 2.399632503035693,
+      "se_total": 3.020755505822008e-05
+    },
+    {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "theta": 2.2931224821381613,
+      "se_total": 0.0367261686506159
+    },
+    {
+      "model": "tiiuae/Falcon3-3B-Instruct",
+      "theta": 2.1996251501672766,
+      "se_total": 0.0088081049077482
+    },
+    {
+      "model": "01-ai/Yi-1.5-6B-Chat",
+      "theta": 2.0955135343204754,
+      "se_total": 0.0038558587155813
+    }
+  ],
+  "bottom5": [
+    {
+      "model": "openbmb/MiniCPM-1B-sft-bf16",
+      "theta": -2.888631980504001,
+      "se_total": 0.1039307015470014
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -4.643318777198033,
+      "se_total": 0.1888100882160687
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -5.322923288621569,
+      "se_total": 0.2343754505913614
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -6.2223011432363045,
+      "se_total": 0.3130340971070657
+    },
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -6.751778593273681,
+      "se_total": 0.3574266472105558
+    }
+  ],
+  "weakly_identified_note": "weakly_identified models (from exp-11 order/seed diagnostics) are near-all-fail / very low information AND order/seed-unstable; their theta is only an UPPER BOUND (theta <~ value), not a point estimate. Reported with SE_total bars but flagged in the figure.",
+  "weakly_identified_models": [
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -4.643318777198033,
+      "se_total": 0.1888100882160687
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -5.322923288621569,
+      "se_total": 0.2343754505913614
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -6.2223011432363045,
+      "se_total": 0.3130340971070657
+    },
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -6.751778593273681,
+      "se_total": 0.3574266472105558
+    }
+  ],
+  "n_weakly_identified": 4
+}

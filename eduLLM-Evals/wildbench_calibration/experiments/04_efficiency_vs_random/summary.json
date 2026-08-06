@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-08-06T20:33:38.175544+00:00",
+  "purpose": "adaptive vs random scenario-selection efficiency",
+  "stop_rule": "eap",
+  "se_metric": "EAP posterior SD",
+  "n_models": 52,
+  "lengths": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    10,
+    12,
+    15,
+    20
+  ],
+  "locked_length": 8,
+  "se_target": 0.12,
+  "locked_point_recovery": {
+    "cat_r": 0.9404,
+    "random_r": 0.8982,
+    "cat_minus_random_r": 0.0422
+  },
+  "random_scenarios_to_match_cat_r_at_locked": 12,
+  "scenarios_to_se_target": {
+    "adaptive": 15,
+    "random": null
+  },
+  "online_se_at_locked": {
+    "adaptive": 0.1543,
+    "random": 0.3312
+  },
+  "adaptive_beats_random_all_lengths": false,
+  "mean_r_gap_over_lengths": 0.0505
+}

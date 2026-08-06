@@ -1,0 +1,1 @@
+Archived online-SE-stop of-record outputs (provenance), superseded by the EAP-posterior stop adoption. See ../../README.md. Full-bank exp-07 floor + exp-08 leaderboard theta are stop-independent and were NOT archived here.

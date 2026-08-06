@@ -1,0 +1,195 @@
+{
+  "purpose": "order/seed theta-SD tail diagnostics (read-only)",
+  "n_models": 52,
+  "weakly_identified_rule": "weakly_identified = (frac_informative_items < 0.05) AND (theta_sd > 0.5). Near-all-fail / very low information AND order/seed-unstable => ability is only bounded (not point-identified) at a short adaptive test. Both conditions required so a low-info-but-stable model is not flagged.",
+  "weakly_identified_cutoffs": {
+    "frac_informative_items_max": 0.05,
+    "theta_sd_min": 0.5
+  },
+  "weakly_identified_models": [
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -6.7518,
+      "theta_sd": 1.6553,
+      "pass_rate": 0.0023,
+      "frac_informative_items": 0.0141,
+      "se_total": 0.3574
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -4.6433,
+      "theta_sd": 1.1066,
+      "pass_rate": 0.008,
+      "frac_informative_items": 0.03,
+      "se_total": 0.1888
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -5.3229,
+      "theta_sd": 0.9447,
+      "pass_rate": 0.007,
+      "frac_informative_items": 0.0212,
+      "se_total": 0.2344
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -6.2223,
+      "theta_sd": 0.8126,
+      "pass_rate": 0.0025,
+      "frac_informative_items": 0.0159,
+      "se_total": 0.313
+    }
+  ],
+  "n_weakly_identified": 4,
+  "theta_sd_stats": {
+    "mean": 0.2924261588044543,
+    "median": 0.15870428357188326,
+    "max": 1.655304480879782
+  },
+  "top8_high_sd": [
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta_sd": 1.6553,
+      "theta_range_seeds": 4.019,
+      "theta": -6.7518,
+      "abs_theta": 6.7518,
+      "se_total": 0.3574,
+      "pass_rate": 0.0023,
+      "pass_extremity": 0.0023,
+      "n_admin_criteria": 8345,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.0141,
+      "weakly_identified": true
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta_sd": 1.1066,
+      "theta_range_seeds": 3.2618,
+      "theta": -4.6433,
+      "abs_theta": 4.6433,
+      "se_total": 0.1888,
+      "pass_rate": 0.008,
+      "pass_extremity": 0.008,
+      "n_admin_criteria": 8345,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.03,
+      "weakly_identified": true
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta_sd": 0.9447,
+      "theta_range_seeds": 2.3225,
+      "theta": -5.3229,
+      "abs_theta": 5.3229,
+      "se_total": 0.2344,
+      "pass_rate": 0.007,
+      "pass_extremity": 0.007,
+      "n_admin_criteria": 8345,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.0212,
+      "weakly_identified": true
+    },
+    {
+      "model": "ai-forever/mGPT",
+      "theta_sd": 0.8126,
+      "theta_range_seeds": 2.0123,
+      "theta": -6.2223,
+      "abs_theta": 6.2223,
+      "se_total": 0.313,
+      "pass_rate": 0.0025,
+      "pass_extremity": 0.0025,
+      "n_admin_criteria": 8345,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.0159,
+      "weakly_identified": true
+    },
+    {
+      "model": "meta-llama/Llama-3.2-1B",
+      "theta_sd": 0.7025,
+      "theta_range_seeds": 2.0049,
+      "theta": -2.4855,
+      "abs_theta": 2.4855,
+      "se_total": 0.0901,
+      "pass_rate": 0.0499,
+      "pass_extremity": 0.0499,
+      "n_admin_criteria": 8345,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.102,
+      "weakly_identified": false
+    },
+    {
+      "model": "h2oai/h2o-danube2-1.8b-base",
+      "theta_sd": 0.6591,
+      "theta_range_seeds": 1.9889,
+      "theta": -1.247,
+      "abs_theta": 1.247,
+      "se_total": 0.0634,
+      "pass_rate": 0.1071,
+      "pass_extremity": 0.1071,
+      "n_admin_criteria": 8345,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.2339,
+      "weakly_identified": false
+    },
+    {
+      "model": "openlm-research/open_llama_3b",
+      "theta_sd": 0.6508,
+      "theta_range_seeds": 2.0753,
+      "theta": -2.8029,
+      "abs_theta": 2.8029,
+      "se_total": 0.099,
+      "pass_rate": 0.0367,
+      "pass_extremity": 0.0367,
+      "n_admin_criteria": 8340,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.0832,
+      "weakly_identified": false
+    },
+    {
+      "model": "allenai/OLMo-2-0425-1B",
+      "theta_sd": 0.5259,
+      "theta_range_seeds": 1.3784,
+      "theta": -2.4069,
+      "abs_theta": 2.4069,
+      "se_total": 0.083,
+      "pass_rate": 0.0493,
+      "pass_extremity": 0.0493,
+      "n_admin_criteria": 8339,
+      "n_admin_scenarios": 985,
+      "frac_informative_items": 0.1089,
+      "weakly_identified": false
+    }
+  ],
+  "correlations_with_theta_sd": {
+    "abs_theta": 0.836,
+    "pass_extremity (higher=more central)": -0.623,
+    "frac_informative_items": -0.721
+  },
+  "tail_models_sd_gt_0.30": {
+    "n": 18,
+    "models": [
+      "allenai/OLMo-1B-hf",
+      "BEE-spoke-data/smol_llama-220M-openhermes",
+      "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "ai-forever/mGPT",
+      "meta-llama/Llama-3.2-1B",
+      "h2oai/h2o-danube2-1.8b-base",
+      "openlm-research/open_llama_3b",
+      "allenai/OLMo-2-0425-1B",
+      "01-ai/Yi-6B-200K",
+      "BSC-LT/salamandra-2b",
+      "HuggingFaceTB/SmolLM2-360M",
+      "utter-project/EuroLLM-1.7B",
+      "Qwen/Qwen1.5-1.8B",
+      "google/gemma-2-2b",
+      "google/gemma-2b",
+      "openbmb/MiniCPM-1B-sft-bf16",
+      "01-ai/Yi-6B",
+      "OpenBMB/MiniCPM4-0.5B"
+    ],
+    "frac_in_top10pct_abs_theta": 0.333,
+    "mean_abs_theta": 2.898,
+    "mean_frac_informative": 0.122
+  },
+  "median_frac_informative_all_models": 0.4397
+}

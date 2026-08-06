@@ -1,0 +1,253 @@
+{
+  "purpose": "deployed-CAT precision-reached rate at locked op-point 8/0.12 (analysis-only)",
+  "source_per_model_se": "se_post_vs_total.csv",
+  "target_se_ability": 0.12,
+  "n_models": 52,
+  "precision_reached_posterior_metric": {
+    "definition": "SE_posterior (honest fine-grid EAP posterior SE) <= 0.12",
+    "n_reached": 34,
+    "pct_reached": 65.4,
+    "n_missed": 18,
+    "pct_missed": 34.6
+  },
+  "engine_online_se_criterion": {
+    "note": "the engine's own stop test uses an online normal-approx SE; it is optimistic vs the honest posterior SE at boundary/low-information theta.",
+    "convergence_rate_f8_se0.12": 1.0,
+    "capped_frac_f8_se0.12": 0.0,
+    "source": "recovery_grid.csv"
+  },
+  "se_ability_distribution": {
+    "median": 0.11119,
+    "mean": 0.13657442307692308,
+    "q1": 0.0810825,
+    "q3": 0.131645,
+    "iqr": 0.05056250000000001,
+    "min": 0.06342,
+    "max": 0.4072
+  },
+  "se_total_distribution": {
+    "median": 0.124035,
+    "mean": 0.16439365384615387,
+    "q1": 0.0997975,
+    "q3": 0.15862500000000002,
+    "iqr": 0.05882750000000002,
+    "min": 0.0738,
+    "max": 0.50099
+  },
+  "missed_target_models": [
+    {
+      "model": "ai-forever/mGPT",
+      "theta": -6.2223,
+      "SE_posterior": 0.4072,
+      "SE_total": 0.4716,
+      "weakly_identified": true
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "theta": -5.3229,
+      "SE_posterior": 0.4024,
+      "SE_total": 0.501,
+      "weakly_identified": true
+    },
+    {
+      "model": "HuggingFaceTB/SmolLM2-360M",
+      "theta": -2.84,
+      "SE_posterior": 0.4006,
+      "SE_total": 0.4891,
+      "weakly_identified": false
+    },
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -6.7518,
+      "SE_posterior": 0.3928,
+      "SE_total": 0.4716,
+      "weakly_identified": true
+    },
+    {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -4.6433,
+      "SE_posterior": 0.3515,
+      "SE_total": 0.4144,
+      "weakly_identified": true
+    },
+    {
+      "model": "utter-project/EuroLLM-1.7B",
+      "theta": -2.4025,
+      "SE_posterior": 0.3126,
+      "SE_total": 0.3622,
+      "weakly_identified": false
+    },
+    {
+      "model": "01-ai/Yi-6B-200K",
+      "theta": -2.1667,
+      "SE_posterior": 0.2748,
+      "SE_total": 0.3293,
+      "weakly_identified": false
+    },
+    {
+      "model": "h2oai/h2o-danube2-1.8b-base",
+      "theta": -1.247,
+      "SE_posterior": 0.1624,
+      "SE_total": 0.1786,
+      "weakly_identified": false
+    },
+    {
+      "model": "BSC-LT/salamandra-7b",
+      "theta": -1.2247,
+      "SE_posterior": 0.1485,
+      "SE_total": 0.1884,
+      "weakly_identified": false
+    },
+    {
+      "model": "openlm-research/open_llama_3b",
+      "theta": -2.8029,
+      "SE_posterior": 0.1465,
+      "SE_total": 0.1825,
+      "weakly_identified": false
+    },
+    {
+      "model": "google/gemma-2b",
+      "theta": -2.1904,
+      "SE_posterior": 0.1462,
+      "SE_total": 0.1806,
+      "weakly_identified": false
+    },
+    {
+      "model": "Qwen/Qwen2-0.5B",
+      "theta": -2.3089,
+      "SE_posterior": 0.1437,
+      "SE_total": 0.157,
+      "weakly_identified": false
+    },
+    {
+      "model": "google/gemma-2-2b",
+      "theta": -1.5892,
+      "SE_posterior": 0.135,
+      "SE_total": 0.1486,
+      "weakly_identified": false
+    },
+    {
+      "model": "allenai/OLMo-2-0425-1B",
+      "theta": -2.4069,
+      "SE_posterior": 0.1305,
+      "SE_total": 0.1704,
+      "weakly_identified": false
+    },
+    {
+      "model": "BSC-LT/salamandra-2b",
+      "theta": -2.1908,
+      "SE_posterior": 0.128,
+      "SE_total": 0.1443,
+      "weakly_identified": false
+    },
+    {
+      "model": "openbmb/MiniCPM-1B-sft-bf16",
+      "theta": -2.8886,
+      "SE_posterior": 0.126,
+      "SE_total": 0.1509,
+      "weakly_identified": false
+    },
+    {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "theta": 2.2931,
+      "SE_posterior": 0.1232,
+      "SE_total": 0.1517,
+      "weakly_identified": false
+    },
+    {
+      "model": "Qwen/Qwen1.5-1.8B",
+      "theta": -2.319,
+      "SE_posterior": 0.1209,
+      "SE_total": 0.1455,
+      "weakly_identified": false
+    }
+  ],
+  "n_missed_weakly_identified": 4,
+  "n_missed_not_flagged": 14,
+  "missed_not_flagged_models": [
+    {
+      "model": "HuggingFaceTB/SmolLM2-360M",
+      "theta": -2.84,
+      "SE_posterior": 0.4006,
+      "SE_total": 0.4891
+    },
+    {
+      "model": "utter-project/EuroLLM-1.7B",
+      "theta": -2.4025,
+      "SE_posterior": 0.3126,
+      "SE_total": 0.3622
+    },
+    {
+      "model": "01-ai/Yi-6B-200K",
+      "theta": -2.1667,
+      "SE_posterior": 0.2748,
+      "SE_total": 0.3293
+    },
+    {
+      "model": "h2oai/h2o-danube2-1.8b-base",
+      "theta": -1.247,
+      "SE_posterior": 0.1624,
+      "SE_total": 0.1786
+    },
+    {
+      "model": "BSC-LT/salamandra-7b",
+      "theta": -1.2247,
+      "SE_posterior": 0.1485,
+      "SE_total": 0.1884
+    },
+    {
+      "model": "openlm-research/open_llama_3b",
+      "theta": -2.8029,
+      "SE_posterior": 0.1465,
+      "SE_total": 0.1825
+    },
+    {
+      "model": "google/gemma-2b",
+      "theta": -2.1904,
+      "SE_posterior": 0.1462,
+      "SE_total": 0.1806
+    },
+    {
+      "model": "Qwen/Qwen2-0.5B",
+      "theta": -2.3089,
+      "SE_posterior": 0.1437,
+      "SE_total": 0.157
+    },
+    {
+      "model": "google/gemma-2-2b",
+      "theta": -1.5892,
+      "SE_posterior": 0.135,
+      "SE_total": 0.1486
+    },
+    {
+      "model": "allenai/OLMo-2-0425-1B",
+      "theta": -2.4069,
+      "SE_posterior": 0.1305,
+      "SE_total": 0.1704
+    },
+    {
+      "model": "BSC-LT/salamandra-2b",
+      "theta": -2.1908,
+      "SE_posterior": 0.128,
+      "SE_total": 0.1443
+    },
+    {
+      "model": "openbmb/MiniCPM-1B-sft-bf16",
+      "theta": -2.8886,
+      "SE_posterior": 0.126,
+      "SE_total": 0.1509
+    },
+    {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "theta": 2.2931,
+      "SE_posterior": 0.1232,
+      "SE_total": 0.1517
+    },
+    {
+      "model": "Qwen/Qwen1.5-1.8B",
+      "theta": -2.319,
+      "SE_posterior": 0.1209,
+      "SE_total": 0.1455
+    }
+  ]
+}

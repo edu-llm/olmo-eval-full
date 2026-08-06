@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-08-06T19:21:48.099085+00:00",
+  "status": "PROTOTYPE / exploratory -- NOT adopted. of-record exp-04/05/06/07/08 untouched.",
+  "design": {
+    "stop_rule_new": "EAP posterior SD <= 0.12 AND n_scenarios >= 8, else cap",
+    "stop_rule_online": "engine online normal-approx SE <= 0.12 AND floor 8",
+    "selection": "unchanged (production engine max-info scenario selection)",
+    "seed": 20260729,
+    "l_max_cap": 40,
+    "eap_grid": 321,
+    "se_param": "REUSED from of-record deployed bootstrap (no re-bootstrap)"
+  },
+  "n_models": 52,
+  "length": {
+    "online": {
+      "scenarios": {
+        "median": 8.0,
+        "mean": 8.8269,
+        "q1": 8.0,
+        "q3": 8.0
+      },
+      "criteria": {
+        "median": 85.0,
+        "mean": 87.1538,
+        "q1": 75.75,
+        "q3": 90.25
+      }
+    },
+    "eap": {
+      "scenarios": {
+        "median": 8.0,
+        "mean": 13.75,
+        "q1": 8.0,
+        "q3": 16.0
+      },
+      "criteria": {
+        "median": 89.0,
+        "mean": 135.7308,
+        "q1": 77.5,
+        "q3": 157.25
+      }
+    }
+  },
+  "pct_reaching_eap_sd_le_0.12": {
+    "online_rule": {
+      "n": 31,
+      "pct": 59.6
+    },
+    "eap_rule": {
+      "n": 48,
+      "pct": 92.3,
+      "n_hit_cap": 4
+    }
+  },
+  "se_ability_distribution": {
+    "online": {
+      "median": 0.1099,
+      "mean": 0.1524,
+      "q1": 0.0887,
+      "q3": 0.1289
+    },
+    "eap": {
+      "median": 0.1098,
+      "mean": 0.1169,
+      "q1": 0.0887,
+      "q3": 0.1182
+    }
+  },
+  "se_total_distribution": {
+    "online": {
+      "median": 0.1306,
+      "mean": 0.1793,
+      "q1": 0.1118,
+      "q3": 0.1689
+    },
+    "eap": {
+      "median": 0.1281,
+      "mean": 0.1502,
+      "q1": 0.1118,
+      "q3": 0.1453
+    }
+  },
+  "oos_recovery_eap_rule": {
+    "r": 0.9752,
+    "r_lo": 0.9584,
+    "r_hi": 0.9857,
+    "slope": 0.9207,
+    "theta_mae": 0.3573,
+    "mean_scenarios": 13.23,
+    "mean_criteria": 128.5
+  },
+  "oos_recovery_online_of_record_exp05": {
+    "r": 0.9567,
+    "slope": 0.8899,
+    "theta_mae": 0.4283,
+    "mean_scenarios": 8.98,
+    "mean_criteria": 86.2
+  },
+  "models_that_still_cap_under_eap": [
+    "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+    "BEE-spoke-data/smol_llama-220M-openhermes",
+    "ai-forever/mGPT",
+    "allenai/OLMo-1B-hf"
+  ]
+}

@@ -186,6 +186,17 @@ data/TutorEval/review_queue*.tsv
 !regenerated_figures/
 !regenerated_figures/**
 
+# ---------------------------------------------------------------------------
+# wildbench_calibration/ = TRACKED scenario-level calibration study. Re-include
+# its figures past the global *.png rule; keep regenerable scratch out.
+# ---------------------------------------------------------------------------
+!wildbench_calibration/**/*.png
+wildbench_calibration/**/_tmp/
+tutorbench_tb33_grading/
+bridgegrade/
+# WildBench raw judged matrix (raw grading output from S3/ORCD; regenerable, never tracked).
+WildBenchGrade/
+
 
 # Criteria-rewording run artifacts: per-item logs are regenerable and stay local
 # (consistent with the qmatrix_logs handling). The reworded scenario copy (~6MB) is

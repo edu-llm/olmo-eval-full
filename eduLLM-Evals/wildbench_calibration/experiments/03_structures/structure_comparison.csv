@@ -1,0 +1,7 @@
+structure,n_dims,n_criteria,fit_path,loglik,n_params,aic,bic,oos_logloss_mean,oos_logloss_se,max_latent_corr_offdiag,converged
+overall_1d,1,8358,1d,-118614.4,16716,270660.8,454238.6,0.48139,0.08013,0.0,True
+gen_vs_rest_2d,2,8358,product_grid,-123109.1,16717,279652.2,463241.0,0.49032,0.08021,0.9574,True
+gen_tech_info_3d,3,8358,product_grid,-122633.6,16719,278705.1,462315.9,0.49094,0.07945,0.9742,True
+gen_tech_info_editcreate_4d,4,8358,product_grid,-122667.0,16722,278778.1,462421.8,0.49074,0.07976,0.986,True
+full_11d,11,8358,independent,-117281.1,16716,267994.2,451572.0,0.47756,0.07937,0.9838,True
+efa_2d,2,8358,product_grid,-122642.9,16717,278719.8,462308.6,0.49009,0.07954,0.9063,True
