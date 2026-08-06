@@ -54,6 +54,36 @@ RUN set -eux; \
     uv sync --frozen --no-default-groups --no-install-project \
         --extra beaker --extra hf --extra s3 --extra clients
 
+# Whether this image can hold a model itself, which is one line and is somebody's
+# decision rather than a default. 0 is what every build has produced so far: no torch,
+# so `mock` and `litellm` run and the three providers that load weights do not. 1 adds
+# the `vllm` group, which is what `vllm`, `vllm_server` and `huggingface` need.
+#
+# The platform's build workflow passes BASE_IMAGE and nothing else, so this cannot be
+# set per build. Flipping the default here is the whole change, and it is deliberately
+# a one-line diff on the default branch rather than a flag somebody has to find.
+#
+# WHAT THE 1 COSTS, measured against this lockfile on 2026-08-06 for cp312 linux
+# x86_64 rather than estimated. 99 packages and 138 MB of wheels become 235 packages
+# and 4.54 GiB. Two thirds of that is six files: torch at 873 MiB and the CUDA
+# libraries torch links, cudnn 674, cublas 567, nccl 307, cusparse 275 and cusparselt
+# 274. None of it is reducible while a model runs in this process, because that is the
+# CUDA userspace the wheel links against.
+#
+# THE ALTERNATIVE IS NOT A SMALLER IMAGE, IT IS A DIFFERENT PLACE TO PAY. uv is on
+# PATH inside the venv, so a workload can install the group at the top of a run
+# instead. That moves the same 4.54 GiB off the image and onto every single run, on a
+# GPU that is being billed while it downloads, and it puts a resolution nothing
+# reviewed inside a job that is meant to be reproducible. Paying once per image is the
+# cheaper half of that trade for anything run more than a handful of times.
+ARG INSTALL_TORCH_AND_VLLM=1
+RUN set -eux; \
+    if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
+    uv sync --frozen --no-default-groups --no-install-project --no-cache \
+        --extra beaker --extra hf --extra s3 --extra clients \
+        --group vllm; \
+    uv cache clean
+
 COPY . .
 RUN set -eux; \
     uv pip install --no-deps .
@@ -120,9 +150,37 @@ RUN set -eux; \
     python -c "import importlib.resources as r; f = r.files('olmo_eval.evals.tasks'); names = [e.name for e in f.iterdir() if e.name.endswith('.jsonl')]; assert names, 'task jsonl data did not travel in the wheel; the evals that read it would fail at load'; print(len(names), 'task data files')"; \
     olmo-eval --help > /dev/null
 
-# torch and vllm are not installed. They are a default group in pyproject.toml that
-# this image drops, because a torch built against this base is several gigabytes and
-# which backend a run needs depends on the run. The repository's own image treats
-# them the same way. uv is on PATH inside the venv, so a workload adds one without
-# rebuilding, and the CUDA libraries such a wheel links against are already here.
+# Which providers this image can actually run, asserted rather than described, and
+# asserted the same way whichever value INSTALL_TORCH_AND_VLLM took. A comment saying
+# what an image carries is a claim nothing checks, and this file has already been
+# read once as evidence that torch was here.
+#
+# `mock` and `litellm` are always constructible, so they are checked unconditionally
+# and the sixteen-gigabyte image is held to the same floor the small one is.
+#
+# WHY THE 1 CHECKS AN IMPORT AND NOT A DISTRIBUTION. `importlib.metadata.version`
+# answers from a `.dist-info` directory and proves only that an installer wrote one.
+# torch is a C extension linked against the CUDA userspace in the base, and the way
+# it fails is a wheel that unpacks and then cannot resolve a symbol at load, so the
+# import is the first thing that would notice. `torch.version.cuda` separates the
+# CUDA build from the CPU-only build of the same version number, which is otherwise
+# a difference nothing here would see until a run asked for a device.
+#
+# vLLM is imported rather than merely counted for the same reason, and it is the
+# import a GPU-less builder is most likely to refuse. It does not refuse: the
+# platform layer resolves to a CPU platform with a warning, and `LLM` is bound.
+# Nothing below constructs one, because that needs a device this runner has not got.
+RUN set -eux; \
+    cd /; \
+    python -c "from olmo_eval.inference import create_provider; print('constructed', type(create_provider('mock', 'image-smoke')).__name__)"; \
+    python -c "from olmo_eval.inference.providers import LiteLLMProvider; print('importable', LiteLLMProvider.__name__)"; \
+    if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
+    python -c "import torch; print('torch', torch.__version__, 'cuda', torch.version.cuda); assert torch.version.cuda, 'this is the CPU build of torch, so nothing here can reach a card'"; \
+    python -c "from vllm import LLM; print('vllm imports, LLM bound:', LLM.__name__)"; \
+    python -c "from olmo_eval.inference.providers import HuggingFaceProvider, VLLMProvider, VLLMServerProvider; print('importable', HuggingFaceProvider.__name__, VLLMProvider.__name__, VLLMServerProvider.__name__)"
+
+# What runs in this image, and it depends on how it was built. At
+# INSTALL_TORCH_AND_VLLM=0 there is no torch, so `mock` and `litellm` run and the
+# three providers that load weights onto a card do not. At 1 all six run. Read the
+# ARG above to see which one this image was built as.
 CMD ["olmo-eval", "--help"]
