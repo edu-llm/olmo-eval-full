@@ -753,7 +753,8 @@ then promotes the **batch driver** to core, then layers namespace and judge on t
   Get approval and apply the scoped `olmo-eval-results/*` bucket-policy grant (§5 B); switch
   `--s3-prefix olmo-eval-results`; re-verify a `PutObject` succeeds. Once execution identity is
   settled (§3.7 / P2), grant the write on this prefix to the **service/launcher principal**, so the
-  namespace has a single owning identity.
+  namespace has a single owning identity. Ready-to-use policy JSON, config diff, and verify command:
+  see `tests/aws/P3_results_namespace.md`.
 - **P3.5 — mcq_cat as second driver command (pluggable-hook proof).**
   Wire the `diagnostics/mcq_cat/` path (§1.5) into the batch driver's pluggable on-node command
   (`python -m diagnostics.mcq_cat.runner --cat-style <name> --checkpoint … --s3-out …`), reusing the
