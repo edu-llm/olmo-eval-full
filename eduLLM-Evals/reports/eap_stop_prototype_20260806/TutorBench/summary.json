@@ -1,0 +1,45 @@
+{
+  "benchmark": "TutorBench",
+  "dims": [
+    "correctness",
+    "scaffolding"
+  ],
+  "n_models": 33,
+  "min_scenarios": 12,
+  "se_target": 0.3,
+  "cap": 50,
+  "ref_nodes": 41,
+  "stop_nodes": 25,
+  "bank_stats": {
+    "n_negative_cells": 349,
+    "n_negative_items": 348,
+    "negative_policy": "clamp",
+    "n_records_after": 3443
+  },
+  "online": {
+    "mean_len": 14.636363636363637,
+    "median_len": 14.0,
+    "pct_reach_correctness": 0.36363636363636365,
+    "recovery_r_correctness": 0.9241,
+    "slope_correctness": 0.6492,
+    "theta_mae_correctness": 0.5745,
+    "pct_reach_scaffolding": 0.3939393939393939,
+    "recovery_r_scaffolding": 0.8917,
+    "slope_scaffolding": 0.7582,
+    "theta_mae_scaffolding": 0.3443,
+    "pct_reach_all_skills": 0.30303030303030304
+  },
+  "eap": {
+    "mean_len": 26.424242424242426,
+    "median_len": 23.0,
+    "pct_reach_correctness": 0.7878787878787878,
+    "recovery_r_correctness": 0.9607,
+    "slope_correctness": 0.7745,
+    "theta_mae_correctness": 0.4367,
+    "pct_reach_scaffolding": 1.0,
+    "recovery_r_scaffolding": 0.9383,
+    "slope_scaffolding": 0.8523,
+    "theta_mae_scaffolding": 0.278,
+    "pct_reach_all_skills": 0.7878787878787878
+  }
+}
