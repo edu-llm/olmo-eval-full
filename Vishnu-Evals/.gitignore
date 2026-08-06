@@ -1,0 +1,19 @@
+# Vishnu's evaluator corpus, 3.4 GB. Two shards exceed GitHub's 100 MB file
+# limit on their own (enigma.jsonl 1.13 GB, prf2.jsonl 1.06 GB). Obtain it from
+# Vishnu directly; the S3 copy under edullm-data is tokenized u32le and cannot
+# substitute, because build_evaluation_metadata hashes raw .jsonl shards.
+corpus-v3/
+
+# Pinned Metamath databases, 62 MB. Reproduce with:
+#   python fetch_metamath_sources.py --manifest corpus-v3/corpus-v3/metamath_sources.json --out mm
+# which verifies every file's SHA-256 against the corpus snapshot.
+mm/
+
+# Vishnu's original delivery. Superseded by, and materially older than, the
+# code on edu-llm/OLMo-core branch edullm/p3-math-split. Kept out of version
+# control so nobody runs it by mistake: that run_eval.py predates the 10%
+# diagnostic cohorts and the Metamath tri-state validity path.
+Vishnu-Eval-Code/
+
+__pycache__/
+*.pyc
