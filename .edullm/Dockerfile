@@ -76,6 +76,7 @@ RUN set -eux; \
 # GPU that is being billed while it downloads, and it puts a resolution nothing
 # reviewed inside a job that is meant to be reproducible. Paying once per image is the
 # cheaper half of that trade for anything run more than a handful of times.
+#
 # --extra vllm RATHER THAN --group vllm, AND THE DIFFERENCE IS NOT COSMETIC. The group
 # is a one-line mirror of the extra, `vllm = ["olmo-eval[vllm]"]`, so it reaches vLLM
 # only through the project referring to itself. This layer passes --no-install-project,
@@ -89,7 +90,15 @@ RUN set -eux; \
 # plain members of the extra and pull them. vLLM itself was not among the 24. That is a
 # multi-gigabyte image that looks like it can self-host and cannot, and nothing but the
 # import check below would have said so.
-ARG INSTALL_TORCH_AND_VLLM=1
+#
+# DEFAULTS TO 0, WHICH REPRODUCES THE IMAGE THAT IS REGISTERED TODAY. Whether this
+# account self-hosts vLLM or evaluates against a served endpoint is not a question a
+# Dockerfile should answer, so this leaves it open and makes the answer one character.
+# Set it to 1 and the image can serve a model itself. Built at 1 on run 31078822781,
+# which published sha256:efc0556f38845d0198a79ab33362c3a6f6e1b372f820e9e65464a7336dba51b0
+# with torch 2.10.0+cu128 and vLLM importable, so the 1 path is a thing that has run
+# rather than a thing that should work.
+ARG INSTALL_TORCH_AND_VLLM=0
 RUN set -eux; \
     if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
     uv sync --frozen --no-default-groups --no-install-project --no-cache \
@@ -169,7 +178,7 @@ RUN set -eux; \
 # read once as evidence that torch was here.
 #
 # `mock` and `litellm` are always constructible, so they are checked unconditionally
-# and the sixteen-gigabyte image is held to the same floor the small one is.
+# and the build at 1 is held to the same floor the build at 0 is.
 #
 # WHY THE 1 CHECKS AN IMPORT AND NOT A DISTRIBUTION. `importlib.metadata.version`
 # answers from a `.dist-info` directory and proves only that an installer wrote one.
