@@ -1,9 +1,9 @@
-# TutorBench -> flow/mirt-frq graduation package (INTERIM)
+# TutorBench -> flow/uni-frq graduation package (INTERIM)
 
 Interim, self-contained payload for porting TutorBench's canonical **correctness-only unidimensional**
 calibration into the FRQ eval flow. **Layout is provisional**: conform the file arrangement to the FRQ
 diagnostic loader (`diagnostics/frq_cat/common/irt_params.py` on `CheckpointFlows`, mirroring
-`diagnostics/mcq_cat/`) before committing into `flow/mirt-frq`.
+`diagnostics/mcq_cat/`) before committing into `flow/uni-frq`.
 
 ## Status
 
@@ -19,7 +19,7 @@ diagnostic loader (`diagnostics/frq_cat/common/irt_params.py` on `CheckpointFlow
 
 ## Target
 
-`flow/mirt-frq` - unidimensional, 1 latent dim: **correctness** (scaffolding dropped as a measured
+`flow/uni-frq` - unidimensional, 1 latent dim: **correctness** (scaffolding dropped as a measured
 construct). Testlet administration (whole scenario per CAT step; ability updated from all its
 correctness-loading criteria) via the production `tutor_cat.engine` / `scenario_cat_lib`.
 
@@ -74,7 +74,7 @@ reads, so the FRQ flow loader must read the modeled-name schema (or emit a 3-slo
 
 TutorBench's of-record stop is the **EAP posterior marginal SD** (honest measurement SE). The FRQ
 flow loader must support a per-benchmark stop rule (TutorBench = `eap`, 1-D marginal), not assume a
-single global one, when these graduate into `flow/mirt-frq`.
+single global one, when these graduate into `flow/uni-frq`.
 
 ## Rerun / swap protocol (200-run)
 
@@ -83,5 +83,5 @@ single global one, when these graduate into `flow/mirt-frq`.
    `unidim/scripts/build_correctness_only_bank.py`.
 2. Re-run `unidim/scripts/oos_grid_full_unidim_correctness_only.py --workers 6` +
    `unidim/scripts/build_of_record_f20se27.py`; refresh `unidim/summary.json` + `unidim/experiments/`.
-3. Re-tag `tutorbench-unidim-correctness-only-<N>models`; re-port to `flow/mirt-frq`.
+3. Re-tag `tutorbench-unidim-correctness-only-<N>models`; re-port to `flow/uni-frq`.
 4. Items / judge config unchanged unless criteria are revised (they will be for the 200-run).
