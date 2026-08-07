@@ -1,10 +1,11 @@
 """Phase 2b exp 04 addendum: measurement-SE-vs-length, adaptive vs random.
 
 The recovery-r-vs-length view saturates fast, hiding the adaptive advantage. This adds the
-clearer view: mean online theta-SE at each administered length L = 1..N, adaptive (CAT) vs
-random (baseline), with an across-model spread band, the SE target (0.15) marked, and the
-scenarios-to-target for each arm annotated. ADDITIVE only -- does not touch the existing
-``efficiency_adaptive_vs_random.png`` / ``results.csv`` / ``summary.json``.
+clearer view: mean fine-grid EAP posterior SD (the adopted honest SE_ability) at each
+administered length L = 1..N, adaptive (CAT) vs random (baseline), with an across-model spread
+band, the SE target (0.12, adopted) marked, and the scenarios-to-target for each arm annotated.
+ADDITIVE only -- does not touch the existing ``efficiency_adaptive_vs_random.png`` /
+``results.csv`` / ``summary.json``.
 
 Outputs (new):
   experiments/04_efficiency_vs_random/se_by_length.csv
@@ -43,7 +44,7 @@ def main() -> int:
     p.add_argument("--out-dir", type=Path, default=base / "experiments" / "04_efficiency_vs_random")
     p.add_argument("--tmp-dir", type=Path, default=base / "experiments" / "04_efficiency_vs_random" / "_tmp_se")
     p.add_argument("--max-length", type=int, default=20)
-    p.add_argument("--se-target", type=float, default=0.15)
+    p.add_argument("--se-target", type=float, default=0.12)
     p.add_argument("--eap-grid", type=int, default=321)
     p.add_argument("--range", type=float, default=8.0)
     p.add_argument("--seed", type=int, default=42)
@@ -80,9 +81,9 @@ def main() -> int:
                                 mode=mode, runs_dir=str(args.tmp_dir / f"{mode}_L{Ln}"))
             res = scat.run_models(models, args.bank, args.matrix, args.scenarios,
                                   "clamp", dims, spec, workers=args.workers)
-            ses = np.array([r0["se_online"][0] for r0 in res])
-            # recovery r of MWLE vs full-bank reference (handy companion column)
+            # honest fine-grid EAP posterior SD at each length (adopted measure), + MWLE recovery
             cat_theta = np.full(len(models), np.nan)
+            se_list = np.full(len(models), np.nan)
             for r0 in res:
                 r = row_of[r0["model"]]
                 idx = np.array([col[c] for c in r0["order"] if c in col], dtype=int)
@@ -90,8 +91,11 @@ def main() -> int:
                     th0 = scat.eap_subset(Y[r], idx, A, b, egrid, elog)
                     thm, _ = scat.mwle_subset(Y[r], idx, A, b, th0)
                     cat_theta[r] = thm[0]
+                    _, var = scat.eap_subset_mean_var(Y[r], idx, A, b, egrid, elog)
+                    se_list[r] = float(np.sqrt(max(float(var[0]), 0.0)))
                 else:
                     cat_theta[r] = 0.0
+            ses = se_list[~np.isnan(se_list)]
             rr = float(np.corrcoef(theta_ref, cat_theta)[0, 1])
             mean_se = float(ses.mean())
             row = {"length": Ln, "arm": ("adaptive" if mode == "cat" else "random"),
@@ -159,7 +163,7 @@ def _figure(rows, lengths, se_target, cross, fig_dir):
                         xytext=(Lc + 0.3, se_target + 0.03 + (0.03 if arm == "random" else 0)),
                         color=colors[arm], fontsize=9)
     ax.set_xlabel("scenarios administered (L)")
-    ax.set_ylabel("mean online theta-SE (10-90 pct band across models)")
+    ax.set_ylabel("mean EAP posterior SD (SE_ability; 10-90 pct band across models)")
     ttl = "Measurement SE vs test length (adaptive vs random)"
     if cross["adaptive"] and cross["random"]:
         ttl += f"\nscenarios to SE<={se_target}: adaptive={cross['adaptive']}, random={cross['random']}"

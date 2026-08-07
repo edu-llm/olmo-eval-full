@@ -1,34 +1,34 @@
 {
-  "generated_at": "2026-08-05T20:21:48.254456+00:00",
+  "generated_at": "2026-08-07T16:04:25.495281+00:00",
   "purpose": "estimator comparison on the identical locked-point administered sets",
   "operating_point": {
     "min_scenarios": 12,
-    "max_se": 0.15
+    "max_se": 0.12
   },
   "n_models": 51,
   "estimators": {
     "online": {
-      "r": 0.9398,
-      "slope": 0.8098,
-      "mae": 0.307
+      "r": 0.9583,
+      "slope": 0.8749,
+      "mae": 0.2743
     },
     "batch_eap": {
-      "r": 0.9518,
-      "slope": 0.8664,
-      "mae": 0.2861
+      "r": 0.9583,
+      "slope": 0.8749,
+      "mae": 0.2743
     },
     "mwle": {
-      "r": 0.9517,
-      "slope": 0.8766,
-      "mae": 0.2845
+      "r": 0.9579,
+      "slope": 0.8829,
+      "mae": 0.273
     },
     "mle": {
-      "r": 0.9521,
-      "slope": 0.8793,
-      "mae": 0.2844
+      "r": 0.9582,
+      "slope": 0.8838,
+      "mae": 0.2729
     }
   },
   "slope_closest_to_1": "mle",
   "recommended_estimator": "mwle",
-  "rationale": "Pick the estimator whose recovery slope is closest to 1. MLE has the nominally-closest slope (0.879) but MWLE (0.877) is within 0.003 (noise); MWLE is chosen as the deployment estimator because plain MLE diverges on all-pass/all-fail administrations (Warm's penalty keeps MWLE finite), matching the item-level study's headline."
+  "rationale": "Pick the estimator whose recovery slope is closest to 1. MLE has the nominally-closest slope (0.884) but MWLE (0.883) is within 0.001 (noise); MWLE is chosen as the deployment estimator because plain MLE diverges on all-pass/all-fail administrations (Warm's penalty keeps MWLE finite), matching the item-level study's headline."
 }

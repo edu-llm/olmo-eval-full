@@ -38,6 +38,9 @@ def main() -> int:
                    default=base / "experiments" / "07_parameter_uncertainty" / "leaderboard_se_components.csv")
     p.add_argument("--out-dir", type=Path, default=base / "experiments" / "08_leaderboard")
     p.add_argument("--top-level", type=Path, default=base / "model_leaderboard.csv")
+    p.add_argument("--weakly-identified", type=Path,
+                   default=base / "experiments" / "07_parameter_uncertainty" / "precision_reached.csv",
+                   help="deployed-SE precision_reached.csv; weakly_identified = EAP-native cap.")
     p.add_argument("--eap-grid", type=int, default=321)
     p.add_argument("--range", type=float, default=8.0)
     args = p.parse_args()
@@ -64,8 +67,17 @@ def main() -> int:
         rows.append({"model": m, "theta": float(theta[i]),
                      "se_ability": se_ability, "se_param": se_param,
                      "se_total": se_total, "observed_pass_rate": float(obs_pass[i])})
+    # weakly_identified flag = EAP-native cap under the deployed stop (never reaches
+    # SE-ability <= 0.12 within the forced cap); theta is an UPPER BOUND for these models.
+    weakly = {}
+    if Path(args.weakly_identified).is_file():
+        wdf = pd.read_csv(args.weakly_identified)
+        if "weakly_identified" in wdf.columns:
+            weakly = dict(zip(wdf["model"], wdf["weakly_identified"].astype(bool)))
+
     df = pd.DataFrame(rows).sort_values("theta", ascending=False).reset_index(drop=True)
     df.insert(0, "rank", np.arange(1, len(df) + 1))
+    df["weakly_identified"] = df["model"].map(lambda m: bool(weakly.get(m, False)))
     df.to_csv(args.out_dir / "model_leaderboard.csv", index=False)
     df.to_csv(args.top_level, index=False)
 
@@ -79,6 +91,14 @@ def main() -> int:
         "se_total_range": [float(df["se_total"].min()), float(df["se_total"].max())],
         "top5": df.head(5)[["model", "theta", "se_total"]].to_dict("records"),
         "bottom5": df.tail(5)[["model", "theta", "se_total"]].to_dict("records"),
+        "weakly_identified_note": (
+            "weakly_identified = EAP-native cap under the deployed stop @ 12/0.12 (never reaches "
+            "SE-ability <= 0.12 within the forced cap); such models' full-bank theta is an UPPER "
+            "BOUND, not a point estimate. Full-bank theta itself is stop-independent (unchanged "
+            "by the adoption)."),
+        "n_weakly_identified": int(df["weakly_identified"].sum()),
+        "weakly_identified_models": df[df["weakly_identified"]][
+            ["model", "theta", "se_total"]].to_dict("records"),
     }
     (args.out_dir / "metrics.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 

@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-08-05T20:28:51.405265+00:00",
+  "generated_at": "2026-08-07T16:25:01.032426+00:00",
   "purpose": "full-bank ability leaderboard with SE_total bars (NOT the 12-scenario CAT)",
   "scoring": "full administrable bank (A3 + extreme_a excluded), 1D fine-EAP theta",
   "se_bars": "SE_total = sqrt(SE_ability_posterior^2 + SE_param^2), from exp 07",
   "n_models": 51,
   "n_criteria_scored": 3961,
   "theta_range": [
-    -4.418749358431425,
-    2.4974335045499956
+    -4.418749358431441,
+    2.497433504549687
   ],
   "se_total_range": [
     0.0002027230101363,
@@ -16,22 +16,22 @@
   "top5": [
     {
       "model": "meta-llama/Llama-3.2-3B-Instruct",
-      "theta": 2.4974335045499956,
+      "theta": 2.497433504549687,
       "se_total": 0.1254276476719009
     },
     {
       "model": "tiiuae/Falcon3-3B-Instruct",
-      "theta": 2.176258090878229,
+      "theta": 2.176258090878469,
       "se_total": 0.0011839810008984
     },
     {
       "model": "pankajmathur/orca_mini_v9_5_3B-Instruct",
-      "theta": 1.6540390464737487,
+      "theta": 1.6540390464737507,
       "se_total": 0.053353254603939
     },
     {
       "model": "nvidia/AceInstruct-1.5B",
-      "theta": 1.5779063119033132,
+      "theta": 1.5779063119031278,
       "se_total": 0.0112574528455546
     },
     {
@@ -43,27 +43,41 @@
   "bottom5": [
     {
       "model": "BSC-LT/salamandra-2b",
-      "theta": -2.4739994054163903,
+      "theta": -2.4739994054164516,
       "se_total": 0.1055934677212167
     },
     {
       "model": "Qwen/Qwen2-0.5B",
-      "theta": -2.527405131301406,
+      "theta": -2.527405131301423,
       "se_total": 0.106395173577951
     },
     {
       "model": "ai-forever/mGPT",
-      "theta": -2.9123071558157294,
+      "theta": -2.912307155815721,
       "se_total": 0.1063069838945556
     },
     {
       "model": "allenai/OLMo-1B-hf",
-      "theta": -3.8393386074046916,
+      "theta": -3.839338607404683,
       "se_total": 0.1209313104717959
     },
     {
       "model": "Qwen/Qwen1.5-1.8B",
-      "theta": -4.418749358431425,
+      "theta": -4.418749358431441,
+      "se_total": 0.1483735327099556
+    }
+  ],
+  "weakly_identified_note": "weakly_identified = EAP-native cap under the deployed stop @ 12/0.12 (never reaches SE-ability <= 0.12 within the forced cap); such models' full-bank theta is an UPPER BOUND, not a point estimate. Full-bank theta itself is stop-independent (unchanged by the adoption).",
+  "n_weakly_identified": 2,
+  "weakly_identified_models": [
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -3.839338607404683,
+      "se_total": 0.1209313104717959
+    },
+    {
+      "model": "Qwen/Qwen1.5-1.8B",
+      "theta": -4.418749358431441,
       "se_total": 0.1483735327099556
     }
   ]

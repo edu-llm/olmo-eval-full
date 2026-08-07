@@ -1,0 +1,13 @@
+SUPERSEDED (Phase-B EAP adoption).
+
+The files in this directory (best.json, sweep_results.csv, figures/) are the Phase-1 ONLINE-SE
+convergence/length sweep used to first locate the operating point. They are retained for
+provenance only.
+
+The of-record operating-point grid is now the EAP-posterior-stop grid in
+../06b_operating_point/ (recovery_grid.csv + recovery_grid_tailstats.csv + recommendation.json),
+promoted from the Phase-A ../13_eap_stop_grid/. The locked deployed operating point is
+min_scenarios 12 / SE-ability target 0.12 under the EAP-posterior stop.
+
+The prior online-SE @0.15 op-record (this exp-06 + 06b) is archived at
+../archive_onlineSE/06_floor_se_grid/ and ../archive_onlineSE/06b_operating_point/.

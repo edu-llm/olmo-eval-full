@@ -23,10 +23,17 @@ via `scripts/scenario_cat_lib.py`; no polytomous collapse).
 
 ## Locked config
 
-`min_scenarios = 12`, `SE target = 0.15`, ridge 1e-2, grid 7 (1D), estimator **MWLE**
-(plain MLE diverges on all-pass/all-fail testlets). Deployment single-run CAT uses a **fixed
-production seed** so first-item/tie-break choices are reproducible across models; ~0.10
-measurement SE is still reported. Recovery CV = OOS model/person folds, k=5, seed 20260729.
+**Stop rule: EAP-posterior SD** (integrate the posterior over the fine 321-node theta grid;
+stop when posterior SD <= target AND floor met, else cap). `min_scenarios = 12`,
+`SE-ability target = 0.12`, ridge 1e-2, grid 7 (1D), estimator **MWLE** (plain MLE diverges on
+all-pass/all-fail testlets). Deployment single-run CAT uses a **fixed production seed** so
+first-item/tie-break choices are reproducible across models; the honest measurement SE is still
+reported. Recovery CV = OOS model/person folds, k=5, seed 20260729.
+
+The SE target moved **0.15 -> 0.12** at adoption: SE_total adds SE_param (~0.05), so a 0.15
+ability target left 14 models with SE_total > 0.15; 0.12 collapses that tail to 2 (see README
+"Operating point"). The prior online-SE @0.15 of-record is archived at
+`experiments/archive_onlineSE/`. Bank unchanged (no re-fit).
 
 ## Payload
 
@@ -57,9 +64,13 @@ Records are per-criterion but administration/scoring is per-scenario testlet.
   250 scenarios / 162 unique sources; 4,795 criteria -> 4,197 after zero-variance filtering;
   ridge 0.01; calibrated 2026-08-05.
 - Matrix sha256: `db27d62c42834abae4d5733bfd8aeb45dddda18157cab40393a448c5a61f623e`.
-- Recovery (exp 05, OOS locked, MWLE): r = **0.952** [0.923, 0.974], slope 0.877, theta-MAE 0.285;
-  p-IRT pass r = 0.935, pass-MAE 0.047; mean length 12 scenarios / 212 criteria.
-- Estimator (exp 10): MWLE r 0.952 / slope 0.877 (recommended). Ridge stable across
+- Recovery (exp 05, OOS locked, EAP stop @ 12/0.12, MWLE): r = **0.958** [0.929, 0.977],
+  slope 0.883, theta-MAE 0.273; p-IRT pass r = 0.936, pass-MAE 0.047; OOS mean length
+  14.4 scenarios / 252 criteria (deployed full-data ~17 scenarios).
+- Deployed SE (exp 07, EAP admin @ 12/0.12): 96.1% of models reach SE-ability <= 0.12;
+  SE_total mean 0.117 / max 0.195; #(SE_total > 0.15) = 2, #(> 0.20) = 0. 2 weakly-identified
+  EAP-native caps (Qwen/Qwen1.5-1.8B, allenai/OLMo-1B-hf).
+- Estimator (exp 10): MWLE r 0.958 / slope 0.883 (recommended). Ridge stable across
   {1e-3,1e-2,1e-1} (min corr 0.988) - keep 1e-2.
 - **Caveats:** N=51 is small (multi-dim non-identifiable -> 1D shipped; 5D exploratory only).
   22 all-zero-variance scenarios are un-administrable. Full details in `README.md` (exp 03-12).

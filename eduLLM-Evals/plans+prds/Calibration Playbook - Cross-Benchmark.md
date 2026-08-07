@@ -355,3 +355,38 @@ them as illustrations of the failure mode, not as targets.
   `11_order_seed` (03..12). Each experiment writes its metrics/CSVs at its own root and its plots under a
   `figures/` subdirectory. Keeping this layout stable is what lets one review script and this playbook
   apply unchanged to a new benchmark.
+
+### 8.7 CAT stopping rule — use the EAP posterior SD (suite default)
+- **Stop on the grid-integrated EAP posterior SD, not the engine's online/Laplace SE.** The online
+  normal-approx SE (curvature at the point estimate) is **optimistic**: on skewed posteriors (few
+  informative items / extreme-ability models) it declares "converged" while the true posterior SD is
+  still above target. At each candidate stop step, integrate the posterior over a **dense** θ grid from
+  the *administered* items and stop when its SD ≤ target (AND `min_scenarios`); this is cheap
+  (grid × items-so-far, ms/step) and reuses the same estimator as the recovery reference, resolving the
+  online-vs-posterior estimator mismatch. **Multidimensional:** take each skill's *marginal* SD from the
+  **joint** grid (not independent 1-D integrals — skills are correlated).
+- **Adopted across the in-house suite (bank UNCHANGED — stop-rule change only, no re-fit):** the honest
+  "% reaching target" jumped everywhere — BiGGen 28.8→88.5%, WildBench 65→86.5%, Bridge (SE-ability)
+  78→100% — recovery held or improved (e.g. BiGGen r 0.972→0.982, WildBench 0.957→0.975), and the SE_total
+  tail (SD/max) shrank. Cost is length: median often unchanged, mean **+2–6 scenarios** as only the tail
+  models administer more. Locked op-points: **WildBench floor 8 / SE 0.12, BiGGen floor 8 / SE 0.12,
+  Bridge floor 12 / SE 0.12.**
+- **Target SE-ability ~0.12 to keep SE_total under ~0.15.** The stop targets **SE_ability**, but the
+  honest bar is **SE_total = √(SE_ability² + SE_param²)** with SE_param ≈ 0.05 at these N. So an
+  SE-ability target of 0.15 leaves a fat SE_total tail (Bridge: 14 models > 0.15); tightening to **0.12**
+  collapses it (→ 2). Pick the SE target against SE_total, not SE_ability.
+- **The SE target is a TAIL lever, not a median lever.** On heavy-testlet benchmarks the median model is
+  already below target once the floor is met, so `se_total_median` is ~flat across SE targets and hides
+  the benefit. **Report per-cell mean / SD / max SE_total and #(SE_total > threshold)** — the SE target's
+  effect lives in the tail.
+- **Adoption recompute-vs-keep:** re-run only the **stop-dependent** experiments (recovery, efficiency,
+  estimator, order/seed, deployed-SE + **SE_param re-bootstrapped on the EAP-administered sets**); **keep**
+  the stop-independent ones (dimensionality, ridge, the **full-bank** SE_param floor, and the **full-bank**
+  leaderboard θ — full-bank scoring doesn't use the CAT stop). **Archive the online-SE of-record**
+  (`experiments/archive_onlineSE/`) and keep the online path behind a `--stop-se {online,eap}` flag.
+- **Prerequisite:** the reference/scoring EAP must already be a **dense** grid. A coarse quadrature grid
+  quantizes θ onto discrete nodes and makes the posterior SD meaningless (e.g. InfoBench's 5-node grid) —
+  do the dense-grid rescore **first**, then adopt the EAP stop.
+- **Deployment:** keep the fixed-production-seed policy; models with no bank information at their θ
+  (near-all-fail extremes) still cap out and stay flagged "weakly identified" (θ bound only) regardless of
+  the stop rule.

@@ -1,0 +1,54 @@
+{
+  "purpose": "re-derived scenario-level operating point (SUPERSEDES item-level SE 0.15 / floor 20 CRITERIA, which is VOID)",
+  "bank": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\eduLLM-Evals\\bridge_calibration\\bridge_scenario_fitted_1d.jsonl",
+  "dims": [
+    "overall"
+  ],
+  "n_models": 51,
+  "bank_scenarios_max": 250,
+  "floors_swept": [
+    0,
+    12,
+    15,
+    20
+  ],
+  "se_targets_swept": [
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4
+  ],
+  "config": {
+    "min_evals_per_skill": 15,
+    "top_n": 5,
+    "selection": "trace",
+    "seed": 42
+  },
+  "achievability_note": "On a 250-scenario bank at N=51 with ~19-20 criteria per scenario, the minimum median final SE achievable is 0.0763. Each administered scenario is a heavy ~19-item testlet, so SE drops fast; the binding constraint is usually the min_scenarios floor / min_evals_per_skill, not the SE target. NOTE: this ability SE ignores calibration (SE_param) uncertainty, which dominates at N=51 and is computed downstream (param-uncertainty bootstrap); the final lock must be checked against that SE_param floor before deployment.",
+  "recommendation": {
+    "se_param_floor_assumed": 0.22,
+    "recommended_provisional": {
+      "min_scenarios": 12,
+      "se_target": 0.25,
+      "convergence_rate": 1.0,
+      "scenarios_mean": 12.0,
+      "criteria_mean": 224.3,
+      "final_se_median": 0.0933,
+      "rationale": "floor=12 guarantees a minimum test length (~224 criteria) that guards against 1-2 scenario tests dominated by within-scenario local dependence; at this floor the SE target does not bind (achieved SE floored by length), so the run is robust to the SE choice. SE target 0.25 matches the anticipated SE_param floor so ability precision is not chased below parameter noise."
+    },
+    "alternative_no_floor": {
+      "min_scenarios": 0,
+      "se_target": 0.25,
+      "scenarios_mean": 2.35,
+      "criteria_mean": 44.4,
+      "final_se_median": 0.2167,
+      "note": "shortest adaptive test at the SE_param floor; risks very short (1-3 scenario) tests with strong testlet local dependence."
+    },
+    "all_cells_converge_100pct": true,
+    "floor_binds_when_ge": 12,
+    "tightest_se_swept": 0.15,
+    "min_achievable_final_se_median": 0.0763
+  }
+}

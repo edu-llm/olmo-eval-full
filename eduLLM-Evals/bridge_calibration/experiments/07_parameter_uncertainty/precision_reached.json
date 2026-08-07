@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-08-07T16:12:31.547282+00:00",
+  "purpose": "deployed-CAT precision-reached + SE tail at the locked op-point under the EAP-posterior stop",
+  "operating_point": {
+    "min_scenarios": 12,
+    "se_target_ability": 0.12,
+    "stop_rule": "eap"
+  },
+  "n_models": 51,
+  "precision_reached_posterior_metric": {
+    "definition": "fine-grid EAP posterior SD (SE_ability) <= 0.12",
+    "n_reached": 49,
+    "pct_reached": 96.1,
+    "n_missed": 2,
+    "pct_missed": 3.9
+  },
+  "se_total_tail": {
+    "n_gt_0.15": 2,
+    "n_gt_0.20": 0
+  },
+  "se_ability_distribution": {
+    "mean": 0.10222843137254903,
+    "sd": 0.016924874162314946,
+    "median": 0.099373,
+    "q3": 0.1187405,
+    "max": 0.147776
+  },
+  "se_total_distribution": {
+    "mean": 0.1173905882352941,
+    "sd": 0.023220620990986842,
+    "median": 0.11704,
+    "q3": 0.131573,
+    "max": 0.195399
+  },
+  "deployed_length": {
+    "mean_criteria": 301.8,
+    "median_criteria": 218
+  },
+  "weakly_identified_eap_cap": {
+    "n": 2,
+    "models": [
+      "Qwen/Qwen1.5-1.8B",
+      "allenai/OLMo-1B-hf"
+    ]
+  },
+  "missed_target_models": [
+    {
+      "model": "Qwen/Qwen1.5-1.8B",
+      "theta": -4.4187,
+      "SE_posterior": 0.1478,
+      "SE_total": 0.1954,
+      "weakly_identified": true
+    },
+    {
+      "model": "allenai/OLMo-1B-hf",
+      "theta": -3.8393,
+      "SE_posterior": 0.138,
+      "SE_total": 0.185,
+      "weakly_identified": true
+    }
+  ]
+}

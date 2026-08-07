@@ -30,6 +30,7 @@ from scipy.special import expit
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 import bridge_scenario_lib as L  # noqa: E402
+import bridge_eap_stop_lib as E  # noqa: E402
 
 ROOT = L.ROOT
 if str(ROOT) not in sys.path:
@@ -91,8 +92,11 @@ def main() -> int:
     p.add_argument("--out05", type=Path, default=base / "experiments" / "05_oos_recovery")
     p.add_argument("--out10", type=Path, default=base / "experiments" / "10_estimator_comparison")
     p.add_argument("--tmp-dir", type=Path, default=base / "experiments" / "05_oos_recovery" / "_tmp")
+    p.add_argument("--stop-rule", choices=["eap", "online"], default="eap",
+                   help="of-record = eap (EAP posterior SD <= target); online kept for provenance.")
+    p.add_argument("--l-max", type=int, default=60, help="forced admin cap for the EAP stop.")
     p.add_argument("--min-scenarios", type=int, default=12)
-    p.add_argument("--max-se", type=float, default=0.15)
+    p.add_argument("--max-se", type=float, default=0.12)
     p.add_argument("--max-scenarios", type=int, default=228)
     p.add_argument("--min-evals-per-skill", type=int, default=15)
     p.add_argument("--k", type=int, default=5)
@@ -119,10 +123,12 @@ def main() -> int:
     row_of = {m: i for i, m in enumerate(models)}
     Q_all = np.ones((len(ids), 1), dtype=int)
     egrid, elog = scat.build_grid(1, args.eap_grid, args.range)
+    gg, lp = E.eap_grid(args.eap_grid, args.range)
 
     print("=" * 88)
     print(f"EXP 05 + 10: OOS recovery at LOCKED op-point (min_scen={args.min_scenarios}, "
-          f"SE={args.max_se}); FINE EAP grid={args.eap_grid} over +/-{args.range}")
+          f"SE={args.max_se}); stop_rule={args.stop_rule}; "
+          f"FINE EAP grid={args.eap_grid} over +/-{args.range}")
     print("=" * 88)
 
     folds = make_folds(models, args.k, args.seed)
@@ -151,13 +157,25 @@ def main() -> int:
         Yte = np.nan_to_num(subte.to_numpy(float), nan=0.0)
         Mte = ~np.isnan(subte.to_numpy(float))
         theta_ref = scat.eap_all_models(Yte, Mte, Ak, bk, egrid, elog)  # fine EAP (n,1)
-        spec = scat.RunSpec(seed=args.seed, top_n=5, max_se=args.max_se,
-                            min_evals_per_skill=args.min_evals_per_skill,
-                            min_scenarios=args.min_scenarios, max_scenarios=args.max_scenarios,
-                            selection="trace", mode="cat", runs_dir=str(args.tmp_dir / f"runs_f{f}"))
-        res = scat.run_models(test, fold_bank, args.matrix, args.scenarios, "clamp",
-                              dims, spec, workers=args.workers)
-        res_by = {r["model"]: r for r in res}
+        if args.stop_rule == "eap":
+            row_of_te = {m: i for i, m in enumerate(test)}
+            admin = E.administer_eap(test, fold_bank, args.matrix, args.scenarios, dims,
+                                     Ak[:, 0], bk, colk, scen_of, Yte, row_of_te, gg, lp,
+                                     seed=args.seed, floor=args.min_scenarios,
+                                     target=args.max_se, l_max=args.l_max, workers=args.workers)
+            res_by = {m: {"order": admin[m]["order"], "theta_online": [admin[m]["eap_mean"]],
+                          "scenarios_administered": admin[m]["scenarios_administered"],
+                          "criteria_administered": admin[m]["criteria_administered"]}
+                      for m in test}
+        else:
+            spec = scat.RunSpec(seed=args.seed, top_n=5, max_se=args.max_se,
+                                min_evals_per_skill=args.min_evals_per_skill,
+                                min_scenarios=args.min_scenarios, max_scenarios=args.max_scenarios,
+                                selection="trace", mode="cat",
+                                runs_dir=str(args.tmp_dir / f"runs_f{f}"))
+            res = scat.run_models(test, fold_bank, args.matrix, args.scenarios, "clamp",
+                                  dims, spec, workers=args.workers)
+            res_by = {r["model"]: r for r in res}
         print(f"  fold {f}: train={len(train)} test={len(test)} kept={len(kept_ids)}", flush=True)
         for ti, m in enumerate(test):
             r0 = res_by[m]
@@ -202,7 +220,8 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "purpose": "definitive OOS model-fold recovery at the locked scenario operating point",
         "operating_point": {"min_scenarios": args.min_scenarios, "max_se": args.max_se,
-                            "selection": "trace", "estimator_headline": "mwle"},
+                            "selection": "trace", "estimator_headline": "mwle",
+                            "stop_rule": args.stop_rule},
         "cv": f"OOS k={args.k} MODEL folds, seed {args.seed}", "n_models": len(df),
         "eap_reference_grid": {"nodes": args.eap_grid, "range": args.range,
                                "type": "fine uniform (continuous)"},

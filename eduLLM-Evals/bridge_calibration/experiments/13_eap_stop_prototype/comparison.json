@@ -1,0 +1,119 @@
+{
+  "generated_at": "2026-08-06T22:57:14.260630+00:00",
+  "status": "PHASE A PROTOTYPE / decision-support -- NOT adopted. of-record exp-04/05/06/06b/07/08/09/10/11/12 untouched.",
+  "operating_point": {
+    "min_scenarios": 12,
+    "se_target": 0.15
+  },
+  "design": {
+    "stop_rule_new": "EAP posterior SD <= 0.15 AND n_scenarios >= 12, else cap",
+    "stop_rule_online": "engine online normal-approx SE <= 0.15 AND floor 12",
+    "selection": "unchanged (production engine max-info scenario selection)",
+    "estimator": "MWLE (of-record deployment estimator)",
+    "reference": "full-bank FINE-EAP (321 nodes over +/-8.0)",
+    "seed": 20260729,
+    "l_max_cap": 60,
+    "eap_grid": 321,
+    "se_param": "op-point-specific observed-info bootstrap over the administered set"
+  },
+  "n_models": 51,
+  "length": {
+    "online": {
+      "scenarios": {
+        "median": 12.0,
+        "mean": 12.0784,
+        "q1": 12.0,
+        "q3": 12.0
+      },
+      "criteria": {
+        "median": 213.0,
+        "mean": 214.1569,
+        "q1": 210.5,
+        "q3": 218.0
+      }
+    },
+    "eap": {
+      "scenarios": {
+        "median": 12.0,
+        "mean": 14.0588,
+        "q1": 12.0,
+        "q3": 12.0
+      },
+      "criteria": {
+        "median": 217.0,
+        "mean": 248.7255,
+        "q1": 212.0,
+        "q3": 219.0
+      }
+    }
+  },
+  "pct_reaching_eap_sd_le_target": {
+    "target": 0.15,
+    "online_rule": {
+      "n": 40,
+      "pct": 78.4
+    },
+    "eap_rule": {
+      "n": 51,
+      "pct": 100.0,
+      "n_hit_cap": 0
+    }
+  },
+  "se_ability_distribution": {
+    "online": {
+      "median": 0.0994,
+      "mean": 0.1213,
+      "q1": 0.0864,
+      "q3": 0.14
+    },
+    "eap": {
+      "median": 0.0994,
+      "mean": 0.1095,
+      "q1": 0.0864,
+      "q3": 0.1404
+    }
+  },
+  "se_total_distribution": {
+    "online": {
+      "median": 0.1162,
+      "mean": 0.1384,
+      "q1": 0.0988,
+      "q3": 0.1542
+    },
+    "eap": {
+      "median": 0.1161,
+      "mean": 0.1262,
+      "q1": 0.0983,
+      "q3": 0.1553
+    }
+  },
+  "oos_recovery": {
+    "online_rule": {
+      "r": 0.9517,
+      "r_lo": 0.9234,
+      "r_hi": 0.9738,
+      "slope": 0.8766,
+      "theta_mae": 0.2845,
+      "mean_scenarios": 12.0,
+      "mean_criteria": 211.6
+    },
+    "eap_rule": {
+      "r": 0.9515,
+      "r_lo": 0.9236,
+      "r_hi": 0.9734,
+      "slope": 0.8828,
+      "theta_mae": 0.2859,
+      "mean_scenarios": 12.31,
+      "mean_criteria": 217.0
+    },
+    "of_record_exp05_online": {
+      "r": 0.9517,
+      "slope": 0.8766,
+      "theta_mae": 0.2845,
+      "mean_scenarios": 12.0,
+      "mean_criteria": 211.6
+    }
+  },
+  "models_that_cap_under_eap": [],
+  "favorability_note": "Bridge scenarios are heavy ~18-criterion testlets: ability SD after the floor of 12 scenarios is already far below 0.15, so the min_scenarios floor binds and the online and EAP rules stop at nearly the same length. The honesty gain (models the online rule declares 'converged' at SE<=target but that the EAP posterior SD would not) is therefore expected to be SMALL relative to WildBench / BiGGen (~11-criterion testlets), where lighter testlets leave a larger online-vs-EAP gap. See pct_reaching_eap_sd_le_target and the SE_ability distributions."
+}

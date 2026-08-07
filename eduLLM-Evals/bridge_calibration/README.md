@@ -6,6 +6,30 @@ Bridge calibration study, and **supersedes the earlier item/criterion-level stud
 (recoverable at git commit `7a394af`), which was developed and compared against before being
 retired in favour of this scenario-level design.
 
+## Of-record stop rule (LOCKED): EAP-posterior SD @ min_scenarios 12 / SE 0.12
+
+The deployed CAT stop is the **EAP-posterior standard deviation**: at each scenario boundary the
+posterior over ability is integrated on the fine 321-node theta grid (over +/-8) from the
+administered responses, and the test stops at the first scenario with `n_scenarios >= 12` **AND**
+posterior SD `<= 0.12`, else it caps. This replaces the engine's earlier **online normal-approx
+SE** stop, and the SE target moved from the historical **0.15 -> 0.12** (see "Operating point").
+
+- **Why EAP, not online SE.** The online normal-approx SE is optimistic at boundary /
+  low-information theta and declares the tail "converged" prematurely; it also mismatched the
+  deployment estimator (which scores the MWLE / posterior). The EAP posterior SD is the honest
+  measure and is what deployment reports, resolving that mismatch. Selection is unchanged
+  (production max-info scenario selection).
+- **Why 0.15 -> 0.12.** `SE_total = sqrt(SE_ability^2 + SE_param^2)` and SE_param ~0.05, so an
+  SE-**ability** target of 0.15 still left **14** models with `SE_total > 0.15`; tightening to
+  **0.12** collapses that tail to **2** (SE_total max 0.203 -> 0.195), at the cost of deployed
+  mean length ~14 -> ~17 scenarios. 0.12 also aligns Bridge's SE target with the WildBench /
+  BiGGen adoptions. Because a Bridge scenario is a heavy ~18-criterion testlet the median model
+  is already well below any target once the floor is met, so the SE target is a **tail-precision
+  guarantee**, not a median lever (see `experiments/06b_operating_point/TAILSTATS_NOTE.md`).
+- The prior **online-SE @0.15** of-record is archived at `experiments/archive_onlineSE/`.
+  **Bank unchanged (no re-fit).** Stop-independent results (exp-03 dimensionality, exp-07
+  full-bank SE_param floor, exp-08 full-bank leaderboard theta, exp-12 ridge) are unchanged.
+
 ## Design (locked)
 
 - **Testlet bundle administration.** A scenario is administered as a *bundle* of its
@@ -32,7 +56,7 @@ retired in favour of this scenario-level design.
 |---|---|---|
 | unit of administration/scoring/stop | one **criterion** at a time | whole **scenario** (testlet of ~18 criteria) |
 | bank | source-deduped to ~162 scenarios' criteria | **all 250 scenarios**, source only for folds |
-| operating point | SE 0.15 / floor **20 criteria** (≈1 scenario) — VOID | **min_scenarios=12 / SE 0.15** (re-derived) |
+| operating point | SE 0.15 / floor **20 criteria** (≈1 scenario) — VOID | **EAP-posterior stop, min_scenarios=12 / SE 0.12** (re-derived; adopted from online-SE 0.15) |
 | `SE_param` | per-criterion (~0.02) | scenario administration, full-bank floor ~0.033 |
 | engine | item-level harness | production `tutor_cat` engine (unmodified) |
 
@@ -68,17 +92,23 @@ All structures within 1 SE on held-out log-loss; the latent correlation collapse
 as dims increase (non-identifiable at N=51). BIC + parsimony → **1D**. Per-axis 5D
 discriminations are all positive (0.82–0.98) — the skills carry signal but are not separable.
 
-## Operating point (`experiments/06_floor_se_grid/`, `experiments/06b_operating_point/`)
+## Operating point (`experiments/06b_operating_point/`; Phase-A source `experiments/13_eap_stop_grid/`)
 
 The item-level "SE 0.15 / floor 20 criteria" is **void**. Re-derived in scenario units over a
-7×7 grid (floors {0,4,6,8,12,15,20} × SE {0.08–0.30}), OOS model-fold recovery. Because a
-Bridge scenario is a heavy ~18-criterion testlet, the `min_scenarios` floor binds and the SE
-target is moot once floor ≥ ~12; SE=0.08 is near-unachievable (ability-SE floor ≈ 0.076).
+7×7 grid (floors {0,4,6,8,12,15,20} × SE {0.08–0.30}), OOS model-fold recovery, **under the
+EAP-posterior stop** (`recovery_grid.csv` + tail-aware `recovery_grid_tailstats.csv`). Because a
+Bridge scenario is a heavy ~18-criterion testlet, the `min_scenarios` floor binds and the median
+model is already far below any SE target once floor ≥ ~12; SE=0.08 is near-unachievable
+(ability-SE floor ≈ 0.076).
 
-**Locked: `min_scenarios = 12, SE target 0.15`** → ~12 scenarios / ~212 criteria, OOS
-r ≈ 0.952. No low-floor + tight-SE cell reaches r ≥ 0.95 at fewer scenarios (tightening SE at
-a low floor just lengthens the test to the same place). Higher precision is available at
-floor 15 (r 0.959) / 20 (r 0.968) for longer tests.
+**Locked: EAP stop, `min_scenarios = 12, SE-ability target 0.12`.** OOS recovery r ≈ **0.958**
+(slope 0.883, θ-MAE 0.273); deployed mean length ~17 scenarios (OOS fold mean 14.4 / 252 crit).
+The SE target was tightened **0.15 → 0.12** to control the SE_total **tail**: the median SE is
+flat across SE targets, but `se_total` mean/SD/max and the count above 0.15 fall as the target
+tightens. At 0.15, **14** models had `SE_total > 0.15` (max 0.203); at **0.12** only **2** remain
+(max 0.195), for ~3 more scenarios of mean length. See `TAILSTATS_NOTE.md` for the full floor×SE
+tail table and the online-vs-EAP side-by-side (the online rule barely acts on the tail below
+0.15; the EAP rule does). Higher precision is available at floor 15 / 20 for longer tests.
 
 ## SE_param regime (`experiments/07_parameter_uncertainty/`)
 
@@ -90,19 +120,23 @@ grows for shorter tests: ~0.05 at the locked point, ~0.13 at a 1-scenario test. 
 
 ## Headline results
 
-- **Recovery (exp 05, OOS, locked point, MWLE):** r = **0.952** [0.923, 0.974], slope 0.877,
-  θ-MAE 0.285; p-IRT pass r = **0.935**, pass-MAE 0.047; mean length 12 scenarios / 212 criteria.
-  Reference θ uses a fine uniform EAP grid (321 nodes over ±8; continuous, no GH quantization).
-- **Efficiency (exp 04):** adaptive ≥ random at **every** test length (mean r gap +0.023).
-  Adaptive reaches r ≈ 0.95 at ~4 scenarios; random needs ~6. Online SE at L=4: 0.171 (adaptive)
-  vs 0.310 (random).
-- **Estimator (exp 10):** online r=0.940/slope 0.810, batch-EAP 0.952/0.866, MWLE 0.952/0.877,
-  MLE 0.952/0.879. MLE's slope is nominally closest to 1 but ties MWLE within noise; **MWLE**
+- **Recovery (exp 05, OOS, EAP stop @ 12/0.12, MWLE):** r = **0.958** [0.929, 0.977], slope 0.883,
+  θ-MAE 0.273; p-IRT pass r = **0.936**, pass-MAE 0.047; OOS mean length 14.4 scenarios / 252
+  criteria. Reference θ uses a fine uniform EAP grid (321 nodes over ±8; continuous, no GH
+  quantization).
+- **Deployed SE (exp 07, EAP admin @ 12/0.12):** **96.1%** of models reach SE-ability ≤ 0.12
+  (2 EAP-native caps); `SE_total` mean **0.117** / median 0.117 / **max 0.195**;
+  **#(SE_total > 0.15) = 2**, #(> 0.20) = 0. SE_param re-bootstrapped on the EAP-administered sets.
+- **Efficiency (exp 04):** adaptive ≥ random at **every** test length (mean r gap +0.023);
+  at the locked L=12, CAT r 0.982 vs random 0.975. On the honest EAP posterior SD, adaptive
+  reaches ≤ 0.12 at ~12 scenarios; random does not reach it within 20 (its tail stays above).
+- **Estimator (exp 10):** online r=0.958/slope 0.875, batch-EAP 0.958/0.875, MWLE 0.958/0.883,
+  MLE 0.958/0.884. MLE's slope is nominally closest to 1 but ties MWLE within noise; **MWLE**
   recommended (robust — plain MLE diverges on all-pass/all-fail administrations).
-- **Order/seed (exp 11):** across 8 seeds at the locked point, mean θ SD = **0.107**
-  (median 0.095, max 0.443), ≈ the achieved ability SE (~0.10). Seed/order adds variance on the
-  order of measurement error; a fixed production seed removes it. Affects only the deployment
-  CAT, not the full-bank leaderboard.
+- **Order/seed (exp 11, EAP stop):** across 8 seeds at the locked point, mean θ SD = **0.077**
+  (median 0.071, max 0.174), ratio 0.64 to the SE target. Seed/order adds variance below
+  measurement error; a fixed production seed removes it. Affects only the deployment CAT, not the
+  full-bank leaderboard.
 - **Ridge sensitivity (exp 12):** θ rank highly stable across ridge {1e-3,1e-2,1e-1} × grid
   {5,7,9} (min corr 0.988). **Keep ridge = 1e-2** (within noise of the best; keeps extreme_a
   low). Optional: ridge=0.1 drains extreme_a to 0 with marginally higher OOS r (within noise).
@@ -130,17 +164,21 @@ bridge_calibration/
   bridge_scenario_fitted_1d_catpool.jsonl   1D CAT pool (3961; A3+extreme_a removed)
   model_leaderboard.csv               top-level full-bank leaderboard
   experiments/
-    03_structures/                    dimensionality 1-5 + selection.json
-    04_efficiency_vs_random/          CAT vs random
-    05_oos_recovery/                  headline recovery (locked point)
-    06_floor_se_grid/                 Phase-1 SE-sweep (convergence/length)
-    06b_operating_point/              7x7 recovery x op-point grid + heatmaps
-    07_parameter_uncertainty/         SE_param bootstrap + SE_total leaderboard
-    08_leaderboard/                   full-bank leaderboard + bars
-    09_pirt_mae/                      standalone p-IRT pass-rate MAE (BiGGen parity)
-    10_estimator_comparison/          EAP vs MWLE vs MLE
-    11_order_seed/                    order/seed stability
-    12_ridge_grid_sensitivity/        ridge/grid robustness
+    03_structures/                    dimensionality 1-5 + selection.json  [stop-independent]
+    04_efficiency_vs_random/          CAT vs random + EAP SE-vs-length (target 0.12)
+    05_oos_recovery/                  headline recovery (EAP stop @ 12/0.12)
+    06_floor_se_grid/                 Phase-1 online SE-sweep (SUPERSEDED; see PROVENANCE.txt)
+    06b_operating_point/              OF-RECORD EAP floor x SE grid + tail stats + heatmaps
+    07_parameter_uncertainty/         full-bank SE_param floor [stop-independent] + deployed-SE
+                                      (se_post_vs_total, precision_reached, se_ability_vs_total)
+    08_leaderboard/                   full-bank leaderboard theta [stop-independent] + weak flag
+    09_pirt_mae/                      standalone p-IRT pass-rate MAE (EAP stop)
+    10_estimator_comparison/          EAP vs MWLE vs MLE (MWLE locked)
+    11_order_seed/                    order/seed stability (EAP stop)
+    12_ridge_grid_sensitivity/        ridge/grid robustness  [stop-independent]
+    13_eap_stop_grid/                 Phase-A EAP floor x SE grid + tail stats (grid source)
+    13_eap_stop_prototype/            Phase-A online-vs-EAP favorability (ADOPTED marker)
+    archive_onlineSE/                 prior online-SE @0.15 of-record (04/05/06/06b/09/10/11)
   scripts/                            bridge_scenario_lib + per-experiment drivers
 ```
 
@@ -151,13 +189,20 @@ bridge_calibration/
 python bridge_calibration/scripts/build_scenario_bank.py
 python bridge_calibration/scripts/scenario_dimensionality.py
 python bridge_calibration/scripts/build_catpool.py
-python bridge_calibration/scripts/scenario_floor_se_grid.py
-python bridge_calibration/scripts/scenario_param_uncertainty.py
-python bridge_calibration/scripts/scenario_recovery_grid.py
-python bridge_calibration/scripts/scenario_recovery_final.py   # exp 05 + 10
-python bridge_calibration/scripts/scenario_efficiency.py       # exp 04
-python bridge_calibration/scripts/scenario_leaderboard.py      # exp 08
-python bridge_calibration/scripts/scenario_pirt_mae.py         # exp 09 (reuses exp 05)
-python bridge_calibration/scripts/scenario_order_seed.py       # exp 11
-python bridge_calibration/scripts/scenario_ridge_sensitivity.py # exp 12
+python bridge_calibration/scripts/scenario_param_uncertainty.py   # exp 07 full-bank floor
+python bridge_calibration/scripts/scenario_leaderboard.py         # exp 08 (theta; weak flag off)
+python bridge_calibration/scripts/bridge_eap_stop_grid.py --stop-se eap   # exp 06b grid source
+python bridge_calibration/scripts/bridge_eap_stop_tailstats.py    # tail-aware per-cell SE
+python bridge_calibration/scripts/scenario_recovery_final.py      # exp 05 + 10 (EAP @ 12/0.12)
+python bridge_calibration/scripts/scenario_pirt_mae.py            # exp 09 (reuses exp 05)
+python bridge_calibration/scripts/bridge_deployed_se.py           # exp 07 deployed-SE (EAP)
+python bridge_calibration/scripts/scenario_leaderboard.py         # exp 08 re-run: attach weak flag
+python bridge_calibration/scripts/scenario_efficiency.py          # exp 04 curves
+python bridge_calibration/scripts/scenario_efficiency_se.py       # exp 04 EAP SE-vs-length
+python bridge_calibration/scripts/scenario_order_seed.py          # exp 11 (EAP)
+python bridge_calibration/scripts/scenario_ridge_sensitivity.py   # exp 12
 ```
+
+All stop-dependent scripts take `--stop-rule {eap,online}` (of-record default `eap`); the online
+path reproduces the archived `experiments/archive_onlineSE/` results. The op-point grid promotion
+(`13_eap_stop_grid/` → `06b_operating_point/`) is a copy step.

@@ -1,24 +1,26 @@
 {
-  "generated_at": "2026-08-05T20:28:16.244495+00:00",
+  "generated_at": "2026-08-07T16:16:26.874182+00:00",
   "purpose": "across-seed order stability of ability at the locked operating point",
   "operating_point": {
     "min_scenarios": 12,
-    "max_se": 0.15,
+    "max_se": 0.12,
+    "stop_rule": "eap",
     "start": "production max-info top5 seeded pick (not uniform-random)"
   },
+  "deployment_policy": "FIXED production seed (consistent with WildBench & BiGGen): single-run CAT scoring pins the RNG so first-item/tie-break choices are reproducible; the ~SE measurement uncertainty is still reported. Affects only single-run CAT, not the full-bank leaderboard.",
   "n_models": 51,
   "n_seeds": 8,
   "theta_sd_across_seeds": {
-    "mean": 0.10709731268001632,
-    "median": 0.09466297542317999,
-    "max": 0.4432978786765163
+    "mean": 0.07694491533056214,
+    "median": 0.07056789724235754,
+    "max": 0.174436945626011
   },
   "theta_range_across_seeds": {
-    "mean": 0.3085926796933118,
-    "max": 1.233661484833576
+    "mean": 0.22053721463072257,
+    "max": 0.45760643661930445
   },
-  "se_target": 0.15,
-  "mean_sd_over_se_target": 0.7139820845334421,
-  "mean_scenarios_administered": 12.053921568627452,
+  "se_target": 0.12,
+  "mean_sd_over_se_target": 0.6412076277546845,
+  "mean_scenarios_administered": 17.245098039215687,
   "interpretation": "mean across-seed theta SD as a fraction of the SE target; <<1 means the adaptive order/seed contributes negligible variance relative to measurement error."
 }

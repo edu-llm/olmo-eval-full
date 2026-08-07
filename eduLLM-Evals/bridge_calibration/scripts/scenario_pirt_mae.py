@@ -56,7 +56,7 @@ def main() -> int:
                    default=base / "experiments" / "05_oos_recovery" / "oos_per_model.csv")
     p.add_argument("--out-dir", type=Path, default=base / "experiments" / "09_pirt_mae")
     p.add_argument("--min-scenarios", type=int, default=12)
-    p.add_argument("--max-se", type=float, default=0.15)
+    p.add_argument("--max-se", type=float, default=0.12)
     p.add_argument("--dim", type=str, default="overall")
     args = p.parse_args()
     (args.out_dir / "figures").mkdir(parents=True, exist_ok=True)

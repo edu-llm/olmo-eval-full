@@ -180,7 +180,7 @@ data/TutorEval/review_queue*.tsv
 # ---------------------------------------------------------------------------
 !reports/
 !reports/**
-
+WildBenchGrade/
 # ---------------------------------------------------------------------------
 # regenerated_figures/ = TRACKED reproductions of the CAT recovery + pIRT
 # figures on a dense quadrature grid (continuous ability axis), produced by

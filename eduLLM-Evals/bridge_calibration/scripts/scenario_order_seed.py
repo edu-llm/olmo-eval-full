@@ -22,6 +22,7 @@ import pandas as pd
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 import bridge_scenario_lib as L  # noqa: E402
+import bridge_eap_stop_lib as E  # noqa: E402
 
 ROOT = L.ROOT
 if str(ROOT) not in sys.path:
@@ -38,9 +39,11 @@ def main() -> int:
     p.add_argument("--scenarios", type=Path, default=ROOT / "data" / "Bridge" / "scenarios.jsonl")
     p.add_argument("--out-dir", type=Path, default=base / "experiments" / "11_order_seed")
     p.add_argument("--tmp-dir", type=Path, default=base / "experiments" / "11_order_seed" / "_tmp")
+    p.add_argument("--stop-rule", choices=["eap", "online"], default="eap")
+    p.add_argument("--l-max", type=int, default=60, help="forced admin cap for the EAP stop.")
     p.add_argument("--n-seeds", type=int, default=8)
     p.add_argument("--min-scenarios", type=int, default=12)
-    p.add_argument("--max-se", type=float, default=0.15)
+    p.add_argument("--max-se", type=float, default=0.12)
     p.add_argument("--max-scenarios", type=int, default=228)
     p.add_argument("--eap-grid", type=int, default=321)
     p.add_argument("--range", type=float, default=8.0)
@@ -58,23 +61,34 @@ def main() -> int:
     models = list(matrix.index)
     row_of = {m: i for i, m in enumerate(models)}
     col = {c: i for i, c in enumerate(ids)}
+    scen_of = {r["criterion_id"]: r["scenario_id"] for r in records}
     egrid, elog = scat.build_grid(1, args.eap_grid, args.range)
+    gg, lp = E.eap_grid(args.eap_grid, args.range)
 
     print("=" * 84)
     print(f"EXP 11: order/seed stability at locked point ({args.min_scenarios}/{args.max_se}), "
-          f"{args.n_seeds} seeds")
+          f"stop_rule={args.stop_rule}, {args.n_seeds} seeds")
     print("=" * 84)
 
     theta_by_seed = np.full((len(models), args.n_seeds), np.nan)
     scen_by_seed = np.full((len(models), args.n_seeds), np.nan)
     for s in range(args.n_seeds):
         seed = 1000 + s
-        spec = scat.RunSpec(seed=seed, top_n=5, max_se=args.max_se,
-                            min_evals_per_skill=15, min_scenarios=args.min_scenarios,
-                            max_scenarios=args.max_scenarios, selection="trace", mode="cat",
-                            runs_dir=str(args.tmp_dir / f"seed{seed}"))
-        res = scat.run_models(models, args.bank, args.matrix, args.scenarios,
-                              "clamp", dims, spec, workers=args.workers)
+        if args.stop_rule == "eap":
+            admin = E.administer_eap(models, args.bank, args.matrix, args.scenarios, dims,
+                                     A[:, 0], b, col, scen_of, Y, row_of, gg, lp, seed=seed,
+                                     floor=args.min_scenarios, target=args.max_se,
+                                     l_max=args.l_max, workers=args.workers,
+                                     runs_dir=str(args.tmp_dir / f"seed{seed}"))
+            res = [{"model": m, "order": admin[m]["order"],
+                    "scenarios_administered": admin[m]["scenarios_administered"]} for m in models]
+        else:
+            spec = scat.RunSpec(seed=seed, top_n=5, max_se=args.max_se,
+                                min_evals_per_skill=15, min_scenarios=args.min_scenarios,
+                                max_scenarios=args.max_scenarios, selection="trace", mode="cat",
+                                runs_dir=str(args.tmp_dir / f"seed{seed}"))
+            res = scat.run_models(models, args.bank, args.matrix, args.scenarios,
+                                  "clamp", dims, spec, workers=args.workers)
         for r0 in res:
             r = row_of[r0["model"]]
             idx = np.array([col[c] for c in r0["order"] if c in col], dtype=int)
@@ -91,7 +105,12 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "purpose": "across-seed order stability of ability at the locked operating point",
         "operating_point": {"min_scenarios": args.min_scenarios, "max_se": args.max_se,
+                            "stop_rule": args.stop_rule,
                             "start": "production max-info top5 seeded pick (not uniform-random)"},
+        "deployment_policy": ("FIXED production seed (consistent with WildBench & BiGGen): "
+                              "single-run CAT scoring pins the RNG so first-item/tie-break choices "
+                              "are reproducible; the ~SE measurement uncertainty is still reported. "
+                              "Affects only single-run CAT, not the full-bank leaderboard."),
         "n_models": len(models), "n_seeds": args.n_seeds,
         "theta_sd_across_seeds": {"mean": float(np.mean(theta_sd)),
                                   "median": float(np.median(theta_sd)),

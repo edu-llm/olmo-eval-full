@@ -1,0 +1,3 @@
+metric,mean,sd_across_models,median,n_models,se_target,regime
+SE_ability_only,0.10222843137254903,0.016924874162314946,0.099373,51,0.12,deployed_cat_12_0.12
+SE_total,0.1173905882352941,0.023220620990986842,0.11704,51,0.12,deployed_cat_12_0.12

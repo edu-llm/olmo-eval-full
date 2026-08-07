@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-08-05T20:28:16.244495+00:00",
+  "purpose": "across-seed order stability of ability at the locked operating point",
+  "operating_point": {
+    "min_scenarios": 12,
+    "max_se": 0.15,
+    "start": "production max-info top5 seeded pick (not uniform-random)"
+  },
+  "n_models": 51,
+  "n_seeds": 8,
+  "theta_sd_across_seeds": {
+    "mean": 0.10709731268001632,
+    "median": 0.09466297542317999,
+    "max": 0.4432978786765163
+  },
+  "theta_range_across_seeds": {
+    "mean": 0.3085926796933118,
+    "max": 1.233661484833576
+  },
+  "se_target": 0.15,
+  "mean_sd_over_se_target": 0.7139820845334421,
+  "mean_scenarios_administered": 12.053921568627452,
+  "interpretation": "mean across-seed theta SD as a fraction of the SE target; <<1 means the adaptive order/seed contributes negligible variance relative to measurement error."
+}
