@@ -1,0 +1,60 @@
+{
+  "dataset": "ifeval",
+  "bridge_kind": "content_hash",
+  "rows": 535,
+  "ordering": {
+    "source": "Open LLM Leaderboard v2 per-model detail repo",
+    "harness_config": "leaderboard_*",
+    "repo": "open-llm-leaderboard/microsoft__Phi-3-mini-4k-instruct-details",
+    "revision": "427d64648094a1aea773aec93fe5e3b5ca069074",
+    "run": "2024-07-18T11-04-02.101450",
+    "paths": {
+      "ifeval": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_ifeval_2024-07-18T11-04-02.101450.jsonl"
+    },
+    "doc_id": "read from each record's explicit doc_id field, not from its position in the file: lm-eval writes samples in completion order, so row order and document order differ",
+    "cross_checked": [
+      {
+        "repo": "open-llm-leaderboard/Qwen__Qwen2.5-7B-Instruct-details",
+        "run": "2024-09-19T16-21-01.446061",
+        "documents_agreeing": 541
+      },
+      {
+        "repo": "open-llm-leaderboard/Danielbrdz__Barcenas-R1-Qwen-1.5b-details",
+        "run": "2025-01-26T19-17-19.771431",
+        "documents_agreeing": 541
+      },
+      {
+        "repo": "open-llm-leaderboard/DeepMount00__Qwen2-1.5B-Ita-details",
+        "run": "2025-02-28T20-55-59.716664",
+        "documents_agreeing": 541
+      }
+    ]
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "tasks": [
+      "ifeval"
+    ]
+  },
+  "matching": {
+    "recipe": "each evaluated document rebuilt from the details record as the olmo-eval task renders it, then matched as a bijection over each subtask's split",
+    "doc_fields": [
+      "prompt"
+    ],
+    "normalization": "none. The details record's doc is the raw wis-k/instruction-following-eval row and the olmo-eval task passes its prompt through unaltered, so the two renderings are the same string. IFEval is the one benchmark where that is forced rather than convenient: a prompt names verifiable instructions about its own text -- no commas, 300+ words, a fixed number of highlighted sections -- so any normalization applied to match it would also be a change to what the verifiers were told to check.",
+    "enumeration": "whole_task",
+    "documents_evaluated": 541,
+    "documents_matched": 541,
+    "positions_agreeing_with_enumeration_order": 541
+  },
+  "index_map": {
+    "source_ref": "origin/Research",
+    "path": "AdaptiveTesting/Inputs/ATLAS/ifeval/atlas_idx_to_question_id.csv",
+    "rows": 535,
+    "subtask_rows": {
+      "ifeval": 535
+    }
+  },
+  "generated_at": "2026-08-07T21:25:36.475610+00:00"
+}

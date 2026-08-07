@@ -1,0 +1,257 @@
+# Configuration for the uni_mcq CAT style.
+#
+# The runner's --se-threshold and --max-items override se_threshold and max_items when
+# supplied; min_items has no CLI flag and is always read from here.
+style: uni_mcq
+
+# Stop once every administered-item count and precision condition is met:
+#   step >= min_items AND se <= se_threshold
+# Initial state is theta = 0, se = 1, so the min_items floor always binds first.
+se_threshold: 0.3
+min_items: 8
+
+# Per-dataset overrides of min_items, folded on by the same mechanism the two grading
+# blocks use for prompt_style and score_normalization. A dataset absent from here runs
+# on the shared floor above, which is every bank but one.
+#
+# min_items is the only key permitted here. se_threshold and max_items are deliberately
+# not: both already have a CLI flag and both are recorded per run, and a second, quieter
+# way to move them per dataset would make two runs of one bank incomparable with nothing
+# in either report to say why.
+#
+# Deliberately not part of the recorded scoring convention either. That block covers
+# settings that decide whether an individual item is answered correctly; this one decides
+# only how many items there are, so a bank vendored under one floor and run under another
+# is still comparable in everything but test length, which the report already carries.
+datasets:
+  bbh:
+    # 24, the number of subtasks the bank spans, against 8 everywhere else.
+    #
+    # BBH's filtered discriminations are inflated -- median 3.99 against roughly 1.4 for
+    # gpqa and musr -- because a unidimensional fit over 24 unrelated skills pushes the
+    # loading onto whatever separates models overall. The posterior standard error
+    # therefore collapses immediately: upstream's CAT reaches SE <= 0.3 in an average of
+    # 8.2 items, the fewest of any bank, and 8 items cannot touch a third of the suite.
+    #
+    # 24 is the smallest floor under which touching every subtask is arithmetically
+    # possible. It is above the 15.4 items upstream needed even at SE <= 0.1, so
+    # precision alone would never reach it, and below max_items 40, so a session that
+    # still needs items can still take them.
+    #
+    # What it does not do, and neither of these should be glossed. It does not guarantee
+    # subtask coverage: Fisher-information selection takes whatever is most informative
+    # at the current theta and may draw heavily from a few subtasks, and content
+    # balancing exists neither here nor in Research. And it does not improve the
+    # estimate: BBH's theta_mae is 0.684 at SE <= 0.3 and 0.711 at SE <= 0.1, flat
+    # because the model is wrong for the benchmark rather than because the test is short.
+    min_items: 24
+
+# Pinned at 40, matching the runner's default and run_checkpoint_diag.sh's MAX_ITEMS,
+# so an ordinary invocation is already comparable without passing an extra flag.
+#
+# 40 is what Research's live CAT actually administers. Its library default is 200
+# (DEFAULT_MAX_ITEMS in src/olmo_eval/adaptive/cat.py on origin/Research), but every
+# launcher that drives that CAT overrides it: scripts/atlas_cat_diagnose/launch_g6.sh
+# and run_worker.sh, and .cursor/skills/add-cat-evals/scripts/run_cat_diagnostic.sh,
+# all pass se_stop=0.3 min_items=8 max_items=40. Matching the launchers rather than the
+# library default is what makes a theta from here comparable with a published one.
+#
+# The value is still recorded per run rather than assumed, since a run under the 200
+# default is not comparable with one under 40. Every report carries max_items and
+# whether it matched this pin.
+max_items: 40
+
+# Settings for the log-likelihood grader, used only when the resolved bank's modality is
+# `mcq`. Generative banks ignore this block entirely.
+#
+# Every key must be a field of common/inference.py's InferenceConfig, except the
+# `datasets` map; an unknown key raises rather than being ignored.
+#
+# Two keys matter and both are per dataset rather than shared, because the MCQ tasks on
+# this branch disagree about both. Each defines its own `format_request`, and each
+# declares the metric its bank was calibrated under; an item's difficulty is a statement
+# about one presentation and one comparison rule, and EAP treats it as fixed, so a
+# benchmark scored behind another's framing or ranked by another's rule has the whole
+# difference absorbed into theta. MCQ_PROMPT_STYLES and MCQ_SCORE_NORMALIZATIONS in
+# common/inference.py hold the layouts and the rules; the entries below say which pair
+# each benchmark takes.
+#
+# score_normalization is omitted wherever the task declares LogprobMCAccuracyMetric,
+# which is the default and is what three of these five take. It is spelled out for musr
+# and bbh, the two whose tasks declare LogprobPerCharMCAccuracyMetric, so the exception
+# is visible where it applies rather than restated three times where it does not.
+mcq:
+  datasets:
+    # olmo-eval's shared evals/tasks/common/format_helpers.format_rc, which
+    # src/olmo_eval/evals/tasks/arc.py uses for its non-MC branch:
+    #   "Question: {stem}\nAnswer:" + " {choice}"
+    arc_challenge:
+      prompt_style: question_answer
+
+    # hellaswag.py's _format_rc returns the query with no answer cue at all. Its
+    # contexts end mid-clause by construction ("... A man is sitting on a roof. He"),
+    # so the choice is the grammatical completion of the stem and anything inserted
+    # between the two breaks it on essentially every item.
+    hellaswag:
+      prompt_style: bare_context
+
+    # winogrande.py's RC branch is Trinh & Le (2018) partial evaluation: the candidate
+    # is substituted into the blank *inside* the prompt and the scored continuation is
+    # the text after the blank, identical for both choices. Two things ride on this.
+    # It is the only formulation that measures coreference rather than which name more
+    # plausibly follows an answer cue in a sentence containing both. And because the
+    # continuations come out byte-identical, an unnormalized sum is length-invariant by
+    # construction -- scoring the options as continuations instead hands the item to
+    # whichever option is shorter.
+    winogrande:
+      prompt_style: blank_substitution
+
+    # lm-evaluation-harness's leaderboard_musr, which is what the bank was calibrated
+    # under; Research has no MuSR task to match against. The narrative and question,
+    # then the choices numbered from one, then a blank line and an `Answer:` cue, with
+    # the choice *text* as the scored continuation.
+    musr:
+      prompt_style: musr
+      # acc_norm, the metric musr.py declares (LogprobPerCharMCAccuracyMetric) and the
+      # one Open LLM Leaderboard v2 reported MuSR under. Its choices are whole clauses
+      # of very unequal length -- an object_placements item can weigh a six-word answer
+      # against a twenty-word one -- so an unnormalized sum would decide a large share
+      # of the bank on token count alone, against difficulties fit on the normalized
+      # binary. Our divisor is one character longer than lm-eval's, matching the repo's
+      # own per-character metric rather than inventing a second one; see PerCharacterMean.
+      score_normalization: continuation_logprob_per_character
+
+    # The only style here that adds nothing to the stem, because the stem is already the
+    # whole prompt. lm-evaluation-harness's leaderboard_bbh is 3-shot behind a one-line
+    # description that differs per *subtask*, and this map is per dataset, so there is no
+    # entry that could express it. Vendoring calls each bbh task's own format_request and
+    # freezes the rendered prompt -- description, three fixed exemplars, the item and its
+    # trailing `A:` cue -- into the item's stem, exactly as gpqa freezes its shuffled
+    # choice block. All that is left is to append ` {choice}`.
+    #
+    # The style's num_fewshot is 3, not 0, and that is recorded in the manifest: 0 would
+    # describe a prompt no model is shown, and the mismatch a stem-framing style would
+    # produce here is what refuses a config edit that dropped the prefix.
+    bbh:
+      prompt_style: bbh
+      # acc_norm, the metric bbh.py declares (LogprobPerCharMCAccuracyMetric) and the one
+      # Open LLM Leaderboard v2 reported BBH under. It matters more here than the choice
+      # lengths suggest: most subtasks rank bare option letters of equal length, where
+      # the two rules agree, but object_counting ranks "0" against "18" and
+      # boolean_expressions "True" against "False", and those the divisor decides.
+      score_normalization: continuation_logprob_per_character
+
+# Settings for the generative grader, used only when the resolved bank's modality is
+# `generative`. MCQ banks ignore this block entirely.
+#
+# Every key must be a field of common/generative.py's GenerationConfig, except the
+# `datasets` map below; an unknown key raises rather than being ignored, because a
+# silently-dropped setting means scoring under a convention nobody chose.
+#
+# The values below reproduce olmo-eval's gsm8k task (src/olmo_eval/evals/tasks/gsm8k.py)
+# so a diagnostic run and a full eval of the same checkpoint ask for the same thing.
+generative:
+  # 8-shot with the fixed GSM8K examples. The setting most worth leaving alone: item
+  # difficulties were estimated from models answering under some prompt, and EAP treats
+  # `b` as fixed, so a harder prompt here is absorbed entirely into theta -- a uniformly
+  # depressed score with a healthy-looking standard error.
+  #
+  # 8 is the olmo-eval task's value. It is not known to be ATLAS's: no shot count is
+  # recorded anywhere upstream, and the harvested population is Open LLM Leaderboard v1,
+  # whose GSM8K convention is 5-shot. See fewshot_examples() in common/generative.py.
+  num_fewshot: 8
+  max_new_tokens: 512
+  # Greedy decoding. Nonzero is rejected rather than ignored: the bank was calibrated on
+  # single greedy completions, and sampling would make one checkpoint score differently
+  # from run to run.
+  temperature: 0.0
+  # Applied locally after generation, since a local `generate` has no stop handling.
+  # A blank line is the boundary the few-shot block teaches between questions, and the
+  # extractor takes the *last* number, so without these a run-on answer would be graded
+  # on a hallucinated next question.
+  stop_sequences: ["Question:", "\n\n"]
+
+  # Per-dataset overrides of the keys above, folded on by common/grading.py using the
+  # resolved bank's name. A dataset absent from here runs on the shared keys alone.
+  #
+  # This exists because the keys above are gsm8k's convention, not a house style, and
+  # two generative benchmarks calibrated under different prompts cannot share one. A
+  # MATH item answered behind gsm8k's `Question:`/`Answer:` framing would be scored
+  # against a difficulty estimated under `Problem:`/`Solution:`, and EAP would absorb
+  # the whole difference into theta.
+  datasets:
+    # Reproduces olmo-eval's leaderboard_math task
+    # (src/olmo_eval/evals/tasks/leaderboard_math.py).
+    leaderboard_math:
+      # 4-shot with the fixed Minerva examples. As with gsm8k, the count the bank was
+      # actually calibrated under is not recoverable: the upstream math calibration
+      # directory holds parameter CSVs, response matrices and figures, and no record of
+      # how the responses were prompted. 4 is the olmo-eval task's value and is also
+      # the count Open LLM Leaderboard v2 publishes for MATH-Hard, which is where this
+      # bank's response data was harvested -- so the two are likely to agree, but that
+      # is inferred from the harvest rather than stated by the bank.
+      num_fewshot: 4
+      fewshot_source: leaderboard_math
+      # `Problem:\n...\n\nSolution:`. The framing also teaches the \boxed{} and
+      # `Final Answer:` endings that the symbolic grader extracts; under gsm8k's
+      # framing a model states its answer in prose and the grader finds nothing.
+      prompt_style: leaderboard_math
+      max_new_tokens: 1024
+      stop_sequences: ["Problem:", "\n\n"]
+
+    # Reproduces olmo-eval's ifeval task (src/olmo_eval/evals/tasks/ifeval.py), which
+    # is the Open LLM Leaderboard v2 configuration.
+    ifeval:
+      # 0-shot, and not a default inherited from anywhere: an IFEval prompt states its
+      # own constraints, and a worked example would add constraints the verifiers were
+      # never told about while burning tokens the response needs. The ifeval prompt
+      # template declares no fewshot_answer_key, so a nonzero count here raises rather
+      # than borrowing gsm8k's block.
+      num_fewshot: 0
+      prompt_style: ifeval
+      # One user turn through the checkpoint's own chat template. The bank was
+      # calibrated on instruction-tuned models answering a bare instruction; the same
+      # text sent as a raw completion prompt is a different task, and a checkpoint with
+      # no chat template is refused rather than sent one.
+      chat_format: true
+      max_new_tokens: 1280
+      # Deliberately empty. Every other generative bank here stops at a blank line
+      # because its few-shot block teaches that as the boundary between questions.
+      # IFEval has no few-shot block and asks for multi-paragraph answers, so that stop
+      # would cut most responses after one paragraph and fail their length and section
+      # constraints -- scoring the harness's truncation as the model's mistake.
+      stop_sequences: []
+
+    # Reproduces the default of olmo-eval's gpqa tasks
+    # (src/olmo_eval/evals/tasks/gpqa.py), which is chat plus chain of thought and not
+    # the log-likelihood ranking its :mc variant would give. Research never wired GPQA
+    # into its CAT, so there is no precedent to prefer over the task's own default.
+    gpqa:
+      # 0-shot: the registered tasks set no num_fewshot and their formatter is handed
+      # whatever get_fewshot returns, which is nothing.
+      num_fewshot: 0
+      # The item's stem is already the whole user turn -- question plus the lettered
+      # choice block, frozen at vendoring time in the order the per-question shuffle
+      # produced, because the gold letter only indexes that one ordering.
+      prompt_style: gpqa
+      chat_format: true
+      # The expert-scientist instruction to reason step by step and end with
+      # "ANSWER: X", read off the registered task's own formatter. It is what produces
+      # the format the grader extracts, so a run without it would be graded on the
+      # model's silence rather than on its answer.
+      system_prompt_source: gpqa
+      # SamplingParams(temperature=0.0, max_tokens=1024) on every registered gpqa task.
+      max_new_tokens: 1024
+      # Deliberately empty, and for a sharper reason than ifeval's. The answer is the
+      # *last* thing a chain of thought says, so a stop at the first blank line would
+      # cut the reasoning off before "ANSWER: X" was ever written and score every item
+      # as unanswered. The task declares no stop sequences either.
+      stop_sequences: []
+
+# NOTE: there is deliberately no `fit_family` key.
+#
+# The fit family is a property of how a particular bank's parameters were estimated,
+# not a style-wide setting, so it lives in each bank's manifest.json and is
+# authoritative from there. The toggle exists at vendoring time
+# (`vendor_bank.py --fit-family {2pl,3pl}` selects the upstream calibration directory).
+# At run time a supplied family that disagrees with the manifest raises.

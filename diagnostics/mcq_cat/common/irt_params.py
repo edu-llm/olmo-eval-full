@@ -66,9 +66,14 @@ def load_irt_params(source: str | Path) -> IRTBank:
 
     The JSON payload may be a list of item records or a mapping of item id to
     record. All items must share the same discrimination dimensionality.
+
+    Read through :func:`~diagnostics.mcq_cat.common.s3_io.read_text` on both branches so
+    the local one is decoded as UTF-8 and not in the platform's locale encoding, which
+    is what the item ids these parameters are keyed by have to survive: a mis-decoded id
+    joins against nothing, and the item silently drops out of the selectable bank.
     """
     source_str = str(source)
-    text = s3_io.read_text(source_str) if s3_io.is_s3_uri(source_str) else Path(source).read_text()
+    text = s3_io.read_text(source_str)
     payload = json.loads(text)
 
     if isinstance(payload, dict):

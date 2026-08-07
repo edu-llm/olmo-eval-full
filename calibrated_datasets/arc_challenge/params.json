@@ -1,0 +1,5852 @@
+[
+  {
+    "item_id": "Mercury_SC_410971",
+    "difficulty": -0.7278215332295084,
+    "discrimination": 3.92501618678444,
+    "guessing": 0.771016169215133,
+    "metadata": {
+      "atlas_idx": 1
+    }
+  },
+  {
+    "item_id": "Mercury_SC_414274",
+    "difficulty": -3.3867735517825985,
+    "discrimination": 1.25788154794205,
+    "guessing": 0.313175686990122,
+    "metadata": {
+      "atlas_idx": 2
+    }
+  },
+  {
+    "item_id": "Mercury_7214498",
+    "difficulty": -1.1838472663250743,
+    "discrimination": 1.78401933746973,
+    "guessing": 0.0773977194821145,
+    "metadata": {
+      "atlas_idx": 3
+    }
+  },
+  {
+    "item_id": "Mercury_401699",
+    "difficulty": -2.76790536591093,
+    "discrimination": 1.39761924667269,
+    "guessing": 0.346761636208261,
+    "metadata": {
+      "atlas_idx": 5
+    }
+  },
+  {
+    "item_id": "Mercury_7205608",
+    "difficulty": 0.8116982944235279,
+    "discrimination": 6.65833789445844,
+    "guessing": 0.102849605976203,
+    "metadata": {
+      "atlas_idx": 7
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2010_4_4",
+    "difficulty": -0.6995373109180189,
+    "discrimination": 7.18948985139309,
+    "guessing": 0.708759813838332,
+    "metadata": {
+      "atlas_idx": 8
+    }
+  },
+  {
+    "item_id": "CSZ_2009_8_CSZ20740",
+    "difficulty": -2.8760322047728666,
+    "discrimination": 2.49715167750248,
+    "guessing": 0.339869492228445,
+    "metadata": {
+      "atlas_idx": 10
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400579",
+    "difficulty": -4.4433297826103635,
+    "discrimination": 2.23762666115638,
+    "guessing": 0.263316690106995,
+    "metadata": {
+      "atlas_idx": 11
+    }
+  },
+  {
+    "item_id": "VASoL_2007_5_22",
+    "difficulty": -0.6691919884347638,
+    "discrimination": 4.65819571839111,
+    "guessing": 0.456082672002257,
+    "metadata": {
+      "atlas_idx": 12
+    }
+  },
+  {
+    "item_id": "Mercury_7186358",
+    "difficulty": -1.2445394492986872,
+    "discrimination": 2.35592968454118,
+    "guessing": 0.820400448884689,
+    "metadata": {
+      "atlas_idx": 13
+    }
+  },
+  {
+    "item_id": "Mercury_SC_416169",
+    "difficulty": 0.705781409797556,
+    "discrimination": 2.42458391263787,
+    "guessing": 0.132494870707479,
+    "metadata": {
+      "atlas_idx": 15
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401142",
+    "difficulty": 0.42271313602480737,
+    "discrimination": 3.74497114075534,
+    "guessing": 0.255162426832174,
+    "metadata": {
+      "atlas_idx": 16
+    }
+  },
+  {
+    "item_id": "MCAS_2006_9_34",
+    "difficulty": 1.4676165099159084,
+    "discrimination": 1.53748754577966,
+    "guessing": 0.112542020395868,
+    "metadata": {
+      "atlas_idx": 17
+    }
+  },
+  {
+    "item_id": "Mercury_400828",
+    "difficulty": -3.2115175850611064,
+    "discrimination": 0.161383134331174,
+    "guessing": 0.213967036196971,
+    "metadata": {
+      "atlas_idx": 18
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413299",
+    "difficulty": -1.976970337225034,
+    "discrimination": 3.50839780610116,
+    "guessing": 0.633395689856698,
+    "metadata": {
+      "atlas_idx": 19
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407382",
+    "difficulty": -1.1647718625594918,
+    "discrimination": 3.5284361483423,
+    "guessing": 0.571499219826026,
+    "metadata": {
+      "atlas_idx": 20
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413089",
+    "difficulty": -0.5559261116327325,
+    "discrimination": 3.67199494363284,
+    "guessing": 0.536940933409332,
+    "metadata": {
+      "atlas_idx": 21
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400661",
+    "difficulty": -4.649205341113747,
+    "discrimination": 1.01159148530601,
+    "guessing": 0.161590754146448,
+    "metadata": {
+      "atlas_idx": 24
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405880",
+    "difficulty": 0.42599050904357677,
+    "discrimination": 5.04534766886081,
+    "guessing": 0.16022532668827,
+    "metadata": {
+      "atlas_idx": 26
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400392",
+    "difficulty": 1.027380982438824,
+    "discrimination": 0.803576673754257,
+    "guessing": 0.00311917908981238,
+    "metadata": {
+      "atlas_idx": 27
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406855",
+    "difficulty": -1.9200291930013726,
+    "discrimination": 0.552002883617313,
+    "guessing": 0.0873569138760336,
+    "metadata": {
+      "atlas_idx": 29
+    }
+  },
+  {
+    "item_id": "MEAP_2005_8_45",
+    "difficulty": 0.9772843218655559,
+    "discrimination": 8.16585251974251,
+    "guessing": 0.31866525495077,
+    "metadata": {
+      "atlas_idx": 31
+    }
+  },
+  {
+    "item_id": "ACTAAP_2009_5_12",
+    "difficulty": -1.7435591852939245,
+    "discrimination": 3.45977788846648,
+    "guessing": 0.58564096108723,
+    "metadata": {
+      "atlas_idx": 32
+    }
+  },
+  {
+    "item_id": "Mercury_7268258",
+    "difficulty": -0.053988650998162004,
+    "discrimination": 1.11021611405517,
+    "guessing": 0.345731388687833,
+    "metadata": {
+      "atlas_idx": 35
+    }
+  },
+  {
+    "item_id": "Mercury_7264093",
+    "difficulty": 30.91798787126209,
+    "discrimination": 0.268476108433175,
+    "guessing": 0.0029527383177449,
+    "metadata": {
+      "atlas_idx": 36
+    }
+  },
+  {
+    "item_id": "Mercury_7234605",
+    "difficulty": -0.4454276427521637,
+    "discrimination": 0.650971879828436,
+    "guessing": 0.00318793161468504,
+    "metadata": {
+      "atlas_idx": 37
+    }
+  },
+  {
+    "item_id": "Mercury_SC_409030",
+    "difficulty": 0.007037178202038538,
+    "discrimination": 3.16855590929543,
+    "guessing": 0.648181219920001,
+    "metadata": {
+      "atlas_idx": 41
+    }
+  },
+  {
+    "item_id": "MCAS_2010_8_12005",
+    "difficulty": -2.607028900282505,
+    "discrimination": 2.37612765066708,
+    "guessing": 0.617384986141465,
+    "metadata": {
+      "atlas_idx": 42
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401277",
+    "difficulty": -3.596872828247523,
+    "discrimination": 2.1657132113145,
+    "guessing": 0.195326776029109,
+    "metadata": {
+      "atlas_idx": 43
+    }
+  },
+  {
+    "item_id": "Mercury_7085225",
+    "difficulty": 10.555406723436866,
+    "discrimination": 0.533859072403477,
+    "guessing": 0.00635473746033921,
+    "metadata": {
+      "atlas_idx": 44
+    }
+  },
+  {
+    "item_id": "Mercury_415083",
+    "difficulty": -1.098459010532697,
+    "discrimination": 1.78977344986135,
+    "guessing": 0.577824647928156,
+    "metadata": {
+      "atlas_idx": 45
+    }
+  },
+  {
+    "item_id": "Mercury_LBS11018",
+    "difficulty": 0.42689744261969903,
+    "discrimination": 5.04577954919457,
+    "guessing": 0.216064661915419,
+    "metadata": {
+      "atlas_idx": 48
+    }
+  },
+  {
+    "item_id": "MCAS_1998_4_13",
+    "difficulty": -3.6364356918545875,
+    "discrimination": 1.57949710840114,
+    "guessing": 0.124125468671128,
+    "metadata": {
+      "atlas_idx": 49
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_8_36",
+    "difficulty": -4.430234121212476,
+    "discrimination": 1.85914333075011,
+    "guessing": 0.23464492360515,
+    "metadata": {
+      "atlas_idx": 50
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402629",
+    "difficulty": -4.013739826694086,
+    "discrimination": 1.27455226036714,
+    "guessing": 0.107500087205836,
+    "metadata": {
+      "atlas_idx": 52
+    }
+  },
+  {
+    "item_id": "MCAS_2003_8_21",
+    "difficulty": 9.337555086013753,
+    "discrimination": 0.43303387658933,
+    "guessing": 0.00108681330442498,
+    "metadata": {
+      "atlas_idx": 53
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400400",
+    "difficulty": -2.0518545960019443,
+    "discrimination": 4.29898003407067,
+    "guessing": 0.698217846877281,
+    "metadata": {
+      "atlas_idx": 54
+    }
+  },
+  {
+    "item_id": "Mercury_7024798",
+    "difficulty": -5.1314232495777246,
+    "discrimination": 0.500434631455858,
+    "guessing": 0.0369074620803322,
+    "metadata": {
+      "atlas_idx": 55
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415534",
+    "difficulty": -3.111605136649176,
+    "discrimination": 1.48467175694161,
+    "guessing": 0.177521475943706,
+    "metadata": {
+      "atlas_idx": 56
+    }
+  },
+  {
+    "item_id": "Mercury_400780",
+    "difficulty": -0.9524753624514651,
+    "discrimination": 2.26071387217728,
+    "guessing": 0.157979391070304,
+    "metadata": {
+      "atlas_idx": 57
+    }
+  },
+  {
+    "item_id": "Mercury_SC_414156",
+    "difficulty": -0.6710574326207072,
+    "discrimination": 3.57711544483407,
+    "guessing": 0.856907123897328,
+    "metadata": {
+      "atlas_idx": 58
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408358",
+    "difficulty": 0.7179006065228579,
+    "discrimination": 4.43784438481478,
+    "guessing": 0.0525104773468811,
+    "metadata": {
+      "atlas_idx": 59
+    }
+  },
+  {
+    "item_id": "Mercury_179025",
+    "difficulty": -0.7960877128421191,
+    "discrimination": 1.81879417548697,
+    "guessing": 0.0937452813528426,
+    "metadata": {
+      "atlas_idx": 60
+    }
+  },
+  {
+    "item_id": "MCAS_1999_8_1",
+    "difficulty": -1.4782935196574847,
+    "discrimination": 2.47156789769092,
+    "guessing": 0.650379863105484,
+    "metadata": {
+      "atlas_idx": 62
+    }
+  },
+  {
+    "item_id": "ACTAAP_2009_7_8",
+    "difficulty": -4.4509820103081985,
+    "discrimination": 0.357215678222736,
+    "guessing": 0.0353793574474509,
+    "metadata": {
+      "atlas_idx": 64
+    }
+  },
+  {
+    "item_id": "Mercury_407260",
+    "difficulty": 7.502196672494835,
+    "discrimination": 0.832148259510861,
+    "guessing": 0.000804522931169512,
+    "metadata": {
+      "atlas_idx": 65
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2012_4_29",
+    "difficulty": -2.1455693851692046,
+    "discrimination": 2.26456453089924,
+    "guessing": 0.44991140825358,
+    "metadata": {
+      "atlas_idx": 67
+    }
+  },
+  {
+    "item_id": "Mercury_7206378",
+    "difficulty": 0.5902238908860975,
+    "discrimination": 7.79755798286522,
+    "guessing": 0.425043579541562,
+    "metadata": {
+      "atlas_idx": 68
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10664",
+    "difficulty": 6.695690520886449,
+    "discrimination": 0.0810136163858775,
+    "guessing": 0.0308445177468409,
+    "metadata": {
+      "atlas_idx": 69
+    }
+  },
+  {
+    "item_id": "MCAS_2004_9_5",
+    "difficulty": -2.623087228785925,
+    "discrimination": 3.15892697588889,
+    "guessing": 0.545610879424761,
+    "metadata": {
+      "atlas_idx": 70
+    }
+  },
+  {
+    "item_id": "LEAP__4_10225",
+    "difficulty": -3.926373224741282,
+    "discrimination": 1.46574307560226,
+    "guessing": 0.0979967319045414,
+    "metadata": {
+      "atlas_idx": 73
+    }
+  },
+  {
+    "item_id": "Mercury_7159810",
+    "difficulty": -0.6347252695899953,
+    "discrimination": 3.99527281295536,
+    "guessing": 0.5019416184646,
+    "metadata": {
+      "atlas_idx": 76
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405937",
+    "difficulty": -1.3712740511683092,
+    "discrimination": 4.82696025922086,
+    "guessing": 0.739322059230615,
+    "metadata": {
+      "atlas_idx": 78
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10273",
+    "difficulty": -1.270236659097581,
+    "discrimination": 0.851164378067908,
+    "guessing": 0.0370882562869372,
+    "metadata": {
+      "atlas_idx": 82
+    }
+  },
+  {
+    "item_id": "Mercury_7057488",
+    "difficulty": 0.11422779352966947,
+    "discrimination": 2.54104076027633,
+    "guessing": 0.289489047248485,
+    "metadata": {
+      "atlas_idx": 84
+    }
+  },
+  {
+    "item_id": "Mercury_7166425",
+    "difficulty": -1.490431197514946,
+    "discrimination": 4.20484671760345,
+    "guessing": 0.608579175080657,
+    "metadata": {
+      "atlas_idx": 85
+    }
+  },
+  {
+    "item_id": "Mercury_416379",
+    "difficulty": 0.5963621777452051,
+    "discrimination": 4.74108284680774,
+    "guessing": 0.304425168551254,
+    "metadata": {
+      "atlas_idx": 86
+    }
+  },
+  {
+    "item_id": "Mercury_7068635",
+    "difficulty": -16.53499958333181,
+    "discrimination": 0.0399305283748661,
+    "guessing": 7.47080479057678e-05,
+    "metadata": {
+      "atlas_idx": 88
+    }
+  },
+  {
+    "item_id": "Mercury_7159250",
+    "difficulty": -3.8294588129185234,
+    "discrimination": 2.06763568285581,
+    "guessing": 0.169457155921534,
+    "metadata": {
+      "atlas_idx": 91
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2013_4_17",
+    "difficulty": -0.5430574739788577,
+    "discrimination": 2.92095327913792,
+    "guessing": 0.324342415586806,
+    "metadata": {
+      "atlas_idx": 93
+    }
+  },
+  {
+    "item_id": "Mercury_178255",
+    "difficulty": -0.7291565080414594,
+    "discrimination": 2.43351548288331,
+    "guessing": 0.454888191389013,
+    "metadata": {
+      "atlas_idx": 94
+    }
+  },
+  {
+    "item_id": "MCAS_2013_5_29411",
+    "difficulty": -1.2638684529416009,
+    "discrimination": 3.8537601774957,
+    "guessing": 0.344532246157767,
+    "metadata": {
+      "atlas_idx": 95
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_4_26",
+    "difficulty": -0.4053945007623371,
+    "discrimination": 2.51049482192138,
+    "guessing": 0.114483123447142,
+    "metadata": {
+      "atlas_idx": 96
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400402",
+    "difficulty": 0.5042589028771227,
+    "discrimination": 4.85438063543083,
+    "guessing": 0.390230272084804,
+    "metadata": {
+      "atlas_idx": 97
+    }
+  },
+  {
+    "item_id": "MCAS_8_2014_8",
+    "difficulty": -1.4572147434273377,
+    "discrimination": 3.32903647684676,
+    "guessing": 0.841995663586198,
+    "metadata": {
+      "atlas_idx": 98
+    }
+  },
+  {
+    "item_id": "Mercury_7114100",
+    "difficulty": 0.7056062840363537,
+    "discrimination": 5.64107471734459,
+    "guessing": 0.105363241613377,
+    "metadata": {
+      "atlas_idx": 99
+    }
+  },
+  {
+    "item_id": "Mercury_405387",
+    "difficulty": -3.3450550421667744,
+    "discrimination": 1.6329298549403,
+    "guessing": 0.184805263115615,
+    "metadata": {
+      "atlas_idx": 100
+    }
+  },
+  {
+    "item_id": "MCAS_2004_5_33",
+    "difficulty": 0.18881124335482874,
+    "discrimination": 11.3201727015166,
+    "guessing": 0.634898550756239,
+    "metadata": {
+      "atlas_idx": 103
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407417",
+    "difficulty": 1.2942433101962392,
+    "discrimination": 6.99115068990382,
+    "guessing": 0.0950644692897829,
+    "metadata": {
+      "atlas_idx": 105
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415719",
+    "difficulty": -2.3067472843677383,
+    "discrimination": 4.43968399553666,
+    "guessing": 0.523953915707939,
+    "metadata": {
+      "atlas_idx": 106
+    }
+  },
+  {
+    "item_id": "Mercury_406550",
+    "difficulty": 0.823175918073661,
+    "discrimination": 3.60793898644894,
+    "guessing": 0.356457075450516,
+    "metadata": {
+      "atlas_idx": 108
+    }
+  },
+  {
+    "item_id": "MCAS_2004_5_11",
+    "difficulty": -2.3469496353523875,
+    "discrimination": 3.69782822525803,
+    "guessing": 0.822353003674173,
+    "metadata": {
+      "atlas_idx": 109
+    }
+  },
+  {
+    "item_id": "Mercury_7282083",
+    "difficulty": -4.827240061187967,
+    "discrimination": 0.122011168361677,
+    "guessing": 0.0663993403068933,
+    "metadata": {
+      "atlas_idx": 111
+    }
+  },
+  {
+    "item_id": "Mercury_7210123",
+    "difficulty": 2.3525707501140056,
+    "discrimination": 1.44400279925381,
+    "guessing": 0.0476507900683378,
+    "metadata": {
+      "atlas_idx": 114
+    }
+  },
+  {
+    "item_id": "Mercury_SC_409266",
+    "difficulty": -1.0702480107486803,
+    "discrimination": 4.26121270306966,
+    "guessing": 0.922530816728146,
+    "metadata": {
+      "atlas_idx": 115
+    }
+  },
+  {
+    "item_id": "Mercury_SC_409245",
+    "difficulty": -1.2214924693824967,
+    "discrimination": 4.83375207049313,
+    "guessing": 0.45809805311536,
+    "metadata": {
+      "atlas_idx": 116
+    }
+  },
+  {
+    "item_id": "Mercury_400750",
+    "difficulty": -0.6932290411184888,
+    "discrimination": 5.19792308826963,
+    "guessing": 0.907519537025734,
+    "metadata": {
+      "atlas_idx": 118
+    }
+  },
+  {
+    "item_id": "Mercury_175385",
+    "difficulty": 1.2043630789316175,
+    "discrimination": 6.01359154071638,
+    "guessing": 0.211403002374758,
+    "metadata": {
+      "atlas_idx": 119
+    }
+  },
+  {
+    "item_id": "MEAP_2005_8_39",
+    "difficulty": -3.002432856017175,
+    "discrimination": 1.45930611517719,
+    "guessing": 0.30206782287841,
+    "metadata": {
+      "atlas_idx": 120
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401801",
+    "difficulty": 0.8206743741302097,
+    "discrimination": 9.71856948878886,
+    "guessing": 0.463309596702644,
+    "metadata": {
+      "atlas_idx": 121
+    }
+  },
+  {
+    "item_id": "Mercury_7004953",
+    "difficulty": 3.9625106706486024,
+    "discrimination": 0.758757285208983,
+    "guessing": 0.27095752944625,
+    "metadata": {
+      "atlas_idx": 124
+    }
+  },
+  {
+    "item_id": "Mercury_178325",
+    "difficulty": -0.10688515548421568,
+    "discrimination": 4.14898281992177,
+    "guessing": 0.279927040828696,
+    "metadata": {
+      "atlas_idx": 127
+    }
+  },
+  {
+    "item_id": "OHAT_2007_8_24",
+    "difficulty": 0.32481360455596003,
+    "discrimination": 4.31667011489911,
+    "guessing": 0.055962139289771,
+    "metadata": {
+      "atlas_idx": 129
+    }
+  },
+  {
+    "item_id": "TIMSS_2011_4_pg5",
+    "difficulty": -3.1230648085336314,
+    "discrimination": 1.61442150458094,
+    "guessing": 0.417350932769879,
+    "metadata": {
+      "atlas_idx": 131
+    }
+  },
+  {
+    "item_id": "LEAP_2005_8_10404",
+    "difficulty": 0.6771793783889669,
+    "discrimination": 4.95710293059803,
+    "guessing": 0.023436912338875,
+    "metadata": {
+      "atlas_idx": 133
+    }
+  },
+  {
+    "item_id": "Mercury_SC_414041",
+    "difficulty": -0.8738736795085907,
+    "discrimination": 0.479611818003794,
+    "guessing": 0.000422771009003491,
+    "metadata": {
+      "atlas_idx": 135
+    }
+  },
+  {
+    "item_id": "MDSA_2013_8_20",
+    "difficulty": -1.8228275724800604,
+    "discrimination": 0.837120872715706,
+    "guessing": 0.0139419866444148,
+    "metadata": {
+      "atlas_idx": 139
+    }
+  },
+  {
+    "item_id": "Mercury_400884",
+    "difficulty": -4.330912627596074,
+    "discrimination": 0.438931133238873,
+    "guessing": 0.0386259908886756,
+    "metadata": {
+      "atlas_idx": 140
+    }
+  },
+  {
+    "item_id": "MDSA_2007_8_30",
+    "difficulty": -4.784059876799426,
+    "discrimination": 0.0883961780060534,
+    "guessing": 0.226661887111479,
+    "metadata": {
+      "atlas_idx": 141
+    }
+  },
+  {
+    "item_id": "Mercury_7038833",
+    "difficulty": -1.6431058934193585,
+    "discrimination": 2.86616998236727,
+    "guessing": 0.271698868826581,
+    "metadata": {
+      "atlas_idx": 145
+    }
+  },
+  {
+    "item_id": "MEA_2013_8_8",
+    "difficulty": -3.309612535938436,
+    "discrimination": 1.85111701579626,
+    "guessing": 0.271162526716629,
+    "metadata": {
+      "atlas_idx": 147
+    }
+  },
+  {
+    "item_id": "Mercury_404894",
+    "difficulty": -3.400412481996342,
+    "discrimination": 1.56641885490118,
+    "guessing": 0.354050469973991,
+    "metadata": {
+      "atlas_idx": 149
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405827",
+    "difficulty": -0.014731480876905144,
+    "discrimination": 2.8955503074589,
+    "guessing": 0.214027274013334,
+    "metadata": {
+      "atlas_idx": 150
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408631",
+    "difficulty": -1.8788143940751765,
+    "discrimination": 4.15897457783037,
+    "guessing": 0.100480175832543,
+    "metadata": {
+      "atlas_idx": 152
+    }
+  },
+  {
+    "item_id": "MCAS_1998_8_26",
+    "difficulty": -1.666113214802682,
+    "discrimination": 3.29809408765491,
+    "guessing": 0.0268864319474637,
+    "metadata": {
+      "atlas_idx": 153
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401295",
+    "difficulty": -4.185667449766586,
+    "discrimination": 1.79736076859713,
+    "guessing": 0.201683472896713,
+    "metadata": {
+      "atlas_idx": 154
+    }
+  },
+  {
+    "item_id": "TIMSS_1995_8_J7",
+    "difficulty": 0.10564093189402518,
+    "discrimination": 6.1306035657887,
+    "guessing": 0.259594600177736,
+    "metadata": {
+      "atlas_idx": 156
+    }
+  },
+  {
+    "item_id": "Mercury_7103600",
+    "difficulty": -0.8313364409412834,
+    "discrimination": 3.77771158992279,
+    "guessing": 0.310745451638991,
+    "metadata": {
+      "atlas_idx": 157
+    }
+  },
+  {
+    "item_id": "Mercury_405950",
+    "difficulty": 0.7664019826407172,
+    "discrimination": 8.60718737577805,
+    "guessing": 0.189915911261787,
+    "metadata": {
+      "atlas_idx": 159
+    }
+  },
+  {
+    "item_id": "Mercury_417118",
+    "difficulty": 0.6757177894676685,
+    "discrimination": 1.99623100906665,
+    "guessing": 0.667790282124367,
+    "metadata": {
+      "atlas_idx": 162
+    }
+  },
+  {
+    "item_id": "Mercury_407019",
+    "difficulty": -1.2917772652613537,
+    "discrimination": 2.89293675318346,
+    "guessing": 0.743755273000158,
+    "metadata": {
+      "atlas_idx": 164
+    }
+  },
+  {
+    "item_id": "Mercury_7185343",
+    "difficulty": -1.348026395217276,
+    "discrimination": 4.4772366370248,
+    "guessing": 0.742029788446749,
+    "metadata": {
+      "atlas_idx": 165
+    }
+  },
+  {
+    "item_id": "Mercury_7116235",
+    "difficulty": -2.741047200900511,
+    "discrimination": 1.95620501181375,
+    "guessing": 0.0358857876915488,
+    "metadata": {
+      "atlas_idx": 168
+    }
+  },
+  {
+    "item_id": "Mercury_7138390",
+    "difficulty": 0.03848970268764102,
+    "discrimination": 3.33225224954609,
+    "guessing": 0.347742179691709,
+    "metadata": {
+      "atlas_idx": 169
+    }
+  },
+  {
+    "item_id": "Mercury_7001295",
+    "difficulty": -0.6665506135162488,
+    "discrimination": 2.19751000219992,
+    "guessing": 0.705301248530716,
+    "metadata": {
+      "atlas_idx": 171
+    }
+  },
+  {
+    "item_id": "Mercury_7206395",
+    "difficulty": -0.48040149319017605,
+    "discrimination": 1.09027674139451,
+    "guessing": 0.000511677188732909,
+    "metadata": {
+      "atlas_idx": 175
+    }
+  },
+  {
+    "item_id": "MCAS_1998_4_23",
+    "difficulty": 0.45401741603047485,
+    "discrimination": 8.33061875490163,
+    "guessing": 0.0602477947840776,
+    "metadata": {
+      "atlas_idx": 176
+    }
+  },
+  {
+    "item_id": "TAKS_2009_8_27",
+    "difficulty": -3.023097849012366,
+    "discrimination": 2.41700858520383,
+    "guessing": 0.259076094587845,
+    "metadata": {
+      "atlas_idx": 177
+    }
+  },
+  {
+    "item_id": "VASoL_2009_5_37",
+    "difficulty": 0.36243430701346846,
+    "discrimination": 2.90213783969723,
+    "guessing": 0.122226145550615,
+    "metadata": {
+      "atlas_idx": 180
+    }
+  },
+  {
+    "item_id": "Mercury_7122640",
+    "difficulty": -1.5817832281562485,
+    "discrimination": 1.56815817662373,
+    "guessing": 0.415426388702122,
+    "metadata": {
+      "atlas_idx": 181
+    }
+  },
+  {
+    "item_id": "Mercury_7094308",
+    "difficulty": -1.0945490018846278,
+    "discrimination": 1.99768133976049,
+    "guessing": 0.741821019020379,
+    "metadata": {
+      "atlas_idx": 182
+    }
+  },
+  {
+    "item_id": "Mercury_7009993",
+    "difficulty": -0.13735842818720875,
+    "discrimination": 3.6145119981467,
+    "guessing": 0.452374847522034,
+    "metadata": {
+      "atlas_idx": 183
+    }
+  },
+  {
+    "item_id": "MEAP_2005_5_12",
+    "difficulty": 0.42429647317352476,
+    "discrimination": 3.94625234256533,
+    "guessing": 0.0127620107731022,
+    "metadata": {
+      "atlas_idx": 185
+    }
+  },
+  {
+    "item_id": "Mercury_7222600",
+    "difficulty": 1.6462159036827704,
+    "discrimination": 1.53986312188649,
+    "guessing": 0.0451821919873428,
+    "metadata": {
+      "atlas_idx": 187
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10027",
+    "difficulty": -4.040772295418291,
+    "discrimination": 2.15217909888545,
+    "guessing": 0.229608247631497,
+    "metadata": {
+      "atlas_idx": 189
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400133",
+    "difficulty": 0.9936964938949767,
+    "discrimination": 7.07097217725073,
+    "guessing": 0.0990932229920096,
+    "metadata": {
+      "atlas_idx": 191
+    }
+  },
+  {
+    "item_id": "LEAP__7_10339",
+    "difficulty": -5.147330435134939,
+    "discrimination": 0.590808652668485,
+    "guessing": 0.108395183159578,
+    "metadata": {
+      "atlas_idx": 193
+    }
+  },
+  {
+    "item_id": "LEAP__5_10312",
+    "difficulty": -0.09925413330860482,
+    "discrimination": 9.73434509745554,
+    "guessing": 0.850317645561574,
+    "metadata": {
+      "atlas_idx": 195
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10265",
+    "difficulty": -3.67633018129968,
+    "discrimination": 0.690045417221043,
+    "guessing": 0.0930715874919904,
+    "metadata": {
+      "atlas_idx": 196
+    }
+  },
+  {
+    "item_id": "Mercury_404609",
+    "difficulty": -4.455637342068799,
+    "discrimination": 0.811463240073858,
+    "guessing": 0.234123161433288,
+    "metadata": {
+      "atlas_idx": 198
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407138",
+    "difficulty": 0.35269861843818995,
+    "discrimination": 4.78319117528474,
+    "guessing": 0.593577843891977,
+    "metadata": {
+      "atlas_idx": 199
+    }
+  },
+  {
+    "item_id": "Mercury_180005",
+    "difficulty": -0.36448740565673204,
+    "discrimination": 3.9129317668373,
+    "guessing": 0.479408501797733,
+    "metadata": {
+      "atlas_idx": 201
+    }
+  },
+  {
+    "item_id": "Mercury_417127",
+    "difficulty": -2.0264960808733785,
+    "discrimination": 5.02407884887721,
+    "guessing": 0.00873577667254882,
+    "metadata": {
+      "atlas_idx": 202
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2010_4_24",
+    "difficulty": -0.6810516124760511,
+    "discrimination": 3.03282924263866,
+    "guessing": 0.466829009025343,
+    "metadata": {
+      "atlas_idx": 203
+    }
+  },
+  {
+    "item_id": "Mercury_7210140",
+    "difficulty": 0.7089119528667245,
+    "discrimination": 15.5262499457648,
+    "guessing": 0.214277399003914,
+    "metadata": {
+      "atlas_idx": 204
+    }
+  },
+  {
+    "item_id": "Mercury_7228725",
+    "difficulty": 0.3674650894910237,
+    "discrimination": 5.62424930938898,
+    "guessing": 0.234934154713559,
+    "metadata": {
+      "atlas_idx": 205
+    }
+  },
+  {
+    "item_id": "Mercury_7210245",
+    "difficulty": 0.2593893141616723,
+    "discrimination": 3.69943251367263,
+    "guessing": 0.674446969387918,
+    "metadata": {
+      "atlas_idx": 206
+    }
+  },
+  {
+    "item_id": "Mercury_7131845",
+    "difficulty": -0.7564346134826875,
+    "discrimination": 0.391504724198026,
+    "guessing": 0.00969767224514117,
+    "metadata": {
+      "atlas_idx": 208
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405341",
+    "difficulty": 0.02016637933167705,
+    "discrimination": 3.36420246683624,
+    "guessing": 0.330979291239058,
+    "metadata": {
+      "atlas_idx": 210
+    }
+  },
+  {
+    "item_id": "Mercury_7214340",
+    "difficulty": -2.0844311666007553,
+    "discrimination": 3.29954680063851,
+    "guessing": 0.0717959571310158,
+    "metadata": {
+      "atlas_idx": 211
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407302",
+    "difficulty": -2.342989248532932,
+    "discrimination": 3.76848979663964,
+    "guessing": 0.0568436392597005,
+    "metadata": {
+      "atlas_idx": 212
+    }
+  },
+  {
+    "item_id": "MDSA_2009_5_39",
+    "difficulty": -0.8549695068883378,
+    "discrimination": 3.66239743961209,
+    "guessing": 0.800880017869122,
+    "metadata": {
+      "atlas_idx": 213
+    }
+  },
+  {
+    "item_id": "MCAS_2004_5_7",
+    "difficulty": -1.0949968179710272,
+    "discrimination": 1.27449455693722,
+    "guessing": 0.0466211017141262,
+    "metadata": {
+      "atlas_idx": 214
+    }
+  },
+  {
+    "item_id": "Mercury_7034843",
+    "difficulty": 1.318633149955885,
+    "discrimination": 1.51136677942604,
+    "guessing": 0.0173034724567134,
+    "metadata": {
+      "atlas_idx": 223
+    }
+  },
+  {
+    "item_id": "Mercury_184205",
+    "difficulty": 0.9454415578286008,
+    "discrimination": 4.579244847356,
+    "guessing": 0.0209936980579296,
+    "metadata": {
+      "atlas_idx": 224
+    }
+  },
+  {
+    "item_id": "Mercury_7033828",
+    "difficulty": -1.504433832011102,
+    "discrimination": 4.79288205589079,
+    "guessing": 0.946316447917049,
+    "metadata": {
+      "atlas_idx": 226
+    }
+  },
+  {
+    "item_id": "Mercury_7107240",
+    "difficulty": -1.083303524848003,
+    "discrimination": 3.961993477834,
+    "guessing": 0.736824662955899,
+    "metadata": {
+      "atlas_idx": 228
+    }
+  },
+  {
+    "item_id": "Mercury_183033",
+    "difficulty": 0.5256181893892655,
+    "discrimination": 1.3032330926769,
+    "guessing": 0.552788211670776,
+    "metadata": {
+      "atlas_idx": 229
+    }
+  },
+  {
+    "item_id": "AIMS_2009_4_5",
+    "difficulty": -0.2255904750526262,
+    "discrimination": 2.83597788357087,
+    "guessing": 0.293003886372676,
+    "metadata": {
+      "atlas_idx": 230
+    }
+  },
+  {
+    "item_id": "Mercury_7137165",
+    "difficulty": -4.679104232108521,
+    "discrimination": 1.4910556038735,
+    "guessing": 0.187007424674676,
+    "metadata": {
+      "atlas_idx": 231
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408748",
+    "difficulty": -2.278566765504471,
+    "discrimination": 2.2925101950557,
+    "guessing": 0.0450516422865201,
+    "metadata": {
+      "atlas_idx": 232
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401373",
+    "difficulty": -1.01051431749724,
+    "discrimination": 2.81547323757446,
+    "guessing": 0.572433806339873,
+    "metadata": {
+      "atlas_idx": 234
+    }
+  },
+  {
+    "item_id": "MDSA_2007_8_3",
+    "difficulty": -0.5498915314715874,
+    "discrimination": 4.6238121068876,
+    "guessing": 0.580704534632378,
+    "metadata": {
+      "atlas_idx": 236
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413439",
+    "difficulty": 1.0776046879182046,
+    "discrimination": 10.4891118855598,
+    "guessing": 0.544853054410126,
+    "metadata": {
+      "atlas_idx": 238
+    }
+  },
+  {
+    "item_id": "Mercury_7271670",
+    "difficulty": -1.2391898671296713,
+    "discrimination": 2.93816075752722,
+    "guessing": 0.352869331030661,
+    "metadata": {
+      "atlas_idx": 240
+    }
+  },
+  {
+    "item_id": "OHAT_2010_5_18",
+    "difficulty": -1.403720335386612,
+    "discrimination": 5.99067861391741,
+    "guessing": 0.907110988490915,
+    "metadata": {
+      "atlas_idx": 241
+    }
+  },
+  {
+    "item_id": "Mercury_7252245",
+    "difficulty": -0.9243183650106579,
+    "discrimination": 5.61035591423857,
+    "guessing": 0.638949684481986,
+    "metadata": {
+      "atlas_idx": 248
+    }
+  },
+  {
+    "item_id": "Mercury_406639",
+    "difficulty": -4.459697732834089,
+    "discrimination": 0.982794130816562,
+    "guessing": 0.175213025280295,
+    "metadata": {
+      "atlas_idx": 249
+    }
+  },
+  {
+    "item_id": "Mercury_7071523",
+    "difficulty": -3.1388290521995565,
+    "discrimination": 1.85709955071064,
+    "guessing": 0.377770869046807,
+    "metadata": {
+      "atlas_idx": 250
+    }
+  },
+  {
+    "item_id": "Mercury_404435",
+    "difficulty": -1.9712980523730521,
+    "discrimination": 1.59853825221055,
+    "guessing": 0.00432210046853213,
+    "metadata": {
+      "atlas_idx": 251
+    }
+  },
+  {
+    "item_id": "TIMSS_2011_8_pg31",
+    "difficulty": -1.278565255225079,
+    "discrimination": 1.34601600708843,
+    "guessing": 0.249905184042003,
+    "metadata": {
+      "atlas_idx": 252
+    }
+  },
+  {
+    "item_id": "TIMSS_2003_8_pg85",
+    "difficulty": -0.7090887796786145,
+    "discrimination": 3.41309033946756,
+    "guessing": 0.745397461156682,
+    "metadata": {
+      "atlas_idx": 254
+    }
+  },
+  {
+    "item_id": "Mercury_7109463",
+    "difficulty": -1.752897364500947,
+    "discrimination": 3.83943865671168,
+    "guessing": 0.0481775390498225,
+    "metadata": {
+      "atlas_idx": 257
+    }
+  },
+  {
+    "item_id": "Mercury_401502",
+    "difficulty": -0.5714624351472715,
+    "discrimination": 1.11774841333493,
+    "guessing": 0.540471560033581,
+    "metadata": {
+      "atlas_idx": 259
+    }
+  },
+  {
+    "item_id": "Mercury_7106593",
+    "difficulty": -1.5786100709902002,
+    "discrimination": 2.78100913104434,
+    "guessing": 0.474249455369411,
+    "metadata": {
+      "atlas_idx": 264
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401668",
+    "difficulty": -0.14941647551530934,
+    "discrimination": 2.43147856926461,
+    "guessing": 0.375539587008834,
+    "metadata": {
+      "atlas_idx": 266
+    }
+  },
+  {
+    "item_id": "MSA_2012_5_23",
+    "difficulty": -0.9008096468102555,
+    "discrimination": 2.38070839288105,
+    "guessing": 0.747889149185153,
+    "metadata": {
+      "atlas_idx": 267
+    }
+  },
+  {
+    "item_id": "Mercury_7027720",
+    "difficulty": -1.2750324883846227,
+    "discrimination": 2.15215900552676,
+    "guessing": 0.0781985314470343,
+    "metadata": {
+      "atlas_idx": 268
+    }
+  },
+  {
+    "item_id": "Mercury_7072380",
+    "difficulty": -2.11884143148258,
+    "discrimination": 1.12244515475769,
+    "guessing": 0.721635967037715,
+    "metadata": {
+      "atlas_idx": 269
+    }
+  },
+  {
+    "item_id": "Mercury_7218628",
+    "difficulty": -9.24094396758866,
+    "discrimination": 0.535738270467943,
+    "guessing": 0.155963091529803,
+    "metadata": {
+      "atlas_idx": 270
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408568",
+    "difficulty": 0.22774449428153357,
+    "discrimination": 3.45040629371582,
+    "guessing": 0.100703144138403,
+    "metadata": {
+      "atlas_idx": 272
+    }
+  },
+  {
+    "item_id": "Mercury_414365",
+    "difficulty": 0.1743171887746803,
+    "discrimination": 10.9722867632666,
+    "guessing": 0.400188217185614,
+    "metadata": {
+      "atlas_idx": 274
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401372",
+    "difficulty": 1.99432491373107,
+    "discrimination": 3.0715472086324,
+    "guessing": 0.00559445208242237,
+    "metadata": {
+      "atlas_idx": 276
+    }
+  },
+  {
+    "item_id": "Mercury_7095060",
+    "difficulty": 0.7756165753834534,
+    "discrimination": 13.0138117117973,
+    "guessing": 0.6248658896355,
+    "metadata": {
+      "atlas_idx": 278
+    }
+  },
+  {
+    "item_id": "Mercury_400407",
+    "difficulty": 2.1837729788982485,
+    "discrimination": 1.48490798854222,
+    "guessing": 0.000118919766962472,
+    "metadata": {
+      "atlas_idx": 280
+    }
+  },
+  {
+    "item_id": "VASoL_2009_3_8",
+    "difficulty": 15.707244348353239,
+    "discrimination": 0.124972012301751,
+    "guessing": 0.00112170924669046,
+    "metadata": {
+      "atlas_idx": 281
+    }
+  },
+  {
+    "item_id": "ACTAAP_2014_7_3",
+    "difficulty": 0.29835482019175996,
+    "discrimination": 6.16834364246064,
+    "guessing": 0.109198367976282,
+    "metadata": {
+      "atlas_idx": 286
+    }
+  },
+  {
+    "item_id": "Mercury_405876",
+    "difficulty": 1.5115972410626164,
+    "discrimination": 2.12747844745743,
+    "guessing": 0.00424904505518518,
+    "metadata": {
+      "atlas_idx": 287
+    }
+  },
+  {
+    "item_id": "VASoL_2008_5_10",
+    "difficulty": -0.757249922859772,
+    "discrimination": 2.88136812421885,
+    "guessing": 0.640526064449331,
+    "metadata": {
+      "atlas_idx": 288
+    }
+  },
+  {
+    "item_id": "Mercury_7058135",
+    "difficulty": -0.4738487852729068,
+    "discrimination": 2.36963851115543,
+    "guessing": 0.300346757909249,
+    "metadata": {
+      "atlas_idx": 290
+    }
+  },
+  {
+    "item_id": "Mercury_7210473",
+    "difficulty": -3.0812001139719856,
+    "discrimination": 1.84955307742948,
+    "guessing": 0.164469372949971,
+    "metadata": {
+      "atlas_idx": 291
+    }
+  },
+  {
+    "item_id": "TIMSS_1995_8_J1",
+    "difficulty": 0.8528088925767034,
+    "discrimination": 5.9025959260314,
+    "guessing": 0.0257335185704508,
+    "metadata": {
+      "atlas_idx": 293
+    }
+  },
+  {
+    "item_id": "Mercury_7138915",
+    "difficulty": -2.9866032354115952,
+    "discrimination": 2.20149395411019,
+    "guessing": 0.332161849520419,
+    "metadata": {
+      "atlas_idx": 294
+    }
+  },
+  {
+    "item_id": "OHAT_2007_8_12",
+    "difficulty": -4.1443999227392565,
+    "discrimination": 0.788433877377516,
+    "guessing": 0.158295309022928,
+    "metadata": {
+      "atlas_idx": 295
+    }
+  },
+  {
+    "item_id": "Mercury_7084228",
+    "difficulty": 1.2356659000269232,
+    "discrimination": 6.39693022201898,
+    "guessing": 0.0534129596918814,
+    "metadata": {
+      "atlas_idx": 298
+    }
+  },
+  {
+    "item_id": "Mercury_416683",
+    "difficulty": -0.29618714415534125,
+    "discrimination": 2.82056175613861,
+    "guessing": 0.142244322952519,
+    "metadata": {
+      "atlas_idx": 300
+    }
+  },
+  {
+    "item_id": "Mercury_7016310",
+    "difficulty": -1.4615424820171035,
+    "discrimination": 2.65925310240243,
+    "guessing": 0.435105961767593,
+    "metadata": {
+      "atlas_idx": 304
+    }
+  },
+  {
+    "item_id": "Mercury_7218400",
+    "difficulty": -0.12102366937942584,
+    "discrimination": 3.67914733593596,
+    "guessing": 0.213876558842611,
+    "metadata": {
+      "atlas_idx": 306
+    }
+  },
+  {
+    "item_id": "Mercury_7056298",
+    "difficulty": -0.7422523921799452,
+    "discrimination": 2.75136301756901,
+    "guessing": 0.240400250113114,
+    "metadata": {
+      "atlas_idx": 309
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_8_47",
+    "difficulty": -0.6665395033614279,
+    "discrimination": 3.14153147665586,
+    "guessing": 0.400015027442202,
+    "metadata": {
+      "atlas_idx": 310
+    }
+  },
+  {
+    "item_id": "Mercury_417150",
+    "difficulty": -2.2481265661582412,
+    "discrimination": 0.476100614618457,
+    "guessing": 0.015954811661183,
+    "metadata": {
+      "atlas_idx": 313
+    }
+  },
+  {
+    "item_id": "MEA_2013_8_1",
+    "difficulty": -1.1337639514646785,
+    "discrimination": 2.66818928179484,
+    "guessing": 0.798537069328281,
+    "metadata": {
+      "atlas_idx": 316
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400386",
+    "difficulty": -1.3597304634838188,
+    "discrimination": 2.7181389349102,
+    "guessing": 0.502120693412237,
+    "metadata": {
+      "atlas_idx": 318
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS11003",
+    "difficulty": -0.5061491870403124,
+    "discrimination": 4.32320190838009,
+    "guessing": 0.129188851734612,
+    "metadata": {
+      "atlas_idx": 319
+    }
+  },
+  {
+    "item_id": "Mercury_7139545",
+    "difficulty": -2.2115935458192024,
+    "discrimination": 0.538459779875896,
+    "guessing": 0.0477718745084805,
+    "metadata": {
+      "atlas_idx": 322
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408384",
+    "difficulty": 0.18015722580204793,
+    "discrimination": 4.15340916402803,
+    "guessing": 0.14753108038214,
+    "metadata": {
+      "atlas_idx": 323
+    }
+  },
+  {
+    "item_id": "MCAS_2001_5_3",
+    "difficulty": 1.2533296979425128,
+    "discrimination": 8.46049616437348,
+    "guessing": 0.0756988709901463,
+    "metadata": {
+      "atlas_idx": 325
+    }
+  },
+  {
+    "item_id": "Mercury_7216248",
+    "difficulty": -0.6192948524194678,
+    "discrimination": 4.11327587438822,
+    "guessing": 0.496486571347281,
+    "metadata": {
+      "atlas_idx": 326
+    }
+  },
+  {
+    "item_id": "Mercury_7214008",
+    "difficulty": 10.780842678569687,
+    "discrimination": 0.228848987931648,
+    "guessing": 0.00327114927769771,
+    "metadata": {
+      "atlas_idx": 327
+    }
+  },
+  {
+    "item_id": "Mercury_7005425",
+    "difficulty": -1.4160277713394034,
+    "discrimination": 1.78917092490287,
+    "guessing": 0.00500756690131225,
+    "metadata": {
+      "atlas_idx": 328
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_8_11",
+    "difficulty": -2.203455317793319,
+    "discrimination": 3.2207978296894,
+    "guessing": 0.399214819604773,
+    "metadata": {
+      "atlas_idx": 329
+    }
+  },
+  {
+    "item_id": "Mercury_7234360",
+    "difficulty": 0.054468298706046914,
+    "discrimination": 4.38608256188161,
+    "guessing": 0.197784658333846,
+    "metadata": {
+      "atlas_idx": 330
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10597",
+    "difficulty": -0.04023105833213844,
+    "discrimination": 2.79978486781078,
+    "guessing": 0.123965174010491,
+    "metadata": {
+      "atlas_idx": 331
+    }
+  },
+  {
+    "item_id": "Mercury_176855",
+    "difficulty": -0.8569266390057776,
+    "discrimination": 3.99312640601335,
+    "guessing": 0.614284578695044,
+    "metadata": {
+      "atlas_idx": 334
+    }
+  },
+  {
+    "item_id": "OHAT_2010_8_8",
+    "difficulty": -1.4576611957005814,
+    "discrimination": 4.58726428363309,
+    "guessing": 0.53634686497024,
+    "metadata": {
+      "atlas_idx": 335
+    }
+  },
+  {
+    "item_id": "Mercury_185010",
+    "difficulty": 0.10837145465868389,
+    "discrimination": 3.19991032498806,
+    "guessing": 0.578641072033733,
+    "metadata": {
+      "atlas_idx": 337
+    }
+  },
+  {
+    "item_id": "Mercury_7075023",
+    "difficulty": 0.16772958935785712,
+    "discrimination": 4.49132066217465,
+    "guessing": 0.045547594022043,
+    "metadata": {
+      "atlas_idx": 338
+    }
+  },
+  {
+    "item_id": "TIMSS_2003_8_pg94",
+    "difficulty": -2.7622441281127337,
+    "discrimination": 1.82668380036994,
+    "guessing": 0.145050382868823,
+    "metadata": {
+      "atlas_idx": 344
+    }
+  },
+  {
+    "item_id": "Mercury_7215828",
+    "difficulty": -1.966667768774483,
+    "discrimination": 2.28004158669193,
+    "guessing": 0.0282414338812989,
+    "metadata": {
+      "atlas_idx": 347
+    }
+  },
+  {
+    "item_id": "MEA_2011_8_13",
+    "difficulty": -1.211505403806334,
+    "discrimination": 2.31956335102048,
+    "guessing": 0.430449106909666,
+    "metadata": {
+      "atlas_idx": 348
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402121",
+    "difficulty": -3.5840174295663565,
+    "discrimination": 2.25293317353222,
+    "guessing": 0.22586184795386,
+    "metadata": {
+      "atlas_idx": 353
+    }
+  },
+  {
+    "item_id": "MCAS_2006_9_30",
+    "difficulty": -3.1839438511699902,
+    "discrimination": 2.19897279073518,
+    "guessing": 0.18238702327055,
+    "metadata": {
+      "atlas_idx": 356
+    }
+  },
+  {
+    "item_id": "Mercury_402547",
+    "difficulty": -1.0427730540667648,
+    "discrimination": 5.95142354118096,
+    "guessing": 0.341148813871314,
+    "metadata": {
+      "atlas_idx": 357
+    }
+  },
+  {
+    "item_id": "MDSA_2013_8_40",
+    "difficulty": 0.21598168341712215,
+    "discrimination": 3.59514306441363,
+    "guessing": 0.359949794681835,
+    "metadata": {
+      "atlas_idx": 359
+    }
+  },
+  {
+    "item_id": "LEAP_2000_8_2",
+    "difficulty": -0.2690166646473524,
+    "discrimination": 2.28450327130951,
+    "guessing": 0.0615636325335397,
+    "metadata": {
+      "atlas_idx": 360
+    }
+  },
+  {
+    "item_id": "Mercury_7174213",
+    "difficulty": -0.9176204274807396,
+    "discrimination": 1.2650253471021,
+    "guessing": 0.00644463153336536,
+    "metadata": {
+      "atlas_idx": 361
+    }
+  },
+  {
+    "item_id": "Mercury_180373",
+    "difficulty": -0.287215541697153,
+    "discrimination": 2.2092246488699,
+    "guessing": 0.683833777568918,
+    "metadata": {
+      "atlas_idx": 362
+    }
+  },
+  {
+    "item_id": "VASoL_2008_3_16",
+    "difficulty": -2.833414078436922,
+    "discrimination": 1.06161803970989,
+    "guessing": 0.0368947295478322,
+    "metadata": {
+      "atlas_idx": 363
+    }
+  },
+  {
+    "item_id": "FCAT_2008_5_1",
+    "difficulty": 0.2505643956647846,
+    "discrimination": 5.34419248919322,
+    "guessing": 0.766127367988963,
+    "metadata": {
+      "atlas_idx": 364
+    }
+  },
+  {
+    "item_id": "Mercury_404097",
+    "difficulty": 0.12019765571324088,
+    "discrimination": 3.20300254983297,
+    "guessing": 0.0305863003110488,
+    "metadata": {
+      "atlas_idx": 366
+    }
+  },
+  {
+    "item_id": "MCAS_2013_8_29425",
+    "difficulty": -3.2811061506937267,
+    "discrimination": 1.57415717948887,
+    "guessing": 0.260998026868878,
+    "metadata": {
+      "atlas_idx": 367
+    }
+  },
+  {
+    "item_id": "Mercury_7154315",
+    "difficulty": -125.94893483530664,
+    "discrimination": 0.0133089226210737,
+    "guessing": 0.0705548694524459,
+    "metadata": {
+      "atlas_idx": 368
+    }
+  },
+  {
+    "item_id": "Mercury_7086520",
+    "difficulty": -3.9168722789765593,
+    "discrimination": 1.36403168525415,
+    "guessing": 0.186132990166621,
+    "metadata": {
+      "atlas_idx": 369
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401585",
+    "difficulty": -0.9180466406109722,
+    "discrimination": 2.29046517878487,
+    "guessing": 0.778437282623503,
+    "metadata": {
+      "atlas_idx": 370
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10932",
+    "difficulty": -0.605296057624237,
+    "discrimination": 4.26934059952791,
+    "guessing": 0.665198048785247,
+    "metadata": {
+      "atlas_idx": 372
+    }
+  },
+  {
+    "item_id": "Mercury_7219328",
+    "difficulty": -1.3107123760886465,
+    "discrimination": 1.52124646236781,
+    "guessing": 0.0144214259247898,
+    "metadata": {
+      "atlas_idx": 373
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405931",
+    "difficulty": -1.4634796811486224,
+    "discrimination": 3.93993497333931,
+    "guessing": 0.878799048688779,
+    "metadata": {
+      "atlas_idx": 374
+    }
+  },
+  {
+    "item_id": "Mercury_7074848",
+    "difficulty": 0.06961670384039129,
+    "discrimination": 3.07379445798858,
+    "guessing": 0.0459691212925657,
+    "metadata": {
+      "atlas_idx": 375
+    }
+  },
+  {
+    "item_id": "Mercury_192220",
+    "difficulty": -3.0410028441954657,
+    "discrimination": 2.20659896242577,
+    "guessing": 0.215735640463046,
+    "metadata": {
+      "atlas_idx": 376
+    }
+  },
+  {
+    "item_id": "ACTAAP_2007_7_3",
+    "difficulty": 0.11784686176957822,
+    "discrimination": 10.1837563836589,
+    "guessing": 0.482508673531809,
+    "metadata": {
+      "atlas_idx": 377
+    }
+  },
+  {
+    "item_id": "Mercury_7212993",
+    "difficulty": 0.5351744744020951,
+    "discrimination": 0.425694603234999,
+    "guessing": 0.0044000414677685,
+    "metadata": {
+      "atlas_idx": 378
+    }
+  },
+  {
+    "item_id": "Mercury_7143308",
+    "difficulty": -1.5644633400008803,
+    "discrimination": 2.86407142695809,
+    "guessing": 0.534533078535659,
+    "metadata": {
+      "atlas_idx": 380
+    }
+  },
+  {
+    "item_id": "MSA_2012_5_12",
+    "difficulty": -2.6161344204934744,
+    "discrimination": 2.55482213029483,
+    "guessing": 0.263200431356858,
+    "metadata": {
+      "atlas_idx": 381
+    }
+  },
+  {
+    "item_id": "MCAS_2004_8_7",
+    "difficulty": 0.09017768287293795,
+    "discrimination": 2.43437250131946,
+    "guessing": 0.0462809741146861,
+    "metadata": {
+      "atlas_idx": 383
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407228",
+    "difficulty": -0.0005061750563708566,
+    "discrimination": 2.91281734838556,
+    "guessing": 0.204632483432574,
+    "metadata": {
+      "atlas_idx": 384
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415416",
+    "difficulty": 61.80312512009805,
+    "discrimination": 0.109733408680924,
+    "guessing": 0.00288391166122106,
+    "metadata": {
+      "atlas_idx": 385
+    }
+  },
+  {
+    "item_id": "Mercury_7215670",
+    "difficulty": 0.8681131273479061,
+    "discrimination": 3.19291498693691,
+    "guessing": 0.393073310069109,
+    "metadata": {
+      "atlas_idx": 386
+    }
+  },
+  {
+    "item_id": "CSZ30338",
+    "difficulty": -2.580591119699595,
+    "discrimination": 1.19884718908801,
+    "guessing": 0.0325161909325684,
+    "metadata": {
+      "atlas_idx": 387
+    }
+  },
+  {
+    "item_id": "Mercury_7106698",
+    "difficulty": -0.5006722960605576,
+    "discrimination": 2.96572196289687,
+    "guessing": 0.794079886402746,
+    "metadata": {
+      "atlas_idx": 388
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_8_34",
+    "difficulty": -1.2357742255073076,
+    "discrimination": 3.37246313912555,
+    "guessing": 0.843553374786028,
+    "metadata": {
+      "atlas_idx": 389
+    }
+  },
+  {
+    "item_id": "Mercury_7082320",
+    "difficulty": -0.1516847547410087,
+    "discrimination": 7.56973623704535,
+    "guessing": 0.223390033770846,
+    "metadata": {
+      "atlas_idx": 391
+    }
+  },
+  {
+    "item_id": "MCAS_2009_8_17",
+    "difficulty": -1.599760461027381,
+    "discrimination": 1.50354658512761,
+    "guessing": 0.0215246012396752,
+    "metadata": {
+      "atlas_idx": 392
+    }
+  },
+  {
+    "item_id": "MCAS_2014_8_6",
+    "difficulty": 1.1109152724814344,
+    "discrimination": 8.30151452644524,
+    "guessing": 0.243427639390848,
+    "metadata": {
+      "atlas_idx": 393
+    }
+  },
+  {
+    "item_id": "MSA_2012_5_15",
+    "difficulty": -4.744233884207234,
+    "discrimination": 1.23659551809996,
+    "guessing": 0.169747023699358,
+    "metadata": {
+      "atlas_idx": 394
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406725",
+    "difficulty": 0.9299519147504975,
+    "discrimination": 5.86228086141022,
+    "guessing": 0.0768228308724506,
+    "metadata": {
+      "atlas_idx": 395
+    }
+  },
+  {
+    "item_id": "MCAS_2005_9_17",
+    "difficulty": -0.7088661761890249,
+    "discrimination": 7.45013685089439,
+    "guessing": 0.798266481492837,
+    "metadata": {
+      "atlas_idx": 397
+    }
+  },
+  {
+    "item_id": "Mercury_7081603",
+    "difficulty": -0.0565623311395429,
+    "discrimination": 4.35641566462871,
+    "guessing": 0.226966374944581,
+    "metadata": {
+      "atlas_idx": 398
+    }
+  },
+  {
+    "item_id": "Mercury_7043068",
+    "difficulty": -0.6869944043231587,
+    "discrimination": 5.34140701276367,
+    "guessing": 0.914912489676436,
+    "metadata": {
+      "atlas_idx": 399
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408657",
+    "difficulty": -0.5474855027716055,
+    "discrimination": 9.39292926877091,
+    "guessing": 0.354396269988872,
+    "metadata": {
+      "atlas_idx": 400
+    }
+  },
+  {
+    "item_id": "Mercury_7012880",
+    "difficulty": -0.5637731332177089,
+    "discrimination": 5.88848591318908,
+    "guessing": 0.86817590749801,
+    "metadata": {
+      "atlas_idx": 401
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_8_17",
+    "difficulty": -1.4621447438742048,
+    "discrimination": 5.16070224218595,
+    "guessing": 0.550522769509085,
+    "metadata": {
+      "atlas_idx": 402
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401788",
+    "difficulty": -2.1058112481544726,
+    "discrimination": 2.88067311663496,
+    "guessing": 0.192090583581737,
+    "metadata": {
+      "atlas_idx": 403
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402612",
+    "difficulty": -2.994849825142031,
+    "discrimination": 1.18586079331274,
+    "guessing": 0.0654821223096806,
+    "metadata": {
+      "atlas_idx": 404
+    }
+  },
+  {
+    "item_id": "TIMSS_2003_8_pg117",
+    "difficulty": 0.8838330794354871,
+    "discrimination": 10.9321144601897,
+    "guessing": 0.513057305404082,
+    "metadata": {
+      "atlas_idx": 406
+    }
+  },
+  {
+    "item_id": "ACTAAP_2014_7_13",
+    "difficulty": -3.2371040795594346,
+    "discrimination": 1.32725193873117,
+    "guessing": 0.156682101131862,
+    "metadata": {
+      "atlas_idx": 412
+    }
+  },
+  {
+    "item_id": "MDSA_2008_8_27",
+    "difficulty": -1.597891105830001,
+    "discrimination": 0.367367142011947,
+    "guessing": 0.0844653870562057,
+    "metadata": {
+      "atlas_idx": 413
+    }
+  },
+  {
+    "item_id": "ACTAAP_2008_5_10",
+    "difficulty": -1.2351218590793167,
+    "discrimination": 1.36460184133375,
+    "guessing": 0.277831522574118,
+    "metadata": {
+      "atlas_idx": 416
+    }
+  },
+  {
+    "item_id": "Mercury_7159285",
+    "difficulty": 0.8893576973240883,
+    "discrimination": 9.40906147421983,
+    "guessing": 0.0166353996902376,
+    "metadata": {
+      "atlas_idx": 420
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406089",
+    "difficulty": -3.3306302947507738,
+    "discrimination": 2.81092848561079,
+    "guessing": 0.268835087872441,
+    "metadata": {
+      "atlas_idx": 421
+    }
+  },
+  {
+    "item_id": "Mercury_7142800",
+    "difficulty": 7.0390594916220754,
+    "discrimination": 0.629122245170135,
+    "guessing": 0.00128981833788968,
+    "metadata": {
+      "atlas_idx": 422
+    }
+  },
+  {
+    "item_id": "Mercury_7214778",
+    "difficulty": -1.3287470445063876,
+    "discrimination": 3.68254500034484,
+    "guessing": 0.44906737480039,
+    "metadata": {
+      "atlas_idx": 423
+    }
+  },
+  {
+    "item_id": "Mercury_184100",
+    "difficulty": 29.118561559251884,
+    "discrimination": 0.227856511301217,
+    "guessing": 0.00139247744666209,
+    "metadata": {
+      "atlas_idx": 424
+    }
+  },
+  {
+    "item_id": "Mercury_7206938",
+    "difficulty": 0.7322347582030894,
+    "discrimination": 8.6607205579086,
+    "guessing": 0.033315071373417,
+    "metadata": {
+      "atlas_idx": 425
+    }
+  },
+  {
+    "item_id": "Mercury_7138460",
+    "difficulty": 0.38362666446662697,
+    "discrimination": 5.50372425018164,
+    "guessing": 0.0859184085663321,
+    "metadata": {
+      "atlas_idx": 426
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_4_15",
+    "difficulty": -3.0127024312304944,
+    "discrimination": 1.0569575326107,
+    "guessing": 0.0510511704171261,
+    "metadata": {
+      "atlas_idx": 427
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406451",
+    "difficulty": -0.9082061003802403,
+    "discrimination": 2.81229427779752,
+    "guessing": 0.863844701675309,
+    "metadata": {
+      "atlas_idx": 428
+    }
+  },
+  {
+    "item_id": "Mercury_407262",
+    "difficulty": -5.297714184175622,
+    "discrimination": 0.724182691469119,
+    "guessing": 0.0429388581966213,
+    "metadata": {
+      "atlas_idx": 429
+    }
+  },
+  {
+    "item_id": "Mercury_7033845",
+    "difficulty": -7.427044023882243,
+    "discrimination": 0.677445109908836,
+    "guessing": 0.17628780965448,
+    "metadata": {
+      "atlas_idx": 431
+    }
+  },
+  {
+    "item_id": "WASL_2004_8_17",
+    "difficulty": 0.4140403033502681,
+    "discrimination": 8.55244348839763,
+    "guessing": 0.115950317455814,
+    "metadata": {
+      "atlas_idx": 432
+    }
+  },
+  {
+    "item_id": "Mercury_7093048",
+    "difficulty": -0.7149181407429562,
+    "discrimination": 3.71811666823297,
+    "guessing": 0.535460532420566,
+    "metadata": {
+      "atlas_idx": 435
+    }
+  },
+  {
+    "item_id": "Mercury_7091823",
+    "difficulty": -2.0362204963292156,
+    "discrimination": 2.25288076725526,
+    "guessing": 0.0337645091539424,
+    "metadata": {
+      "atlas_idx": 437
+    }
+  },
+  {
+    "item_id": "Mercury_7131758",
+    "difficulty": 0.6696063157711514,
+    "discrimination": 1.83934716189117,
+    "guessing": 0.381537691520294,
+    "metadata": {
+      "atlas_idx": 438
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10392",
+    "difficulty": -0.4306195747337461,
+    "discrimination": 3.8697631476018,
+    "guessing": 0.297984814869987,
+    "metadata": {
+      "atlas_idx": 440
+    }
+  },
+  {
+    "item_id": "VASoL_2008_3_32",
+    "difficulty": -3.203114913022979,
+    "discrimination": 1.65717465749834,
+    "guessing": 0.0193766343708602,
+    "metadata": {
+      "atlas_idx": 442
+    }
+  },
+  {
+    "item_id": "Mercury_7093958",
+    "difficulty": -0.9657328148609818,
+    "discrimination": 7.38606865877113,
+    "guessing": 0.790267362862028,
+    "metadata": {
+      "atlas_idx": 447
+    }
+  },
+  {
+    "item_id": "MCAS_2004_8_14",
+    "difficulty": 0.06064052237551043,
+    "discrimination": 2.11225717708928,
+    "guessing": 0.299413513635016,
+    "metadata": {
+      "atlas_idx": 449
+    }
+  },
+  {
+    "item_id": "MCAS_2010_8_12016",
+    "difficulty": 1.51314216391751,
+    "discrimination": 6.06966436408813,
+    "guessing": 0.0192527482529522,
+    "metadata": {
+      "atlas_idx": 451
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406833",
+    "difficulty": -0.9587533825218801,
+    "discrimination": 2.79367950229898,
+    "guessing": 0.576780045486877,
+    "metadata": {
+      "atlas_idx": 452
+    }
+  },
+  {
+    "item_id": "Mercury_SC_410963",
+    "difficulty": -0.3462503616436944,
+    "discrimination": 3.55187970029263,
+    "guessing": 0.8453890288997,
+    "metadata": {
+      "atlas_idx": 458
+    }
+  },
+  {
+    "item_id": "Mercury_7217298",
+    "difficulty": 1.3311689081815028,
+    "discrimination": 8.5410868498107,
+    "guessing": 0.106266434171295,
+    "metadata": {
+      "atlas_idx": 459
+    }
+  },
+  {
+    "item_id": "Mercury_7238945",
+    "difficulty": -3.4851213486600225,
+    "discrimination": 0.413023860493527,
+    "guessing": 0.00681538339707464,
+    "metadata": {
+      "atlas_idx": 460
+    }
+  },
+  {
+    "item_id": "Mercury_7040775",
+    "difficulty": -2.130276789303897,
+    "discrimination": 1.98234233457421,
+    "guessing": 0.474236981521839,
+    "metadata": {
+      "atlas_idx": 465
+    }
+  },
+  {
+    "item_id": "Mercury_7040793",
+    "difficulty": 0.9913617583924043,
+    "discrimination": 5.0259454111766,
+    "guessing": 0.807785269896425,
+    "metadata": {
+      "atlas_idx": 472
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402103",
+    "difficulty": 1.8164348562779127,
+    "discrimination": 9.8458956011006,
+    "guessing": 0.529684631684776,
+    "metadata": {
+      "atlas_idx": 473
+    }
+  },
+  {
+    "item_id": "Mercury_416645",
+    "difficulty": 1.0080384440519645,
+    "discrimination": 17.0022244722968,
+    "guessing": 0.0225067545521384,
+    "metadata": {
+      "atlas_idx": 474
+    }
+  },
+  {
+    "item_id": "Mercury_403234",
+    "difficulty": 0.18347879139598858,
+    "discrimination": 5.20714281389576,
+    "guessing": 0.0547995149048692,
+    "metadata": {
+      "atlas_idx": 476
+    }
+  },
+  {
+    "item_id": "MCAS_1999_4_26",
+    "difficulty": 1.278322555743529,
+    "discrimination": 15.6615937154373,
+    "guessing": 0.714406463749369,
+    "metadata": {
+      "atlas_idx": 479
+    }
+  },
+  {
+    "item_id": "NCEOGA_2013_5_9",
+    "difficulty": -0.8129058749247473,
+    "discrimination": 1.01795223934019,
+    "guessing": 0.000805610283726478,
+    "metadata": {
+      "atlas_idx": 483
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400839",
+    "difficulty": -0.9799598992839982,
+    "discrimination": 2.81397640033672,
+    "guessing": 0.816089584708654,
+    "metadata": {
+      "atlas_idx": 484
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_8_36",
+    "difficulty": 0.9651883194783735,
+    "discrimination": 14.0435392768811,
+    "guessing": 0.88542076347422,
+    "metadata": {
+      "atlas_idx": 486
+    }
+  },
+  {
+    "item_id": "Mercury_7234308",
+    "difficulty": 5.439502248074391,
+    "discrimination": 0.730714496971597,
+    "guessing": 0.000395248773694258,
+    "metadata": {
+      "atlas_idx": 487
+    }
+  },
+  {
+    "item_id": "Mercury_SC_409009",
+    "difficulty": -1.408036950678725,
+    "discrimination": 1.60840040646299,
+    "guessing": 0.0380644329706734,
+    "metadata": {
+      "atlas_idx": 489
+    }
+  },
+  {
+    "item_id": "MCAS_2005_8_12",
+    "difficulty": 3.417707442878991,
+    "discrimination": 1.57671191700239,
+    "guessing": 0.0052709719924474,
+    "metadata": {
+      "atlas_idx": 491
+    }
+  },
+  {
+    "item_id": "Mercury_7218820",
+    "difficulty": 0.6121997946162863,
+    "discrimination": 3.76674332478184,
+    "guessing": 0.253682356736706,
+    "metadata": {
+      "atlas_idx": 492
+    }
+  },
+  {
+    "item_id": "MSA_2015_8_30",
+    "difficulty": -0.41560731967982995,
+    "discrimination": 2.5955920616096,
+    "guessing": 0.406717910074657,
+    "metadata": {
+      "atlas_idx": 494
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401147",
+    "difficulty": -0.2786246961017094,
+    "discrimination": 12.7376622834866,
+    "guessing": 0.715128549315356,
+    "metadata": {
+      "atlas_idx": 496
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2010_8_16",
+    "difficulty": -2.803400410148823,
+    "discrimination": 0.941307010051205,
+    "guessing": 0.00701031549074927,
+    "metadata": {
+      "atlas_idx": 498
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400582",
+    "difficulty": 1.295152093753555,
+    "discrimination": 4.93551366154408,
+    "guessing": 0.13225777569024,
+    "metadata": {
+      "atlas_idx": 504
+    }
+  },
+  {
+    "item_id": "Mercury_7094133",
+    "difficulty": 0.6819700964550686,
+    "discrimination": 5.7215344719423,
+    "guessing": 0.62546580210805,
+    "metadata": {
+      "atlas_idx": 505
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408251",
+    "difficulty": -1.524801496061192,
+    "discrimination": 3.08231567834425,
+    "guessing": 0.242517576721717,
+    "metadata": {
+      "atlas_idx": 507
+    }
+  },
+  {
+    "item_id": "AIMS_2008_8_6",
+    "difficulty": 1.0378384289469509,
+    "discrimination": 4.40451562301107,
+    "guessing": 0.0606590031181992,
+    "metadata": {
+      "atlas_idx": 508
+    }
+  },
+  {
+    "item_id": "TIMSS_1995_8_N2",
+    "difficulty": 1.1308923408667124,
+    "discrimination": 1.72479589683963,
+    "guessing": 0.198857589546546,
+    "metadata": {
+      "atlas_idx": 509
+    }
+  },
+  {
+    "item_id": "Mercury_7252753",
+    "difficulty": -1.1343055089923868,
+    "discrimination": 4.67381273523733,
+    "guessing": 0.149776869282181,
+    "metadata": {
+      "atlas_idx": 510
+    }
+  },
+  {
+    "item_id": "Mercury_403232",
+    "difficulty": -0.7917504324556645,
+    "discrimination": 4.73599019541108,
+    "guessing": 0.889842602612186,
+    "metadata": {
+      "atlas_idx": 512
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407572",
+    "difficulty": -2.5985561872770706,
+    "discrimination": 2.42300177138212,
+    "guessing": 0.828557697792715,
+    "metadata": {
+      "atlas_idx": 513
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415471",
+    "difficulty": 0.25231568905810076,
+    "discrimination": 9.8692615963213,
+    "guessing": 0.313479311973897,
+    "metadata": {
+      "atlas_idx": 514
+    }
+  },
+  {
+    "item_id": "Mercury_7190120",
+    "difficulty": 1.5780891803074013,
+    "discrimination": 6.8335661955037,
+    "guessing": 0.290799372499918,
+    "metadata": {
+      "atlas_idx": 515
+    }
+  },
+  {
+    "item_id": "ACTAAP_2013_5_8",
+    "difficulty": 1.3914698739900055,
+    "discrimination": 9.56009495418896,
+    "guessing": 0.0167820332108925,
+    "metadata": {
+      "atlas_idx": 516
+    }
+  },
+  {
+    "item_id": "Mercury_7013965",
+    "difficulty": -1.3982267094665788,
+    "discrimination": 3.42426463823229,
+    "guessing": 0.893729713029319,
+    "metadata": {
+      "atlas_idx": 518
+    }
+  },
+  {
+    "item_id": "Mercury_7222460",
+    "difficulty": 8.011728879179206,
+    "discrimination": 1.09100248192817,
+    "guessing": 0.00120911653956895,
+    "metadata": {
+      "atlas_idx": 519
+    }
+  },
+  {
+    "item_id": "MSA_2013_5_23",
+    "difficulty": -0.8225861680352257,
+    "discrimination": 7.31606514191928,
+    "guessing": 0.600871872128399,
+    "metadata": {
+      "atlas_idx": 522
+    }
+  },
+  {
+    "item_id": "Mercury_407539",
+    "difficulty": -0.46047830057316563,
+    "discrimination": 2.68785124386575,
+    "guessing": 0.456142942010428,
+    "metadata": {
+      "atlas_idx": 524
+    }
+  },
+  {
+    "item_id": "Mercury_7223160",
+    "difficulty": 0.6522510263144237,
+    "discrimination": 3.1843918191046,
+    "guessing": 0.0380084511998003,
+    "metadata": {
+      "atlas_idx": 527
+    }
+  },
+  {
+    "item_id": "LEAP__8_10365",
+    "difficulty": -0.4596042833437122,
+    "discrimination": 3.17577511869916,
+    "guessing": 0.0552433309394312,
+    "metadata": {
+      "atlas_idx": 528
+    }
+  },
+  {
+    "item_id": "MCAS_2016_8_15",
+    "difficulty": -5.212133715813484,
+    "discrimination": 0.534769815370948,
+    "guessing": 0.0263983452364742,
+    "metadata": {
+      "atlas_idx": 529
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400374",
+    "difficulty": -1.5029070611593862,
+    "discrimination": 0.565524084808414,
+    "guessing": 0.00189043462720009,
+    "metadata": {
+      "atlas_idx": 533
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_8_45",
+    "difficulty": 0.12866601351748677,
+    "discrimination": 2.40125201101056,
+    "guessing": 0.579743190287723,
+    "metadata": {
+      "atlas_idx": 534
+    }
+  },
+  {
+    "item_id": "Mercury_7247678",
+    "difficulty": -1.3039700258637823,
+    "discrimination": 4.79607509398762,
+    "guessing": 0.648920761863026,
+    "metadata": {
+      "atlas_idx": 535
+    }
+  },
+  {
+    "item_id": "Mercury_184818",
+    "difficulty": 1.1750133914286451,
+    "discrimination": 12.4948190335056,
+    "guessing": 0.115545603000967,
+    "metadata": {
+      "atlas_idx": 536
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_8_3",
+    "difficulty": 1.3987432326776754,
+    "discrimination": 10.295577194009,
+    "guessing": 0.105442712288569,
+    "metadata": {
+      "atlas_idx": 540
+    }
+  },
+  {
+    "item_id": "Mercury_7186568",
+    "difficulty": -0.03723550886412511,
+    "discrimination": 8.20657490931609,
+    "guessing": 0.536426468694309,
+    "metadata": {
+      "atlas_idx": 544
+    }
+  },
+  {
+    "item_id": "MCAS_2005_8_2",
+    "difficulty": -1.558278917845529,
+    "discrimination": 4.94609970620789,
+    "guessing": 0.34832072634687,
+    "metadata": {
+      "atlas_idx": 545
+    }
+  },
+  {
+    "item_id": "Mercury_404820",
+    "difficulty": -1.1923175584436834,
+    "discrimination": 1.7971537126642,
+    "guessing": 0.00791821240974664,
+    "metadata": {
+      "atlas_idx": 546
+    }
+  },
+  {
+    "item_id": "TIMSS_2003_8_pg80",
+    "difficulty": -1.1405500094784637,
+    "discrimination": 4.73189659825066,
+    "guessing": 0.873269780775992,
+    "metadata": {
+      "atlas_idx": 548
+    }
+  },
+  {
+    "item_id": "Mercury_410334",
+    "difficulty": -3.2967351316337514,
+    "discrimination": 1.20163083650589,
+    "guessing": 0.0389432822906919,
+    "metadata": {
+      "atlas_idx": 555
+    }
+  },
+  {
+    "item_id": "Mercury_7271128",
+    "difficulty": -1.7872621474756027,
+    "discrimination": 1.56492667076321,
+    "guessing": 0.391119836105983,
+    "metadata": {
+      "atlas_idx": 556
+    }
+  },
+  {
+    "item_id": "Mercury_7158935",
+    "difficulty": 1.3293199935400921,
+    "discrimination": 6.66247595012344,
+    "guessing": 0.0197173248838891,
+    "metadata": {
+      "atlas_idx": 557
+    }
+  },
+  {
+    "item_id": "Mercury_7016800",
+    "difficulty": 0.7614779390119574,
+    "discrimination": 2.96457788583572,
+    "guessing": 0.0729588178064481,
+    "metadata": {
+      "atlas_idx": 558
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_4_12",
+    "difficulty": -1.2348861967594873,
+    "discrimination": 0.421456783770792,
+    "guessing": 0.000933016226849058,
+    "metadata": {
+      "atlas_idx": 560
+    }
+  },
+  {
+    "item_id": "MDSA_2010_4_20",
+    "difficulty": -0.7193357376820209,
+    "discrimination": 1.5283026763891,
+    "guessing": 0.119201984633985,
+    "metadata": {
+      "atlas_idx": 561
+    }
+  },
+  {
+    "item_id": "Mercury_416536",
+    "difficulty": -2.1247730326678647,
+    "discrimination": 1.57979352247056,
+    "guessing": 0.276598450262116,
+    "metadata": {
+      "atlas_idx": 564
+    }
+  },
+  {
+    "item_id": "Mercury_SC_416108",
+    "difficulty": 0.978215774620356,
+    "discrimination": 3.98560621446247,
+    "guessing": 0.0254295649228275,
+    "metadata": {
+      "atlas_idx": 565
+    }
+  },
+  {
+    "item_id": "Mercury_7106628",
+    "difficulty": 0.967231761016289,
+    "discrimination": 5.47867430880564,
+    "guessing": 0.724712225147856,
+    "metadata": {
+      "atlas_idx": 566
+    }
+  },
+  {
+    "item_id": "Mercury_7011323",
+    "difficulty": 5.7209069507168975,
+    "discrimination": 0.989085988567452,
+    "guessing": 0.00116938898315018,
+    "metadata": {
+      "atlas_idx": 568
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407696",
+    "difficulty": 0.5333346674077714,
+    "discrimination": 5.11408184504945,
+    "guessing": 0.0183271996170619,
+    "metadata": {
+      "atlas_idx": 569
+    }
+  },
+  {
+    "item_id": "Mercury_7064260",
+    "difficulty": -2.9052510518861996,
+    "discrimination": 2.44194718106036,
+    "guessing": 0.484562193388449,
+    "metadata": {
+      "atlas_idx": 572
+    }
+  },
+  {
+    "item_id": "Mercury_SC_414339",
+    "difficulty": 0.6425749256360941,
+    "discrimination": 6.66938426778685,
+    "guessing": 0.582012456141863,
+    "metadata": {
+      "atlas_idx": 575
+    }
+  },
+  {
+    "item_id": "LEAP__5_10315",
+    "difficulty": -2.263125827834734,
+    "discrimination": 2.5574095841742,
+    "guessing": 0.784403559923088,
+    "metadata": {
+      "atlas_idx": 576
+    }
+  },
+  {
+    "item_id": "MDSA_2009_5_25",
+    "difficulty": 1.044106676905373,
+    "discrimination": 8.20055216551416,
+    "guessing": 0.749205802480404,
+    "metadata": {
+      "atlas_idx": 581
+    }
+  },
+  {
+    "item_id": "TIMSS_2011_8_pg15",
+    "difficulty": 1.0415983961044624,
+    "discrimination": 4.42575060409987,
+    "guessing": 0.496186740648298,
+    "metadata": {
+      "atlas_idx": 582
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400683",
+    "difficulty": -1.0681714607933217,
+    "discrimination": 4.62075200517088,
+    "guessing": 0.975640601675289,
+    "metadata": {
+      "atlas_idx": 584
+    }
+  },
+  {
+    "item_id": "Mercury_7106960",
+    "difficulty": -1.9267560792892529,
+    "discrimination": 5.59007299095095,
+    "guessing": 0.885599155280661,
+    "metadata": {
+      "atlas_idx": 585
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10902",
+    "difficulty": 0.2767216398523209,
+    "discrimination": 0.963603906969253,
+    "guessing": 0.000876199055727525,
+    "metadata": {
+      "atlas_idx": 586
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400130",
+    "difficulty": 1.7162050498545418,
+    "discrimination": 5.38287066140672,
+    "guessing": 0.0423343020067453,
+    "metadata": {
+      "atlas_idx": 587
+    }
+  },
+  {
+    "item_id": "Mercury_7230073",
+    "difficulty": 0.5230001625849175,
+    "discrimination": 5.90603012450541,
+    "guessing": 0.254574176570133,
+    "metadata": {
+      "atlas_idx": 588
+    }
+  },
+  {
+    "item_id": "Mercury_406800",
+    "difficulty": 0.25690385347344735,
+    "discrimination": 3.02882982116553,
+    "guessing": 0.470608346070807,
+    "metadata": {
+      "atlas_idx": 590
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402276",
+    "difficulty": 1.001444193868427,
+    "discrimination": 2.79318657749424,
+    "guessing": 0.580264522410407,
+    "metadata": {
+      "atlas_idx": 593
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2012_8_20",
+    "difficulty": -3.1586644803688384,
+    "discrimination": 1.09203101366763,
+    "guessing": 0.236855148988953,
+    "metadata": {
+      "atlas_idx": 595
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_8_9",
+    "difficulty": -4.347562071742101,
+    "discrimination": 1.99417758399405,
+    "guessing": 0.258205529024282,
+    "metadata": {
+      "atlas_idx": 596
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401766",
+    "difficulty": -2.964750059665856,
+    "discrimination": 2.03609677247789,
+    "guessing": 0.55261322531453,
+    "metadata": {
+      "atlas_idx": 597
+    }
+  },
+  {
+    "item_id": "Mercury_7202843",
+    "difficulty": -0.26583148770250903,
+    "discrimination": 4.00069288411834,
+    "guessing": 0.0812797270751666,
+    "metadata": {
+      "atlas_idx": 602
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401278",
+    "difficulty": 0.022885574200353625,
+    "discrimination": 2.92152998033652,
+    "guessing": 0.623594977550205,
+    "metadata": {
+      "atlas_idx": 603
+    }
+  },
+  {
+    "item_id": "Mercury_7018270",
+    "difficulty": 7.404934787617214,
+    "discrimination": 0.670760773570357,
+    "guessing": 0.000621980262854829,
+    "metadata": {
+      "atlas_idx": 604
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407070",
+    "difficulty": 1.3361140474714066,
+    "discrimination": 5.98388113377606,
+    "guessing": 0.550852269374272,
+    "metadata": {
+      "atlas_idx": 607
+    }
+  },
+  {
+    "item_id": "MDSA_2012_8_16",
+    "difficulty": -3.2222125340708296,
+    "discrimination": 2.43996724866757,
+    "guessing": 0.603473555727842,
+    "metadata": {
+      "atlas_idx": 609
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415453",
+    "difficulty": -1.1872199389783022,
+    "discrimination": 0.210201704611793,
+    "guessing": 0.01578503458935,
+    "metadata": {
+      "atlas_idx": 610
+    }
+  },
+  {
+    "item_id": "Mercury_7081305",
+    "difficulty": -3.164333156437867,
+    "discrimination": 1.54521667572483,
+    "guessing": 0.257420368781126,
+    "metadata": {
+      "atlas_idx": 611
+    }
+  },
+  {
+    "item_id": "ACTAAP_2011_5_8",
+    "difficulty": -1.0802028650505822,
+    "discrimination": 2.25980777955256,
+    "guessing": 0.52248719051051,
+    "metadata": {
+      "atlas_idx": 612
+    }
+  },
+  {
+    "item_id": "Mercury_7159023",
+    "difficulty": -0.8894505597906545,
+    "discrimination": 4.07172043385813,
+    "guessing": 0.296344768117572,
+    "metadata": {
+      "atlas_idx": 613
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402120",
+    "difficulty": -1.3312283020666211,
+    "discrimination": 3.58788034189467,
+    "guessing": 0.38602517829078,
+    "metadata": {
+      "atlas_idx": 614
+    }
+  },
+  {
+    "item_id": "Mercury_7027160",
+    "difficulty": -0.02515652576826942,
+    "discrimination": 6.6623941678792,
+    "guessing": 0.479112973515531,
+    "metadata": {
+      "atlas_idx": 616
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400046",
+    "difficulty": 0.7936150576292024,
+    "discrimination": 14.8174762480531,
+    "guessing": 0.185889381742645,
+    "metadata": {
+      "atlas_idx": 617
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_4_28",
+    "difficulty": 0.1859829347734352,
+    "discrimination": 1.56729749378137,
+    "guessing": 0.299347273530181,
+    "metadata": {
+      "atlas_idx": 618
+    }
+  },
+  {
+    "item_id": "NAEP_2005_4_S14+3",
+    "difficulty": -1.0159734473274729,
+    "discrimination": 3.49693766054552,
+    "guessing": 0.267025074488473,
+    "metadata": {
+      "atlas_idx": 620
+    }
+  },
+  {
+    "item_id": "Mercury_417143",
+    "difficulty": -3.3709183580487148,
+    "discrimination": 1.28553731839586,
+    "guessing": 0.175577341392892,
+    "metadata": {
+      "atlas_idx": 623
+    }
+  },
+  {
+    "item_id": "Mercury_7109323",
+    "difficulty": 1.2278257906938603,
+    "discrimination": 4.38319972942976,
+    "guessing": 0.0669586552703552,
+    "metadata": {
+      "atlas_idx": 624
+    }
+  },
+  {
+    "item_id": "ACTAAP_2007_7_31",
+    "difficulty": -1.3825523918172298,
+    "discrimination": 4.61983384450041,
+    "guessing": 0.943159795990151,
+    "metadata": {
+      "atlas_idx": 627
+    }
+  },
+  {
+    "item_id": "MCAS_2006_9_4",
+    "difficulty": 3.263209680768948,
+    "discrimination": 1.44234468041518,
+    "guessing": 0.0015803206100335,
+    "metadata": {
+      "atlas_idx": 629
+    }
+  },
+  {
+    "item_id": "Mercury_7203560",
+    "difficulty": -1.0637919667437983,
+    "discrimination": 2.77243786853466,
+    "guessing": 0.878455793066098,
+    "metadata": {
+      "atlas_idx": 631
+    }
+  },
+  {
+    "item_id": "TAKS_2009_5_30",
+    "difficulty": -0.5368165210281705,
+    "discrimination": 5.1338123701435,
+    "guessing": 0.646365421868657,
+    "metadata": {
+      "atlas_idx": 634
+    }
+  },
+  {
+    "item_id": "Mercury_405685",
+    "difficulty": 0.3780927797280332,
+    "discrimination": 4.32975728636876,
+    "guessing": 0.683775670347546,
+    "metadata": {
+      "atlas_idx": 635
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400063",
+    "difficulty": 1.2476035187135213,
+    "discrimination": 9.26178924662035,
+    "guessing": 0.00242566788452317,
+    "metadata": {
+      "atlas_idx": 637
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408042",
+    "difficulty": -5.260346405995952,
+    "discrimination": 1.18540555647378,
+    "guessing": 0.183370368246082,
+    "metadata": {
+      "atlas_idx": 638
+    }
+  },
+  {
+    "item_id": "Mercury_7175875",
+    "difficulty": -0.29168685393498883,
+    "discrimination": 7.46609954610745,
+    "guessing": 0.869283227602696,
+    "metadata": {
+      "atlas_idx": 640
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413628",
+    "difficulty": -1.4751363891957605,
+    "discrimination": 3.26255917825873,
+    "guessing": 0.115912535013989,
+    "metadata": {
+      "atlas_idx": 643
+    }
+  },
+  {
+    "item_id": "NCEOGA_2013_8_15",
+    "difficulty": 19.618311956165748,
+    "discrimination": 0.247049019214467,
+    "guessing": 0.00189581126859388,
+    "metadata": {
+      "atlas_idx": 645
+    }
+  },
+  {
+    "item_id": "MCAS_2000_8_22",
+    "difficulty": 0.46046867384452994,
+    "discrimination": 15.3560561028576,
+    "guessing": 0.181521388323349,
+    "metadata": {
+      "atlas_idx": 647
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401006",
+    "difficulty": -0.6722568482855266,
+    "discrimination": 3.44129407458085,
+    "guessing": 0.629041345801909,
+    "metadata": {
+      "atlas_idx": 648
+    }
+  },
+  {
+    "item_id": "Mercury_7230353",
+    "difficulty": -0.3368227685346905,
+    "discrimination": 2.00912511807754,
+    "guessing": 0.27736773756816,
+    "metadata": {
+      "atlas_idx": 649
+    }
+  },
+  {
+    "item_id": "Mercury_189053",
+    "difficulty": -1.4580797282868372,
+    "discrimination": 1.81936379729755,
+    "guessing": 0.630553773914584,
+    "metadata": {
+      "atlas_idx": 651
+    }
+  },
+  {
+    "item_id": "Mercury_175840",
+    "difficulty": -3.918934088169285,
+    "discrimination": 1.80855093619202,
+    "guessing": 0.126784883303474,
+    "metadata": {
+      "atlas_idx": 652
+    }
+  },
+  {
+    "item_id": "Mercury_416404",
+    "difficulty": -0.7676840786401,
+    "discrimination": 2.92190142426303,
+    "guessing": 0.493456504483689,
+    "metadata": {
+      "atlas_idx": 655
+    }
+  },
+  {
+    "item_id": "Mercury_7037555",
+    "difficulty": -0.5024572003983494,
+    "discrimination": 5.78168168416504,
+    "guessing": 0.144007821090541,
+    "metadata": {
+      "atlas_idx": 656
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401357",
+    "difficulty": -1.2662419591258502,
+    "discrimination": 2.8469853157292,
+    "guessing": 0.909850778209756,
+    "metadata": {
+      "atlas_idx": 659
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_4_11",
+    "difficulty": 0.1332727736942849,
+    "discrimination": 1.41605891846116,
+    "guessing": 0.000385086208356599,
+    "metadata": {
+      "atlas_idx": 661
+    }
+  },
+  {
+    "item_id": "ACTAAP_2009_5_8",
+    "difficulty": -1.8372652478830336,
+    "discrimination": 3.03004668880287,
+    "guessing": 0.900031733004201,
+    "metadata": {
+      "atlas_idx": 662
+    }
+  },
+  {
+    "item_id": "Mercury_409114",
+    "difficulty": -3.7996310455194733,
+    "discrimination": 1.35064939668132,
+    "guessing": 0.247132854623728,
+    "metadata": {
+      "atlas_idx": 665
+    }
+  },
+  {
+    "item_id": "MCAS_2015_5_14",
+    "difficulty": 1.220729120686811,
+    "discrimination": 10.5660476838902,
+    "guessing": 0.47636871257932,
+    "metadata": {
+      "atlas_idx": 667
+    }
+  },
+  {
+    "item_id": "Mercury_401428",
+    "difficulty": 2.7096714696436925,
+    "discrimination": 1.3038851067732,
+    "guessing": 0.102865914551125,
+    "metadata": {
+      "atlas_idx": 669
+    }
+  },
+  {
+    "item_id": "Mercury_416638",
+    "difficulty": 4.132071721317036,
+    "discrimination": 1.00464263600739,
+    "guessing": 0.022603503213215,
+    "metadata": {
+      "atlas_idx": 671
+    }
+  },
+  {
+    "item_id": "ACTAAP_2010_5_1",
+    "difficulty": -0.37377464547988776,
+    "discrimination": 1.84719101745511,
+    "guessing": 0.214169317018786,
+    "metadata": {
+      "atlas_idx": 675
+    }
+  },
+  {
+    "item_id": "Mercury_7201968",
+    "difficulty": 5.751465742150641,
+    "discrimination": 0.230710431700512,
+    "guessing": 0.00560013358118214,
+    "metadata": {
+      "atlas_idx": 677
+    }
+  },
+  {
+    "item_id": "NCEOGA_2013_5_11",
+    "difficulty": -0.17893625574276273,
+    "discrimination": 9.06977030948425,
+    "guessing": 0.782809971052713,
+    "metadata": {
+      "atlas_idx": 678
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415422",
+    "difficulty": -0.12105280792209726,
+    "discrimination": 3.65122381552477,
+    "guessing": 0.878014861560965,
+    "metadata": {
+      "atlas_idx": 679
+    }
+  },
+  {
+    "item_id": "Mercury_7230090",
+    "difficulty": 0.3351670741370847,
+    "discrimination": 5.08637763800962,
+    "guessing": 0.628729373193573,
+    "metadata": {
+      "atlas_idx": 681
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2013_8_42",
+    "difficulty": -0.8062312525173766,
+    "discrimination": 4.12417423534197,
+    "guessing": 0.742443315698734,
+    "metadata": {
+      "atlas_idx": 682
+    }
+  },
+  {
+    "item_id": "Mercury_7221043",
+    "difficulty": -3.475173888161602,
+    "discrimination": 1.43574825536714,
+    "guessing": 0.516249984191994,
+    "metadata": {
+      "atlas_idx": 683
+    }
+  },
+  {
+    "item_id": "Mercury_412774",
+    "difficulty": -0.6899662236448633,
+    "discrimination": 3.89153514689936,
+    "guessing": 0.504196770418759,
+    "metadata": {
+      "atlas_idx": 685
+    }
+  },
+  {
+    "item_id": "MCAS_2000_4_26",
+    "difficulty": 1.2442628562056317,
+    "discrimination": 12.4389213083788,
+    "guessing": 0.563832049911471,
+    "metadata": {
+      "atlas_idx": 687
+    }
+  },
+  {
+    "item_id": "MCAS_2012_8_23640",
+    "difficulty": -1.1963263458913813,
+    "discrimination": 3.7449951088463,
+    "guessing": 0.800844498450228,
+    "metadata": {
+      "atlas_idx": 690
+    }
+  },
+  {
+    "item_id": "Mercury_189070",
+    "difficulty": -0.9075604588056891,
+    "discrimination": 2.13306257480403,
+    "guessing": 0.380887876037161,
+    "metadata": {
+      "atlas_idx": 694
+    }
+  },
+  {
+    "item_id": "VASoL_2009_3_12",
+    "difficulty": 0.404994357164205,
+    "discrimination": 3.32757492359027,
+    "guessing": 0.214785704190215,
+    "metadata": {
+      "atlas_idx": 695
+    }
+  },
+  {
+    "item_id": "VASoL_2007_3_1",
+    "difficulty": -5.151179719632906,
+    "discrimination": 0.178275561895159,
+    "guessing": 0.00378627257801255,
+    "metadata": {
+      "atlas_idx": 700
+    }
+  },
+  {
+    "item_id": "Mercury_415081",
+    "difficulty": -0.6117198581168005,
+    "discrimination": 1.6237501992781,
+    "guessing": 0.0127354676195362,
+    "metadata": {
+      "atlas_idx": 701
+    }
+  },
+  {
+    "item_id": "Mercury_7271513",
+    "difficulty": -0.7200931707722286,
+    "discrimination": 8.76581107985064,
+    "guessing": 0.786142296469111,
+    "metadata": {
+      "atlas_idx": 702
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400383",
+    "difficulty": -0.6297188475946903,
+    "discrimination": 3.99584787583232,
+    "guessing": 0.356753799214916,
+    "metadata": {
+      "atlas_idx": 703
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405086",
+    "difficulty": -2.9076709684752577,
+    "discrimination": 0.959145765265019,
+    "guessing": 0.010411331371895,
+    "metadata": {
+      "atlas_idx": 705
+    }
+  },
+  {
+    "item_id": "MCAS_2004_8_23",
+    "difficulty": -1.6154327225758427,
+    "discrimination": 4.52813951992282,
+    "guessing": 0.077755324804045,
+    "metadata": {
+      "atlas_idx": 706
+    }
+  },
+  {
+    "item_id": "TAKS_2009_8_36",
+    "difficulty": -1.3993270853137774,
+    "discrimination": 1.23962426341187,
+    "guessing": 0.00179614430967939,
+    "metadata": {
+      "atlas_idx": 707
+    }
+  },
+  {
+    "item_id": "MEA_2011_8_19",
+    "difficulty": -5.958553019591562,
+    "discrimination": 0.0673512273963419,
+    "guessing": 0.029751774624341,
+    "metadata": {
+      "atlas_idx": 708
+    }
+  },
+  {
+    "item_id": "Mercury_411732",
+    "difficulty": -0.8175033134879243,
+    "discrimination": 0.82545973336494,
+    "guessing": 0.00782175195709798,
+    "metadata": {
+      "atlas_idx": 709
+    }
+  },
+  {
+    "item_id": "Mercury_7132405",
+    "difficulty": 0.3084124640603137,
+    "discrimination": 9.24131911660685,
+    "guessing": 0.122114562680865,
+    "metadata": {
+      "atlas_idx": 710
+    }
+  },
+  {
+    "item_id": "Mercury_SC_416167",
+    "difficulty": -3.443762178655436,
+    "discrimination": 1.44073684202521,
+    "guessing": 0.215587549574209,
+    "metadata": {
+      "atlas_idx": 713
+    }
+  },
+  {
+    "item_id": "Mercury_7168823",
+    "difficulty": 1.6328695644583608,
+    "discrimination": 4.82023361895666,
+    "guessing": 0.00472141354596515,
+    "metadata": {
+      "atlas_idx": 715
+    }
+  },
+  {
+    "item_id": "Mercury_402348",
+    "difficulty": -0.6665572137829313,
+    "discrimination": 3.66458206985076,
+    "guessing": 0.863240444017176,
+    "metadata": {
+      "atlas_idx": 717
+    }
+  },
+  {
+    "item_id": "Mercury_7150343",
+    "difficulty": -2.084479842180723,
+    "discrimination": 1.52624876076759,
+    "guessing": 0.106732297976955,
+    "metadata": {
+      "atlas_idx": 719
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10018",
+    "difficulty": -0.7556858679715507,
+    "discrimination": 4.75530955894923,
+    "guessing": 0.79455801819934,
+    "metadata": {
+      "atlas_idx": 720
+    }
+  },
+  {
+    "item_id": "LEAP__7_10348",
+    "difficulty": 2.165999996204456,
+    "discrimination": 5.57678526401165,
+    "guessing": 0.293432912784028,
+    "metadata": {
+      "atlas_idx": 721
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402994",
+    "difficulty": 0.3073307259187315,
+    "discrimination": 7.51446626713243,
+    "guessing": 0.279975290127012,
+    "metadata": {
+      "atlas_idx": 723
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406835",
+    "difficulty": 0.8280028738917393,
+    "discrimination": 13.1301443828301,
+    "guessing": 0.102485414915182,
+    "metadata": {
+      "atlas_idx": 725
+    }
+  },
+  {
+    "item_id": "Mercury_7162400",
+    "difficulty": -3.7930006312669655,
+    "discrimination": 1.73336812931236,
+    "guessing": 0.30289543600249,
+    "metadata": {
+      "atlas_idx": 726
+    }
+  },
+  {
+    "item_id": "MEA_2014_8_10",
+    "difficulty": -0.8061550417335731,
+    "discrimination": 3.88577881511354,
+    "guessing": 0.548136953569058,
+    "metadata": {
+      "atlas_idx": 727
+    }
+  },
+  {
+    "item_id": "Mercury_409085",
+    "difficulty": -1.6123410480371279,
+    "discrimination": 3.23349196820447,
+    "guessing": 0.0238677121316924,
+    "metadata": {
+      "atlas_idx": 728
+    }
+  },
+  {
+    "item_id": "ACTAAP_2011_5_1",
+    "difficulty": -0.5887664077139177,
+    "discrimination": 3.39370455827444,
+    "guessing": 0.587176922059179,
+    "metadata": {
+      "atlas_idx": 730
+    }
+  },
+  {
+    "item_id": "Mercury_7263375",
+    "difficulty": -1.5057911018176322,
+    "discrimination": 6.09711898991032,
+    "guessing": 0.149133310941326,
+    "metadata": {
+      "atlas_idx": 734
+    }
+  },
+  {
+    "item_id": "TIMSS_1995_8_R2",
+    "difficulty": -1.1938589737899632,
+    "discrimination": 4.38257422129249,
+    "guessing": 0.8801486280764,
+    "metadata": {
+      "atlas_idx": 737
+    }
+  },
+  {
+    "item_id": "Mercury_409317",
+    "difficulty": -0.013591216305273632,
+    "discrimination": 7.86488732056957,
+    "guessing": 0.895304986313551,
+    "metadata": {
+      "atlas_idx": 740
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405928",
+    "difficulty": -3.135763790468819,
+    "discrimination": 2.36605483032293,
+    "guessing": 0.375629773312892,
+    "metadata": {
+      "atlas_idx": 745
+    }
+  },
+  {
+    "item_id": "Mercury_400811",
+    "difficulty": 0.6173379864388906,
+    "discrimination": 10.4277487063088,
+    "guessing": 0.755137884407555,
+    "metadata": {
+      "atlas_idx": 746
+    }
+  },
+  {
+    "item_id": "ACTAAP_2012_7_9",
+    "difficulty": 0.4069680929426031,
+    "discrimination": 7.1502987144294,
+    "guessing": 0.902572693655914,
+    "metadata": {
+      "atlas_idx": 747
+    }
+  },
+  {
+    "item_id": "Mercury_415268",
+    "difficulty": -3.5755794732169597,
+    "discrimination": 0.271870794589009,
+    "guessing": 0.258749494044645,
+    "metadata": {
+      "atlas_idx": 749
+    }
+  },
+  {
+    "item_id": "ACTAAP_2014_5_8",
+    "difficulty": 1.573336921844649,
+    "discrimination": 4.09132227999147,
+    "guessing": 0.178413614826869,
+    "metadata": {
+      "atlas_idx": 750
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2015_4_11",
+    "difficulty": -3.728048341883216,
+    "discrimination": 1.76886282280572,
+    "guessing": 0.144228766487721,
+    "metadata": {
+      "atlas_idx": 751
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400062",
+    "difficulty": 0.4997015779469902,
+    "discrimination": 7.65632936388492,
+    "guessing": 0.545073058883727,
+    "metadata": {
+      "atlas_idx": 752
+    }
+  },
+  {
+    "item_id": "Mercury_7120873",
+    "difficulty": 0.6727284847297597,
+    "discrimination": 13.3237965679245,
+    "guessing": 0.483690852071708,
+    "metadata": {
+      "atlas_idx": 755
+    }
+  },
+  {
+    "item_id": "Mercury_7131530",
+    "difficulty": -1.4047149685841627,
+    "discrimination": 5.93572233256491,
+    "guessing": 0.848586318386944,
+    "metadata": {
+      "atlas_idx": 757
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2012_8_19",
+    "difficulty": -1.7224489707902368,
+    "discrimination": 0.471723185234265,
+    "guessing": 0.00467943297565765,
+    "metadata": {
+      "atlas_idx": 758
+    }
+  },
+  {
+    "item_id": "ACTAAP_2010_5_7",
+    "difficulty": -3.1565915888733,
+    "discrimination": 2.61664459270273,
+    "guessing": 0.131951188333802,
+    "metadata": {
+      "atlas_idx": 760
+    }
+  },
+  {
+    "item_id": "Mercury_7270515",
+    "difficulty": 0.7306741799495203,
+    "discrimination": 4.43545179980022,
+    "guessing": 0.151290127341324,
+    "metadata": {
+      "atlas_idx": 762
+    }
+  },
+  {
+    "item_id": "Mercury_7132020",
+    "difficulty": -0.5979438043830648,
+    "discrimination": 6.63221100399621,
+    "guessing": 0.798766346530231,
+    "metadata": {
+      "atlas_idx": 763
+    }
+  },
+  {
+    "item_id": "MDSA_2011_5_3",
+    "difficulty": -3.407060819696518,
+    "discrimination": 2.05640540624011,
+    "guessing": 0.284137968201368,
+    "metadata": {
+      "atlas_idx": 764
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408763",
+    "difficulty": -1.9356723130191043,
+    "discrimination": 1.64717951739098,
+    "guessing": 0.385431185297939,
+    "metadata": {
+      "atlas_idx": 765
+    }
+  },
+  {
+    "item_id": "Mercury_7141610",
+    "difficulty": 0.6965823682308855,
+    "discrimination": 12.0956770976092,
+    "guessing": 0.701243431992119,
+    "metadata": {
+      "atlas_idx": 766
+    }
+  },
+  {
+    "item_id": "MEA_2013_5_12",
+    "difficulty": -3.563299298988985,
+    "discrimination": 0.756579245644637,
+    "guessing": 0.0510400692187452,
+    "metadata": {
+      "atlas_idx": 771
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401116",
+    "difficulty": -0.5663389586057086,
+    "discrimination": 13.6749554060774,
+    "guessing": 0.825746553943619,
+    "metadata": {
+      "atlas_idx": 773
+    }
+  },
+  {
+    "item_id": "Mercury_7068513",
+    "difficulty": -0.08013869935297224,
+    "discrimination": 2.96179604386212,
+    "guessing": 0.785947684959844,
+    "metadata": {
+      "atlas_idx": 774
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2013_4_1",
+    "difficulty": -0.44860002798828574,
+    "discrimination": 7.28653230523128,
+    "guessing": 0.238327001365423,
+    "metadata": {
+      "atlas_idx": 775
+    }
+  },
+  {
+    "item_id": "MDSA_2007_8_24",
+    "difficulty": -1.254553057819092,
+    "discrimination": 2.04361790882782,
+    "guessing": 0.163169118257457,
+    "metadata": {
+      "atlas_idx": 776
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_8_53",
+    "difficulty": -3.209118531620147,
+    "discrimination": 0.931068115178333,
+    "guessing": 0.280916488002667,
+    "metadata": {
+      "atlas_idx": 781
+    }
+  },
+  {
+    "item_id": "Mercury_409295",
+    "difficulty": -1.6499669089868036,
+    "discrimination": 4.28578186398658,
+    "guessing": 0.650382133212824,
+    "metadata": {
+      "atlas_idx": 782
+    }
+  },
+  {
+    "item_id": "Mercury_7085278",
+    "difficulty": -1.3497582562605346,
+    "discrimination": 3.75617468471814,
+    "guessing": 0.820055557467675,
+    "metadata": {
+      "atlas_idx": 783
+    }
+  },
+  {
+    "item_id": "Mercury_7221988",
+    "difficulty": -0.5012168143091278,
+    "discrimination": 11.1767755760938,
+    "guessing": 0.850944695067552,
+    "metadata": {
+      "atlas_idx": 785
+    }
+  },
+  {
+    "item_id": "NCEOGA_2013_8_28",
+    "difficulty": -0.5101484821457302,
+    "discrimination": 2.72437574755678,
+    "guessing": 0.0752119196937421,
+    "metadata": {
+      "atlas_idx": 786
+    }
+  },
+  {
+    "item_id": "Mercury_187198",
+    "difficulty": 1.0724587797298013,
+    "discrimination": 0.288961770200438,
+    "guessing": 0.00509207323899891,
+    "metadata": {
+      "atlas_idx": 793
+    }
+  },
+  {
+    "item_id": "Mercury_7093153",
+    "difficulty": -0.3419777192048995,
+    "discrimination": 3.97708840305057,
+    "guessing": 0.347087255993827,
+    "metadata": {
+      "atlas_idx": 794
+    }
+  },
+  {
+    "item_id": "Mercury_7171570",
+    "difficulty": -2.432559429309839,
+    "discrimination": 3.77868814005674,
+    "guessing": 0.158973902191467,
+    "metadata": {
+      "atlas_idx": 797
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406625",
+    "difficulty": -0.1658912294366789,
+    "discrimination": 4.56291513563484,
+    "guessing": 0.219141257989429,
+    "metadata": {
+      "atlas_idx": 798
+    }
+  },
+  {
+    "item_id": "Mercury_7016538",
+    "difficulty": -0.9016523388423249,
+    "discrimination": 5.00771953165716,
+    "guessing": 0.935970792965788,
+    "metadata": {
+      "atlas_idx": 799
+    }
+  },
+  {
+    "item_id": "Mercury_7168805",
+    "difficulty": -0.5763464262058734,
+    "discrimination": 1.3431316733834,
+    "guessing": 0.0199127956140856,
+    "metadata": {
+      "atlas_idx": 800
+    }
+  },
+  {
+    "item_id": "TIMSS_2011_4_pg45",
+    "difficulty": -2.866170623800729,
+    "discrimination": 2.32936791718939,
+    "guessing": 0.0937538664576374,
+    "metadata": {
+      "atlas_idx": 802
+    }
+  },
+  {
+    "item_id": "Mercury_177870",
+    "difficulty": 1.0571653302194601,
+    "discrimination": 8.89922941023738,
+    "guessing": 0.0666716404469319,
+    "metadata": {
+      "atlas_idx": 803
+    }
+  },
+  {
+    "item_id": "Mercury_LBS10131",
+    "difficulty": -3.3068427288503104,
+    "discrimination": 1.68387996314421,
+    "guessing": 0.106361115233991,
+    "metadata": {
+      "atlas_idx": 804
+    }
+  },
+  {
+    "item_id": "Mercury_7207550",
+    "difficulty": -0.7581534882386671,
+    "discrimination": 2.5477061009977,
+    "guessing": 0.179502337067167,
+    "metadata": {
+      "atlas_idx": 806
+    }
+  },
+  {
+    "item_id": "Mercury_7227710",
+    "difficulty": 0.7053651038823816,
+    "discrimination": 10.8857476158456,
+    "guessing": 0.706538529789708,
+    "metadata": {
+      "atlas_idx": 808
+    }
+  },
+  {
+    "item_id": "NAEP_2000_8_S21+4",
+    "difficulty": -0.922391788827286,
+    "discrimination": 5.71617293581587,
+    "guessing": 0.557689738033311,
+    "metadata": {
+      "atlas_idx": 810
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401185",
+    "difficulty": -1.4066333575045418,
+    "discrimination": 2.64141522945314,
+    "guessing": 0.439724654026792,
+    "metadata": {
+      "atlas_idx": 812
+    }
+  },
+  {
+    "item_id": "Mercury_7143010",
+    "difficulty": -1.4337222311804485,
+    "discrimination": 3.90981633136513,
+    "guessing": 0.838155312218825,
+    "metadata": {
+      "atlas_idx": 814
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401661",
+    "difficulty": 0.776348754664815,
+    "discrimination": 2.50701044227743,
+    "guessing": 0.0514826752882292,
+    "metadata": {
+      "atlas_idx": 815
+    }
+  },
+  {
+    "item_id": "Mercury_405462",
+    "difficulty": 0.16618697133490898,
+    "discrimination": 2.86364446353328,
+    "guessing": 0.104750171387607,
+    "metadata": {
+      "atlas_idx": 817
+    }
+  },
+  {
+    "item_id": "MEA_2010_8_1",
+    "difficulty": 10.274591275798967,
+    "discrimination": 0.513299851661605,
+    "guessing": 0.00398635859631552,
+    "metadata": {
+      "atlas_idx": 819
+    }
+  },
+  {
+    "item_id": "MCAS_2004_9_2",
+    "difficulty": -0.5504096976248887,
+    "discrimination": 3.4672177585752,
+    "guessing": 0.557069884987112,
+    "metadata": {
+      "atlas_idx": 820
+    }
+  },
+  {
+    "item_id": "MCAS_2010_5_11984",
+    "difficulty": -2.520016938441144,
+    "discrimination": 1.71318489962298,
+    "guessing": 0.0840526697495992,
+    "metadata": {
+      "atlas_idx": 821
+    }
+  },
+  {
+    "item_id": "Mercury_417138",
+    "difficulty": -0.5169574339487324,
+    "discrimination": 9.28377228759,
+    "guessing": 0.692137738005351,
+    "metadata": {
+      "atlas_idx": 822
+    }
+  },
+  {
+    "item_id": "MCAS_2003_8_11",
+    "difficulty": -2.5368860938847666,
+    "discrimination": 1.62652654891205,
+    "guessing": 0.0611712495408708,
+    "metadata": {
+      "atlas_idx": 824
+    }
+  },
+  {
+    "item_id": "Mercury_7044328",
+    "difficulty": -0.8836680837980234,
+    "discrimination": 1.73089335416929,
+    "guessing": 0.693922789192704,
+    "metadata": {
+      "atlas_idx": 825
+    }
+  },
+  {
+    "item_id": "MCAS_2011_8_17694",
+    "difficulty": -1.1829247999893775,
+    "discrimination": 0.257978933641269,
+    "guessing": 0.0297322043168629,
+    "metadata": {
+      "atlas_idx": 826
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402057",
+    "difficulty": -1.7979941913782929,
+    "discrimination": 3.883211296076,
+    "guessing": 0.560998517564455,
+    "metadata": {
+      "atlas_idx": 829
+    }
+  },
+  {
+    "item_id": "MEA_2016_5_4",
+    "difficulty": -0.3781876549760459,
+    "discrimination": 4.56031193842403,
+    "guessing": 0.177111463453735,
+    "metadata": {
+      "atlas_idx": 831
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413542",
+    "difficulty": -0.5568371440473424,
+    "discrimination": 2.22047454682333,
+    "guessing": 0.041229123024121,
+    "metadata": {
+      "atlas_idx": 833
+    }
+  },
+  {
+    "item_id": "Mercury_402563",
+    "difficulty": -0.3968026475128842,
+    "discrimination": 4.51116898985488,
+    "guessing": 0.792593921199484,
+    "metadata": {
+      "atlas_idx": 834
+    }
+  },
+  {
+    "item_id": "MDSA_2007_8_17",
+    "difficulty": -1.3255033240421499,
+    "discrimination": 3.96063393543852,
+    "guessing": 0.436475770890683,
+    "metadata": {
+      "atlas_idx": 835
+    }
+  },
+  {
+    "item_id": "Mercury_7192798",
+    "difficulty": 0.029026168428155003,
+    "discrimination": 4.42084953879431,
+    "guessing": 0.373796946247904,
+    "metadata": {
+      "atlas_idx": 836
+    }
+  },
+  {
+    "item_id": "Mercury_7056525",
+    "difficulty": 0.6482911284145499,
+    "discrimination": 7.7896685012927,
+    "guessing": 0.0743508277645695,
+    "metadata": {
+      "atlas_idx": 837
+    }
+  },
+  {
+    "item_id": "Mercury_7005880",
+    "difficulty": -0.7612218883680357,
+    "discrimination": 2.79270542710881,
+    "guessing": 0.353864193870914,
+    "metadata": {
+      "atlas_idx": 838
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400700",
+    "difficulty": 1.008107855655944,
+    "discrimination": 6.27263758349538,
+    "guessing": 0.0431901576271453,
+    "metadata": {
+      "atlas_idx": 839
+    }
+  },
+  {
+    "item_id": "Mercury_7014333",
+    "difficulty": -2.6679016472931343,
+    "discrimination": 2.16035089069139,
+    "guessing": 0.178962558787114,
+    "metadata": {
+      "atlas_idx": 841
+    }
+  },
+  {
+    "item_id": "CSZ10358",
+    "difficulty": -9.277976425292481,
+    "discrimination": 0.286532436817157,
+    "guessing": 0.0846750625311382,
+    "metadata": {
+      "atlas_idx": 842
+    }
+  },
+  {
+    "item_id": "MEA_2013_5_15",
+    "difficulty": -1.0181998690753553,
+    "discrimination": 2.53667575063854,
+    "guessing": 0.0526048761918437,
+    "metadata": {
+      "atlas_idx": 845
+    }
+  },
+  {
+    "item_id": "Mercury_7025060",
+    "difficulty": -0.17572563994230392,
+    "discrimination": 4.80868316968422,
+    "guessing": 0.152705284861271,
+    "metadata": {
+      "atlas_idx": 846
+    }
+  },
+  {
+    "item_id": "Mercury_410026",
+    "difficulty": -3.194419763112972,
+    "discrimination": 2.25674213805529,
+    "guessing": 0.151625844249687,
+    "metadata": {
+      "atlas_idx": 848
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405640",
+    "difficulty": -2.354054354756979,
+    "discrimination": 2.15830495394311,
+    "guessing": 0.347209191768931,
+    "metadata": {
+      "atlas_idx": 852
+    }
+  },
+  {
+    "item_id": "Mercury_7126263",
+    "difficulty": 2.0190439916189056,
+    "discrimination": 0.392003484986513,
+    "guessing": 0.00458960513502147,
+    "metadata": {
+      "atlas_idx": 853
+    }
+  },
+  {
+    "item_id": "MEAP_2005_8_21",
+    "difficulty": 0.6597101231974963,
+    "discrimination": 5.2407509556713,
+    "guessing": 0.100518030371085,
+    "metadata": {
+      "atlas_idx": 854
+    }
+  },
+  {
+    "item_id": "Mercury_LBS10933",
+    "difficulty": -3.2216284738336096,
+    "discrimination": 1.97363785249049,
+    "guessing": 0.447399101213255,
+    "metadata": {
+      "atlas_idx": 855
+    }
+  },
+  {
+    "item_id": "Mercury_7140333",
+    "difficulty": -0.21180328291563688,
+    "discrimination": 3.35696855105553,
+    "guessing": 0.0823351252128875,
+    "metadata": {
+      "atlas_idx": 858
+    }
+  },
+  {
+    "item_id": "Mercury_7188195",
+    "difficulty": 0.1269633457215264,
+    "discrimination": 14.471844818469,
+    "guessing": 0.77116930613678,
+    "metadata": {
+      "atlas_idx": 859
+    }
+  },
+  {
+    "item_id": "MCAS_2005_5_25",
+    "difficulty": -0.1724547003394438,
+    "discrimination": 7.72762041721546,
+    "guessing": 0.892510814911879,
+    "metadata": {
+      "atlas_idx": 862
+    }
+  },
+  {
+    "item_id": "ACTAAP_2007_7_36",
+    "difficulty": -0.8706180203177525,
+    "discrimination": 4.49895721230078,
+    "guessing": 0.195518580544534,
+    "metadata": {
+      "atlas_idx": 863
+    }
+  },
+  {
+    "item_id": "Mercury_401728",
+    "difficulty": -2.4112359824679386,
+    "discrimination": 2.35320995973969,
+    "guessing": 0.579549040185459,
+    "metadata": {
+      "atlas_idx": 864
+    }
+  },
+  {
+    "item_id": "Mercury_417117",
+    "difficulty": -3.532401650717452,
+    "discrimination": 2.04306572513167,
+    "guessing": 0.12131067189361,
+    "metadata": {
+      "atlas_idx": 866
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400697",
+    "difficulty": -2.603396087904375,
+    "discrimination": 1.12181409289023,
+    "guessing": 0.367561660687662,
+    "metadata": {
+      "atlas_idx": 868
+    }
+  },
+  {
+    "item_id": "Mercury_416576",
+    "difficulty": 0.4558670602071659,
+    "discrimination": 5.23471701995414,
+    "guessing": 0.125554382655175,
+    "metadata": {
+      "atlas_idx": 869
+    }
+  },
+  {
+    "item_id": "TAKS_2009_8_32",
+    "difficulty": 0.4011282399876058,
+    "discrimination": 3.18403054107079,
+    "guessing": 0.125901517821415,
+    "metadata": {
+      "atlas_idx": 871
+    }
+  },
+  {
+    "item_id": "Mercury_7168053",
+    "difficulty": -1.1942112127466038,
+    "discrimination": 1.30831251728844,
+    "guessing": 0.487543295768241,
+    "metadata": {
+      "atlas_idx": 872
+    }
+  },
+  {
+    "item_id": "Mercury_7123393",
+    "difficulty": -1.3897067190499957,
+    "discrimination": 4.45205772234365,
+    "guessing": 0.491299808564399,
+    "metadata": {
+      "atlas_idx": 875
+    }
+  },
+  {
+    "item_id": "Mercury_7041650",
+    "difficulty": 0.16649925627594625,
+    "discrimination": 6.02432061712745,
+    "guessing": 0.547645446512286,
+    "metadata": {
+      "atlas_idx": 876
+    }
+  },
+  {
+    "item_id": "Mercury_7099190",
+    "difficulty": 1.1627318960576465,
+    "discrimination": 8.73643015342479,
+    "guessing": 0.314889149676748,
+    "metadata": {
+      "atlas_idx": 880
+    }
+  },
+  {
+    "item_id": "Mercury_SC_416155",
+    "difficulty": -1.2018075287000023,
+    "discrimination": 6.19136380996858,
+    "guessing": 0.770774398815867,
+    "metadata": {
+      "atlas_idx": 882
+    }
+  },
+  {
+    "item_id": "Mercury_417137",
+    "difficulty": -0.13535974443691046,
+    "discrimination": 12.6706678352904,
+    "guessing": 0.725992285117873,
+    "metadata": {
+      "atlas_idx": 884
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415761",
+    "difficulty": -0.9205495328682908,
+    "discrimination": 2.51446022441784,
+    "guessing": 0.370090239772641,
+    "metadata": {
+      "atlas_idx": 887
+    }
+  },
+  {
+    "item_id": "Mercury_7175893",
+    "difficulty": -1.401410788449719,
+    "discrimination": 5.69692172424862,
+    "guessing": 0.906249999086956,
+    "metadata": {
+      "atlas_idx": 891
+    }
+  },
+  {
+    "item_id": "Mercury_7082023",
+    "difficulty": -3.5942565858167974,
+    "discrimination": 1.09420180448198,
+    "guessing": 0.0721334581787573,
+    "metadata": {
+      "atlas_idx": 893
+    }
+  },
+  {
+    "item_id": "Mercury_7191433",
+    "difficulty": 0.6947605010166163,
+    "discrimination": 10.9877136935985,
+    "guessing": 0.464843920163619,
+    "metadata": {
+      "atlas_idx": 894
+    }
+  },
+  {
+    "item_id": "ACTAAP_2010_7_14",
+    "difficulty": 0.5013543959878458,
+    "discrimination": 8.19316680954161,
+    "guessing": 0.802653065758675,
+    "metadata": {
+      "atlas_idx": 896
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408547",
+    "difficulty": 2.5694640840055962,
+    "discrimination": 0.67206141460663,
+    "guessing": 0.00173584909208771,
+    "metadata": {
+      "atlas_idx": 897
+    }
+  },
+  {
+    "item_id": "Mercury_7024465",
+    "difficulty": 0.2458733563131275,
+    "discrimination": 11.0683128866492,
+    "guessing": 0.434970921072764,
+    "metadata": {
+      "atlas_idx": 899
+    }
+  },
+  {
+    "item_id": "Mercury_7211033",
+    "difficulty": -2.573061365773697,
+    "discrimination": 1.44860398004395,
+    "guessing": 0.237373040069264,
+    "metadata": {
+      "atlas_idx": 902
+    }
+  },
+  {
+    "item_id": "Mercury_SC_401792",
+    "difficulty": -0.9670946392220826,
+    "discrimination": 9.14280155285176,
+    "guessing": 0.749988631607138,
+    "metadata": {
+      "atlas_idx": 903
+    }
+  },
+  {
+    "item_id": "NAEP_2000_4_S12+3",
+    "difficulty": 1.2004048291919724,
+    "discrimination": 1.42828726068092,
+    "guessing": 0.145282458528036,
+    "metadata": {
+      "atlas_idx": 905
+    }
+  },
+  {
+    "item_id": "Mercury_SC_414001",
+    "difficulty": -1.0875457165220221,
+    "discrimination": 4.32797532761673,
+    "guessing": 0.245100868076918,
+    "metadata": {
+      "atlas_idx": 906
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405533",
+    "difficulty": -0.7821370912684256,
+    "discrimination": 3.0388888006643,
+    "guessing": 0.547659037826214,
+    "metadata": {
+      "atlas_idx": 908
+    }
+  },
+  {
+    "item_id": "MCAS_2006_9_17-v1",
+    "difficulty": 0.5167532723676395,
+    "discrimination": 5.94273874895723,
+    "guessing": 0.446928239976707,
+    "metadata": {
+      "atlas_idx": 909
+    }
+  },
+  {
+    "item_id": "Mercury_7064680",
+    "difficulty": -0.5183652078925923,
+    "discrimination": 3.41009280305375,
+    "guessing": 0.758197525178935,
+    "metadata": {
+      "atlas_idx": 911
+    }
+  },
+  {
+    "item_id": "MCAS_1998_4_19",
+    "difficulty": -3.5655619481538476,
+    "discrimination": 2.29643649910462,
+    "guessing": 0.178019927727138,
+    "metadata": {
+      "atlas_idx": 914
+    }
+  },
+  {
+    "item_id": "Mercury_416380",
+    "difficulty": -1.2175150719577876,
+    "discrimination": 2.18123100000714,
+    "guessing": 0.820950531511283,
+    "metadata": {
+      "atlas_idx": 915
+    }
+  },
+  {
+    "item_id": "Mercury_7123358",
+    "difficulty": 1.9400805782596973,
+    "discrimination": 4.41274868565153,
+    "guessing": 0.226655856037831,
+    "metadata": {
+      "atlas_idx": 919
+    }
+  },
+  {
+    "item_id": "ACTAAP_2015_7_9",
+    "difficulty": 0.4222409007428411,
+    "discrimination": 9.03246915702039,
+    "guessing": 0.819991210942298,
+    "metadata": {
+      "atlas_idx": 921
+    }
+  },
+  {
+    "item_id": "VASoL_2008_3_25",
+    "difficulty": -3.7420170827071906,
+    "discrimination": 2.09076926119532,
+    "guessing": 0.344702881164265,
+    "metadata": {
+      "atlas_idx": 926
+    }
+  },
+  {
+    "item_id": "Mercury_7109603",
+    "difficulty": -0.9762588069329485,
+    "discrimination": 5.01677610103872,
+    "guessing": 0.895767860851135,
+    "metadata": {
+      "atlas_idx": 927
+    }
+  },
+  {
+    "item_id": "LEAP_2007_4_10280",
+    "difficulty": -1.0005067777109156,
+    "discrimination": 2.20950387405038,
+    "guessing": 0.774481758018296,
+    "metadata": {
+      "atlas_idx": 929
+    }
+  },
+  {
+    "item_id": "Mercury_7011130",
+    "difficulty": 1.5390495710371044,
+    "discrimination": 7.47330924394261,
+    "guessing": 0.143171178437579,
+    "metadata": {
+      "atlas_idx": 930
+    }
+  },
+  {
+    "item_id": "Mercury_409301",
+    "difficulty": -0.9660981599194255,
+    "discrimination": 0.4506519143709,
+    "guessing": 0.0108360336661796,
+    "metadata": {
+      "atlas_idx": 934
+    }
+  },
+  {
+    "item_id": "Mercury_7027405",
+    "difficulty": -1.2267933037919465,
+    "discrimination": 3.79478708580443,
+    "guessing": 0.213459520223838,
+    "metadata": {
+      "atlas_idx": 936
+    }
+  },
+  {
+    "item_id": "Mercury_402502",
+    "difficulty": -7.8188858509596475,
+    "discrimination": 0.44738571493013,
+    "guessing": 0.146147462385128,
+    "metadata": {
+      "atlas_idx": 937
+    }
+  },
+  {
+    "item_id": "Mercury_7267715",
+    "difficulty": 0.9305285889094695,
+    "discrimination": 8.96018700696753,
+    "guessing": 0.0445128709172155,
+    "metadata": {
+      "atlas_idx": 938
+    }
+  },
+  {
+    "item_id": "MCAS_2006_8_12",
+    "difficulty": -0.10635903552648028,
+    "discrimination": 3.76709600467354,
+    "guessing": 0.553694075428585,
+    "metadata": {
+      "atlas_idx": 940
+    }
+  },
+  {
+    "item_id": "Mercury_7223493",
+    "difficulty": 0.7278510040987748,
+    "discrimination": 9.56291147655538,
+    "guessing": 0.157173079013712,
+    "metadata": {
+      "atlas_idx": 946
+    }
+  },
+  {
+    "item_id": "MEA_2010_8_18",
+    "difficulty": -3.122658718927505,
+    "discrimination": 1.27915754571359,
+    "guessing": 0.054135315665734,
+    "metadata": {
+      "atlas_idx": 949
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402282",
+    "difficulty": -0.1757802944557587,
+    "discrimination": 5.47408648721923,
+    "guessing": 0.728127915545184,
+    "metadata": {
+      "atlas_idx": 950
+    }
+  },
+  {
+    "item_id": "Mercury_7030870",
+    "difficulty": 1.1863950766288307,
+    "discrimination": 1.43054451802321,
+    "guessing": 0.235137413375371,
+    "metadata": {
+      "atlas_idx": 951
+    }
+  },
+  {
+    "item_id": "Mercury_7032498",
+    "difficulty": 0.36280272610674796,
+    "discrimination": 12.0107578775747,
+    "guessing": 0.363365138616674,
+    "metadata": {
+      "atlas_idx": 952
+    }
+  },
+  {
+    "item_id": "Mercury_LBS10151",
+    "difficulty": 107.5767055212588,
+    "discrimination": 0.0187093706620986,
+    "guessing": 0.00390982494603249,
+    "metadata": {
+      "atlas_idx": 957
+    }
+  },
+  {
+    "item_id": "Mercury_7222793",
+    "difficulty": -0.32849191827076524,
+    "discrimination": 3.50310444772398,
+    "guessing": 0.832267910181869,
+    "metadata": {
+      "atlas_idx": 958
+    }
+  },
+  {
+    "item_id": "LEAP_2001_8_10379",
+    "difficulty": -1.0420467303913095,
+    "discrimination": 5.02002301768599,
+    "guessing": 0.555267413575137,
+    "metadata": {
+      "atlas_idx": 959
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2015_8_9",
+    "difficulty": -0.7783358225450766,
+    "discrimination": 4.5354640401166,
+    "guessing": 0.57872802399771,
+    "metadata": {
+      "atlas_idx": 961
+    }
+  },
+  {
+    "item_id": "Mercury_409349",
+    "difficulty": -0.7406958116762066,
+    "discrimination": 4.41975813575634,
+    "guessing": 0.679471203884955,
+    "metadata": {
+      "atlas_idx": 965
+    }
+  },
+  {
+    "item_id": "Mercury_7133613",
+    "difficulty": -1.031739584502446,
+    "discrimination": 4.77951312025873,
+    "guessing": 0.812086612467961,
+    "metadata": {
+      "atlas_idx": 966
+    }
+  },
+  {
+    "item_id": "Mercury_183890",
+    "difficulty": 0.1667935908953545,
+    "discrimination": 7.28307072728754,
+    "guessing": 0.762908745474184,
+    "metadata": {
+      "atlas_idx": 968
+    }
+  },
+  {
+    "item_id": "LEAP_2000_8_4",
+    "difficulty": 0.4399995721461255,
+    "discrimination": 12.788922075659,
+    "guessing": 0.55262965041034,
+    "metadata": {
+      "atlas_idx": 972
+    }
+  },
+  {
+    "item_id": "Mercury_7086748",
+    "difficulty": -1.2787423952003398,
+    "discrimination": 4.06507019262802,
+    "guessing": 0.8059296708341,
+    "metadata": {
+      "atlas_idx": 976
+    }
+  },
+  {
+    "item_id": "MCAS_2000_4_34",
+    "difficulty": -0.7257978622774763,
+    "discrimination": 3.30405808155142,
+    "guessing": 0.266182802108784,
+    "metadata": {
+      "atlas_idx": 978
+    }
+  },
+  {
+    "item_id": "Mercury_400803",
+    "difficulty": -0.3653338876687612,
+    "discrimination": 0.377287846320915,
+    "guessing": 0.0180270556504225,
+    "metadata": {
+      "atlas_idx": 979
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400142",
+    "difficulty": -0.7852834266615781,
+    "discrimination": 4.20941706981222,
+    "guessing": 0.143312247443567,
+    "metadata": {
+      "atlas_idx": 980
+    }
+  },
+  {
+    "item_id": "Mercury_7016258",
+    "difficulty": 0.698544574331498,
+    "discrimination": 7.5572588174363,
+    "guessing": 0.741940675729614,
+    "metadata": {
+      "atlas_idx": 984
+    }
+  },
+  {
+    "item_id": "Mercury_400440",
+    "difficulty": -3.78061756372247,
+    "discrimination": 1.78513268636438,
+    "guessing": 0.153657462329709,
+    "metadata": {
+      "atlas_idx": 985
+    }
+  },
+  {
+    "item_id": "Mercury_7213325",
+    "difficulty": -4.193317153534659,
+    "discrimination": 0.686750182285223,
+    "guessing": 0.283208854565696,
+    "metadata": {
+      "atlas_idx": 987
+    }
+  },
+  {
+    "item_id": "Mercury_7136885",
+    "difficulty": 0.3704574039273263,
+    "discrimination": 9.77259941337407,
+    "guessing": 0.164551427569427,
+    "metadata": {
+      "atlas_idx": 988
+    }
+  },
+  {
+    "item_id": "MCAS_2014_8_16",
+    "difficulty": -0.9462308848466636,
+    "discrimination": 5.31741203633716,
+    "guessing": 0.882275771559,
+    "metadata": {
+      "atlas_idx": 991
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413624",
+    "difficulty": 1.122459033027084,
+    "discrimination": 2.92640268851781,
+    "guessing": 0.583760784194956,
+    "metadata": {
+      "atlas_idx": 992
+    }
+  },
+  {
+    "item_id": "Mercury_7216318",
+    "difficulty": 0.5111861295503943,
+    "discrimination": 9.74374800461543,
+    "guessing": 0.162330304215805,
+    "metadata": {
+      "atlas_idx": 994
+    }
+  },
+  {
+    "item_id": "Mercury_7086608",
+    "difficulty": -0.2543198606297847,
+    "discrimination": 3.21063515857488,
+    "guessing": 0.286287626265561,
+    "metadata": {
+      "atlas_idx": 997
+    }
+  },
+  {
+    "item_id": "Mercury_7201775",
+    "difficulty": -1.090802891285498,
+    "discrimination": 2.79372549421843,
+    "guessing": 0.835350993728756,
+    "metadata": {
+      "atlas_idx": 999
+    }
+  },
+  {
+    "item_id": "Mercury_7026355",
+    "difficulty": -3.7179710553578498,
+    "discrimination": 1.10972256672968,
+    "guessing": 0.135221706314836,
+    "metadata": {
+      "atlas_idx": 1000
+    }
+  },
+  {
+    "item_id": "Mercury_7205870",
+    "difficulty": -1.085178235134574,
+    "discrimination": 3.9668135192806,
+    "guessing": 0.53906315459009,
+    "metadata": {
+      "atlas_idx": 1001
+    }
+  },
+  {
+    "item_id": "Mercury_7032620",
+    "difficulty": 0.3325265914320837,
+    "discrimination": 0.518778867170572,
+    "guessing": 0.00200003695213153,
+    "metadata": {
+      "atlas_idx": 1002
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405357",
+    "difficulty": -0.9362183669106712,
+    "discrimination": 2.38787862228604,
+    "guessing": 0.259639875772447,
+    "metadata": {
+      "atlas_idx": 1003
+    }
+  },
+  {
+    "item_id": "MCAS_2003_5_14",
+    "difficulty": -3.9178783276605817,
+    "discrimination": 1.94279232373181,
+    "guessing": 0.199052043998582,
+    "metadata": {
+      "atlas_idx": 1005
+    }
+  },
+  {
+    "item_id": "Mercury_7161315",
+    "difficulty": 0.10657254482663468,
+    "discrimination": 10.3260289699508,
+    "guessing": 0.387315810261051,
+    "metadata": {
+      "atlas_idx": 1008
+    }
+  },
+  {
+    "item_id": "MDSA_2007_5_2",
+    "difficulty": -1.4694203852622467,
+    "discrimination": 7.30619672995429,
+    "guessing": 0.766847399295759,
+    "metadata": {
+      "atlas_idx": 1011
+    }
+  },
+  {
+    "item_id": "Mercury_7136028",
+    "difficulty": -0.11586703356941956,
+    "discrimination": 2.69211347221714,
+    "guessing": 0.697463076266857,
+    "metadata": {
+      "atlas_idx": 1012
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2008_8_5",
+    "difficulty": -28.054145701594283,
+    "discrimination": 0.0361637493281713,
+    "guessing": 0.15335969927679,
+    "metadata": {
+      "atlas_idx": 1013
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2015_4_5",
+    "difficulty": -3.3260310257285934,
+    "discrimination": 2.2720054928072,
+    "guessing": 0.1686172648242,
+    "metadata": {
+      "atlas_idx": 1014
+    }
+  },
+  {
+    "item_id": "OHAT_2009_8_34",
+    "difficulty": -1.6047220793278372,
+    "discrimination": 5.29025339053357,
+    "guessing": 0.865822812457476,
+    "metadata": {
+      "atlas_idx": 1015
+    }
+  },
+  {
+    "item_id": "MCAS_2013_8_29435",
+    "difficulty": -1.2298042840134744,
+    "discrimination": 4.79677487750588,
+    "guessing": 0.898213383536083,
+    "metadata": {
+      "atlas_idx": 1016
+    }
+  },
+  {
+    "item_id": "Mercury_SC_405726",
+    "difficulty": -0.9510972751867218,
+    "discrimination": 3.01443616202903,
+    "guessing": 0.198595439431603,
+    "metadata": {
+      "atlas_idx": 1017
+    }
+  },
+  {
+    "item_id": "Mercury_7164623",
+    "difficulty": -2.0675265555040823,
+    "discrimination": 3.70283613186969,
+    "guessing": 0.773621641357741,
+    "metadata": {
+      "atlas_idx": 1019
+    }
+  },
+  {
+    "item_id": "Mercury_7038028",
+    "difficulty": -0.667833978020933,
+    "discrimination": 3.550483614775,
+    "guessing": 0.774922994974304,
+    "metadata": {
+      "atlas_idx": 1022
+    }
+  },
+  {
+    "item_id": "CSZ30169",
+    "difficulty": 0.7908042073222916,
+    "discrimination": 7.64734049969401,
+    "guessing": 0.199592115994253,
+    "metadata": {
+      "atlas_idx": 1024
+    }
+  },
+  {
+    "item_id": "Mercury_7218015",
+    "difficulty": -3.2172326754208433,
+    "discrimination": 3.22215687733977,
+    "guessing": 0.193943015841959,
+    "metadata": {
+      "atlas_idx": 1025
+    }
+  },
+  {
+    "item_id": "Mercury_7198468",
+    "difficulty": 8.658384715880215,
+    "discrimination": 0.231427633553613,
+    "guessing": 0.00651002868540251,
+    "metadata": {
+      "atlas_idx": 1027
+    }
+  },
+  {
+    "item_id": "Mercury_405947",
+    "difficulty": -3.1174879622174183,
+    "discrimination": 2.9988000600966,
+    "guessing": 0.473975359849271,
+    "metadata": {
+      "atlas_idx": 1028
+    }
+  },
+  {
+    "item_id": "AIMS_2009_8_14",
+    "difficulty": 12.308157008756227,
+    "discrimination": 0.20021605200389,
+    "guessing": 0.00109748994403104,
+    "metadata": {
+      "atlas_idx": 1030
+    }
+  },
+  {
+    "item_id": "TAKS_2009_5_25",
+    "difficulty": -1.1705506465706434,
+    "discrimination": 5.82632625849248,
+    "guessing": 0.889798802797783,
+    "metadata": {
+      "atlas_idx": 1031
+    }
+  },
+  {
+    "item_id": "LEAP_2002_4_10247",
+    "difficulty": -3.943665947351101,
+    "discrimination": 1.61469376912682,
+    "guessing": 0.185051331431131,
+    "metadata": {
+      "atlas_idx": 1032
+    }
+  },
+  {
+    "item_id": "Mercury_415086",
+    "difficulty": -1.840765509506614,
+    "discrimination": 5.20671608540102,
+    "guessing": 0.735840410018119,
+    "metadata": {
+      "atlas_idx": 1033
+    }
+  },
+  {
+    "item_id": "Mercury_7136063",
+    "difficulty": 0.5433238576976467,
+    "discrimination": 6.59421845809551,
+    "guessing": 0.736602129884136,
+    "metadata": {
+      "atlas_idx": 1034
+    }
+  },
+  {
+    "item_id": "MCAS_2004_9_15-v1",
+    "difficulty": -0.7104811072494066,
+    "discrimination": 5.19569761959162,
+    "guessing": 0.927699982049,
+    "metadata": {
+      "atlas_idx": 1038
+    }
+  },
+  {
+    "item_id": "MSA_2012_5_2",
+    "difficulty": -1.25775712459159,
+    "discrimination": 4.02699262553803,
+    "guessing": 0.427221863855779,
+    "metadata": {
+      "atlas_idx": 1040
+    }
+  },
+  {
+    "item_id": "Mercury_SC_409171",
+    "difficulty": -0.9891786759683702,
+    "discrimination": 3.10560728023765,
+    "guessing": 0.753695435469604,
+    "metadata": {
+      "atlas_idx": 1041
+    }
+  },
+  {
+    "item_id": "Mercury_401926",
+    "difficulty": 13.94461076461877,
+    "discrimination": 0.142107956321697,
+    "guessing": 0.00313720624915635,
+    "metadata": {
+      "atlas_idx": 1044
+    }
+  },
+  {
+    "item_id": "Mercury_7234378",
+    "difficulty": -0.9575530838441431,
+    "discrimination": 3.50022836886489,
+    "guessing": 0.235894643102534,
+    "metadata": {
+      "atlas_idx": 1045
+    }
+  },
+  {
+    "item_id": "Mercury_7017045",
+    "difficulty": -0.5813359142244681,
+    "discrimination": 3.44210073173074,
+    "guessing": 0.359755082447379,
+    "metadata": {
+      "atlas_idx": 1046
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415407",
+    "difficulty": -0.6017908519444438,
+    "discrimination": 2.81530514178909,
+    "guessing": 0.6909753213955,
+    "metadata": {
+      "atlas_idx": 1048
+    }
+  },
+  {
+    "item_id": "Mercury_7263638",
+    "difficulty": 1.3160614378309627,
+    "discrimination": 10.2889744284335,
+    "guessing": 0.0811503858118796,
+    "metadata": {
+      "atlas_idx": 1049
+    }
+  },
+  {
+    "item_id": "Mercury_7133945",
+    "difficulty": -3.6426275729642783,
+    "discrimination": 1.64855975675113,
+    "guessing": 0.240317328648544,
+    "metadata": {
+      "atlas_idx": 1050
+    }
+  },
+  {
+    "item_id": "Mercury_7210508",
+    "difficulty": 0.7669901215087089,
+    "discrimination": 4.08558961348693,
+    "guessing": 0.0120539597065605,
+    "metadata": {
+      "atlas_idx": 1051
+    }
+  },
+  {
+    "item_id": "MDSA_2013_8_32",
+    "difficulty": -0.7604896281970436,
+    "discrimination": 1.74958229672573,
+    "guessing": 0.00206461793277983,
+    "metadata": {
+      "atlas_idx": 1052
+    }
+  },
+  {
+    "item_id": "MCAS_2014_5_7",
+    "difficulty": 0.3589798951381281,
+    "discrimination": 1.76670048446112,
+    "guessing": 0.053203660203746,
+    "metadata": {
+      "atlas_idx": 1053
+    }
+  },
+  {
+    "item_id": "Mercury_SC_415476",
+    "difficulty": 0.16310056095687073,
+    "discrimination": 3.99136685521767,
+    "guessing": 0.352941165477325,
+    "metadata": {
+      "atlas_idx": 1055
+    }
+  },
+  {
+    "item_id": "Mercury_7098473",
+    "difficulty": -0.6005679289747574,
+    "discrimination": 0.811713625081891,
+    "guessing": 0.579880180238717,
+    "metadata": {
+      "atlas_idx": 1056
+    }
+  },
+  {
+    "item_id": "Mercury_405804",
+    "difficulty": -1.6565913013680227,
+    "discrimination": 1.13459498685258,
+    "guessing": 0.557405451427172,
+    "metadata": {
+      "atlas_idx": 1057
+    }
+  },
+  {
+    "item_id": "NYSEDREGENTS_2010_4_30",
+    "difficulty": -9.596454661858674,
+    "discrimination": 0.533457018387906,
+    "guessing": 0.156169863987427,
+    "metadata": {
+      "atlas_idx": 1060
+    }
+  },
+  {
+    "item_id": "MCAS_2002_8_11",
+    "difficulty": -1.3940024568708635,
+    "discrimination": 5.27078516308958,
+    "guessing": 0.864251188609759,
+    "metadata": {
+      "atlas_idx": 1062
+    }
+  },
+  {
+    "item_id": "Mercury_7270358",
+    "difficulty": -0.4582230310212782,
+    "discrimination": 2.15274234018989,
+    "guessing": 0.20872993528917,
+    "metadata": {
+      "atlas_idx": 1064
+    }
+  },
+  {
+    "item_id": "Mercury_401684",
+    "difficulty": -0.10027502653077548,
+    "discrimination": 9.34167169177726,
+    "guessing": 0.836975985669159,
+    "metadata": {
+      "atlas_idx": 1065
+    }
+  },
+  {
+    "item_id": "Mercury_7111178",
+    "difficulty": 1.0089210987093469,
+    "discrimination": 0.528117397427609,
+    "guessing": 0.191307285218088,
+    "metadata": {
+      "atlas_idx": 1066
+    }
+  },
+  {
+    "item_id": "Mercury_404638",
+    "difficulty": -0.2501500123398986,
+    "discrimination": 4.00168521271833,
+    "guessing": 0.0160752858211138,
+    "metadata": {
+      "atlas_idx": 1069
+    }
+  },
+  {
+    "item_id": "Mercury_7211680",
+    "difficulty": -0.3919830039211347,
+    "discrimination": 3.96868746504405,
+    "guessing": 0.80537734563293,
+    "metadata": {
+      "atlas_idx": 1072
+    }
+  },
+  {
+    "item_id": "Mercury_409647",
+    "difficulty": 1.392697434532355,
+    "discrimination": 10.3352750559948,
+    "guessing": 0.0108326673468567,
+    "metadata": {
+      "atlas_idx": 1073
+    }
+  },
+  {
+    "item_id": "Mercury_188335",
+    "difficulty": -2.880603551079685,
+    "discrimination": 1.40280228308115,
+    "guessing": 0.106773748347081,
+    "metadata": {
+      "atlas_idx": 1076
+    }
+  },
+  {
+    "item_id": "Mercury_7130655",
+    "difficulty": -1.0064836005515256,
+    "discrimination": 4.76028778850936,
+    "guessing": 0.709362988954212,
+    "metadata": {
+      "atlas_idx": 1078
+    }
+  },
+  {
+    "item_id": "Mercury_7069020",
+    "difficulty": -2.244919276501709,
+    "discrimination": 1.81623228450459,
+    "guessing": 0.0418583469348597,
+    "metadata": {
+      "atlas_idx": 1080
+    }
+  },
+  {
+    "item_id": "Mercury_7210210",
+    "difficulty": -1.314206580722003,
+    "discrimination": 2.57144515974996,
+    "guessing": 0.00644284487143523,
+    "metadata": {
+      "atlas_idx": 1085
+    }
+  },
+  {
+    "item_id": "Mercury_402364",
+    "difficulty": 1.8085523475666399,
+    "discrimination": 0.358740557941327,
+    "guessing": 0.0200225645046986,
+    "metadata": {
+      "atlas_idx": 1086
+    }
+  },
+  {
+    "item_id": "Mercury_7017710",
+    "difficulty": -1.3109300108352342,
+    "discrimination": 4.20467364382204,
+    "guessing": 0.541900895220326,
+    "metadata": {
+      "atlas_idx": 1087
+    }
+  },
+  {
+    "item_id": "Mercury_416671",
+    "difficulty": -4.928012100118684,
+    "discrimination": 0.72158010268934,
+    "guessing": 0.229726912881798,
+    "metadata": {
+      "atlas_idx": 1088
+    }
+  },
+  {
+    "item_id": "Mercury_411224",
+    "difficulty": -2.1211119631752973,
+    "discrimination": 2.35498993558998,
+    "guessing": 0.174021535436281,
+    "metadata": {
+      "atlas_idx": 1089
+    }
+  },
+  {
+    "item_id": "MEAP_2005_8_13",
+    "difficulty": -0.3235904095534795,
+    "discrimination": 2.5376120174439,
+    "guessing": 0.5588205979229,
+    "metadata": {
+      "atlas_idx": 1091
+    }
+  },
+  {
+    "item_id": "Mercury_407125",
+    "difficulty": 14.90560539953869,
+    "discrimination": 0.726850701849534,
+    "guessing": 0.271406233450884,
+    "metadata": {
+      "atlas_idx": 1095
+    }
+  },
+  {
+    "item_id": "Mercury_SC_406836",
+    "difficulty": 0.35657615195521597,
+    "discrimination": 0.188896346702958,
+    "guessing": 0.00942111278184749,
+    "metadata": {
+      "atlas_idx": 1097
+    }
+  },
+  {
+    "item_id": "NCEOGA_2013_8_26",
+    "difficulty": 1.0980638421012925,
+    "discrimination": 2.29669470150927,
+    "guessing": 0.0670447202151717,
+    "metadata": {
+      "atlas_idx": 1100
+    }
+  },
+  {
+    "item_id": "Mercury_417465",
+    "difficulty": -1.1011880723158838,
+    "discrimination": 2.39148554305885,
+    "guessing": 0.145868802007892,
+    "metadata": {
+      "atlas_idx": 1101
+    }
+  },
+  {
+    "item_id": "Mercury_191625",
+    "difficulty": 10.879497366846199,
+    "discrimination": 0.341125718675535,
+    "guessing": 9.11868731643383e-05,
+    "metadata": {
+      "atlas_idx": 1102
+    }
+  },
+  {
+    "item_id": "Mercury_7268118",
+    "difficulty": 1.3675005004704812,
+    "discrimination": 9.77388483500867,
+    "guessing": 0.0449773866762079,
+    "metadata": {
+      "atlas_idx": 1104
+    }
+  },
+  {
+    "item_id": "Mercury_7111125",
+    "difficulty": 1.3941072618324932,
+    "discrimination": 12.1449802325664,
+    "guessing": 0.255694661588977,
+    "metadata": {
+      "atlas_idx": 1105
+    }
+  },
+  {
+    "item_id": "LEAP__7_10351",
+    "difficulty": 18.357864451057974,
+    "discrimination": 0.291787007330073,
+    "guessing": 6.36055784416251e-05,
+    "metadata": {
+      "atlas_idx": 1106
+    }
+  },
+  {
+    "item_id": "Mercury_412463",
+    "difficulty": -1.2727233149993264,
+    "discrimination": 3.40864472027346,
+    "guessing": 0.230027382894329,
+    "metadata": {
+      "atlas_idx": 1107
+    }
+  },
+  {
+    "item_id": "Mercury_7267523",
+    "difficulty": -1.8055231904993057,
+    "discrimination": 4.09125360120817,
+    "guessing": 0.162099944051782,
+    "metadata": {
+      "atlas_idx": 1110
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407247",
+    "difficulty": 0.1267234816473785,
+    "discrimination": 6.46461235407905,
+    "guessing": 0.629460370387623,
+    "metadata": {
+      "atlas_idx": 1111
+    }
+  },
+  {
+    "item_id": "Mercury_SC_402616",
+    "difficulty": -0.41610000183675966,
+    "discrimination": 4.20479894527992,
+    "guessing": 0.26414604236432,
+    "metadata": {
+      "atlas_idx": 1115
+    }
+  },
+  {
+    "item_id": "NAEP_2005_4_S13+14",
+    "difficulty": 0.12523687036259398,
+    "discrimination": 3.68204215630356,
+    "guessing": 0.81559570656185,
+    "metadata": {
+      "atlas_idx": 1117
+    }
+  },
+  {
+    "item_id": "Mercury_7271758",
+    "difficulty": -29.20548126057128,
+    "discrimination": 0.128892550156632,
+    "guessing": 0.144081330841634,
+    "metadata": {
+      "atlas_idx": 1118
+    }
+  },
+  {
+    "item_id": "Mercury_7212818",
+    "difficulty": 1.6536446747369968,
+    "discrimination": 5.21221736041841,
+    "guessing": 0.0588818393690107,
+    "metadata": {
+      "atlas_idx": 1120
+    }
+  },
+  {
+    "item_id": "VASoL_2007_5_21",
+    "difficulty": 0.612203759873455,
+    "discrimination": 2.97319852684708,
+    "guessing": 0.135484591020172,
+    "metadata": {
+      "atlas_idx": 1121
+    }
+  },
+  {
+    "item_id": "Mercury_402539",
+    "difficulty": -4.200075474649571,
+    "discrimination": 1.92136738805035,
+    "guessing": 0.21315681822265,
+    "metadata": {
+      "atlas_idx": 1122
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2012_8_6",
+    "difficulty": 0.005178951466233691,
+    "discrimination": 5.03470632128705,
+    "guessing": 0.538422181661636,
+    "metadata": {
+      "atlas_idx": 1124
+    }
+  },
+  {
+    "item_id": "Mercury_412673",
+    "difficulty": -13.328296212899804,
+    "discrimination": 0.0754710169371775,
+    "guessing": 0.0592831866251042,
+    "metadata": {
+      "atlas_idx": 1126
+    }
+  },
+  {
+    "item_id": "Mercury_SC_408367",
+    "difficulty": 3.80459074962297,
+    "discrimination": 0.460527908323896,
+    "guessing": 0.00111571543068921,
+    "metadata": {
+      "atlas_idx": 1127
+    }
+  },
+  {
+    "item_id": "TIMSS_2003_4_pg7",
+    "difficulty": -0.49387482631683144,
+    "discrimination": 7.07165614705439,
+    "guessing": 0.364467719165336,
+    "metadata": {
+      "atlas_idx": 1128
+    }
+  },
+  {
+    "item_id": "MCAS_2006_9_43",
+    "difficulty": -1.6321969646677337,
+    "discrimination": 1.93249287720529,
+    "guessing": 0.00112837623975592,
+    "metadata": {
+      "atlas_idx": 1133
+    }
+  },
+  {
+    "item_id": "Mercury_7057103",
+    "difficulty": -3.4239756522126363,
+    "discrimination": 2.01727285822478,
+    "guessing": 0.352836168230026,
+    "metadata": {
+      "atlas_idx": 1134
+    }
+  },
+  {
+    "item_id": "CSZ_2005_5_CSZ10021",
+    "difficulty": -1.3761017782797553,
+    "discrimination": 3.94137486865284,
+    "guessing": 0.937365238344718,
+    "metadata": {
+      "atlas_idx": 1137
+    }
+  },
+  {
+    "item_id": "ACTAAP_2014_7_5",
+    "difficulty": -0.5850335535060667,
+    "discrimination": 2.2727212620496,
+    "guessing": 0.58724155082311,
+    "metadata": {
+      "atlas_idx": 1141
+    }
+  },
+  {
+    "item_id": "MCAS_2006_8_24",
+    "difficulty": 2.76522728318252,
+    "discrimination": 0.935431263857921,
+    "guessing": 0.00899666312631852,
+    "metadata": {
+      "atlas_idx": 1143
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400985",
+    "difficulty": -0.20750602259962556,
+    "discrimination": 4.24926429639196,
+    "guessing": 0.181932324902894,
+    "metadata": {
+      "atlas_idx": 1145
+    }
+  },
+  {
+    "item_id": "Mercury_7068583",
+    "difficulty": -6.360260154085503,
+    "discrimination": 1.11912738272166,
+    "guessing": 0.177443957437794,
+    "metadata": {
+      "atlas_idx": 1147
+    }
+  },
+  {
+    "item_id": "Mercury_SC_407400",
+    "difficulty": -0.6552671331408898,
+    "discrimination": 2.38506832128177,
+    "guessing": 0.11675235624991,
+    "metadata": {
+      "atlas_idx": 1148
+    }
+  },
+  {
+    "item_id": "VASoL_2009_3_23",
+    "difficulty": -4.066950165488562,
+    "discrimination": 1.49317395735144,
+    "guessing": 0.222889857850012,
+    "metadata": {
+      "atlas_idx": 1149
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400052",
+    "difficulty": 0.2558977872854762,
+    "discrimination": 10.9802938314164,
+    "guessing": 0.755059242229141,
+    "metadata": {
+      "atlas_idx": 1151
+    }
+  },
+  {
+    "item_id": "TIMSS_2003_8_pg87",
+    "difficulty": 0.15817800797578016,
+    "discrimination": 0.846228601122278,
+    "guessing": 0.000681596813766085,
+    "metadata": {
+      "atlas_idx": 1152
+    }
+  },
+  {
+    "item_id": "Mercury_SC_LBS10662",
+    "difficulty": -5.45274080590208,
+    "discrimination": 1.31654836341363,
+    "guessing": 0.182247799135515,
+    "metadata": {
+      "atlas_idx": 1155
+    }
+  },
+  {
+    "item_id": "NAEP_2000_8_S11+10",
+    "difficulty": -9.906055770515227,
+    "discrimination": 0.309863527696916,
+    "guessing": 0.159183089595555,
+    "metadata": {
+      "atlas_idx": 1157
+    }
+  },
+  {
+    "item_id": "Mercury_SC_413549",
+    "difficulty": -0.8305776890991412,
+    "discrimination": 2.37681454005329,
+    "guessing": 0.837793915942808,
+    "metadata": {
+      "atlas_idx": 1160
+    }
+  },
+  {
+    "item_id": "Mercury_406777",
+    "difficulty": -1.9466354474054677,
+    "discrimination": 6.14961230934753,
+    "guessing": 0.659352232540933,
+    "metadata": {
+      "atlas_idx": 1162
+    }
+  },
+  {
+    "item_id": "Mercury_SC_400134",
+    "difficulty": 77.80897097992563,
+    "discrimination": 0.107811709274336,
+    "guessing": 3.58575663718168e-05,
+    "metadata": {
+      "atlas_idx": 1165
+    }
+  },
+  {
+    "item_id": "TIMSS_2007_8_pg109",
+    "difficulty": 0.9136962974762181,
+    "discrimination": 5.62632737343969,
+    "guessing": 0.0533474463306652,
+    "metadata": {
+      "atlas_idx": 1166
+    }
+  },
+  {
+    "item_id": "Mercury_407517",
+    "difficulty": -1.882101394751892,
+    "discrimination": 1.35544266281042,
+    "guessing": 0.0125799451568027,
+    "metadata": {
+      "atlas_idx": 1167
+    }
+  },
+  {
+    "item_id": "Mercury_7210455",
+    "difficulty": -1.010841686591966,
+    "discrimination": 2.28911572099407,
+    "guessing": 0.5370176356832,
+    "metadata": {
+      "atlas_idx": 1168
+    }
+  },
+  {
+    "item_id": "AKDE&ED_2008_8_48",
+    "difficulty": -3.9187939055926724,
+    "discrimination": 1.07889555997048,
+    "guessing": 0.338877231627206,
+    "metadata": {
+      "atlas_idx": 1169
+    }
+  },
+  {
+    "item_id": "Mercury_7219678",
+    "difficulty": 11.258199199532188,
+    "discrimination": 0.406226794912084,
+    "guessing": 6.5215078156199e-05,
+    "metadata": {
+      "atlas_idx": 1170
+    }
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "dataset": "winogrande",
+  "bridge_kind": "content_hash",
+  "rows": 1267,
+  "ordering": {
+    "source": "Open LLM Leaderboard v1 per-model detail repo",
+    "harness_config": "harness_winogrande_5",
+    "repo": "open-llm-leaderboard-old/details_Corianas__Quokka_2.7b",
+    "revision": "05ea88af3c1503f9949e054ebb930a13d532f207",
+    "path": "2023-09-18T03-05-58.053951/details_harness|winogrande|5_2023-09-18T03-05-58.053951.parquet",
+    "cross_checked": [
+      "open-llm-leaderboard-old/details_mistralai__Mistral-7B-v0.1",
+      "open-llm-leaderboard-old/details_microsoft__phi-2",
+      "open-llm-leaderboard-old/details_google__gemma-7b",
+      "open-llm-leaderboard-old/details_Qwen__Qwen1.5-7B",
+      "open-llm-leaderboard-old/details_tiiuae__falcon-7b"
+    ]
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "task": "winogrande",
+    "split": "validation",
+    "data_source": "DataSource(path='allenai/winogrande', subset='winogrande_xl', split='validation', source_type=<SourceType.HF: 'hf'>, data_files=None, revision=None)"
+  },
+  "matching": {
+    "recipe": "each leaderboard example rebuilt from the HuggingFace document as the v1 harness rendered it, then matched as a bijection over the split",
+    "details_columns": [
+      "example"
+    ],
+    "positions_agreeing_with_split_order": 1
+  },
+  "generated_at": "2026-08-07T18:27:27.704984+00:00"
+}

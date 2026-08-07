@@ -8,6 +8,12 @@ Usage::
 The runner resolves the requested style through the auto-discovering registry and
 runs it through the generic CAT engine. It resolves any registered style without
 being modified when new styles are added.
+
+It is also the only place that decides *how* items are graded. ``CatStyle.score``
+receives an already-constructed model, so the grading scheme is fixed when the model
+is built, which happens here. The runner stays style-agnostic about it: it asks the
+style for a :class:`~diagnostics.mcq_cat.common.grading.GradingRequest` and hands that
+to :mod:`~diagnostics.mcq_cat.common.grading`, which owns the modality table.
 """
 
 from __future__ import annotations
@@ -21,7 +27,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from . import registry
-from .common import cat_loop, inference, s3_io
+from .common import cat_loop, generative, grading, inference, s3_io
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,8 +56,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--max-items",
         type=int,
-        default=50,
-        help="Maximum number of items to administer (default: 50).",
+        default=40,
+        help="Maximum number of items to administer (default: 40).",
     )
     parser.add_argument(
         "--checkpoint-kind",
@@ -97,7 +103,14 @@ def _write_report(report_dict: dict, args: argparse.Namespace) -> str:
 
 
 def run(args: argparse.Namespace) -> int:
-    """Execute the runner for parsed ``args``."""
+    """Execute the runner for parsed ``args``.
+
+    The bank is resolved, its modality checked, its recorded scoring convention compared
+    against the resolved settings and the requested checkpoint format tested for a
+    loader before the checkpoint is fetched, so an unsupported dataset, a bank that would
+    be graded by the wrong scheme, one that would be graded under the wrong convention
+    and a format nothing can load all fail without staging gigabytes or booting a GPU.
+    """
     if args.list_styles:
         styles = registry.available_styles()
         print("Available CAT styles:", ", ".join(styles) if styles else "<none>")
@@ -133,22 +146,30 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
 
-    config = inference.InferenceConfig(
-        checkpoint_kind=args.checkpoint_kind,
-        batch_size=args.batch_size,
+    settings = grading.GradingSettings(
+        mcq=inference.InferenceConfig(
+            checkpoint_kind=args.checkpoint_kind,
+            batch_size=args.batch_size,
+        ),
+        generation=generative.GenerationConfig(checkpoint_kind=args.checkpoint_kind),
     )
 
     with tempfile.TemporaryDirectory(prefix="mcq-cat-") as tmp:
+        bank = style.download_benchmark(benchmark, dest=Path(tmp) / "benchmark")
+        irt_bank = style.load_irt_params(args.irt_params or benchmark)
+
+        request = grading.request_for(style, dataset=benchmark or bank.name)
+        grading.check_bank_modality(request, bank.items)
+        grading.check_scoring_convention(style, request, settings)
+        grading.check_checkpoint_kind(request, settings)
+
         checkpoint_dir = s3_io.resolve_checkpoint(
             args.checkpoint,
             Path(tmp) / "checkpoint",
             region=args.aws_region,
             endpoint_url=args.s3_endpoint_url,
         )
-        model = inference.load_scoring_model(checkpoint_dir, config)
-
-        bank = style.download_benchmark(benchmark, dest=Path(tmp) / "benchmark")
-        irt_bank = style.load_irt_params(args.irt_params or benchmark)
+        model = grading.load_grader(request, checkpoint_dir, settings)
 
         report = cat_loop.run_cat(
             style,
@@ -164,6 +185,8 @@ def run(args: argparse.Namespace) -> int:
         "cat_style": args.cat_style,
         "checkpoint": args.checkpoint,
         "checkpoint_kind": args.checkpoint_kind,
+        "modality": request.modality,
+        "grader": grading.get_grader(request.modality).summary,
         "timestamp": datetime.now(UTC).isoformat(),
     }
     location = _write_report(report_dict, args)

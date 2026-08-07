@@ -90,3 +90,15 @@ src/olmo_eval/evals/tasks/data/litsearch_rerank_pools.jsonl
 # branch). Ignore the whole tree so a stray "stage all" can't sweep in data/, runs/,
 # logs/, etc. AWS smoke-test files live at repo-root tests/aws/ instead.
 /eduLLM-Evals/
+
+# Metamath corpora, ~3.5 GB across 36 files. Nothing on this branch reads them, and
+# left untracked they dominate any diff summary -- they were the whole of a reported
+# 308k-line change -- which makes it easy to miss what actually moved.
+/Vishnu-Evals/
+
+# AdaptiveTesting working copy, present on disk from origin/Research and not tracked
+# here. The calibration inputs this branch needs are read out of that ref with
+# `git show` at vendoring time, never from the working tree, so an on-disk copy is a
+# leftover rather than an input. Ignored for the same reason as eduLLM-Evals above:
+# a stray "stage all" would otherwise commit a research tree into a flow branch.
+/AdaptiveTesting/

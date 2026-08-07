@@ -1,0 +1,90 @@
+{
+  "dataset": "gsm8k",
+  "task": "gsm8k",
+  "route": "C",
+  "modality": "generative",
+  "answer_type": "numeric",
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Inputs/ATLAS/gsm8k",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/gsm8k.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "gsm8k",
+    "bridge_kind": "content_hash",
+    "rows": 1319,
+    "ordering": {
+      "source": "Open LLM Leaderboard v1 per-model detail repo",
+      "harness_config": "harness_gsm8k_5",
+      "repo": "open-llm-leaderboard-old/details_Corianas__Quokka_2.7b",
+      "revision": "05ea88af3c1503f9949e054ebb930a13d532f207",
+      "path": "2023-09-18T03-05-58.053951/details_harness|gsm8k|5_2023-09-18T03-05-58.053951.parquet",
+      "cross_checked": [
+        "open-llm-leaderboard-old/details_mistralai__Mistral-7B-v0.1",
+        "open-llm-leaderboard-old/details_microsoft__phi-2",
+        "open-llm-leaderboard-old/details_google__gemma-7b",
+        "open-llm-leaderboard-old/details_Qwen__Qwen1.5-7B",
+        "open-llm-leaderboard-old/details_tiiuae__falcon-7b"
+      ]
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "task": "gsm8k",
+      "split": "test",
+      "data_source": "DataSource(path='openai/gsm8k', subset='main', split='test', source_type=<SourceType.HF: 'hf'>, data_files=None, revision=None)"
+    },
+    "matching": {
+      "recipe": "each leaderboard example rebuilt from the HuggingFace document as the v1 harness rendered it, then matched as a bijection over the split",
+      "details_columns": [
+        "example"
+      ],
+      "positions_agreeing_with_split_order": 2
+    },
+    "generated_at": "2026-08-07T18:27:33.978659+00:00"
+  },
+  "upstream_bank_rows": 1306,
+  "bridge_rows": 1319,
+  "items": 1298,
+  "dropped": {
+    "non_positive_discrimination": 8,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "ungradable_instances": 0,
+  "positional_ids": false,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "generative",
+      "prompt_style": "gsm8k",
+      "num_fewshot": 8,
+      "fewshot_source": "gsm8k",
+      "chat_format": false,
+      "system_prompt_source": null,
+      "stop_sequences": [
+        "Question:",
+        "\n\n"
+      ],
+      "max_new_tokens": 512,
+      "max_length": null,
+      "grader": "last_number_exact_match"
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": "unrecorded",
+      "metric": "unrecorded",
+      "note": "The ATLAS release records no prompt, shot count or metric for GSM8K. Its population is Open LLM Leaderboard v1, whose GSM8K convention is 5-shot strict match, so the last-number strict match used here is likely the right family of grader and the 8-shot block this harness prepends is likely not the calibrated count -- but both of those are inferences about the harvest rather than anything the bank states, which is why all three fields above say so."
+    }
+  },
+  "notes": "The one generative dataset here: items carry no choices, and a response is graded by extracting the final number from a sampled completion and exact-matching it against metadata['gold_answer']. Strict match is used because a more forgiving grader would score the same model higher against these parameters and the resulting theta would not be comparable to the published one; that the calibration used it is inferred from the harvested population being Open LLM Leaderboard v1 rather than recorded anywhere. The ATLAS release reports 4,195 calibration models over 1,307 items in 12 chunks; it does not publish the train/test split of that population, so no train-model count is claimed here. The task declares no split and so inherits the TaskConfig default of test, giving the 1,319 instances the bridge was built against; its metadata['id'] is a positional index, so the join is by split position and breaks silently if enumeration order shifts. Bank max index, bridge rows and enumerated instances all agree at 1,319. 8 of the 1,306 calibrated rows have a non-positive discrimination and are dropped, leaving 1,298 items at 100% overlap. Enumeration needs DataSource(path='openai/gsm8k'): the bare 'gsm8k' repo id the task used to declare is no longer accepted by the Hub. Its bridge was generated locally by Inputs/ATLAS/scripts/build_atlas_idx_bridge.py, which assumes ATLAS index k is the k-th instance olmo-eval enumerates. That assumption is disproved on ARC, the only benchmark carrying a bridge the release shipped: the generated and shipped bridges agree on 2 of 1,172 positions, the release's order being Open LLM Leaderboard harness_arc_challenge_25 example order rather than HuggingFace split order. Its bridge is a pure identity map too -- atlas_idx - 1 equals question_id on all 1,319 rows -- so it restates that assumption and adds nothing to it. Unlike HellaSwag and WinoGrande it cannot even be checked: no response matrix, actual_accuracy.csv, item-selection frequency or per-item statistic for gsm8k is committed on any of the 113 local and remote refs in this checkout, so there is no empirical difficulty to correlate the bank against. This bank is unverifiable from committed data and rests on an assumption disproved elsewhere; that is a weaker position than the other two, not a stronger one.",
+  "sha256": {
+    "params.json": "d0e11c2bbf0ea30fdb31afd09e776e2aef1ea670099a7cda698f0fd220176505",
+    "items.jsonl": "ac3f01731c4c616a6311a677163e45f6651edcc9c98a773a033527009c618e17"
+  },
+  "generated_at": "2026-08-07T18:31:56.803119+00:00"
+}

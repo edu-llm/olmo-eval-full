@@ -49,7 +49,7 @@ Selection is entirely by environment variable — no per-style code path:
 | `CHECKPOINT` | checkpoint under test | `s3://.../step_1000` |
 | `CHECKPOINT_KIND` | `hf` (default) \| `olmo_core` | `hf` |
 | `BENCHMARK` / `IRT_PARAMS` | optional overrides (else style defaults) | |
-| `SE_THRESHOLD` / `MAX_ITEMS` | CAT stop knobs | `0.3` / `50` |
+| `SE_THRESHOLD` / `MAX_ITEMS` | CAT stop knobs | `0.3` / `40` |
 | `JUDGE_ENDPOINT` | FRQ only: served frozen-judge `/v1` URL | |
 | `S3_BUCKET` / `S3_PREFIX` / `S3_GROUP` | result namespace (same story as the atom) | |
 

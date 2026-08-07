@@ -1,0 +1,35 @@
+{
+  "dataset": "hellaswag",
+  "bridge_kind": "content_hash",
+  "rows": 10042,
+  "ordering": {
+    "source": "Open LLM Leaderboard v1 per-model detail repo",
+    "harness_config": "harness_hellaswag_10",
+    "repo": "open-llm-leaderboard-old/details_Corianas__Quokka_2.7b",
+    "revision": "05ea88af3c1503f9949e054ebb930a13d532f207",
+    "path": "2023-07-19T15:58:12.174583/details_harness|hellaswag|10_2023-07-19T15:58:12.174583.parquet",
+    "cross_checked": [
+      "open-llm-leaderboard-old/details_mistralai__Mistral-7B-v0.1",
+      "open-llm-leaderboard-old/details_microsoft__phi-2",
+      "open-llm-leaderboard-old/details_google__gemma-7b",
+      "open-llm-leaderboard-old/details_Qwen__Qwen1.5-7B",
+      "open-llm-leaderboard-old/details_tiiuae__falcon-7b"
+    ]
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "task": "hellaswag",
+    "split": "validation",
+    "data_source": "DataSource(path='allenai/hellaswag', subset=None, split='validation', source_type=<SourceType.HF: 'hf'>, data_files=None, revision=None)"
+  },
+  "matching": {
+    "recipe": "each leaderboard example rebuilt from the HuggingFace document as the v1 harness rendered it, then matched as a bijection over the split",
+    "details_columns": [
+      "example",
+      "choices"
+    ],
+    "positions_agreeing_with_split_order": 3
+  },
+  "generated_at": "2026-08-07T18:27:21.379068+00:00"
+}

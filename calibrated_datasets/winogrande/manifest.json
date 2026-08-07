@@ -1,0 +1,82 @@
+{
+  "dataset": "winogrande",
+  "task": "winogrande",
+  "route": "C",
+  "modality": "mcq",
+  "answer_type": null,
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Inputs/ATLAS/winogrande",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/winogrande.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "winogrande",
+    "bridge_kind": "content_hash",
+    "rows": 1267,
+    "ordering": {
+      "source": "Open LLM Leaderboard v1 per-model detail repo",
+      "harness_config": "harness_winogrande_5",
+      "repo": "open-llm-leaderboard-old/details_Corianas__Quokka_2.7b",
+      "revision": "05ea88af3c1503f9949e054ebb930a13d532f207",
+      "path": "2023-09-18T03-05-58.053951/details_harness|winogrande|5_2023-09-18T03-05-58.053951.parquet",
+      "cross_checked": [
+        "open-llm-leaderboard-old/details_mistralai__Mistral-7B-v0.1",
+        "open-llm-leaderboard-old/details_microsoft__phi-2",
+        "open-llm-leaderboard-old/details_google__gemma-7b",
+        "open-llm-leaderboard-old/details_Qwen__Qwen1.5-7B",
+        "open-llm-leaderboard-old/details_tiiuae__falcon-7b"
+      ]
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "task": "winogrande",
+      "split": "validation",
+      "data_source": "DataSource(path='allenai/winogrande', subset='winogrande_xl', split='validation', source_type=<SourceType.HF: 'hf'>, data_files=None, revision=None)"
+    },
+    "matching": {
+      "recipe": "each leaderboard example rebuilt from the HuggingFace document as the v1 harness rendered it, then matched as a bijection over the split",
+      "details_columns": [
+        "example"
+      ],
+      "positions_agreeing_with_split_order": 1
+    },
+    "generated_at": "2026-08-07T18:27:27.704984+00:00"
+  },
+  "upstream_bank_rows": 1045,
+  "bridge_rows": 1267,
+  "items": 865,
+  "dropped": {
+    "non_positive_discrimination": 180,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "ungradable_instances": 0,
+  "positional_ids": false,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "blank_substitution",
+      "num_fewshot": 0,
+      "score_normalization": "unnormalized_sum_of_continuation_logprobs",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": "unrecorded",
+      "metric": "unrecorded",
+      "note": "The ATLAS release records nothing about how WinoGrande's calibration responses were prompted or scored. Trinh & Le partial evaluation is the olmo-eval task's formulation and the only one that measures coreference, which is why it is used here; the bank does not say whether it is the one its difficulties were estimated behind."
+    }
+  },
+  "notes": "The ATLAS release reports 4,680 models for WinoGrande. That figure is the combined train and test population, not the calibration set: for ARC the same table says 4,162 while the committed matrices hold 3,747 train and 417 test rows. No WinoGrande matrix is committed, so the calibration count is not known here and none is claimed. The task emits a positional index as metadata['id'] over the winogrande_xl validation split, so the join is by split position and would break silently, not loudly, if enumeration order ever shifted -- which is what the overlap floor enforced for positional_ids datasets exists to catch. Bank max index, bridge rows and enumerated instances all agree at 1,267. 180 of the 1,045 calibrated rows have a non-positive discrimination and are dropped (X3 is the first, a1 = -0.25); nothing is lost to the bridge or the join, so 865 items survive at 100% overlap. Enumeration needs DataSource(path='allenai/winogrande'): the bare 'winogrande' repo id the task used to declare is no longer accepted by the Hub. Its bridge was generated locally by Inputs/ATLAS/scripts/build_atlas_idx_bridge.py, which assumes ATLAS index k is the k-th instance olmo-eval enumerates. That assumption is disproved on ARC, the only benchmark carrying a bridge the release shipped: the generated and shipped bridges agree on 2 of 1,172 positions, the release's order being Open LLM Leaderboard harness_arc_challenge_25 example order rather than HuggingFace split order. This bridge is additionally a pure identity map -- atlas_idx - 1 equals question_id on all 1,267 rows -- so it carries no information beyond that assumption and cannot be cross-checked the way HellaSwag's native ind allowed. The empirical check goes the same way as HellaSwag's: the four Qwen2.5 checkpoints in Inputs/Open/LLM-Judge/mcq/winogrande/ rank items with a reliability of 0.54 and correlate with the bank's implied b at +0.04 over 865 rows, against a scrambled null of 0.00 with a standard deviation of 0.04 -- the wrong sign, and roughly where the null sits. Reliability being lower here makes this the weaker of the two findings, but not by enough to explain the gap: attenuating ARC's four-model -0.32 for the difference predicts about -0.26. The obvious confound is ruled out -- these checkpoints score near chance on WinoGrande, but their p-value tracks item difficulty rather than which option is gold (Spearman 0.00 against gold == A, mean p 0.563 versus 0.565).",
+  "sha256": {
+    "params.json": "491fb41d1d8fc88d587472e306bc94fe6ee77073e6fa290b5c4011e4bf30543b",
+    "items.jsonl": "6b11e622445ac6986b87491594185810db6454cca29d8cc6ce8393e20cb517fa"
+  },
+  "generated_at": "2026-08-07T18:31:51.597883+00:00"
+}

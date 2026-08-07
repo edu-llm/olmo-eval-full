@@ -1,0 +1,118 @@
+{
+  "dataset": "musr",
+  "task": "musr_murder_mysteries, musr_object_placements, musr_team_allocation",
+  "route": "B",
+  "modality": "mcq",
+  "answer_type": null,
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Experiments/openlm_atlas_3pl/musr/calibration",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/musr.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "musr",
+    "bridge_kind": "content_hash",
+    "rows": 754,
+    "ordering": {
+      "source": "Open LLM Leaderboard v2 per-model detail repo",
+      "harness_config": "leaderboard_musr_*",
+      "repo": "open-llm-leaderboard/microsoft__Phi-3-mini-4k-instruct-details",
+      "revision": "427d64648094a1aea773aec93fe5e3b5ca069074",
+      "run": "2024-07-18T11-04-02.101450",
+      "paths": {
+        "murder_mysteries": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_musr_murder_mysteries_2024-07-18T11-04-02.101450.jsonl",
+        "object_placements": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_musr_object_placements_2024-07-18T11-04-02.101450.jsonl",
+        "team_allocation": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_musr_team_allocation_2024-07-18T11-04-02.101450.jsonl"
+      },
+      "doc_id": "read from each record's explicit doc_id field, not from its position in the file: lm-eval writes samples in completion order, so row order and document order differ",
+      "cross_checked": [
+        {
+          "repo": "open-llm-leaderboard/Qwen__Qwen2.5-7B-Instruct-details",
+          "run": "2024-09-19T16-21-01.446061",
+          "documents_agreeing": 756
+        },
+        {
+          "repo": "open-llm-leaderboard/Danielbrdz__Barcenas-R1-Qwen-1.5b-details",
+          "run": "2025-01-26T19-17-19.771431",
+          "documents_agreeing": 756
+        },
+        {
+          "repo": "open-llm-leaderboard/DeepMount00__Qwen2-1.5B-Ita-details",
+          "run": "2025-02-28T20-55-59.716664",
+          "documents_agreeing": 756
+        }
+      ]
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "tasks": [
+        "musr_murder_mysteries",
+        "musr_object_placements",
+        "musr_team_allocation"
+      ]
+    },
+    "matching": {
+      "recipe": "each evaluated document rebuilt from the details record as the olmo-eval task renders it, then matched as a bijection over each subtask's split",
+      "doc_fields": [
+        "narrative",
+        "question",
+        "choices"
+      ],
+      "normalization": "none. The details record's doc is the raw TAUR-Lab/MuSR row, so the two sides differ only by the conversions the olmo-eval task performs on it: narrative and question joined by a blank line, and the choices column parsed out of its Python-list repr. The leaderboard's rendered prompt -- the numbered choice block, the Answer: cue and the model's chat template -- is in the record's arguments field and is deliberately not what is matched, since it is per model and is not the string this bank's items are keyed by.",
+      "enumeration": "per_subtask_task",
+      "documents_evaluated": 756,
+      "documents_matched": 756,
+      "positions_agreeing_with_enumeration_order": 756
+    },
+    "index_map": {
+      "source_ref": "origin/Research",
+      "path": "AdaptiveTesting/Experiments/openlm_atlas_3pl/musr/data/item_id_map.csv",
+      "rows": 754,
+      "subtask_rows": {
+        "murder_mysteries": 250,
+        "object_placements": 254,
+        "team_allocation": 250
+      }
+    },
+    "generated_at": "2026-08-07T21:19:57.844306+00:00"
+  },
+  "upstream_bank_rows": 754,
+  "bridge_rows": 754,
+  "items": 432,
+  "dropped": {
+    "non_positive_discrimination": 322,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "ungradable_instances": 0,
+  "positional_ids": false,
+  "frozen_prompt": false,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "musr",
+      "num_fewshot": 0,
+      "score_normalization": "continuation_logprob_per_character",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": "unrecorded",
+      "metric": "acc_norm",
+      "note": "The metric is recorded and this harness matches it: Open LLM Leaderboard v2 scored MuSR by acc_norm, the length-normalized log-likelihood ranking, and the bank was fit on that binary. Nothing upstream records the prompt or shot count, but there is little room for either to differ -- the harvest is leaderboard v2, whose MuSR configuration is lm-evaluation-harness's 0-shot leaderboard_musr, and that is the layout musr.py reproduces."
+    }
+  },
+  "bank_caveat": null,
+  "notes": "The only multiple-choice bank here that is not from ATLAS, and the only one scored by acc_norm rather than by an unnormalized sum. Both facts follow from the same thing: it was harvested from Open LLM Leaderboard v2 and fit locally, and v2 reported MuSR length-normalized. Scoring it by the sum the other three MCQ banks use would rank a choice set differently on a benchmark whose options are whole clauses, so score_normalization is a per dataset setting recorded in the manifest and checked at startup. Its bank spans three registered tasks rather than one: murder_mysteries at 250 bridge rows, object_placements at 254 and team_allocation at 250, summing to the bridge's 754. The three are HuggingFace splits of TAUR-Lab/MuSR rather than subset configurations, which is why the split name travels on the task class. Its bridge is keyed by content hash and not by the composite '<subtask>|<doc_id>' the upstream item_id_map.csv uses, because doc_id is not a property of a question. It is lm-eval's enumeration position within a subtask's split at harvest time, so joining through it means re-deriving the key by counting an enumeration today and assuming the two agree -- the same class of assumption that proved false for the ATLAS banks, where a positional bridge disagreed with the shipped one on 1,170 of 1,172 positions. scripts/build_leaderboard_bridge.py instead reads which document each doc_id named off Open LLM Leaderboard v2's own per-model detail files, joins that through item_id_map.csv, and writes atlas_idx -> content hash to styles/uni_mcq/bridges/musr.csv. The measurement came out in the old assumption's favour, which is worth stating plainly rather than dressing up. All 756 evaluated documents match the task's enumeration as an exact bijection with no normalization, and all 756 sit at the position a fresh enumeration assumes, so the re-keyed bridge names exactly the items the composite one did and the bank is unchanged at 432. What changed is the evidence and the failure mode. The join now rests on the leaderboard's record of what it evaluated -- cross-checked against three further models spanning July 2024 to February 2025, all agreeing on all 756 documents -- rather than on doc_id being reproducible by counting; and a re-rendered or reordered split now misses instead of silently naming its neighbour's question, which the overlap floor turns into an abort. object_placements is the reason the per-subtask alignment guard tolerates a sparse bridge, and that tolerance is now load-bearing for gpqa and bbh rather than here. Its 254 rows spread over positions 0..255, with 136 and 140 absent because those two items were dropped during calibration -- mid-run rather than at the tail, so the gap is real and not a truncation. Demanding a gapless 0..n-1 run refused the dataset before enumeration started, and comparing enumerated instances against bridge *rows* would have rejected the 256 instances the task correctly yields one step later. Under a content-hashed key neither question arises: the two dropped positions simply have no bank row, and nothing is numbered. The guard that does still apply is the per-subtask overlap floor, unchanged at 90% of each subtask's own bank rows, reading the subtask off the bridge's own column now that the id no longer carries it. Of the 754 calibrated rows 322 have a non-positive discrimination and are dropped, leaving 432, and all 432 match the task at 100% per subtask, with nothing lost to a non-finite a, a missing bridge entry or an ambiguous id. 43% dropped puts it beside gpqa rather than beside the ATLAS banks. The r = -0.036 that once kept this dataset excluded was the pre-filter figure and was bank hygiene rather than a linking failure: link_failure_diagnosis/diagnosis_summary.csv records both sides directly, cat_r_prefilter_old = -0.036264 against cat_r_postfilter_new = 0.745955, and the ten-fold cross-validation gives r = 0.757. Vendoring applies exactly that a > 0 filter. Verified by scripts/check_bridge_alignment.py against the calibration's own response matrices (1,099 models over the 432 vendored items): item p-value against the bank's implied b = -d/a1 is Spearman -0.616, with a scrambled control of +0.001 +/- 0.049. Unambiguously the right sign, about thirteen standard deviations from the null, and the weakest of the four banks this test can be run on -- ifeval reads -0.888, gpqa -0.746 and leaderboard_math -0.731 through the same code path. The fit's own instability below is the readiest explanation and is not demonstrated to be the whole of it. As with the other Route B banks, the matrix columns are the same positional index as the parameter rows, so this attests the difficulties against the responses they were fit from and says nothing about which question each column is. That second half is what the content re-key supplies, and it is the one respect in which this bank is now better attested than its Route B siblings: their joins still rest on a composite key rebuilt by counting, while this one rests on the leaderboard's own record of the document each harvested response answered. The reservation to read before quoting a theta is the fit family. The 3PL fit is unstable across folds -- one collapses to r = 0.142, for a fold-r standard deviation of 0.202 -- while the 2PL refit is markedly steadier, pooling to 0.802 with a worst fold of 0.710 and a standard deviation of 0.042. This pipeline standardizes on 3PL and that is what is vendored, so the instability is a property of the bank a reader has to carry rather than something the harness corrects.",
+  "sha256": {
+    "params.json": "ff253791a1737b39c8da8b64a4448f1d8d58c8901bcc953ca7e03099ca887fa8",
+    "items.jsonl": "72613b389153654197e0d13f7d30d565630bbaba1c744b3568c469ec1600b4bf"
+  },
+  "generated_at": "2026-08-07T21:20:03.443711+00:00"
+}

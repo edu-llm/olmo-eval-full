@@ -1,0 +1,59 @@
+{
+  "dataset": "arc_challenge",
+  "bridge_kind": "content_hash",
+  "rows": 1172,
+  "ordering": {
+    "source": "Open LLM Leaderboard v1 per-model detail repo",
+    "harness_config": "harness_arc_challenge_25",
+    "repo": "open-llm-leaderboard-old/details_Corianas__Quokka_2.7b",
+    "revision": "05ea88af3c1503f9949e054ebb930a13d532f207",
+    "path": "2023-07-19T15:58:12.174583/details_harness|arc:challenge|25_2023-07-19T15:58:12.174583.parquet",
+    "cross_checked": [
+      "open-llm-leaderboard-old/details_mistralai__Mistral-7B-v0.1",
+      "open-llm-leaderboard-old/details_microsoft__phi-2",
+      "open-llm-leaderboard-old/details_google__gemma-7b",
+      "open-llm-leaderboard-old/details_Qwen__Qwen1.5-7B",
+      "open-llm-leaderboard-old/details_tiiuae__falcon-7b"
+    ]
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "task": "arc_challenge",
+    "split": "test",
+    "data_source": "DataSource(path='allenai/ai2_arc', subset='ARC-Challenge', split='test', source_type=<SourceType.HF: 'hf'>, data_files=None, revision=None)"
+  },
+  "matching": {
+    "recipe": "each leaderboard example rebuilt from the HuggingFace document as the v1 harness rendered it, then matched as a bijection over the split",
+    "details_columns": [
+      "example"
+    ],
+    "positions_agreeing_with_split_order": 2
+  },
+  "generated_at": "2026-08-07T18:27:06.723818+00:00",
+  "control": {
+    "shipped_bridge": "origin/Research:AdaptiveTesting/Inputs/ATLAS/arc/atlas_idx_to_question_id.csv",
+    "positions_compared": 1172,
+    "positions_agreeing": 1170,
+    "agreement": 0.998294,
+    "positions_agreeing_on_stem": 1172,
+    "ids_duplicated_in_shipped_bridge": [
+      "Mercury_406639",
+      "Mercury_SC_LBS10597"
+    ],
+    "disagreements": [
+      {
+        "atlas_idx": "331",
+        "shipped_question_id": "Mercury_SC_LBS10597",
+        "recovered_question_id": "TIMSS_2003_8_pg47",
+        "stems_identical": "True"
+      },
+      {
+        "atlas_idx": "738",
+        "shipped_question_id": "Mercury_406639",
+        "recovered_question_id": "Mercury_7116183",
+        "stems_identical": "True"
+      }
+    ]
+  }
+}

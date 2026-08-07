@@ -74,9 +74,16 @@ def download_prefix(
 
 
 def read_text(uri: str, *, region: str = "us-east-1", endpoint_url: str | None = None) -> str:
-    """Read a single object's body as UTF-8 text from an ``s3://`` URI or a path."""
+    """Read a single object's body as UTF-8 text from an ``s3://`` URI or a path.
+
+    UTF-8 on both branches, and named on the local one rather than left to the platform.
+    ``read_text()`` without an encoding uses the locale's, which is cp1252 on Windows,
+    and the artifacts this reads -- item stems, IRT parameters -- are written UTF-8. A
+    mis-decode there is not a crash on most bytes: it substitutes a different stem, and
+    the run scores a question the bank holds no difficulty for.
+    """
     if not is_s3_uri(uri):
-        return Path(uri).read_text()
+        return Path(uri).read_text(encoding="utf-8")
     bucket, key = parse_s3_uri(uri)
     client = s3_client(region=region, endpoint_url=endpoint_url)
     obj = client.get_object(Bucket=bucket, Key=key)

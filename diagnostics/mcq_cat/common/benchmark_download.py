@@ -50,9 +50,15 @@ def _item_from_record(record: dict, index: int) -> BenchmarkItem:
 
 
 def load_items_from_jsonl(source: str | Path, *, name: str | None = None) -> BenchmarkBank:
-    """Load MCQ items from a JSONL source (local path or ``s3://`` URI)."""
+    """Load MCQ items from a JSONL source (local path or ``s3://`` URI).
+
+    Read through :func:`~diagnostics.mcq_cat.common.s3_io.read_text` on both branches, so
+    a local bank is decoded as UTF-8 rather than in the platform's locale encoding. The
+    two disagree wherever a stem is not ASCII, and the failure is a substituted character
+    in the prompt rather than an error.
+    """
     source_str = str(source)
-    text = s3_io.read_text(source_str) if s3_io.is_s3_uri(source_str) else Path(source).read_text()
+    text = s3_io.read_text(source_str)
 
     items: list[BenchmarkItem] = []
     for index, line in enumerate(text.splitlines()):

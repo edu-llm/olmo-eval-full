@@ -48,7 +48,7 @@ CHECKPOINT_KIND="${CHECKPOINT_KIND:-hf}"               # hf (default) | olmo_cor
 BENCHMARK="${BENCHMARK:-}"                              # optional; else the style default
 IRT_PARAMS="${IRT_PARAMS:-}"                            # optional; else the style's bundled bank
 SE_THRESHOLD="${SE_THRESHOLD:-0.3}"
-MAX_ITEMS="${MAX_ITEMS:-50}"
+MAX_ITEMS="${MAX_ITEMS:-40}"                            # what Research's live CAT runs
 
 # --- FRQ-only served endpoints (reachable from the node) ---------------------
 TUTOR_ENDPOINT="${TUTOR_ENDPOINT:-}"                    # checkpoint-under-test /v1 base URL

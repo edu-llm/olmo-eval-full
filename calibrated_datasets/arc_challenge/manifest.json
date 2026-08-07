@@ -1,0 +1,44 @@
+{
+  "dataset": "arc_challenge",
+  "task": "arc_challenge",
+  "route": "C",
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Inputs/ATLAS/arc",
+  "bridge_path": "AdaptiveTesting/Inputs/ATLAS/arc/atlas_idx_to_question_id.csv",
+  "bridge_kind": "atlas",
+  "upstream_bank_rows": 839,
+  "bridge_rows": 1172,
+  "items": 650,
+  "dropped": {
+    "non_positive_discrimination": 189,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "positional_ids": false,
+  "scoring_convention": {
+    "recorded_by": "migrate_manifests",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "score_normalization": "unnormalized_sum_of_continuation_logprobs",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": 25,
+      "metric": "unrecorded",
+      "note": "The one shot count recorded anywhere for these banks: the ATLAS release states its ARC-Challenge labels are 25-shot leaderboard scoring. It does not state the prompt those responses were produced behind, nor the metric they were scored by, so neither is claimed here. This harness scores 0-shot, matching Research's own CAT."
+    }
+  },
+  "notes": "ATLAS calibrated ARC-Challenge on 3,747 train models. Native string ids (Mercury_7175875), so the join is unambiguous. Its bridge uniquely carries a third 'question' column, which is stem-only and therefore not usable as an item source. Calibrated under 25-shot leaderboard scoring.",
+  "sha256": {
+    "params.json": "714240f27b4de601186dabb90afc1ae2cde96518e89e4e2652ad82b2dcfdf584",
+    "items.jsonl": "b1e63f1394b39ad77d22aaa10fac0837aad9a0a53259345644949822d76a5b72"
+  },
+  "generated_at": "2026-08-06T20:38:00.187657+00:00"
+}

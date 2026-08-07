@@ -1,0 +1,865 @@
+{"id": "d8e081c1e4ca0fd0", "question": "People think _ is embarassed, because Samantha made snide comments about the shirt Rebecca was wearing.", "choices": ["Samantha", "Rebecca"], "gold_index": 1}
+{"id": "edb1cf543bdc9292", "question": "For her birthday gifts, Sarah was upset with the pearls, but felt the opposite about the rings she received. The _ were fancier.", "choices": ["pearls", "rings"], "gold_index": 1}
+{"id": "defbeb9505685048", "question": "At their high school's homecoming dance, Natalie stayed on the floor for the slow dance while Maria got food during it, because _ currently had a significant other.", "choices": ["Natalie", "Maria"], "gold_index": 0}
+{"id": "e4b39ce7c32ef779", "question": "So _ ignores Google to search for information because Betty trusts in it and Cynthia doesn't.", "choices": ["Betty", "Cynthia"], "gold_index": 1}
+{"id": "a7350977aaeaa65c", "question": "Jennifer thought it was important to neuter a dog and Rachel did not because _ knew lots of animals become homeless.", "choices": ["Jennifer", "Rachel"], "gold_index": 0}
+{"id": "794fde12aacb04ae", "question": "Mary wanted to get another piercing in her ear, but the _ was much too tiny.", "choices": ["ear", "piercing"], "gold_index": 0}
+{"id": "edfd3da47c6afa0e", "question": "The water in the car was hotter than the water in the truck because the engine in the _ had run more recently.", "choices": ["truck", "car"], "gold_index": 1}
+{"id": "7733a9945e0251a7", "question": "Tanya spent more on the children's birthday party than Amy. _ thought a magician was a good use of funds.", "choices": ["Tanya", "Amy"], "gold_index": 0}
+{"id": "9b31eda2aaebf7a4", "question": "I handed the documents over to immigration with the passports, but they only accepted the passports, because the _ were complete.", "choices": ["documents", "passports"], "gold_index": 1}
+{"id": "650a161c8fc13f3b", "question": "I helped my sister find her gold necklace. She couldn't wear her woven necklace to the ball because the _ was so casual.", "choices": ["woven necklace", "ball"], "gold_index": 0}
+{"id": "9d69c6eabb4e656f", "question": "Jane loved travelling internationally. The current country she was in preferred wine over tea because the _ was less available.", "choices": ["wine", "tea"], "gold_index": 1}
+{"id": "e6b57a13b9289b3b", "question": "To remove the stain he reached for soap first, then got up and got a bowl.  The _ was close by.", "choices": ["soap", "bowl"], "gold_index": 0}
+{"id": "f7531a17ec345845", "question": "James always feel weak whenever he walked the length of his street so he decided walking just the length of the lawn. The _ is short.", "choices": ["street", "lawn"], "gold_index": 1}
+{"id": "f851b011f90e967e", "question": "Randy was going to see an X-rated film but was stopped on the sidewalk and yelled at by Nick. The shame showed on _ 's face.", "choices": ["Randy", "Nick"], "gold_index": 0}
+{"id": "c646e4393dd97303", "question": "Lawrence liked watching foreign movies with subtitles unlike Jason because _ appreciated the original language of the film.", "choices": ["Lawrence", "Jason"], "gold_index": 0}
+{"id": "0f05af97f880bab8", "question": "Police arrested Maria but let Cynthia go as _ had no paint on their hand from the spray paint used for graffiti.", "choices": ["Maria", "Cynthia"], "gold_index": 1}
+{"id": "e444b312eb9cbf66", "question": "I loved my old gifts but not the new dishes, because the _ were so beautiful.", "choices": ["gifts", "dishes"], "gold_index": 0}
+{"id": "4a51ab1c5e370f48", "question": "Devin got sick after eating the sausage, so he laid on the couch and later moved to the bed because the _ was more comfortable.", "choices": ["couch", "bed"], "gold_index": 1}
+{"id": "91e9fcdb4857ef95", "question": "It was painful for Justin to break up with Jason, but _ wasn't ready to move on.", "choices": ["Justin", "Jason"], "gold_index": 1}
+{"id": "ea147f087d3aaf7c", "question": "Logan ended up calling the police over an incident involving Jason because _ was scratched by them.", "choices": ["Logan", "Jason"], "gold_index": 0}
+{"id": "d0a99ab6fb46167e", "question": "Applying to dance in music videos was great for Erin but not Lindsey because _ was a beginner dancer.", "choices": ["Erin", "Lindsey"], "gold_index": 1}
+{"id": "125c764ccfbbdf78", "question": "Patricia teaches Kindergarten students, Christine teaches High School students therefore _ reads aloud a lot.", "choices": ["Patricia", "Christine"], "gold_index": 0}
+{"id": "df0c748ec86c743d", "question": "Christine was watching makeup tutorials while Amy was not because _ wanted to forget how to put blush on correctly.", "choices": ["Christine", "Amy"], "gold_index": 1}
+{"id": "9bb71f694b2f9a3a", "question": "Lindsey like to read graphic novels but Natalie liked classic literature to read. _ bought the new Frank Miller comic at the book store.", "choices": ["Lindsey", "Natalie"], "gold_index": 0}
+{"id": "9155e9f2709944aa", "question": "After a boring meeting, Monica closed her eyes and dozed while Carrie took a walk, as _ had gone to bed early the night before.", "choices": ["Monica", "Carrie"], "gold_index": 1}
+{"id": "a616b2ebfb737bdb", "question": "The man chose medication for his infection rather than the ointment, because the _ was ineffective.", "choices": ["ointment", "medication"], "gold_index": 0}
+{"id": "c78c987d226034f2", "question": "Sara's cat got fleas so she bought a treatment and put it on the cat's neck. The cat was unhappy and tried to lick it off the _ .", "choices": ["neck", "treatment"], "gold_index": 0}
+{"id": "440a745c970e6fc0", "question": "Lawrence volunteered to donate blood to help others, but Steven was unable to, since _ was healthy.", "choices": ["Lawrence", "Steven"], "gold_index": 0}
+{"id": "da60e937ca0ebcbb", "question": "You can grow cilantro in a garden or buy it at the store, but the _ variety will taste bland because it will be older.", "choices": ["garden", "store"], "gold_index": 1}
+{"id": "6f00bd48af021e84", "question": "Natalie tended to wear their hair in a ponytail, while Maria wasn't able to, because _ had long hair.", "choices": ["Natalie", "Maria"], "gold_index": 0}
+{"id": "4c91f3e349dc5f9a", "question": "He wanted to kill time at the house instead of the playground, because everyone at the _ was fun.", "choices": ["playground", "house"], "gold_index": 1}
+{"id": "e7e5c0f96ec035ff", "question": "The knee injury of Samantha has healed much quicker than Katrina's. _ 's injury was minor.", "choices": ["Samantha", "Katrina"], "gold_index": 0}
+{"id": "01fa8453b0883d2a", "question": "The intelligence agency ordered new computers for the workers and kept the same peripherals because the _ were at risk.", "choices": ["computers", "peripherals"], "gold_index": 0}
+{"id": "af4e0878ee4b4999", "question": "The beef tasted better than the pork did although the _ had been slightly undercooked.", "choices": ["pork", "beef"], "gold_index": 1}
+{"id": "502d7a0151f45602", "question": "The rubber resisted the rock but snapped on the concrete, as the _ was smooth.", "choices": ["rock", "concrete"], "gold_index": 0}
+{"id": "6d001c83c47a9f46", "question": "The patient put in a special request for Brett instead of Kyle because _ was always stern.", "choices": ["Brett", "Kyle"], "gold_index": 1}
+{"id": "5592a21f9a04df40", "question": "I didn't do well on my exam even though I did all the problems in the textbook correctly. I guess the questions in the _ were just too hard.", "choices": ["exam", "textbook"], "gold_index": 0}
+{"id": "63a01ea4dbefc4bd", "question": "Brian agreed to buy soap for Kenneth while at the store, and _ paid them back the following day for the errand.", "choices": ["Brian", "Kenneth"], "gold_index": 1}
+{"id": "ce12d0b464c2bb09", "question": "Kyle loved to camp in the wilderness but Justin preferred a nice hotel. _ booked a trip to Yellowstone Park.", "choices": ["Kyle", "Justin"], "gold_index": 0}
+{"id": "018985ce8a5f62bd", "question": "It took a minute longer to melt the chocolate in the microwave than the caramel, because the _ was very firm.", "choices": ["chocolate", "caramel"], "gold_index": 0}
+{"id": "3ba99f2c21c9dd5c", "question": "Brett asked Nelson where they were because _ had no idea after he fell asleep.", "choices": ["Brett", "Nelson"], "gold_index": 0}
+{"id": "22bc32658831c591", "question": "Writing came easily to Carrie but was difficult for Natalie because _ had taken engineering in college.", "choices": ["Carrie", "Natalie"], "gold_index": 1}
+{"id": "5e52de0944100c0f", "question": "Joe did a lot worse on the quiz last week than he did on the test today, because the _ was a surprise.", "choices": ["quiz", "test"], "gold_index": 0}
+{"id": "ef7a081de1618c53", "question": "Pete preferred to use the sheet to the blanket, because the _ was much hotter.", "choices": ["sheet", "blanket"], "gold_index": 1}
+{"id": "7884d92c17a32b91", "question": "The dancer would leave the stage and enter the hall after her dance was finished, as the _ was where she belonged during the dance.", "choices": ["stage", "hall"], "gold_index": 0}
+{"id": "5a60a318debf7664", "question": "Justin bought a new RV but Lawrence liked his old one, so _ decided to sell it.", "choices": ["Justin", "Lawrence"], "gold_index": 0}
+{"id": "ecac3e161f858569", "question": "The doctor suggested alternating between ice and a heating pad when I strained a muscle, but he warned me to not let the _ get too cold.", "choices": ["ice", "pad"], "gold_index": 0}
+{"id": "6f3d29a2e37d1ac8", "question": "Because Megan wanted to be a welder and Patricia wanted to be a engineer, _ went to university instead of trade school.", "choices": ["Megan", "Patricia"], "gold_index": 1}
+{"id": "265656c342412d51", "question": "Mary wanted to get another piercing in her ear, but the _ was much too huge.", "choices": ["ear", "piercing"], "gold_index": 1}
+{"id": "960d256ce4d26012", "question": "Emily delivered the daily newspaper to Samantha promptly, so _ gave a nice Christmas bonus.", "choices": ["Emily", "Samantha"], "gold_index": 1}
+{"id": "be27a49156769194", "question": "Justin became very ill with pneumonia, so Matthew made him some soup; then _ finally went home.", "choices": ["Justin", "Matthew"], "gold_index": 1}
+{"id": "ee71a0532d91d15a", "question": "The hiking group had less food than water, so they tried to conserve the _ .", "choices": ["water", "food"], "gold_index": 1}
+{"id": "5fc8b6b9e8742813", "question": "Hunter had low tire pressure and asked Eric to fill the tires; when he said no, _ filled the tires.", "choices": ["Hunter", "Eric"], "gold_index": 0}
+{"id": "34c22814ef486f77", "question": "Patricia liked to lie around in a hammock all day but Megan did not because _ was very sedentary.", "choices": ["Patricia", "Megan"], "gold_index": 0}
+{"id": "002bb184d0de8db0", "question": "Craig made sure to stretch before working out but Christopher never did, so _ frequently got injuries.", "choices": ["Craig", "Christopher"], "gold_index": 1}
+{"id": "6c951917d1b2e024", "question": "Irena didn't like other people living in something before her so she felt more comfortable buying the house instead of the mansion as the _ was old.", "choices": ["house", "mansion"], "gold_index": 1}
+{"id": "71ee6587d8fa27d7", "question": "Neil put the finishing touches on the android as he sold it off to Brian because _ was an engineer.", "choices": ["Neil", "Brian"], "gold_index": 0}
+{"id": "82ea49d8602ecc71", "question": "Benjamin was chosen instead of Brett to be the makeup artist for the play because _ was less experienced.", "choices": ["Benjamin", "Brett"], "gold_index": 1}
+{"id": "91dc15c70684da79", "question": "Joe brought the horse out to the country quite a distance and gave him food but the _ was too much.", "choices": ["food", "distance"], "gold_index": 1}
+{"id": "732e6d092c686745", "question": "Johnny likes fruits more than vegetables in his new keto diet because the _ are saccharine.", "choices": ["fruits", "vegetables"], "gold_index": 0}
+{"id": "3ce45c8b0328e1a4", "question": "Alcohol is a love of Matthew's, but Ryan can't stand the stuff because _ is a sober alcoholic.", "choices": ["Matthew", "Ryan"], "gold_index": 1}
+{"id": "4762165a37b940bc", "question": "Tanya wanted poppies for her wedding flowers but Carrie said that was an odd choice. _ pointed out it was a wedding and tradition mattered.", "choices": ["Tanya", "Carrie"], "gold_index": 1}
+{"id": "e62af2bb98042ebd", "question": "Aaron drank plenty of water before the hike, but Christopher forgot to, so _ ended up staying hydrated.", "choices": ["Aaron", "Christopher"], "gold_index": 0}
+{"id": "35cc3679dd30945a", "question": "The cake that Lawrence tried to bake for Ryan didn't rise, and _ felt forgiving abut it.", "choices": ["Lawrence", "Ryan"], "gold_index": 1}
+{"id": "09d05b2e85a51aed", "question": "Michael had to learn how to speak Chinese for his job unlike Matthew, because _ worked in England.", "choices": ["Michael", "Matthew"], "gold_index": 1}
+{"id": "3ea458ca431014ea", "question": "John tried to clean the juice that spilled on the carpet with a towel but it has sunk deep. The _ is still dry.", "choices": ["carpet", "towel"], "gold_index": 1}
+{"id": "f10ede90d4ad5f7b", "question": "Carrie asked Betty where the children were on the playground because _ could not see them.", "choices": ["Carrie", "Betty"], "gold_index": 0}
+{"id": "be8eedf6185fb836", "question": "After visiting their tenth college, Kevin demanded that Donald to just make up _ 's mind, because he just didn't have time for more.", "choices": ["Kevin", "Donald"], "gold_index": 1}
+{"id": "869526aa8d53951e", "question": "The student liked writing their signature with a pen instead of a pencil, because the _ showed up lighter.", "choices": ["pen", "pencil"], "gold_index": 1}
+{"id": "0bbbf9c2f614ce75", "question": "William lived in a rougher part of town than Eric, so _ trained their dog as a guard dog.", "choices": ["William", "Eric"], "gold_index": 0}
+{"id": "e68ad04d18361ed2", "question": "Michael was a better employer than Joel so _ did not have to worry about retaining employees.", "choices": ["Michael", "Joel"], "gold_index": 0}
+{"id": "bf2f7c48ea611c3f", "question": "Reading poetry and rhymes was very entertaining for Derrick but boring for Logan, since _ was a mathematician.", "choices": ["Derrick", "Logan"], "gold_index": 1}
+{"id": "f8e71b11f247aa82", "question": "Patricia had to pay less tax than Cynthia because _ made more money in the year.", "choices": ["Patricia", "Cynthia"], "gold_index": 1}
+{"id": "3f5a8562ab69143b", "question": "The personal trainer gave Laura but not Victoria the more difficult exercise because _ was in shape.", "choices": ["Laura", "Victoria"], "gold_index": 0}
+{"id": "f18b73ae950d1597", "question": "The virus stuck to the clothes better than it stuck to the walls, because the _ had more deterrents on them.", "choices": ["walls", "clothes"], "gold_index": 0}
+{"id": "2ed9669a7efc1c92", "question": "Tommy was able to carry the tripod himself, but his friend had to help him carry the camera because the _ was heavier.", "choices": ["camera", "tripod"], "gold_index": 0}
+{"id": "f6c8f9800b4161c4", "question": "Jasmine wanted to put the emerald on the ring and it would not fit. The _ was colossal.", "choices": ["emerald", "ring"], "gold_index": 0}
+{"id": "d4d1e895c3737a55", "question": "Jennifer wanted to get romance in a relationship while Elena did not because _ liked to watch romantic comedies.", "choices": ["Jennifer", "Elena"], "gold_index": 0}
+{"id": "64a0c89710dd4d49", "question": "Steven believes they can buy happiness but Craig thinks otherwise as _ is very realistic.", "choices": ["Steven", "Craig"], "gold_index": 1}
+{"id": "3ddd5bbc20a71b44", "question": "Aaron drank plenty of water before the hike, but Christopher forgot to, so _ ended up getting dehydrated.", "choices": ["Aaron", "Christopher"], "gold_index": 1}
+{"id": "1e92a5c2b2bf7333", "question": "The drink was rich in caffeine and low in sugar because the _ was not enough to keep the drinker awake.", "choices": ["caffeine", "sugar"], "gold_index": 1}
+{"id": "89575b76489bfbd8", "question": "The cleavage had to be hidden for this event's clothing because the _ was inappropriate.", "choices": ["cleavage", "clothing"], "gold_index": 0}
+{"id": "e2e2e48b764f2e99", "question": "Leslie was nervous around parrots but Neil was not, since _ was bitten by a bird early in life.", "choices": ["Leslie", "Neil"], "gold_index": 0}
+{"id": "ac21b5f50bf56c48", "question": "The architect tried to build the room inside the house but the _ was too small.", "choices": ["house", "room"], "gold_index": 0}
+{"id": "68983b26846d125d", "question": "I like to drink mineral water over tap water when I travel outside of the USA because the _ water in other countries is safe.", "choices": ["mineral", "tap"], "gold_index": 0}
+{"id": "8abfc62ab6ac07c3", "question": "On Valentine's Day, Brian receives no flowers, but Kevin gets a lot. _ is probably dating someone.", "choices": ["Brian", "Kevin"], "gold_index": 1}
+{"id": "d99aead74672e8fb", "question": "Jason really wanted to get the job, but he felt like he flunked the interview. The manager called and said he could try the _  again next week.", "choices": ["job", "interview"], "gold_index": 1}
+{"id": "3d78a83f9244c572", "question": "Kenneth had better skin than Craig so _ had to use more of the moisturizer.", "choices": ["Kenneth", "Craig"], "gold_index": 1}
+{"id": "4187c28147f141ed", "question": "Sally knew the exam would be hard so she developed a study schedule. The _ was 4 weeks long.", "choices": ["exam", "schedule"], "gold_index": 1}
+{"id": "801f895eb681898b", "question": "Victoria taught Elena how to count in Malay for their trip, because _ was a visitor of the island.", "choices": ["Victoria", "Elena"], "gold_index": 1}
+{"id": "887bb9bf9d4e9642", "question": "Mary thought poodles were a cool dog but Rachel thought Great Danes were cooler. _ bought a gigantic dog bed for their pet.", "choices": ["Mary", "Rachel"], "gold_index": 1}
+{"id": "dbdeeec8309578af", "question": "The girl put her money in her bag instead of her pocket because the bully looked in the _ .", "choices": ["pocket", "bag"], "gold_index": 0}
+{"id": "f75da42a1065e638", "question": "When Steven found that their T-shirt had shrunk in the laundry, Robert's first reaction was to laugh, and _ then became angry.", "choices": ["Steven", "Robert"], "gold_index": 0}
+{"id": "8cca3f4aa3762f8b", "question": "God liked to control the day and the night, but the _ was too bright.", "choices": ["day", "night"], "gold_index": 0}
+{"id": "dd33f84015fdf221", "question": "Jack wanted to start a game, but couldn't decide between baseball or basketball. The _ game would needed fewer of friends.", "choices": ["baseball", "basketball"], "gold_index": 1}
+{"id": "827691a7848811ae", "question": "They were wanting  to move the bed thru the door. The _ was way to small.", "choices": ["door", "bed"], "gold_index": 0}
+{"id": "9444076b607cab55", "question": "Sarah but not Erin would get a retirement pension because _ had a 30 year work career.", "choices": ["Sarah", "Erin"], "gold_index": 0}
+{"id": "074534499bba28d5", "question": "Ian was tired of trying new diets while Steven had luck with one, so _ decided to do their own thing.", "choices": ["Ian", "Steven"], "gold_index": 0}
+{"id": "aa4fe399095442f8", "question": "She watered the rose but not the cactus, because the soil of the _ was already wet.", "choices": ["rose", "cactus"], "gold_index": 1}
+{"id": "46f46d60c5bdb46f", "question": "The ambulance went to the hospital without Nelson inside but with Ryan because _ drove there in a car.", "choices": ["Nelson", "Ryan"], "gold_index": 0}
+{"id": "31420fd135e93dcd", "question": "Logan kept a store of ammo in their house but Brian did not as _ approved of hunting.", "choices": ["Logan", "Brian"], "gold_index": 0}
+{"id": "94e199b90bb6eb5f", "question": "Kyle paid Craig to board the family dog at the kennel for a week, because _ was going on vacation.", "choices": ["Kyle", "Craig"], "gold_index": 0}
+{"id": "d11b115d7c20a1a2", "question": "Jen made charcoal to use as a mask and as toothpaste, but using the _ made her skin very black.", "choices": ["mask", "toothpaste"], "gold_index": 0}
+{"id": "6554eb7e52abf72c", "question": "Katrina asked Rachel to change the diapers for the babies this morning because _ is handling the stove.", "choices": ["Katrina", "Rachel"], "gold_index": 0}
+{"id": "be885b51f2fc6b72", "question": "Betty reluctantly confided in Rebecca that she was suffering from memory loss.  _ was distraught.", "choices": ["Betty", "Rebecca"], "gold_index": 0}
+{"id": "2ad3d87abdc54735", "question": "Rachel decided on adopting a young puppy but Megan didn't because _ didn't want to train a pupply.", "choices": ["Rachel", "Megan"], "gold_index": 1}
+{"id": "34455c64c9819f0c", "question": "Going to a restaurant is something that Patricia does very often but Carrie rarely goes to one because _ is a very good cook.", "choices": ["Patricia", "Carrie"], "gold_index": 1}
+{"id": "83e85b35798785cc", "question": "My face was more familiar than it was at the bar than the gym because I went to the _ several times a week.", "choices": ["bar", "gym"], "gold_index": 0}
+{"id": "7f053dea8f4bbc0a", "question": "The barista loved to make all types of coffee including iced and hot. The _ coffee was popular in the hotter weathers.", "choices": ["iced", "hot"], "gold_index": 0}
+{"id": "beecea588f4e6e93", "question": "Megan forgot to buy deodorant at the store so they borrowed Jessica's deodorant and _ hoped they never found out.", "choices": ["Megan", "Jessica"], "gold_index": 0}
+{"id": "6e79f2fdf59b0680", "question": "During the earthquake, the boy hid under the desk instead of the table because the _ was sturdy.", "choices": ["desk", "table"], "gold_index": 0}
+{"id": "f4d596452a5ae0dc", "question": "Jessica enjoyed a simple, basic life with Betty, but _ was bored having a quiet existence.", "choices": ["Jessica", "Betty"], "gold_index": 1}
+{"id": "c5cf48e50a902253", "question": "The food that Hunter ate was spoiled but not that of Brett because _ left his food in the fridge.", "choices": ["Hunter", "Brett"], "gold_index": 1}
+{"id": "d346eb4dad3872d3", "question": "Kayla prepared a foot soak bath for Cynthia for their birthday so _ is pouring in water.", "choices": ["Kayla", "Cynthia"], "gold_index": 0}
+{"id": "831ce75234fddb4a", "question": "Laura held the steel for their project while Carrie used the blowtorch, because _ was more skilled.", "choices": ["Laura", "Carrie"], "gold_index": 1}
+{"id": "1f5f1326c064db58", "question": "During the summer, I like visiting the zoo more than the aquarium because the _ is inside.", "choices": ["zoo", "aquarium"], "gold_index": 1}
+{"id": "634dec63cf106883", "question": "The Windows software attempted to install the upgrades onto the computer, but the _ exceeded data capacity.", "choices": ["software", "computer"], "gold_index": 0}
+{"id": "6ea4e853eb266cb6", "question": "William wanted to go biking but Aaron wanted to stay home, so _ went out by themselves.", "choices": ["William", "Aaron"], "gold_index": 0}
+{"id": "8383a36a22e1c276", "question": "Carrie tried to convince Cynthia that the cat needed a microchip because _ was concerned about the cat getting lost.", "choices": ["Carrie", "Cynthia"], "gold_index": 0}
+{"id": "f54dec0b884b7e6b", "question": "Jason hired his coworker to paint the house instead of hiring a painting company, because the _ will do it for more money.", "choices": ["coworker", "painting company"], "gold_index": 1}
+{"id": "0607b734b95e8d39", "question": "Laura didn't buy anything at all for Betty's birthday, because _ forgot to mention it.", "choices": ["Laura", "Betty"], "gold_index": 1}
+{"id": "efbd5766c873c821", "question": "Angela did a bunch of crunches and sit-ups but Cynthia didn't, consequentially _ had six- pack abs.", "choices": ["Angela", "Cynthia"], "gold_index": 0}
+{"id": "7558ec583b1249e7", "question": "Kenneth is accused of destroying drywall in Jeffrey's house, _ is leasing out the house.", "choices": ["Kenneth", "Jeffrey"], "gold_index": 1}
+{"id": "00347b9370bf9745", "question": "The color of the paint was quite pleasing to Jessica however Natalie believed it to be too bright. _ painted their room with a subdued color paint.", "choices": ["Jessica", "Natalie"], "gold_index": 1}
+{"id": "473f200e33833c2a", "question": "Jeffrey brushed their teeth quite regularly but Brian did not. _ rarely had to go to a dentist.", "choices": ["Jeffrey", "Brian"], "gold_index": 0}
+{"id": "54e219831a688db9", "question": "i had to walk closer to the board to see the phone numbers, only the monogram of the company is visible from a distance. The _ is bold.", "choices": ["monogram", "number"], "gold_index": 0}
+{"id": "85db2d9e9e12dca4", "question": "Kenneth explained to Ryan that he was dressed like this because he was going to a disco party.  _ was excited.", "choices": ["Kenneth", "Ryan"], "gold_index": 0}
+{"id": "dda965368d46324e", "question": "Michael was a very calm person with yoga but Jeffrey was hyper so, _ decided to take a yoga class.", "choices": ["Michael", "Jeffrey"], "gold_index": 1}
+{"id": "e2b8eee8aa9ab080", "question": "Hunter found they no longer returned Joseph's love in their marriage, therefore _ received divorce papers.", "choices": ["Hunter", "Joseph"], "gold_index": 1}
+{"id": "4d8d205602d41512", "question": "Kelly was embarrassed when his toga fell off at the party and people saw his underwear because the _ was too tight.", "choices": ["toga", "underwear"], "gold_index": 1}
+{"id": "4928f86ff66f1eda", "question": "The woman avoided the hole but easily stepped over the pit, because the _ was very shallow.", "choices": ["hole", "pit"], "gold_index": 1}
+{"id": "a1b93f7fb771d0cf", "question": "Learning a new form of karate was difficult for Logan but not William because _ was not athletic.", "choices": ["Logan", "William"], "gold_index": 0}
+{"id": "39585d41d7623982", "question": "The cleaning crew always used rags instead of washcloths, although the _ tended to wear out quickly.", "choices": ["washcloths", "rags"], "gold_index": 1}
+{"id": "9b0e0c8a25ecbc00", "question": "Starting the engine of the car took less time unlike the truck since the _ 's engine was working at the time.", "choices": ["car", "truck"], "gold_index": 0}
+{"id": "b2a88560804cd228", "question": "When other people were smoking, Kayla was more disgusted than Erin because _ had always avoided smoke.", "choices": ["Kayla", "Erin"], "gold_index": 0}
+{"id": "990d78e87f2f3309", "question": "Michael had a cat as a pet but Nelson didn't have any pets because _ had little allergies in their system.", "choices": ["Michael", "Nelson"], "gold_index": 0}
+{"id": "f2ec5fac64934133", "question": "The student liked writing their signature with a pen instead of a pencil, because the _ showed up darker.", "choices": ["pen", "pencil"], "gold_index": 0}
+{"id": "304f3f1152d15fa4", "question": "Jason missed his work shift in order to finish his research paper, because the _ was less important.", "choices": ["work shift", "research paper"], "gold_index": 0}
+{"id": "b3596fdf7509885e", "question": "Kayla threw the phone to Rebecca, then _ asked for it to be thrown back.", "choices": ["Kayla", "Rebecca"], "gold_index": 0}
+{"id": "f13bc0f2efd3ca8e", "question": "The toddler kicked the hard furniture and soft toy, but only the _ caused pain.", "choices": ["furniture", "toy"], "gold_index": 0}
+{"id": "ce8d76850ec89454", "question": "Jessica was given a sapphire ring by Christine for her birthday because _ really likes sapphires.", "choices": ["Jessica", "Christine"], "gold_index": 0}
+{"id": "6aa27016691e2347", "question": "Wanting to impress his boss, the man put the brandy away and served scotch instead because the _ was cheap.", "choices": ["Brandy", "Scotch"], "gold_index": 0}
+{"id": "ffeb6634eaaf92a4", "question": "Brett was browsing the internet while he found the information unlike Randy, _ prefers using books.", "choices": ["Brett", "Randy"], "gold_index": 1}
+{"id": "8944402e30baea90", "question": "Playing basketball came easier for Cynthia than Jennifer but _ had less control of their body movements.", "choices": ["Cynthia", "Jennifer"], "gold_index": 0}
+{"id": "554df05e0c8ba92a", "question": "Derrick was sad that Robert did not show up, _ forgot they had an agreement to meet each other.", "choices": ["Derrick", "Robert"], "gold_index": 1}
+{"id": "b233ebdede2ad780", "question": "Laura just loved the taste of green beans but Felicia hated the taste of them. _ didn't have a second serving.", "choices": ["Laura", "Felicia"], "gold_index": 1}
+{"id": "5d42249aa753e127", "question": "Michael was a better employer than Joel so _ had to worry about retaining employees.", "choices": ["Michael", "Joel"], "gold_index": 1}
+{"id": "24ea015efad07a43", "question": "Donald had to wax a lot more frequently than Ian because _ had blonde colored hair.", "choices": ["Donald", "Ian"], "gold_index": 1}
+{"id": "defbd85eaed89eb0", "question": "The clothing in the north was warmer than the clothing in the south because there was more snow in the _ .", "choices": ["south", "north"], "gold_index": 1}
+{"id": "d5fb38a1098eea5b", "question": "William liked to be outside more than Kyle so _ spent time arguing against getting a pool.", "choices": ["William", "Kyle"], "gold_index": 1}
+{"id": "9d48267b8248f175", "question": "Brett wanted to get a massage but Kenneth did not. This is because _ was feeling relaxed.", "choices": ["Brett", "Kenneth"], "gold_index": 1}
+{"id": "033a11eb6c187a75", "question": "Rachel's date was shorter than she, so she wore her shoes rather than her boots, because the _ had high heels.", "choices": ["shoes", "boots"], "gold_index": 1}
+{"id": "089c200e7b268db0", "question": "The virus stuck to the clothes better than it stuck to the walls, because the _ had less deterrents on them.", "choices": ["walls", "clothes"], "gold_index": 1}
+{"id": "4936b74b2e56d3e4", "question": "I couldn't figure out what my costume would be for Halloween Peter Pan or Snow White. The _ costume I'd have to make myself a boy.", "choices": ["Peter Pan", "Snow White"], "gold_index": 0}
+{"id": "14d7c3645afd7cef", "question": "John sold the three chairs and used the money to buy twelve shoes. The _ were cheaper.", "choices": ["chairs", "shoes"], "gold_index": 1}
+{"id": "0a951e83805e633f", "question": "Michael made pickled eggs for Kenneth, but _ really loved his own and wanted to share them.", "choices": ["Michael", "Kenneth"], "gold_index": 1}
+{"id": "49da67c8aa715719", "question": "Cynthia ate all of the dessert while Sarah did not have any since _ was not trying to lose any weight.", "choices": ["Cynthia", "Sarah"], "gold_index": 0}
+{"id": "2cde3c0d2b280c77", "question": "James wanted to wear the corsage but it wouldn't fit around his wrist because his _ was too small.", "choices": ["wrist", "corsage"], "gold_index": 1}
+{"id": "6b382d614853181b", "question": "The temperature in winter is much different than summer,  the _  is always lower.", "choices": ["summer", "winter"], "gold_index": 1}
+{"id": "2ace5853c93536fd", "question": "The newborns in the nursery were very hardy because they were fed the _ calorie food during the high and low calorie experiment.", "choices": ["high", "low"], "gold_index": 0}
+{"id": "fcb7f7c1de98b24a", "question": "Laura asked Rachel if she could borrow some clothes because _ loved her fashion sense.", "choices": ["Laura", "Rachel"], "gold_index": 0}
+{"id": "649416499ccbad68", "question": "Lindsey did not know how to make a good impression for an interview with Tanya. _ was surprised when she did not get the job.", "choices": ["Lindsey", "Tanya"], "gold_index": 0}
+{"id": "382bf36a9f79eb30", "question": "Katrina asked Rachel to change the diapers for the babies this morning because _ isn't doing anything.", "choices": ["Katrina", "Rachel"], "gold_index": 1}
+{"id": "c68734d91cc0eaa1", "question": "Kayla always wears sunscreen outdoors but Natalie doesn't because _ isn't concerned about getting neck wrinkles.", "choices": ["Kayla", "Natalie"], "gold_index": 1}
+{"id": "1d4f5e0e619d47a8", "question": "Tanya looked for an escape route while Elena did not because _ liked to be aware of all the surroundings.", "choices": ["Tanya", "Elena"], "gold_index": 0}
+{"id": "f81a3cc0b13792d6", "question": "Rebecca had a sneezing reflex unlike Monica, so when they took the cinnamon challenge _ won.", "choices": ["Rebecca", "Monica"], "gold_index": 1}
+{"id": "ad09edb2632b3d38", "question": "Ryan ordered the salad with added avocado, but Randy passed, because _ was ok with the $3 upcharge.", "choices": ["Ryan", "Randy"], "gold_index": 0}
+{"id": "f78b4b446ea09742", "question": "Mary felt a great deal of guilt for stealing various items from Rachel so _ forgave her.", "choices": ["Mary", "Rachel"], "gold_index": 1}
+{"id": "caa593d1fd6ef237", "question": "Cynthia violated the rights of Amy, because _ had too much passivity with other people.", "choices": ["Cynthia", "Amy"], "gold_index": 1}
+{"id": "f00a9657bdd3198b", "question": "Donald has a problem with hearing in his ears unlike Benjamin because _ worked in a quiet area.", "choices": ["Donald", "Benjamin"], "gold_index": 1}
+{"id": "1cb57c1931a66992", "question": "In the hotel laundry room, Felicia burned Mary's shirt while ironing it, so the manager wrote _ up.", "choices": ["Felicia", "Mary"], "gold_index": 0}
+{"id": "314ad2de7aa44723", "question": "Late at night, Rebecca was more tired than Jessica so _ was unable to go right to sleep.", "choices": ["Rebecca", "Jessica"], "gold_index": 1}
+{"id": "bd20b91e28cd9631", "question": "Kenneth was really scared to have surgery but Neil was very brave about it. _ was under a lot of stress.", "choices": ["Kenneth", "Neil"], "gold_index": 0}
+{"id": "a5e33cad267ad4cf", "question": "Needing a boost Emily asked Rachel to put them on their shoulders in order to reach the roof, _  is tall in height.", "choices": ["Emily", "Rachel"], "gold_index": 1}
+{"id": "df128e8d63141544", "question": "A background check was performed on Natalie by Lindsey due to _ being a nanny.", "choices": ["Natalie", "Lindsey"], "gold_index": 0}
+{"id": "cde2cde079209952", "question": "Joel always liked to turn the heater up higher than Joseph did for the reason that _ was never cold.", "choices": ["Joel", "Joseph"], "gold_index": 1}
+{"id": "25427474653ab549", "question": "Randy's hair is dry when compared to Ian's due to _ using a strong conditioner.", "choices": ["Randy", "Ian"], "gold_index": 1}
+{"id": "e7d6aec6ff58014f", "question": "The quill was used by the writer much more than the pen for the job since the _ is heavy.", "choices": ["quill", "pen"], "gold_index": 1}
+{"id": "bd08f3328ee43e8b", "question": "The farmer had more corn to harvest than yams because his cows liked eating the _ .", "choices": ["yams", "corn"], "gold_index": 0}
+{"id": "88f1d4db5abb9803", "question": "The woman used a gentle technique when painting the urn but applied more pressure when painting the vase, because the _ was less fragile.", "choices": ["Urn", "Vase"], "gold_index": 1}
+{"id": "0233e71e64076e82", "question": "Natalie had a pig while Jennifer had a cow so _ thought mines smaller so its better.", "choices": ["Natalie", "Jennifer"], "gold_index": 0}
+{"id": "a8b1000a3e6a46b0", "question": "The stove was left on after Matthew used it, so Nelson turned it off. _ was careful.", "choices": ["Matthew", "Nelson"], "gold_index": 1}
+{"id": "1dbf9d82be8da236", "question": "The blood sample on the slide was more helpful than the one in the vial, because the _ had been kept pristine.", "choices": ["slide", "vial"], "gold_index": 0}
+{"id": "9d73b4eaf4792288", "question": "The wound caused by the bullet needed more care than the one caused by the knife because the _ wound was superficial.", "choices": ["bullet", "knife"], "gold_index": 1}
+{"id": "1be1c687221f7b4e", "question": "John painted the pole red close to the color of the wall and painted the frame white and now the _ is contrasting.", "choices": ["frame", "pole"], "gold_index": 0}
+{"id": "84b8b2d27cd0942f", "question": "The wooden doors at my friends work are worse than the wooden desks at my work, because the _ material is cheaper.", "choices": ["doors", "desks"], "gold_index": 0}
+{"id": "fc2ccd8557e1277f", "question": "Emily bought a piece of jewelry from Natalie, later _ thought she sold too low but kept a cool attitude.", "choices": ["Emily", "Natalie"], "gold_index": 1}
+{"id": "a8b38e35208d9462", "question": "John could not hear his alarm clock when he was sleeping with a headphone on his head because the _ is farther.", "choices": ["headphone", "clock"], "gold_index": 1}
+{"id": "0b9ad778438d554b", "question": "He found it harder to write the letter than the e-mail because the _ had so few words.", "choices": ["letter", "e-mail"], "gold_index": 1}
+{"id": "680913d1282cf9ac", "question": "The store sold Michael a fake phone but not Eric so _ could still make a call.", "choices": ["Michael", "Eric"], "gold_index": 1}
+{"id": "337876db8f28e1ad", "question": "Donald had to drive Matthew to the doctor immediately because _ was feeling lightheaded and dizzy.", "choices": ["Donald", "Matthew"], "gold_index": 1}
+{"id": "6f744190d3c32cab", "question": "Since Craig wears clear contacts and William wears colored ones, it is safe to assume that _ dislikes the color of their eyes.", "choices": ["Craig", "William"], "gold_index": 1}
+{"id": "18ad13892b85aa70", "question": "The crops in the facility grew better than in the greenhouse since the _ was bright inside.", "choices": ["facility", "greenhouse"], "gold_index": 0}
+{"id": "3d93b66bcf8fef9b", "question": "You can grow cilantro in a garden or buy it at the store, but the _ variety will taste better because it will be fresh.", "choices": ["garden", "store"], "gold_index": 0}
+{"id": "5f19eaf00f1dea7a", "question": "Megan liked to read a book good more than Samantha because _ hated the peace and quiet.", "choices": ["Megan", "Samantha"], "gold_index": 1}
+{"id": "e86c64feb17dd908", "question": "I chose to drive the car over the truck because the _ had a small amount of gas.", "choices": ["car", "truck"], "gold_index": 1}
+{"id": "9e79dcbc6e2a7bcd", "question": "Michael swam in the pond for longer than Derrick because _ thought the algae was okay.", "choices": ["Michael", "Derrick"], "gold_index": 0}
+{"id": "258ac2d85bc919e0", "question": "The gerbil came over to Laura but not Monica because _ was holding a hockey stick.", "choices": ["Laura", "Monica"], "gold_index": 1}
+{"id": "56053af7916563ba", "question": "The commodities trader decided to buy wool and sell cotton because the _ was priced high.", "choices": ["wool", "cotton"], "gold_index": 1}
+{"id": "64d2b51eb830e378", "question": "Michael had more money than Samuel did because _ like to shop and spend money too much.", "choices": ["Michael", "Samuel"], "gold_index": 1}
+{"id": "56203b44d77b1a69", "question": "Mary was more reliable and hardworking than Rachel, but to be fair, _ had a better foundation as a child.", "choices": ["Mary", "Rachel"], "gold_index": 0}
+{"id": "e9caab608f9c4774", "question": "When you buy food for your cat, choose dry instead of wet as the crunchy texture of the _ is better for their teeth.", "choices": ["dry", "wet"], "gold_index": 0}
+{"id": "8f73d1ee197680bb", "question": "Angela's room was a lot lighter than Rebecca's room, because the light of _ went out.", "choices": ["Angela", "Rebecca"], "gold_index": 1}
+{"id": "3f12cbbf82c61329", "question": "Adam asked Dennis to always remember to flush the toilet because _ doesn't flush it.", "choices": ["Adam", "Dennis"], "gold_index": 1}
+{"id": "38985a60c8f200b8", "question": "Steven was worried about the height requirements for the rollercoaster more than Dennis was since _ was short.", "choices": ["Steven", "Dennis"], "gold_index": 0}
+{"id": "c5330dd3d52cd9d1", "question": "Patricia decided to buy Felicia dinner because they had been through a lot and _ just inherited some money.", "choices": ["Patricia", "Felicia"], "gold_index": 0}
+{"id": "59ebd2f31c378c6c", "question": "The filter in the living room needed to be changed more often than the one in the bedroom because the _ was cleaner.", "choices": ["living room", "bedroom"], "gold_index": 1}
+{"id": "290f432ef11ab1d7", "question": "Samantha wanted to use a valet to park the car but Carrie did not because _ was generous with money.", "choices": ["Samantha", "Carrie"], "gold_index": 0}
+{"id": "3a9ee970ecaaae1c", "question": "I tried to make mini lamps by using glow sticks in mason jars, but had to get larger jars because the _ were too big.", "choices": ["glow sticks", "jars"], "gold_index": 0}
+{"id": "9c574940c6e17485", "question": "Monica did not need a recipe in order to mix a cake but Angela did because _ was an instinctive baker.", "choices": ["Monica", "Angela"], "gold_index": 0}
+{"id": "91861e2b36cbcb3a", "question": "Frank wanted to put the burger on the barbecue, but the _ wasn't formed yet.", "choices": ["barbecue", "burger"], "gold_index": 1}
+{"id": "6c1a103203389763", "question": "The teacher asked for the homework. Elena played games the night before and Tanya did not, so _ got an A.", "choices": ["Elena", "Tanya"], "gold_index": 1}
+{"id": "fa713912050cd161", "question": "Steven believes they can buy happiness but Craig thinks otherwise as _ is very materialistic.", "choices": ["Steven", "Craig"], "gold_index": 0}
+{"id": "aa2daed3851c7cc6", "question": "Lawrence was always gaining weight while Dennis was losing it as _ liked to eat too little.", "choices": ["Lawrence", "Dennis"], "gold_index": 1}
+{"id": "5ef71be8c47e306b", "question": "Maria asked Cynthia if she could borrow some fuel for her car, as _ had a shortage of it.", "choices": ["Maria", "Cynthia"], "gold_index": 0}
+{"id": "61ef555f95169c2b", "question": "Laura had a much better body than Katrina, because _ spent all of their time at the ice cream shop.", "choices": ["Laura", "Katrina"], "gold_index": 1}
+{"id": "1ba79313ecf604d7", "question": "After a boring meeting, Monica closed her eyes and dozed while Carrie took a walk, as _ had gone to bed late the night before.", "choices": ["Monica", "Carrie"], "gold_index": 0}
+{"id": "72d3c1ba38612f0e", "question": "We couldn't extract the blood but got the plasma out, since the _ was reachable by the needle.", "choices": ["blood", "plasma"], "gold_index": 1}
+{"id": "f1b342cedc43195d", "question": "The laws of the government are a lot worse than the rules of schools, because the _ are strict.", "choices": ["laws", "rules"], "gold_index": 0}
+{"id": "bcf138a8f2369657", "question": "Mary loved to make baked potatoes, but Monica couldn't stand the smell; _ only made them when she was alone.", "choices": ["Mary", "Monica"], "gold_index": 0}
+{"id": "97d10fc46d781dc2", "question": "Getting a divorce as soon as possible suited Victoria but not Lindsey because _ was no longer in love.", "choices": ["Victoria", "Lindsey"], "gold_index": 0}
+{"id": "12df4136163df701", "question": "James took out a seat from his office to create more space. The _ is too big.", "choices": ["seat", "office"], "gold_index": 0}
+{"id": "df0ce3f9b5263b79", "question": "Angela thinks her husband might be cheating with Lindsey, and _ confesses at the dinner party.", "choices": ["Angela", "Lindsey"], "gold_index": 1}
+{"id": "457a2a733d5fb9ce", "question": "Jeri was deciding what to bring to a potluck and picked cookies over a pie because the _ could be shared with fewer people.", "choices": ["cookies", "pie"], "gold_index": 1}
+{"id": "7354055d33a01948", "question": "The man took longer to pay for the shoes than the shirt because he paid for the _ in coins.", "choices": ["shoes", "shirt"], "gold_index": 0}
+{"id": "3aa682b201c747d0", "question": "Donna needed dentures or implants for her bad teeth. She chose the _ because they are cheaper.", "choices": ["dentures", "implants"], "gold_index": 0}
+{"id": "a84e0f2e04118aa4", "question": "Samantha gifted her new bathrobe to Betty because it felt very comfortable for _ when she tried it on.", "choices": ["Samantha", "Betty"], "gold_index": 1}
+{"id": "4393c17c767925c7", "question": "The man couldn't stop thinking about the violin and the crossbow he lost when he was younger. He used to love to shoot _ .", "choices": ["violin", "crossbow"], "gold_index": 1}
+{"id": "47870787062ad981", "question": "Ian always got ready quickly in the morning and ended up waiting for Christopher, _ was always punctual.", "choices": ["Ian", "Christopher"], "gold_index": 0}
+{"id": "68d7c6e4414d1a04", "question": "Emily has never struggled with blood clots like Victoria has, because _ lives a sedentary, gluttonous lifestyle.", "choices": ["Emily", "Victoria"], "gold_index": 1}
+{"id": "bd6b5a8004995477", "question": "Although William liked animals less overall than Justin, _ couldn't stand to be around hamsters.", "choices": ["William", "Justin"], "gold_index": 1}
+{"id": "f071078e090feaaa", "question": "Tom recently was approved for botox therapy.  He had a choice between near the office or near his house and went with his weekday convenience of the _ .", "choices": ["office", "house"], "gold_index": 0}
+{"id": "c1d84b633cddd7de", "question": "Neil cut trees down into lumber every year unlike Logan because _ lives out in the countryside.", "choices": ["Neil", "Logan"], "gold_index": 0}
+{"id": "ea21daa6beba2144", "question": "The wall of the house looks nicer than the one in the garage despite that the _ was painted more recently.", "choices": ["house", "garage"], "gold_index": 1}
+{"id": "dae06065527c24fb", "question": "Derrick always wanted to wash when they woke up but Benjamin rarely bothered. _ was a very clean person.", "choices": ["Derrick", "Benjamin"], "gold_index": 0}
+{"id": "8e83250cc7a5609b", "question": "Tommy was able to carry the tripod himself, but his friend had to help him carry the camera because the _ was lighter.", "choices": ["camera", "tripod"], "gold_index": 1}
+{"id": "830b20ae769398bc", "question": "The landscaping looked better at the house than at the cottage because the _ owners used a hardworking company.", "choices": ["house", "cottage"], "gold_index": 0}
+{"id": "ac675af655f8826d", "question": "Betty drank chocolate shakes while Elena drank carrot juice, and _ had a very unhealthy diet.", "choices": ["Betty", "Elena"], "gold_index": 0}
+{"id": "d5988d9f95c4d95a", "question": "Samuel had to recently recover from a stroke unlike William because _ was living an unhealthy lifestyle.", "choices": ["Samuel", "William"], "gold_index": 0}
+{"id": "5f1b22f60bb12f35", "question": "The game on television was very important for Ian but not Dennis because _ was into music instead.", "choices": ["Ian", "Dennis"], "gold_index": 1}
+{"id": "9d44e606a5ac4f45", "question": "The mediation and medication both helped me be patient.  I lost my temper when the _ got rescheduled.", "choices": ["medication", "mediation"], "gold_index": 1}
+{"id": "e059f92fafd1a8dc", "question": "Victoria was still grieving the death of a friend more than Elena, because _ had a more distant relationship with the friend.", "choices": ["Victoria", "Elena"], "gold_index": 1}
+{"id": "d0df2dcc05758bb9", "question": "Steven was disappointed as Logan asked him if he had any herb.  _ was a stoner.", "choices": ["Steven", "Logan"], "gold_index": 1}
+{"id": "8caf9167be1c0590", "question": "Hunter chose to eat a banana for breakfast every morning but Michael did not because _ is unconcerned about their health.", "choices": ["Hunter", "Michael"], "gold_index": 1}
+{"id": "5f2aec231fc08881", "question": "The woman avoided the hole but easily stepped over the pit, because the _ was very deep.", "choices": ["hole", "pit"], "gold_index": 0}
+{"id": "545664d96dfff168", "question": "Nelson teased Christopher about needing to find a homecoming date because _ could not find one.", "choices": ["Nelson", "Christopher"], "gold_index": 1}
+{"id": "830f01808d2f798c", "question": "There was more dirt on the car than the bike because the _ was kept outside.", "choices": ["bike", "car"], "gold_index": 1}
+{"id": "06ce1d3db6d84a7d", "question": "Keeping the doors closed and the windows opened kept the apartment cool , because the _ kept out the heat.", "choices": ["doors", "windows"], "gold_index": 0}
+{"id": "4d0d3e8b60289185", "question": "Paint was applied to the chairs but not the tables, since the _ were new.", "choices": ["chairs", "tables"], "gold_index": 1}
+{"id": "99c560fd158c4507", "question": "Leslie had a lot of issues that Kyle was tired of dealing with, so _ felt abandoned when they finally moved out.", "choices": ["Leslie", "Kyle"], "gold_index": 0}
+{"id": "1bb273ab46cea406", "question": "It doesn't take much to shift between ice and water. The _ is hard and strong when its cold.", "choices": ["water", "ice"], "gold_index": 1}
+{"id": "a9c9bacddcb20ddd", "question": "Michael loved eating many different vegetables but not Brett because _ was on a vegetarian diet.", "choices": ["Michael", "Brett"], "gold_index": 0}
+{"id": "ac262cfcd31ffc4b", "question": "The flour spills out when we use an ancient family recipe and pour three teacups of flour into our bowl. The _ is too big.", "choices": ["teacup", "bowl"], "gold_index": 0}
+{"id": "264caa0345f2ba14", "question": "When Benjamin put the family into debt, Adam filed for divorce; then the judge gave _ a withering look.", "choices": ["Benjamin", "Adam"], "gold_index": 0}
+{"id": "9123e06eec83da3a", "question": "Donald took medication for their anxiety, but Craig went to therapy because _ was open with their feelings.", "choices": ["Donald", "Craig"], "gold_index": 1}
+{"id": "e5798b8d6627298a", "question": "Jennifer has more money than Amy, so _ became a homeowner at a young age.", "choices": ["Jennifer", "Amy"], "gold_index": 0}
+{"id": "ab8d327622152383", "question": "There are lots of pills in the home of Neil, but none in the house of Logan, so _ must be healthy.", "choices": ["Neil", "Logan"], "gold_index": 1}
+{"id": "c4cf608dbb8d855f", "question": "Mike wanted to make the picture with the Photoshop software instead of  the Paintshop software because the _ was more reliable.", "choices": ["Photoshop software", "Paintshop software"], "gold_index": 0}
+{"id": "ce4d62fe11cc1d61", "question": "Kayla was always thinner than Rachel because _ enjoyed eating brioche and butter every morning.", "choices": ["Kayla", "Rachel"], "gold_index": 1}
+{"id": "bdbeeb568ef47140", "question": "Selena wanted the hairdresser to cut her hair with a razor instead of a clipper, because the _ always gave an edgier look.", "choices": ["clipper", "razor"], "gold_index": 1}
+{"id": "4eef1ba49451af5f", "question": "Carla start doing sit-ups and pushups for her weak spots. The _ are for her abs.", "choices": ["sit-ups", "pushups"], "gold_index": 0}
+{"id": "b3d591a241056d43", "question": "Much to the dismay of Christopher, Jeffrey learned of their evil plan, and _ was stopped before it succeeded.", "choices": ["Christopher", "Jeffrey"], "gold_index": 0}
+{"id": "fd07935d0da891b0", "question": "The stone still thudded on the floor even though it was dropped on the pillow. The _ is too light.", "choices": ["stone", "pillow"], "gold_index": 1}
+{"id": "9db643ee870d8af1", "question": "A very active Randy injured their elbow playing basketball against Lawrence, so _ said sorry.", "choices": ["Randy", "Lawrence"], "gold_index": 1}
+{"id": "59bb06bb97f0b0bc", "question": "William went on the ride more than Matthew did because _ thought it was scary.", "choices": ["William", "Matthew"], "gold_index": 1}
+{"id": "264bf613dbd62237", "question": "The rubber resisted the rock but snapped on the concrete, as the _ was abrasive.", "choices": ["rock", "concrete"], "gold_index": 1}
+{"id": "9850192320956fc9", "question": "The wind during the last hurricane tried to knock over their new house, but the _ was too strong.", "choices": ["house", "wind"], "gold_index": 0}
+{"id": "9687a8c1f6ac789e", "question": "Robert has no regret for punching Justin in the nose because _ was the victim of injustice.", "choices": ["Robert", "Justin"], "gold_index": 0}
+{"id": "57cfc2b43236f692", "question": "the scanning tool could not get through the cervix because the _ was too big.", "choices": ["cervix", "tool"], "gold_index": 1}
+{"id": "c9c648fb10b99c3a", "question": "Steven was worried about the height requirements for the rollercoaster more than Dennis was since _ was tall.", "choices": ["Steven", "Dennis"], "gold_index": 1}
+{"id": "894538350143a311", "question": "The kid looked terrible in the ancient  Egyptian dress because the _ was too small.", "choices": ["dress", "kid"], "gold_index": 1}
+{"id": "ae1322c603017ff2", "question": "Mike doesn't like the table in his living room as much as the couch. The _ resonates with the other decorations.", "choices": ["table", "couch"], "gold_index": 1}
+{"id": "d725b4411610f5b6", "question": "The handle of the spoon was submerged in the cup of tea because the _ is short.", "choices": ["cup", "spoon"], "gold_index": 1}
+{"id": "37214c952d2435c2", "question": "Amy recognized the man in the waiting room before Monica did, because _ had met the man only once.", "choices": ["Amy", "Monica"], "gold_index": 1}
+{"id": "8e08e243ef1b8909", "question": "Beautiful to Angela means something physical, while it's mental to Emily, so _ is deeper.", "choices": ["Angela", "Emily"], "gold_index": 1}
+{"id": "6bf731640eaaebc3", "question": "Erin showed Maria to use the fork and knife in a proper manner as _ attended etiquette school.", "choices": ["Erin", "Maria"], "gold_index": 0}
+{"id": "2baaa00b14af4d73", "question": "She wanted to shop for more clothes and ultimately decided on the velvet dress instead of the denim jacket because the _ was more casual.", "choices": ["dress", "jacket"], "gold_index": 1}
+{"id": "182ef67b18b27f2f", "question": "Beautiful to Angela means something physical, while it's mental to Emily, so _ is shallower.", "choices": ["Angela", "Emily"], "gold_index": 0}
+{"id": "d6b3f1344a8c45c0", "question": "The cracker that was given to me was worse than the cookie, because the _ was stale.", "choices": ["cracker", "cookie"], "gold_index": 0}
+{"id": "54e1992b0771c299", "question": "The gas was not smelling out of the tank but out of the hose because the _ is leaky.", "choices": ["hose", "tank"], "gold_index": 0}
+{"id": "a86bdd6b103fd6f1", "question": "Dennis's home just burned down, but luckily Donald's was spared. So, now _ is grateful.", "choices": ["Dennis", "Donald"], "gold_index": 1}
+{"id": "1a5a1f0479bc692c", "question": "Hunter prepared the documents and data tables for Matthew's scientific research because _ is his assistant.", "choices": ["Hunter", "Matthew"], "gold_index": 0}
+{"id": "ca68a55c1d17e60b", "question": "James was able to hide to gift he brought wit him in his pocket because the _ is small.", "choices": ["gift", "pocket"], "gold_index": 0}
+{"id": "e579f4f06c427722", "question": "I couldn't decide if I should pressure cook or smoke the pig feet.  After looking outside, I decided the weather was good enough to _ them.", "choices": ["smoke", "pressure cook"], "gold_index": 0}
+{"id": "fda1fe122baf0ef3", "question": "Erin has a teenager whereas Patricia has toddler-age children because _ became a mother later.", "choices": ["Erin", "Patricia"], "gold_index": 1}
+{"id": "2d10939782f41dd3", "question": "Megan didn't care for the comedians show but Patricia thought it was brilliant. _ hung out for the comedian's second set.", "choices": ["Megan", "Patricia"], "gold_index": 1}
+{"id": "d0a9402724fdbda7", "question": "The garbage can smells much worse than the recycling, so the _ is probably a lot more sterile.", "choices": ["garbage", "recycling"], "gold_index": 1}
+{"id": "852fb1dac124d695", "question": "The student wanted to be respectful to the teacher so he got her a book instead of an apple because the _ was old.", "choices": ["book", "apple"], "gold_index": 1}
+{"id": "d5e998cd6c0fbceb", "question": "Kevin drew the blood from Ian's arm, because _ was giving it to do some tests.", "choices": ["Kevin", "Ian"], "gold_index": 1}
+{"id": "e3abb66da5d39353", "question": "William was a huge animal rights activist but Randy couldn't care less so _ loved leather.", "choices": ["William", "Randy"], "gold_index": 1}
+{"id": "354f1c90f8a682ca", "question": "Adam was law-abiding and not a crook like Joseph, so it was surprising that _ was the one with a restraining order against him.", "choices": ["Adam", "Joseph"], "gold_index": 0}
+{"id": "51f6ffc08d5cc802", "question": "The student tried to write down the notes on the papers but the _ were too long.", "choices": ["papers", "notes"], "gold_index": 1}
+{"id": "269d92791d16fe5a", "question": "James passport was kept inside the purse. He never knew the _ is that small.", "choices": ["passport", "purse"], "gold_index": 0}
+{"id": "1eceab4e666bd007", "question": "Randy showed Samuel the abused horse that he rescued from the shelter.  _ was proud of his friend.", "choices": ["Randy", "Samuel"], "gold_index": 1}
+{"id": "64599d6acffef99c", "question": "My employer offers a bonus of either a phone or a television, but unfortunately the _ is just way too large to be useful.", "choices": ["phone", "television"], "gold_index": 0}
+{"id": "127b3b88111e23af", "question": "The shirts were straighter than the pants because the _ were hanging on the hanger.", "choices": ["shirt", "pants"], "gold_index": 0}
+{"id": "f942cd0b63e0b853", "question": "Michael had a unhappy relationship and was jealous because Lawrence had a great one only to find out the reason was _ slacked in adhering to standard marriage advice.", "choices": ["Michael", "Lawrence"], "gold_index": 0}
+{"id": "3d503022ebf6ba01", "question": "Victoria was interested in babies, but Katrina thought they were annoying, so _ preferred visiting the nursery.", "choices": ["Victoria", "Katrina"], "gold_index": 0}
+{"id": "38e02bac49b4d4c8", "question": "Elena is concerned that Megan might have a Twitter addiction, but _ is probably worrying about nothing.", "choices": ["Elena", "Megan"], "gold_index": 0}
+{"id": "5b08fd956b9f1ed5", "question": "Lindsey has dark lips unlike Elena due to _ forgetting to put on chapsticks at night.", "choices": ["Lindsey", "Elena"], "gold_index": 0}
+{"id": "6475a6b181e3ea93", "question": "Adam's mindset was a lot stronger than William's because _ was able to control it.", "choices": ["Adam", "William"], "gold_index": 0}
+{"id": "1d5adb4d77c46d00", "question": "The assertive commander told the privates to change their boots but not their shirts because the _ were fine.", "choices": ["boots", "shirts"], "gold_index": 1}
+{"id": "deab99ebe117371f", "question": "Cynthia had to pee after one large coffee but Betty did not as _ had a very big bladder.", "choices": ["Cynthia", "Betty"], "gold_index": 1}
+{"id": "0c6f55e669cc0039", "question": "The bird squawked at Mary's rushed approached and quieted when Jennifer came in since _ was threatening.", "choices": ["Mary", "Jennifer"], "gold_index": 0}
+{"id": "f4e657d178f2dc6e", "question": "In high school Matthew was most popular among the teachers as were Steven was among the students, _ was liked by adolescents.", "choices": ["Matthew", "Steven"], "gold_index": 1}
+{"id": "b74db809205c34ce", "question": "To remove the stain he reached for soap first, then got up and got a bowl.  The _ was far away.", "choices": ["soap", "bowl"], "gold_index": 1}
+{"id": "918dadcc9559bb0c", "question": "Monica really enjoys a vodka drink, but Felicia prefers whiskey because _ likes clear liquors.", "choices": ["Monica", "Felicia"], "gold_index": 0}
+{"id": "c928368f21eafaea", "question": "Emily decided to eat a lot more yucca than Carrie did. _ was still hungry.", "choices": ["Emily", "Carrie"], "gold_index": 1}
+{"id": "072e927eb1865d3b", "question": "The man paid cash for the phone but purchased the tablet with credit because the _ was pricy.", "choices": ["Phone", "Tablet"], "gold_index": 1}
+{"id": "a3d09a6caf444696", "question": "The food Katrina made was very bland, so Victoria added some salt; _ felt bad and vowed not to season again.", "choices": ["Katrina", "Victoria"], "gold_index": 1}
+{"id": "351a2c26fc7e09a2", "question": "The apartment that Samantha lived in was a lot smaller than Megan, because _ had a little salary.", "choices": ["Samantha", "Megan"], "gold_index": 0}
+{"id": "533ee42023265f3d", "question": "Justin admired the art hung on the wall by Nick, so _ asked if he would like to take something home.", "choices": ["Justin", "Nick"], "gold_index": 1}
+{"id": "129a1d4ebe616235", "question": "Kevin was not able to run fast compared to William because _ had no broken bones in his body.", "choices": ["Kevin", "William"], "gold_index": 1}
+{"id": "5fccea5ef3fd8a95", "question": "Craig was all about self-publishing his first album, but a PRO rep Lawrence advised against it. _ advocated for a very hands-on approach to publishing.", "choices": ["Craig", "Lawrence"], "gold_index": 0}
+{"id": "4942c6a483591467", "question": "The jeans fit worse than the shirt because I had tried the _ on at the store.", "choices": ["jeans", "shirt"], "gold_index": 1}
+{"id": "876ad9ef424be008", "question": "The personal trainer gave Laura but not Victoria the more difficult exercise because _ was out of shape.", "choices": ["Laura", "Victoria"], "gold_index": 1}
+{"id": "83bb0bfd95e6ef89", "question": "Brett took more medicines than Aaron did although _ was suffering from many more diseases.", "choices": ["Brett", "Aaron"], "gold_index": 1}
+{"id": "c13ce267b4fc42ef", "question": "Natalie is a forest ranger, Jessica is a cook therefore _ probably can't tell you how to plant your pine tree.", "choices": ["Natalie", "Jessica"], "gold_index": 1}
+{"id": "e5361d2f24f8e90d", "question": "John was glad the file was kept in the box before the fire outbreak started because the _ is inflammable.", "choices": ["box", "file"], "gold_index": 0}
+{"id": "f667e01d01888b09", "question": "Jen made charcoal to use as a mask and as toothpaste, but using the _ made her teeth very white.", "choices": ["mask", "toothpaste"], "gold_index": 1}
+{"id": "f1eab7d27ba653e3", "question": "She wanted to sew a shirt from silk she bought and a jacket in denim from old jeans so the _ was recycled.", "choices": ["denim", "silk"], "gold_index": 0}
+{"id": "f76df363bce31e8b", "question": "Ian was supposed to be babysitting for Dennis but didn\u2019t show up because _ was forgotten.", "choices": ["Ian", "Dennis"], "gold_index": 1}
+{"id": "27ddafc91e001085", "question": "The jewelry sold for less than the baseball card did since the _ was very common.", "choices": ["card", "jewelry"], "gold_index": 1}
+{"id": "cab200450c7b3bd8", "question": "Kerry was running later when he took his car to work than when he took a taxi because he ran into more traffic in the _ .", "choices": ["car", "taxi"], "gold_index": 0}
+{"id": "3dd17eac29f38195", "question": "Ann's babies were crying, and she could give them a bottle or a rattle.  She tried the _ first in case they were bored.", "choices": ["bottle", "rattle"], "gold_index": 1}
+{"id": "55f28a21572e6cf0", "question": "Christine was tired of Maria being a pain in the neck after _ laid down the prank trap.", "choices": ["Christine", "Maria"], "gold_index": 1}
+{"id": "044070f78178061c", "question": "Patricia teaches Kindergarten students, Christine teaches High School students therefore _ doesn't read aloud a lot.", "choices": ["Patricia", "Christine"], "gold_index": 1}
+{"id": "789d4156db4d4d0c", "question": "The athletes on the team of Christine were less tired than those on the team of Monica because the ones with _ did less laps.", "choices": ["Christine", "Monica"], "gold_index": 0}
+{"id": "710da2dd134c46f7", "question": "Betty avoided getting attacked in the dark alley where Elena was mugged, because _ ignored their intuition.", "choices": ["Betty", "Elena"], "gold_index": 1}
+{"id": "5ad49b2fca3e24e6", "question": "Tina made a schedule to keep track of her work and school obligations.  She preferred to focus on the _ because she wanted to learn.", "choices": ["school", "work"], "gold_index": 0}
+{"id": "33b929d44e732c34", "question": "Logan preferred to snowboard while Kyle wanted to do biathlon so _ went up the hill.", "choices": ["Logan", "Kyle"], "gold_index": 0}
+{"id": "a6a698a79c1965a4", "question": "The woman practiced for her interview and not for the sport since the _ was expedient.", "choices": ["interview", "sport"], "gold_index": 0}
+{"id": "28b8b1f7d3c40374", "question": "Emily said that Victoria's hijab was silly and old fashioned. _ heard some very offensive things.", "choices": ["Emily", "Victoria"], "gold_index": 1}
+{"id": "ec0895e50b6f3ee0", "question": "Justin used a stencil on their presentation lettering but Derrick did not. _ had a very neat looking presentation.", "choices": ["Justin", "Derrick"], "gold_index": 0}
+{"id": "64b78bb1cd5b2f82", "question": "Jessica found the heavy load at work overwhelming but not Katrina because _ did a poor job at planning their work.", "choices": ["Jessica", "Katrina"], "gold_index": 0}
+{"id": "6fe153e09cb62c91", "question": "William was very comfortable entering Kenneth 's personal domain any time, as _ was very self-assured.", "choices": ["William", "Kenneth"], "gold_index": 0}
+{"id": "153a87652108f938", "question": "Brian could learn to swim with the right instruction, but it was hard to tell whether lifeguard Matthew was qualified to provide it, since _ had never swum before.", "choices": ["Brian", "Matthew"], "gold_index": 0}
+{"id": "dcd9784ae1309c28", "question": "On Monday, Patricia made Felicia eggs for an early breakfast, but _ does not like fried eggs.", "choices": ["Patricia", "Felicia"], "gold_index": 1}
+{"id": "0c8e9a8579953213", "question": "Remodeling the kitchen came naturally to Michael but not William because _ had experience being a carpenter's apprentice.", "choices": ["Michael", "William"], "gold_index": 0}
+{"id": "fd44f0a359abd478", "question": "Felicia liked wearing glasses more than braces because she could take the _ off every day.", "choices": ["glasses", "braces"], "gold_index": 0}
+{"id": "afa5f89a6872e00d", "question": "Christine told Samantha at court their reasons for their expired license, since _ had the responsibility to attend.", "choices": ["Christine", "Samantha"], "gold_index": 0}
+{"id": "bfea68e34d44e4ea", "question": "Derrick needed Kenneth to go to the store and get a baby bib, but _ said the one they had was still ok.", "choices": ["Derrick", "Kenneth"], "gold_index": 1}
+{"id": "b4b9c4ea2a51d328", "question": "Brett looks as if they are aging at half the rate of Craig because _ has lived a rough lifestyle.", "choices": ["Brett", "Craig"], "gold_index": 1}
+{"id": "b1e2ed0f829345ba", "question": "James wanted to wear the corsage but it wouldn't fit around his wrist because the _ was too big.", "choices": ["wrist", "corsage"], "gold_index": 0}
+{"id": "c149f07d6354a7ce", "question": "Erin was eating more than Betty was eating for dinner because _ had a big lunch.", "choices": ["Erin", "Betty"], "gold_index": 1}
+{"id": "00db0fc61c3fe89d", "question": "Joe drank his milk and tried to dunk his cookie in the glass but the _ was too big.", "choices": ["cookie", "glass"], "gold_index": 0}
+{"id": "21a52020a3e3827a", "question": "Emily said that Victoria's hijab was silly and old fashioned. _ said some very offensive things.", "choices": ["Emily", "Victoria"], "gold_index": 0}
+{"id": "a837e8413e9fc37b", "question": "Felicia experienced a tummy ache while Tanya did not because _ had not eaten any food.", "choices": ["Felicia", "Tanya"], "gold_index": 1}
+{"id": "16f384f8a0417537", "question": "The woman kept the bikini but returned the top, because the _ was the right size.", "choices": ["bikini", "top"], "gold_index": 0}
+{"id": "ce880de66d9583a1", "question": "The man took longer to pay for the shoes than the shirt although he paid for the _ in coins.", "choices": ["shoes", "shirt"], "gold_index": 1}
+{"id": "ae79093822b46ca0", "question": "The clothing in the north was warmer than the clothing in the south because there was more sun in the _ .", "choices": ["south", "north"], "gold_index": 0}
+{"id": "3b9ffcbd39467809", "question": "The woman kept the bikini but returned the top, because the _ was the wrong size.", "choices": ["bikini", "top"], "gold_index": 1}
+{"id": "a7034e341e883da4", "question": "Cynthia felt very thirsty but Sarah did not feel thirsty. _ bought a bag of chips.", "choices": ["Cynthia", "Sarah"], "gold_index": 1}
+{"id": "fe400ea086ffdedf", "question": "John opened the window for air to come him when he was sweating in his bedroom. The _ is cold.", "choices": ["bedroom", "air"], "gold_index": 1}
+{"id": "e1ad2b812dc22535", "question": "At Jan's home, she dusted the dresser more frequently than the fan, because the _ was easier to reach.", "choices": ["fan", "dresser"], "gold_index": 1}
+{"id": "61b2f65c330c13b7", "question": "Sookie roasted a turkey and served it with potatoes instead of carrots, because everyone in her family would have hated the _ .", "choices": ["carrots", "potatoes"], "gold_index": 0}
+{"id": "dc62c078a0f817f7", "question": "Mary goes around telling everyone that Christine is too clingy because _ likes  to be touched..", "choices": ["Mary", "Christine"], "gold_index": 1}
+{"id": "cc9523701abd0788", "question": "The doctor offered to treat the patient's illness quickly with surgery or slowly with diet, and the patient refused the _ because he felt it was dangerous.", "choices": ["diet", "surgery"], "gold_index": 1}
+{"id": "09721229b7bacee0", "question": "John cannot listen to his music with the volume of the television his cousin is watching. The _ is quiet.", "choices": ["television", "music"], "gold_index": 1}
+{"id": "ad605899d0b40fc4", "question": "Megan wrote on the paper with a pencil unlike Jennifer who wrote with a pen, because _ wanted to keep it for later.", "choices": ["Megan", "Jennifer"], "gold_index": 1}
+{"id": "c580d4c211023dc6", "question": "Adam loved dogs but Jason was afraid of them, so only _ petted the poodle.", "choices": ["Adam", "Jason"], "gold_index": 0}
+{"id": "c90bde0c04339320", "question": "The chopstick were better to eat the noodles with than the fork as the _ was repaired.", "choices": ["chopstick", "fork"], "gold_index": 0}
+{"id": "81ba77f9e00c72f3", "question": "Ian's hair is being worked on by Craig, so it's more likely _ is the customer.", "choices": ["Ian", "Craig"], "gold_index": 0}
+{"id": "f9d5d752e3d82e5c", "question": "Christopher was able to travel abroad, while William only travelled domestically, as _ had never applied for a passport.", "choices": ["Christopher", "William"], "gold_index": 1}
+{"id": "1ec4361de5994775", "question": "She counted her calories for her diet and found she needed more so she ate a brownie instead of an apple since the _ has fewer.", "choices": ["apple", "brownie"], "gold_index": 0}
+{"id": "8e48e969e99f2143", "question": "Lindsey loves dogs and doesn't have one of her own. So when Amy visits with her dog, _ gives it treats and spoils it.", "choices": ["Lindsey", "Amy"], "gold_index": 0}
+{"id": "e4d3e15150e4c10f", "question": "The game of chess was easy to play for Angela but not Rebecca because  _ did not have an analytical mind.", "choices": ["Angela", "Rebecca"], "gold_index": 1}
+{"id": "7bfbdc791d34a48d", "question": "Samantha had to get car insurance and Jessica did not because _ just got a new car.", "choices": ["Samantha", "Jessica"], "gold_index": 0}
+{"id": "8f294b8871cb41c9", "question": "Lawrence had lost a lot of weight on their diet but Hunter wasn't nearly as succesful. _ was now heavy.", "choices": ["Lawrence", "Hunter"], "gold_index": 1}
+{"id": "9382fa622a0c58e9", "question": "Ben wanted to propose to his girlfriend by hiding the ring in either cake or water. He decided to hide it in the _ because she drank the water fast.", "choices": ["cake", "water"], "gold_index": 0}
+{"id": "4d9f6e78c83117a5", "question": "All the clutter in the house excited Leslie but not Derrick because cleaning energized _ very much.", "choices": ["Leslie", "Derrick"], "gold_index": 0}
+{"id": "d84e27fe7e006101", "question": "Michael had less money than Samuel did because _ liked to shop and spend money too much.", "choices": ["Michael", "Samuel"], "gold_index": 0}
+{"id": "5735df5b78a7f6c6", "question": "The girl broke Leslie's heart but not Kenneth's because _ used to be in love with her.", "choices": ["Leslie", "Kenneth"], "gold_index": 0}
+{"id": "546dc56958c25b69", "question": "At the estate sale, John saw the hammer was more affordable than the screwdriver, because the _ was brand new.", "choices": ["hammer", "screwdriver"], "gold_index": 1}
+{"id": "966d16d092a80649", "question": "The woman didn't need an apprasial for the desk, but wondered how much the table was worth, because the _ appeared to be common.", "choices": ["desk", "table"], "gold_index": 0}
+{"id": "03858c5a8c4451ab", "question": "The woman used a gentle technique when painting the urn but applied more pressure when painting the vase, because the _ was more fragile.", "choices": ["Urn", "Vase"], "gold_index": 0}
+{"id": "4f238ee8687eaf39", "question": "I chose to drive the car over the truck because the _ had a large amount of gas.", "choices": ["car", "truck"], "gold_index": 0}
+{"id": "503167ed7465d656", "question": "I don't want to use that iron on my new shirt, and, yes, it's because the _ is too expensive.", "choices": ["iron", "shirt"], "gold_index": 1}
+{"id": "fd7a8f8e5ad2e8f7", "question": "Angela noticed the lumps on Amy 's arms that she had failed to notice, _ is just oblivious that way.", "choices": ["Angela", "Amy"], "gold_index": 1}
+{"id": "e4bfe1e2aa93ab6d", "question": "Kelly was embarrassed when his toga fell off at the party and people saw his underwear because the _ was too loose.", "choices": ["toga", "underwear"], "gold_index": 0}
+{"id": "4858d3f71bd8b3c9", "question": "I picked up some leaves to put in the books and dry, but they didn't fit because the _ were too small.", "choices": ["leaves", "books"], "gold_index": 1}
+{"id": "c303c69c1d278630", "question": "James always had to wash his shoe after jogging on the street but it is not always the same when jogging on the lawn. The _ is clean.", "choices": ["street", "lawn"], "gold_index": 1}
+{"id": "fbebe981017c1694", "question": "Donald took medication for their anxiety, and Craig went to therapy because _ was private with their feelings.", "choices": ["Donald", "Craig"], "gold_index": 0}
+{"id": "e1635abca7402c1f", "question": "Justin usually paid for the gas when Craig always said he was broke. _ was generous.", "choices": ["Justin", "Craig"], "gold_index": 0}
+{"id": "2f2af4da64984a5e", "question": "Mary thought poodles were a cool dog but Rachel thought Great Danes were cooler. _ bought a small dog bed for their pet.", "choices": ["Mary", "Rachel"], "gold_index": 0}
+{"id": "c0447fea4e93de4c", "question": "Jennifer was more of a morning person than Natalie although _ always went to bed early and got a good night's rest.", "choices": ["Jennifer", "Natalie"], "gold_index": 1}
+{"id": "1b727e35b6a28c84", "question": "The hiking group had more food than water, so they tried to conserve the _ .", "choices": ["water", "food"], "gold_index": 0}
+{"id": "39e66f41f590ebe1", "question": "Christmas was a special holiday to Eric but not Adam since _ was a Jew.", "choices": ["Eric", "Adam"], "gold_index": 1}
+{"id": "a77c6603564fca56", "question": "Patricia is a great nurse and Cynthia is a famous doctor, blood is normal to them, _ get assisted in operations.", "choices": ["Patricia", "Cynthia"], "gold_index": 1}
+{"id": "33953d8245b88520", "question": "Benjamin lied to Logan because _ was so upset about the money that was missing.", "choices": ["Benjamin", "Logan"], "gold_index": 1}
+{"id": "bdebcf11e6f7df59", "question": "When the dog behaves I like to give him a sausage otherwise I give him a ball. I gave him the _ since he was bad.", "choices": ["sausage", "ball"], "gold_index": 1}
+{"id": "6ff14ce847eb507e", "question": "For work I can either get there by car or bicycle. I'm going to take the _ today because the weather is supposed to be rainy.", "choices": ["bicycle", "car"], "gold_index": 1}
+{"id": "b41a64ffb4ab41d6", "question": "After visiting their tenth college, Kevin asked Donald to just make up his mind, because _ just didn't have time for more.", "choices": ["Kevin", "Donald"], "gold_index": 0}
+{"id": "115681f30d32f670", "question": "Cynthia had a much harder life than Amy, so when _ said life was good, it was an unusual sentiment.", "choices": ["Cynthia", "Amy"], "gold_index": 0}
+{"id": "2501929363447f4c", "question": "Katrina turned out to be much more spoiled than Felicia because _ had wealthy and generous parents.", "choices": ["Katrina", "Felicia"], "gold_index": 0}
+{"id": "7e965c15d470d820", "question": "The doctor told Kevin to exercise more often but not Neil. _ had always been active and self-motivated.", "choices": ["Kevin", "Neil"], "gold_index": 1}
+{"id": "50fbc5cb10f3f321", "question": "Jill bought a slip to go with her new skirt but the _ was too long and it hung out the bottom.", "choices": ["skirt", "slip"], "gold_index": 1}
+{"id": "62278263d7b068e6", "question": "The dark circles under Erin's eyes were darker than Cynthia's due to _ being older.", "choices": ["Erin", "Cynthia"], "gold_index": 0}
+{"id": "b24a7afa3b1d98e9", "question": "Rachel knew exactly how to treat the injured person's wound but not Emily because _ took a woodworking class in high school.", "choices": ["Rachel", "Emily"], "gold_index": 1}
+{"id": "0737da78a5edd5ec", "question": "Amy went over to the waiting room at the hospital to calm Samantha because _ was placid.", "choices": ["Amy", "Samantha"], "gold_index": 0}
+{"id": "9d05710ccbf4c63b", "question": "The water in the car was cooler than the water in the truck because the engine in the _ had run more recently.", "choices": ["truck", "car"], "gold_index": 0}
+{"id": "80da24a17de316f5", "question": "At their high school's homecoming dance, Natalie stayed on the floor for the slow dance while Maria got food during it, because _ had broken up with her significant other.", "choices": ["Natalie", "Maria"], "gold_index": 1}
+{"id": "2711280c38cb1e85", "question": "Nelson teased Christopher about needing to find a homecoming date because _ already had one.", "choices": ["Nelson", "Christopher"], "gold_index": 0}
+{"id": "0b185834e63959e8", "question": "I had to rake more leaves at the house than at the office because there were more trees at the _ .", "choices": ["house", "office"], "gold_index": 0}
+{"id": "1a20b2349eedb22f", "question": "The sliding glass door was broken when Eric pushed Ian through it because _ is a pushover.", "choices": ["Eric", "Ian"], "gold_index": 1}
+{"id": "ac64df133ab3dce3", "question": "The building's ancient foundation was re-enforced with a steel alloy during the remodel because the _ was strengthening.", "choices": ["foundation", "steel"], "gold_index": 1}
+{"id": "fe09bde8d01d64e8", "question": "The boot was removed from the car tire and put on the truck tire, since the _ was now legally parked.", "choices": ["car", "truck"], "gold_index": 0}
+{"id": "da01002e55336895", "question": "Megan wrote on the paper with a pencil unlike Jennifer who wrote with a pen, because _ wanted to erase it later.", "choices": ["Megan", "Jennifer"], "gold_index": 0}
+{"id": "e8d27f8d04f894f9", "question": "Christine was going to Jessica's house to do some cleaning in the kitchen, because _ was a energetic person.", "choices": ["Christine", "Jessica"], "gold_index": 0}
+{"id": "f73aebc3c6e6f357", "question": "She watered the rose but not the cactus, because the soil of the _ was already dry.", "choices": ["rose", "cactus"], "gold_index": 0}
+{"id": "455b1c07383aae1e", "question": "Betty assisted Kayla with the daily analysis task they were assigned and then _ ask for help herself.", "choices": ["Betty", "Kayla"], "gold_index": 0}
+{"id": "0bd93e7be282a160", "question": "The company wanted to increase labor productivity with its new machinery and camera, but the _ had faulty screws.", "choices": ["machinery", "camera"], "gold_index": 0}
+{"id": "d1887e57c6835ae5", "question": "Cynthia gave a rabbit as a companion to Carrie because _ thought they were lonely.", "choices": ["Cynthia", "Carrie"], "gold_index": 0}
+{"id": "f0224d95536b746c", "question": "We were going fishing out on the dock later in the day after we couldn't all fit in the boat, because the _ was confined.", "choices": ["dock", "boat"], "gold_index": 1}
+{"id": "f6a922b90b1c9b85", "question": "James was able to hide the book inside his jacket because the _ is big.", "choices": ["book", "jacket"], "gold_index": 1}
+{"id": "dc2ddb7bdca67753", "question": "The stores used posters instead of flyers, but the overall cost of distribution for the _ was cheaper.", "choices": ["posters", "flyers"], "gold_index": 1}
+{"id": "a0b578e502ab3a2f", "question": "Jason but not Craig asked the company if they were currently hiring because _ has a job.", "choices": ["Jason", "Craig"], "gold_index": 1}
+{"id": "75c3a9fbcef432c4", "question": "Brett was actively engaged in weight loss whereas Benjamin was trying to gain weight, so _ maximized their caloric intake.", "choices": ["Brett", "Benjamin"], "gold_index": 1}
+{"id": "ee7350dc8ae65ff5", "question": "The chef decided to omit the chicken from his signature dish for the party, because the _ needed to be vegetarian.", "choices": ["dish", "party"], "gold_index": 0}
+{"id": "6d85d075075d46ce", "question": "To make frosting I needed pudding that was at a store 15 minutes away but pre-made frosting was at a store 5 minutes away.  The _ was closer.", "choices": ["pudding", "frosting"], "gold_index": 1}
+{"id": "f57eab807dc30ae9", "question": "The battery of the the phone died faster than the laptop battery, because the _ was always on.", "choices": ["phone", "laptop"], "gold_index": 0}
+{"id": "546e0e51a9f280e9", "question": "Going on a diet was easier for Benjamin but not Donald because _ did not know about any different programs.", "choices": ["Benjamin", "Donald"], "gold_index": 1}
+{"id": "ae932e3367fc11ad", "question": "The fishing line snagged and broke on a rock because the _ was too heavy.", "choices": ["fishing line", "rock"], "gold_index": 1}
+{"id": "44fd25fd30da9f6f", "question": "James panicked when his phone fell on the table thinking it will break but the _ is strong.", "choices": ["phone", "table"], "gold_index": 0}
+{"id": "7bbb4e7ba1ac1f9f", "question": "The new cream didn't remove the warts like the last lotion, because the _ was not powerful enough.", "choices": ["cream", "lotion"], "gold_index": 0}
+{"id": "bbfd092a9a5a28b9", "question": "Carrie was helping Patricia diet and exercise at the gym to lose weight because _ used to be overweight.", "choices": ["Carrie", "Patricia"], "gold_index": 0}
+{"id": "72b1bef6199b58b1", "question": "Justin used a stencil on their presentation lettering but Derrick did not. _ had a very sloppy looking presentation.", "choices": ["Justin", "Derrick"], "gold_index": 1}
+{"id": "33d050d2787caea7", "question": "Donald was able to catch the Frisbee thrown by Eric, then _ was thrown the Frisbee back.", "choices": ["Donald", "Eric"], "gold_index": 1}
+{"id": "989949eb524f29a6", "question": "Monica really enjoys a vodka drink, but Felicia prefers whiskey because _ likes dark liquors.", "choices": ["Monica", "Felicia"], "gold_index": 1}
+{"id": "42199586308b223c", "question": "The teacher was helping us study carpentry instead of studying the cooking today. The _ was mandatory.", "choices": ["carpentry", "cooking"], "gold_index": 0}
+{"id": "432680f237084622", "question": "James forgot to put the food in the freezer so he had to eat the fruits the next day because the _ is rotting.", "choices": ["food", "fruit"], "gold_index": 0}
+{"id": "d1cdb185ab6e93cb", "question": "Natalie took a longer time to take a bath than Jennifer because _ liked relaxing in the tub.", "choices": ["Natalie", "Jennifer"], "gold_index": 0}
+{"id": "81a80bdf6892df8a", "question": "Mastering the game of chess was easier for Brian than William because _ had an analytical mind.", "choices": ["Brian", "William"], "gold_index": 0}
+{"id": "35f0783835a30333", "question": "When Leslie told Aaron he only wanted to eat food that was healthy, he was laughed at. The teacher scolded _ immediately.", "choices": ["Leslie", "Aaron"], "gold_index": 1}
+{"id": "e0a0da194b935bac", "question": "The children were not vaccinated, which was fine with Betty but annoyed Mary. _ believed they made kids autistic.", "choices": ["Betty", "Mary"], "gold_index": 0}
+{"id": "8226646d3be66d42", "question": "Natalie is extremely shy, but Lindsey is good at talking to strangers, which makes _ worse at telemarketing.", "choices": ["Natalie", "Lindsey"], "gold_index": 0}
+{"id": "52c6352281661e9a", "question": "Despite the fact that Joseph was sick and Craig was healthy, _ still stayed home from work that day.", "choices": ["Joseph", "Craig"], "gold_index": 1}
+{"id": "e61ca5ed0cfd43d7", "question": "Angela wanted to find a partner, but Victoria wanted to stay single, because _ was lonely.", "choices": ["Angela", "Victoria"], "gold_index": 0}
+{"id": "c2dc1a25b7a2473e", "question": "The teenager chose a jeweled pin for her belly piercing, but the _ was too huge.", "choices": ["piercing", "pin"], "gold_index": 1}
+{"id": "5d79a632d3f37eb6", "question": "Aaron didn't know Dennis had a peanut allergy, so when _ made peanut chicken an ambulance was called.", "choices": ["Aaron", "Dennis"], "gold_index": 0}
+{"id": "39475124c5df33c4", "question": "Maria never received flowers from the customers unlike Monica, by virtue of _ being polite.", "choices": ["Maria", "Monica"], "gold_index": 1}
+{"id": "afee6a239fbab163", "question": "The juice from the mango fruit could not fill up the cup because the _ is small.", "choices": ["mango", "cup"], "gold_index": 0}
+{"id": "5ad81a8c07b096ad", "question": "The man with the fever came over and talked to Carrie and not Lindsey because _ was a patient.", "choices": ["Carrie", "Lindsey"], "gold_index": 1}
+{"id": "c6d893f84061e21f", "question": "The man thought lifting the rock, not the log, would give him a hernia because the _ was lighter.", "choices": ["rock", "log"], "gold_index": 1}
+{"id": "4401f0cd2ea4c9fc", "question": "The TV that Samantha bought costs more than that of Carrie, because _ was poor.", "choices": ["Samantha", "Carrie"], "gold_index": 1}
+{"id": "22eab7c3dc8e8ed5", "question": "While waiting for the movie to begin, Natalie bought popcorn and drinks for Lindsey, since _ had little money.", "choices": ["Natalie", "Lindsey"], "gold_index": 1}
+{"id": "607c097066f96b53", "question": "Ian needed to adjust the mirror and Craig did not because _ was shorter than the owner of the car.", "choices": ["Ian", "Craig"], "gold_index": 0}
+{"id": "bd737d937c513c0b", "question": "The doctor told Kevin to exercise more often but not Neil. _ had always been lazy and unmotivated.", "choices": ["Kevin", "Neil"], "gold_index": 0}
+{"id": "e55f6174d36f7853", "question": "Tanya wanted to audition for the show that Sarah was casting, so _ watched her routine very carefully.", "choices": ["Tanya", "Sarah"], "gold_index": 1}
+{"id": "571791d168af3335", "question": "John never mentioned his canoe, but had a long conversation with Ron about the raft, because John rarely used the _ .", "choices": ["canoe", "raft"], "gold_index": 0}
+{"id": "f1ab7142709f281c", "question": "John sold the three chairs and used the money to buy twelve shoes. The _ were more expensive.", "choices": ["chairs", "shoes"], "gold_index": 0}
+{"id": "182960167619c974", "question": "The doctor couldn't treat the arm infection, but was able to handle the ear ache. The _ was more petty.", "choices": ["arm infection", "ear ache"], "gold_index": 1}
+{"id": "ec9f27aeb7a83543", "question": "Monica was caught napping in class more often than Katrina because _ stayed up all night.", "choices": ["Monica", "Katrina"], "gold_index": 0}
+{"id": "5f567acbb04fee5c", "question": "Samantha was not interested in hearing about Tanya awesome marriage, because _ was happy all the time.", "choices": ["Samantha", "Tanya"], "gold_index": 1}
+{"id": "fe44aa6038f3d883", "question": "The watch could not fit on the arm properly because it had been cut by a blade. The _ was short.", "choices": ["Watch", "Blade"], "gold_index": 0}
+{"id": "cd8292638332779f", "question": "Police arrested Maria but let Cynthia go as _ had some paint on their hand from the spray paint used for graffiti.", "choices": ["Maria", "Cynthia"], "gold_index": 0}
+{"id": "aa817de676be01e9", "question": "She decided to report the accident and the burglary, but the _ required much more investigation.", "choices": ["burglary", "accident"], "gold_index": 0}
+{"id": "edc2671cff631e20", "question": "Amy's being taught how to pay it forward by Kayla, so _ is likely the younger person.", "choices": ["Amy", "Kayla"], "gold_index": 0}
+{"id": "49616031d4de4562", "question": "Craig had cereal for breakfast while Dennis had a shake, so _ finished eating their breakfast.", "choices": ["Craig", "Dennis"], "gold_index": 0}
+{"id": "5d597cbf12c154df", "question": "After Logan pitched a ball that got clobbered for a home run by Justin in a baseball game, _ felt exultant.", "choices": ["Logan", "Justin"], "gold_index": 1}
+{"id": "f7057bd520204f4a", "question": "On the playground at school during recess, Monica called Emily a chicken because _ was scared of climbing the ladder.", "choices": ["Monica", "Emily"], "gold_index": 1}
+{"id": "253b9a4534213382", "question": "The honey flows out slower from the bottle than the oil. The _ is viscous.", "choices": ["honey", "oil"], "gold_index": 0}
+{"id": "d42df77f71996e91", "question": "Amy asked Maria how to make homemade candles to give as gifts. _ knew she had a lot of experience making them.", "choices": ["Amy", "Maria"], "gold_index": 0}
+{"id": "98401ac0fd1e3d01", "question": "Benjamin thought Android was the superior phone system but Ian thought IOS was better. _ bought a new iPhone 9 from Verizon.", "choices": ["Benjamin", "Ian"], "gold_index": 1}
+{"id": "0fce7f61670523a1", "question": "Jessica was arrested for growing hemp by the police but not Sarah because _ fled during the field raid.", "choices": ["Jessica", "Sarah"], "gold_index": 1}
+{"id": "6e410512e7a21b6f", "question": "Megan focused less on proper posture than Lindsey because _ wanted to become a model.", "choices": ["Megan", "Lindsey"], "gold_index": 1}
+{"id": "34d99770e2bb8466", "question": "The stain was lighter on Jason's shirt than Donald's because _ spilled red wine and not white wine.", "choices": ["Jason", "Donald"], "gold_index": 1}
+{"id": "2f4b51f97c03eace", "question": "Katrina wanted to build a new picture frame for Samantha's portrait because _ was an inexperienced woodworker.", "choices": ["Katrina", "Samantha"], "gold_index": 1}
+{"id": "563728a9d0395836", "question": "Craig gifted Eric a new picnic table, because _ lent him some money a while ago.", "choices": ["Craig", "Eric"], "gold_index": 1}
+{"id": "1c2a068e004cc2a6", "question": "Research came easy to Monica as compared to Erin because _ 's father was a landscaper.", "choices": ["Monica", "Erin"], "gold_index": 1}
+{"id": "a74bca8ea8ccb277", "question": "Jessica was arrested for growing hemp by the police but not Sarah because _ stayed during the field raid.", "choices": ["Jessica", "Sarah"], "gold_index": 0}
+{"id": "0dcbff92b7bc7fdc", "question": "Mary went to the office to receive a new card with her photo on it  and discarded a sticker because the _ was temporary.", "choices": ["sticker", "card"], "gold_index": 0}
+{"id": "03ccb7a6a0f2f8fc", "question": "Carrie always arrived to work after Cynthia, as _ had a shorter driving commute in the mornings.", "choices": ["Carrie", "Cynthia"], "gold_index": 1}
+{"id": "96c7e65d752272c2", "question": "The food that Hunter ate was spoiled but not that of Brett because _ left his food outside.", "choices": ["Hunter", "Brett"], "gold_index": 0}
+{"id": "a2621bb9938ecdc3", "question": "My mom didn't fit the shape into the painting, because the _ was too complete.", "choices": ["shape", "painting"], "gold_index": 1}
+{"id": "4bcbeee65f26256e", "question": "Maria gave Samantha the blue floral pants, because _ didn't  fit into them very well.", "choices": ["Maria", "Samantha"], "gold_index": 0}
+{"id": "88f278ea4fc888ce", "question": "It was easy for Angela to become a vegetarian although Kayla couldn't do it. _ really missed the taste of chicken.", "choices": ["Angela", "Kayla"], "gold_index": 1}
+{"id": "a0b0895e80c05b84", "question": "Whilst on the beach Cynthia loved to wear a bikini but Laura did not because _ had a flat stomach.", "choices": ["Cynthia", "Laura"], "gold_index": 0}
+{"id": "55b67c4ebc00026f", "question": "My face was more familiar than it was at the bar than the gym because I went to the _ very rarely.", "choices": ["bar", "gym"], "gold_index": 1}
+{"id": "c61f4bb6fddd3d0b", "question": "The sponges performed worse at cleaning the tub in the bathroom when compared with the cloths. It's because the _ are cheaper.", "choices": ["sponges", "cloths"], "gold_index": 0}
+{"id": "0b9577ed1ff919d9", "question": "Samantha was pretty good at math while Natalie was better at English. _ enrolled in a storytelling class this semester.", "choices": ["Samantha", "Natalie"], "gold_index": 1}
+{"id": "9df15a7d2b383dda", "question": "The arrow stuck to the bark but not the stone because the _ was hard.", "choices": ["bark", "stone"], "gold_index": 1}
+{"id": "c7dcad10daf4e7a2", "question": "Samantha decided to mix the mortar while Rebecca applied it to the wall. _ was not good at the finishing touches.", "choices": ["Samantha", "Rebecca"], "gold_index": 0}
+{"id": "2c11e8fae78b395e", "question": "Dennis did not enjoy their afternoon but Hunter did because _ left work after the sunrise.", "choices": ["Dennis", "Hunter"], "gold_index": 1}
+{"id": "4e11498cd9237fc6", "question": "Christine knew how to make wings with better flavor than Maria, so _ waited for supper.", "choices": ["Christine", "Maria"], "gold_index": 1}
+{"id": "59181af2830ba21e", "question": "It was easy for Matthew but not Logan to practice yoga because _ wanted to improve their mind and body.", "choices": ["Matthew", "Logan"], "gold_index": 0}
+{"id": "801f7e44539d934c", "question": "Megan forgot to buy deodorant at the store so they borrowed Jessica's deodorant and _ never found out.", "choices": ["Megan", "Jessica"], "gold_index": 1}
+{"id": "72bc6a4aaeec6588", "question": "Cynthia has a pond in their backyard, but Carrie cannot afford one, which means _ lives in the richer neighborhood.", "choices": ["Cynthia", "Carrie"], "gold_index": 0}
+{"id": "69476c930d468a72", "question": "Jessica wants to protect herself from infectious diseases so she goes to doctor Samantha, because _ is careful.", "choices": ["Jessica", "Samantha"], "gold_index": 0}
+{"id": "7c9f0d36f274a3d7", "question": "Natalie had a phobia about crossing over high bridges but Tanya didn't. _ had to re-route their trip to avoid bridges.", "choices": ["Natalie", "Tanya"], "gold_index": 0}
+{"id": "0582a20d7016d8f7", "question": "James was finding a space on the couch for the box to be placed but he could not find it because the _ is big.", "choices": ["box", "couch"], "gold_index": 0}
+{"id": "863bdc2eb06cdbb7", "question": "Sometimes I write in my journal with a pencil instead of a pen, but the _ can be run dry.", "choices": ["pencil", "pen"], "gold_index": 1}
+{"id": "52dd5df1cfa9ed2f", "question": "The computer ran faster than the tablet because the files on the _ were larger.", "choices": ["tablet", "computer"], "gold_index": 0}
+{"id": "a6c56bb71ebbf2b1", "question": "Cynthia was happy to give Patricia the politics section of the newspaper, because _ had little interest in the election results.", "choices": ["Cynthia", "Patricia"], "gold_index": 0}
+{"id": "75e18c0c1de6fd03", "question": "Garrett was always feeling fatigued because of the energy his job demands. The _ of the job is too much.", "choices": ["demand", "energy"], "gold_index": 0}
+{"id": "9968a46ad67561bf", "question": "Emily delivered the daily newspaper to Samantha promptly, so _ expected a nice Christmas bonus.", "choices": ["Emily", "Samantha"], "gold_index": 0}
+{"id": "edba2c3f5364036b", "question": "The rib-eye steak needed some artisan pepper to season it because the _ was flavorful.", "choices": ["steak", "pepper"], "gold_index": 1}
+{"id": "076e0626519f60a6", "question": "The teacher asked for the homework. Elena played games the night before and Tanya did not, so _ got an F.", "choices": ["Elena", "Tanya"], "gold_index": 0}
+{"id": "ddd1502a510b0739", "question": "Jason considers he and Benjamin to be friends so _ puts a lot of effort into their relationship.", "choices": ["Jason", "Benjamin"], "gold_index": 0}
+{"id": "2a3aa115195088ba", "question": "Dennis is changing the sand in a pool filter for Joseph, because _ is a bit lazy.", "choices": ["Dennis", "Joseph"], "gold_index": 1}
+{"id": "b548e107bc5ac68b", "question": "Of the two owners, Jessica was far worse than Jennifer, because _ like to treat the dogs.", "choices": ["Jessica", "Jennifer"], "gold_index": 1}
+{"id": "8c9448ae2819a648", "question": "The creatures attacked Derrick while ignoring Ryan, because _ remembered to put on the repellent.", "choices": ["Derrick", "Ryan"], "gold_index": 1}
+{"id": "d617a93ebc98682a", "question": "Tanya loved pepperoni on their pizza and Katrina loved sausage, so when it had just sausage _ was not very happy.", "choices": ["Tanya", "Katrina"], "gold_index": 0}
+{"id": "c2b33ae9fc6705dc", "question": "The lease in the city was more than the lease in the country because the value of the property in the _ was higher.", "choices": ["city", "country"], "gold_index": 0}
+{"id": "dadd6fc4e79fb642", "question": "Sarah had to call in an expert unlike Erin because _ had no knowledge on the subject.", "choices": ["Sarah", "Erin"], "gold_index": 0}
+{"id": "e21c836bdaa49eaf", "question": "Ian won a fish from Kenneth at the carnival so _ bagged it up and sent it home.", "choices": ["Ian", "Kenneth"], "gold_index": 1}
+{"id": "7aa8d4570aee4a27", "question": "Tanya read the contract carefully before signing it but Patricia didn't. _ didn't get ripped off by the shady merchant.", "choices": ["Tanya", "Patricia"], "gold_index": 0}
+{"id": "ad1486996434fd73", "question": "Joel has experience driving large vehicles and Lawrence doesn't. _ drives their RV with accuracy.", "choices": ["Joel", "Lawrence"], "gold_index": 0}
+{"id": "75bc71645ecc50a2", "question": "Craig had a slower running phone than Logan because _ had more apps running on theirs.", "choices": ["Craig", "Logan"], "gold_index": 0}
+{"id": "8089a9292b6050c3", "question": "Mary used the lotion instead of the cream because her skin was glowing when she used the _ .", "choices": ["cream", "lotion"], "gold_index": 1}
+{"id": "80b03b54fd2c3d4c", "question": "The kitty ran away from Kayla and not Felicia because the kitty had known _ for many years.", "choices": ["Kayla", "Felicia"], "gold_index": 1}
+{"id": "01cdb2310c17604f", "question": "Adam was a crook and not a law-abiding citizen like Joseph, so it was surprising that _ was the one with a restraining order against him.", "choices": ["Adam", "Joseph"], "gold_index": 1}
+{"id": "ec37e6ed8b6d560d", "question": "Rebecca had a way of minimizing risks whereas Mary usually did not. This made _ want to assist.", "choices": ["Rebecca", "Mary"], "gold_index": 0}
+{"id": "c4e8b356eb4afa49", "question": "the scanning tool could not get through the cervix because the _ was too small.", "choices": ["cervix", "tool"], "gold_index": 0}
+{"id": "038bba1c63f34506", "question": "I got more use in the gym than at the playground because the _ had more things to do.", "choices": ["gym", "playground"], "gold_index": 0}
+{"id": "5b64c2357a0039e5", "question": "Robert usually didn't like fish as much as Kyle however _ had a disliking for sardines on pizza.", "choices": ["Robert", "Kyle"], "gold_index": 1}
+{"id": "0e0a6c377817cd8a", "question": "Betty learned to play the cello well but Erin did not because _ was very impatient.", "choices": ["Betty", "Erin"], "gold_index": 1}
+{"id": "7b201bbdc762500a", "question": "Hannah had to get a lawyer to help her understanding of the contract language because the _ the contract had was too complex.", "choices": ["language", "understanding"], "gold_index": 0}
+{"id": "7462d697b85e4d93", "question": "Eating spicy foods better suited Robert and not Adam because _ never got acid reflux from salsa.", "choices": ["Robert", "Adam"], "gold_index": 0}
+{"id": "3180af535ce70f7d", "question": "On the playground at school during recess, Monica called Emily a chicken because _ was capable of climbing the ladder.", "choices": ["Monica", "Emily"], "gold_index": 0}
+{"id": "2ad9822c944c0196", "question": "The dog hated Kevin but loved Derrick, so _ started bringing the dog treats to change its mind.", "choices": ["Kevin", "Derrick"], "gold_index": 0}
+{"id": "dac1d474892f110b", "question": "The bank permitted Michael to open a checking account, but not Matthew, because _ was unemployed.", "choices": ["Michael", "Matthew"], "gold_index": 1}
+{"id": "f35d08cead41c65c", "question": "If I want to build a swing should I build it out of wood or use a tire? It seems like the _ would get dirty and gross inside.", "choices": ["tire", "wood"], "gold_index": 0}
+{"id": "99169452a141c783", "question": "The mirror didn't lie when it showed how overweight Patricia was and how emaciated Felicia was, so _ needed to go on diet.", "choices": ["Patricia", "Felicia"], "gold_index": 0}
+{"id": "2c9adc6fa827f792", "question": "Kenneth did not like Hunter because he was not a good manager. But he still respected _ because he was his superior.", "choices": ["Kenneth", "Hunter"], "gold_index": 1}
+{"id": "bdde2f14e2b545fe", "question": "Elena was asked by Jessica to put patches in the holes in her pants; _ gave her some she bought at the store.", "choices": ["Elena", "Jessica"], "gold_index": 1}
+{"id": "007ea2de63100923", "question": "The flour spills out when we use an ancient family recipe and pour three teacups of flour into our bowl. The _ is too small.", "choices": ["teacup", "bowl"], "gold_index": 1}
+{"id": "b539bf37e2bd1512", "question": "The tip of James pencil was breaking while writing on the paper sheet. The _ is weak.", "choices": ["pencil", "paper"], "gold_index": 0}
+{"id": "85cb4528e13d8359", "question": "Laura was climbing down from the roof and Katrina was below so, _ was holding the ladder.", "choices": ["Laura", "Katrina"], "gold_index": 1}
+{"id": "1108579abb91e314", "question": "Emily had always loved kids and Jessica felt the opposite, so _ was surprised to become a pediatrician.", "choices": ["Emily", "Jessica"], "gold_index": 1}
+{"id": "bcb3d05b7ad072de", "question": "Mary wanted to surprise Cynthia with a puppy for Christmas, so _ asked about allergies to dogs.", "choices": ["Mary", "Cynthia"], "gold_index": 0}
+{"id": "542fc4814726de87", "question": "Even though Ian had less of a sweet tooth than Robert, _ liked chocolate more.", "choices": ["Ian", "Robert"], "gold_index": 0}
+{"id": "5cf1f100db3e8473", "question": "Samantha told Lindsey to be careful with the porcelain doll; when she ignored her and dropped the doll, _ was very sorry.", "choices": ["Samantha", "Lindsey"], "gold_index": 1}
+{"id": "71f81d59e53a348d", "question": "Joel ran out of toilet paper, so he asked Dennis in the stall next to him for some. _ was relieved when he agreed.", "choices": ["Joel", "Dennis"], "gold_index": 0}
+{"id": "fbb01748c3450817", "question": "Kevin was worried about Eric's infections so _ decided to go to an emergency clinic.", "choices": ["Kevin", "Eric"], "gold_index": 1}
+{"id": "84667f6217ae6531", "question": "The parakeet flew to Hunter but flew past Samuel because _ had some bird seed in their hand.", "choices": ["Hunter", "Samuel"], "gold_index": 0}
+{"id": "ee4742fbf43ca2ec", "question": "Sarah was quickly promoted to manager over Kayla, because _ excelled at angering other people.", "choices": ["Sarah", "Kayla"], "gold_index": 1}
+{"id": "a806f54b91c469d8", "question": "In order to grow his plants naturally, he bought fertilizer and water. The _ was filled with nutrients.", "choices": ["fertilizer", "water"], "gold_index": 0}
+{"id": "8e5a926d5db2b18e", "question": "Samantha gifted her new bathrobe to Betty because it felt very itchy for _ when she tried it on.", "choices": ["Samantha", "Betty"], "gold_index": 0}
+{"id": "35d0a932174c8bd3", "question": "Ian laughs at Ryan because of the small Christmas tree they picked out. _ wants a six foot tree.", "choices": ["Ian", "Ryan"], "gold_index": 0}
+{"id": "52c7136e2228bfca", "question": "Since Craig threw aluminum cans in the trash and Benjamin recycled, _ was environmentally irresponsible.", "choices": ["Craig", "Benjamin"], "gold_index": 0}
+{"id": "0965248111c36a8d", "question": "Derrick really liked working in Human Resources and William wanted to work at the same company, and _ subsequently accepted a position.", "choices": ["Derrick", "William"], "gold_index": 1}
+{"id": "2f08f5e51c6c2752", "question": "Jen planned a retreat to a mountain or the park. She chose the _ because it was warmer.", "choices": ["mountain", "park"], "gold_index": 1}
+{"id": "23029d94b9bbcd21", "question": "When Benjamin put the family into debt, Adam filed for divorce; then the judge gave _ a sympathetic look.", "choices": ["Benjamin", "Adam"], "gold_index": 1}
+{"id": "add50770c17836bf", "question": "The roof would have to be repaired using tarps or shingles before the storm comes. The _ are a temporary fix, though.", "choices": ["tarps", "shingles"], "gold_index": 0}
+{"id": "1ae11937e0ead4aa", "question": "Joel plans to go to Latin America next year where Dennis is currently living, _ has never been to Latin America.", "choices": ["Joel", "Dennis"], "gold_index": 0}
+{"id": "cf32488532ed2c7e", "question": "Monica painted the porch for Kayla so the neighbor berated _ for being so lazy.", "choices": ["Monica", "Kayla"], "gold_index": 1}
+{"id": "be1e7f7bf5b35b18", "question": "The man decided to use a nail instead of a screw because the _ would be looser in the wood.", "choices": ["nail", "screw"], "gold_index": 1}
+{"id": "5f82986f20f43001", "question": "After walking barefooted, James washed his foot in the bowl of water and the _ got dirty.", "choices": ["foot", "water"], "gold_index": 1}
+{"id": "72e8fe4684fa2552", "question": "Neil's cat was terrified of thunderstorms but Kyle's wasn't bothered by them. _ found their cat hiding under the bed after the loud crackle of thunder.", "choices": ["Neil", "Kyle"], "gold_index": 0}
+{"id": "3d3c7d441f444890", "question": "They had to eat a lot to gain the strength they had lost and be able to work, the _ was too little.", "choices": ["work", "strength"], "gold_index": 1}
+{"id": "5a3ba84ffbea4385", "question": "Tanya was an adult while Samantha was young and still had room to grow , so _ took her old clothes.", "choices": ["Tanya", "Samantha"], "gold_index": 1}
+{"id": "ea6f16e61883b8ab", "question": "Elena enjoyed yoga classes while Amy preferred other forms of exercise; this was because _ was flexible.", "choices": ["Elena", "Amy"], "gold_index": 0}
+{"id": "a2a49e8b9232e553", "question": "Jason considers he and Benjamin to be friends even though _ puts little effort into their relationship.", "choices": ["Jason", "Benjamin"], "gold_index": 1}
+{"id": "d64dc8e464216cb7", "question": "Tanya recently finished filling out a job application but not Megan because _ is currently unemployed.", "choices": ["Tanya", "Megan"], "gold_index": 0}
+{"id": "42a854f3a5d89ef7", "question": "Whilst on the beach Cynthia loved to wear a bikini but Laura did not because _ had a fat stomach.", "choices": ["Cynthia", "Laura"], "gold_index": 1}
+{"id": "5460fcdecae00732", "question": "Kenneth's back is being tended to by Derrick at the office, so _ is the client in this situation.", "choices": ["Kenneth", "Derrick"], "gold_index": 0}
+{"id": "9e8ac0a6b960b2b7", "question": "Erin has a teenager whereas Patricia has toddler-age children because _ became a mother first.", "choices": ["Erin", "Patricia"], "gold_index": 0}
+{"id": "c45f05697143db75", "question": "The professor's eyes could not see clearly because of the sunglasses he had. The _ were poor.", "choices": ["Sunglasses", "Eyes"], "gold_index": 0}
+{"id": "5e7f71f53b879582", "question": "The pressure of finding new jobs is harder than finding new apartments. The _ are high in numbers.", "choices": ["jobs", "apartments"], "gold_index": 1}
+{"id": "5c438bb9aa2035e2", "question": "Ian needed to adjust the mirror and Craig did not because _ was the same height as the owner of the car.", "choices": ["Ian", "Craig"], "gold_index": 1}
+{"id": "ca3e6ee98c3a89b3", "question": "I was driving my car and tried to get through the intersection, but the light turned red. The _ is too fast.", "choices": ["light", "car"], "gold_index": 0}
+{"id": "75bfd00a60d3cffd", "question": "The hotel had a terrible gym but a nice restaurant; the _ was something management attended to.", "choices": ["gym", "restaurant"], "gold_index": 1}
+{"id": "a60ed17aa3ac773f", "question": "Kyle asked Brett for some tips on healthy eating because _ has recently lost weight.", "choices": ["Kyle", "Brett"], "gold_index": 1}
+{"id": "cecb39c46c2ead5c", "question": "Joe brought his books to school in a suitcase instead of a backpack because the _ was smaller.", "choices": ["suitcase", "backpack"], "gold_index": 1}
+{"id": "f2181624d117566d", "question": "The sand and water in the fish tank were very dirty, so the _ needed to be scrubbed.", "choices": ["water", "sand"], "gold_index": 1}
+{"id": "a0eac7b4522bbfeb", "question": "The roof of Rachel's home is old and falling apart, while Betty's is new. The home value of _ is lower.", "choices": ["Rachel", "Betty"], "gold_index": 0}
+{"id": "aa44f34967786054", "question": "Refraining from drinking was easy for Kyle but not Eric, as _ never enjoyed the taste of alcohol.", "choices": ["Kyle", "Eric"], "gold_index": 0}
+{"id": "edf2ad941b80be0b", "question": "At the estate sale, John saw the hammer was more affordable than the screwdriver, because the _ was used.", "choices": ["hammer", "screwdriver"], "gold_index": 0}
+{"id": "adf24793a199c6ef", "question": "We reached a settlement with the company but were roadblocked by the court.  The _ was just more inflexible in its dealings.", "choices": ["company", "court"], "gold_index": 1}
+{"id": "4f2b76726b46d582", "question": "Bill could only go out to the restaurants rather than the bars because going to the _ required a minimum age.", "choices": ["restaurants", "bars"], "gold_index": 1}
+{"id": "ef15a1b1d459c87f", "question": "She decided to report the accident and the burglary, but the _ required much less investigation.", "choices": ["burglary", "accident"], "gold_index": 1}
+{"id": "a454a7c1c2e5038e", "question": "Dennis made their weight loss goal before Eric, because _ only ate a healthy diet.", "choices": ["Dennis", "Eric"], "gold_index": 0}
+{"id": "34f4e166d1f0f0fc", "question": "Ben had to drain both water and oil down the sink, but the _ was too fluid.", "choices": ["oil", "water"], "gold_index": 1}
+{"id": "88f6f064e8f546da", "question": "All of the bands were not able to march on the fields at the same time because the _ were massive.", "choices": ["bands", "fields"], "gold_index": 0}
+{"id": "9a647c30cdd2d258", "question": "Jasmine wanted to put the emerald on the ring but it would not fit. The _ was minuscule.", "choices": ["emerald", "ring"], "gold_index": 1}
+{"id": "f3bedc26cfa7f663", "question": "Tanya was unrecognizable after Sarah was done beating them, so _ ended up going to jail.", "choices": ["Tanya", "Sarah"], "gold_index": 1}
+{"id": "be37e8d8c2210991", "question": "The athletes on the team of Christine were more tired than those on the team of Monica because the ones with _ did less laps.", "choices": ["Christine", "Monica"], "gold_index": 1}
+{"id": "2d998a05f8ec9f18", "question": "They discussed the company's budget at the business meeting but the _ was boring and the meeting was ran long.", "choices": ["budget", "meeting"], "gold_index": 0}
+{"id": "e961f1473f202ba8", "question": "The kids at camp liked the activities with water, but avoided the sand, because the _ was cleansed.", "choices": ["sand", "water"], "gold_index": 1}
+{"id": "83d4ee3875d6d742", "question": "At the beauty salon, Angela preferred to work on her eyebrows instead of her eyelashes because the _ were already worked on.", "choices": ["eyebrows", "eyelashes"], "gold_index": 1}
+{"id": "99909cbdbeef14e0", "question": "Joel had many extra possesions while Neil didn't, so _ didn't have to rent a storage shed.", "choices": ["Joel", "Neil"], "gold_index": 1}
+{"id": "c3949b5907e29fc7", "question": "We didn't get the biscuits this morning before school, so I ordered an omelet instead of a hash brown as the _ would make me hungry.", "choices": ["omelet", "hash brown"], "gold_index": 1}
+{"id": "208830ceabb925a3", "question": "Neil asked Brian to hand him the measuring tape, but _ already measured the wall to center the picture.", "choices": ["Neil", "Brian"], "gold_index": 1}
+{"id": "624577554003f8b9", "question": "Joel researched laws and helped to open a preschool for Eric. Because _ is very good with kids.", "choices": ["Joel", "Eric"], "gold_index": 1}
+{"id": "e3089248805ccb41", "question": "Samuel tried unsuccessfully to get Brett to skip school because _ was a truant that didn't follow the rules.", "choices": ["Samuel", "Brett"], "gold_index": 0}
+{"id": "ce11376845a2dca5", "question": "Mary was helping Patricia's daughter put on makeup because _ watches a lot of makeup tutorials.", "choices": ["Mary", "Patricia"], "gold_index": 0}
+{"id": "1827c46edccaef1a", "question": "Jack wanted to start a game, but couldn't decide between baseball or basketball. The _ game would call for more friends.", "choices": ["baseball", "basketball"], "gold_index": 0}
+{"id": "c89f1fc18e805f2b", "question": "Beautiful roses were bought by Jason for Dennis because _ is a receiver in general.", "choices": ["Jason", "Dennis"], "gold_index": 1}
+{"id": "6a6811095aae2d18", "question": "Joel had many extra possesions while Neil didn't, so _ had to rent a storage shed.", "choices": ["Joel", "Neil"], "gold_index": 0}
+{"id": "2832a604b7370cc1", "question": "Christine took all the money while Mary told her to save the money for herself. _ only knows to take.", "choices": ["Christine", "Mary"], "gold_index": 0}
+{"id": "eca830e410b47156", "question": "I always wonder how people prefer reading in a library instead of at the house because the amount of people at the _ would make it hard to concentrate.", "choices": ["library", "house"], "gold_index": 0}
+{"id": "487b60cdaf87abea", "question": "Natalie committed a bunch of good deeds in Samantha's name, because _ didn't want the credit.", "choices": ["Natalie", "Samantha"], "gold_index": 0}
+{"id": "644d6afc448e5bcc", "question": "Rebecca thought Disney movies were the best thing to watch but Samantha like horror movies better. _ rented Saw from Redbox.", "choices": ["Rebecca", "Samantha"], "gold_index": 1}
+{"id": "69151d8562fb5ac7", "question": "Nelson wanted to be an actor so Neil got them an audition because _ had poor connections in the movie industry.", "choices": ["Nelson", "Neil"], "gold_index": 0}
+{"id": "84c86aaf501ddc58", "question": "The room at the hotel cost more to stay in than the room at the inn because the _ was nicer.", "choices": ["hotel", "inn"], "gold_index": 0}
+{"id": "38f6c493fb01f1ec", "question": "Ryan grew the houseplant from seed, but Matthew bought a plastic plant instead, because _ tended to neglect plants.", "choices": ["Ryan", "Matthew"], "gold_index": 1}
+{"id": "ce2d6459474dc22b", "question": "Katrina did not value the antique pictures as much as Lindsey because _ was a history buff.", "choices": ["Katrina", "Lindsey"], "gold_index": 1}
+{"id": "86a0525e92ee5beb", "question": "The arrow stuck to the bark but not the stone because the _ was flimsy.", "choices": ["bark", "stone"], "gold_index": 0}
+{"id": "4e99d8cc346a8fb4", "question": "I look forward to the Sunday newspaper so I can look at the comics.  This is the only reason I still get the _ in this day and age.", "choices": ["newspaper", "comics"], "gold_index": 0}
+{"id": "4aa11ab63c250f2d", "question": "Mary thinks Sarah has beautiful skin, even though _ actually has the better complexion of the two.", "choices": ["Mary", "Sarah"], "gold_index": 0}
+{"id": "74b32a6a1dcbe822", "question": "I don't want to use that iron on my new shirt, and, yes, it's because the _ is too cheap.", "choices": ["iron", "shirt"], "gold_index": 0}
+{"id": "8b08894f91b3667b", "question": "Cynthia gave a rabbit as a companion to Carrie because _ explained they were lonely.", "choices": ["Cynthia", "Carrie"], "gold_index": 1}
+{"id": "0bfea2f9b1fbfec8", "question": "Betty gave the full pitcher to Rachel so _ could fill her glass with water.", "choices": ["Betty", "Rachel"], "gold_index": 1}
+{"id": "e3e0f4b2de6e8859", "question": "We were making orange jack o lanterns and  bought candles to put in the oranges, the candles did not fit. The _ were too big.", "choices": ["candles", "oranges"], "gold_index": 0}
+{"id": "b560a808aa8e74cf", "question": "The shoe james bought got pinched by a nail while jogging because the _ is soft.", "choices": ["shoe", "nail"], "gold_index": 0}
+{"id": "afa01e52e9f85ec9", "question": "Elena brought the horse to the stables owned by Cynthia, so _ could sell the animal.", "choices": ["Elena", "Cynthia"], "gold_index": 0}
+{"id": "1d23eaf1748db2f6", "question": "Jennifer got about with a seeing-eye dog but Mary did not because _ was sighted.", "choices": ["Jennifer", "Mary"], "gold_index": 1}
+{"id": "e85ef63097ed0347", "question": "The bill had extra charges for past due and hookup. I owe the _ for being a new customer.", "choices": ["past due", "hookup"], "gold_index": 1}
+{"id": "e6ea4f7bcc383e2f", "question": "The gothic lolita style suited Victoria better than Sarah because _ looked the worst in frilly dresses.", "choices": ["Victoria", "Sarah"], "gold_index": 1}
+{"id": "941254067d532820", "question": "It took a less time for Katrina to read the book than Cynthia since _ was a better reader.", "choices": ["Katrina", "Cynthia"], "gold_index": 0}
+{"id": "1d40888b88cbf068", "question": "Angela beat Mary in the weightlifting competition, but it wasn't fair. _ had been taking steroids.", "choices": ["Angela", "Mary"], "gold_index": 0}
+{"id": "6dda3414e62dd683", "question": "Craig grew frustrated trying to coach Nick in soccer, as _ lacked the aptitude needed for the task.", "choices": ["Craig", "Nick"], "gold_index": 1}
+{"id": "49d1543afdbfbfac", "question": "Derrick always wanted to wash when they woke up but Benjamin rarely bothered. _ was a very dirty person.", "choices": ["Derrick", "Benjamin"], "gold_index": 1}
+{"id": "720307ffb7d8e4b4", "question": "The ingredients that I use are tastier than the available toppings because the _ are old.", "choices": ["ingredients", "toppings"], "gold_index": 1}
+{"id": "9fa449e45518f014", "question": "The plan devised by Christine to get Kayla to like them failed, as _ did not really try it.", "choices": ["Christine", "Kayla"], "gold_index": 0}
+{"id": "c613ea7dee17aae4", "question": "Jeffrey thought Craig probably had gum and asked for a piece, because _ had bad breath.", "choices": ["Jeffrey", "Craig"], "gold_index": 0}
+{"id": "995b3afe64d4b543", "question": "Natalie has a rich husband and lots of money, Jennifer is poor _ needs to make her clothes.", "choices": ["Natalie", "Jennifer"], "gold_index": 1}
+{"id": "24c9f7c0b7ea7d3a", "question": "Carl needed a new top after ripping his epaulette shirt. He wanted a  flannel shirt because the _ is old.", "choices": ["epaulette shirt", "flannel shirt"], "gold_index": 0}
+{"id": "73def63fda84e879", "question": "He was having an asthma attack but forgot his inhaler so someone recommended coffee as the _ was unavailable.", "choices": ["inhaler", "coffee"], "gold_index": 0}
+{"id": "e8a80a8a61acc724", "question": "My mom always had training at the house, but not today because the _ was unavailable.", "choices": ["training", "house"], "gold_index": 1}
+{"id": "e966d7904ca6013c", "question": "Hunter gave Justin two weeks to respond after sending him a demand letter. .After that _ will sue him in the court.", "choices": ["Hunter", "Justin"], "gold_index": 0}
+{"id": "b9cb48b434b87a66", "question": "Caroline works in the catering and food wholesale industries, but enjoys food preparation more, so she prefers her work in the _ industry.", "choices": ["catering", "food wholesale"], "gold_index": 0}
+{"id": "cb453a69b15c8dc2", "question": "It doesn't take much to shift between ice and water. The _ is fluid and flexible when its warm.", "choices": ["water", "ice"], "gold_index": 0}
+{"id": "4f469e57fbeaf379", "question": "Patricia was called back for a second interview but not Victoria, as _ had passed the background check.", "choices": ["Patricia", "Victoria"], "gold_index": 0}
+{"id": "766b1ced6e429a11", "question": "The diary of Carrie is boring, and the one Jennifer writes is interestin. _ has lived a simple life.", "choices": ["Carrie", "Jennifer"], "gold_index": 0}
+{"id": "ce36e52d39b8b5a6", "question": "The stain was darker on Jason's shirt than Donald's because _ spilled red wine and not white wine.", "choices": ["Jason", "Donald"], "gold_index": 0}
+{"id": "b7be376d9da1c052", "question": "James was able to hide the book inside his jacket because the _ is small.", "choices": ["book", "jacket"], "gold_index": 0}
+{"id": "4fc790026b53fe91", "question": "Ian laughs at Ryan because of the small Christmas tree they picked out. _ wants a table top tree.", "choices": ["Ian", "Ryan"], "gold_index": 1}
+{"id": "71178fd239d86290", "question": "Craig had problems with dry skin but not Hunter since _ used a soothing skin lotion.", "choices": ["Craig", "Hunter"], "gold_index": 1}
+{"id": "34195a56304f4208", "question": "The tree fell down after the sapling because the roots of the _ were weaker.", "choices": ["tree", "sapling"], "gold_index": 1}
+{"id": "0994b0110e43039e", "question": "Samantha wanted to reduce smoking by relying on a new nicotine patch and therapy video, but the _ was addictive.", "choices": ["patch", "video"], "gold_index": 0}
+{"id": "d41dc12eb860a876", "question": "The chef fried less mushrooms than tomatoes because the _ were ordered frequently at the restaurant.", "choices": ["mushrooms", "tomatoes"], "gold_index": 1}
+{"id": "27c2b262532bf9a3", "question": "The bank permitted Michael to open a checking account, but not Matthew, because _ was employed.", "choices": ["Michael", "Matthew"], "gold_index": 0}
+{"id": "5a025df3191723f6", "question": "The teen found the new hat was no substitute for his cool shirt.  The _ was just cool to wear to school.", "choices": ["hat", "shirt"], "gold_index": 1}
+{"id": "efb0f80256f4c344", "question": "The woman pierced the customer's tongue with a needle before piercing his nose because the _ was still sensitive.", "choices": ["tongue", "nose"], "gold_index": 1}
+{"id": "e7dc9c6c9985fcfa", "question": "Emily was nine months pregnant but Tanya was not pregnant at all. _ had a beautiful baby girl.", "choices": ["Emily", "Tanya"], "gold_index": 0}
+{"id": "67b30ba32795be1e", "question": "Joe immediately went to bakery before the bank because the _ had a limited supply of what he wanted.", "choices": ["bakery", "bank"], "gold_index": 0}
+{"id": "2347c8bf712afa57", "question": "Joel always liked to turn the heater up higher than Joseph did for the reason that _ was always cold.", "choices": ["Joel", "Joseph"], "gold_index": 0}
+{"id": "0f38b6965d8ffc77", "question": "Jan planted her herbs in small growing bags, but she worried that the _ would be too stifled to put down roots.", "choices": ["herbs", "bags"], "gold_index": 0}
+{"id": "87d3629d95cfd7d3", "question": "Rebecca asked Kayla to turn the lights out but _ did not want to go to sleep.", "choices": ["Rebecca", "Kayla"], "gold_index": 1}
+{"id": "fa2736a3e5a790cb", "question": "I was wearing wool socks when I went to try on my new boots but I couldn't get them on because the _ were too small.", "choices": ["boots", "socks"], "gold_index": 0}
+{"id": "7c7524d1f28a7942", "question": "Rachel hated their new in-laws, but tried to keep it secret from Monica.  Eventually _ told them.", "choices": ["Rachel", "Monica"], "gold_index": 0}
+{"id": "376995cde6abe9e0", "question": "The house of Aaron took some damage from the storm but not Michael's house, because _ lived farther away.", "choices": ["Aaron", "Michael"], "gold_index": 1}
+{"id": "4a554cfc853070ec", "question": "Adam always spent all of the free time watching Tv unlike Hunter who volunteered, due to _ being lazy.", "choices": ["Adam", "Hunter"], "gold_index": 0}
+{"id": "2caf11ae232322bc", "question": "The air in the shop was better than in the garage, because the _ was highly purified.", "choices": ["garage", "shop"], "gold_index": 1}
+{"id": "3904570103f2eb30", "question": "The man paid cash for the phone but purchased the tablet with credit because the _ was inexpensive.", "choices": ["Phone", "Tablet"], "gold_index": 0}
+{"id": "6aca9044aa367e99", "question": "Eric replaced his long hair with a new hat for the summer time, the _ was old.", "choices": ["hair", "hat"], "gold_index": 0}
+{"id": "3918240d060b3fab", "question": "Jennifer got about with a seeing-eye dog but Mary did not because _ was blind.", "choices": ["Jennifer", "Mary"], "gold_index": 0}
+{"id": "3d6a2d757739caac", "question": "The living room was cleaner than the kitchen, because we spend leess time in in the _ .", "choices": ["living room", "kitchen"], "gold_index": 0}
+{"id": "3a5c9cb3bcb7d6d3", "question": "I always wonder how people prefer reading in a library instead of at the house because the lack of people at the _ would make it easier to concentrate.", "choices": ["library", "house"], "gold_index": 1}
+{"id": "88313e3599be0304", "question": "Maria gave birth to Katrina, so after the process was over, _ was a brand new mother.", "choices": ["Maria", "Katrina"], "gold_index": 0}
+{"id": "b46383bf08f0d812", "question": "Victoria had no issues with Achilles Tendinitis unlike Betty because _ never wore sneakers with cushion.", "choices": ["Victoria", "Betty"], "gold_index": 1}
+{"id": "08a448a22611e62a", "question": "I couldn't figure out what my costume would be for Halloween Peter Pan or Snow White. The _ costume I'd have to wear a dress.", "choices": ["Peter Pan", "Snow White"], "gold_index": 1}
+{"id": "9a6b78228cf3023a", "question": "Although Angela was overall a nicer person than Natalie, _ often did practice humility very regularlly.", "choices": ["Angela", "Natalie"], "gold_index": 1}
+{"id": "da83579cd18a70a8", "question": "The filter in the living room needed to be changed more often than the one in the bedroom because the _ was dirtier.", "choices": ["living room", "bedroom"], "gold_index": 0}
+{"id": "e3cbbce28a6a291e", "question": "Late at night, Rebecca was more tired than Jessica so _ was able to go right to sleep.", "choices": ["Rebecca", "Jessica"], "gold_index": 0}
+{"id": "7e066ca974eaba15", "question": "Emily decided to eat a lot more yucca than Carrie did. _ was no longer hungry.", "choices": ["Emily", "Carrie"], "gold_index": 0}
+{"id": "d94286b206c4a19a", "question": "Of the two owners, Jessica was far worse than Jennifer, because _ like to beat the dogs.", "choices": ["Jessica", "Jennifer"], "gold_index": 0}
+{"id": "1193edc1dfffbb6b", "question": "Sarah had to call in an expert unlike Erin because _ had vast knowledge on the subject.", "choices": ["Sarah", "Erin"], "gold_index": 1}
+{"id": "8e1d385ad373c1cf", "question": "The life of Christine was pretty basic until they met Maria , _ is a  is lover of excitement .", "choices": ["Christine", "Maria"], "gold_index": 1}
+{"id": "c1881501e235418c", "question": "The box slid down James hand when he was wearing a glove, hence he removed it and lift it again. The _ is slippery.", "choices": ["glove", "hand"], "gold_index": 0}
+{"id": "98d204a030c5b4d7", "question": "It is likely that Donald but not Jason would get the job promotion because _ never stayed late and never did extra work.", "choices": ["Donald", "Jason"], "gold_index": 1}
+{"id": "c7214fec68e2b6b5", "question": "Elena was asked by Jessica to put patches in the holes in her pants; _ used some she already had at home.", "choices": ["Elena", "Jessica"], "gold_index": 0}
+{"id": "d2be3f3a2d3a35ef", "question": "The cat Natalie owned would snuggle up on Jessica's lap because _ was nice to it all the time.", "choices": ["Natalie", "Jessica"], "gold_index": 1}
+{"id": "38852d692f447926", "question": "The bartender cut Carrie off but continued to serve Emily because _ was too drunk.", "choices": ["Carrie", "Emily"], "gold_index": 0}
+{"id": "d54c981775e1d694", "question": "Christopher was getting ready to wash Joel's hair,so _  got out shampoo by the sink and sat in the chair.", "choices": ["Christopher", "Joel"], "gold_index": 1}
+{"id": "0200dda2c8a2eb38", "question": "At the beach, Emily collected some seashells for her mother Maria. _ polished the seashells before giving them away.", "choices": ["Emily", "Maria"], "gold_index": 0}
+{"id": "fe9a51bd5b5cb4e3", "question": "His hands were a lot rougher than his thighs, because he used the _ for nothing.", "choices": ["hands", "thighs"], "gold_index": 1}
+{"id": "e5a415bb20cdeece", "question": "Brett asked Joel for advice and guidance about waxing his mustache, and afterwards _ felt burdened.", "choices": ["Brett", "Joel"], "gold_index": 1}
+{"id": "14db7576d2a6299a", "question": "Craig had a faster running phone than Logan because _ had more apps running on theirs.", "choices": ["Craig", "Logan"], "gold_index": 1}
+{"id": "8616344eab37aebd", "question": "When Leslie told Aaron he only wanted to eat food that was healthy, he was laughed at. The teacher comforted _ immediately.", "choices": ["Leslie", "Aaron"], "gold_index": 0}
+{"id": "f6d6c4dbb8e6b5bd", "question": "Felicia was given a leather belt from Betty to clean it, because _ doesn't know how to clean it.", "choices": ["Felicia", "Betty"], "gold_index": 1}
+{"id": "eca17412566828a0", "question": "Bob had a love and hate relationship with gambling and the _ grew as he won more money.", "choices": ["love", "hate"], "gold_index": 0}
+{"id": "56650ad9e7303737", "question": "Christine told Samantha at court their reasons for their expired license, since _ had the responsibility to judge.", "choices": ["Christine", "Samantha"], "gold_index": 1}
+{"id": "c81497b5b5e151fd", "question": "Kyle makes a lot more money than Nelson can make at his job, as _ is a cashier.", "choices": ["Kyle", "Nelson"], "gold_index": 1}
+{"id": "b3f73e802c3bc7f8", "question": "The boards were used to build the houses instead of the bricks as the _ were sparse.", "choices": ["boards", "bricks"], "gold_index": 1}
+{"id": "9ce284f94e78fbb3", "question": "The snow came down so much that Michael had to go plow Kevins driveway because _ agreed to take care of his neighbors.", "choices": ["Michael", "Kevin"], "gold_index": 0}
+{"id": "a61c64186fe00b19", "question": "Logan could eat gluten while Adam could not, and _ always had a smaller variety of foods to choose from.", "choices": ["Logan", "Adam"], "gold_index": 1}
+{"id": "a9e077c319bdf7f7", "question": "So _ ignored drinking milk from the bottle because Rachel was thirsty and Erin already drank some water.", "choices": ["Rachel", "Erin"], "gold_index": 1}
+{"id": "3cb7975410fce80c", "question": "The assertive commander told the privates to change their boots but not their shirts because the _ were disgusting.", "choices": ["boots", "shirts"], "gold_index": 0}
+{"id": "769592a3aae7b8df", "question": "Samantha strictly followed their diet while Sarah ate what they felt like, and _ ate chicken and broccoli all week.", "choices": ["Samantha", "Sarah"], "gold_index": 0}
+{"id": "00a210717886b064", "question": "The hotline was staffed by Christine when Tanya called in because _ was a volunteer.", "choices": ["Christine", "Tanya"], "gold_index": 0}
+{"id": "a5e7e588f4dc98df", "question": "The photo came out of the Polaroid camera and fell onto the tray, so now the _ is lighter.", "choices": ["camera", "tray"], "gold_index": 0}
+{"id": "d8b2981430960616", "question": "Patricia decided to buy Felicia dinner because they had been through a lot and _ just lost some money.", "choices": ["Patricia", "Felicia"], "gold_index": 1}
+{"id": "f6879350b490eb3c", "question": "Carrie had an easier time crawling through the narrow tunnel than Patricia because _ was larger.", "choices": ["Carrie", "Patricia"], "gold_index": 1}
+{"id": "4ab7566bb173a063", "question": "Patricia had to pay less tax than Cynthia because _ made less money in the year.", "choices": ["Patricia", "Cynthia"], "gold_index": 0}
+{"id": "b3cd7448d5e9e107", "question": "Eric often thought of his annoying habits, like hitting his pen on his desk, and asked Ryan if it bothered him; _ said he was sorry he had done it.", "choices": ["Eric", "Ryan"], "gold_index": 0}
+{"id": "9bd8fa7ed0688f42", "question": "At the store, John signed a warranty contract for the tablet, but did not purchase insurance for the phone, because the _ was unlikely to be damaged.", "choices": ["tablet", "phone"], "gold_index": 1}
+{"id": "ebf9ff4e7d1d3dbc", "question": "John had to bow to walk through the door but have to crawl to enter the tent. The _ is taller.", "choices": ["door", "tent"], "gold_index": 0}
+{"id": "c0503e55f269a24e", "question": "Gem had a husky breed named Ben. Ben liked both bones and toys. However, he liked the _ the best because it was inedible.", "choices": ["bones", "toys"], "gold_index": 1}
+{"id": "073d46d176cb4f6e", "question": "My teeth hurt more after eating the cake than the pie because the _ was sweeter tasting.", "choices": ["pie", "cake"], "gold_index": 1}
+{"id": "c23bb466b45352a8", "question": "April gets stressed when she goes waterskiing more than swimming. The _ is filled with relaxation for her.", "choices": ["waterskiing", "swimming"], "gold_index": 1}
+{"id": "7eedb2428bbb0ef5", "question": "Elena waited patiently for Angela, as _ arrived early to meet at their prearranged spot.", "choices": ["Elena", "Angela"], "gold_index": 0}
+{"id": "167b8944208bba1b", "question": "The drink was rich in caffeine and low in sugar because the _ was suffice in keeping the drinker awake.", "choices": ["caffeine", "sugar"], "gold_index": 0}
+{"id": "1849df20a521eed5", "question": "Benjamin had less piercings than Jeffrey did so it was harder for _ to get a job.", "choices": ["Benjamin", "Jeffrey"], "gold_index": 1}
+{"id": "4350624c6206a87e", "question": "Tanya looked for an escape route while Elena did not because _ liked to live in the moment.", "choices": ["Tanya", "Elena"], "gold_index": 1}
+{"id": "10213751de5fa4c8", "question": "At night, Jeffrey always stays up later than Hunter to watch TV because _ wakes up late.", "choices": ["Jeffrey", "Hunter"], "gold_index": 0}
+{"id": "5d7e7b800e22f7c7", "question": "If you are trying to get rid of blood spots from clothes use cold water instead of hot water the _ releases the stain.", "choices": ["cold water", "hot water"], "gold_index": 0}
+{"id": "58ac06352ba97a42", "question": "They disagreed over what dog to adopt as Mary wanted a yorkie while Maria wanted a labrador. _ loved small dogs.", "choices": ["Mary", "Maria"], "gold_index": 0}
+{"id": "2947ad92ceb28e8b", "question": "The highlands were a lot colder than the beaches because the _ were lower down in elevation.", "choices": ["highlands", "beaches"], "gold_index": 1}
+{"id": "54d6f6c89a3dbfa4", "question": "The doctor treated Natalie, but refused to see Tanya, because _ has an incredible insurance plan.", "choices": ["Natalie", "Tanya"], "gold_index": 0}
+{"id": "648aee1f1e9b1628", "question": "The dress could use either velcro or a zipper to close, the _ would last longer.", "choices": ["velcro", "zipper"], "gold_index": 1}
+{"id": "28e4b87409cc762a", "question": "The room at the hotel cost more to stay in than the room at the inn because the _ was nastier.", "choices": ["hotel", "inn"], "gold_index": 1}
+{"id": "e053cd0112ebc696", "question": "William was a huge animal rights activist but Randy couldn't care less so _ hated leather.", "choices": ["William", "Randy"], "gold_index": 0}
+{"id": "945f962688855edf", "question": "The students were at their desks taking tests with pencils, they used the _ to hold the papers.", "choices": ["desks", "pencils"], "gold_index": 0}
+{"id": "92a50b8d240f29f0", "question": "The game of chess was easy to play for Angela but not Rebecca because _ had a analytical mind.", "choices": ["Angela", "Rebecca"], "gold_index": 0}
+{"id": "a290cdec649b2440", "question": "Victoria was eager to make the big sale to Sarah , as _ needed the money that day.", "choices": ["Victoria", "Sarah"], "gold_index": 0}
+{"id": "c0cd2966db442772", "question": "Rachel's date was shorter than she, so she wore her shoes rather than her boots, because the _ had low heels.", "choices": ["shoes", "boots"], "gold_index": 0}
+{"id": "67a29cfbcbfe8d53", "question": "The man looked at the sundial since a watch or clocktower was not at his disposal, having lost the _ .", "choices": ["watch", "clocktower"], "gold_index": 0}
+{"id": "cc3c248154e32435", "question": "Carrie kept written records of their expenses but not Laura because _ had a sharp memory.", "choices": ["Carrie", "Laura"], "gold_index": 1}
+{"id": "ab63ced26a0d9161", "question": "Mark wanted to lose some weight by starting a diet and workout routine.  He focused mainly on the _ because he was lazy.", "choices": ["workout routine", "diet"], "gold_index": 1}
+{"id": "3db7b8c3d8d308ee", "question": "Erin was eating more than Betty was eating for dinner because _ had skipped lunch.", "choices": ["Erin", "Betty"], "gold_index": 0}
+{"id": "b88130c7db97615b", "question": "Craig was a very selfish individual but Kenneth was very generous. _ had a lot of good friends.", "choices": ["Craig", "Kenneth"], "gold_index": 1}
+{"id": "68b15dd6c73c692f", "question": "Kyle wanted to write to Aaron every day, because _ enjoyed receiving letters from friends.", "choices": ["Kyle", "Aaron"], "gold_index": 1}
+{"id": "897112455dbd5d92", "question": "Elena liked lizards more than Rachel did, so _ was appalled to receive a pet gecko for her birthday.", "choices": ["Elena", "Rachel"], "gold_index": 1}
+{"id": "500100f40e43ff1e", "question": "Kayla was very civil when dealing with Emily so that _ would be accepted by her.", "choices": ["Kayla", "Emily"], "gold_index": 0}
+{"id": "d9352557f07aea87", "question": "Victoria decided to adopt a Yorkie, but Elena wouldn't even consider it, because _ loved small dogs.", "choices": ["Victoria", "Elena"], "gold_index": 0}
+{"id": "78b8b63e992fb82a", "question": "It seemed more likely that Brett would wear a fedora rather than Justin because _ was known to dress stylishly.", "choices": ["Brett", "Justin"], "gold_index": 0}
+{"id": "d7af3b60b313bf9a", "question": "Tanya loved pepperoni on their pizza and Katrina loved sausage, so when it had just pepperoni _ was not very happy.", "choices": ["Tanya", "Katrina"], "gold_index": 1}
+{"id": "2c22a99c54d192d4", "question": "Brian taught Michael how to feed a rabbit greens because _ had rabbits as a kid.", "choices": ["Brian", "Michael"], "gold_index": 0}
+{"id": "809c51b7e1ad652c", "question": "Victoria was eager to make the big sale to Sarah , as _ had the money that day.", "choices": ["Victoria", "Sarah"], "gold_index": 1}
+{"id": "cc0029d479f4fde4", "question": "She used vinegar to wipe down the cabinets hourly and a wood cleaner monthly.  The _ was overused.", "choices": ["vinegar", "cleaner"], "gold_index": 0}
+{"id": "97fb117153ee75a1", "question": "Craig had never learned handwriting in school but Michael had learned beautiful script so, _ always typed all their correspondence.", "choices": ["Craig", "Michael"], "gold_index": 0}
+{"id": "d46e133403593fae", "question": "Maria mimicked everything that Christine did at work because _ was like a fan to her.", "choices": ["Maria", "Christine"], "gold_index": 0}
+{"id": "e1e33dd0648be072", "question": "Al got solar panels and a small generator installed at his house for electricity as the _ would be his main power supply.", "choices": ["panels", "generator"], "gold_index": 0}
+{"id": "055301bb1cd91323", "question": "The maid took away a cozy blanket from Lawrence but not Nick because _ was very cold.", "choices": ["Lawrence", "Nick"], "gold_index": 1}
+{"id": "9f59109528ac0f46", "question": "The refrigerator was acting up again, so we called a technician to repair the part.  The _ was fine when he showed up.", "choices": ["refrigerator", "part"], "gold_index": 0}
+{"id": "243181d9276a0cf5", "question": "Justin went with Donald to the game because _ wanted to be the designated driver.", "choices": ["Justin", "Donald"], "gold_index": 0}
+{"id": "9dddab640a6ace68", "question": "Nick did not like sauces made from tomato, only creamy sauces. Ryan knew this so he only made white sauce when _ came over.", "choices": ["Nick", "Ryan"], "gold_index": 0}
+{"id": "228aa1e6e8e346ea", "question": "The TV that Samantha bought costs more than that of Carrie, because _ was rich.", "choices": ["Samantha", "Carrie"], "gold_index": 0}
+{"id": "7e7f0d1dee4b7b75", "question": "Derrick greeted Craig at the event but he did not respond to him because _ is arrogant.", "choices": ["Derrick", "Craig"], "gold_index": 1}
+{"id": "fab5310887f99702", "question": "Ryan had to use a calculator on the test but Michael didn't because _ was very bad at math.", "choices": ["Ryan", "Michael"], "gold_index": 0}
+{"id": "6fe59b5c9cb7cc47", "question": "Christine had really good grammar but Cynthia didn't have good grammar because _ studied math in college.", "choices": ["Christine", "Cynthia"], "gold_index": 1}
+{"id": "5d67ff94979d9a04", "question": "Timmy bought a transporter for his cat so he could take him on the plane but the _ was too small.", "choices": ["transporter", "plane"], "gold_index": 0}
+{"id": "0654724773ea4a3f", "question": "The patient took calcium to fix his broken bone but the _ was too strong.", "choices": ["bone", "calcium"], "gold_index": 1}
+{"id": "43ac2cd7eea87e7b", "question": "Logan reads a lot, while Donald almost never picks up a book because _ is a student.", "choices": ["Logan", "Donald"], "gold_index": 0}
+{"id": "e546a0dd390be120", "question": "Angela thought that Elena talked too slowly, and _ had a hard time being understood when they spoke.", "choices": ["Angela", "Elena"], "gold_index": 1}
+{"id": "b7ce48f4e4ac6e89", "question": "The president had their speech at the auditorium rather than the park because the _ was smaller.", "choices": ["auditorium", "park"], "gold_index": 1}
+{"id": "97b4a72f7049820b", "question": "Neil cut trees down into lumber every year unlike Logan because _ lives in the city.", "choices": ["Neil", "Logan"], "gold_index": 1}
+{"id": "18bc158a5f459821", "question": "At Jan's home, she dusted the dresser more frequently than the fan, because the _ was more difficult to reach.", "choices": ["fan", "dresser"], "gold_index": 0}
+{"id": "2a27ee3c9b51c46b", "question": "Jill was on a budget so she only bought a new dress for the ceremony and wore an old hat. She figured the _ would be more noticeable.", "choices": ["dress", "hat"], "gold_index": 0}
+{"id": "5aa5c5b62a2a8a49", "question": "the region was too crowded for our comfortable stay for all the people sent there , the _ were too small..", "choices": ["region", "people"], "gold_index": 0}
+{"id": "088601bc6a9af423", "question": "John could not buy anything from the store than night and he went to the kiosk to buy some things because the _ is opened.", "choices": ["store", "kiosk"], "gold_index": 1}
+{"id": "b38a37763daa0a95", "question": "The musician liked playing at the auditorium more than at the park because he sounded louder at the _ .", "choices": ["auditorium", "park"], "gold_index": 0}
+{"id": "2ba408ddbc91cc64", "question": "Donald was chosen to be a model while Dennis was passed over, because _ was exceptionally tall.", "choices": ["Donald", "Dennis"], "gold_index": 0}
+{"id": "e83b05c2b9751d20", "question": "Neil used a chainsaw to cut down the tree instead of a regular saw like William, because _ believed in modern equipment.", "choices": ["Neil", "William"], "gold_index": 0}
+{"id": "804d44c8b8efd5c6", "question": "Erin read a book to Monica because _ was old enough to be able to read.", "choices": ["Erin", "Monica"], "gold_index": 0}
+{"id": "8840a278015daa4e", "question": "Patricia bought a plant for Natalie to put in her garden, so _ sent a thank you card.", "choices": ["Patricia", "Natalie"], "gold_index": 1}
+{"id": "828f78fc6ce70de9", "question": "Derrick really liked working in Human Resources and William wanted to work at the same company, and _ subsequently offered a position.", "choices": ["Derrick", "William"], "gold_index": 0}
+{"id": "6f606e0cfe8cae00", "question": "Because Megan wanted to be a welder and Patricia wanted to be a engineer, _ went to trade school instead of university.", "choices": ["Megan", "Patricia"], "gold_index": 0}
+{"id": "17f56f0eccd1df7f", "question": "The woman moved the urn in front of the vase on the shelf because the _ was attractive.", "choices": ["urn", "vase"], "gold_index": 0}
+{"id": "ae9227db810d9661", "question": "I was told my eyes are failing so I need to get glasses or contacts. I don't think I'll get the contacts since the _ seem less comfortable.", "choices": ["glasses", "contacts"], "gold_index": 1}
+{"id": "5dcde0a96d262cfa", "question": "When it came to taking care of elderly people, Adam was suited for the job more than Brian because _ lived with younger people longer.", "choices": ["Adam", "Brian"], "gold_index": 1}
+{"id": "9d313a68b2f0fe35", "question": "Felicia was given a leather belt from Betty to clean it, because _ knows how to do it.", "choices": ["Felicia", "Betty"], "gold_index": 0}
+{"id": "31e088cd72a2a4f3", "question": "I picked up some leaves to put in the books and dry, but they didn't fit because the _ were too massive.", "choices": ["leaves", "books"], "gold_index": 0}
+{"id": "bb663e14bd5f8c8e", "question": "Cynthia had to pee after one large coffee but Betty did not as _ had a very small bladder.", "choices": ["Cynthia", "Betty"], "gold_index": 0}
+{"id": "b40a98d45b329755", "question": "The computer of Victoria ran slower than that of Carrie because _ downloaded less files.", "choices": ["Victoria", "Carrie"], "gold_index": 1}
+{"id": "44d7457ea44745d7", "question": "Donald's understanding of math isn't as good as Joseph's, so _ is more likely a professor.", "choices": ["Donald", "Joseph"], "gold_index": 1}
+{"id": "7885f8a8a64b5418", "question": "Sarah was a much better surgeon than Maria so _ always got the harder cases.", "choices": ["Sarah", "Maria"], "gold_index": 0}
+{"id": "e0c455fbe693dacb", "question": "Tanya recently finished filling out a job application but not Megan because _ is currently working.", "choices": ["Tanya", "Megan"], "gold_index": 1}
+{"id": "43ff8718176a3873", "question": "In the accident the vehicle of Nelson received more damage than that of Justin, since _ vehicle was bigger.", "choices": ["Nelson", "Justin"], "gold_index": 1}
+{"id": "eaad5094d7e50dd8", "question": "Benjamin thought Android was the superior phone system but Ian thought IOS was better. _ bought a new Note 9 from Verizon.", "choices": ["Benjamin", "Ian"], "gold_index": 0}
+{"id": "3f58c4de7a559e49", "question": "Happiness was most important to Nick but money was most important to William. _ valued a good life.", "choices": ["Nick", "William"], "gold_index": 0}
+{"id": "480299ca85541cad", "question": "The man finally decided to become a guardian for the child at the orphanage because the _ was loving.", "choices": ["orphanage", "guardian"], "gold_index": 1}
+{"id": "fdcf9ea25882b968", "question": "Felicia wanted to be pampered by Emily, so _ went to the jewelry store and bought an expensive ring.", "choices": ["Felicia", "Emily"], "gold_index": 1}
+{"id": "af41105453631daa", "question": "Mark preferred his drinks in paper cups over styrofoam cups because the _ are strong.", "choices": ["styrofoam cups", "paper cups"], "gold_index": 1}
+{"id": "198be4724a6ed13e", "question": "Rebecca slept in the hammock in the backyard while Tanya gardened because _ was tired.", "choices": ["Rebecca", "Tanya"], "gold_index": 0}
+{"id": "8b7b435d5f55100d", "question": "The home that my parents had when I was in school was a lot nicer than my house now because the _ was sophisticated.", "choices": ["home", "house"], "gold_index": 0}
+{"id": "3c8fbeec3940fb36", "question": "The girl used the comb to try and brush her hair but the _ was too soft.", "choices": ["hair", "comb"], "gold_index": 1}
+{"id": "800b1cdac40ba1ec", "question": "She chose the black car over the green car, because the _ has more brighter color.", "choices": ["black car", "green car"], "gold_index": 1}
+{"id": "f38621d09f2aa94f", "question": "The skateboard got broken under the weight of the fat boy and his luggage. The _ is light.", "choices": ["skateboard", "weight"], "gold_index": 0}
+{"id": "cf601b3a2c5a365d", "question": "Laura never feared anything like Erin because _ didn't have a very strong and very powerful mind.", "choices": ["Laura", "Erin"], "gold_index": 1}
+{"id": "f87dd439b09c9d42", "question": "Megan sentenced Jennifer to probation for stealing from the grocery store, _ obeys the laws that are written.", "choices": ["Megan", "Jennifer"], "gold_index": 0}
+{"id": "d0e6b3c60739a901", "question": "Elena enjoyed yoga classes while Amy preferred other forms of exercise; this was because _ was inflexible.", "choices": ["Elena", "Amy"], "gold_index": 1}
+{"id": "c5e4b43e43a8807c", "question": "The lady was blushing when she walked passed Amy but not Carrie because _ was intrigued by her.", "choices": ["Amy", "Carrie"], "gold_index": 0}
+{"id": "37ff23dc0ff8aad3", "question": "The stain in the bucket could not be cleaned with the brush because the _ is soft.", "choices": ["stain", "brush"], "gold_index": 1}
+{"id": "119d617557c8fe96", "question": "I started a program for youth that worked better than the old system, because the _ is new.", "choices": ["program", "system"], "gold_index": 0}
+{"id": "640a7e749ec82454", "question": "Jan planted her herbs in small growing bags, but she worried that the _ would be too shallow for them to put down roots.", "choices": ["herbs", "bags"], "gold_index": 1}
+{"id": "fe309c8beda6927f", "question": "Adam decided to shave Denniss beard before the reuinion, but _ thought it was too short.", "choices": ["Adam", "Dennis"], "gold_index": 1}
+{"id": "3f2afa35617ce3c4", "question": "Maria planned to spring clean this weekend and told Katrina they should help too. _ expected her help.", "choices": ["Maria", "Katrina"], "gold_index": 0}
+{"id": "552319751e522c11", "question": "The health of Joel was stronger than that of William due to _ being a cigar smoker.", "choices": ["Joel", "William"], "gold_index": 1}
+{"id": "228decb0a0de0339", "question": "Jeffrey went to the doctor to treat their ailments but not Robert so _ became sicker.", "choices": ["Jeffrey", "Robert"], "gold_index": 1}
+{"id": "8ce00a84499285d2", "question": "It took a minute longer to melt the chocolate in the microwave than the caramel, because the _ was very soft.", "choices": ["chocolate", "caramel"], "gold_index": 1}
+{"id": "408ab0b958a1e83b", "question": "It seemed more likely that Brett would wear a fedora rather than Justin because _ did not often dress stylishly.", "choices": ["Brett", "Justin"], "gold_index": 1}
+{"id": "c1cc544d162d1afa", "question": "The leg of the pig body stuck out of the grave where it was buried because the _ is large.", "choices": ["body", "grave"], "gold_index": 0}
+{"id": "897fb24de38bd4c2", "question": "She preferred a globe of the world made of PVC instead of plastic, because the _ made it look expensive.", "choices": ["plastic", "PVC"], "gold_index": 1}
+{"id": "6ebd783c53ccd894", "question": "Katrina demanded that Jessica get off of their property, because _ wasn't in the mood for visiting.", "choices": ["Katrina", "Jessica"], "gold_index": 0}
+{"id": "e40cb2f0435fe8cb", "question": "The gerbil came over to Laura but not Monica because _ was holding a carrot stick.", "choices": ["Laura", "Monica"], "gold_index": 0}
+{"id": "78fb49e6f0c5e1b2", "question": "Brian asked  Nick to feed their rabbit,because  _ was planning on going on vacation to Disney for a week.", "choices": ["Brian", "Nick"], "gold_index": 0}
+{"id": "037206a0d4a6b472", "question": "Tanya was an adult while Samantha was young and still had room to grow , so _ gave her her old clothes.", "choices": ["Tanya", "Samantha"], "gold_index": 0}
+{"id": "ba83f90fa5403d99", "question": "At dinner time, Tanya ate Erin's serving of peas even though _ really likes green vegetables.", "choices": ["Tanya", "Erin"], "gold_index": 1}
+{"id": "da093bd197085b69", "question": "The sink in the bathroom looked good but the toilet was leaking so James kept the _ .", "choices": ["toilet", "sink"], "gold_index": 1}
+{"id": "886ce2ba77a952b1", "question": "The apartment Brett rented was owned by Jason, so _ sent the rent for the apartment each month.", "choices": ["Brett", "Jason"], "gold_index": 0}
+{"id": "9e6ca77ec6c2e992", "question": "Angela was a homebody while Amy loved to travel the world whenever they could. _ took a staycation at home over the summer.", "choices": ["Angela", "Amy"], "gold_index": 0}
+{"id": "109743f077ab10f6", "question": "Rachel but not Christine was tracked down by police because _ did not make it to the hideout.", "choices": ["Rachel", "Christine"], "gold_index": 0}
+{"id": "b9c91c207286e6ab", "question": "Patricia was called back for a second interview but not Victoria, as _ had failed the background check.", "choices": ["Patricia", "Victoria"], "gold_index": 1}
+{"id": "46070ca3f3d8581e", "question": "Bill had complicated feelings about getting a car after his motorcycle died because the _ possessed a lot of sentimental value.", "choices": ["car", "motorcycle"], "gold_index": 1}
+{"id": "1b6d8eb7361a8299", "question": "At the store, John signed a warranty contract for the tablet, but did not purchase insurance for the phone, because the _ was likely to be damaged.", "choices": ["tablet", "phone"], "gold_index": 0}
+{"id": "8aa4d43200c5ca3c", "question": "Angela loved to wear sun glasses but Jessica didn't. _ bought a fancy new pair of shoes.", "choices": ["Angela", "Jessica"], "gold_index": 1}
+{"id": "1caad484ab642524", "question": "The dog was more suspicious of the locker than of the package because the drugs were in the _ .", "choices": ["locker", "package"], "gold_index": 0}
+{"id": "32355a806b8d33e4", "question": "Jennifer dragged Felicia along to a self help workshop about how to succeed, because _ wanted some company.", "choices": ["Jennifer", "Felicia"], "gold_index": 0}
+{"id": "4c832bf007475d39", "question": "Jeffrey brushed their teeth quite regularly but Brian did not. _ had to go to a dentist often.", "choices": ["Jeffrey", "Brian"], "gold_index": 1}
+{"id": "dacbe7da70d9591a", "question": "Erin loved people and wanted to help them while Katrina loved to help animals. _ volunteered at the local shelter.", "choices": ["Erin", "Katrina"], "gold_index": 1}
+{"id": "bd7326d164892fc9", "question": "Joel complained to Ian about the condition of the house. _ preferred a messy space.", "choices": ["Joel", "Ian"], "gold_index": 1}
+{"id": "3c34516e1cc07fd6", "question": "The hair stylist gave Laura hair extensions and not Katrina because _ had very short hair.", "choices": ["Laura", "Katrina"], "gold_index": 0}
+{"id": "a40a5dcc7ce9af85", "question": "Jason went zooming down Brett's street way too fast on his motorcycle, causing _ great excitement.", "choices": ["Jason", "Brett"], "gold_index": 0}
+{"id": "9fe3daa62f877111", "question": "If our relationship just started, should I get her a card or gift for Christmas? She might think I'm cheap if I give the _ .", "choices": ["card", "gift"], "gold_index": 0}
+{"id": "fdffda6359d9b054", "question": "Nick smelled much worse than Kenneth after the baseball game although _ was wearing deodorant.", "choices": ["Nick", "Kenneth"], "gold_index": 0}
+{"id": "a4475c45ddd6804f", "question": "Katrina turned out to be much more spoiled than Felicia because _ did not have wealthy or generous parents.", "choices": ["Katrina", "Felicia"], "gold_index": 1}
+{"id": "366df3a72bd6dedd", "question": "Joel went to Michael 's house and consumed a lot of alcohol, so _ had to ride back home as a passenger.", "choices": ["Joel", "Michael"], "gold_index": 0}
+{"id": "221e528b82a65476", "question": "Elena brought the horse to the stables owned by Cynthia, so _ could buy the animal.", "choices": ["Elena", "Cynthia"], "gold_index": 1}
+{"id": "0d3f85fc00e0c413", "question": "The installation process was simpler for the cable over the internet because the man had never installed the _ previously.", "choices": ["cable", "internet"], "gold_index": 1}
+{"id": "b9e08845d8cf3627", "question": "Maria told Monica they looked too sick to go to work and asked if they had a fever. _ went to the Doctor.", "choices": ["Maria", "Monica"], "gold_index": 1}
+{"id": "0f37db4c8d4d00bb", "question": "Although Amy worked harder and longer than Rebecca, _ was a more wealthy person overall.", "choices": ["Amy", "Rebecca"], "gold_index": 1}
+{"id": "d967566e7ec976f3", "question": "James always feel weak whenever he walked the length of his street so he decided walking just the length of the lawn. The _ is long.", "choices": ["street", "lawn"], "gold_index": 0}
+{"id": "f689feb2ac44959c", "question": "Paint was applied to the chairs but not the tables, since the _ were old.", "choices": ["chairs", "tables"], "gold_index": 0}
+{"id": "18e324ac5d8f80e2", "question": "The architect tried to build the room inside the house but the _ was too large.", "choices": ["house", "room"], "gold_index": 1}
+{"id": "89909085a0899f60", "question": "Monica gives Jessica a book about posture, because _ has been trying to get better at ballet dancing.", "choices": ["Monica", "Jessica"], "gold_index": 1}
+{"id": "02a97b7dcdeda6e1", "question": "The wooden doors at my friends work are worse than the wooden desks at my work, because the _ material is stronger.", "choices": ["doors", "desks"], "gold_index": 1}
+{"id": "10b9fee0106bbcd5", "question": "During the rescue mission, Maria pulled Rebecca away from the minefield since _ was a civilian.", "choices": ["Maria", "Rebecca"], "gold_index": 1}
+{"id": "1837b05d23020a68", "question": "Erin ordered a martini when Tanya only ordered a tonic water with lemon, because _ was pregnant.", "choices": ["Erin", "Tanya"], "gold_index": 1}
+{"id": "46175bab80728a81", "question": "John could not hear his alarm clock when he was sleeping with a headphone on his head because the _ is closer.", "choices": ["headphone", "clock"], "gold_index": 0}
+{"id": "6c18b5dbc9796366", "question": "William liked to be outside more than Kyle so _ spent time arguing for getting a pool.", "choices": ["William", "Kyle"], "gold_index": 0}
+{"id": "135ad702e1265642", "question": "Paolo tries to remember what he read in the textbook, but all he can think of is the email from his friend because he read the _ ages ago.", "choices": ["email", "textbook"], "gold_index": 1}
+{"id": "bbb8c6b4e2e55c36", "question": "The commodities trader decided to buy wool and sell cotton because the _ was priced low.", "choices": ["wool", "cotton"], "gold_index": 0}
+{"id": "c84ca6c3e7bd6c61", "question": "Mary didn't know what the currency of Mexico was but Lindsey knew _ had never been to Mexico before.", "choices": ["Mary", "Lindsey"], "gold_index": 0}
+{"id": "81187df8f9b74e7f", "question": "As a marine, Emily looks down on civilians like Maria, so _ is a bit saddened.", "choices": ["Emily", "Maria"], "gold_index": 1}
+{"id": "0ac3e6fac4f7e54d", "question": "Amy thought she was the mirror image of Natalie , but _ could not be convinced to see the similarity.", "choices": ["Amy", "Natalie"], "gold_index": 1}
+{"id": "701b9fb1c855e8b4", "question": "Rachel but not Christine was tracked down by police because _ made it to the hideout.", "choices": ["Rachel", "Christine"], "gold_index": 1}
+{"id": "72986ed2e3bf142e", "question": "So _ avoids eating carrots for their eye health because Emily needs good eyesight while Monica doesn't.", "choices": ["Emily", "Monica"], "gold_index": 1}
+{"id": "4a941c372bd7e220", "question": "The dog loved Kevin but hated Derrick, so _ started bringing the dog treats to change its mind.", "choices": ["Kevin", "Derrick"], "gold_index": 1}
+{"id": "81f1a220fda327ac", "question": "Craig gifted Eric a new picnic table, because _ borrowed some money a while ago.", "choices": ["Craig", "Eric"], "gold_index": 0}
+{"id": "1a06b4aa07115943", "question": "More people attended the funeral of Joel than of Derrick because _ was a mean person.", "choices": ["Joel", "Derrick"], "gold_index": 1}
+{"id": "eb79e8e6f212b158", "question": "The puncture healed quicker than the cut because the _ was a more superficial wound.", "choices": ["cut", "puncture"], "gold_index": 1}
+{"id": "e7585642779e7c85", "question": "Angela was a homebody while Amy loved to travel the world whenever they could. _ took a vacation to the beach over the summer.", "choices": ["Angela", "Amy"], "gold_index": 1}
+{"id": "8d371a86e92b4a9a", "question": "Kenneth had worse skin than Craig so _ had to use more of the moisturizer.", "choices": ["Kenneth", "Craig"], "gold_index": 0}
+{"id": "b2939747b8191ddf", "question": "The waist of Joel measured more inches than that of Kevin because _ ate much less.", "choices": ["Joel", "Kevin"], "gold_index": 1}
+{"id": "5dc498c4191a2e86", "question": "Randy only ever added a little bit of hot sauce to his food, especially compared to Adam, as _ was much more sensitive to spice.", "choices": ["Randy", "Adam"], "gold_index": 0}
+{"id": "16e805992697981c", "question": "Justin bought a new RV but Lawrence liked his old one, so _ decided to buy it.", "choices": ["Justin", "Lawrence"], "gold_index": 1}
+{"id": "6397e3722b9a9355", "question": "Jeffrey asked Hunter when was the date set for the wedding because _ was getting married.", "choices": ["Jeffrey", "Hunter"], "gold_index": 1}
+{"id": "97ce668869c82fc2", "question": "Hunter bought a vehicle to commute in but not Dennis because _ had a driving distance to work.", "choices": ["Hunter", "Dennis"], "gold_index": 0}
+{"id": "75e406be9016caf1", "question": "He had enough time between classes to go to a cafe or to the library. He went to the _ because his paper could wait.", "choices": ["cafe", "library"], "gold_index": 0}
+{"id": "760d47388e61e3d5", "question": "Laura was thrilled to get their lip pierced but Rachel was pretty scared. _ had theirs done and cried.", "choices": ["Laura", "Rachel"], "gold_index": 1}
+{"id": "564f84affc7a0779", "question": "Buying a swimming pool was great for Adam but not for Christopher because _ had a large back yard.", "choices": ["Adam", "Christopher"], "gold_index": 0}
+{"id": "6c9a470cc3c3799e", "question": "The toddler kicked the soft furniture and hard toy, but only the _ caused pain.", "choices": ["furniture", "toy"], "gold_index": 1}
+{"id": "262bd221bb8e420b", "question": "Hugh scrubbed the mold in his apartment with a cleaner but had to call a pro because the _ was too weak.", "choices": ["mold", "cleaner"], "gold_index": 1}
+{"id": "a389b79ccb2a6758", "question": "Samantha believed in life after death while Christine did not, so _ never tried to talk to spirits.", "choices": ["Samantha", "Christine"], "gold_index": 1}
+{"id": "01b9f4d9e5895084", "question": "Samantha had to use the potty while Felicia used the restroom because _ is a grownup.", "choices": ["Samantha", "Felicia"], "gold_index": 1}
+{"id": "630c1fa0b93219e2", "question": "The actors practiced the scenes in the parking lot more than the scenes in the morgue, because the _ scenes are full of silence.", "choices": ["parking lot", "morgue"], "gold_index": 1}
+{"id": "1b2ac06fe656bc59", "question": "Jennifer was more of a morning person than Natalie because _ always went to bed early and got a good night's rest.", "choices": ["Jennifer", "Natalie"], "gold_index": 0}
+{"id": "d29c34f9fe8f7fd0", "question": "Christopher taught Hunter to play go fish so that _ had someone to play with.", "choices": ["Christopher", "Hunter"], "gold_index": 0}
+{"id": "5d0dd1048791aaf2", "question": "James walked into a ditch while trying to catch the ball thrown at him. The _ is farther.", "choices": ["ditch", "ball"], "gold_index": 1}
+{"id": "5c203ed2f8d38dc1", "question": "Using a needle to sew together both the leather and silk was difficult.  The _ was hard get through.", "choices": ["leather", "silk"], "gold_index": 0}
+{"id": "d64da415ade5fab4", "question": "Laura used too much super glue on Erins hands, so _ needed to get to the doctor to separate their hands.", "choices": ["Laura", "Erin"], "gold_index": 1}
+{"id": "bab2f6ebec8bfc29", "question": "The fireman used several rags to polish the nozzles on the fire hose; when he was done the _ were dirty.", "choices": ["nozzles", "rags"], "gold_index": 1}
+{"id": "abda5e09baf8ca4d", "question": "In the hotel laundry room, Felicia burned Mary's shirt while ironing it, so the manager gave _ a refund.", "choices": ["Felicia", "Mary"], "gold_index": 1}
+{"id": "fc34428a3ebb847b", "question": "Only the bag got melted and not the wood when they were inside the flame. The _ is soft.", "choices": ["wood", "bag"], "gold_index": 1}
+{"id": "2823ac3bf2a6894a", "question": "Justin brought a a saw and hammer to prepare making a cupboard for Benjamin because _ is his employer.", "choices": ["Justin", "Benjamin"], "gold_index": 1}
+{"id": "ca8fc936c143133f", "question": "Lawrence liked watching foreign movies with subtitles unlike Jason because _ criticized the original language of the film.", "choices": ["Lawrence", "Jason"], "gold_index": 1}
+{"id": "5be7381908b438cf", "question": "The dog that Laura found was dirtier than Amy's dog, since _ dog lived in the street.", "choices": ["Laura", "Amy"], "gold_index": 0}
+{"id": "bdeacc107023a1d4", "question": "The barista loved to make all types of coffee including iced and hot. The _ coffee was popular in the cooler weathers.", "choices": ["iced", "hot"], "gold_index": 1}
+{"id": "ec11d5076efebffd", "question": "Smoke still rose from the house but had subsided at the barn.  The fire was doused at the _ .", "choices": ["house", "barn"], "gold_index": 1}
+{"id": "4e3d3da1795720a3", "question": "Judy bought new brushes to paint the etched glasses crack but it didn't fit. The _ was too narrow.", "choices": ["brush", "crack"], "gold_index": 1}
+{"id": "38962d0c23a0292b", "question": "The computer of Victoria ran faster than that of Carrie because _ downloaded less files.", "choices": ["Victoria", "Carrie"], "gold_index": 0}

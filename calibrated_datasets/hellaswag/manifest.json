@@ -1,0 +1,83 @@
+{
+  "dataset": "hellaswag",
+  "task": "hellaswag",
+  "route": "C",
+  "modality": "mcq",
+  "answer_type": null,
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Inputs/ATLAS/hellaswag",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/hellaswag.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "hellaswag",
+    "bridge_kind": "content_hash",
+    "rows": 10042,
+    "ordering": {
+      "source": "Open LLM Leaderboard v1 per-model detail repo",
+      "harness_config": "harness_hellaswag_10",
+      "repo": "open-llm-leaderboard-old/details_Corianas__Quokka_2.7b",
+      "revision": "05ea88af3c1503f9949e054ebb930a13d532f207",
+      "path": "2023-07-19T15:58:12.174583/details_harness|hellaswag|10_2023-07-19T15:58:12.174583.parquet",
+      "cross_checked": [
+        "open-llm-leaderboard-old/details_mistralai__Mistral-7B-v0.1",
+        "open-llm-leaderboard-old/details_microsoft__phi-2",
+        "open-llm-leaderboard-old/details_google__gemma-7b",
+        "open-llm-leaderboard-old/details_Qwen__Qwen1.5-7B",
+        "open-llm-leaderboard-old/details_tiiuae__falcon-7b"
+      ]
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "task": "hellaswag",
+      "split": "validation",
+      "data_source": "DataSource(path='allenai/hellaswag', subset=None, split='validation', source_type=<SourceType.HF: 'hf'>, data_files=None, revision=None)"
+    },
+    "matching": {
+      "recipe": "each leaderboard example rebuilt from the HuggingFace document as the v1 harness rendered it, then matched as a bijection over the split",
+      "details_columns": [
+        "example",
+        "choices"
+      ],
+      "positions_agreeing_with_split_order": 3
+    },
+    "generated_at": "2026-08-07T18:27:21.379068+00:00"
+  },
+  "upstream_bank_rows": 5600,
+  "bridge_rows": 10042,
+  "items": 5044,
+  "dropped": {
+    "non_positive_discrimination": 556,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "ungradable_instances": 0,
+  "positional_ids": false,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "bare_context",
+      "num_fewshot": 0,
+      "score_normalization": "unnormalized_sum_of_continuation_logprobs",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": "unrecorded",
+      "metric": "unrecorded",
+      "note": "The ATLAS release records nothing about how HellaSwag's calibration responses were prompted or scored. The bare-context prompt and unnormalized sum used here are the olmo-eval task's, which is a choice about self-consistency and not evidence about the bank."
+    }
+  },
+  "notes": "The ATLAS release reports 3,467 models for HellaSwag, which is the combined train and test population rather than the calibration set; see the WinoGrande note for why that distinction matters. Joins on the native 'ind' value. The 3PL fit's guessing parameter has a p95 of 0.834 on a four-choice benchmark where chance is 0.25, which is the third parameter absorbing misfit; a real 2PL refit would be the better bank if vendored. Yields 4,840 usable items: 556 rows are dropped for non-positive discrimination and a further 204 because this bridge is not injective -- it maps 10,042 indices onto 9,609 unique ids, so 102 ids are each claimed by two differently calibrated rows and all claimants must be dropped. Its bridge was generated locally by Inputs/ATLAS/scripts/build_atlas_idx_bridge.py, which assumes ATLAS index k is the k-th instance olmo-eval enumerates. That assumption is disproved on ARC, the only benchmark carrying a bridge the release shipped: the generated and shipped bridges agree on 2 of 1,172 positions, the release's order being Open LLM Leaderboard harness_arc_challenge_25 example order rather than HuggingFace split order. Empirically the join does not hold up either. The 1,984 items with committed per-question responses (Inputs/Open/LLM-Judge/mcq/hellaswag/, four Qwen2.5 checkpoints, keyed by the same native ind the bridge stores) give a p-value that ranks items with a Spearman-Brown reliability of 0.85, and its rank correlation against the bank's implied b = -d/a1 is -0.04 over the 1,057 rows that join -- against a scrambled null of 0.00 with a standard deviation of 0.03. Those same four checkpoints on ARC's verified join give -0.32, and twenty random four-model subsets of the ARC roster give -0.46 with every draw negative, so the null result here is not a power problem. Treat this bank's difficulties as unattributed until the bridge is rebuilt from leaderboard example order.",
+  "sha256": {
+    "params.json": "d4c359a5ed0bbd00f20180327153b5ab6ede32259c98b4d0b4568d62ff6e5a5f",
+    "items.jsonl": "5548c339f388a4efefcd6a130321b7a0eae7a0b45d0cf2f570c51474e6acb1cc"
+  },
+  "generated_at": "2026-08-07T18:31:45.860249+00:00"
+}

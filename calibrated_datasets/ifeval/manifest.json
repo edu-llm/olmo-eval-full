@@ -1,0 +1,115 @@
+{
+  "dataset": "ifeval",
+  "task": "ifeval",
+  "route": "B",
+  "modality": "generative",
+  "answer_type": "ifeval_strict",
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Experiments/openlm_atlas_3pl/ifeval/calibration",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/ifeval.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "ifeval",
+    "bridge_kind": "content_hash",
+    "rows": 535,
+    "ordering": {
+      "source": "Open LLM Leaderboard v2 per-model detail repo",
+      "harness_config": "leaderboard_*",
+      "repo": "open-llm-leaderboard/microsoft__Phi-3-mini-4k-instruct-details",
+      "revision": "427d64648094a1aea773aec93fe5e3b5ca069074",
+      "run": "2024-07-18T11-04-02.101450",
+      "paths": {
+        "ifeval": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_ifeval_2024-07-18T11-04-02.101450.jsonl"
+      },
+      "doc_id": "read from each record's explicit doc_id field, not from its position in the file: lm-eval writes samples in completion order, so row order and document order differ",
+      "cross_checked": [
+        {
+          "repo": "open-llm-leaderboard/Qwen__Qwen2.5-7B-Instruct-details",
+          "run": "2024-09-19T16-21-01.446061",
+          "documents_agreeing": 541
+        },
+        {
+          "repo": "open-llm-leaderboard/Danielbrdz__Barcenas-R1-Qwen-1.5b-details",
+          "run": "2025-01-26T19-17-19.771431",
+          "documents_agreeing": 541
+        },
+        {
+          "repo": "open-llm-leaderboard/DeepMount00__Qwen2-1.5B-Ita-details",
+          "run": "2025-02-28T20-55-59.716664",
+          "documents_agreeing": 541
+        }
+      ]
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "tasks": [
+        "ifeval"
+      ]
+    },
+    "matching": {
+      "recipe": "each evaluated document rebuilt from the details record as the olmo-eval task renders it, then matched as a bijection over each subtask's split",
+      "doc_fields": [
+        "prompt"
+      ],
+      "normalization": "none. The details record's doc is the raw wis-k/instruction-following-eval row and the olmo-eval task passes its prompt through unaltered, so the two renderings are the same string. IFEval is the one benchmark where that is forced rather than convenient: a prompt names verifiable instructions about its own text -- no commas, 300+ words, a fixed number of highlighted sections -- so any normalization applied to match it would also be a change to what the verifiers were told to check.",
+      "enumeration": "whole_task",
+      "documents_evaluated": 541,
+      "documents_matched": 541,
+      "positions_agreeing_with_enumeration_order": 541
+    },
+    "index_map": {
+      "source_ref": "origin/Research",
+      "path": "AdaptiveTesting/Inputs/ATLAS/ifeval/atlas_idx_to_question_id.csv",
+      "rows": 535,
+      "subtask_rows": {
+        "ifeval": 535
+      }
+    },
+    "generated_at": "2026-08-07T21:25:36.475610+00:00"
+  },
+  "upstream_bank_rows": 535,
+  "bridge_rows": 535,
+  "items": 511,
+  "dropped": {
+    "non_positive_discrimination": 24,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "ungradable_instances": 0,
+  "positional_ids": false,
+  "frozen_prompt": false,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "generative",
+      "prompt_style": "ifeval",
+      "num_fewshot": 0,
+      "fewshot_source": null,
+      "chat_format": true,
+      "system_prompt_source": null,
+      "stop_sequences": [],
+      "max_new_tokens": 1280,
+      "max_length": null,
+      "grader": "ifeval_prompt_strict"
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": "unrecorded",
+      "metric": "prompt_level_strict_acc",
+      "note": "The one bank whose recorded metric this harness matches exactly: it was fit on prompt_level_strict_acc, which is what IFEvalPromptStrict computes. The loose variant the same verifier run also produces would make every item look easier than its difficulty. Nothing records the prompt or shot count, though there is little room for either to differ -- an IFEval prompt is sent verbatim because any framing is one more constraint the verifiers were never told about."
+    }
+  },
+  "bank_caveat": null,
+  "notes": "The strongest bank here by a wide margin: ten-fold cross-validation over 1,102 models gives r = 0.942, slope 0.944 and accuracy MAE 0.0425 with a 95% CI of [0.0400, 0.0451], reaching SE <= 0.3 in 27 items on a mean bank of 513.5 (Research/01_MCQ_ATLAS/data/atlas_replication_cv/ifeval/results.json). 24 of the 535 calibrated rows have a non-positive discrimination and are dropped, leaving 511, and all 511 match the task. It is the one dataset with no gold answer anywhere in it. An IFEval prompt names verifiable instructions -- 'no commas', 'at least three highlighted sections', '300+ words' -- and correctness is those verifiers run against the response, so the item's metadata carries instruction_id_list and kwargs where a gsm8k item carries a number. The binary is prompt-level *strict* accuracy, every instruction passing on the response exactly as written, which is the metric the bank was calibrated under; the loose variant retries each instruction against eight lightly edited copies of the response and would make every item look easier than its difficulty. It is still an ordinary generative bank -- one sampled completion, one binary -- so it needs no third modality, only a grader that reads the item instead of a gold string. The task is chat-format, one user turn carrying the prompt verbatim, 0-shot, 1,280 tokens, no stop sequences; a stop at a blank line would truncate a multi-paragraph response into a constraint violation. Grading needs the ifbench verifier registry, a declared dependency of this project installed from a git URL; vendoring does not. The package is not the whole prerequisite. Several verifiers -- the ones counting sentences or capitalised words, such as change_case:capital_word_frequency -- tokenize with NLTK and fetch punkt_tab and averaged_perceptron_tagger_eng the first time they run. Where that fetch cannot reach the network the failure is a LookupError raised mid-grade, on whichever item happens to select such a verifier, after the checkpoint has been staged; pre-fetch both corpora on a box that will run this bank. With them present all 511 items grade to a real per-instruction verdict, none ungradable. Two joins are available and only one of them is right. The bridge used here is Inputs/ATLAS/ifeval/atlas_idx_to_question_id.csv, whose question_id is a bare integer equal to the task's metadata['id'], the position in the split's native order. Not Experiments/openlm_atlas_3pl/ifeval/data/item_id_map.csv: same 535 items, but keyed as the composite 'ifeval|k', which this task never emits. Its ids run 0..540 with six absent (115, 440, 453, 455, 523, 528) because 541 prompts were harvested and 535 calibrated. eduLLM-Evals/data/IFEval/scenarios.jsonl is not an item source either, and is the dangerous one: its ife_NNNN ids were assigned after sorting the prompts by integer key, while the dataset's native order is lexicographic by the key's string form, so document 0 is key 1000 and is ife_0049 while ife_0000 is key 13. Both id spaces are dense 0..540 over the same 541 prompts, so a positional join finds ~100% overlap, clears the floor, and produces a well-formed bank of mismatched items. The join is by position either way, which is what the overlap floor enforced for positional_ids datasets exists to catch when enumeration order shifts -- it cannot catch a different ordering of the same prompts, which is why the source matters more than the guard.",
+  "sha256": {
+    "params.json": "610f5ac15653f44163daa71e10ac6537a31d742dc77093e0e1daba06b3cf3478",
+    "items.jsonl": "3dcc3ddc4f35cc9f01c55463b73c1685f79a1a96cc2f28ebee2866ba107df9db"
+  },
+  "generated_at": "2026-08-07T21:25:54.570085+00:00"
+}

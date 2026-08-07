@@ -1,0 +1,68 @@
+{
+  "dataset": "musr",
+  "bridge_kind": "content_hash",
+  "rows": 754,
+  "ordering": {
+    "source": "Open LLM Leaderboard v2 per-model detail repo",
+    "harness_config": "leaderboard_musr_*",
+    "repo": "open-llm-leaderboard/microsoft__Phi-3-mini-4k-instruct-details",
+    "revision": "427d64648094a1aea773aec93fe5e3b5ca069074",
+    "run": "2024-07-18T11-04-02.101450",
+    "paths": {
+      "murder_mysteries": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_musr_murder_mysteries_2024-07-18T11-04-02.101450.jsonl",
+      "object_placements": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_musr_object_placements_2024-07-18T11-04-02.101450.jsonl",
+      "team_allocation": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_musr_team_allocation_2024-07-18T11-04-02.101450.jsonl"
+    },
+    "doc_id": "read from each record's explicit doc_id field, not from its position in the file: lm-eval writes samples in completion order, so row order and document order differ",
+    "cross_checked": [
+      {
+        "repo": "open-llm-leaderboard/Qwen__Qwen2.5-7B-Instruct-details",
+        "run": "2024-09-19T16-21-01.446061",
+        "documents_agreeing": 756
+      },
+      {
+        "repo": "open-llm-leaderboard/Danielbrdz__Barcenas-R1-Qwen-1.5b-details",
+        "run": "2025-01-26T19-17-19.771431",
+        "documents_agreeing": 756
+      },
+      {
+        "repo": "open-llm-leaderboard/DeepMount00__Qwen2-1.5B-Ita-details",
+        "run": "2025-02-28T20-55-59.716664",
+        "documents_agreeing": 756
+      }
+    ]
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "tasks": [
+      "musr_murder_mysteries",
+      "musr_object_placements",
+      "musr_team_allocation"
+    ]
+  },
+  "matching": {
+    "recipe": "each evaluated document rebuilt from the details record as the olmo-eval task renders it, then matched as a bijection over each subtask's split",
+    "doc_fields": [
+      "narrative",
+      "question",
+      "choices"
+    ],
+    "normalization": "none. The details record's doc is the raw TAUR-Lab/MuSR row, so the two sides differ only by the conversions the olmo-eval task performs on it: narrative and question joined by a blank line, and the choices column parsed out of its Python-list repr. The leaderboard's rendered prompt -- the numbered choice block, the Answer: cue and the model's chat template -- is in the record's arguments field and is deliberately not what is matched, since it is per model and is not the string this bank's items are keyed by.",
+    "enumeration": "per_subtask_task",
+    "documents_evaluated": 756,
+    "documents_matched": 756,
+    "positions_agreeing_with_enumeration_order": 756
+  },
+  "index_map": {
+    "source_ref": "origin/Research",
+    "path": "AdaptiveTesting/Experiments/openlm_atlas_3pl/musr/data/item_id_map.csv",
+    "rows": 754,
+    "subtask_rows": {
+      "murder_mysteries": 250,
+      "object_placements": 254,
+      "team_allocation": 250
+    }
+  },
+  "generated_at": "2026-08-07T21:19:57.844306+00:00"
+}

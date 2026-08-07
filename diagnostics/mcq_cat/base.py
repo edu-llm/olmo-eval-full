@@ -178,11 +178,15 @@ class CATReport:
 
 @runtime_checkable
 class ScoringModel(Protocol):
-    """A checkpoint-backed model that grades MCQ items by log-likelihood.
+    """A checkpoint-backed model that grades items and returns one response each.
 
-    Implementations batch-score every choice of every item and return one graded
-    :class:`ItemResponse` per item. See
-    :mod:`diagnostics.mcq_cat.common.inference` for the concrete loader.
+    How an item is graded depends on its modality, and this protocol deliberately
+    does not say which: :mod:`diagnostics.mcq_cat.common.inference` scores every
+    choice by continuation log-likelihood and takes the argmax, while
+    :mod:`diagnostics.mcq_cat.common.generative` samples a completion and matches an
+    extracted answer. Both reduce to the same binary outcome, which is the only thing
+    the IRT layer reads, so the CAT engine drives either one unchanged.
+    :mod:`diagnostics.mcq_cat.common.grading` maps a modality to its grader.
     """
 
     def score_items(self, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
@@ -219,7 +223,7 @@ class CatStyle(ABC):
 
     @abstractmethod
     def score(self, model: ScoringModel, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
-        """Grade ``items`` with ``model`` via batched log-likelihood scoring."""
+        """Grade ``items`` with ``model``, which already matches the bank's modality."""
         ...
 
     @abstractmethod

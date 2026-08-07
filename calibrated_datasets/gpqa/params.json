@@ -1,0 +1,3952 @@
+[
+  {
+    "item_id": "diamond|11",
+    "difficulty": 2.41249758624113,
+    "discrimination": 0.58619396363658,
+    "guessing": 7.81167413782874e-06,
+    "metadata": {
+      "atlas_idx": 14,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|112",
+    "difficulty": 1.6704053861763295,
+    "discrimination": 0.984318454254742,
+    "guessing": 6.85633713660906e-06,
+    "metadata": {
+      "atlas_idx": 17,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|118",
+    "difficulty": 2.115694530089623,
+    "discrimination": 0.196903541697096,
+    "guessing": 0.000157681551553664,
+    "metadata": {
+      "atlas_idx": 23,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|122",
+    "difficulty": 0.9555078153618093,
+    "discrimination": 1.52237423208276,
+    "guessing": 4.97500226905985e-06,
+    "metadata": {
+      "atlas_idx": 28,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|124",
+    "difficulty": 0.8258140922065419,
+    "discrimination": 3.00048623206767,
+    "guessing": 0.0185038204618992,
+    "metadata": {
+      "atlas_idx": 30,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|139",
+    "difficulty": 1.7605530347633587,
+    "discrimination": 0.914847827973135,
+    "guessing": 6.03936740151283e-06,
+    "metadata": {
+      "atlas_idx": 46,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|140",
+    "difficulty": 5.998766548385328,
+    "discrimination": 0.192161148217396,
+    "guessing": 6.85740829315702e-05,
+    "metadata": {
+      "atlas_idx": 48,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|144",
+    "difficulty": 1.7316261397365722,
+    "discrimination": 0.877018146746688,
+    "guessing": 8.31026832196366e-06,
+    "metadata": {
+      "atlas_idx": 52,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|151",
+    "difficulty": 4.297168698101584,
+    "discrimination": 0.322916008743031,
+    "guessing": 3.08019711579681e-05,
+    "metadata": {
+      "atlas_idx": 60,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|152",
+    "difficulty": 4.396551266608672,
+    "discrimination": 0.564376148486401,
+    "guessing": 6.271209891154e-06,
+    "metadata": {
+      "atlas_idx": 61,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|161",
+    "difficulty": 1.2869371434956176,
+    "discrimination": 2.80238626933749,
+    "guessing": 0.0363485523909015,
+    "metadata": {
+      "atlas_idx": 71,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|173",
+    "difficulty": 10.59722328114207,
+    "discrimination": 0.120262301084834,
+    "guessing": 0.000120446039340284,
+    "metadata": {
+      "atlas_idx": 84,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|179",
+    "difficulty": 1.7019287559899172,
+    "discrimination": 0.866352364383157,
+    "guessing": 4.45241637616821e-06,
+    "metadata": {
+      "atlas_idx": 90,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|18",
+    "difficulty": 2.362430013683828,
+    "discrimination": 0.768616167591276,
+    "guessing": 9.35754621480526e-06,
+    "metadata": {
+      "atlas_idx": 91,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|192",
+    "difficulty": 0.4864361551482622,
+    "discrimination": 2.32295809292992,
+    "guessing": 3.41506003974598e-05,
+    "metadata": {
+      "atlas_idx": 105,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|22",
+    "difficulty": 0.3559406607349714,
+    "discrimination": 1.36689329981172,
+    "guessing": 0.000286675616717988,
+    "metadata": {
+      "atlas_idx": 114,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|44",
+    "difficulty": 0.4874335871166193,
+    "discrimination": 4.97100321353954,
+    "guessing": 0.0564569372115501,
+    "metadata": {
+      "atlas_idx": 138,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|53",
+    "difficulty": 0.5166887161169395,
+    "discrimination": 1.19411480243525,
+    "guessing": 4.28437546753754e-05,
+    "metadata": {
+      "atlas_idx": 148,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|58",
+    "difficulty": 0.8284271910842068,
+    "discrimination": 2.98405710613293,
+    "guessing": 0.246773073287409,
+    "metadata": {
+      "atlas_idx": 153,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|60",
+    "difficulty": 0.4357090297408654,
+    "discrimination": 0.892173004491589,
+    "guessing": 7.22279269915864e-05,
+    "metadata": {
+      "atlas_idx": 156,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|69",
+    "difficulty": 0.912239653951864,
+    "discrimination": 1.74403180854972,
+    "guessing": 0.00011837748787808,
+    "metadata": {
+      "atlas_idx": 165,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|81",
+    "difficulty": 0.40151991592629327,
+    "discrimination": 0.847930923859232,
+    "guessing": 0.000104567978168272,
+    "metadata": {
+      "atlas_idx": 179,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|87",
+    "difficulty": -0.16929361766186657,
+    "discrimination": 0.941472155040825,
+    "guessing": 0.000111885976718043,
+    "metadata": {
+      "atlas_idx": 185,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "diamond|88",
+    "difficulty": 0.27909507878345213,
+    "discrimination": 1.88996088921699,
+    "guessing": 5.10446061336212e-05,
+    "metadata": {
+      "atlas_idx": 186,
+      "subtask": "diamond"
+    }
+  },
+  {
+    "item_id": "extended|1",
+    "difficulty": 0.37934190589506384,
+    "discrimination": 1.23608280918197,
+    "guessing": 0.000289766662542255,
+    "metadata": {
+      "atlas_idx": 200,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|100",
+    "difficulty": 1.268193476134458,
+    "discrimination": 7.16319957484447,
+    "guessing": 0.229280207440287,
+    "metadata": {
+      "atlas_idx": 202,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|103",
+    "difficulty": 1.046239353446553,
+    "discrimination": 9.18662923831919,
+    "guessing": 0.128108937370599,
+    "metadata": {
+      "atlas_idx": 205,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|104",
+    "difficulty": 1.1862694300679966,
+    "discrimination": 7.00951317457855,
+    "guessing": 0.0913027710435419,
+    "metadata": {
+      "atlas_idx": 206,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|105",
+    "difficulty": 1.0413998035909662,
+    "discrimination": 10.5699834127012,
+    "guessing": 0.327658683436533,
+    "metadata": {
+      "atlas_idx": 207,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|110",
+    "difficulty": 1.0732617260123742,
+    "discrimination": 6.9516147826958,
+    "guessing": 0.39907625927591,
+    "metadata": {
+      "atlas_idx": 213,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|111",
+    "difficulty": 0.10630614836133012,
+    "discrimination": 3.59225900098818,
+    "guessing": 0.117624059460528,
+    "metadata": {
+      "atlas_idx": 214,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|115",
+    "difficulty": 21.71721942696663,
+    "discrimination": 0.0625130062550068,
+    "guessing": 0.00184530655077103,
+    "metadata": {
+      "atlas_idx": 218,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|116",
+    "difficulty": 1.1818249474426732,
+    "discrimination": 8.91533088570191,
+    "guessing": 0.188837397702758,
+    "metadata": {
+      "atlas_idx": 219,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|123",
+    "difficulty": 0.6753695978464631,
+    "discrimination": 0.956689949006664,
+    "guessing": 0.000160708889765132,
+    "metadata": {
+      "atlas_idx": 227,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|126",
+    "difficulty": -0.12694321723941013,
+    "discrimination": 2.08931035619039,
+    "guessing": 1.70088670184927e-05,
+    "metadata": {
+      "atlas_idx": 230,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|127",
+    "difficulty": 1.277765291190267,
+    "discrimination": 14.2404291590601,
+    "guessing": 0.333572893549399,
+    "metadata": {
+      "atlas_idx": 231,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|128",
+    "difficulty": 9.930741350240165,
+    "discrimination": 0.104171748321523,
+    "guessing": 0.000778088134909346,
+    "metadata": {
+      "atlas_idx": 232,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|130",
+    "difficulty": 1.233394814871744,
+    "discrimination": 7.12731042871154,
+    "guessing": 0.246092848618966,
+    "metadata": {
+      "atlas_idx": 235,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|132",
+    "difficulty": 1.0167511526518342,
+    "discrimination": 13.0582464817457,
+    "guessing": 0.112732239077661,
+    "metadata": {
+      "atlas_idx": 237,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|133",
+    "difficulty": 4.20277444089912,
+    "discrimination": 0.156898795633248,
+    "guessing": 0.000385325487034627,
+    "metadata": {
+      "atlas_idx": 238,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|136",
+    "difficulty": 2.9101375284442095,
+    "discrimination": 0.350706913014639,
+    "guessing": 9.8857199545917e-05,
+    "metadata": {
+      "atlas_idx": 241,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|137",
+    "difficulty": 1.007500064161275,
+    "discrimination": 14.2261300685673,
+    "guessing": 0.206834836931965,
+    "metadata": {
+      "atlas_idx": 242,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|147",
+    "difficulty": -1.0059865400806036,
+    "discrimination": 1.30758051523489,
+    "guessing": 0.000110062283942752,
+    "metadata": {
+      "atlas_idx": 253,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|148",
+    "difficulty": 1.1363756226269532,
+    "discrimination": 9.63589582206485,
+    "guessing": 0.196095113182187,
+    "metadata": {
+      "atlas_idx": 254,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|150",
+    "difficulty": -0.6476380964525023,
+    "discrimination": 1.82555919085495,
+    "guessing": 6.65619476098549e-05,
+    "metadata": {
+      "atlas_idx": 257,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|152",
+    "difficulty": 0.18476461908541006,
+    "discrimination": 3.12793856555845,
+    "guessing": 0.330409181381665,
+    "metadata": {
+      "atlas_idx": 259,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|154",
+    "difficulty": 1.2430381775069268,
+    "discrimination": 8.60101742678746,
+    "guessing": 0.167506870612686,
+    "metadata": {
+      "atlas_idx": 261,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|155",
+    "difficulty": 2.5671227755383645,
+    "discrimination": 0.324263264957335,
+    "guessing": 9.69062878502084e-05,
+    "metadata": {
+      "atlas_idx": 262,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|158",
+    "difficulty": 0.24786481154729664,
+    "discrimination": 2.68799577956969,
+    "guessing": 0.259640277169986,
+    "metadata": {
+      "atlas_idx": 265,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|159",
+    "difficulty": 1.3071754546962198,
+    "discrimination": 5.19134329724052,
+    "guessing": 0.220781410658585,
+    "metadata": {
+      "atlas_idx": 266,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|16",
+    "difficulty": 0.2948391204132161,
+    "discrimination": 3.39982249741211,
+    "guessing": 0.242215449928006,
+    "metadata": {
+      "atlas_idx": 267,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|160",
+    "difficulty": 1.0923389861680386,
+    "discrimination": 9.92214361578659,
+    "guessing": 0.228190057247112,
+    "metadata": {
+      "atlas_idx": 268,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|161",
+    "difficulty": 6.613613375940629,
+    "discrimination": 0.116475967434695,
+    "guessing": 0.00239391209100286,
+    "metadata": {
+      "atlas_idx": 269,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|162",
+    "difficulty": 4.509614127335403,
+    "discrimination": 0.31304365263109,
+    "guessing": 5.54320700672838e-05,
+    "metadata": {
+      "atlas_idx": 270,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|163",
+    "difficulty": 1.3362043865994768,
+    "discrimination": 3.30092140207976,
+    "guessing": 0.0615649031366128,
+    "metadata": {
+      "atlas_idx": 271,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|171",
+    "difficulty": 1.3171971572971302,
+    "discrimination": 22.0153192219982,
+    "guessing": 0.287139298620927,
+    "metadata": {
+      "atlas_idx": 280,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|176",
+    "difficulty": 1.0889322650300426,
+    "discrimination": 12.4609960591405,
+    "guessing": 0.21822716379246,
+    "metadata": {
+      "atlas_idx": 285,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|179",
+    "difficulty": 26.000699540062666,
+    "discrimination": 0.0356125138361769,
+    "guessing": 0.00658945839146358,
+    "metadata": {
+      "atlas_idx": 288,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|183",
+    "difficulty": 0.9414272700561205,
+    "discrimination": 33.1655155459284,
+    "guessing": 0.208147261079828,
+    "metadata": {
+      "atlas_idx": 293,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|184",
+    "difficulty": 0.6666083465753054,
+    "discrimination": 0.53850766556246,
+    "guessing": 0.000117580139857881,
+    "metadata": {
+      "atlas_idx": 294,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|185",
+    "difficulty": -0.052581350943607996,
+    "discrimination": 1.68581756907868,
+    "guessing": 0.000101626993973202,
+    "metadata": {
+      "atlas_idx": 295,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|186",
+    "difficulty": 2.7172490850045197,
+    "discrimination": 0.316652049717371,
+    "guessing": 9.76216805558043e-05,
+    "metadata": {
+      "atlas_idx": 296,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|188",
+    "difficulty": -0.44310165382584393,
+    "discrimination": 2.220399117419,
+    "guessing": 3.29652453541914e-05,
+    "metadata": {
+      "atlas_idx": 298,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|189",
+    "difficulty": 1.4237927269064912,
+    "discrimination": 15.3731610905376,
+    "guessing": 0.247964674707025,
+    "metadata": {
+      "atlas_idx": 299,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|193",
+    "difficulty": 0.5017123442978425,
+    "discrimination": 2.61347140105729,
+    "guessing": 0.0330977559016096,
+    "metadata": {
+      "atlas_idx": 304,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|194",
+    "difficulty": 1.1072610037863944,
+    "discrimination": 6.91165707813698,
+    "guessing": 0.232827168679477,
+    "metadata": {
+      "atlas_idx": 305,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|196",
+    "difficulty": -0.08835304378778444,
+    "discrimination": 2.53610764128357,
+    "guessing": 0.0286209524620128,
+    "metadata": {
+      "atlas_idx": 307,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|197",
+    "difficulty": 1.7602294960605394,
+    "discrimination": 2.52341623335119,
+    "guessing": 0.11729799697231,
+    "metadata": {
+      "atlas_idx": 308,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|199",
+    "difficulty": 1.3551924354647704,
+    "discrimination": 1.36430177950663,
+    "guessing": 0.0207805134328314,
+    "metadata": {
+      "atlas_idx": 310,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|20",
+    "difficulty": 1.468523072043667,
+    "discrimination": 3.31876635099957,
+    "guessing": 0.283699943326188,
+    "metadata": {
+      "atlas_idx": 312,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|201",
+    "difficulty": 1.4122334188008108,
+    "discrimination": 4.91772670680275,
+    "guessing": 0.245699456631885,
+    "metadata": {
+      "atlas_idx": 314,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|202",
+    "difficulty": 1.2217330024908557,
+    "discrimination": 6.14097348222615,
+    "guessing": 0.272615895542309,
+    "metadata": {
+      "atlas_idx": 315,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|203",
+    "difficulty": 1.019335506297316,
+    "discrimination": 4.83130892838874,
+    "guessing": 0.132960770740265,
+    "metadata": {
+      "atlas_idx": 316,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|208",
+    "difficulty": 1.304983002403146,
+    "discrimination": 4.64654830323515,
+    "guessing": 0.223056291699776,
+    "metadata": {
+      "atlas_idx": 321,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|211",
+    "difficulty": 1.3021915667089403,
+    "discrimination": 2.58227892315558,
+    "guessing": 0.262541904357739,
+    "metadata": {
+      "atlas_idx": 325,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|212",
+    "difficulty": 0.37039337565530384,
+    "discrimination": 3.86680928461589,
+    "guessing": 0.223537104688755,
+    "metadata": {
+      "atlas_idx": 326,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|214",
+    "difficulty": 0.8539181066915308,
+    "discrimination": 2.56005822373154,
+    "guessing": 0.23201870873719,
+    "metadata": {
+      "atlas_idx": 328,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|216",
+    "difficulty": -0.16683897818532156,
+    "discrimination": 2.45858537942063,
+    "guessing": 7.1399050833374e-05,
+    "metadata": {
+      "atlas_idx": 330,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|219",
+    "difficulty": 0.8664988250321057,
+    "discrimination": 10.3180742067032,
+    "guessing": 0.418772283494911,
+    "metadata": {
+      "atlas_idx": 333,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|22",
+    "difficulty": 0.3258565839680009,
+    "discrimination": 2.89271054800573,
+    "guessing": 0.280834966316958,
+    "metadata": {
+      "atlas_idx": 334,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|220",
+    "difficulty": -0.20696846126042087,
+    "discrimination": 1.67684905798734,
+    "guessing": 4.8420821798931e-05,
+    "metadata": {
+      "atlas_idx": 335,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|225",
+    "difficulty": 1.1008844874731927,
+    "discrimination": 4.4879595438143,
+    "guessing": 0.0553373990612646,
+    "metadata": {
+      "atlas_idx": 340,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|227",
+    "difficulty": 0.005161986766799363,
+    "discrimination": 2.03698890248019,
+    "guessing": 9.36569103139682e-05,
+    "metadata": {
+      "atlas_idx": 342,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|231",
+    "difficulty": 1.9284366300904046,
+    "discrimination": 1.56005009591395,
+    "guessing": 0.347982355610324,
+    "metadata": {
+      "atlas_idx": 347,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|235",
+    "difficulty": -0.45211208800981223,
+    "discrimination": 1.12718255146675,
+    "guessing": 0.000183526328344232,
+    "metadata": {
+      "atlas_idx": 351,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|239",
+    "difficulty": 0.9095494338283145,
+    "discrimination": 4.57715337062777,
+    "guessing": 0.110215771102833,
+    "metadata": {
+      "atlas_idx": 355,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|24",
+    "difficulty": 0.3411547377167299,
+    "discrimination": 1.18180595311707,
+    "guessing": 0.000266695180071409,
+    "metadata": {
+      "atlas_idx": 356,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|241",
+    "difficulty": 0.24506938482164378,
+    "discrimination": 2.49532889523104,
+    "guessing": 0.246857464550475,
+    "metadata": {
+      "atlas_idx": 358,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|242",
+    "difficulty": 1.1857113046694996,
+    "discrimination": 2.67228720534704,
+    "guessing": 0.205041073996191,
+    "metadata": {
+      "atlas_idx": 359,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|254",
+    "difficulty": 0.1274480972380407,
+    "discrimination": 1.40506315970702,
+    "guessing": 8.66160273887735e-05,
+    "metadata": {
+      "atlas_idx": 372,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|259",
+    "difficulty": 1.516437993447554,
+    "discrimination": 5.39618059887685,
+    "guessing": 0.504684619430896,
+    "metadata": {
+      "atlas_idx": 377,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|264",
+    "difficulty": -0.5520997705528563,
+    "discrimination": 1.88642200447602,
+    "guessing": 0.000535997631842883,
+    "metadata": {
+      "atlas_idx": 383,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|265",
+    "difficulty": 0.5209783950532504,
+    "discrimination": 1.37934427913076,
+    "guessing": 2.87377784319081e-05,
+    "metadata": {
+      "atlas_idx": 384,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|267",
+    "difficulty": 9.80580685986487,
+    "discrimination": 0.205914434068242,
+    "guessing": 0.000201676274431362,
+    "metadata": {
+      "atlas_idx": 386,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|269",
+    "difficulty": 16.035597015341203,
+    "discrimination": 0.116982525125524,
+    "guessing": 0.000535800621233909,
+    "metadata": {
+      "atlas_idx": 388,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|276",
+    "difficulty": 0.29207540818175165,
+    "discrimination": 1.54576549810204,
+    "guessing": 0.00020352603961971,
+    "metadata": {
+      "atlas_idx": 396,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|277",
+    "difficulty": 1.0829427699556853,
+    "discrimination": 4.32211153780098,
+    "guessing": 0.189245470671369,
+    "metadata": {
+      "atlas_idx": 397,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|278",
+    "difficulty": 0.411069230700337,
+    "discrimination": 2.03070340324125,
+    "guessing": 0.0582446380542611,
+    "metadata": {
+      "atlas_idx": 398,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|280",
+    "difficulty": 0.8320393667788554,
+    "discrimination": 1.34750400442535,
+    "guessing": 7.16346007357428e-06,
+    "metadata": {
+      "atlas_idx": 401,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|281",
+    "difficulty": 4.891480528453938,
+    "discrimination": 0.253473751642805,
+    "guessing": 4.33636197780432e-05,
+    "metadata": {
+      "atlas_idx": 402,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|283",
+    "difficulty": 1.8965693909910952,
+    "discrimination": 4.98567386151167,
+    "guessing": 0.110026251430975,
+    "metadata": {
+      "atlas_idx": 404,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|284",
+    "difficulty": 0.09984923465155218,
+    "discrimination": 1.57581995104278,
+    "guessing": 8.48271171173951e-06,
+    "metadata": {
+      "atlas_idx": 405,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|285",
+    "difficulty": 5.007583287021263,
+    "discrimination": 0.26240455924331,
+    "guessing": 3.91913378351313e-05,
+    "metadata": {
+      "atlas_idx": 406,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|286",
+    "difficulty": 1.0961922833246271,
+    "discrimination": 41.5483660882731,
+    "guessing": 0.129344443889011,
+    "metadata": {
+      "atlas_idx": 407,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|288",
+    "difficulty": 34.76002348835833,
+    "discrimination": 0.0652778728832811,
+    "guessing": 0.000454416354790672,
+    "metadata": {
+      "atlas_idx": 409,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|29",
+    "difficulty": 1.290900786075477,
+    "discrimination": 23.9251562621388,
+    "guessing": 0.582967923411859,
+    "metadata": {
+      "atlas_idx": 411,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|292",
+    "difficulty": 12.080620235249642,
+    "discrimination": 0.183847445035655,
+    "guessing": 6.84064607486633e-05,
+    "metadata": {
+      "atlas_idx": 414,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|293",
+    "difficulty": 0.7368748575808319,
+    "discrimination": 1.00069423287225,
+    "guessing": 1.12785866732765e-05,
+    "metadata": {
+      "atlas_idx": 415,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|294",
+    "difficulty": 6.699207363564618,
+    "discrimination": 0.260368502474107,
+    "guessing": 4.49119684659381e-05,
+    "metadata": {
+      "atlas_idx": 416,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|295",
+    "difficulty": 1.4010905087863934,
+    "discrimination": 30.142815397673,
+    "guessing": 0.522451953706058,
+    "metadata": {
+      "atlas_idx": 417,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|296",
+    "difficulty": 8.776509785762164,
+    "discrimination": 0.237220245842163,
+    "guessing": 3.98865347813516e-05,
+    "metadata": {
+      "atlas_idx": 418,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|297",
+    "difficulty": 45.089329314934716,
+    "discrimination": 0.0542833803140286,
+    "guessing": 0.000490794648267539,
+    "metadata": {
+      "atlas_idx": 419,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|298",
+    "difficulty": 1.4320058645730698,
+    "discrimination": 32.2147052330737,
+    "guessing": 0.2481315814505,
+    "metadata": {
+      "atlas_idx": 420,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|3",
+    "difficulty": 1.8198340712150125,
+    "discrimination": 1.95654924810602,
+    "guessing": 0.209154712320845,
+    "metadata": {
+      "atlas_idx": 422,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|30",
+    "difficulty": 0.4173104633758153,
+    "discrimination": 2.63222870472986,
+    "guessing": 0.0237554006101875,
+    "metadata": {
+      "atlas_idx": 423,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|300",
+    "difficulty": 7.023871370536106,
+    "discrimination": 0.228163475434679,
+    "guessing": 4.62381467748354e-05,
+    "metadata": {
+      "atlas_idx": 424,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|302",
+    "difficulty": 11.224735248657502,
+    "discrimination": 0.202113262369534,
+    "guessing": 5.52686443845637e-05,
+    "metadata": {
+      "atlas_idx": 426,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|304",
+    "difficulty": 0.7148053936564742,
+    "discrimination": 2.31618587882034,
+    "guessing": 0.149284367236654,
+    "metadata": {
+      "atlas_idx": 428,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|307",
+    "difficulty": 2.4863244834559395,
+    "discrimination": 0.385704332951778,
+    "guessing": 1.74329499673419e-05,
+    "metadata": {
+      "atlas_idx": 431,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|308",
+    "difficulty": 14.497099503016909,
+    "discrimination": 0.146259386169732,
+    "guessing": 0.000108581174831265,
+    "metadata": {
+      "atlas_idx": 432,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|309",
+    "difficulty": 1.2128761356893092,
+    "discrimination": 30.3990630705741,
+    "guessing": 0.278620931854018,
+    "metadata": {
+      "atlas_idx": 433,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|31",
+    "difficulty": 1.744815509276471,
+    "discrimination": 5.54855544508438,
+    "guessing": 0.32493753027936,
+    "metadata": {
+      "atlas_idx": 434,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|310",
+    "difficulty": 10.324254918782467,
+    "discrimination": 0.18203865694833,
+    "guessing": 8.03579686953982e-05,
+    "metadata": {
+      "atlas_idx": 435,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|311",
+    "difficulty": 3.889919769661054,
+    "discrimination": 0.571692132466648,
+    "guessing": 1.48843229768915e-05,
+    "metadata": {
+      "atlas_idx": 436,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|313",
+    "difficulty": 3.006214560911003,
+    "discrimination": 0.489380227453154,
+    "guessing": 1.25032193869065e-05,
+    "metadata": {
+      "atlas_idx": 438,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|314",
+    "difficulty": 1.8528397614111087,
+    "discrimination": 6.09704490985006,
+    "guessing": 0.25853678809486,
+    "metadata": {
+      "atlas_idx": 439,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|315",
+    "difficulty": -0.1998313493181039,
+    "discrimination": 1.69778336780999,
+    "guessing": 0.0133246904709477,
+    "metadata": {
+      "atlas_idx": 440,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|318",
+    "difficulty": 15.265214133595082,
+    "discrimination": 0.128774132292486,
+    "guessing": 0.000165374277675278,
+    "metadata": {
+      "atlas_idx": 443,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|32",
+    "difficulty": 6.849832738010305,
+    "discrimination": 0.226720220311183,
+    "guessing": 4.74137945543677e-05,
+    "metadata": {
+      "atlas_idx": 445,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|320",
+    "difficulty": 3.739815760797587,
+    "discrimination": 0.624093415655233,
+    "guessing": 1.17899871372312e-05,
+    "metadata": {
+      "atlas_idx": 446,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|322",
+    "difficulty": 1.1678713850116855,
+    "discrimination": 0.707592283624296,
+    "guessing": 1.26739473438858e-05,
+    "metadata": {
+      "atlas_idx": 448,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|323",
+    "difficulty": 4.9782246131957795,
+    "discrimination": 0.582891656077269,
+    "guessing": 9.85845047741942e-06,
+    "metadata": {
+      "atlas_idx": 449,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|324",
+    "difficulty": 11.36632423022146,
+    "discrimination": 0.208807497647478,
+    "guessing": 5.06720807805731e-05,
+    "metadata": {
+      "atlas_idx": 450,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|325",
+    "difficulty": 1.6560055149375208,
+    "discrimination": 4.60730069422078,
+    "guessing": 0.144592336243463,
+    "metadata": {
+      "atlas_idx": 451,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|326",
+    "difficulty": 1.92785699024204,
+    "discrimination": 1.90320459355718,
+    "guessing": 0.170094198392092,
+    "metadata": {
+      "atlas_idx": 452,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|328",
+    "difficulty": 7.044394890703337,
+    "discrimination": 0.282816522525665,
+    "guessing": 2.91761458403541e-05,
+    "metadata": {
+      "atlas_idx": 454,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|329",
+    "difficulty": 14.94945893732384,
+    "discrimination": 0.129109475760944,
+    "guessing": 0.000155625712900907,
+    "metadata": {
+      "atlas_idx": 455,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|330",
+    "difficulty": 1.0183849711527804,
+    "discrimination": 13.5954417609134,
+    "guessing": 0.143621442188516,
+    "metadata": {
+      "atlas_idx": 457,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|331",
+    "difficulty": 26.760066803198594,
+    "discrimination": 0.0971208432867107,
+    "guessing": 0.000202063978582016,
+    "metadata": {
+      "atlas_idx": 458,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|333",
+    "difficulty": 1.5090369558355035,
+    "discrimination": 11.0189446009617,
+    "guessing": 0.434324738300727,
+    "metadata": {
+      "atlas_idx": 460,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|335",
+    "difficulty": 2.7940709689031076,
+    "discrimination": 0.892668512425041,
+    "guessing": 9.20859714302723e-06,
+    "metadata": {
+      "atlas_idx": 462,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|336",
+    "difficulty": 5.9158091033520925,
+    "discrimination": 0.404384036875564,
+    "guessing": 1.50585543016126e-05,
+    "metadata": {
+      "atlas_idx": 463,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|337",
+    "difficulty": 1.1561471416262887,
+    "discrimination": 1.6977471746077,
+    "guessing": 0.0152601239073223,
+    "metadata": {
+      "atlas_idx": 464,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|338",
+    "difficulty": 1.4919618759533668,
+    "discrimination": 33.2982465727893,
+    "guessing": 0.542020723408845,
+    "metadata": {
+      "atlas_idx": 465,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|339",
+    "difficulty": 6.862012157002338,
+    "discrimination": 0.225257120958893,
+    "guessing": 4.40495941180661e-05,
+    "metadata": {
+      "atlas_idx": 466,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|34",
+    "difficulty": 51.16294465132593,
+    "discrimination": 0.050780416791142,
+    "guessing": 0.000629958810175353,
+    "metadata": {
+      "atlas_idx": 467,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|340",
+    "difficulty": 8.189026193015078,
+    "discrimination": 0.130071072835926,
+    "guessing": 0.000181355542870518,
+    "metadata": {
+      "atlas_idx": 468,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|341",
+    "difficulty": 4.987131424366356,
+    "discrimination": 0.334328117673092,
+    "guessing": 2.2363126335638e-05,
+    "metadata": {
+      "atlas_idx": 469,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|342",
+    "difficulty": 1.3774146322347915,
+    "discrimination": 35.6054696988458,
+    "guessing": 0.313049185552685,
+    "metadata": {
+      "atlas_idx": 470,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|345",
+    "difficulty": 1.7149086032240444,
+    "discrimination": 0.705834282024639,
+    "guessing": 1.70029458868499e-05,
+    "metadata": {
+      "atlas_idx": 473,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|347",
+    "difficulty": 9.302153445842706,
+    "discrimination": 0.185628661900968,
+    "guessing": 7.73436770021345e-05,
+    "metadata": {
+      "atlas_idx": 475,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|348",
+    "difficulty": 11.006601902677872,
+    "discrimination": 0.189865578968383,
+    "guessing": 6.71569745755957e-05,
+    "metadata": {
+      "atlas_idx": 476,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|349",
+    "difficulty": 6.993119447706121,
+    "discrimination": 0.193805090439068,
+    "guessing": 6.77093425506114e-05,
+    "metadata": {
+      "atlas_idx": 477,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|350",
+    "difficulty": 2.8883927301902323,
+    "discrimination": 0.844553805761261,
+    "guessing": 2.86103518802407e-05,
+    "metadata": {
+      "atlas_idx": 479,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|354",
+    "difficulty": 0.061715609531181256,
+    "discrimination": 0.932064457971163,
+    "guessing": 1.36142199329031e-05,
+    "metadata": {
+      "atlas_idx": 483,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|355",
+    "difficulty": 5.325049579472079,
+    "discrimination": 0.316256945559271,
+    "guessing": 3.00313637393097e-05,
+    "metadata": {
+      "atlas_idx": 484,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|356",
+    "difficulty": 1.3154166675046453,
+    "discrimination": 48.7001013623114,
+    "guessing": 0.361507298964032,
+    "metadata": {
+      "atlas_idx": 485,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|358",
+    "difficulty": 1.4187316683817548,
+    "discrimination": 31.8502563160917,
+    "guessing": 0.36678955480634,
+    "metadata": {
+      "atlas_idx": 487,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|359",
+    "difficulty": 1.477313519937253,
+    "discrimination": 11.152128137108,
+    "guessing": 0.195731743771177,
+    "metadata": {
+      "atlas_idx": 488,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|36",
+    "difficulty": 11.002833656966809,
+    "discrimination": 0.0914976090932206,
+    "guessing": 0.000327411820975417,
+    "metadata": {
+      "atlas_idx": 489,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|361",
+    "difficulty": 0.2816911350184911,
+    "discrimination": 2.16896884155285,
+    "guessing": 0.199610000072072,
+    "metadata": {
+      "atlas_idx": 491,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|363",
+    "difficulty": -0.23079289504720685,
+    "discrimination": 2.34152852227914,
+    "guessing": 0.487085267043743,
+    "metadata": {
+      "atlas_idx": 493,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|364",
+    "difficulty": 4.326177534670938,
+    "discrimination": 0.312270696860654,
+    "guessing": 2.69432950992497e-05,
+    "metadata": {
+      "atlas_idx": 494,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|365",
+    "difficulty": 1.0793115050645725,
+    "discrimination": 9.05684215962143,
+    "guessing": 0.176325466184541,
+    "metadata": {
+      "atlas_idx": 495,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|366",
+    "difficulty": 3.1684392953666447,
+    "discrimination": 0.509755964918801,
+    "guessing": 2.05258376925378e-05,
+    "metadata": {
+      "atlas_idx": 496,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|368",
+    "difficulty": 1.5982659242287862,
+    "discrimination": 32.2756581519508,
+    "guessing": 0.387092693531365,
+    "metadata": {
+      "atlas_idx": 498,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|369",
+    "difficulty": 1.5621828118364682,
+    "discrimination": 33.0300064319858,
+    "guessing": 0.197083118812713,
+    "metadata": {
+      "atlas_idx": 499,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|374",
+    "difficulty": 0.23785552784061928,
+    "discrimination": 1.82881889036852,
+    "guessing": 0.059057086970115,
+    "metadata": {
+      "atlas_idx": 505,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|384",
+    "difficulty": 35.333636530631864,
+    "discrimination": 0.02372058408979,
+    "guessing": 0.040522754581675,
+    "metadata": {
+      "atlas_idx": 516,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|387",
+    "difficulty": -0.3069332889517498,
+    "discrimination": 1.88322822245621,
+    "guessing": 0.000123048358451984,
+    "metadata": {
+      "atlas_idx": 519,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|388",
+    "difficulty": 1.8361058948186735,
+    "discrimination": 6.05877842640553,
+    "guessing": 0.395722679828357,
+    "metadata": {
+      "atlas_idx": 520,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|390",
+    "difficulty": 1.0612881038534268,
+    "discrimination": 3.35689167751641,
+    "guessing": 0.222441979610251,
+    "metadata": {
+      "atlas_idx": 523,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|395",
+    "difficulty": 1.2012973995641838,
+    "discrimination": 2.12000884276426,
+    "guessing": 0.201819152092494,
+    "metadata": {
+      "atlas_idx": 528,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|40",
+    "difficulty": 0.5341451121623374,
+    "discrimination": 3.26649567295227,
+    "guessing": 0.269942088856325,
+    "metadata": {
+      "atlas_idx": 534,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|400",
+    "difficulty": 1.2504226748130534,
+    "discrimination": 1.42335578832756,
+    "guessing": 0.179315294185295,
+    "metadata": {
+      "atlas_idx": 535,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|404",
+    "difficulty": 0.462356861649873,
+    "discrimination": 2.359280360716,
+    "guessing": 0.347175816616167,
+    "metadata": {
+      "atlas_idx": 539,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|406",
+    "difficulty": 1.0881568909750048,
+    "discrimination": 12.3049816179437,
+    "guessing": 0.135648257943304,
+    "metadata": {
+      "atlas_idx": 541,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|407",
+    "difficulty": 0.20644280257108366,
+    "discrimination": 2.79295130828096,
+    "guessing": 0.165200904188692,
+    "metadata": {
+      "atlas_idx": 542,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|408",
+    "difficulty": 0.7118023400208839,
+    "discrimination": 1.77379396659197,
+    "guessing": 0.000241863739337243,
+    "metadata": {
+      "atlas_idx": 543,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|409",
+    "difficulty": 0.9592569162495811,
+    "discrimination": 2.3682180276074,
+    "guessing": 0.160515900521189,
+    "metadata": {
+      "atlas_idx": 544,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|410",
+    "difficulty": 0.11459758115073042,
+    "discrimination": 1.48168786657074,
+    "guessing": 0.000516860061453455,
+    "metadata": {
+      "atlas_idx": 546,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|411",
+    "difficulty": 0.27181609407959834,
+    "discrimination": 3.04607786225716,
+    "guessing": 0.0241879060501065,
+    "metadata": {
+      "atlas_idx": 547,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|412",
+    "difficulty": 0.10477114549065342,
+    "discrimination": 4.80438335137665,
+    "guessing": 0.144568986604925,
+    "metadata": {
+      "atlas_idx": 548,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|415",
+    "difficulty": 0.6407015189559349,
+    "discrimination": 1.63893524492415,
+    "guessing": 0.0196584592371913,
+    "metadata": {
+      "atlas_idx": 551,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|417",
+    "difficulty": 0.1932473218199551,
+    "discrimination": 2.15475216842767,
+    "guessing": 5.14047556897143e-05,
+    "metadata": {
+      "atlas_idx": 553,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|419",
+    "difficulty": 1.2905744063038123,
+    "discrimination": 1.20217951366874,
+    "guessing": 0.237947531149289,
+    "metadata": {
+      "atlas_idx": 555,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|420",
+    "difficulty": 1.2265067597498305,
+    "discrimination": 4.25576909909719,
+    "guessing": 0.142149719642862,
+    "metadata": {
+      "atlas_idx": 557,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|421",
+    "difficulty": 0.3504977378145455,
+    "discrimination": 3.3997953365271,
+    "guessing": 0.321229375043813,
+    "metadata": {
+      "atlas_idx": 558,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|429",
+    "difficulty": 1.1964033595958092,
+    "discrimination": 4.77669877175639,
+    "guessing": 0.193906163231136,
+    "metadata": {
+      "atlas_idx": 566,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|434",
+    "difficulty": 0.3682593534775048,
+    "discrimination": 2.75388081201739,
+    "guessing": 0.0404056821167124,
+    "metadata": {
+      "atlas_idx": 572,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|438",
+    "difficulty": 0.928086574509559,
+    "discrimination": 2.48169425653938,
+    "guessing": 0.0551272942638258,
+    "metadata": {
+      "atlas_idx": 576,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|439",
+    "difficulty": 0.7914294477281117,
+    "discrimination": 3.80545775323163,
+    "guessing": 0.139744373338989,
+    "metadata": {
+      "atlas_idx": 577,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|442",
+    "difficulty": 1.6965781923491094,
+    "discrimination": 2.42736392702912,
+    "guessing": 0.100833315701083,
+    "metadata": {
+      "atlas_idx": 581,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|443",
+    "difficulty": 0.43334357580519817,
+    "discrimination": 1.55375759529784,
+    "guessing": 0.000285981791746382,
+    "metadata": {
+      "atlas_idx": 582,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|444",
+    "difficulty": -0.16844530861724566,
+    "discrimination": 2.37185254625029,
+    "guessing": 0.0429566544080304,
+    "metadata": {
+      "atlas_idx": 583,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|445",
+    "difficulty": -0.005281056941787093,
+    "discrimination": 1.73174078737607,
+    "guessing": 0.0011883827377567,
+    "metadata": {
+      "atlas_idx": 584,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|447",
+    "difficulty": 0.9017035636086325,
+    "discrimination": 5.79978502527897,
+    "guessing": 0.0760778675833374,
+    "metadata": {
+      "atlas_idx": 586,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|449",
+    "difficulty": 1.7390165526795776,
+    "discrimination": 3.29239051227557,
+    "guessing": 0.174497072547337,
+    "metadata": {
+      "atlas_idx": 588,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|45",
+    "difficulty": 1.433040032275275,
+    "discrimination": 3.33821893339679,
+    "guessing": 0.139659657947527,
+    "metadata": {
+      "atlas_idx": 589,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|453",
+    "difficulty": 0.15029310476020225,
+    "discrimination": 3.92846174599322,
+    "guessing": 0.0998243632393354,
+    "metadata": {
+      "atlas_idx": 593,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|455",
+    "difficulty": 1.3490263343400537,
+    "discrimination": 3.43598030378356,
+    "guessing": 0.313955957189867,
+    "metadata": {
+      "atlas_idx": 595,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|460",
+    "difficulty": 3.4305913636940715,
+    "discrimination": 0.646778678971276,
+    "guessing": 3.04251341659315e-05,
+    "metadata": {
+      "atlas_idx": 601,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|461",
+    "difficulty": 6.060547172477895,
+    "discrimination": 0.273779841024485,
+    "guessing": 0.000121924500892484,
+    "metadata": {
+      "atlas_idx": 602,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|462",
+    "difficulty": 3.033160989068984,
+    "discrimination": 0.822296962958785,
+    "guessing": 1.86913905109725e-05,
+    "metadata": {
+      "atlas_idx": 603,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|463",
+    "difficulty": 2.5582098482802818,
+    "discrimination": 0.465041126029567,
+    "guessing": 4.11954028874156e-05,
+    "metadata": {
+      "atlas_idx": 604,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|465",
+    "difficulty": 2.0373094926015822,
+    "discrimination": 0.74207481284792,
+    "guessing": 2.30684818198852e-05,
+    "metadata": {
+      "atlas_idx": 606,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|466",
+    "difficulty": 7.311288624840523,
+    "discrimination": 0.34193094393568,
+    "guessing": 5.62936087104697e-05,
+    "metadata": {
+      "atlas_idx": 607,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|467",
+    "difficulty": 1.2030281487556742,
+    "discrimination": 7.93152082755823,
+    "guessing": 0.147178488760544,
+    "metadata": {
+      "atlas_idx": 608,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|468",
+    "difficulty": 6.996727877859077,
+    "discrimination": 0.176769750896229,
+    "guessing": 0.000393826619898086,
+    "metadata": {
+      "atlas_idx": 609,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|469",
+    "difficulty": 0.9030782589432635,
+    "discrimination": 5.30113575250523,
+    "guessing": 0.0920756359177912,
+    "metadata": {
+      "atlas_idx": 610,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|470",
+    "difficulty": 3.509463589113204,
+    "discrimination": 0.397855210886327,
+    "guessing": 5.19813481865121e-05,
+    "metadata": {
+      "atlas_idx": 612,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|471",
+    "difficulty": 4.367195255069851,
+    "discrimination": 0.546287869132641,
+    "guessing": 2.29864706367044e-05,
+    "metadata": {
+      "atlas_idx": 613,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|472",
+    "difficulty": 2.2681569081375947,
+    "discrimination": 0.46313247309249,
+    "guessing": 4.10236311625724e-05,
+    "metadata": {
+      "atlas_idx": 614,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|473",
+    "difficulty": 1.798048674158098,
+    "discrimination": 0.529533800162676,
+    "guessing": 6.17458569810373e-05,
+    "metadata": {
+      "atlas_idx": 615,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|475",
+    "difficulty": 7.551590965077413,
+    "discrimination": 0.259571071165147,
+    "guessing": 9.77733970186952e-05,
+    "metadata": {
+      "atlas_idx": 617,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|476",
+    "difficulty": 1.3403838110098336,
+    "discrimination": 31.0761432695235,
+    "guessing": 0.45543821282501,
+    "metadata": {
+      "atlas_idx": 618,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|479",
+    "difficulty": 45.701373273142394,
+    "discrimination": 0.0501991493401267,
+    "guessing": 0.00181772974827399,
+    "metadata": {
+      "atlas_idx": 621,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|48",
+    "difficulty": 4.987862612823435,
+    "discrimination": 0.411800456413776,
+    "guessing": 4.11717425656297e-05,
+    "metadata": {
+      "atlas_idx": 622,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|480",
+    "difficulty": 0.6245115269990104,
+    "discrimination": 0.978160587011836,
+    "guessing": 0.0016741985633543,
+    "metadata": {
+      "atlas_idx": 623,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|481",
+    "difficulty": 10.158474282445528,
+    "discrimination": 0.224831678526875,
+    "guessing": 0.00011499233302591,
+    "metadata": {
+      "atlas_idx": 624,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|482",
+    "difficulty": 2.766521604479089,
+    "discrimination": 0.666276298455385,
+    "guessing": 2.65007992749937e-05,
+    "metadata": {
+      "atlas_idx": 625,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|483",
+    "difficulty": 3.5045178563304917,
+    "discrimination": 0.505376268612454,
+    "guessing": 3.15481963946235e-05,
+    "metadata": {
+      "atlas_idx": 626,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|484",
+    "difficulty": 1.1749104014965523,
+    "discrimination": 1.82210599640898,
+    "guessing": 2.87326314296663e-05,
+    "metadata": {
+      "atlas_idx": 627,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|486",
+    "difficulty": 3.5653194409091187,
+    "discrimination": 0.4025065603608,
+    "guessing": 5.42582628334422e-05,
+    "metadata": {
+      "atlas_idx": 629,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|490",
+    "difficulty": 0.8929523154575646,
+    "discrimination": 2.85116608644524,
+    "guessing": 0.285780224812133,
+    "metadata": {
+      "atlas_idx": 634,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|491",
+    "difficulty": 0.7717330320003936,
+    "discrimination": 2.53431896788009,
+    "guessing": 0.304954235323484,
+    "metadata": {
+      "atlas_idx": 635,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|492",
+    "difficulty": 3.7739115285965985,
+    "discrimination": 0.394595991085487,
+    "guessing": 4.67060892373568e-05,
+    "metadata": {
+      "atlas_idx": 636,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|494",
+    "difficulty": 1.5227857908630065,
+    "discrimination": 1.47819938775368,
+    "guessing": 0.00469611176861652,
+    "metadata": {
+      "atlas_idx": 638,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|495",
+    "difficulty": 7.667814040894732,
+    "discrimination": 0.131234287862448,
+    "guessing": 0.000487263827561457,
+    "metadata": {
+      "atlas_idx": 639,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|498",
+    "difficulty": 1.0709743339062734,
+    "discrimination": 22.6825667254047,
+    "guessing": 0.108839510679813,
+    "metadata": {
+      "atlas_idx": 642,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|50",
+    "difficulty": 0.5537156203487617,
+    "discrimination": 5.6026139620556,
+    "guessing": 0.405666641325442,
+    "metadata": {
+      "atlas_idx": 645,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|500",
+    "difficulty": 5.350013616407339,
+    "discrimination": 0.176607569531609,
+    "guessing": 0.00038996969215957,
+    "metadata": {
+      "atlas_idx": 646,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|501",
+    "difficulty": 0.8799660823747621,
+    "discrimination": 0.599084335265213,
+    "guessing": 8.05357412284341e-05,
+    "metadata": {
+      "atlas_idx": 647,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|502",
+    "difficulty": 6.055114072617042,
+    "discrimination": 0.330833023226343,
+    "guessing": 7.82081683407129e-05,
+    "metadata": {
+      "atlas_idx": 648,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|503",
+    "difficulty": 4.239393793749447,
+    "discrimination": 0.266844467854127,
+    "guessing": 0.000115108114143614,
+    "metadata": {
+      "atlas_idx": 649,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|504",
+    "difficulty": 1.3700782153735922,
+    "discrimination": 37.3349959502397,
+    "guessing": 0.330015865865354,
+    "metadata": {
+      "atlas_idx": 650,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|505",
+    "difficulty": 7.084919318385934,
+    "discrimination": 0.18630190227646,
+    "guessing": 0.000190092037305705,
+    "metadata": {
+      "atlas_idx": 651,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|506",
+    "difficulty": 1.0907690985678575,
+    "discrimination": 22.708333122787,
+    "guessing": 0.116518732879218,
+    "metadata": {
+      "atlas_idx": 652,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|507",
+    "difficulty": 1.4468456760550799,
+    "discrimination": 32.2277386449361,
+    "guessing": 0.307960873306362,
+    "metadata": {
+      "atlas_idx": 653,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|508",
+    "difficulty": 4.066745081030985,
+    "discrimination": 0.42319322321517,
+    "guessing": 9.47425190683024e-05,
+    "metadata": {
+      "atlas_idx": 654,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|509",
+    "difficulty": 13.747605386914458,
+    "discrimination": 0.101493550448598,
+    "guessing": 0.000684424429974463,
+    "metadata": {
+      "atlas_idx": 655,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|51",
+    "difficulty": 2.989783549603854,
+    "discrimination": 0.499269754383786,
+    "guessing": 0.000104466087983644,
+    "metadata": {
+      "atlas_idx": 656,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|511",
+    "difficulty": 1.5802000668066047,
+    "discrimination": 27.8415684980597,
+    "guessing": 0.125760379702749,
+    "metadata": {
+      "atlas_idx": 658,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|513",
+    "difficulty": 5.522005675846841,
+    "discrimination": 0.276639673746105,
+    "guessing": 8.82755712225803e-05,
+    "metadata": {
+      "atlas_idx": 660,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|516",
+    "difficulty": 4.71012263192701,
+    "discrimination": 0.377487065269708,
+    "guessing": 5.04019119169023e-05,
+    "metadata": {
+      "atlas_idx": 663,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|52",
+    "difficulty": 3.042967199890298,
+    "discrimination": 0.342520645163594,
+    "guessing": 7.54957118800286e-05,
+    "metadata": {
+      "atlas_idx": 667,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|520",
+    "difficulty": 1.5240271297808474,
+    "discrimination": 29.2263742341295,
+    "guessing": 0.166266786181105,
+    "metadata": {
+      "atlas_idx": 668,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|521",
+    "difficulty": 0.7336454156622371,
+    "discrimination": 2.93431833435529,
+    "guessing": 0.360397380932984,
+    "metadata": {
+      "atlas_idx": 669,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|522",
+    "difficulty": 1.2060149011729582,
+    "discrimination": 29.790855548285,
+    "guessing": 0.295297755095399,
+    "metadata": {
+      "atlas_idx": 670,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|526",
+    "difficulty": 31.319169068272753,
+    "discrimination": 0.0416977559156745,
+    "guessing": 0.00475054585373106,
+    "metadata": {
+      "atlas_idx": 674,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|527",
+    "difficulty": 3.4823320182250095,
+    "discrimination": 0.429633961821606,
+    "guessing": 4.88214311633905e-05,
+    "metadata": {
+      "atlas_idx": 675,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|528",
+    "difficulty": 1.5494318235393978,
+    "discrimination": 3.47916278360656,
+    "guessing": 0.142137558431925,
+    "metadata": {
+      "atlas_idx": 676,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|529",
+    "difficulty": 5.711370173051463,
+    "discrimination": 0.279607972121043,
+    "guessing": 0.000107772889910779,
+    "metadata": {
+      "atlas_idx": 677,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|53",
+    "difficulty": 0.8854410281938168,
+    "discrimination": 1.61408366638142,
+    "guessing": 0.000109296817801071,
+    "metadata": {
+      "atlas_idx": 678,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|531",
+    "difficulty": 2.878205444679089,
+    "discrimination": 0.306544394217013,
+    "guessing": 8.84423660282201e-05,
+    "metadata": {
+      "atlas_idx": 680,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|533",
+    "difficulty": 0.32986225840680417,
+    "discrimination": 1.40326493281034,
+    "guessing": 0.000419700450334788,
+    "metadata": {
+      "atlas_idx": 682,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|534",
+    "difficulty": 23.024403401009305,
+    "discrimination": 0.0103315976315376,
+    "guessing": 0.00251344142089764,
+    "metadata": {
+      "atlas_idx": 683,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|535",
+    "difficulty": 3.19501396458335,
+    "discrimination": 0.448838977046233,
+    "guessing": 4.32459126887489e-05,
+    "metadata": {
+      "atlas_idx": 684,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|536",
+    "difficulty": 2.746512852279457,
+    "discrimination": 0.782644606535999,
+    "guessing": 8.03029692339722e-05,
+    "metadata": {
+      "atlas_idx": 685,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|537",
+    "difficulty": 1.6872970100462816,
+    "discrimination": 20.9164089132606,
+    "guessing": 0.186008601481093,
+    "metadata": {
+      "atlas_idx": 686,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|538",
+    "difficulty": 0.7581878952847286,
+    "discrimination": 3.04820940425779,
+    "guessing": 0.0522360459271488,
+    "metadata": {
+      "atlas_idx": 687,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|539",
+    "difficulty": 12.51426186088853,
+    "discrimination": 0.134975444672561,
+    "guessing": 0.000366942040472384,
+    "metadata": {
+      "atlas_idx": 688,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|541",
+    "difficulty": 3.179067275171936,
+    "discrimination": 0.394366386095706,
+    "guessing": 6.79038194370159e-05,
+    "metadata": {
+      "atlas_idx": 691,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|544",
+    "difficulty": 4.66639357175599,
+    "discrimination": 0.483238145285049,
+    "guessing": 3.77874255448556e-05,
+    "metadata": {
+      "atlas_idx": 694,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|55",
+    "difficulty": 5.125744111249498,
+    "discrimination": 0.274023099366314,
+    "guessing": 0.000128445775162163,
+    "metadata": {
+      "atlas_idx": 696,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|57",
+    "difficulty": 7.902993740187716,
+    "discrimination": 0.246364339641941,
+    "guessing": 0.000103856943016824,
+    "metadata": {
+      "atlas_idx": 698,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|58",
+    "difficulty": 0.7885373295744338,
+    "discrimination": 3.12195592988257,
+    "guessing": 0.476355593138938,
+    "metadata": {
+      "atlas_idx": 699,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|60",
+    "difficulty": -0.03767206794517997,
+    "discrimination": 0.888032726550408,
+    "guessing": 0.000138117556425922,
+    "metadata": {
+      "atlas_idx": 702,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|61",
+    "difficulty": 1.333528482772658,
+    "discrimination": 5.00977220998817,
+    "guessing": 0.484027039788824,
+    "metadata": {
+      "atlas_idx": 703,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|63",
+    "difficulty": 1.760121062277589,
+    "discrimination": 22.9618540518741,
+    "guessing": 0.587961723715738,
+    "metadata": {
+      "atlas_idx": 705,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|67",
+    "difficulty": 0.7972852743096112,
+    "discrimination": 1.44373193399608,
+    "guessing": 0.0554246616739949,
+    "metadata": {
+      "atlas_idx": 709,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|68",
+    "difficulty": 1.1921436494353521,
+    "discrimination": 2.1586894492201,
+    "guessing": 0.0702234551188725,
+    "metadata": {
+      "atlas_idx": 710,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|71",
+    "difficulty": 1.6170457885638765,
+    "discrimination": 25.3522601605968,
+    "guessing": 0.219061523409554,
+    "metadata": {
+      "atlas_idx": 714,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|77",
+    "difficulty": -0.283301274052596,
+    "discrimination": 0.945581302523434,
+    "guessing": 0.000120285436200407,
+    "metadata": {
+      "atlas_idx": 720,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|94",
+    "difficulty": 1.7301584013224622,
+    "discrimination": 23.4617187823024,
+    "guessing": 0.252862202780486,
+    "metadata": {
+      "atlas_idx": 739,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "extended|97",
+    "difficulty": 4.085154074375709,
+    "discrimination": 0.260490465520315,
+    "guessing": 8.24131184024992e-05,
+    "metadata": {
+      "atlas_idx": 742,
+      "subtask": "extended"
+    }
+  },
+  {
+    "item_id": "main|102",
+    "difficulty": 0.9476769420527688,
+    "discrimination": 1.76205864857558,
+    "guessing": 1.63966883914054e-05,
+    "metadata": {
+      "atlas_idx": 750,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|103",
+    "difficulty": 0.7042225238968282,
+    "discrimination": 2.40407994595659,
+    "guessing": 0.155998924327418,
+    "metadata": {
+      "atlas_idx": 751,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|105",
+    "difficulty": 1.6220590483112156,
+    "discrimination": 2.43641765365861,
+    "guessing": 0.0594923837966367,
+    "metadata": {
+      "atlas_idx": 753,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|108",
+    "difficulty": -0.27362640768052043,
+    "discrimination": 1.13090073550521,
+    "guessing": 0.178219994143808,
+    "metadata": {
+      "atlas_idx": 756,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|112",
+    "difficulty": 0.8502808453486621,
+    "discrimination": 1.37040782296727,
+    "guessing": 6.12670213715366e-05,
+    "metadata": {
+      "atlas_idx": 761,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|115",
+    "difficulty": 0.002645144410014851,
+    "discrimination": 2.83690918551978,
+    "guessing": 1.76801358067135e-05,
+    "metadata": {
+      "atlas_idx": 764,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|124",
+    "difficulty": -0.14509080443668745,
+    "discrimination": 1.95513994336936,
+    "guessing": 1.29387438173709e-05,
+    "metadata": {
+      "atlas_idx": 774,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|126",
+    "difficulty": -0.022641414061242007,
+    "discrimination": 1.43444207235329,
+    "guessing": 0.000179867432317455,
+    "metadata": {
+      "atlas_idx": 776,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|129",
+    "difficulty": -0.1906347330523429,
+    "discrimination": 2.66906710010934,
+    "guessing": 3.04351037688832e-05,
+    "metadata": {
+      "atlas_idx": 779,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|13",
+    "difficulty": 0.89594230013242,
+    "discrimination": 4.06695869957175,
+    "guessing": 0.376342586036374,
+    "metadata": {
+      "atlas_idx": 780,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|133",
+    "difficulty": -0.2334039036049291,
+    "discrimination": 2.54056698295436,
+    "guessing": 9.53891591768246e-05,
+    "metadata": {
+      "atlas_idx": 784,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|15",
+    "difficulty": 0.5112012039647791,
+    "discrimination": 5.13378386502172,
+    "guessing": 0.190226553305915,
+    "metadata": {
+      "atlas_idx": 802,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|153",
+    "difficulty": -0.05889261595440904,
+    "discrimination": 1.84202474433324,
+    "guessing": 8.37098297308076e-05,
+    "metadata": {
+      "atlas_idx": 806,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|167",
+    "difficulty": 1.488429418708324,
+    "discrimination": 4.05351720864325,
+    "guessing": 0.472421426425748,
+    "metadata": {
+      "atlas_idx": 821,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|181",
+    "difficulty": -0.4174330173475013,
+    "discrimination": 2.69580370010977,
+    "guessing": 6.65692435895961e-05,
+    "metadata": {
+      "atlas_idx": 837,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|182",
+    "difficulty": 0.230976686750851,
+    "discrimination": 2.70313984179911,
+    "guessing": 0.141159921685542,
+    "metadata": {
+      "atlas_idx": 838,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|184",
+    "difficulty": -0.09108766797706698,
+    "discrimination": 1.89270741708349,
+    "guessing": 0.13716287068917,
+    "metadata": {
+      "atlas_idx": 840,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|185",
+    "difficulty": -0.30026984103683846,
+    "discrimination": 2.42963578965782,
+    "guessing": 0.00027085784062843,
+    "metadata": {
+      "atlas_idx": 841,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|187",
+    "difficulty": -1.0521490818495634,
+    "discrimination": 1.88851476994402,
+    "guessing": 0.00412606929348848,
+    "metadata": {
+      "atlas_idx": 843,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|189",
+    "difficulty": -0.577082528944512,
+    "discrimination": 3.24101969883309,
+    "guessing": 0.000217113856788304,
+    "metadata": {
+      "atlas_idx": 845,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|190",
+    "difficulty": 0.9489829581670874,
+    "discrimination": 1.32591905005085,
+    "guessing": 7.95409538150454e-05,
+    "metadata": {
+      "atlas_idx": 847,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|193",
+    "difficulty": -1.5443433640024442,
+    "discrimination": 1.06275298267994,
+    "guessing": 0.00133908213550414,
+    "metadata": {
+      "atlas_idx": 850,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|196",
+    "difficulty": 1.0732415901272692,
+    "discrimination": 2.83662315443091,
+    "guessing": 0.0598208923297994,
+    "metadata": {
+      "atlas_idx": 853,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|197",
+    "difficulty": -0.1942539907326036,
+    "discrimination": 1.65368810114286,
+    "guessing": 0.00024439644056831,
+    "metadata": {
+      "atlas_idx": 854,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|220",
+    "difficulty": -0.2907764911311266,
+    "discrimination": 2.83851281089414,
+    "guessing": 0.0615387454181246,
+    "metadata": {
+      "atlas_idx": 881,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|228",
+    "difficulty": 0.3612332686037766,
+    "discrimination": 3.13052187338195,
+    "guessing": 0.0635300644397806,
+    "metadata": {
+      "atlas_idx": 889,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|24",
+    "difficulty": 0.5306510582938737,
+    "discrimination": 12.8483146351437,
+    "guessing": 0.0123281513686271,
+    "metadata": {
+      "atlas_idx": 902,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|243",
+    "difficulty": -0.572487799310226,
+    "discrimination": 1.21414301162447,
+    "guessing": 4.40670849650291e-05,
+    "metadata": {
+      "atlas_idx": 906,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|244",
+    "difficulty": 2.4539909417897277,
+    "discrimination": 0.883183208122705,
+    "guessing": 3.10279874746467e-05,
+    "metadata": {
+      "atlas_idx": 907,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|246",
+    "difficulty": 1.425750848842086,
+    "discrimination": 0.574833391386776,
+    "guessing": 3.73154650535944e-05,
+    "metadata": {
+      "atlas_idx": 909,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|248",
+    "difficulty": 1.5436070250799745,
+    "discrimination": 0.953576479518651,
+    "guessing": 1.92114711895237e-05,
+    "metadata": {
+      "atlas_idx": 911,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|25",
+    "difficulty": 0.7349009668502107,
+    "discrimination": 17.5292365612658,
+    "guessing": 0.194514382034218,
+    "metadata": {
+      "atlas_idx": 913,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|254",
+    "difficulty": 0.4902070011758265,
+    "discrimination": 1.19380775259408,
+    "guessing": 2.74980133472851e-05,
+    "metadata": {
+      "atlas_idx": 918,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|257",
+    "difficulty": 0.02113251331063835,
+    "discrimination": 0.569588240723408,
+    "guessing": 0.000157955491987893,
+    "metadata": {
+      "atlas_idx": 921,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|258",
+    "difficulty": 3.3606238379050968,
+    "discrimination": 0.482355053767924,
+    "guessing": 8.75221535268931e-05,
+    "metadata": {
+      "atlas_idx": 922,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|26",
+    "difficulty": 5.942482090424151,
+    "discrimination": 0.465987807503871,
+    "guessing": 0.000171954232168227,
+    "metadata": {
+      "atlas_idx": 924,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|266",
+    "difficulty": 0.5564877163874689,
+    "discrimination": 1.35150851038726,
+    "guessing": 6.83354483491996e-05,
+    "metadata": {
+      "atlas_idx": 931,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|267",
+    "difficulty": 0.7782045168582574,
+    "discrimination": 1.6127078793565,
+    "guessing": 5.92339276447078e-05,
+    "metadata": {
+      "atlas_idx": 932,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|269",
+    "difficulty": 2.95133342938722,
+    "discrimination": 0.427507893488608,
+    "guessing": 0.00353062410027888,
+    "metadata": {
+      "atlas_idx": 934,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|272",
+    "difficulty": 0.5964771632409092,
+    "discrimination": 15.7433961928208,
+    "guessing": 0.0262139431785687,
+    "metadata": {
+      "atlas_idx": 938,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|277",
+    "difficulty": 2.4879224695469886,
+    "discrimination": 0.896105888815742,
+    "guessing": 2.28505792750823e-05,
+    "metadata": {
+      "atlas_idx": 943,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|282",
+    "difficulty": 4.303898363777909,
+    "discrimination": 0.480730653074559,
+    "guessing": 6.14156872659283e-05,
+    "metadata": {
+      "atlas_idx": 949,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|285",
+    "difficulty": 0.5677093576327988,
+    "discrimination": 1.78927316013893,
+    "guessing": 0.0324816213183226,
+    "metadata": {
+      "atlas_idx": 952,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|286",
+    "difficulty": 0.5718909809010965,
+    "discrimination": 1.01028342075077,
+    "guessing": 2.96182713090904e-05,
+    "metadata": {
+      "atlas_idx": 953,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|287",
+    "difficulty": 0.1616170790080919,
+    "discrimination": 2.30111125427464,
+    "guessing": 0.0284312453383923,
+    "metadata": {
+      "atlas_idx": 954,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|288",
+    "difficulty": 0.601929118763647,
+    "discrimination": 6.44291702073892,
+    "guessing": 0.0375255989437519,
+    "metadata": {
+      "atlas_idx": 955,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|29",
+    "difficulty": 2.5546654034448686,
+    "discrimination": 0.663840677618261,
+    "guessing": 3.77535680533271e-05,
+    "metadata": {
+      "atlas_idx": 957,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|290",
+    "difficulty": 0.20319459960434402,
+    "discrimination": 1.77407843894689,
+    "guessing": 0.00201721252883979,
+    "metadata": {
+      "atlas_idx": 958,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|291",
+    "difficulty": 0.38690673079729376,
+    "discrimination": 4.80334131628035,
+    "guessing": 0.0522691906640713,
+    "metadata": {
+      "atlas_idx": 959,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|292",
+    "difficulty": 6.615826900902751,
+    "discrimination": 0.373478662694198,
+    "guessing": 0.000587486023803352,
+    "metadata": {
+      "atlas_idx": 960,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|293",
+    "difficulty": 3.612400283494438,
+    "discrimination": 0.7800960904772,
+    "guessing": 2.77341951515852e-05,
+    "metadata": {
+      "atlas_idx": 961,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|295",
+    "difficulty": 3.6546912552308886,
+    "discrimination": 0.429502710056547,
+    "guessing": 6.14519969330144e-05,
+    "metadata": {
+      "atlas_idx": 963,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|296",
+    "difficulty": 5.495840086715592,
+    "discrimination": 0.447402746036112,
+    "guessing": 5.3038462767136e-05,
+    "metadata": {
+      "atlas_idx": 964,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|297",
+    "difficulty": 0.9750943878584897,
+    "discrimination": 1.11493090207805,
+    "guessing": 1.51270422800998e-05,
+    "metadata": {
+      "atlas_idx": 965,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|299",
+    "difficulty": -2.934069116673191,
+    "discrimination": 0.750207647773839,
+    "guessing": 0.000207319585513726,
+    "metadata": {
+      "atlas_idx": 967,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|30",
+    "difficulty": 0.8122082302901044,
+    "discrimination": 5.67230618131477,
+    "guessing": 0.0388040312681617,
+    "metadata": {
+      "atlas_idx": 969,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|300",
+    "difficulty": 2.3792138151345554,
+    "discrimination": 0.58052863219294,
+    "guessing": 3.82190053945675e-05,
+    "metadata": {
+      "atlas_idx": 970,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|304",
+    "difficulty": 1.5484604885219617,
+    "discrimination": 1.31442903213363,
+    "guessing": 2.54603594160122e-05,
+    "metadata": {
+      "atlas_idx": 974,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|305",
+    "difficulty": 1.4945670783484748,
+    "discrimination": 0.622225449803141,
+    "guessing": 3.48861931409238e-05,
+    "metadata": {
+      "atlas_idx": 975,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|307",
+    "difficulty": 1.2537998054707806,
+    "discrimination": 0.981315269707205,
+    "guessing": 2.06598273523029e-05,
+    "metadata": {
+      "atlas_idx": 977,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|309",
+    "difficulty": 0.5505599687951496,
+    "discrimination": 3.71411299465359,
+    "guessing": 0.0844395799740803,
+    "metadata": {
+      "atlas_idx": 979,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|31",
+    "difficulty": 0.4536416513690103,
+    "discrimination": 6.87070959426796,
+    "guessing": 0.319349921544146,
+    "metadata": {
+      "atlas_idx": 980,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|311",
+    "difficulty": 1.7429356429088063,
+    "discrimination": 0.877214272418294,
+    "guessing": 4.88903834802331e-05,
+    "metadata": {
+      "atlas_idx": 982,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|324",
+    "difficulty": 4.487960563618341,
+    "discrimination": 0.674723205894664,
+    "guessing": 2.83494983367089e-05,
+    "metadata": {
+      "atlas_idx": 996,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|327",
+    "difficulty": 0.6081345180835332,
+    "discrimination": 8.42587594201571,
+    "guessing": 0.0721978243247431,
+    "metadata": {
+      "atlas_idx": 999,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|336",
+    "difficulty": 0.5589472217679485,
+    "discrimination": 3.47964655100035,
+    "guessing": 0.168418488922525,
+    "metadata": {
+      "atlas_idx": 1009,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|337",
+    "difficulty": 0.4409214472840897,
+    "discrimination": 4.82761982618036,
+    "guessing": 0.220215500066926,
+    "metadata": {
+      "atlas_idx": 1010,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|34",
+    "difficulty": 0.5052642788837476,
+    "discrimination": 4.89914772743105,
+    "guessing": 0.222976443788428,
+    "metadata": {
+      "atlas_idx": 1013,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|340",
+    "difficulty": -0.22327487001797253,
+    "discrimination": 1.28178529967317,
+    "guessing": 0.000132023664532703,
+    "metadata": {
+      "atlas_idx": 1014,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|354",
+    "difficulty": 0.46494125378522455,
+    "discrimination": 6.29037903257253,
+    "guessing": 0.204802190618457,
+    "metadata": {
+      "atlas_idx": 1029,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|358",
+    "difficulty": 0.009713110337129639,
+    "discrimination": 1.92408081794964,
+    "guessing": 0.0332199053533949,
+    "metadata": {
+      "atlas_idx": 1033,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|383",
+    "difficulty": 0.4672578611299497,
+    "discrimination": 4.92610466067126,
+    "guessing": 0.252121313301222,
+    "metadata": {
+      "atlas_idx": 1061,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|397",
+    "difficulty": 0.5703528285347755,
+    "discrimination": 3.80128880704076,
+    "guessing": 0.0646761961286204,
+    "metadata": {
+      "atlas_idx": 1076,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|399",
+    "difficulty": -0.0752248624314354,
+    "discrimination": 2.77700399654415,
+    "guessing": 0.152897979066609,
+    "metadata": {
+      "atlas_idx": 1078,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|422",
+    "difficulty": 1.0918215706559988,
+    "discrimination": 1.99792729387433,
+    "guessing": 6.35031065475248e-06,
+    "metadata": {
+      "atlas_idx": 1105,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|423",
+    "difficulty": 2.9282283915251215,
+    "discrimination": 0.728797001768013,
+    "guessing": 1.80288143257655e-06,
+    "metadata": {
+      "atlas_idx": 1106,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|425",
+    "difficulty": 2.5265287375428778,
+    "discrimination": 0.735740920104014,
+    "guessing": 3.68991983243085e-05,
+    "metadata": {
+      "atlas_idx": 1108,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|426",
+    "difficulty": 4.188139586776818,
+    "discrimination": 0.594710622969661,
+    "guessing": 4.91509944249625e-05,
+    "metadata": {
+      "atlas_idx": 1109,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|428",
+    "difficulty": 1.1941081968077185,
+    "discrimination": 0.907826484047834,
+    "guessing": 3.78176792082321e-05,
+    "metadata": {
+      "atlas_idx": 1111,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|43",
+    "difficulty": 1.1742561359698973,
+    "discrimination": 10.4361593414556,
+    "guessing": 0.158008295729259,
+    "metadata": {
+      "atlas_idx": 1113,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|434",
+    "difficulty": 1.19482946032157,
+    "discrimination": 1.78573682751069,
+    "guessing": 0.00444500691787174,
+    "metadata": {
+      "atlas_idx": 1118,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|436",
+    "difficulty": 1.7190138339516567,
+    "discrimination": 1.38683643388652,
+    "guessing": 0.0315987104074181,
+    "metadata": {
+      "atlas_idx": 1120,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|437",
+    "difficulty": 2.239612358967169,
+    "discrimination": 0.941418607512568,
+    "guessing": 2.67468802257628e-05,
+    "metadata": {
+      "atlas_idx": 1121,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|438",
+    "difficulty": 1.21378563572759,
+    "discrimination": 16.9129718776834,
+    "guessing": 0.0690513690388647,
+    "metadata": {
+      "atlas_idx": 1122,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|447",
+    "difficulty": 4.503401499963799,
+    "discrimination": 0.329164948308581,
+    "guessing": 5.8112437862806e-05,
+    "metadata": {
+      "atlas_idx": 1132,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|46",
+    "difficulty": 4.649801257642344,
+    "discrimination": 0.55974071619742,
+    "guessing": 1.29306313754559e-05,
+    "metadata": {
+      "atlas_idx": 1134,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|51",
+    "difficulty": 0.9706367368341885,
+    "discrimination": 1.7538267443896,
+    "guessing": 1.33617471295149e-05,
+    "metadata": {
+      "atlas_idx": 1140,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|52",
+    "difficulty": 0.2604160913665167,
+    "discrimination": 1.06204312594417,
+    "guessing": 1.1470234328103e-05,
+    "metadata": {
+      "atlas_idx": 1141,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|53",
+    "difficulty": 1.2047806414853468,
+    "discrimination": 6.38194250477287,
+    "guessing": 0.117500400726105,
+    "metadata": {
+      "atlas_idx": 1142,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|55",
+    "difficulty": 2.7469612267721146,
+    "discrimination": 0.880733788488532,
+    "guessing": 0.00946304767187204,
+    "metadata": {
+      "atlas_idx": 1144,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|56",
+    "difficulty": 2.1624090789330483,
+    "discrimination": 1.06941750399378,
+    "guessing": 8.02746865848338e-06,
+    "metadata": {
+      "atlas_idx": 1145,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|58",
+    "difficulty": 1.1837956358714536,
+    "discrimination": 2.55619544504669,
+    "guessing": 0.0268335572274602,
+    "metadata": {
+      "atlas_idx": 1147,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|59",
+    "difficulty": 6.987539900598934,
+    "discrimination": 0.394023672405787,
+    "guessing": 2.62212562109631e-05,
+    "metadata": {
+      "atlas_idx": 1148,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|6",
+    "difficulty": 1.0840697350473238,
+    "discrimination": 1.5278776869553,
+    "guessing": 8.02481004180798e-06,
+    "metadata": {
+      "atlas_idx": 1149,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|60",
+    "difficulty": 3.138158996404403,
+    "discrimination": 0.770600628367549,
+    "guessing": 1.15453493625562e-05,
+    "metadata": {
+      "atlas_idx": 1150,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|62",
+    "difficulty": 3.8213409674252845,
+    "discrimination": 0.608134186561874,
+    "guessing": 1.96649068749718e-05,
+    "metadata": {
+      "atlas_idx": 1152,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|63",
+    "difficulty": 1.1289612882786833,
+    "discrimination": 2.91896541918349,
+    "guessing": 0.0682142338291389,
+    "metadata": {
+      "atlas_idx": 1153,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|64",
+    "difficulty": -0.22394689769974063,
+    "discrimination": 1.0607374357476,
+    "guessing": 1.65789819345384e-05,
+    "metadata": {
+      "atlas_idx": 1154,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|65",
+    "difficulty": 2.564234066835961,
+    "discrimination": 0.430694234322233,
+    "guessing": 4.39150620849326e-05,
+    "metadata": {
+      "atlas_idx": 1155,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|67",
+    "difficulty": 2.4903328518607166,
+    "discrimination": 0.75690074392018,
+    "guessing": 2.97916528094271e-05,
+    "metadata": {
+      "atlas_idx": 1157,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|69",
+    "difficulty": 2.745558679936077,
+    "discrimination": 1.03256967445887,
+    "guessing": 1.24923004182456e-05,
+    "metadata": {
+      "atlas_idx": 1159,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|70",
+    "difficulty": 1.8964892205151407,
+    "discrimination": 0.821631338891947,
+    "guessing": 9.70726188989159e-06,
+    "metadata": {
+      "atlas_idx": 1161,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|71",
+    "difficulty": 6.298980847876285,
+    "discrimination": 0.363599756216843,
+    "guessing": 3.04608525465158e-05,
+    "metadata": {
+      "atlas_idx": 1162,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|75",
+    "difficulty": 4.81314764668744,
+    "discrimination": 0.475208112096315,
+    "guessing": 2.09213229085371e-05,
+    "metadata": {
+      "atlas_idx": 1166,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|76",
+    "difficulty": 2.9493853523283864,
+    "discrimination": 0.778382685607201,
+    "guessing": 2.09054464613734e-05,
+    "metadata": {
+      "atlas_idx": 1167,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|77",
+    "difficulty": 0.7543988316367867,
+    "discrimination": 2.13035235833678,
+    "guessing": 1.00689822118129e-05,
+    "metadata": {
+      "atlas_idx": 1168,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|79",
+    "difficulty": 0.361099534338604,
+    "discrimination": 0.716739959721928,
+    "guessing": 2.39208909983749e-05,
+    "metadata": {
+      "atlas_idx": 1170,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|8",
+    "difficulty": 10.661642365896084,
+    "discrimination": 0.196696164614012,
+    "guessing": 0.000109618048929614,
+    "metadata": {
+      "atlas_idx": 1171,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|83",
+    "difficulty": 2.5159542909191157,
+    "discrimination": 0.931398176009079,
+    "guessing": 1.60598666729551e-05,
+    "metadata": {
+      "atlas_idx": 1175,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|84",
+    "difficulty": 2.602814841933366,
+    "discrimination": 0.999413646590242,
+    "guessing": 6.5303580068403e-05,
+    "metadata": {
+      "atlas_idx": 1176,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|85",
+    "difficulty": 1.8470563274393506,
+    "discrimination": 1.60114145581676,
+    "guessing": 3.89468987456862e-06,
+    "metadata": {
+      "atlas_idx": 1177,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|86",
+    "difficulty": 1.3625965492354952,
+    "discrimination": 0.680779601451515,
+    "guessing": 4.18067420260153e-05,
+    "metadata": {
+      "atlas_idx": 1178,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|88",
+    "difficulty": 2.586204768954147,
+    "discrimination": 0.995807029671505,
+    "guessing": 7.39123015373031e-06,
+    "metadata": {
+      "atlas_idx": 1180,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|89",
+    "difficulty": 2.6661123682599723,
+    "discrimination": 1.13887151138436,
+    "guessing": 7.88371516078014e-06,
+    "metadata": {
+      "atlas_idx": 1181,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|9",
+    "difficulty": 3.1382009446957744,
+    "discrimination": 0.591174561078628,
+    "guessing": 1.19636893295221e-05,
+    "metadata": {
+      "atlas_idx": 1182,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|90",
+    "difficulty": 2.358627266447436,
+    "discrimination": 1.31888389027156,
+    "guessing": 9.17280387051206e-06,
+    "metadata": {
+      "atlas_idx": 1183,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|94",
+    "difficulty": 4.872845872025919,
+    "discrimination": 0.20238829508665,
+    "guessing": 0.000102111795491124,
+    "metadata": {
+      "atlas_idx": 1187,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|96",
+    "difficulty": 3.1513813380172864,
+    "discrimination": 0.527914292160749,
+    "guessing": 6.47408979530056e-05,
+    "metadata": {
+      "atlas_idx": 1189,
+      "subtask": "main"
+    }
+  },
+  {
+    "item_id": "main|97",
+    "difficulty": 1.5340912819208463,
+    "discrimination": 1.45180752201753,
+    "guessing": 9.70540830982167e-06,
+    "metadata": {
+      "atlas_idx": 1190,
+      "subtask": "main"
+    }
+  }
+]

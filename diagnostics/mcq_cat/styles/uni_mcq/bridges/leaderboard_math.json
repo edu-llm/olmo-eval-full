@@ -1,0 +1,72 @@
+{
+  "dataset": "leaderboard_math",
+  "bridge_kind": "content_hash",
+  "rows": 1206,
+  "ordering": {
+    "source": "Open LLM Leaderboard v2 per-model detail repo",
+    "harness_config": "leaderboard_math_*",
+    "repo": "open-llm-leaderboard/microsoft__Phi-3-mini-4k-instruct-details",
+    "revision": "427d64648094a1aea773aec93fe5e3b5ca069074",
+    "run": "2024-07-18T11-04-02.101450",
+    "paths": {
+      "algebra_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_algebra_hard_2024-07-18T11-04-02.101450.jsonl",
+      "counting_and_prob_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_counting_and_prob_hard_2024-07-18T11-04-02.101450.jsonl",
+      "geometry_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_geometry_hard_2024-07-18T11-04-02.101450.jsonl",
+      "intermediate_algebra_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_intermediate_algebra_hard_2024-07-18T11-04-02.101450.jsonl",
+      "num_theory_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_num_theory_hard_2024-07-18T11-04-02.101450.jsonl",
+      "prealgebra_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_prealgebra_hard_2024-07-18T11-04-02.101450.jsonl",
+      "precalculus_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_precalculus_hard_2024-07-18T11-04-02.101450.jsonl"
+    },
+    "doc_id": "read from each record's explicit doc_id field, not from its position in the file: lm-eval writes samples in completion order, so row order and document order differ",
+    "cross_checked": [
+      {
+        "repo": "open-llm-leaderboard/Qwen__Qwen2.5-7B-Instruct-details",
+        "run": "2024-09-19T16-21-01.446061",
+        "documents_agreeing": 1324
+      },
+      {
+        "repo": "open-llm-leaderboard/Danielbrdz__Barcenas-R1-Qwen-1.5b-details",
+        "run": "2025-01-26T19-17-19.771431",
+        "documents_agreeing": 1324
+      },
+      {
+        "repo": "open-llm-leaderboard/DeepMount00__Qwen2-1.5B-Ita-details",
+        "run": "2025-02-28T20-55-59.716664",
+        "documents_agreeing": 1324
+      }
+    ]
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "tasks": [
+      "leaderboard_math"
+    ]
+  },
+  "matching": {
+    "recipe": "each evaluated document rebuilt from the details record as the olmo-eval task renders it, then matched as a bijection over each subtask's split",
+    "doc_fields": [
+      "problem"
+    ],
+    "normalization": "none. The details record's doc is the raw MATH-lighteval row and the olmo-eval task's stem is its problem field unaltered, so the two renderings are the same string; the 4-shot Minerva block and the Problem:/Solution: framing are added by format_request and are deliberately not matched. The one thing this entry depends on beyond the text is the enumeration: the task concatenates seven subjects and numbers each one's Level-5 subsequence from zero, emitting <subject>|<position> as its own id, so composite_id recovers the per-subject enumeration from that id rather than from the registry -- there is one registered task, not seven.",
+    "enumeration": "composite_id",
+    "documents_evaluated": 1324,
+    "documents_matched": 1324,
+    "positions_agreeing_with_enumeration_order": 8
+  },
+  "index_map": {
+    "source_ref": "origin/Research",
+    "path": "AdaptiveTesting/Experiments/openlm_atlas_3pl/math/data/item_id_map.csv",
+    "rows": 1206,
+    "subtask_rows": {
+      "algebra_hard": 303,
+      "counting_and_prob_hard": 120,
+      "geometry_hard": 115,
+      "intermediate_algebra_hard": 223,
+      "num_theory_hard": 151,
+      "prealgebra_hard": 188,
+      "precalculus_hard": 106
+    }
+  },
+  "generated_at": "2026-08-07T21:28:46.905577+00:00"
+}

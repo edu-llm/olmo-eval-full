@@ -1,0 +1,130 @@
+{
+  "dataset": "leaderboard_math",
+  "task": "leaderboard_math",
+  "route": "B",
+  "modality": "generative",
+  "answer_type": "math_latex",
+  "fit_family": "3pl",
+  "source_ref": "origin/Research",
+  "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+  "bank_dir": "AdaptiveTesting/Experiments/openlm_atlas_3pl/math/calibration",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/leaderboard_math.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "leaderboard_math",
+    "bridge_kind": "content_hash",
+    "rows": 1206,
+    "ordering": {
+      "source": "Open LLM Leaderboard v2 per-model detail repo",
+      "harness_config": "leaderboard_math_*",
+      "repo": "open-llm-leaderboard/microsoft__Phi-3-mini-4k-instruct-details",
+      "revision": "427d64648094a1aea773aec93fe5e3b5ca069074",
+      "run": "2024-07-18T11-04-02.101450",
+      "paths": {
+        "algebra_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_algebra_hard_2024-07-18T11-04-02.101450.jsonl",
+        "counting_and_prob_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_counting_and_prob_hard_2024-07-18T11-04-02.101450.jsonl",
+        "geometry_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_geometry_hard_2024-07-18T11-04-02.101450.jsonl",
+        "intermediate_algebra_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_intermediate_algebra_hard_2024-07-18T11-04-02.101450.jsonl",
+        "num_theory_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_num_theory_hard_2024-07-18T11-04-02.101450.jsonl",
+        "prealgebra_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_prealgebra_hard_2024-07-18T11-04-02.101450.jsonl",
+        "precalculus_hard": "microsoft__Phi-3-mini-4k-instruct/samples_leaderboard_math_precalculus_hard_2024-07-18T11-04-02.101450.jsonl"
+      },
+      "doc_id": "read from each record's explicit doc_id field, not from its position in the file: lm-eval writes samples in completion order, so row order and document order differ",
+      "cross_checked": [
+        {
+          "repo": "open-llm-leaderboard/Qwen__Qwen2.5-7B-Instruct-details",
+          "run": "2024-09-19T16-21-01.446061",
+          "documents_agreeing": 1324
+        },
+        {
+          "repo": "open-llm-leaderboard/Danielbrdz__Barcenas-R1-Qwen-1.5b-details",
+          "run": "2025-01-26T19-17-19.771431",
+          "documents_agreeing": 1324
+        },
+        {
+          "repo": "open-llm-leaderboard/DeepMount00__Qwen2-1.5B-Ita-details",
+          "run": "2025-02-28T20-55-59.716664",
+          "documents_agreeing": 1324
+        }
+      ]
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "tasks": [
+        "leaderboard_math"
+      ]
+    },
+    "matching": {
+      "recipe": "each evaluated document rebuilt from the details record as the olmo-eval task renders it, then matched as a bijection over each subtask's split",
+      "doc_fields": [
+        "problem"
+      ],
+      "normalization": "none. The details record's doc is the raw MATH-lighteval row and the olmo-eval task's stem is its problem field unaltered, so the two renderings are the same string; the 4-shot Minerva block and the Problem:/Solution: framing are added by format_request and are deliberately not matched. The one thing this entry depends on beyond the text is the enumeration: the task concatenates seven subjects and numbers each one's Level-5 subsequence from zero, emitting <subject>|<position> as its own id, so composite_id recovers the per-subject enumeration from that id rather than from the registry -- there is one registered task, not seven.",
+      "enumeration": "composite_id",
+      "documents_evaluated": 1324,
+      "documents_matched": 1324,
+      "positions_agreeing_with_enumeration_order": 8
+    },
+    "index_map": {
+      "source_ref": "origin/Research",
+      "path": "AdaptiveTesting/Experiments/openlm_atlas_3pl/math/data/item_id_map.csv",
+      "rows": 1206,
+      "subtask_rows": {
+        "algebra_hard": 303,
+        "counting_and_prob_hard": 120,
+        "geometry_hard": 115,
+        "intermediate_algebra_hard": 223,
+        "num_theory_hard": 151,
+        "prealgebra_hard": 188,
+        "precalculus_hard": 106
+      }
+    },
+    "generated_at": "2026-08-07T21:28:46.905577+00:00"
+  },
+  "upstream_bank_rows": 1206,
+  "bridge_rows": 1206,
+  "items": 1183,
+  "dropped": {
+    "non_positive_discrimination": 23,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0
+  },
+  "ungradable_instances": 0,
+  "positional_ids": false,
+  "frozen_prompt": false,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "generative",
+      "prompt_style": "leaderboard_math",
+      "num_fewshot": 4,
+      "fewshot_source": "leaderboard_math",
+      "chat_format": false,
+      "system_prompt_source": null,
+      "stop_sequences": [
+        "Problem:",
+        "\n\n"
+      ],
+      "max_new_tokens": 1024,
+      "max_length": null,
+      "grader": "math_latex_equivalence"
+    },
+    "calibration": {
+      "prompt_style": "unrecorded",
+      "num_fewshot": "unrecorded",
+      "metric": "lm-eval math_verify exact match",
+      "note": "The metric is the one recorded fact and it is a deviation: the bank was fit on lm-eval's math_verify exact match while this harness grades with olmo-eval's Minerva equivalence, which Research's own benchmarks.py calls close but not identical and able to shift item difficulty. The calibration directory holds parameter CSVs, response matrices and figures and no record of prompting, so the 4-shot Minerva block used here is the olmo-eval task's value -- it coincides with the count Open LLM Leaderboard v2 publishes for MATH-Hard, which is where this bank's responses were harvested, but that is an inference about the harvest."
+    }
+  },
+  "bank_caveat": null,
+  "notes": "MATH-Hard: the Level-5 slice of the seven MATH subjects that Open LLM Leaderboard v2 scores, fit locally on that harvest. Ten-fold cross-validation over 901 models gives r = 0.918, slope 0.705, accuracy MAE 0.0210 with a 95% CI of [0.0191, 0.0230] and a mean bank of 1,182 (Research/01_MCQ_ATLAS/data/atlas_replication_cv/math/results.json). 23 of the 1,206 calibrated rows have a non-positive discrimination and are dropped, leaving 1,183, and all 1,183 match the task. Two things about it are worth knowing before reading a report. Its average CAT length upstream is 96 items to SE <= 0.3, roughly four times ifeval's and well over twice the max_items this style pins, so a real checkpoint is likely to stop on the cap with a standard error above 0.3; a simulated taker drawn from the bank's own 3PL converges at the 8-item floor instead, and the whole gap between those two numbers is real models misfitting the model. And the bank has a high floor: difficulties run from 0.85 at the 5th percentile to 2.78 at the median, so a checkpoint below theta -1 answers every item wrong however many are administered, and its reported theta is the prior pulled down rather than a measurement. On both counts the honest reading is the standard error and the stop reason, not the point estimate. Its bridge is the composite item_id_map.csv, keyed '<subtask>|<doc_id>' like 'algebra_hard|0', and this is nonetheless a single-task dataset: the leaderboard_math task concatenates all seven subjects and emits that composite id itself, so nothing has to be rebuilt by counting. Routing it through the multi-task path instead would abort, and correctly -- check_subtask_alignment demands each subtask's positions be a gapless 0..n-1 run, and these are sparse within a subtask because calibration dropped items that failed to converge (geometry_hard has 115 rows spread over positions 0..131). Every subtask's maximum bridge position is below the count the task enumerates for it (307 / 123 / 132 / 280 / 154 / 193 / 135, summing to 1,324), which is why the join is total. Do not reach for minerva_math_<subject> as an item source. It looks like the natural one -- the same seven subjects, algebra lining up with algebra_hard -- and it is not: it enumerates the entire unfiltered test split of EleutherAI/hendrycks_math and keys metadata['id'] by position in that split, while these ids are positions in the Level-5-filtered subsequence of DigitalLearningGmbH/MATH-lighteval. The composite key fails safely against it today, because minerva_math_<subject> never emits one. It stops failing safely the moment anyone switches this spec to bridge_kind='atlas' to 'make the join work': that keys on the bare question_id, which is unique only within a subtask, so the 1,206 rows collapse onto 307 distinct ids, 1,137 of the 1,183 drop as ambiguous, and the 46 survivors match minerva positions 0..306 at full overlap. Every guard passes and the bank's difficulties belong to different questions. Parity caveat, and it is the real one here: the bank was calibrated under lm-eval's math_verify exact match, while items are graded here by olmo-eval's Minerva composition -- \\boxed{} or 'Final Answer:' extraction, then sympy equivalence with a Hendrycks string-normalization fallback. Research's own benchmarks.py calls the two 'close but not identical, which can shift item difficulty', and matching the local Research implementation is the standing policy, so Minerva it is; the residual disagreement lands in theta's absolute scale and not in checkpoint-to-checkpoint comparison. One environment quirk compounds it: minerva_is_equiv wraps its sympy comparison in a signal.SIGALRM timeout, which does not exist on Windows, so on a Windows box the symbolic half never runs and every comparison falls back to string normalization. A Windows run and a Linux run of the same checkpoint can therefore disagree on a tail of items, with Windows the stricter of the two. AdaptiveTesting/Inputs/ATLAS/math/ holds a byte-identical mirror of the parameter CSV beside an atlas_idx_to_question_id.csv whose question_id is already the composite; the Experiments path is used here because that is where the fit lives.",
+  "sha256": {
+    "params.json": "bbf4b2617371ea619f71e356bbb17013f51aa703b62beb984a0804a54b8f83ec",
+    "items.jsonl": "02300eef0d6363f2f7b550ab73e59417f375f177eec7203252b06764a3757adb"
+  },
+  "generated_at": "2026-08-07T21:35:24.082847+00:00"
+}
