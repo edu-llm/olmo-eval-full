@@ -48,9 +48,10 @@ paths, candidate checkpoint, task list, skill order, and CAT operating point
 are placeholders. Replace them with an approved, versioned fitted bank and
 benchmark-specific policy. The software intentionally does not install a
 universal difficulty, discrimination, skill structure, or stopping threshold.
-The candidate provider revision is required and must exactly match
-`tutor.model_provenance.revision`; this prevents the manifest from claiming a
-different checkpoint than the one the runner loads.
+For live provider-generated tutor responses, the candidate provider revision is
+required and must exactly match `tutor.model_provenance.revision`; this prevents
+the manifest from claiming a different checkpoint than the one the runner
+loads. Precomputed workflows declare their provenance as described below.
 
 ### Using tutor responses generated elsewhere
 
@@ -92,6 +93,69 @@ Qwen is not called for that scenario's criteria and each corresponding result is
 `no_decision`, never an automatic failure. The adaptive manifest records the
 source path, declared and observed hashes, row count, and blank-response count.
 
+### Uploading responses for multiple tutor models
+
+Use [`run_precomputed_batch.example.yaml`](run_precomputed_batch.example.yaml)
+when one file contains responses from several tutor models. This is also an
+**adaptive-only** run: the primary provider must be `kind: mock`,
+`edullm_adaptive` must be the only selected mode, and `tutor.generation` must be
+`null`. The uploaded rows identify the real tutor models; the mock provider is
+only a lifecycle placeholder and is never asked to generate a response.
+
+The batch must be a UTF-8 JSONL file with one model-scenario response per line:
+
+```json
+{"model_id":"org/model-a","model_family":"family-a","model_revision":"revision-a","scenario_id":"ifb_0001","response":"Model A response"}
+{"model_id":"org/model-a","model_family":"family-a","model_revision":"revision-a","scenario_id":"ifb_0002","response":"","metadata":{"finish_reason":"length"}}
+{"model_id":"org/model-b","model_family":"family-b","model_revision":"revision-b","scenario_id":"ifb_0001","response":"Model B response"}
+{"model_id":"org/model-b","model_family":"family-b","model_revision":"revision-b","scenario_id":"ifb_0002","response":"Model B response"}
+```
+
+Every row must contain `model_id`, `model_family`, `model_revision`,
+`scenario_id`, and string-valued `response`. `metadata` is an optional JSON
+object. All four identity/scenario strings must be non-empty and have no leading
+or trailing whitespace. The family and revision must be consistent across all
+rows carrying the same `model_id`, and each model must have exactly one row for
+every scenario in the fitted bank. The batch `tutor` config contains only
+`generation` and `response_source`; the response source provenance contains
+exactly non-empty `source` and `revision` strings. The runner rejects unknown
+fields, malformed rows, duplicate model-scenario pairs, inconsistent identities,
+missing or extra scenarios, and a file whose bytes do not match the declared
+SHA-256. This validation completes before Qwen is started.
+
+Qwen is loaded once and reused for every model in the batch. Each model then
+gets its own independent CAT session and its own EAP and MWLE estimates. CAT
+selects scenarios adaptively, so it judges only the selected responses for each
+model; it does **not** exhaustively judge every uploaded response. Blank or
+whitespace-only selected responses skip Qwen and remain `no_decision`, exactly
+as in the single-model precomputed workflow.
+
+A completed batch run has this adaptive-mode layout:
+
+```text
+<output_dir>/modes/edullm_adaptive/
+  manifest.json
+  batch_summary.json
+  model_results.jsonl
+  mode_result.json
+  models/
+    candidate-0000-<stable-hash>/
+      manifest.json
+      tutor_responses.jsonl
+      judge_rows.jsonl
+      cat_result.json
+      cat_trace.jsonl
+    candidate-0001-<stable-hash>/
+      ...
+```
+
+`model_results.jsonl` maps each original model identity to its safe output
+directory, terminal status, CAT metrics, warnings, and error if any.
+`batch_summary.json` provides aggregate model, scenario, criterion, and
+`no_decision` counts. A runtime failure for one tutor is recorded in that
+tutor's directory and does not prevent later tutors from running, although the
+overall adaptive mode is marked failed if any tutor failed.
+
 Run read-only validation explicitly when desired:
 
 ```bash
@@ -108,7 +172,9 @@ Run the configured evaluation (this is the default; no smoke test is inserted):
 uv run olmo-eval run-modes --config /path/to/final-run.yaml
 ```
 
-The output directory must be new or empty. A completed run has this shape:
+The output directory must be new or empty. A completed live-generated or
+single-model precomputed run has this shape (batch runs use the layout shown
+above):
 
 ```text
 <output_dir>/

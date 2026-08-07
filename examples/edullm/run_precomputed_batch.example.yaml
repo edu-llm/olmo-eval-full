@@ -1,0 +1,94 @@
+# Adaptive-only template for a JSONL batch containing multiple tutor models.
+# Replace every YOUR_* value and all illustrative CAT settings before running.
+schema_version: olmo-eval-mode-config-v1
+run_id: YOUR_UNIQUE_BATCH_RUN_ID
+output_dir: /path/to/new/results/YOUR_UNIQUE_BATCH_RUN_ID
+continue_on_mode_failure: false
+metadata:
+  benchmark: YOUR_BENCHMARK
+  bank_release: YOUR_FITTED_BANK_RELEASE
+  tutor_response_source: precomputed_batch_jsonl
+
+harness:
+  name: edullm-precomputed-tutor-response-batch
+  # Required lifecycle placeholder. This does not load or call a tutor model.
+  provider:
+    kind: mock
+    model: precomputed-response-batch-sentinel
+    num_instances: 1
+  auxiliary_providers:
+    # Qwen is loaded once and reused across every tutor model in the batch.
+    judge:
+      kind: vllm_server
+      model: Qwen/Qwen3.5-9B
+      revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+      tokenizer: Qwen/Qwen3.5-9B
+      dtype: bfloat16
+      max_model_len: 32768
+      trust_remote_code: false
+      num_instances: 1
+      kwargs:
+        language_model_only: true
+        tensor_parallel_size: 1
+        gpu_memory_utilization: 0.9
+        chat_template_kwargs:
+          enable_thinking: false
+
+# Batch replay must be the only selected mode in this run.
+modes:
+  - name: edullm_adaptive
+    config:
+      schema_version: edullm-adaptive-mode-config-v1
+      bank:
+        rubrics_path: /path/to/fitted_bank/rubrics.jsonl
+        scenarios_path: /path/to/fitted_bank/scenarios.jsonl
+        manifest_path: /path/to/fitted_bank/manifest.json
+        skills_order:
+          - YOUR_SKILL_1
+        benchmark_id: YOUR_BENCHMARK
+        calibration_version: YOUR_CALIBRATION_VERSION
+        policy_id: YOUR_APPROVED_CAT_POLICY
+        scientific_status: experimental
+      tutor:
+        generation: null
+        response_source:
+          kind: precomputed_batch_jsonl
+          schema_version: edullm-precomputed-tutor-response-batch-v1
+          path: /path/to/all_tutor_responses.jsonl
+          sha256: YOUR_LOWERCASE_64_CHARACTER_FILE_SHA256
+          # Provenance for the combined response artifact. Individual tutor
+          # model revisions are declared on their JSONL rows.
+          provenance:
+            source: YOUR_RESPONSE_GENERATION_RUN_OR_ARTIFACT
+            revision: YOUR_IMMUTABLE_BATCH_ARTIFACT_REVISION
+      judge:
+        provider: judge
+        model: Qwen/Qwen3.5-9B
+        model_family: qwen
+        revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+        prompt_version: local-judge-v4.3.1-curated
+        adapter_version: atomic-json-v4
+        enable_thinking: false
+        language_model_only: true
+        pass_token_ids: [47, 387, 9729]
+        fail_token_ids: [37, 426, 12362]
+        failure_probability_threshold: 0.33
+        atomic_requirement_policy: criterion_as_single_atomic_unless_curation_finalized
+      quadrature:
+        nodes_per_dim: 21
+        max_nodes: 200000
+        method: gauss_hermite
+        linear_bound: 8.0
+      cat:
+        # Illustrative only: replace with the approved policy for this bank.
+        max_se: 0.25
+        min_evals_per_skill: 0
+        min_scenarios: 5
+        max_scenarios: 50
+        seed: 42
+        top_n: 5
+        selection: trace
+        stop_se_method: eap
+        theta_init: null
+        covariance_init_diag: null
+        mwle_ridge: 0.000001

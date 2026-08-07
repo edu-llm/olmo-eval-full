@@ -27,7 +27,7 @@ from olmo_eval.edullm.mode import (
     EduLLMAdaptiveMode,
 )
 from olmo_eval.inference.base import InferenceProvider
-from olmo_eval.runners.modes import ModeRunContext, ModeStatus
+from olmo_eval.runners.modes import ModeResult, ModeRunContext, ModeStatus
 
 
 class _Provider(InferenceProvider):
@@ -274,6 +274,28 @@ def _use_precomputed_responses(
     }
 
 
+def _use_precomputed_response_batch(
+    config: dict[str, Any],
+    path: Path,
+    rows: list[dict[str, Any]],
+) -> None:
+    payload = _jsonl(rows)
+    path.write_bytes(payload)
+    config["tutor"] = {
+        "generation": None,
+        "response_source": {
+            "kind": "precomputed_batch_jsonl",
+            "schema_version": "edullm-precomputed-tutor-response-batch-v1",
+            "path": str(path),
+            "sha256": _sha(payload),
+            "provenance": {
+                "source": "uploaded_batch_archive",
+                "revision": "uploaded-batch-revision",
+            },
+        },
+    }
+
+
 def _classification_output(label: str) -> LMOutput:
     p_fail = 0.1 if label == "P" else 0.9
     chosen_probability = 1.0 - p_fail if label == "P" else p_fail
@@ -308,6 +330,30 @@ def _judge_provider(first_verdict: str = "pass", *, malformed: bool = False) -> 
                     "verdict": verdict,
                     "rationale": "criterion-specific fixture rationale",
                     "evidence": "direct fixture evidence",
+                }
+            )
+        )
+
+    return _Provider(QWEN_JUDGE_MODEL, handler)
+
+
+def _batch_judge_provider(*, raise_on: str | None = None) -> _Provider:
+    def handler(request: LMRequest) -> LMOutput:
+        is_classification = len(request.messages) >= 3
+        if is_classification:
+            native = str(request.messages[-2]["content"])
+            label = "F" if '"verdict": "fail"' in native else "P"
+            return _classification_output(label)
+        prompt = str(request.messages[-1]["content"])
+        if raise_on is not None and raise_on in prompt:
+            raise RuntimeError("fixture model-specific judge failure")
+        verdict = "fail" if "A mid response" in prompt else "pass"
+        return LMOutput(
+            text=json.dumps(
+                {
+                    "verdict": verdict,
+                    "rationale": "batch fixture rationale",
+                    "evidence": "batch fixture evidence",
                 }
             )
         )
@@ -512,6 +558,160 @@ def test_blank_precomputed_response_remains_no_decision_without_qwen(
     assert row["observation"] is None
     manifest = json.loads((output / "manifest.json").read_text())
     assert manifest["tutor"]["response_source"]["blank_count"] == 1
+
+
+def test_precomputed_batch_reuses_qwen_and_runs_independent_cat_per_model(
+    tmp_path: Path,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank")
+    config = _config(bank_paths)
+    rows: list[dict[str, Any]] = []
+    for model_id, family, revision, prefix in (
+        ("vendor/z-model", "family-z", "revision-z", "Z"),
+        ("vendor/a-model", "family-a", "revision-a", "A"),
+    ):
+        for scenario_id in ("mid", "easy", "hard"):
+            rows.append(
+                {
+                    "model_id": model_id,
+                    "model_family": family,
+                    "model_revision": revision,
+                    "scenario_id": scenario_id,
+                    "response": f"{prefix} {scenario_id} response",
+                    "metadata": {"source_index": len(rows)},
+                }
+            )
+    _use_precomputed_response_batch(config, tmp_path / "batch.jsonl", rows)
+    judge = _batch_judge_provider()
+    context, tutor = _context(
+        tmp_path / "run",
+        judge,
+        tutor_handler=lambda _request: (_ for _ in ()).throw(
+            AssertionError("batch mode must not call the tutor provider")
+        ),
+    )
+    output = tmp_path / "run/modes/edullm_adaptive"
+
+    result = asyncio.run(EduLLMAdaptiveMode().run(context, config, output))
+
+    assert result.status == ModeStatus.SUCCEEDED
+    assert result.completed_units == 2
+    assert result.metrics["models_total"] == 2
+    assert result.metrics["models_succeeded"] == 2
+    assert tutor.requests == []
+    assert len(judge.requests) == 8
+    model_rows = _read_jsonl(output / "model_results.jsonl")
+    assert [row["model_id"] for row in model_rows] == [
+        "vendor/a-model",
+        "vendor/z-model",
+    ]
+    assert all("/" not in Path(row["output_dir"]).name for row in model_rows)
+    assert len({row["output_dir"] for row in model_rows}) == 2
+    cat_paths: dict[str, list[str]] = {}
+    for row in model_rows:
+        candidate_dir = output / row["output_dir"]
+        candidate_manifest = json.loads((candidate_dir / "manifest.json").read_text())
+        candidate_cat = json.loads((candidate_dir / "cat_result.json").read_text())
+        assert candidate_manifest["tutor"]["model"] == row["model_id"]
+        assert candidate_manifest["tutor"]["provenance"]["revision"] == row["model_revision"]
+        assert candidate_manifest["tutor"]["response_source"]["kind"] == "precomputed_batch_jsonl"
+        cat_paths[row["model_id"]] = candidate_cat["scenarios_administered"]
+    assert cat_paths["vendor/a-model"] == ["mid", "easy"]
+    assert cat_paths["vendor/z-model"] == ["mid", "hard"]
+    manifest = json.loads((output / "manifest.json").read_text())
+    assert manifest["status"] == "succeeded"
+    assert manifest["response_batch"]["model_count"] == 2
+    assert manifest["response_batch"]["row_count"] == 6
+    assert manifest["progress"]["models_completed"] == 2
+    assert set(result.artifacts) == {
+        "manifest.json",
+        "model_results.jsonl",
+        "batch_summary.json",
+    }
+
+
+def test_precomputed_batch_continues_after_one_model_runtime_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank", scenario_ids=("mid",))
+    config = _config(bank_paths, max_scenarios=1)
+    _use_precomputed_response_batch(
+        config,
+        tmp_path / "batch.jsonl",
+        [
+            {
+                "model_id": "a-broken",
+                "model_family": "family-a",
+                "model_revision": "revision-a",
+                "scenario_id": "mid",
+                "response": "BROKEN response",
+            },
+            {
+                "model_id": "z-good",
+                "model_family": "family-z",
+                "model_revision": "revision-z",
+                "scenario_id": "mid",
+                "response": "Good response",
+            },
+        ],
+    )
+    judge = _batch_judge_provider()
+    context, tutor = _context(tmp_path / "run", judge)
+    output = tmp_path / "run/modes/edullm_adaptive"
+    original_run_candidate = EduLLMAdaptiveMode._run_candidate
+
+    async def controlled_run_candidate(
+        self: EduLLMAdaptiveMode,
+        candidate_context: ModeRunContext,
+        prepared: Any,
+        candidate_output: Path,
+    ) -> ModeResult:
+        if prepared.tutor_identity.model == "a-broken":
+            candidate_output.mkdir(parents=True)
+            (candidate_output / "manifest.json").write_text(
+                json.dumps({"status": "failed"}) + "\n",
+                encoding="utf-8",
+            )
+            (candidate_output / "failure.json").write_text(
+                json.dumps({"error": "fixture model-specific failure"}) + "\n",
+                encoding="utf-8",
+            )
+            return ModeResult(
+                mode="edullm_adaptive",
+                implementation_version=self.implementation_version,
+                status=ModeStatus.FAILED,
+                artifacts=("manifest.json", "failure.json"),
+                error="fixture model-specific failure",
+            )
+        return await original_run_candidate(
+            self,
+            candidate_context,
+            prepared,
+            candidate_output,
+        )
+
+    monkeypatch.setattr(EduLLMAdaptiveMode, "_run_candidate", controlled_run_candidate)
+
+    result = asyncio.run(EduLLMAdaptiveMode().run(context, config, output))
+
+    assert result.status == ModeStatus.FAILED
+    assert result.completed_units == 2
+    assert result.metrics["models_failed"] == 1
+    assert result.metrics["models_succeeded"] == 1
+    assert tutor.requests == []
+    model_rows = _read_jsonl(output / "model_results.jsonl")
+    assert [(row["model_id"], row["status"]) for row in model_rows] == [
+        ("a-broken", "failed"),
+        ("z-good", "succeeded"),
+    ]
+    broken_dir = output / model_rows[0]["output_dir"]
+    good_dir = output / model_rows[1]["output_dir"]
+    assert (broken_dir / "failure.json").is_file()
+    assert (good_dir / "cat_result.json").is_file()
+    manifest = json.loads((output / "manifest.json").read_text())
+    assert manifest["status"] == "failed"
+    assert manifest["progress"]["models_pending"] == 0
 
 
 def test_reviewed_atomic_checklist_is_used_without_synthetic_splitting(

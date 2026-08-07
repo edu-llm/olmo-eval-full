@@ -22,6 +22,7 @@ from olmo_eval.edullm.mode import (
 from olmo_eval.edullm.mode import (
     MODE_CONFIG_SCHEMA_VERSION as ADAPTIVE_CONFIG_SCHEMA_VERSION,
 )
+from olmo_eval.edullm.precomputed import PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION
 from olmo_eval.inference.providers.config import ProviderConfig
 from olmo_eval.runners.mode_config import (
     MODE_CONFIG_SCHEMA_VERSION,
@@ -170,6 +171,31 @@ def _use_precomputed_responses(raw: dict[str, Any], tmp_path: Path) -> None:
     tutor["generation"] = None
 
 
+def _use_precomputed_response_batch(raw: dict[str, Any], tmp_path: Path) -> None:
+    """Convert an adaptive fixture to the strict multi-tutor replay mode."""
+
+    adaptive_mode = next(mode for mode in raw["modes"] if mode["name"] == "edullm_adaptive")
+    adaptive_mode["config"]["tutor"] = {
+        "generation": None,
+        "response_source": {
+            "kind": "precomputed_batch_jsonl",
+            "schema_version": PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION,
+            "path": str(tmp_path / "response-batch.jsonl"),
+            "sha256": "b" * 64,
+            "provenance": {
+                "source": "fixture-response-batch",
+                "revision": "fixture-response-batch-v1",
+            },
+        },
+    }
+    raw["modes"] = [adaptive_mode]
+    raw["harness"]["provider"] = {
+        "kind": "mock",
+        "model": "precomputed-batch-response-sentinel",
+        "num_instances": 1,
+    }
+
+
 def test_parse_injects_shared_harness_into_standard_mode(tmp_path: Path) -> None:
     raw = _config(tmp_path)
     parsed = parse_mapping(raw)
@@ -288,6 +314,161 @@ def test_adaptive_precomputed_responses_still_require_frozen_qwen(tmp_path: Path
 
     with pytest.raises(ValueError, match="frozen Qwen judge model"):
         parse_mapping(raw)
+
+
+def test_adaptive_precomputed_batch_accepts_exact_shape_with_mock_primary(
+    tmp_path: Path,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+
+    parsed = parse_mapping(raw)
+
+    assert parsed.mode_names == ("edullm_adaptive",)
+    assert parsed.harness.provider.kind == "mock"
+    assert parsed.harness.provider.revision is None
+    tutor = parsed.modes[0].config["tutor"]
+    assert set(tutor) == {"generation", "response_source"}
+    assert tutor["generation"] is None
+    source = tutor["response_source"]
+    assert set(source) == {"kind", "schema_version", "path", "sha256", "provenance"}
+    assert source["schema_version"] == PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION
+    assert source["sha256"] == "b" * 64
+    assert source["provenance"] == {
+        "source": "fixture-response-batch",
+        "revision": "fixture-response-batch-v1",
+    }
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (lambda tutor: tutor.pop("generation"), "tutor fields differ"),
+        (
+            lambda tutor: tutor.update({"expected_model": "invalid-batch-placeholder"}),
+            "tutor fields differ",
+        ),
+        (
+            lambda tutor: tutor["response_source"].pop("path"),
+            "tutor.response_source fields differ",
+        ),
+        (
+            lambda tutor: tutor["response_source"].update({"extra": True}),
+            "tutor.response_source fields differ",
+        ),
+        (
+            lambda tutor: tutor["response_source"]["provenance"].pop("revision"),
+            "tutor.response_source.provenance fields differ",
+        ),
+        (
+            lambda tutor: tutor["response_source"]["provenance"].update({"extra": True}),
+            "tutor.response_source.provenance fields differ",
+        ),
+    ],
+)
+def test_adaptive_precomputed_batch_tutor_source_and_provenance_keys_are_exact(
+    tmp_path: Path,
+    mutation: Any,
+    message: str,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+    tutor = raw["modes"][0]["config"]["tutor"]
+    mutation(tutor)
+
+    with pytest.raises(ValueError, match=message):
+        parse_mapping(raw)
+
+
+def test_adaptive_precomputed_batch_requires_null_generation(tmp_path: Path) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+    raw["modes"][0]["config"]["tutor"]["generation"] = {}
+
+    with pytest.raises(ValueError, match="generation must be null for precomputed_batch_jsonl"):
+        parse_mapping(raw)
+
+
+@pytest.mark.parametrize(
+    ("path", "replacement", "message"),
+    [
+        ("schema_version", "future-batch-schema", "unsupported.*schema_version"),
+        ("sha256", "B" * 64, "lowercase 64-character SHA-256"),
+        ("sha256", "b" * 63, "lowercase 64-character SHA-256"),
+        ("provenance.source", "", "provenance.source must be a non-empty string"),
+        ("provenance.revision", "", "provenance.revision must be a non-empty string"),
+    ],
+)
+def test_adaptive_precomputed_batch_validates_schema_hash_and_provenance_values(
+    tmp_path: Path,
+    path: str,
+    replacement: Any,
+    message: str,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+    source = raw["modes"][0]["config"]["tutor"]["response_source"]
+    _set_path(source, path, replacement)
+
+    with pytest.raises(ValueError, match=message):
+        parse_mapping(raw)
+
+
+def test_adaptive_precomputed_batch_requires_mock_primary(tmp_path: Path) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+    raw["harness"]["provider"] = {
+        "kind": "vllm_server",
+        "model": "live-tutor-model",
+        "revision": "live-revision",
+        "num_instances": 1,
+    }
+
+    with pytest.raises(ValueError, match="precomputed_batch_jsonl requires.*kind='mock'"):
+        parse_mapping(raw)
+
+
+@pytest.mark.parametrize("other_mode", ["standard_olmo", "future_eval"])
+def test_adaptive_precomputed_batch_must_be_the_only_selected_mode(
+    tmp_path: Path,
+    other_mode: str,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+    if other_mode == "standard_olmo":
+        other = copy.deepcopy(_config(tmp_path)["modes"][0])
+    else:
+        other = {"name": other_mode, "config": {"enabled": True}}
+    raw["modes"].insert(0, other)
+
+    with pytest.raises(ValueError, match="precomputed_batch_jsonl must be the only selected mode"):
+        parse_mapping(raw)
+
+
+def test_adaptive_precomputed_batch_still_requires_frozen_qwen(tmp_path: Path) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_response_batch(raw, tmp_path)
+    raw["harness"]["auxiliary_providers"]["judge"]["model"] = "other-judge"
+
+    with pytest.raises(ValueError, match="frozen Qwen judge model"):
+        parse_mapping(raw)
+
+
+@pytest.mark.parametrize("explicit_response_source", [False, True])
+def test_batch_extension_preserves_legacy_provider_tutor_shapes(
+    tmp_path: Path,
+    explicit_response_source: bool,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    tutor = raw["modes"][1]["config"]["tutor"]
+    if explicit_response_source:
+        tutor["response_source"] = {"kind": "provider"}
+
+    parsed = parse_mapping(raw)
+
+    parsed_tutor = parsed.modes[1].config["tutor"]
+    assert parsed_tutor["expected_model"] == "fixture-tutor"
+    assert ("response_source" in parsed_tutor) is explicit_response_source
 
 
 def test_explicit_provider_response_source_keeps_candidate_identity_checks(

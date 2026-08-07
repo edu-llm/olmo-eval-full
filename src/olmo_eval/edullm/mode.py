@@ -17,7 +17,7 @@ import math
 import os
 import uuid
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -46,8 +46,13 @@ from olmo_eval.edullm.judge import (
     build_classification_messages,
 )
 from olmo_eval.edullm.precomputed import (
+    PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION,
     PRECOMPUTED_RESPONSES_SCHEMA_VERSION,
+    PrecomputedTutorResponse,
+    PrecomputedTutorResponseBatch,
+    PrecomputedTutorResponseBatchModel,
     PrecomputedTutorResponses,
+    load_precomputed_tutor_response_batch,
     load_precomputed_tutor_responses,
 )
 from olmo_eval.edullm.tutor import (
@@ -58,9 +63,10 @@ from olmo_eval.edullm.tutor import (
 from olmo_eval.runners.modes import ModeResult, ModeRunContext, ModeStatus
 
 MODE_NAME = "edullm_adaptive"
-IMPLEMENTATION_VERSION = "edullm-adaptive-olmo-v2"
+IMPLEMENTATION_VERSION = "edullm-adaptive-olmo-v3"
 MODE_CONFIG_SCHEMA_VERSION = "edullm-adaptive-mode-config-v1"
 ARTIFACT_SCHEMA_VERSION = "edullm-adaptive-artifacts-v1"
+BATCH_ARTIFACT_SCHEMA_VERSION = "edullm-adaptive-batch-artifacts-v1"
 ATOMIC_REQUIREMENT_POLICY = "criterion_as_single_atomic_unless_curation_finalized"
 TUTOR_PROMPT_SOURCE = "origin/frq/infobench:eduLLM-Evals/tutor_cat/respgen/prompts.py"
 TUTOR_PROMPT_VERSION = "frq-infobench-prompts-b4ea2e8"
@@ -84,16 +90,17 @@ class BankRuntimeConfig:
 
 @dataclass(frozen=True, slots=True)
 class TutorResponseSourceConfig:
-    kind: Literal["provider", "precomputed_jsonl"]
+    kind: Literal["provider", "precomputed_jsonl", "precomputed_batch_jsonl"]
     schema_version: str | None = None
     path: Path | None = None
     sha256: str | None = None
+    provenance: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class TutorRuntimeConfig:
-    expected_model: str
-    model_family: str
+    expected_model: str | None
+    model_family: str | None
     model_provenance: Mapping[str, Any]
     generation: TutorGenerationConfig | None
     response_source: TutorResponseSourceConfig
@@ -141,14 +148,24 @@ class RequirementPlan:
 
 
 @dataclass(frozen=True, slots=True)
+class TutorIdentity:
+    model: str
+    model_family: str
+    provenance: Mapping[str, Any]
+
+
+@dataclass(frozen=True, slots=True)
 class _PreparedRun:
     config: EduLLMAdaptiveConfig
     bank: FittedBank
     quadrature: Quadrature
     judge: QwenZeroShotBinaryJudge
     requirement_plans: Mapping[str, RequirementPlan]
-    candidate_revision: str
-    precomputed_responses: PrecomputedTutorResponses | None
+    tutor_identity: TutorIdentity | None
+    response_rows: Mapping[str, PrecomputedTutorResponse] | None
+    single_precomputed_source: PrecomputedTutorResponses | None
+    precomputed_batch: PrecomputedTutorResponseBatch | None
+    batch_model: PrecomputedTutorResponseBatchModel | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -157,7 +174,8 @@ class _PreparedInputs:
     bank: FittedBank
     quadrature: Quadrature
     requirement_plans: Mapping[str, RequirementPlan]
-    precomputed_responses: PrecomputedTutorResponses | None
+    single_precomputed_source: PrecomputedTutorResponses | None
+    precomputed_batch: PrecomputedTutorResponseBatch | None
 
 
 def _json_value(value: Any, *, path: str = "value") -> Any:
@@ -362,93 +380,136 @@ def _parse_config(raw_config: Mapping[str, Any]) -> EduLLMAdaptiveConfig:
     )
 
     tutor_value = _mapping(top["tutor"], "tutor")
-    tutor_fields = {"expected_model", "model_family", "model_provenance", "generation"}
-    if "response_source" in tutor_value:
-        tutor_fields.add("response_source")
-    _exact_keys(
-        tutor_value,
-        tutor_fields,
-        "tutor",
-    )
-    provenance = _mapping(tutor_value["model_provenance"], "tutor.model_provenance")
-    _exact_keys(provenance, {"source", "revision"}, "tutor.model_provenance")
-    _nonempty_string(provenance.get("source"), "tutor.model_provenance.source")
-    _nonempty_string(provenance.get("revision"), "tutor.model_provenance.revision")
     raw_source = tutor_value.get("response_source", {"kind": "provider"})
     source_value = _mapping(raw_source, "tutor.response_source")
     source_kind = _nonempty_string(source_value.get("kind"), "tutor.response_source.kind")
-    if source_kind == "provider":
-        _exact_keys(source_value, {"kind"}, "tutor.response_source")
-        response_source = TutorResponseSourceConfig(kind="provider")
-        generation_value = _mapping(tutor_value["generation"], "tutor.generation")
-        _exact_keys(
-            generation_value,
-            {
-                "max_tokens",
-                "temperature",
-                "top_p",
-                "top_k",
-                "stop_sequences",
-                "num_samples",
-                "do_sample",
-            },
-            "tutor.generation",
-        )
-        raw_stops = generation_value["stop_sequences"]
-        if raw_stops is None:
-            stops = None
-        elif isinstance(raw_stops, Sequence) and not isinstance(raw_stops, (str, bytes)):
-            stops = tuple(
-                _nonempty_string(value, f"tutor.generation.stop_sequences[{index}]")
-                for index, value in enumerate(raw_stops)
-            )
-        else:
-            raise ValueError("tutor.generation.stop_sequences must be null or an array")
-        if not isinstance(generation_value["do_sample"], bool):
-            raise ValueError("tutor.generation.do_sample must be boolean")
-        top_p = generation_value["top_p"]
-        top_k = generation_value["top_k"]
-        generation: TutorGenerationConfig | None = TutorGenerationConfig(
-            max_tokens=_integer(generation_value["max_tokens"], "tutor.max_tokens", minimum=1),
-            temperature=_finite_number(generation_value["temperature"], "tutor.temperature"),
-            top_p=None if top_p is None else _finite_number(top_p, "tutor.top_p"),
-            top_k=None if top_k is None else _integer(top_k, "tutor.top_k", minimum=1),
-            stop_sequences=stops,
-            num_samples=_integer(generation_value["num_samples"], "tutor.num_samples", minimum=1),
-            do_sample=generation_value["do_sample"],
-        )
-    elif source_kind == "precomputed_jsonl":
+    if source_kind == "precomputed_batch_jsonl":
+        _exact_keys(tutor_value, {"generation", "response_source"}, "tutor")
         _exact_keys(
             source_value,
-            {"kind", "schema_version", "path", "sha256"},
+            {"kind", "schema_version", "path", "sha256", "provenance"},
             "tutor.response_source",
         )
         if tutor_value["generation"] is not None:
-            raise ValueError("tutor.generation must be null for precomputed_jsonl responses")
+            raise ValueError("tutor.generation must be null for precomputed_batch_jsonl responses")
         schema_version = _nonempty_string(
             source_value["schema_version"], "tutor.response_source.schema_version"
         )
-        if schema_version != PRECOMPUTED_RESPONSES_SCHEMA_VERSION:
+        if schema_version != PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION:
             raise ValueError(
                 f"unsupported tutor.response_source.schema_version {schema_version!r}; "
-                f"expected {PRECOMPUTED_RESPONSES_SCHEMA_VERSION!r}"
+                f"expected {PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION!r}"
             )
+        batch_provenance = _mapping(source_value["provenance"], "tutor.response_source.provenance")
+        _exact_keys(
+            batch_provenance,
+            {"source", "revision"},
+            "tutor.response_source.provenance",
+        )
+        _nonempty_string(batch_provenance.get("source"), "tutor.response_source.provenance.source")
+        _nonempty_string(
+            batch_provenance.get("revision"), "tutor.response_source.provenance.revision"
+        )
         response_source = TutorResponseSourceConfig(
-            kind="precomputed_jsonl",
+            kind="precomputed_batch_jsonl",
             schema_version=schema_version,
             path=Path(_nonempty_string(source_value["path"], "tutor.response_source.path")),
             sha256=_sha256_string(source_value["sha256"], "tutor.response_source.sha256"),
+            provenance=dict(batch_provenance),
         )
-        generation = None
+        tutor = TutorRuntimeConfig(
+            expected_model=None,
+            model_family=None,
+            model_provenance={},
+            generation=None,
+            response_source=response_source,
+        )
     else:
-        raise ValueError("tutor.response_source.kind must be 'provider' or 'precomputed_jsonl'")
-    tutor = TutorRuntimeConfig(
-        expected_model=_nonempty_string(tutor_value["expected_model"], "tutor.expected_model"),
-        model_family=_nonempty_string(tutor_value["model_family"], "tutor.model_family"),
-        model_provenance=dict(provenance),
-        generation=generation,
-        response_source=response_source,
-    )
+        tutor_fields = {"expected_model", "model_family", "model_provenance", "generation"}
+        if "response_source" in tutor_value:
+            tutor_fields.add("response_source")
+        _exact_keys(tutor_value, tutor_fields, "tutor")
+        provenance = _mapping(tutor_value["model_provenance"], "tutor.model_provenance")
+        _exact_keys(provenance, {"source", "revision"}, "tutor.model_provenance")
+        _nonempty_string(provenance.get("source"), "tutor.model_provenance.source")
+        _nonempty_string(provenance.get("revision"), "tutor.model_provenance.revision")
+        if source_kind == "provider":
+            _exact_keys(source_value, {"kind"}, "tutor.response_source")
+            response_source = TutorResponseSourceConfig(kind="provider")
+            generation_value = _mapping(tutor_value["generation"], "tutor.generation")
+            _exact_keys(
+                generation_value,
+                {
+                    "max_tokens",
+                    "temperature",
+                    "top_p",
+                    "top_k",
+                    "stop_sequences",
+                    "num_samples",
+                    "do_sample",
+                },
+                "tutor.generation",
+            )
+            raw_stops = generation_value["stop_sequences"]
+            if raw_stops is None:
+                stops = None
+            elif isinstance(raw_stops, Sequence) and not isinstance(raw_stops, (str, bytes)):
+                stops = tuple(
+                    _nonempty_string(value, f"tutor.generation.stop_sequences[{index}]")
+                    for index, value in enumerate(raw_stops)
+                )
+            else:
+                raise ValueError("tutor.generation.stop_sequences must be null or an array")
+            if not isinstance(generation_value["do_sample"], bool):
+                raise ValueError("tutor.generation.do_sample must be boolean")
+            top_p = generation_value["top_p"]
+            top_k = generation_value["top_k"]
+            generation: TutorGenerationConfig | None = TutorGenerationConfig(
+                max_tokens=_integer(generation_value["max_tokens"], "tutor.max_tokens", minimum=1),
+                temperature=_finite_number(generation_value["temperature"], "tutor.temperature"),
+                top_p=None if top_p is None else _finite_number(top_p, "tutor.top_p"),
+                top_k=None if top_k is None else _integer(top_k, "tutor.top_k", minimum=1),
+                stop_sequences=stops,
+                num_samples=_integer(
+                    generation_value["num_samples"], "tutor.num_samples", minimum=1
+                ),
+                do_sample=generation_value["do_sample"],
+            )
+        elif source_kind == "precomputed_jsonl":
+            _exact_keys(
+                source_value,
+                {"kind", "schema_version", "path", "sha256"},
+                "tutor.response_source",
+            )
+            if tutor_value["generation"] is not None:
+                raise ValueError("tutor.generation must be null for precomputed_jsonl responses")
+            schema_version = _nonempty_string(
+                source_value["schema_version"], "tutor.response_source.schema_version"
+            )
+            if schema_version != PRECOMPUTED_RESPONSES_SCHEMA_VERSION:
+                raise ValueError(
+                    f"unsupported tutor.response_source.schema_version {schema_version!r}; "
+                    f"expected {PRECOMPUTED_RESPONSES_SCHEMA_VERSION!r}"
+                )
+            response_source = TutorResponseSourceConfig(
+                kind="precomputed_jsonl",
+                schema_version=schema_version,
+                path=Path(_nonempty_string(source_value["path"], "tutor.response_source.path")),
+                sha256=_sha256_string(source_value["sha256"], "tutor.response_source.sha256"),
+            )
+            generation = None
+        else:
+            raise ValueError(
+                "tutor.response_source.kind must be 'provider', 'precomputed_jsonl', "
+                "or 'precomputed_batch_jsonl'"
+            )
+        tutor = TutorRuntimeConfig(
+            expected_model=_nonempty_string(tutor_value["expected_model"], "tutor.expected_model"),
+            model_family=_nonempty_string(tutor_value["model_family"], "tutor.model_family"),
+            model_provenance=dict(provenance),
+            generation=generation,
+            response_source=response_source,
+        )
 
     judge_value = _mapping(top["judge"], "judge")
     _exact_keys(
@@ -744,12 +805,22 @@ def preflight_adaptive_config(raw_config: Mapping[str, Any]) -> _PreparedInputs:
         criterion_id: _requirement_plan(rubric, records[criterion_id])
         for criterion_id, rubric in bank.rubrics.items()
     }
-    precomputed_responses: PrecomputedTutorResponses | None = None
+    single_precomputed_source: PrecomputedTutorResponses | None = None
+    precomputed_batch: PrecomputedTutorResponseBatch | None = None
     if config.tutor.response_source.kind == "precomputed_jsonl":
         source = config.tutor.response_source
         if source.path is None or source.sha256 is None:
             raise ValueError("precomputed_jsonl source is missing its path or SHA-256")
-        precomputed_responses = load_precomputed_tutor_responses(
+        single_precomputed_source = load_precomputed_tutor_responses(
+            source.path,
+            expected_sha256=source.sha256,
+            expected_scenario_ids=tuple(bank.scenarios),
+        )
+    elif config.tutor.response_source.kind == "precomputed_batch_jsonl":
+        source = config.tutor.response_source
+        if source.path is None or source.sha256 is None:
+            raise ValueError("precomputed_batch_jsonl source is missing its path or SHA-256")
+        precomputed_batch = load_precomputed_tutor_response_batch(
             source.path,
             expected_sha256=source.sha256,
             expected_scenario_ids=tuple(bank.scenarios),
@@ -759,19 +830,35 @@ def preflight_adaptive_config(raw_config: Mapping[str, Any]) -> _PreparedInputs:
         bank=bank,
         quadrature=quadrature,
         requirement_plans=plans,
-        precomputed_responses=precomputed_responses,
+        single_precomputed_source=single_precomputed_source,
+        precomputed_batch=precomputed_batch,
     )
 
 
 def _prepare(context: ModeRunContext, raw_config: Mapping[str, Any]) -> _PreparedRun:
     inputs = preflight_adaptive_config(raw_config)
     config = inputs.config
-    configured_candidate_revision = str(config.tutor.model_provenance["revision"])
+    tutor_identity: TutorIdentity | None = None
+    if config.tutor.response_source.kind in {"provider", "precomputed_jsonl"}:
+        expected_model = config.tutor.expected_model
+        model_family = config.tutor.model_family
+        if expected_model is None or model_family is None:
+            raise ValueError("single-model tutor configuration is missing its identity")
+        configured_candidate_revision = str(config.tutor.model_provenance["revision"])
+        tutor_provenance = dict(config.tutor.model_provenance)
+        tutor_provenance["revision"] = configured_candidate_revision
+        tutor_identity = TutorIdentity(
+            model=expected_model,
+            model_family=model_family,
+            provenance=tutor_provenance,
+        )
     if config.tutor.response_source.kind == "provider":
-        if context.provider.model_name != config.tutor.expected_model:
+        if tutor_identity is None:
+            raise ValueError("provider tutor source is missing its identity")
+        if context.provider.model_name != tutor_identity.model:
             raise ValueError(
                 "primary tutor provider model does not match tutor.expected_model: "
-                f"{context.provider.model_name!r} != {config.tutor.expected_model!r}"
+                f"{context.provider.model_name!r} != {tutor_identity.model!r}"
             )
         runner_metadata = context.metadata.get("mode_runner")
         declared_candidate_revision: object | None = None
@@ -784,10 +871,10 @@ def _prepare(context: ModeRunContext, raw_config: Mapping[str, Any]) -> _Prepare
         ):
             if candidate_revision is None:
                 continue
-            if candidate_revision != configured_candidate_revision:
+            if candidate_revision != tutor_identity.provenance["revision"]:
                 raise ValueError(
                     f"{source} revision does not match tutor.model_provenance.revision: "
-                    f"{candidate_revision!r} != {configured_candidate_revision!r}"
+                    f"{candidate_revision!r} != {tutor_identity.provenance['revision']!r}"
                 )
 
     judge_provider = context.get_provider("judge")
@@ -833,8 +920,14 @@ def _prepare(context: ModeRunContext, raw_config: Mapping[str, Any]) -> _Prepare
         quadrature=inputs.quadrature,
         judge=judge,
         requirement_plans=inputs.requirement_plans,
-        candidate_revision=configured_candidate_revision,
-        precomputed_responses=inputs.precomputed_responses,
+        tutor_identity=tutor_identity,
+        response_rows=(
+            None
+            if inputs.single_precomputed_source is None
+            else inputs.single_precomputed_source.responses
+        ),
+        single_precomputed_source=inputs.single_precomputed_source,
+        precomputed_batch=inputs.precomputed_batch,
     )
 
 
@@ -970,19 +1063,82 @@ def _tutor_response_source_provenance(prepared: _PreparedRun) -> dict[str, Any]:
     source = prepared.config.tutor.response_source
     if source.kind == "provider":
         return {"kind": "provider"}
-    uploaded = prepared.precomputed_responses
-    if uploaded is None or source.schema_version is None:
-        raise ValueError("precomputed tutor response provenance is unavailable")
+    if source.kind == "precomputed_jsonl":
+        uploaded = prepared.single_precomputed_source
+        if uploaded is None or source.schema_version is None:
+            raise ValueError("precomputed tutor response provenance is unavailable")
+        return {
+            "kind": "precomputed_jsonl",
+            "schema_version": source.schema_version,
+            "path": str(uploaded.path),
+            "declared_sha256": source.sha256,
+            "observed_sha256": uploaded.sha256,
+            "row_count": uploaded.row_count,
+            "scenario_count": uploaded.row_count,
+            "blank_count": uploaded.blank_count,
+            "exact_bank_coverage": True,
+        }
+    uploaded_batch = prepared.precomputed_batch
+    batch_model = prepared.batch_model
+    if uploaded_batch is None or batch_model is None or source.schema_version is None:
+        raise ValueError("precomputed tutor response batch provenance is unavailable")
     return {
-        "kind": "precomputed_jsonl",
+        "kind": "precomputed_batch_jsonl",
         "schema_version": source.schema_version,
-        "path": str(uploaded.path),
+        "path": str(uploaded_batch.path),
         "declared_sha256": source.sha256,
-        "observed_sha256": uploaded.sha256,
-        "row_count": uploaded.row_count,
-        "scenario_count": uploaded.row_count,
-        "blank_count": uploaded.blank_count,
+        "observed_sha256": uploaded_batch.sha256,
+        "batch_model_count": uploaded_batch.model_count,
+        "batch_row_count": uploaded_batch.row_count,
+        "batch_blank_count": uploaded_batch.blank_count,
+        "selected_model_id": batch_model.model_id,
+        "selected_model_row_count": batch_model.row_count,
+        "selected_model_blank_count": batch_model.blank_count,
         "exact_bank_coverage": True,
+        "batch_provenance": dict(source.provenance or {}),
+    }
+
+
+def _judge_provenance(prepared: _PreparedRun) -> dict[str, Any]:
+    config = prepared.config.judge
+    judge_identity = {
+        "provider": "judge",
+        "model": config.model,
+        "model_family": config.model_family,
+        "revision": config.revision,
+        "enable_thinking": config.enable_thinking,
+        "language_model_only": config.language_model_only,
+    }
+    return {
+        **judge_identity,
+        "identity_sha256": _canonical_hash(judge_identity),
+        "failure_probability_threshold": config.failure_probability_threshold,
+        "atomic_requirement_policy": config.atomic_requirement_policy,
+        "classification_token_ids": {
+            "pass": list(prepared.judge.classification_token_ids.pass_ids),
+            "fail": list(prepared.judge.classification_token_ids.fail_ids),
+            "canonical_pass": prepared.judge.classification_token_ids.canonical_pass_id,
+            "canonical_fail": prepared.judge.classification_token_ids.canonical_fail_id,
+            "source": prepared.judge.classification_token_ids.source,
+        },
+    }
+
+
+def _prompt_provenance() -> dict[str, Any]:
+    return {
+        "tutor_source": TUTOR_PROMPT_SOURCE,
+        "tutor_version": TUTOR_PROMPT_VERSION,
+        "judge_prompt_version": PROMPT_VERSION,
+        "judge_prompt_profile": PROMPT_PROFILE,
+        "judge_prompt_variant": PROMPT_VARIANT,
+        "judge_adapter_version": ADAPTER_VERSION,
+        "judge_contract_sha256": _canonical_hash(
+            {
+                "evidence": EVIDENCE_DECISION_POLICY,
+                "curated": CURATED_GRADING_POLICY,
+                "classification": CLASSIFICATION_INSTRUCTION,
+            }
+        ),
     }
 
 
@@ -999,36 +1155,14 @@ def _manifest(
     error: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     config = prepared.config
-    tutor_provenance = dict(config.tutor.model_provenance)
-    tutor_provenance["revision"] = prepared.candidate_revision
+    identity = prepared.tutor_identity
+    if identity is None:
+        raise ValueError("candidate tutor identity is unavailable")
     tutor_identity = {
-        "model": config.tutor.expected_model,
-        "model_family": config.tutor.model_family,
-        "provenance": tutor_provenance,
+        "model": identity.model,
+        "model_family": identity.model_family,
+        "provenance": dict(identity.provenance),
         "response_source": _tutor_response_source_provenance(prepared),
-    }
-    judge_identity = {
-        "provider": "judge",
-        "model": config.judge.model,
-        "model_family": config.judge.model_family,
-        "revision": config.judge.revision,
-        "enable_thinking": config.judge.enable_thinking,
-        "language_model_only": config.judge.language_model_only,
-    }
-    prompt_contract = {
-        "tutor_source": TUTOR_PROMPT_SOURCE,
-        "tutor_version": TUTOR_PROMPT_VERSION,
-        "judge_prompt_version": PROMPT_VERSION,
-        "judge_prompt_profile": PROMPT_PROFILE,
-        "judge_prompt_variant": PROMPT_VARIANT,
-        "judge_adapter_version": ADAPTER_VERSION,
-        "judge_contract_sha256": _canonical_hash(
-            {
-                "evidence": EVIDENCE_DECISION_POLICY,
-                "curated": CURATED_GRADING_POLICY,
-                "classification": CLASSIFICATION_INSTRUCTION,
-            }
-        ),
     }
     return {
         "schema_version": ARTIFACT_SCHEMA_VERSION,
@@ -1043,20 +1177,8 @@ def _manifest(
             **tutor_identity,
             "identity_sha256": _canonical_hash(tutor_identity),
         },
-        "judge": {
-            **judge_identity,
-            "identity_sha256": _canonical_hash(judge_identity),
-            "failure_probability_threshold": config.judge.failure_probability_threshold,
-            "atomic_requirement_policy": config.judge.atomic_requirement_policy,
-            "classification_token_ids": {
-                "pass": list(prepared.judge.classification_token_ids.pass_ids),
-                "fail": list(prepared.judge.classification_token_ids.fail_ids),
-                "canonical_pass": prepared.judge.classification_token_ids.canonical_pass_id,
-                "canonical_fail": prepared.judge.classification_token_ids.canonical_fail_id,
-                "source": prepared.judge.classification_token_ids.source,
-            },
-        },
-        "prompts": prompt_contract,
+        "judge": _judge_provenance(prepared),
+        "prompts": _prompt_provenance(),
         "bank": _bank_provenance(prepared),
         "progress": {
             "selected_scenarios": list(selected_scenarios),
@@ -1065,6 +1187,89 @@ def _manifest(
             "criterion_judgments": len(judge_rows),
             "no_decisions": sum(row.get("verdict") == "no_decision" for row in judge_rows),
         },
+        "artifact_sha256": dict(artifacts or {}),
+        "error": None if error is None else dict(error),
+    }
+
+
+def _batch_response_source_provenance(prepared: _PreparedRun) -> dict[str, Any]:
+    batch = prepared.precomputed_batch
+    source = prepared.config.tutor.response_source
+    if batch is None or source.schema_version is None:
+        raise ValueError("precomputed tutor response batch provenance is unavailable")
+    return {
+        "kind": "precomputed_batch_jsonl",
+        "schema_version": source.schema_version,
+        "path": str(batch.path),
+        "declared_sha256": source.sha256,
+        "observed_sha256": batch.sha256,
+        "model_count": batch.model_count,
+        "row_count": batch.row_count,
+        "blank_count": batch.blank_count,
+        "scenarios_per_model": len(prepared.bank.scenarios),
+        "exact_bank_coverage_per_model": True,
+        "provenance": dict(source.provenance or {}),
+    }
+
+
+def _batch_counts(
+    batch: PrecomputedTutorResponseBatch,
+    model_rows: Sequence[Mapping[str, Any]],
+) -> dict[str, int]:
+    succeeded = sum(row.get("status") == ModeStatus.SUCCEEDED.value for row in model_rows)
+    failed = sum(row.get("status") == ModeStatus.FAILED.value for row in model_rows)
+    cancelled = sum(row.get("status") == ModeStatus.CANCELLED.value for row in model_rows)
+    return {
+        "models_total": batch.model_count,
+        "models_completed": len(model_rows),
+        "models_succeeded": succeeded,
+        "models_failed": failed,
+        "models_cancelled": cancelled,
+        "models_pending": batch.model_count - len(model_rows),
+        "scenarios_administered": sum(
+            int(cast(Mapping[str, Any], row.get("metrics", {})).get("scenarios_administered", 0))
+            for row in model_rows
+        ),
+        "criteria_observed": sum(
+            int(cast(Mapping[str, Any], row.get("metrics", {})).get("criteria_observed", 0))
+            for row in model_rows
+        ),
+        "criteria_no_decision": sum(
+            int(cast(Mapping[str, Any], row.get("metrics", {})).get("criteria_no_decision", 0))
+            for row in model_rows
+        ),
+    }
+
+
+def _batch_manifest(
+    context: ModeRunContext,
+    prepared: _PreparedRun,
+    *,
+    status: str,
+    model_rows: Sequence[Mapping[str, Any]],
+    artifacts: Mapping[str, str] | None = None,
+    error: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    batch = prepared.precomputed_batch
+    if batch is None:
+        raise ValueError("batch manifest requested for a non-batch run")
+    return {
+        "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+        "implementation_version": IMPLEMENTATION_VERSION,
+        "mode": MODE_NAME,
+        "execution": "precomputed_batch",
+        "run_id": context.run_id,
+        "status": status,
+        "config_sha256": _canonical_hash(prepared.config.raw),
+        "config": prepared.config.raw,
+        "context_metadata": dict(context.metadata),
+        "response_batch": _batch_response_source_provenance(prepared),
+        "judge": _judge_provenance(prepared),
+        "prompts": _prompt_provenance(),
+        "bank": _bank_provenance(prepared),
+        "cat_policy": _json_value(prepared.config.raw["cat"], path="cat_policy"),
+        "progress": _batch_counts(batch, model_rows),
+        "model_result_paths": [str(row["output_dir"]) for row in model_rows],
         "artifact_sha256": dict(artifacts or {}),
         "error": None if error is None else dict(error),
     }
@@ -1094,6 +1299,18 @@ class EduLLMAdaptiveMode:
         output_dir: Path,
     ) -> ModeResult:
         prepared = _prepare(context, config)
+        if prepared.precomputed_batch is not None:
+            return await self._run_batch(context, prepared, output_dir)
+        if prepared.tutor_identity is None:
+            raise RuntimeError("single-model run is missing its tutor identity")
+        return await self._run_candidate(context, prepared, output_dir)
+
+    async def _run_candidate(
+        self,
+        context: ModeRunContext,
+        prepared: _PreparedRun,
+        output_dir: Path,
+    ) -> ModeResult:
         paths = {
             "manifest.json": output_dir / "manifest.json",
             "tutor_responses.jsonl": output_dir / "tutor_responses.jsonl",
@@ -1134,6 +1351,9 @@ class EduLLMAdaptiveMode:
             rubrics: tuple[Rubric, ...],
         ) -> Mapping[str, int | None]:
             selected_scenarios.append(scenario.scenario_id)
+            identity = prepared.tutor_identity
+            if identity is None:
+                raise RuntimeError("candidate tutor identity is unavailable")
             source_metadata: Mapping[str, Any] = {}
             source_row_sha256: str | None = None
             if prepared.config.tutor.response_source.kind == "provider":
@@ -1148,10 +1368,10 @@ class EduLLMAdaptiveMode:
                 messages = [dict(message) for message in generated.request.messages]
                 response_text = generated.output.text
             else:
-                uploaded = prepared.precomputed_responses
-                if uploaded is None:
+                response_rows = prepared.response_rows
+                if response_rows is None:
                     raise RuntimeError("precomputed tutor responses were not loaded")
-                source_row = uploaded.responses[scenario.scenario_id]
+                source_row = response_rows[scenario.scenario_id]
                 messages = [dict(message) for message in build_tutor_messages(scenario)]
                 response_text = source_row.response
                 source_metadata = source_row.metadata
@@ -1159,7 +1379,7 @@ class EduLLMAdaptiveMode:
             tutor_row = {
                 "schema_version": ARTIFACT_SCHEMA_VERSION,
                 "scenario_id": scenario.scenario_id,
-                "tutor_model": prepared.config.tutor.expected_model,
+                "tutor_model": identity.model,
                 "response_source": prepared.config.tutor.response_source.kind,
                 "source_metadata": dict(source_metadata),
                 "source_row_sha256": source_row_sha256,
@@ -1352,6 +1572,159 @@ class EduLLMAdaptiveMode:
                 error=f"{type(exc).__name__}: {exc}",
             )
 
+    async def _run_batch(
+        self,
+        context: ModeRunContext,
+        prepared: _PreparedRun,
+        output_dir: Path,
+    ) -> ModeResult:
+        batch = prepared.precomputed_batch
+        source_provenance = prepared.config.tutor.response_source.provenance
+        if batch is None or source_provenance is None:
+            raise RuntimeError("precomputed tutor response batch is unavailable")
+        paths = {
+            "manifest.json": output_dir / "manifest.json",
+            "model_results.jsonl": output_dir / "model_results.jsonl",
+            "batch_summary.json": output_dir / "batch_summary.json",
+        }
+        model_rows: list[dict[str, Any]] = []
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        def checkpoint(
+            status: str,
+            *,
+            error: Mapping[str, Any] | None = None,
+        ) -> None:
+            counts = _batch_counts(batch, model_rows)
+            _atomic_write_jsonl(paths["model_results.jsonl"], model_rows)
+            _atomic_write_json(
+                paths["batch_summary.json"],
+                {
+                    "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+                    "status": status,
+                    **counts,
+                    "response_batch_sha256": batch.sha256,
+                    "model_results_path": "model_results.jsonl",
+                    "error": None if error is None else dict(error),
+                },
+            )
+            artifact_hashes = {
+                name: sha256_file(path) for name, path in paths.items() if name != "manifest.json"
+            }
+            _atomic_write_json(
+                paths["manifest.json"],
+                _batch_manifest(
+                    context,
+                    prepared,
+                    status=status,
+                    model_rows=model_rows,
+                    artifacts=artifact_hashes,
+                    error=error,
+                ),
+            )
+
+        checkpoint("running")
+        for model_index, batch_model in enumerate(batch.models):
+            candidate_id = f"candidate-{model_index:04d}-{_text_hash(batch_model.model_id)[:12]}"
+            relative_output = Path("models") / candidate_id
+            candidate_output = output_dir / relative_output
+            identity = TutorIdentity(
+                model=batch_model.model_id,
+                model_family=batch_model.model_family,
+                provenance={
+                    "source": source_provenance["source"],
+                    "revision": batch_model.model_revision,
+                    "batch_revision": source_provenance["revision"],
+                    "batch_sha256": batch.sha256,
+                },
+            )
+            candidate_prepared = replace(
+                prepared,
+                tutor_identity=identity,
+                response_rows=batch_model.responses,
+                batch_model=batch_model,
+            )
+            try:
+                result = await self._run_candidate(
+                    context,
+                    candidate_prepared,
+                    candidate_output,
+                )
+            except asyncio.CancelledError:
+                model_rows.append(
+                    {
+                        "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+                        "model_index": model_index,
+                        "candidate_id": candidate_id,
+                        "model_id": batch_model.model_id,
+                        "model_family": batch_model.model_family,
+                        "model_revision": batch_model.model_revision,
+                        "output_dir": relative_output.as_posix(),
+                        "status": ModeStatus.CANCELLED.value,
+                        "metrics": {},
+                        "warnings": [],
+                        "error": "evaluation mode was cancelled",
+                        "manifest_sha256": (
+                            sha256_file(candidate_output / "manifest.json")
+                            if (candidate_output / "manifest.json").is_file()
+                            else None
+                        ),
+                    }
+                )
+                error_row = {
+                    "type": "CancelledError",
+                    "message": "batch evaluation was cancelled",
+                }
+                checkpoint(ModeStatus.CANCELLED.value, error=error_row)
+                raise
+
+            candidate_manifest = candidate_output / "manifest.json"
+            model_rows.append(
+                {
+                    "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+                    "model_index": model_index,
+                    "candidate_id": candidate_id,
+                    "model_id": batch_model.model_id,
+                    "model_family": batch_model.model_family,
+                    "model_revision": batch_model.model_revision,
+                    "output_dir": relative_output.as_posix(),
+                    "status": result.status.value,
+                    "metrics": dict(result.metrics),
+                    "warnings": list(result.warnings),
+                    "error": result.error,
+                    "manifest_sha256": sha256_file(candidate_manifest),
+                }
+            )
+            checkpoint("running")
+
+        counts = _batch_counts(batch, model_rows)
+        failed = counts["models_failed"]
+        status = ModeStatus.FAILED if failed else ModeStatus.SUCCEEDED
+        error_text = None if not failed else f"{failed} tutor model evaluation(s) failed"
+        error_row = (
+            None if error_text is None else {"type": "BatchModelFailure", "message": error_text}
+        )
+        checkpoint(status.value, error=error_row)
+        warnings: list[str] = []
+        if prepared.config.bank.scientific_status == "experimental":
+            warnings.append("fitted bank and CAT policy are explicitly experimental")
+        if failed:
+            warnings.append(error_text or "one or more tutor model evaluations failed")
+        if counts["criteria_no_decision"]:
+            warnings.append(
+                f"{counts['criteria_no_decision']} criterion judgment(s) were no-decision"
+            )
+        return ModeResult(
+            mode=self.name,
+            implementation_version=self.implementation_version,
+            status=status,
+            metrics=counts,
+            artifacts=tuple(paths),
+            warnings=tuple(warnings),
+            completed_units=len(model_rows),
+            error=error_text,
+        )
+
     @staticmethod
     def _write_failure(
         context: ModeRunContext,
@@ -1420,6 +1793,7 @@ class EduLLMAdaptiveMode:
 __all__ = [
     "ARTIFACT_SCHEMA_VERSION",
     "ATOMIC_REQUIREMENT_POLICY",
+    "BATCH_ARTIFACT_SCHEMA_VERSION",
     "EduLLMAdaptiveConfig",
     "EduLLMAdaptiveMode",
     "IMPLEMENTATION_VERSION",

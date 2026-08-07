@@ -383,25 +383,37 @@ def parse_mapping(value: Mapping[str, Any]) -> ModeRunConfig:
         from olmo_eval.edullm.mode import parse_adaptive_config
 
         adaptive = parse_adaptive_config(adaptive_modes[0].config)
-        provenance_source = adaptive.tutor.model_provenance.get("source")
-        provenance_revision = adaptive.tutor.model_provenance.get("revision")
-        if not isinstance(provenance_source, str) or not provenance_source.strip():
-            raise ValueError("edullm_adaptive requires tutor.model_provenance.source")
-        if not isinstance(provenance_revision, str) or not provenance_revision.strip():
-            raise ValueError("edullm_adaptive requires tutor.model_provenance.revision")
-
         response_source_kind = adaptive.tutor.response_source.kind
-        if response_source_kind == "precomputed_jsonl":
+        if response_source_kind in {"precomputed_jsonl", "precomputed_batch_jsonl"}:
             if harness.provider.get_provider_name() != "mock":
                 raise ValueError(
-                    "edullm_adaptive precomputed_jsonl requires harness.provider.kind='mock'"
+                    f"edullm_adaptive {response_source_kind} requires harness.provider.kind='mock'"
                 )
-            if any(mode.name == "standard_olmo" for mode in modes):
+            if response_source_kind == "precomputed_batch_jsonl" and (
+                len(modes) != 1 or modes[0].name != "edullm_adaptive"
+            ):
                 raise ValueError(
-                    "standard_olmo cannot run with an edullm_adaptive "
-                    "precomputed_jsonl tutor response source"
+                    "edullm_adaptive precomputed_batch_jsonl must be the only selected mode"
                 )
+            if response_source_kind == "precomputed_jsonl":
+                provenance_source = adaptive.tutor.model_provenance.get("source")
+                provenance_revision = adaptive.tutor.model_provenance.get("revision")
+                if not isinstance(provenance_source, str) or not provenance_source.strip():
+                    raise ValueError("edullm_adaptive requires tutor.model_provenance.source")
+                if not isinstance(provenance_revision, str) or not provenance_revision.strip():
+                    raise ValueError("edullm_adaptive requires tutor.model_provenance.revision")
+                if any(mode.name == "standard_olmo" for mode in modes):
+                    raise ValueError(
+                        "standard_olmo cannot run with an edullm_adaptive "
+                        "precomputed_jsonl tutor response source"
+                    )
         elif response_source_kind == "provider":
+            provenance_source = adaptive.tutor.model_provenance.get("source")
+            provenance_revision = adaptive.tutor.model_provenance.get("revision")
+            if not isinstance(provenance_source, str) or not provenance_source.strip():
+                raise ValueError("edullm_adaptive requires tutor.model_provenance.source")
+            if not isinstance(provenance_revision, str) or not provenance_revision.strip():
+                raise ValueError("edullm_adaptive requires tutor.model_provenance.revision")
             candidate_revision = harness.provider.revision
             if not isinstance(candidate_revision, str) or not candidate_revision.strip():
                 raise ValueError(
