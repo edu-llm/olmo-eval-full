@@ -35,7 +35,7 @@ def run_modes(config_path: str, check: bool) -> None:
         orchestrator = ModeRunOrchestrator(config)
         if check:
             preflight = orchestrator.preflight()
-            console.print(
+            click.echo(
                 json.dumps(
                     {
                         "status": "preflight_passed",

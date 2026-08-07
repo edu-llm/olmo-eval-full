@@ -50,7 +50,12 @@ def test_check_runs_preflight_without_starting_inference_manager(
     result = CliRunner().invoke(run_modes, ["--config", str(config_path), "--check"])
 
     assert result.exit_code == 0, result.output
-    assert '"status": "preflight_passed"' in result.output
-    assert '"run_id": "cli-check-fixture"' in result.output
-    assert '"provider_names": [\n    "candidate"\n  ]' in result.output
+    assert json.loads(result.output) == {
+        "status": "preflight_passed",
+        "run_id": "cli-check-fixture",
+        "selected_modes": ["standard_olmo"],
+        "provider_names": ["candidate"],
+        "available_gpu_ids": [],
+        "judge_runtime": {},
+    }
     assert not output_dir.exists()
