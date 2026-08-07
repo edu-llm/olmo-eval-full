@@ -97,6 +97,7 @@ staging/supp_v2/
 # run-data, binary matrices, and all archives. These live in S3 or are
 # regenerable, and are never tracked.
 # ---------------------------------------------------------------------------
+aws_judge_results/
 tutorbench-responses*/
 tutorbench-grading*/
 grading/
@@ -147,6 +148,7 @@ data/EduBench/en_data/
 # Dr. SCI: large HF-derived parquet + generated scenario/rubric/CSV artifacts
 # (multiple GBs; jsonl regenerable via scripts/build_dr_sci_scenarios.py).
 data/dr-sci/*.parquet
+data/dr-sci/*.json
 data/dr-sci/*.jsonl
 data/dr-sci/*.csv
 
@@ -200,3 +202,8 @@ data/TutorEval/scenarios_reworded.jsonl
 
 # cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
 biggen_results_cache.parquet
+
+# Human judge-audit answer key: keep this after the reports/ re-include above.
+# It contains deblinded tutor identities and must never enter a grader packet
+# or repository commit.
+reports/infobench_judge_audit_v1/audit_analysis_key.csv
