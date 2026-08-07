@@ -1,0 +1,50 @@
+{
+  "schema_version": "infobench-eap-grid-followup-v1",
+  "status": "preregistered_before_followup_results",
+  "created_date": "2026-08-04",
+  "benchmark": "InFoBench",
+  "reason": "The append-only fit-grid follow-up locked fit grid 61, but its frozen 41-vs-81 EAP gate failed because median and p95 reference-theta shifts were too large. This second append-only follow-up tests denser EAP grids without changing thresholds or refitting grid 61.",
+  "parent_study": {
+    "config": "configs/infobench_dense_grid_followup_v1.json",
+    "run_dir": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+    "study_manifest": "runs/calibration/InFoBench_remediation_v1_dense_followup/study_manifest.json",
+    "study_manifest_sha256": "60e810b4c2ee8f087421b1ed5993b15563f6182f59fe36284e09ba7cea50b855",
+    "fit_gate": "runs/calibration/InFoBench_remediation_v1_dense_followup/dense_grid/fit_grid_stability.json",
+    "fit_gate_sha256": "c5a86b3631e565e7505453d37504f1f47200b220b78c4a27bf3e5a6ba73f6394",
+    "failed_eap_gate": "runs/calibration/InFoBench_remediation_v1_dense_followup/dense_grid/eap_grid_stability.json",
+    "failed_eap_gate_sha256": "0b27ed809e155a8b1f8c0b4156e8301b1afbc7ae1607abaac1dd82caa73673ed",
+    "required_status": "blocked_eap_grid_stability",
+    "locked_fit_grid": 61,
+    "reuse_eap_grid": 81,
+    "reuse_policy": "Hash-verify and copy the completed grid-61 ridge-0.1 fit and EAP-81 score artifacts; do not refit or rescore them."
+  },
+  "output_dir": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+  "initial_ridge": 0.1,
+  "fit_grid": 61,
+  "eap_grid_candidates": [
+    81,
+    161,
+    321
+  ],
+  "successive_eap_comparisons": [
+    "81_vs_161",
+    "161_vs_321"
+  ],
+  "eap_grid_lock_rule": {
+    "description": "Run both successive comparisons. Lock 81 only if both pass. If 81-vs-161 fails but 161-vs-321 passes, lock 161. Otherwise make no EAP lock.",
+    "maximum_median_absolute_theta_shift": 0.02,
+    "maximum_p95_absolute_theta_shift": 0.05,
+    "maximum_recovery_correlation_shift": 0.01,
+    "maximum_recovery_slope_shift": 0.02,
+    "maximum_theta_mae_shift": 0.02,
+    "maximum_pass_rate_mae_shift": 0.005,
+    "require_identical_fixed_bank_orders": true
+  },
+  "ridge_candidates_after_grid_lock": [
+    0.001,
+    0.01,
+    0.1
+  ],
+  "threshold_change_policy": "No threshold may be relaxed after observing follow-up results.",
+  "downstream_policy": "Nested CAT work remains provisional until the two-human InFoBench Qwen audit passes."
+}

@@ -1,0 +1,4 @@
+stage,criteria,removed_from_prior_stage,exclusion_reason
+source,2250,0,
+fitted,2105,145,unfitted (all-fail/zero-variance)
+exported,2096,9,nonpositive discrimination

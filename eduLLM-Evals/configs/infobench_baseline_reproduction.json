@@ -1,0 +1,170 @@
+{
+  "schema_version": "infobench-baseline-reproduction-v1",
+  "frozen_inputs": {
+    "response_matrix": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+      "sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "judge_manifest": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/judge_manifest.json",
+      "sha256": "d2f19c55b8ebb8f3ebe0c641485e0b694ce861f2740835da760b7b51b40698e7"
+    },
+    "rubrics": {
+      "path": "data/InFoBench/rubrics.jsonl",
+      "sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10"
+    },
+    "scenarios": {
+      "path": "data/InFoBench/scenarios.jsonl",
+      "sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+    }
+  },
+  "stored_artifacts": {
+    "phase0_input_artifact": "reports/infobench_calibration_remediation/phase0_input_artifact.json",
+    "phase0_input_archive": "runs/calibration/InFoBench_remediation_phase0/infobench_phase0_inputs.tar.gz",
+    "export_manifest": "reports/infobench_calibration_20260804/selected_bank/export_manifest.json",
+    "selected_calibration_csv": "runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p1/fit/calibration_mirt.csv",
+    "exported_rubrics": "runs/calibration/InFoBench_playbook_full/selected_bank/rubrics_fitted_only.jsonl",
+    "structure_comparison": "reports/infobench_calibration_20260804/structure_comparison.csv",
+    "structure_selection": "reports/infobench_calibration_20260804/structure_selection.json",
+    "cat_configuration": "reports/infobench_calibration_20260804/cat_configuration_selection.json",
+    "cat_validation": "reports/infobench_calibration_20260804/cat_configuration_validation.json",
+    "selected_cat_per_model": "runs/calibration/InFoBench_playbook_full/cat_sweeps/selected_configuration/per_model.csv",
+    "random_per_model": "runs/calibration/InFoBench_playbook_full/cat_sweeps/random_baseline/per_model.csv",
+    "oos_per_model": "runs/calibration/InFoBench_playbook_full/estimator_oos_kfold/oos_per_model.csv",
+    "oos_metrics": "reports/infobench_calibration_20260804/estimator_oos_metrics.csv",
+    "uncertainty_components": "runs/calibration/InFoBench_playbook_full/parameter_uncertainty/ability_se_components_se_0p25.csv",
+    "uncertainty_summary": "reports/infobench_calibration_20260804/parameter_uncertainty_summary.csv"
+  },
+  "outputs": {
+    "report": "reports/infobench_calibration_20260804/baseline_reproduction.json",
+    "criterion_flow_csv": "reports/infobench_calibration_20260804/criterion_count_reconciliation.csv"
+  },
+  "expected": {
+    "status": "verified",
+    "matrix": {
+      "models": 52,
+      "criteria": 2250,
+      "scenarios": 500,
+      "total_cells": 117000,
+      "observed_cells": 116973,
+      "missing_cells": 27,
+      "pass_cells": 47032,
+      "fail_cells": 69941
+    },
+    "judge_provenance": {
+      "judge_name": "qwen",
+      "judge_model": "Qwen/Qwen3.5-9B",
+      "judge_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "adapter": "generic-binary",
+      "prompt_version": "judge-validation-v3",
+      "normalization_version": "judge-normalization-v3",
+      "evidence_policy_version": "criterion-evidence-gate-v1",
+      "prompt_variant": "canonical",
+      "replicate_id": "r1",
+      "configuration_hash": "1430098374debc217ba8d3394a0a1c70a2ecfcd9a4b0f1a5c6c3a47197c4bf19",
+      "frozen_configuration_hash": "0a3acef09eef3a00316d14f2541c04eda9a73726702fbbe9020926c0974963f7",
+      "total_cells": 117000,
+      "filled_cells": 116973,
+      "no_decision_cells": 27,
+      "no_decision_policy": "missing"
+    },
+    "criterion_flow": {
+      "source_criteria": 2250,
+      "fitted_criteria": 2105,
+      "exported_criteria": 2096,
+      "total_excluded": 154,
+      "exclusions": {
+        "unfitted": 145,
+        "nonpositive_discrimination": 9
+      },
+      "identities_reconciled": true
+    },
+    "phase0_input_bundle": {
+      "schema_version": "infobench-phase0-input-bundle-v1",
+      "archive_sha256": "b033f86f0e206197bfff80c057a5793563989b04ab4062f4e7aa476718c62ca3",
+      "archive_bytes": 34352098,
+      "archive_members": 60,
+      "response_shards": 52,
+      "normalized_verdicts_present": true,
+      "storage_status": "local_only_not_published"
+    },
+    "headline_metrics": {
+      "structure_selection": {
+        "selected_structure": "overall_1d",
+        "selected_dimensions": 1,
+        "best_mean_structure": "overall_1d",
+        "best_cv_mean_log_loss": 0.40699016955787765,
+        "best_cv_standard_error": 0.013542133386570879,
+        "one_standard_error_boundary": 0.42053230294444854,
+        "eligible_structures": [
+          "correlation_2d",
+          "correlation_3d",
+          "full_5d",
+          "merge_content_style_4d",
+          "merge_format_linguistic_4d",
+          "merge_number_linguistic_4d",
+          "overall_1d"
+        ]
+      },
+      "cat_vs_random": {
+        "configuration": {
+          "minimum_scenarios": 0,
+          "nominal_se_target": 0.25,
+          "selection_rule": "trace"
+        },
+        "selected_cat": {
+          "models": 52,
+          "mean_scenarios": 5.288461538461538,
+          "mean_criteria": 19.26923076923077,
+          "precision_reached_rate": 1.0,
+          "mwle_convergence_rate": 1.0,
+          "mwle_recovery": {
+            "r": 0.9687837259792256,
+            "slope": 1.0487454191989187,
+            "mae": 0.4213952483934754
+          }
+        },
+        "random_baseline": {
+          "models": 52,
+          "mean_scenarios": 23.692307692307693,
+          "mean_criteria": 98.42307692307692,
+          "precision_reached_rate": 1.0,
+          "mwle_convergence_rate": 1.0,
+          "mwle_recovery": {
+            "r": 0.9274345581234741,
+            "slope": 1.0620432113942324,
+            "mae": 0.5743157606472891
+          }
+        },
+        "paired_mean_scenario_difference": -18.403846153846153
+      },
+      "oos_estimator_recovery": {
+        "eap": {
+          "models": 52,
+          "r": 0.9020231576911608,
+          "slope": 0.7766687261262218,
+          "mae": 0.4982215541613687
+        },
+        "mwle": {
+          "models": 52,
+          "r": 0.9244019519131822,
+          "slope": 0.84528046953426,
+          "mae": 0.5619672136353769
+        },
+        "online": {
+          "models": 52,
+          "r": 0.9100755649338793,
+          "slope": 0.5947434937147318,
+          "mae": 0.7239179164302781
+        }
+      },
+      "mwle_uncertainty": {
+        "nominal_se_target": 0.25,
+        "reliable_models": 52,
+        "median_total_se": 0.536703549746096,
+        "p90_total_se": 0.9377686617048517,
+        "models_at_or_below_nominal_target": 0
+      }
+    }
+  }
+}
