@@ -216,84 +216,40 @@ jobs:
             --tb=short
 
   # ============================================================================
-  # Integration Tests (GPU)
+  # There Are No GPU Jobs, And There Is Nowhere To Put One
   # ============================================================================
-  integration-test-gpu:
-    name: Integration Tests (GPU)
-    runs-on: [self-hosted, gpu]
-    # Only run when explicitly requested via workflow_dispatch
-    if: github.event_name == 'workflow_dispatch'
-    needs: [lint, type-check, test]
-    timeout-minutes: 30
-    env:
-      HUGGING_FACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Verify GPU availability
-        run: |
-          nvidia-smi
-          uv run --frozen python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}'); print(f'GPU count: {torch.cuda.device_count()}')"
-
-      - name: Run vLLM integration tests
-        run: |
-          uv run --frozen pytest tests/integration/test_vllm_provider.py \
-            -v \
-            --integration \
-            --no-docker \
-            --tb=short
-
-  # ============================================================================
-  # Integration Tests (GPU with Docker)
-  # ============================================================================
-  integration-test-docker:
-    name: Integration Tests (Docker)
-    runs-on: [self-hosted, gpu, docker]
-    # Only run when explicitly requested via workflow_dispatch
-    if: github.event_name == 'workflow_dispatch'
-    needs: [lint, type-check, test]
-    timeout-minutes: 45
-    env:
-      HUGGING_FACE_HUB_TOKEN: ${{ secrets.HF_TOKEN }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Verify Docker and GPU
-        run: |
-          docker --version
-          docker compose version
-          nvidia-smi
-          docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
-
-      - name: Run vLLM integration tests with Docker
-        run: |
-          uv run --frozen pytest tests/integration/test_vllm_provider.py \
-            -v \
-            --integration \
-            --tb=short
-
-      - name: Cleanup Docker containers
-        if: always()
-        run: |
-          docker compose -f tests/integration/docker-compose.vllm.yml down --volumes --remove-orphans || true
+  # `integration-test-gpu` on [self-hosted, gpu] and `integration-test-docker` on
+  # [self-hosted, gpu, docker] used to sit here. Both were deleted, along with the CI
+  # example in tests/integration/README.md they were copied from. Do not restore either.
+  #
+  # NOTHING IN THIS ORGANIZATION CAN SERVE THOSE LABELS AND NOTHING IS GOING TO. edu-llm
+  # has zero self-hosted runners and one runner group with no members, and the only other
+  # route to a hosted GPU is GitHub's larger-runner product, which the hosted-runners API
+  # answers for with "not supported for this organization". A job whose labels no runner
+  # carries is not rejected. It queues, renders as a pending yellow dot for 24 hours, and
+  # is then cancelled -- measured, not assumed: twelve runs of the sibling repository's
+  # tests.yml did exactly that, each cancelled to the minute 24 hours after it was
+  # created. A pending check reads as one about to pass rather than one that is absent,
+  # and on the day required status checks are switched on it blocks the merge outright.
+  #
+  # `if: github.event_name == 'workflow_dispatch'` was the whole of what stood between
+  # this workflow and that, and workflow_dispatch is a trigger this workflow declares --
+  # so the distance was one press of the Run workflow button in the Actions tab.
+  #
+  # THEY COULD NOT HAVE PASSED ON THE HARDWARE THEY ASKED FOR EITHER. Both ran pytest
+  # with `--integration`, which no conftest.py registers: it is the name of a marker in
+  # pyproject.toml, not an option, so pytest exits 4 on `unrecognized arguments:
+  # --integration` before it imports a test. Drop that flag and all 19 tests in
+  # test_vllm_provider.py skip regardless -- they carry `pytestmark = [pytest.mark.gpu]`
+  # and tests/conftest.py skips gpu-marked tests unless `--gpu` is passed, which neither
+  # job passed. Both also read `secrets.HF_TOKEN`, which this repository does not have.
+  #
+  # THE TESTS ARE KEPT AND ARE WORTH RUNNING; they are simply not CI's to run. On a GPU
+  # box: `uv run pytest tests/integration/test_vllm_provider.py --gpu`, which is what
+  # tests/integration/README.md now says instead. GPU work in eduLLM goes to AWS Batch
+  # through `edullm submit`, against the image .edullm/Dockerfile builds -- a path that
+  # bills a real accelerator against a real approval, which is why it does not hang off
+  # every push.
 
   # ============================================================================
   # Build Check
