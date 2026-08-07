@@ -13,8 +13,11 @@ evaluation team.
 - **Latent structure used by the latest study:** one overall
   `instruction_following` dimension built from InFoBench's five source labels
   (`content`, `format`, `number`, `style`, and `linguistic`).
-- **Latest study:** the preregistered 2PL-only follow-up completed all Phase-3
-  calibration panels but failed its CAT validation gates.
+- **Latest calibration/CAT policy study:** the preregistered 2PL-only follow-up
+  completed all Phase-3 calibration panels but failed its CAT validation gates.
+- **Latest stop-rule diagnostic:** EAP posterior-SD stopping improved honest
+  target attainment from 13.8% to 85.8%, but added roughly 3–4 scenarios and
+  therefore failed the preregistered no-length-increase gate (`do_not_adopt`).
 - **Release status:** no final fitted bank or deployable CAT policy is approved.
   Phase 4 and final export were correctly not run.
 
@@ -32,6 +35,9 @@ them to support deployment claims.
 | Terminal result and limitations | `reports/infobench_calibration_cat_2pl_only_v1/EXECUTION_SUMMARY.md` |
 | Figure explanations | `reports/infobench_calibration_cat_2pl_only_v1/figures/FIGURE_GUIDE.md` |
 | Exact reproduction commands | `reports/infobench_calibration_cat_2pl_only_v1/reproduction_commands.txt` |
+| Frozen EAP stop-rule prototype | `configs/infobench_eap_stop_prototype_v1.json` |
+| EAP stop-rule result and figures | `reports/infobench_eap_stop_prototype_v1/EAP_STOP_PROTOTYPE_SUMMARY.md` |
+| EAP raw metrics and provenance | `runs/calibration/InFoBench_eap_stop_prototype_v1/` |
 
 Earlier InFoBench calibration and numerical studies are retained because the
 latest 2PL pipeline imports or hash-verifies parts of that provenance chain.
@@ -54,6 +60,16 @@ uv run --frozen --extra irt pytest -q \
   tests/test_nested_cat_total_uncertainty_2pl_only_v1.py \
   tests/test_finalize_infobench_calibration_cat_2pl_only_v1.py \
   tests/test_render_infobench_2pl_only_v1_terminal.py
+```
+
+The optional EAP stopping path and frozen prototype driver can be checked with:
+
+```bash
+uv run --frozen --extra irt pytest -q \
+  tests/test_mirt.py \
+  tests/test_engine_sim.py \
+  tests/test_scenario_cat_lib.py \
+  tests/test_infobench_eap_stop_prototype.py
 ```
 
 ## Generate tutor responses
