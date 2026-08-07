@@ -39,7 +39,7 @@ command: >-
   s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-staged-refhq-step1315/checkpoint/
   --steering-dataset stereoset
   --eval-dataset stereoset
-  --layers 16
+  --layers 8
   --alphas -1
   --max-statements 200
   --eval-limit 100
