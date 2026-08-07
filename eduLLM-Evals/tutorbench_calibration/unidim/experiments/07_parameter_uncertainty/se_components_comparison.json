@@ -1,0 +1,44 @@
+{
+  "rows": [
+    {
+      "scale": "2skill_correctness",
+      "dim": "correctness",
+      "median_se_posterior": 0.3337,
+      "median_se_param": 0.2074,
+      "median_se_total": 0.4117,
+      "median_bar_inflation": 1.1714,
+      "max_bar_inflation": 3.2195,
+      "source": "regenerated_figures\\scenario_level_115_min12\\param_uncertainty\\2_skills\\metrics.json"
+    },
+    {
+      "scale": "collapse_all_unidim",
+      "dim": "overall",
+      "median_se_posterior": 0.24,
+      "median_se_param": 0.0987,
+      "median_se_total": 0.258,
+      "median_bar_inflation": 1.1125,
+      "max_bar_inflation": 1.3764,
+      "source": "regenerated_figures\\scenario_level_115_min12\\param_uncertainty\\unidim\\metrics.json"
+    },
+    {
+      "scale": "correctness_only_unidim",
+      "dim": "correctness",
+      "median_se_posterior": 0.3258,
+      "median_se_param": 0.1126,
+      "median_se_total": 0.3441,
+      "median_bar_inflation": 1.0509,
+      "max_bar_inflation": 1.5616,
+      "source": "reports\\eap_unidim_correctness_only_tutorbench\\param_uncertainty\\metrics.json"
+    }
+  ],
+  "deltas_correctness_only_vs_2skill": {
+    "se_param_abs_reduction_vs_2skill": 0.0948,
+    "se_param_pct_reduction_vs_2skill": 45.7,
+    "se_posterior_abs_reduction_vs_2skill": 0.0079,
+    "se_posterior_pct_reduction_vs_2skill": 2.4,
+    "se_total_abs_reduction_vs_2skill": 0.0676,
+    "se_total_pct_reduction_vs_2skill": 16.4,
+    "max_inflation_2skill": 3.2195,
+    "max_inflation_correctness_only": 1.5616
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "operating_point": {
+    "floor": 20,
+    "se_ability_target": 0.27
+  },
+  "n_headline": 114,
+  "passrate_mae_headline": 0.01968645942720784,
+  "passrate_mae_all115": 0.019565124452286958,
+  "passrate_r_headline": 0.974745902053123,
+  "theta_source": "MWLE theta at 20/0.27 stop from FRESH adaptive trace",
+  "prediction": "p = expit(A*theta - b) over each model's observed fold-bank criteria",
+  "compute": "FRESH: reuses k-fold refit banks + adaptive-stop theta"
+}

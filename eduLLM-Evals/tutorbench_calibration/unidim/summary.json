@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-08-07T22:17:20.568174+00:00",
+  "status": "STUDY / reporting only - LOCAL. Production engine + tutorbench_calibration/ untouched. Nothing committed.",
+  "deliverable": "OF-RECORD @ locked op-point floor=20 / SE_ability=0.27",
+  "benchmark": "TutorBench",
+  "scale": "correctness-only unidimensional",
+  "dim": "correctness",
+  "operating_point": {
+    "floor_min_scenarios": 20,
+    "se_ability_target": 0.27,
+    "stop": "EAP-posterior 1-D marginal SD, dense 321-node grid; plateau delta=0.005/W=3; cap 70; MWLE theta at stop",
+    "oos": "k=5 refit-per-fold, seed 20260729"
+  },
+  "n_models": 115,
+  "n_headline": 114,
+  "headline_exclude": [
+    "Qwen/Qwen1.5-1.8B"
+  ],
+  "salamandra_7b": "rehabilitated under correctness-only unidim scale -> kept in headline",
+  "headline_recovery": {
+    "r": 0.955041280683213,
+    "slope": 1.005479373729806,
+    "intercept": -0.1426304493782724,
+    "mae": 0.4159456614604977
+  },
+  "grid_row_20_0.27": {
+    "r": 0.9550412806832131,
+    "slope": 1.0054793737298062,
+    "theta_mae": 0.4159456614604977,
+    "median_sd": 0.2579721530938593,
+    "median_se_total": 0.2751929193559631,
+    "median_len": 20.0,
+    "mean_len": 21.67543859649123
+  },
+  "se_components": {
+    "median_se_ability": 0.25797215309385924,
+    "median_se_total": 0.27519291935596313,
+    "median_se_param_offset": 0.11256641278534789
+  },
+  "leaderboard_top": {
+    "model": "Qwen/Qwen3-1.7B",
+    "theta": 2.598580625584051,
+    "se_total": 0.2752583550671971
+  },
+  "leaderboard_bottom_headline": {
+    "model": "openai-community/gpt2-large",
+    "theta": -5.78367493480984,
+    "se_total": 0.5325376478429128
+  },
+  "weak_model_rank": 88,
+  "efficiency_metrics": {
+    "operating_point": {
+      "floor": 20,
+      "se_ability_target": 0.27
+    },
+    "n_headline": 114,
+    "adaptive_scenarios_to_reach_se_le_0.27": 20,
+    "random_scenarios_to_reach_se_le_0.27": 68,
+    "savings_factor": 3.4,
+    "adaptive_r_at_20": 0.9534482432268031,
+    "random_r_at_20": 0.9317254540435398,
+    "adaptive_median_se_at_20": 0.26863984605452684,
+    "random_median_se_at_20": 0.4680199681126126,
+    "adaptive_r_at_cap": 0.975662268774139,
+    "random_r_at_cap": 0.9630698178884323,
+    "compute": "FRESH: k-fold refit rerun with a matched random-order (mode=baseline) arm"
+  },
+  "pirt_metrics": {
+    "operating_point": {
+      "floor": 20,
+      "se_ability_target": 0.27
+    },
+    "n_headline": 114,
+    "passrate_mae_headline": 0.01968645942720784,
+    "passrate_mae_all115": 0.019565124452286958,
+    "passrate_r_headline": 0.974745902053123,
+    "theta_source": "MWLE theta at 20/0.27 stop from FRESH adaptive trace",
+    "prediction": "p = expit(A*theta - b) over each model's observed fold-bank criteria",
+    "compute": "FRESH: reuses k-fold refit banks + adaptive-stop theta"
+  },
+  "compute_provenance": {
+    "from_csv": [
+      "05_oos_recovery",
+      "07_parameter_uncertainty",
+      "08_leaderboard"
+    ],
+    "fresh_compute": [
+      "04_efficiency_vs_random (random-order arm)",
+      "09_pirt_mae (predicted pass-rate)"
+    ]
+  }
+}

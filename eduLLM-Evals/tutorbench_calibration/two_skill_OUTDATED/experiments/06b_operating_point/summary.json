@@ -1,0 +1,215 @@
+{
+  "benchmark": "TutorBench",
+  "dims": [
+    "correctness",
+    "scaffolding"
+  ],
+  "n_models": 33,
+  "stop_nodes_per_dim": 161,
+  "grid_spacing": 0.075,
+  "grid_joint_nodes": 25921,
+  "cap": 70,
+  "plateau": {
+    "headline_delta": 0.005,
+    "W": 3,
+    "sensitivity": [
+      {
+        "delta": 0.003,
+        "W": 3,
+        "mean_pct_info_plateau_across_cells": 0.5627705627705628,
+        "mean_median_len_across_cells": 28.285714285714285
+      },
+      {
+        "delta": 0.005,
+        "W": 3,
+        "mean_pct_info_plateau_across_cells": 0.6398268398268399,
+        "mean_median_len_across_cells": 26.0
+      },
+      {
+        "delta": 0.01,
+        "W": 3,
+        "mean_pct_info_plateau_across_cells": 0.7489177489177488,
+        "mean_median_len_across_cells": 21.6
+      }
+    ]
+  },
+  "estimator_at_stop": "MWLE (scenario_cat_lib.mwle_subset), start=dense-grid EAP mean",
+  "se_param_source": "regenerated_figures\\scenario_level_115_min12\\param_uncertainty\\2_skills\\leaderboard_se_components.csv",
+  "se_param_median": {
+    "correctness": 0.2073817098675225,
+    "scaffolding": 0.1748781787909174
+  },
+  "n_se_param_median_fallback": 0,
+  "bank_stats": {
+    "n_negative_cells": 349,
+    "n_negative_items": 348,
+    "negative_policy": "clamp",
+    "n_records_after": 3443
+  },
+  "floors": [
+    6,
+    8,
+    10,
+    12,
+    15
+  ],
+  "se_targets": [
+    0.15,
+    0.2,
+    0.22,
+    0.25,
+    0.27,
+    0.3,
+    0.32
+  ],
+  "asymptotic_sd_floor": {
+    "per_model": {
+      "01-ai/Yi-1.5-6B": {
+        "correctness": 0.04342393646714028,
+        "scaffolding": 0.12476549213775848
+      },
+      "01-ai/Yi-1.5-6B-Chat": {
+        "correctness": 0.038921836025892984,
+        "scaffolding": 0.11757827422003524
+      },
+      "01-ai/Yi-6B-200K": {
+        "correctness": 0.0937017565551299,
+        "scaffolding": 0.11899253065623899
+      },
+      "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu": {
+        "correctness": 0.16971079977817627,
+        "scaffolding": 0.11963031155616341
+      },
+      "BEE-spoke-data/smol_llama-220M-openhermes": {
+        "correctness": 0.17342543732570723,
+        "scaffolding": 0.12363277040975733
+      },
+      "BSC-LT/salamandra-2b": {
+        "correctness": 0.11931604376999293,
+        "scaffolding": 0.12212213523795398
+      },
+      "BSC-LT/salamandra-2b-instruct": {
+        "correctness": 0.1089424665848443,
+        "scaffolding": 0.12499274023572722
+      },
+      "BSC-LT/salamandra-7b": {
+        "correctness": 0.08031132882647551,
+        "scaffolding": 0.1162332707224255
+      },
+      "BSC-LT/salamandra-7b-instruct": {
+        "correctness": 0.0696055434269295,
+        "scaffolding": 0.1303225494497308
+      },
+      "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct": {
+        "correctness": 0.03851144871881291,
+        "scaffolding": 0.10708208408540147
+      },
+      "OpenBMB/MiniCPM4-0.5B": {
+        "correctness": 0.07759015936397642,
+        "scaffolding": 0.13670882472933216
+      },
+      "Qwen/Qwen1.5-1.8B": {
+        "correctness": 0.18265951282444204,
+        "scaffolding": 0.13580956259430935
+      },
+      "Qwen/Qwen1.5-1.8B-Chat": {
+        "correctness": 0.09654111811375145,
+        "scaffolding": 0.14051119140268378
+      },
+      "ai-forever/mGPT": {
+        "correctness": 0.2130596250748648,
+        "scaffolding": 0.12300234561875188
+      },
+      "allenai/OLMo-1B-hf": {
+        "correctness": 0.2342025006782485,
+        "scaffolding": 0.12386387626870356
+      },
+      "allenai/OLMo-2-0425-1B-DPO": {
+        "correctness": 0.057065794958626584,
+        "scaffolding": 0.1381886480259938
+      },
+      "allenai/OLMo-2-0425-1B-Instruct": {
+        "correctness": 0.05580315983384773,
+        "scaffolding": 0.1365979006230779
+      },
+      "arcee-ai/raspberry-3B": {
+        "correctness": 0.04211999128461634,
+        "scaffolding": 0.11130355254659727
+      },
+      "google/gemma-2b": {
+        "correctness": 0.08806083262904983,
+        "scaffolding": 0.11807721978464746
+      },
+      "h2oai/h2o-danube-1.8b-chat": {
+        "correctness": 0.09789031367203957,
+        "scaffolding": 0.1322816772594896
+      },
+      "h2oai/h2o-danube2-1.8b-chat": {
+        "correctness": 0.08742961892629823,
+        "scaffolding": 0.12701399982850953
+      },
+      "ibm-granite/granite-7b-instruct": {
+        "correctness": 0.07213046260171471,
+        "scaffolding": 0.11339655851531302
+      },
+      "ibm/PowerLM-3b": {
+        "correctness": 0.05264676405617504,
+        "scaffolding": 0.12205409210026417
+      },
+      "nvidia/AceInstruct-1.5B": {
+        "correctness": 0.038141345167623304,
+        "scaffolding": 0.11556421164245
+      },
+      "openbmb/MiniCPM-1B-sft-bf16": {
+        "correctness": 0.17596470475005963,
+        "scaffolding": 0.12416976398966943
+      },
+      "openlm-research/open_llama_3b": {
+        "correctness": 0.10211454103471217,
+        "scaffolding": 0.11869926868201672
+      },
+      "pankajmathur/orca_mini_3b": {
+        "correctness": 0.10624936671180225,
+        "scaffolding": 0.12348515551590258
+      },
+      "pankajmathur/orca_mini_v9_5_3B-Instruct": {
+        "correctness": 0.04712987823693671,
+        "scaffolding": 0.10932095335951628
+      },
+      "stabilityai/stablelm-2-1_6b-chat": {
+        "correctness": 0.07676857068932105,
+        "scaffolding": 0.14430956478426213
+      },
+      "tiiuae/Falcon3-1B-Instruct": {
+        "correctness": 0.046314361298655404,
+        "scaffolding": 0.13594894102961574
+      },
+      "tiiuae/Falcon3-3B-Instruct": {
+        "correctness": 0.033087342581891624,
+        "scaffolding": 0.11318989672745385
+      },
+      "utter-project/EuroLLM-1.7B": {
+        "correctness": 0.14577149208515625,
+        "scaffolding": 0.1237058443243913
+      },
+      "utter-project/EuroLLM-1.7B-Instruct": {
+        "correctness": 0.12454562196075937,
+        "scaffolding": 0.1291166265322872
+      }
+    },
+    "correctness": {
+      "min": 0.033087342581891624,
+      "median": 0.08742961892629823,
+      "max": 0.2342025006782485,
+      "n_above_0.30": 0,
+      "n_above_0.25": 0
+    },
+    "scaffolding": {
+      "min": 0.10708208408540147,
+      "median": 0.12363277040975733,
+      "max": 0.14430956478426213,
+      "n_above_0.30": 0,
+      "n_above_0.25": 0
+    }
+  }
+}

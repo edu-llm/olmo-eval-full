@@ -1,0 +1,131 @@
+{
+  "generated_at": "2026-08-07T20:12:13.581039+00:00",
+  "status": "STUDY / reporting ONLY - production engine untouched; nothing committed.",
+  "deliverable": "OF-RECORD package @ locked operating point floor=20 / SE_ability=0.27",
+  "benchmark": "TutorBench",
+  "dims": [
+    "correctness",
+    "scaffolding"
+  ],
+  "operating_point": {
+    "floor_min_scenarios": 20,
+    "se_ability_target": 0.27,
+    "selection": "SELECTED out-of-sample on the floor x SE grid over the full 115 models (not inherited from the 12/0.30 prototype, not in-sample)"
+  },
+  "estimator_at_stop": "MWLE (scenario_cat_lib.mwle_subset), start = dense-grid EAP mean",
+  "stop_rule": {
+    "metric": "EAP-posterior joint-grid per-skill MARGINAL SD (marginal of joint 2-D posterior)",
+    "stop_nodes_per_dim": 161,
+    "grid_joint_nodes": 25921,
+    "plateau_delta": 0.005,
+    "plateau_W": 3,
+    "cap": 70,
+    "priority": "precision -> info_plateau -> cap -> bank_exhausted"
+  },
+  "n_models": 115,
+  "n_headline": 113,
+  "excluded_weak_models": [
+    "Qwen/Qwen1.5-1.8B",
+    "BSC-LT/salamandra-7b-instruct"
+  ],
+  "fit_config": {
+    "fitter": "calibrate_mirt.fit_m2pl_em (confirmatory M2PL, Bock-Aitkin EM)",
+    "fit_grid_nodes_per_dim": 7,
+    "ridge": 0.01,
+    "max_iter": 200,
+    "negative_policy": "clamp",
+    "q_source": "frozen bank q_modeled (confirmatory)"
+  },
+  "protocol": {
+    "scheme": "OOS k-fold refit-per-fold, offline replay",
+    "k": 5,
+    "seed": 20260729
+  },
+  "se_param_offset_note": "SE_total = sqrt(SD^2 + SE_param^2); SE_param is the 115-min12 per-model parameter uncertainty used as a FIXED offset (NOT per-fold). Median SE_param: correctness ~0.207, scaffolding ~0.175.",
+  "se_param_median": {
+    "correctness": 0.2073817098675225,
+    "scaffolding": 0.1748781787909174
+  },
+  "headline_oos_from_grid_row_20_0.27": {
+    "n_excl2": 113,
+    "median_len": 25.0,
+    "mean_len": 26.53982300884956,
+    "pct_cap": 0.0,
+    "pct_info_plateau": 0.6637168141592921,
+    "pct_reach_se_ability_all": 0.336283185840708,
+    "r_correctness": 0.9667483351831976,
+    "r_scaffolding": 0.9321169894633722,
+    "slope_correctness": 1.0187434686791124,
+    "slope_scaffolding": 0.952709067492437,
+    "theta_mae_correctness": 0.4367758495061078,
+    "theta_mae_scaffolding": 0.2564216825447821,
+    "median_sd_correctness": 0.279979497067947,
+    "median_sd_scaffolding": 0.2654349097110283,
+    "median_se_total_correctness": 0.3711315422087264,
+    "median_se_total_scaffolding": 0.3195590757885208,
+    "pct_reach_se_ability_correctness": 0.4336283185840708,
+    "pct_reach_se_ability_scaffolding": 0.6902654867256637
+  },
+  "headline_recomputed_from_per_model_cell": {
+    "n_excl2": 113,
+    "median_len": 25.0,
+    "mean_len": 26.539823008849556,
+    "pct_reach_se_ability_all": 0.336283185840708,
+    "pct_info_plateau": 0.6637168141592921,
+    "pct_cap": 0.0,
+    "median_sd_correctness": 0.279979497067947,
+    "median_se_total_correctness": 0.3711315422087264,
+    "pct_reach_se_ability_correctness": 0.4336283185840708,
+    "median_sd_scaffolding": 0.2654349097110283,
+    "median_se_total_scaffolding": 0.3195590757885208,
+    "pct_reach_se_ability_scaffolding": 0.6902654867256637
+  },
+  "scatter_stats_recomputed_vs_grid": {
+    "correctness": {
+      "r": {
+        "recomputed": 0.9667483351831976,
+        "grid": 0.9667483351831976,
+        "abs_diff": 0.0
+      },
+      "slope": {
+        "recomputed": 1.0187434686791124,
+        "grid": 1.0187434686791124,
+        "abs_diff": 0.0
+      },
+      "theta_mae": {
+        "recomputed": 0.43677584950610787,
+        "grid": 0.4367758495061078,
+        "abs_diff": 5.551115123125783e-17
+      }
+    },
+    "scaffolding": {
+      "r": {
+        "recomputed": 0.9321169894633722,
+        "grid": 0.9321169894633722,
+        "abs_diff": 0.0
+      },
+      "slope": {
+        "recomputed": 0.9527090674924364,
+        "grid": 0.952709067492437,
+        "abs_diff": 5.551115123125783e-16
+      },
+      "theta_mae": {
+        "recomputed": 0.2564216825447821,
+        "grid": 0.2564216825447821,
+        "abs_diff": 0.0
+      }
+    }
+  },
+  "reach_note": "The modest ~34% both-skills SE_ability reach is an SE_param precision-ceiling artifact (SE_param ~0.21 correctness), NOT a stop-rule defect: OOS recovery is strong (correctness r~0.967, slope~1.0).",
+  "artifacts": {
+    "leaderboard_csv": "leaderboard_f20se27.csv",
+    "scatter_correctness": "figures/oos_recovery_correctness_f20se27.png",
+    "scatter_scaffolding": "figures/oos_recovery_scaffolding_f20se27.png",
+    "leaderboard_fig": "figures/leaderboard_correctness_f20se27.png"
+  },
+  "source_inputs": {
+    "per_cell_grid": "../oos_per_cell_grid.csv (row floor==20 & se_target==0.27)",
+    "per_model_per_cell": "../oos_per_model_per_cell.csv (filtered floor==20 & se_target==0.27)",
+    "grid_study_script": "../../../scripts/eap_oos_grid_study.py"
+  }
+}

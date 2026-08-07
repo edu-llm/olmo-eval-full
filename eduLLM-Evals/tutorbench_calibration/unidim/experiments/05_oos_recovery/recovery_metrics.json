@@ -1,0 +1,30 @@
+{
+  "operating_point": {
+    "floor": 20,
+    "se_ability_target": 0.27
+  },
+  "scale": "correctness-only unidimensional",
+  "n_headline": 114,
+  "recomputed_from_per_model_cell": {
+    "r": 0.955041280683213,
+    "slope": 1.005479373729806,
+    "intercept": -0.1426304493782724,
+    "mae": 0.4159456614604977
+  },
+  "grid_row_20_0.27": {
+    "r": 0.9550412806832131,
+    "slope": 1.0054793737298062,
+    "theta_mae": 0.4159456614604977,
+    "median_sd": 0.2579721530938593,
+    "median_se_total": 0.2751929193559631,
+    "median_len": 20.0,
+    "mean_len": 21.67543859649123
+  },
+  "weak_excluded": {
+    "Qwen/Qwen1.5-1.8B": {
+      "theta_ref": -3.2421613891703265,
+      "theta_mwle": -2.860421338993155
+    }
+  },
+  "source": "oos_grid_full/oos_per_model_per_cell.csv (from CSV, no recompute)"
+}

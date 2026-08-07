@@ -202,3 +202,28 @@ data/TutorEval/scenarios_reworded.jsonl
 
 # cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
 biggen_results_cache.parquet
+
+# ---------------------------------------------------------------------------
+# tutorbench_calibration/ = TRACKED deliverable package (canonical unidim/ +
+# superseded two_skill_OUTDATED/). The global *.png rule above would otherwise
+# swallow this package's figures, so re-include only its PNGs (this does NOT
+# re-include __pycache__/*.pyc, which stays ignored). Everything else in the
+# package (csv/json/jsonl/md/py) is not caught by any ignore rule.
+# ---------------------------------------------------------------------------
+!tutorbench_calibration/**/*.png
+
+# ---------------------------------------------------------------------------
+# Leftover scratch from the unidim build: the of-record deliverables were moved
+# into tutorbench_calibration/unidim/; what remains here is superseded scratch
+# (compact 15-cell oos_grid/, helper/compact-grid scripts, __pycache__, old
+# study README + build log). Placed AFTER the reports/ re-include so it wins.
+# ---------------------------------------------------------------------------
+reports/eap_unidim_correctness_only_tutorbench/
+
+# ---------------------------------------------------------------------------
+# 2-skill EAP scratch: data + figures are fully duplicated into
+# tutorbench_calibration/two_skill_OUTDATED/, so these loose working dirs are
+# redundant and not tracked.
+# ---------------------------------------------------------------------------
+reports/eap_oos_grid_tutorbench_2skill/
+reports/eap_stop_grid_tutorbench_2skill/

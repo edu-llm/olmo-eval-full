@@ -1,0 +1,49 @@
+{
+  "benchmark": "TutorBench",
+  "instrument": "2-skill (correctness, scaffolding)",
+  "status": "STUDY / reporting ONLY - production engine (tutor_cat/, scenario_cat_lib.py) untouched; nothing committed",
+  "snapshot_tag": "tutorbench-2skill-115models",
+  "of_record_bank": "data/TutorBench/rubrics_qmatrix_calibrated_2skill_115_fitted.jsonl",
+  "fit": {
+    "fitter": "calibrate_mirt.fit_m2pl_em (confirmatory M2PL, Bock-Aitkin MML-EM)",
+    "structure": "content+diagnosis -> correctness; scaffolding as-is; presentation NOT modeled",
+    "n_persons": 115,
+    "n_items_fit": 3666,
+    "fit_grid_nodes_per_dim": 7,
+    "ridge": 0.01,
+    "ridge_note": "ridge=1e-2 adopted 2026-07-31 (Scaffolding-Hygiene audit plateau; was 1e-3)",
+    "negative_loading_policy": "clamp (349/452 negative fitted loadings clamped to 0.0; runtime requires a>=0)",
+    "date": "2026-08-02",
+    "cohort_note": "82-model pilot + 33 net-new tb33 (full-200 grading) = 115"
+  },
+  "response_matrix": {
+    "path": "staging/response_matrix_full_nonopt_115.csv",
+    "sha256": "152286b6ded6561aca84e4b90cb0abbf065634d374217f91c9edcc783cccc0eb",
+    "tracked": "no (staging, gitignored -> S3)"
+  },
+  "cat_of_record": {
+    "stop_rule": "EAP-posterior honest per-skill MARGINAL SD (marginal of the joint 2-D posterior)",
+    "stop_nodes_per_dim": 161,
+    "grid_joint_nodes": 25921,
+    "info_plateau": {"delta": 0.005, "W": 3},
+    "cap": 70,
+    "priority": "precision -> info_plateau -> cap -> bank_exhausted",
+    "estimator_at_stop": "MWLE (scenario_cat_lib.mwle_subset), start = dense-grid EAP mean",
+    "operating_point": {"floor_min_scenarios": 20, "se_ability_target": 0.27,
+      "selection": "SELECTED out-of-sample on the floor x SE grid over all 115 models (k=5, seed 20260729, refit-per-fold)"}
+  },
+  "oos_protocol": {"scheme": "OOS k-fold refit-per-fold, offline replay", "k": 5, "seed": 20260729},
+  "n_models": 115,
+  "n_headline": 113,
+  "excluded_weak_models": ["Qwen/Qwen1.5-1.8B", "BSC-LT/salamandra-7b-instruct"],
+  "se_param_offset": {
+    "note": "SE_total = sqrt(SD_at_stop^2 + SE_param^2); SE_param is a FIXED per-model offset (07_parameter_uncertainty), NOT per-fold",
+    "median_correctness": 0.2073817098675225,
+    "median_scaffolding": 0.1748781787909174
+  },
+  "headline_oos_at_20_0.27": {
+    "correctness": {"r": 0.967, "slope": 1.019, "theta_mae": 0.437, "median_sd": 0.280, "median_se_total": 0.371, "pct_reach_se_ability": 0.434},
+    "scaffolding": {"r": 0.932, "slope": 0.953, "theta_mae": 0.256, "median_sd": 0.265, "median_se_total": 0.320, "pct_reach_se_ability": 0.690},
+    "median_length": 25, "mean_length": 26.54, "both_skills_reach": 0.336, "pct_info_plateau": 0.664, "pct_cap": 0.0
+  }
+}

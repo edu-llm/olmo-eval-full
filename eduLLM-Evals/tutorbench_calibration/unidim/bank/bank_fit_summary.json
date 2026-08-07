@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-08-07T21:00:58.897271+00:00",
+  "status": "STUDY ONLY - local; engine untouched; nothing committed.",
+  "dim": "correctness",
+  "source_bank": "data\\TutorBench\\rubrics_qmatrix_calibrated_2skill_115_fitted.jsonl",
+  "matrix": "staging/response_matrix_full_nonopt_115.csv",
+  "matrix_sha256": "152286b6ded6561aca84e4b90cb0abbf065634d374217f91c9edcc783cccc0eb",
+  "n_models": 115,
+  "criteria_classification": {
+    "n_source": 3666,
+    "kept_correctness_only": 2842,
+    "dropped_scaffolding_only": 357,
+    "dropped_correctness_and_scaffolding": 467,
+    "dropped_other": 0,
+    "total_dropped_any_scaffolding_load": 824
+  },
+  "fit_block": {
+    "n_items_fit": 2842,
+    "n_persons_fit": 115,
+    "n_observed_cells": 322493,
+    "dropped_absent_from_matrix": 0,
+    "dropped_zero_variance_within_set": 0
+  },
+  "fit_config": {
+    "fitter": "calibrate_mirt.fit_m2pl_em (1 dim)",
+    "grid_nodes_per_dim": 7,
+    "ridge": 0.01,
+    "max_iter": 200,
+    "tol": 0.0001,
+    "negative_policy": "clamp (at consume time)"
+  },
+  "fit_result": {
+    "loglik": -65707.72760757418,
+    "n_params": 5684,
+    "aic": 142783.45521514837,
+    "bic": 203510.3830722649,
+    "n_iter": 21,
+    "converged": true,
+    "n_negative_loadings_clamped": 33,
+    "n_extreme_a": 123,
+    "max_discrimination": 6.073495862145469,
+    "min_discrimination": -2.714550418463431,
+    "median_discrimination": 0.9706498496797982
+  },
+  "compare_2skill_fit_negatives": {
+    "2skill_clamped_negatives": 349,
+    "note": "2-skill fit clamped 349 negative fitted loadings (per of-record bank provenance)."
+  },
+  "bank_out": "reports\\eap_unidim_correctness_only_tutorbench\\rubrics_qmatrix_correctness_only_unidim_115_fitted.jsonl"
+}

@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-08-07T21:03:15.944007+00:00",
+  "purpose": "scenario-level parameter-uncertainty inflation of ability SEs",
+  "bank": "reports\\eap_unidim_correctness_only_tutorbench\\rubrics_qmatrix_correctness_only_unidim_115_fitted.jsonl",
+  "matrix": "staging\\response_matrix_full_nonopt_115.csv",
+  "dims": [
+    "correctness"
+  ],
+  "config": {
+    "fit_nodes": 7,
+    "eap_grid": 61,
+    "n_boot": 150,
+    "max_se": 0.3
+  },
+  "n_models": 115,
+  "median_item_param_se": {
+    "correctness": 0.34714078153220773
+  },
+  "se_components": {
+    "correctness": {
+      "median_se_posterior": 0.32578573493986523,
+      "median_se_param": 0.11256641278534789,
+      "median_se_total": 0.34413740833035195,
+      "median_bar_inflation": 1.050915392006853,
+      "max_bar_inflation": 1.5615549718903816
+    }
+  }
+}

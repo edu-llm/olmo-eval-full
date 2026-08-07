@@ -1,0 +1,17 @@
+{
+  "operating_point": {
+    "floor": 20,
+    "se_ability_target": 0.27
+  },
+  "n_headline": 114,
+  "adaptive_scenarios_to_reach_se_le_0.27": 20,
+  "random_scenarios_to_reach_se_le_0.27": 68,
+  "savings_factor": 3.4,
+  "adaptive_r_at_20": 0.9534482432268031,
+  "random_r_at_20": 0.9317254540435398,
+  "adaptive_median_se_at_20": 0.26863984605452684,
+  "random_median_se_at_20": 0.4680199681126126,
+  "adaptive_r_at_cap": 0.975662268774139,
+  "random_r_at_cap": 0.9630698178884323,
+  "compute": "FRESH: k-fold refit rerun with a matched random-order (mode=baseline) arm"
+}

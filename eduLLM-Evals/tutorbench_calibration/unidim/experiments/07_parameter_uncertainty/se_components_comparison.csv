@@ -1,0 +1,4 @@
+scale,dim,median_se_posterior,median_se_param,median_se_total,median_bar_inflation,max_bar_inflation,source
+2skill_correctness,correctness,0.3337,0.2074,0.4117,1.1714,3.2195,regenerated_figures\scenario_level_115_min12\param_uncertainty\2_skills\metrics.json
+collapse_all_unidim,overall,0.24,0.0987,0.258,1.1125,1.3764,regenerated_figures\scenario_level_115_min12\param_uncertainty\unidim\metrics.json
+correctness_only_unidim,correctness,0.3258,0.1126,0.3441,1.0509,1.5616,reports\eap_unidim_correctness_only_tutorbench\param_uncertainty\metrics.json
