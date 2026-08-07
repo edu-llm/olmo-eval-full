@@ -17,9 +17,15 @@ revisions.
 
 ## What the job does
 
+**One checkpoint is enough.** The harness self-steers: it extracts the steering
+vector from `CHECKPOINT_S3` and applies it back to that same model as the eval
+target, so a single checkpoint yields a complete baseline-vs-steered result. Set
+`TARGET_S3` only to steer a *different* model with the vector.
+
 For one checkpoint (`CHECKPOINT_S3`):
 
-1. **Materialize** the checkpoint from S3 onto the node (HF-format directory).
+1. **Materialize** the checkpoint from S3 onto the node, converting it to an
+   HF-format directory when it is a raw OLMo-core checkpoint (see below).
 2. **Build steering vectors** — collect last-token residual-stream activations on
    a probing dataset (`STEERING_DATASET`) and form, per layer, the
    mean-difference direction between the two classes, unit-normalized and scaled
@@ -42,6 +48,28 @@ The activation-capture, steering-vector, hook, and prompt logic are
 reimplemented in the harness rather than imported: the vendored modules import
 `openai`, `scikit-learn`, `tqdm`, and `matplotlib` at load, which the platform
 image does not carry. Only the vendored CSV datasets are read directly.
+
+## Checkpoint format: OLMo-core -> HF
+
+TracingLLM's method needs a HuggingFace model (`AutoModelForCausalLM`, forward
+hooks on `model.model.layers`). The OLMo checkpoints in S3
+(`s3://edullm-checkpoints/olmo-370m/...`) are **raw OLMo-core** checkpoints
+(`model_and_optim/` distributed shards + an olmo-core `config.json`), so the
+harness converts them on the node before loading:
+
+- `ensure_hf_checkpoint` detects the layout. HF dirs are used as-is.
+- For OLMo-core, `convert_olmo_core_to_hf` rebuilds the `Transformer` from
+  `config.json`, loads the distributed checkpoint with
+  `olmo_core.distributed.checkpoint.load_model_and_optim_state`, writes HF
+  weights via `olmo_core.nn.hf.save_hf_model` (bf16), and saves the checkpoint's
+  tokenizer (dolma2) so the directory loads with `AutoTokenizer`.
+
+`ai2-olmo-core[transformers]==2.4.0` (already a project dependency) provides the
+conversion; the conversion runs in a single-rank gloo process group.
+
+The default `CHECKPOINT_S3` in `run.env.example` points at one such checkpoint:
+`s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/step1315/`
+(a 370M, 12-layer / 512-dim step).
 
 ## Run it
 

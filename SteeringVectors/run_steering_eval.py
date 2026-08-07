@@ -238,6 +238,121 @@ def parse_step(uri: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Checkpoint format: OLMo-core -> HuggingFace conversion (live path)
+# ---------------------------------------------------------------------------
+def _read_local_config(local_dir: Path) -> dict[str, Any] | None:
+    config_path = local_dir / "config.json"
+    if not config_path.exists():
+        return None
+    try:
+        return json.loads(config_path.read_text())
+    except json.JSONDecodeError:
+        return None
+
+
+def _is_olmo_core_checkpoint(local_dir: Path) -> bool:
+    """A raw OLMo-core checkpoint: config.json with a nested olmo-core model +
+    dataset config, and a sharded distributed checkpoint under model_and_optim/.
+    """
+    if (local_dir / "model_and_optim" / ".metadata").exists():
+        return True
+    config = _read_local_config(local_dir)
+    return bool(
+        config
+        and isinstance(config.get("model"), dict)
+        and isinstance(config.get("dataset"), dict)
+        and "architectures" not in config
+    )
+
+
+def _is_hf_checkpoint(local_dir: Path) -> bool:
+    """An HF-format directory transformers can load directly."""
+    has_weights = any(
+        (local_dir / name).exists()
+        for name in ("model.safetensors", "model.safetensors.index.json", "pytorch_model.bin")
+    )
+    has_tokenizer = any(
+        (local_dir / name).exists()
+        for name in ("tokenizer.json", "tokenizer_config.json", "tokenizer.model")
+    )
+    return has_weights and has_tokenizer
+
+
+def convert_olmo_core_to_hf(local_dir: Path, out_dir: Path) -> Path:
+    """Convert a raw OLMo-core checkpoint into an HF-format directory.
+
+    Rebuilds the olmo-core ``Transformer`` from ``config.json``, loads the
+    distributed checkpoint weights in-place, writes them in HF format with
+    :func:`olmo_core.nn.hf.save_hf_model`, and saves the matching tokenizer
+    (from the checkpoint's own tokenizer config, falling back to dolma2) so the
+    directory is loadable with ``AutoModelForCausalLM`` / ``AutoTokenizer``.
+    """
+    import os
+
+    import torch.distributed as dist
+    from olmo_core.config import DType
+    from olmo_core.data import TokenizerConfig
+    from olmo_core.distributed.checkpoint import load_model_and_optim_state
+    from olmo_core.nn.hf import save_hf_model
+    from olmo_core.nn.transformer import TransformerConfig
+    from transformers import AutoTokenizer
+
+    config = _read_local_config(local_dir)
+    if not config or not isinstance(config.get("model"), dict):
+        raise SystemExit(f"OLMo-core config.json with a 'model' block not found in {local_dir}")
+
+    # olmo-core's distributed-checkpoint load expects a process group; a single
+    # gloo rank is enough to convert one checkpoint on one process.
+    started_pg = False
+    if not dist.is_initialized():
+        os.environ.setdefault("MASTER_ADDR", "localhost")
+        os.environ.setdefault("MASTER_PORT", "29501")
+        os.environ.setdefault("RANK", "0")
+        os.environ.setdefault("WORLD_SIZE", "1")
+        dist.init_process_group(backend="gloo")
+        started_pg = True
+
+    try:
+        model_config = TransformerConfig.from_dict(config["model"])
+        model = model_config.build(init_device="cpu").eval()
+        load_model_and_optim_state(str(local_dir / "model_and_optim"), model)
+
+        out_dir.mkdir(parents=True, exist_ok=True)
+        save_hf_model(str(out_dir), model.state_dict(), model, dtype=DType.bfloat16)
+
+        dataset = config.get("dataset", {})
+        tok_cfg = (
+            TokenizerConfig.from_dict(dataset["tokenizer"])
+            if isinstance(dataset, dict) and "tokenizer" in dataset
+            else TokenizerConfig.dolma2()
+        )
+        tok_id = getattr(tok_cfg, "identifier", None) or TokenizerConfig.dolma2().identifier
+        if not tok_id:
+            raise SystemExit("Could not resolve a tokenizer identifier for this checkpoint.")
+        AutoTokenizer.from_pretrained(tok_id).save_pretrained(str(out_dir))
+        log.info("Converted OLMo-core checkpoint to HF at %s (tokenizer %s)", out_dir, tok_id)
+    finally:
+        if started_pg and dist.is_initialized():
+            dist.destroy_process_group()
+    return out_dir
+
+
+def ensure_hf_checkpoint(local_dir: Path, out_dir: Path) -> Path:
+    """Return an HF-format directory, converting from OLMo-core when needed."""
+    if _is_hf_checkpoint(local_dir):
+        return local_dir
+    if _is_olmo_core_checkpoint(local_dir):
+        log.info("Detected OLMo-core checkpoint at %s; converting to HF", local_dir)
+        return convert_olmo_core_to_hf(local_dir, out_dir)
+    if (local_dir / "config.json").exists():
+        # A config with no tokenizer/weights we recognize -- let transformers try,
+        # but flag it so the failure is legible.
+        log.warning("Checkpoint at %s is neither clearly HF nor OLMo-core; trying as HF", local_dir)
+        return local_dir
+    raise SystemExit(f"Unrecognized checkpoint layout at {local_dir}")
+
+
+# ---------------------------------------------------------------------------
 # Datasets (vendored CSVs, read with the stdlib)
 # ---------------------------------------------------------------------------
 def _dataset_path(name: str) -> Path:
@@ -437,7 +552,8 @@ def run(cfg: Config) -> dict[str, Any]:
         tmp_path = Path(tmp)
 
         log.info("Materializing steering checkpoint: %s", cfg.checkpoint)
-        ckpt_dir = materialize_checkpoint(cfg, cfg.checkpoint, tmp_path / "checkpoint")
+        raw_ckpt = materialize_checkpoint(cfg, cfg.checkpoint, tmp_path / "checkpoint_raw")
+        ckpt_dir = ensure_hf_checkpoint(raw_ckpt, tmp_path / "checkpoint_hf")
         tokenizer, model = _load_model(cfg, ckpt_dir)
         vectors = build_steering_vectors(cfg, tokenizer, model)
 
@@ -445,7 +561,8 @@ def run(cfg: Config) -> dict[str, Any]:
             target_tokenizer, target_model = tokenizer, model
         else:
             log.info("Materializing target checkpoint: %s", cfg.target)
-            target_dir = materialize_checkpoint(cfg, cfg.target, tmp_path / "target")
+            raw_target = materialize_checkpoint(cfg, cfg.target, tmp_path / "target_raw")
+            target_dir = ensure_hf_checkpoint(raw_target, tmp_path / "target_hf")
             target_tokenizer, target_model = _load_model(cfg, target_dir)
 
         statements, labels = load_eval_split(cfg)
