@@ -6,6 +6,7 @@ running in the parent process.
 """
 
 from olmo_eval.evals.external.base import ExternalEval, SandboxedExternalEval
+from olmo_eval.evals.external.context import ExternalEvalContext
 from olmo_eval.evals.external.network import get_docker_network_args
 from olmo_eval.evals.external.registry import (
     clear_registry,
@@ -19,6 +20,7 @@ from olmo_eval.evals.external.result import ExternalEvalResult
 
 __all__ = [
     "ExternalEval",
+    "ExternalEvalContext",
     "ExternalEvalResult",
     "SandboxedExternalEval",
     "clear_registry",

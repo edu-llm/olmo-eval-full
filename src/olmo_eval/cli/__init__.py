@@ -19,6 +19,7 @@ from olmo_eval.cli.metrics import metrics
 from olmo_eval.cli.results import results
 from olmo_eval.cli.run import run
 from olmo_eval.cli.run_external import run_external
+from olmo_eval.cli.run_modes import run_modes
 from olmo_eval.cli.suite import suite
 from olmo_eval.cli.task import task
 from olmo_eval.cli.utils import console
@@ -41,6 +42,7 @@ main.add_command(metrics)
 main.add_command(task)
 main.add_command(suite)
 main.add_command(run_external)
+main.add_command(run_modes)
 
 
 @main.command()

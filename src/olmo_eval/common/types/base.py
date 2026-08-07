@@ -182,6 +182,7 @@ class TopLogProb(TypedDict):
     token: str
     logprob: float
     bytes: NotRequired[list[int]]
+    token_id: NotRequired[int]
 
 
 class LogProbEntry(TypedDict):
@@ -194,6 +195,7 @@ class LogProbEntry(TypedDict):
     token: str
     logprob: float
     bytes: NotRequired[list[int]]
+    token_id: NotRequired[int]
     top_logprobs: NotRequired[list[TopLogProb]]
 
 
@@ -230,6 +232,7 @@ class LMRequest:
     tools: tuple[ToolSchema, ...] | None = None
     system_prompt: str | None = None
     max_length: int | None = None
+    chat_template_kwargs: dict[str, Any] | None = None
 
 
 @hide_unset()
@@ -243,8 +246,41 @@ class SamplingParams:
     top_k: int | None = None
     stop_sequences: tuple[str, ...] | None = None
     num_samples: int = 1
+    # Number of generated-token alternatives to request when logprobs are enabled.
+    # Providers may return fewer alternatives when the backing API has a lower limit.
     logprobs: int | None = None
+    # Specific generated-token IDs whose logprobs must be returned. Providers
+    # must fail explicitly when their inference engine cannot honor this request.
+    logprob_token_ids: tuple[int, ...] | None = None
+    structured_output_regex: str | None = None
+    structured_output_json_schema: dict[str, Any] | None = None
+    seed: int | None = None
     do_sample: bool = True
+
+    def __post_init__(self) -> None:
+        if (
+            self.structured_output_regex is not None
+            and self.structured_output_json_schema is not None
+        ):
+            raise ValueError(
+                "structured_output_regex and structured_output_json_schema are mutually exclusive"
+            )
+        if self.logprob_token_ids is not None:
+            if not self.logprob_token_ids:
+                raise ValueError("logprob_token_ids must not be empty")
+            if any(
+                not isinstance(token_id, int) or isinstance(token_id, bool) or token_id < 0
+                for token_id in self.logprob_token_ids
+            ):
+                raise ValueError("logprob_token_ids must contain non-negative integers")
+            if len(set(self.logprob_token_ids)) != len(self.logprob_token_ids):
+                raise ValueError("logprob_token_ids must not contain duplicates")
+            if self.logprobs is not None and self.logprobs != len(self.logprob_token_ids):
+                raise ValueError("logprobs must equal len(logprob_token_ids) when both are set")
+        if self.seed is not None and (
+            isinstance(self.seed, bool) or not isinstance(self.seed, int) or self.seed < 0
+        ):
+            raise ValueError("seed must be a non-negative integer or None")
 
 
 @dataclass(slots=True)
@@ -256,6 +292,8 @@ class LMOutput:
 
     text: str
     logprobs: list[LogProbEntry] | None = None
+    token_ids: tuple[int, ...] | None = None
+    finish_reason: str | None = None
     extracted_answer: Any = None
     metadata: dict[str, Any] = field(default_factory=dict)
     tool_calls: list[ToolCall] | None = None

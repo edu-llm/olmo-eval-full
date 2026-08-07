@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
 from olmo_eval.common.types import ProviderKind
@@ -215,6 +217,42 @@ class TestProviderRegistry:
 
         assert registry2.names == registry1.names
         assert registry2.models == registry1.models
+
+    def test_aclose_releases_only_instantiated_providers(self):
+        events: list[str] = []
+
+        class ClosableProvider:
+            model_name = "closable"
+
+            async def aclose(self) -> None:
+                events.append("aclose")
+
+            def close(self) -> None:
+                events.append("close")
+
+        class Config:
+            model = "closable"
+
+            def create_provider(self):
+                events.append("create")
+                return ClosableProvider()
+
+            def to_dict(self):
+                return {"kind": "mock", "model": self.model}
+
+        registry = ProviderRegistry.from_resolved_configs(
+            {
+                "used": [Config()],  # type: ignore[list-item]
+                "unused": [Config()],  # type: ignore[list-item]
+            }
+        )
+        first = registry.get("used")
+        assert first.model_name == "closable"
+
+        asyncio.run(registry.aclose())
+
+        assert events == ["create", "aclose", "close"]
+        assert registry.get("used") is not first
 
 
 class TestGPUPlanner:

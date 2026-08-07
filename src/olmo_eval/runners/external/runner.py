@@ -29,6 +29,7 @@ from olmo_eval.runners.common.models import S3Config
 from olmo_eval.runners.processing.utils import generate_experiment_id
 
 if TYPE_CHECKING:
+    from olmo_eval.inference.registry import ProviderLookup
     from olmo_eval.storage import StorageBackend
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,7 @@ class ExternalEvalRunner:
         experiment_name: Human-readable experiment name.
         experiment_group: Experiment group for grouping related experiments.
         metrics: Configuration for metrics collection on the provider.
+        inference_pool: Optional lookup for named auxiliary providers.
     """
 
     provider_config: ProviderConfig
@@ -67,6 +69,7 @@ class ExternalEvalRunner:
     experiment_name: str | None = None
     experiment_group: str | None = None
     metrics: MetricsConfig | None = None
+    inference_pool: ProviderLookup | None = None
 
     def validate(self) -> None:
         """Validate runner configuration.
@@ -161,12 +164,22 @@ class ExternalEvalRunner:
 
                 try:
                     external_eval = get_external_eval(eval_name)
-                    result = await external_eval.execute_with_provider(
-                        provider=provider,  # type: ignore[ty:invalid-argument-type]
-                        args=self.eval_args,
-                        output_dir=self.output_dir,
-                        container_runtime=self.container_runtime,
-                    )
+                    if self.inference_pool is None:
+                        # Preserve overrides written against the original public hook.
+                        result = await external_eval.execute_with_provider(
+                            provider=provider,  # type: ignore[ty:invalid-argument-type]
+                            args=self.eval_args,
+                            output_dir=self.output_dir,
+                            container_runtime=self.container_runtime,
+                        )
+                    else:
+                        result = await external_eval.execute_with_provider(
+                            provider=provider,  # type: ignore[ty:invalid-argument-type]
+                            inference_pool=self.inference_pool,
+                            args=self.eval_args,
+                            output_dir=self.output_dir,
+                            container_runtime=self.container_runtime,
+                        )
                     results[eval_name] = result
 
                     if result.success:

@@ -72,6 +72,12 @@ analysis = [
     "seaborn~=0.13.2",
     "scipy~=1.17.1",
 ]
+edullm = [
+    # Required by calibration, joint EAP, and final MWLE estimation.  Keep it
+    # optional so ordinary OLMo task/suite evaluation does not acquire a
+    # scientific-computing dependency solely because EduLLM is installed.
+    "scipy~=1.17.1",
+]
 openhands = [
     "openhands-ai~=1.4.0",
 ]

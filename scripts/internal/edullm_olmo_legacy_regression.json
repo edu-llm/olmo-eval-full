@@ -1,0 +1,130 @@
+{
+  "schema_version": "edullm-legacy-regression-v1",
+  "description": "Recorded one-dimensional regression values derived from the cited EduLLM EAP, MWLE, online-update, and selection implementations. This fixture is a provenance-bearing compatibility oracle; it is not an independent scientific validation dataset.",
+  "source": {
+    "git_ref": "origin/frq/infobench",
+    "commit": "b4ea2e8e4b1da75067dd5e38ea5e83270776a07f",
+    "derivation": "The cited commit's build_quadrature, batch_eap, and mwle functions were executed on the fixture below. The numbers are recorded here because they do not appear as literals in the legacy commit.",
+    "files": [
+      {
+        "path": "eduLLM-Evals/scripts/scenario_cat_lib.py",
+        "blob": "20bb1f6177e2ff95506f7a3a55d20d78c2a3f679",
+        "symbols": [
+          "build_quadrature",
+          "batch_eap",
+          "mwle"
+        ]
+      },
+      {
+        "path": "eduLLM-Evals/tutor_cat/mirt.py",
+        "blob": "44c13d5029536569d149ff69857571bfd46f58b7",
+        "symbols": [
+          "pass_probability",
+          "update"
+        ]
+      },
+      {
+        "path": "eduLLM-Evals/tutor_cat/selector.py",
+        "blob": "19e634ad42c9e522b06c700d8b9ef4c8e22100d1",
+        "symbols": [
+          "criterion_information",
+          "scenario_value"
+        ]
+      }
+    ]
+  },
+  "fixture": {
+    "dimensions": 1,
+    "irt_model": "P(pass)=sigmoid(discrimination*theta-difficulty)",
+    "prior": "standard_normal",
+    "initial_online_theta": 0.0,
+    "initial_online_variance": 1.0,
+    "quadrature": {
+      "method": "normal_trapezoid",
+      "nodes": 801,
+      "bound": 8.0
+    },
+    "mwle_ridge": 1e-06,
+    "selection_policy": {
+      "mode": "deterministic_maximum_fisher_information",
+      "top_n": 1,
+      "tie_break": "scenario_id_ascending",
+      "legacy_scope_note": "This is a bounded feasibility-spike policy. It does not reproduce the legacy default seeded random choice among the top five scenarios."
+    },
+    "items": [
+      {
+        "scenario_id": "mid",
+        "discrimination": 2.0,
+        "difficulty": 0.0
+      },
+      {
+        "scenario_id": "easy",
+        "discrimination": 2.0,
+        "difficulty": -2.0
+      },
+      {
+        "scenario_id": "hard",
+        "discrimination": 2.0,
+        "difficulty": 2.0
+      }
+    ]
+  },
+  "expected": {
+    "strong": {
+      "scenario_order": [
+        "mid",
+        "hard",
+        "easy"
+      ],
+      "decisions": {
+        "mid": "pass",
+        "hard": "fail",
+        "easy": "no_decision"
+      },
+      "observations": [
+        [
+          "mid",
+          1
+        ],
+        [
+          "hard",
+          0
+        ]
+      ],
+      "eap_theta": 0.283622568,
+      "eap_se": 0.660388755,
+      "mwle_theta": 0.499999796,
+      "mwle_se": 0.797351713
+    },
+    "weak": {
+      "scenario_order": [
+        "mid",
+        "easy",
+        "hard"
+      ],
+      "decisions": {
+        "mid": "fail",
+        "easy": "pass",
+        "hard": "no_decision"
+      },
+      "observations": [
+        [
+          "mid",
+          0
+        ],
+        [
+          "easy",
+          1
+        ]
+      ],
+      "eap_theta": -0.283622568,
+      "eap_se": 0.660388755,
+      "mwle_theta": -0.499999796,
+      "mwle_se": 0.797351713
+    }
+  },
+  "tolerances": {
+    "eap_absolute": 1e-06,
+    "mwle_absolute": 1e-05
+  }
+}
