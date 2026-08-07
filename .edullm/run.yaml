@@ -1,10 +1,12 @@
 # eduLLM job: steering-vector trustworthiness test over an S3 model checkpoint.
 #
-# Everything here is a property of the code and travels with it in git; the
+# Everything here is a property of the code and travels with it in git; only the
 # machine, the corpus (--dataset none, this reads a checkpoint not a corpus) and
-# the experiment are supplied at submit time. See SteeringVectors/README.md for
-# how to submit, what env vars parameterize a run, and the one image decision
-# this job depends on.
+# the experiment are supplied at submit time. `edullm submit` cannot inject env
+# vars, so the checkpoint under test, the output prefix, and the sweep are baked
+# into the command below. To test a different checkpoint or sweep, edit this
+# command and re-push. (SteeringVectors/run.env.example drives local --dry-run
+# only.) See SteeringVectors/README.md for the image decision this job depends on.
 #
 # The image the platform builds for olmo-eval-full carries transformers but not
 # torch (INSTALL_TORCH_AND_VLLM defaults to 0 in .edullm/Dockerfile). This
@@ -20,14 +22,13 @@ command: >-
   bash -lc 'uv sync --frozen --no-default-groups
   --extra beaker --extra hf --extra s3 --extra clients --extra vllm
   && python SteeringVectors/run_steering_eval.py
-  "${CHECKPOINT_S3:?set CHECKPOINT_S3 to the s3:// checkpoint prefix under test}"
-  --target "${TARGET_S3:-$CHECKPOINT_S3}"
-  --steering-dataset "${STEERING_DATASET:-stereoset}"
-  --eval-dataset "${EVAL_DATASET:-stereoset}"
-  --layers ${LAYERS:-16}
-  --alphas ${ALPHAS:--1}
-  --max-statements "${MAX_STATEMENTS:-400}"
-  --eval-limit "${EVAL_LIMIT:-200}"
-  --results-s3 "${RESULTS_S3:?set RESULTS_S3 to the s3:// output prefix}"
-  --run-name "${RUN_NAME:-steering-eval}"
+  s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/step1315/
+  --steering-dataset stereoset
+  --eval-dataset stereoset
+  --layers 16
+  --alphas -1
+  --max-statements 200
+  --eval-limit 100
+  --results-s3 s3://edullm-scratch
+  --run-name steering-eval-refhq-step1315
   --device cuda:0'
