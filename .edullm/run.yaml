@@ -3,10 +3,16 @@
 # Everything here is a property of the code and travels with it in git; only the
 # machine, the corpus (--dataset none, this reads a checkpoint not a corpus) and
 # the experiment are supplied at submit time. `edullm submit` cannot inject env
-# vars, so the checkpoint under test, the output prefix, and the sweep are baked
-# into the command below. To test a different checkpoint or sweep, edit this
-# command and re-push. (SteeringVectors/run.env.example drives local --dry-run
-# only.) See SteeringVectors/README.md for the image decision this job depends on.
+# vars, so the checkpoint under test and the sweep are baked into the command.
+#
+# The checkpoint reads from the outputs bucket, not edullm-checkpoints: the GPU
+# workload role is scoped to teams/<team>/runs/*, so a checkpoint staged under
+# that space is readable by a run and edullm-checkpoints is not. Results write to
+# $EDULLM_OUTPUT_PREFIX (this run's own prefix, injected by the platform), the
+# only place the workload role may write. To test a different checkpoint, stage
+# it under teams/<team>/runs/ and edit the path below, then re-push.
+# (SteeringVectors/run.env.example drives local --dry-run only.) See
+# SteeringVectors/README.md for the image decision this job depends on.
 #
 # The image the platform builds for olmo-eval-full carries transformers but not
 # torch (INSTALL_TORCH_AND_VLLM defaults to 0 in .edullm/Dockerfile). This
@@ -22,13 +28,13 @@ command: >-
   bash -lc 'uv sync --frozen --no-default-groups
   --extra beaker --extra hf --extra s3 --extra clients --extra vllm
   && python SteeringVectors/run_steering_eval.py
-  s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/step1315/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-staged-refhq-step1315/checkpoint/
   --steering-dataset stereoset
   --eval-dataset stereoset
   --layers 16
   --alphas -1
   --max-statements 200
   --eval-limit 100
-  --results-s3 s3://edullm-scratch
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
   --run-name steering-eval-refhq-step1315
   --device cuda:0'
