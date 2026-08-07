@@ -52,6 +52,46 @@ The candidate provider revision is required and must exactly match
 `tutor.model_provenance.revision`; this prevents the manifest from claiming a
 different checkpoint than the one the runner loads.
 
+### Using tutor responses generated elsewhere
+
+If tutor responses already exist, use
+[`run_precomputed.example.yaml`](run_precomputed.example.yaml) instead of loading
+the tutor model again. This option is for an **adaptive-only** run: the primary
+provider must be `kind: mock`, `standard_olmo` must not be selected, and
+`tutor.generation` must be `null`. The mock provider is only an OLMo lifecycle
+placeholder; it does not generate responses or load the tutor model. The frozen
+Qwen judge still runs through vLLM on the uploaded responses, after which CAT
+performs selection and reports the usual EAP and MWLE estimates.
+
+Use one UTF-8 JSONL file for one tutor model and one run. Each line has this
+strict form:
+
+```json
+{"scenario_id":"ifb_0001","response":"The tutor's response"}
+{"scenario_id":"ifb_0002","response":"","metadata":{"finish_reason":"length"}}
+```
+
+`metadata` is optional and, when present, must be a JSON object. It is preserved
+for provenance but does not affect judging. Unknown fields, malformed JSON,
+duplicate scenario IDs, and blank physical lines are rejected. The file must
+contain exactly one row for every scenario in the fitted bank: missing and extra
+scenario IDs are both errors because CAT may select any bank scenario.
+
+Declare the actual tutor model and immutable revision under `tutor`, then hash
+the exact response-file bytes and put that digest in
+`tutor.response_source.sha256`:
+
+```bash
+sha256sum /path/to/responses.jsonl
+# macOS also provides: shasum -a 256 /path/to/responses.jsonl
+```
+
+The runner verifies the digest and complete scenario roster before judging.
+Whitespace-only response text is allowed, but it is treated as missing data:
+Qwen is not called for that scenario's criteria and each corresponding result is
+`no_decision`, never an automatic failure. The adaptive manifest records the
+source path, declared and observed hashes, row count, and blank-response count.
+
 Run read-only validation explicitly when desired:
 
 ```bash

@@ -1,11 +1,11 @@
 """Thin OLMo-owned execution mode for the EduLLM adaptive pipeline.
 
-OLMo supplies and owns both inference providers.  This adapter validates an
-explicit fitted-bank and scientific runtime configuration, generates one tutor
-response for each adaptively selected scenario, applies the frozen Qwen binary
-judge one criterion at a time, and delegates all state transitions to
-``run_cat``.  It never creates a model client, launches vLLM, or calls a cloud
-service directly.
+OLMo supplies and owns the inference-provider lifecycle.  This adapter validates
+an explicit fitted-bank and scientific runtime configuration, obtains tutor
+responses either from the primary provider or a prevalidated JSONL snapshot,
+applies the frozen Qwen binary judge one criterion at a time, and delegates all
+state transitions to ``run_cat``.  It never creates a model client, launches
+vLLM, or calls a cloud service directly.
 """
 
 from __future__ import annotations
@@ -45,14 +45,20 @@ from olmo_eval.edullm.judge import (
     build_atomic_messages,
     build_classification_messages,
 )
+from olmo_eval.edullm.precomputed import (
+    PRECOMPUTED_RESPONSES_SCHEMA_VERSION,
+    PrecomputedTutorResponses,
+    load_precomputed_tutor_responses,
+)
 from olmo_eval.edullm.tutor import (
     TutorGenerationConfig,
+    build_tutor_messages,
     generate_tutor_response,
 )
 from olmo_eval.runners.modes import ModeResult, ModeRunContext, ModeStatus
 
 MODE_NAME = "edullm_adaptive"
-IMPLEMENTATION_VERSION = "edullm-adaptive-olmo-v1"
+IMPLEMENTATION_VERSION = "edullm-adaptive-olmo-v2"
 MODE_CONFIG_SCHEMA_VERSION = "edullm-adaptive-mode-config-v1"
 ARTIFACT_SCHEMA_VERSION = "edullm-adaptive-artifacts-v1"
 ATOMIC_REQUIREMENT_POLICY = "criterion_as_single_atomic_unless_curation_finalized"
@@ -77,11 +83,20 @@ class BankRuntimeConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class TutorResponseSourceConfig:
+    kind: Literal["provider", "precomputed_jsonl"]
+    schema_version: str | None = None
+    path: Path | None = None
+    sha256: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class TutorRuntimeConfig:
     expected_model: str
     model_family: str
     model_provenance: Mapping[str, Any]
-    generation: TutorGenerationConfig
+    generation: TutorGenerationConfig | None
+    response_source: TutorResponseSourceConfig
 
 
 @dataclass(frozen=True, slots=True)
@@ -133,6 +148,7 @@ class _PreparedRun:
     judge: QwenZeroShotBinaryJudge
     requirement_plans: Mapping[str, RequirementPlan]
     candidate_revision: str
+    precomputed_responses: PrecomputedTutorResponses | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,6 +157,7 @@ class _PreparedInputs:
     bank: FittedBank
     quadrature: Quadrature
     requirement_plans: Mapping[str, RequirementPlan]
+    precomputed_responses: PrecomputedTutorResponses | None
 
 
 def _json_value(value: Any, *, path: str = "value") -> Any:
@@ -234,6 +251,13 @@ def _nonempty_string(value: Any, label: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{label} must be a non-empty string")
     return value.strip()
+
+
+def _sha256_string(value: Any, label: str) -> str:
+    result = _nonempty_string(value, label)
+    if len(result) != 64 or any(character not in _HEX_SHA256 for character in result):
+        raise ValueError(f"{label} must be a lowercase 64-character SHA-256 digest")
+    return result
 
 
 def _integer(value: Any, label: str, *, minimum: int) -> int:
@@ -338,48 +362,53 @@ def _parse_config(raw_config: Mapping[str, Any]) -> EduLLMAdaptiveConfig:
     )
 
     tutor_value = _mapping(top["tutor"], "tutor")
+    tutor_fields = {"expected_model", "model_family", "model_provenance", "generation"}
+    if "response_source" in tutor_value:
+        tutor_fields.add("response_source")
     _exact_keys(
         tutor_value,
-        {"expected_model", "model_family", "model_provenance", "generation"},
+        tutor_fields,
         "tutor",
     )
     provenance = _mapping(tutor_value["model_provenance"], "tutor.model_provenance")
     _exact_keys(provenance, {"source", "revision"}, "tutor.model_provenance")
     _nonempty_string(provenance.get("source"), "tutor.model_provenance.source")
     _nonempty_string(provenance.get("revision"), "tutor.model_provenance.revision")
-    generation_value = _mapping(tutor_value["generation"], "tutor.generation")
-    _exact_keys(
-        generation_value,
-        {
-            "max_tokens",
-            "temperature",
-            "top_p",
-            "top_k",
-            "stop_sequences",
-            "num_samples",
-            "do_sample",
-        },
-        "tutor.generation",
-    )
-    raw_stops = generation_value["stop_sequences"]
-    if raw_stops is None:
-        stops = None
-    elif isinstance(raw_stops, Sequence) and not isinstance(raw_stops, (str, bytes)):
-        stops = tuple(
-            _nonempty_string(value, f"tutor.generation.stop_sequences[{index}]")
-            for index, value in enumerate(raw_stops)
+    raw_source = tutor_value.get("response_source", {"kind": "provider"})
+    source_value = _mapping(raw_source, "tutor.response_source")
+    source_kind = _nonempty_string(source_value.get("kind"), "tutor.response_source.kind")
+    if source_kind == "provider":
+        _exact_keys(source_value, {"kind"}, "tutor.response_source")
+        response_source = TutorResponseSourceConfig(kind="provider")
+        generation_value = _mapping(tutor_value["generation"], "tutor.generation")
+        _exact_keys(
+            generation_value,
+            {
+                "max_tokens",
+                "temperature",
+                "top_p",
+                "top_k",
+                "stop_sequences",
+                "num_samples",
+                "do_sample",
+            },
+            "tutor.generation",
         )
-    else:
-        raise ValueError("tutor.generation.stop_sequences must be null or an array")
-    if not isinstance(generation_value["do_sample"], bool):
-        raise ValueError("tutor.generation.do_sample must be boolean")
-    top_p = generation_value["top_p"]
-    top_k = generation_value["top_k"]
-    tutor = TutorRuntimeConfig(
-        expected_model=_nonempty_string(tutor_value["expected_model"], "tutor.expected_model"),
-        model_family=_nonempty_string(tutor_value["model_family"], "tutor.model_family"),
-        model_provenance=dict(provenance),
-        generation=TutorGenerationConfig(
+        raw_stops = generation_value["stop_sequences"]
+        if raw_stops is None:
+            stops = None
+        elif isinstance(raw_stops, Sequence) and not isinstance(raw_stops, (str, bytes)):
+            stops = tuple(
+                _nonempty_string(value, f"tutor.generation.stop_sequences[{index}]")
+                for index, value in enumerate(raw_stops)
+            )
+        else:
+            raise ValueError("tutor.generation.stop_sequences must be null or an array")
+        if not isinstance(generation_value["do_sample"], bool):
+            raise ValueError("tutor.generation.do_sample must be boolean")
+        top_p = generation_value["top_p"]
+        top_k = generation_value["top_k"]
+        generation: TutorGenerationConfig | None = TutorGenerationConfig(
             max_tokens=_integer(generation_value["max_tokens"], "tutor.max_tokens", minimum=1),
             temperature=_finite_number(generation_value["temperature"], "tutor.temperature"),
             top_p=None if top_p is None else _finite_number(top_p, "tutor.top_p"),
@@ -387,7 +416,38 @@ def _parse_config(raw_config: Mapping[str, Any]) -> EduLLMAdaptiveConfig:
             stop_sequences=stops,
             num_samples=_integer(generation_value["num_samples"], "tutor.num_samples", minimum=1),
             do_sample=generation_value["do_sample"],
-        ),
+        )
+    elif source_kind == "precomputed_jsonl":
+        _exact_keys(
+            source_value,
+            {"kind", "schema_version", "path", "sha256"},
+            "tutor.response_source",
+        )
+        if tutor_value["generation"] is not None:
+            raise ValueError("tutor.generation must be null for precomputed_jsonl responses")
+        schema_version = _nonempty_string(
+            source_value["schema_version"], "tutor.response_source.schema_version"
+        )
+        if schema_version != PRECOMPUTED_RESPONSES_SCHEMA_VERSION:
+            raise ValueError(
+                f"unsupported tutor.response_source.schema_version {schema_version!r}; "
+                f"expected {PRECOMPUTED_RESPONSES_SCHEMA_VERSION!r}"
+            )
+        response_source = TutorResponseSourceConfig(
+            kind="precomputed_jsonl",
+            schema_version=schema_version,
+            path=Path(_nonempty_string(source_value["path"], "tutor.response_source.path")),
+            sha256=_sha256_string(source_value["sha256"], "tutor.response_source.sha256"),
+        )
+        generation = None
+    else:
+        raise ValueError("tutor.response_source.kind must be 'provider' or 'precomputed_jsonl'")
+    tutor = TutorRuntimeConfig(
+        expected_model=_nonempty_string(tutor_value["expected_model"], "tutor.expected_model"),
+        model_family=_nonempty_string(tutor_value["model_family"], "tutor.model_family"),
+        model_provenance=dict(provenance),
+        generation=generation,
+        response_source=response_source,
     )
 
     judge_value = _mapping(top["judge"], "judge")
@@ -684,39 +744,51 @@ def preflight_adaptive_config(raw_config: Mapping[str, Any]) -> _PreparedInputs:
         criterion_id: _requirement_plan(rubric, records[criterion_id])
         for criterion_id, rubric in bank.rubrics.items()
     }
+    precomputed_responses: PrecomputedTutorResponses | None = None
+    if config.tutor.response_source.kind == "precomputed_jsonl":
+        source = config.tutor.response_source
+        if source.path is None or source.sha256 is None:
+            raise ValueError("precomputed_jsonl source is missing its path or SHA-256")
+        precomputed_responses = load_precomputed_tutor_responses(
+            source.path,
+            expected_sha256=source.sha256,
+            expected_scenario_ids=tuple(bank.scenarios),
+        )
     return _PreparedInputs(
         config=config,
         bank=bank,
         quadrature=quadrature,
         requirement_plans=plans,
+        precomputed_responses=precomputed_responses,
     )
 
 
 def _prepare(context: ModeRunContext, raw_config: Mapping[str, Any]) -> _PreparedRun:
     inputs = preflight_adaptive_config(raw_config)
     config = inputs.config
-    if context.provider.model_name != config.tutor.expected_model:
-        raise ValueError(
-            "primary tutor provider model does not match tutor.expected_model: "
-            f"{context.provider.model_name!r} != {config.tutor.expected_model!r}"
-        )
     configured_candidate_revision = str(config.tutor.model_provenance["revision"])
-    runner_metadata = context.metadata.get("mode_runner")
-    declared_candidate_revision: object | None = None
-    if isinstance(runner_metadata, Mapping):
-        declared_candidate_revision = runner_metadata.get("candidate_revision")
-    provider_candidate_revision = getattr(context.provider, "_tokenizer_revision", None)
-    for source, candidate_revision in (
-        ("shared runner", declared_candidate_revision),
-        ("candidate provider", provider_candidate_revision),
-    ):
-        if candidate_revision is None:
-            continue
-        if candidate_revision != configured_candidate_revision:
+    if config.tutor.response_source.kind == "provider":
+        if context.provider.model_name != config.tutor.expected_model:
             raise ValueError(
-                f"{source} revision does not match tutor.model_provenance.revision: "
-                f"{candidate_revision!r} != {configured_candidate_revision!r}"
+                "primary tutor provider model does not match tutor.expected_model: "
+                f"{context.provider.model_name!r} != {config.tutor.expected_model!r}"
             )
+        runner_metadata = context.metadata.get("mode_runner")
+        declared_candidate_revision: object | None = None
+        if isinstance(runner_metadata, Mapping):
+            declared_candidate_revision = runner_metadata.get("candidate_revision")
+        provider_candidate_revision = getattr(context.provider, "_tokenizer_revision", None)
+        for source, candidate_revision in (
+            ("shared runner", declared_candidate_revision),
+            ("candidate provider", provider_candidate_revision),
+        ):
+            if candidate_revision is None:
+                continue
+            if candidate_revision != configured_candidate_revision:
+                raise ValueError(
+                    f"{source} revision does not match tutor.model_provenance.revision: "
+                    f"{candidate_revision!r} != {configured_candidate_revision!r}"
+                )
 
     judge_provider = context.get_provider("judge")
     if judge_provider.model_name != QWEN_JUDGE_MODEL:
@@ -762,6 +834,7 @@ def _prepare(context: ModeRunContext, raw_config: Mapping[str, Any]) -> _Prepare
         judge=judge,
         requirement_plans=inputs.requirement_plans,
         candidate_revision=configured_candidate_revision,
+        precomputed_responses=inputs.precomputed_responses,
     )
 
 
@@ -893,6 +966,26 @@ def _bank_provenance(prepared: _PreparedRun) -> dict[str, Any]:
     }
 
 
+def _tutor_response_source_provenance(prepared: _PreparedRun) -> dict[str, Any]:
+    source = prepared.config.tutor.response_source
+    if source.kind == "provider":
+        return {"kind": "provider"}
+    uploaded = prepared.precomputed_responses
+    if uploaded is None or source.schema_version is None:
+        raise ValueError("precomputed tutor response provenance is unavailable")
+    return {
+        "kind": "precomputed_jsonl",
+        "schema_version": source.schema_version,
+        "path": str(uploaded.path),
+        "declared_sha256": source.sha256,
+        "observed_sha256": uploaded.sha256,
+        "row_count": uploaded.row_count,
+        "scenario_count": uploaded.row_count,
+        "blank_count": uploaded.blank_count,
+        "exact_bank_coverage": True,
+    }
+
+
 def _manifest(
     context: ModeRunContext,
     prepared: _PreparedRun,
@@ -909,9 +1002,10 @@ def _manifest(
     tutor_provenance = dict(config.tutor.model_provenance)
     tutor_provenance["revision"] = prepared.candidate_revision
     tutor_identity = {
-        "model": context.provider.model_name,
+        "model": config.tutor.expected_model,
         "model_family": config.tutor.model_family,
         "provenance": tutor_provenance,
+        "response_source": _tutor_response_source_provenance(prepared),
     }
     judge_identity = {
         "provider": "judge",
@@ -1040,21 +1134,40 @@ class EduLLMAdaptiveMode:
             rubrics: tuple[Rubric, ...],
         ) -> Mapping[str, int | None]:
             selected_scenarios.append(scenario.scenario_id)
-            response = await generate_tutor_response(
-                context.provider,
-                scenario,
-                prepared.config.tutor.generation,
-            )
-            messages = [dict(message) for message in response.request.messages]
+            source_metadata: Mapping[str, Any] = {}
+            source_row_sha256: str | None = None
+            if prepared.config.tutor.response_source.kind == "provider":
+                generation = prepared.config.tutor.generation
+                if generation is None:
+                    raise RuntimeError("provider tutor source is missing generation settings")
+                generated = await generate_tutor_response(
+                    context.provider,
+                    scenario,
+                    generation,
+                )
+                messages = [dict(message) for message in generated.request.messages]
+                response_text = generated.output.text
+            else:
+                uploaded = prepared.precomputed_responses
+                if uploaded is None:
+                    raise RuntimeError("precomputed tutor responses were not loaded")
+                source_row = uploaded.responses[scenario.scenario_id]
+                messages = [dict(message) for message in build_tutor_messages(scenario)]
+                response_text = source_row.response
+                source_metadata = source_row.metadata
+                source_row_sha256 = source_row.source_row_sha256
             tutor_row = {
                 "schema_version": ARTIFACT_SCHEMA_VERSION,
                 "scenario_id": scenario.scenario_id,
-                "tutor_model": context.provider.model_name,
+                "tutor_model": prepared.config.tutor.expected_model,
+                "response_source": prepared.config.tutor.response_source.kind,
+                "source_metadata": dict(source_metadata),
+                "source_row_sha256": source_row_sha256,
                 "messages": messages,
                 "request_sha256": _canonical_hash(messages),
-                "raw_output": response.output.text,
-                "raw_output_sha256": _text_hash(response.output.text),
-                "blank_response": not bool(response.output.text.strip()),
+                "raw_output": response_text,
+                "raw_output_sha256": _text_hash(response_text),
+                "blank_response": not bool(response_text.strip()),
             }
             tutor_rows.append(tutor_row)
             _atomic_write_jsonl(paths["tutor_responses.jsonl"], tutor_rows)
@@ -1074,13 +1187,13 @@ class EduLLMAdaptiveMode:
                     expected_evidence = ()
                 case = BlindedJudgeCase(
                     scenario_prompt=scenario.prompt,
-                    candidate_response=response.output.text,
+                    candidate_response=response_text,
                     conversation_context=tuple(scenario.conversation_context),
                     reference_solution=scenario.reference_solution,
                     expected_evidence=expected_evidence,
                 )
 
-                if not response.output.text.strip():
+                if not response_text.strip():
                     result = CriterionJudgeResult(
                         verdict="no_decision",
                         status="blank_tutor_response",
@@ -1120,7 +1233,7 @@ class EduLLMAdaptiveMode:
                     "criterion_id": rubric.criterion_id,
                     "criterion": rubric.criterion,
                     "criterion_sha256": _text_hash(rubric.criterion),
-                    "candidate_response_sha256": _text_hash(response.output.text),
+                    "candidate_response_sha256": _text_hash(response_text),
                     "judge_model": prepared.config.judge.model,
                     "judge_revision": prepared.config.judge.revision,
                     "adapter_version": prepared.config.judge.adapter_version,
@@ -1313,6 +1426,7 @@ __all__ = [
     "MODE_CONFIG_SCHEMA_VERSION",
     "MODE_NAME",
     "RequirementPlan",
+    "TutorResponseSourceConfig",
     "parse_adaptive_config",
     "preflight_adaptive_config",
 ]

@@ -254,6 +254,26 @@ def _config(
     }
 
 
+def _use_precomputed_responses(
+    config: dict[str, Any],
+    path: Path,
+    rows: list[dict[str, Any]],
+) -> None:
+    payload = _jsonl(rows)
+    path.write_bytes(payload)
+    config["tutor"]["generation"] = None
+    config["tutor"]["model_provenance"] = {
+        "source": "uploaded_response_archive",
+        "revision": "uploaded-revision",
+    }
+    config["tutor"]["response_source"] = {
+        "kind": "precomputed_jsonl",
+        "schema_version": "edullm-precomputed-tutor-responses-v1",
+        "path": str(path),
+        "sha256": _sha(payload),
+    }
+
+
 def _classification_output(label: str) -> LMOutput:
     p_fail = 0.1 if label == "P" else 0.9
     chosen_probability = 1.0 - p_fail if label == "P" else p_fail
@@ -419,6 +439,81 @@ def test_blank_tutor_response_is_missing_without_calling_judge(tmp_path: Path) -
     assert row["classification_prompt_sha256"] == []
 
 
+def test_precomputed_responses_skip_tutor_generation_and_reach_qwen_cat(
+    tmp_path: Path,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank")
+    config = _config(bank_paths)
+    _use_precomputed_responses(
+        config,
+        tmp_path / "uploaded.jsonl",
+        [
+            {"scenario_id": "mid", "response": "Uploaded mid response", "metadata": {"n": 1}},
+            {"scenario_id": "easy", "response": "Uploaded easy response"},
+            {"scenario_id": "hard", "response": "Uploaded hard response"},
+        ],
+    )
+    judge = _judge_provider("fail")
+    context, tutor = _context(
+        tmp_path / "run",
+        judge,
+        tutor_handler=lambda _request: (_ for _ in ()).throw(
+            AssertionError("precomputed mode must not call the tutor provider")
+        ),
+    )
+    output = tmp_path / "run/modes/edullm_adaptive"
+
+    result = asyncio.run(EduLLMAdaptiveMode().run(context, config, output))
+
+    assert result.status == ModeStatus.SUCCEEDED
+    assert tutor.requests == []
+    assert len(judge.requests) == 4
+    cat_result = json.loads((output / "cat_result.json").read_text())
+    assert cat_result["scenarios_administered"] == ["mid", "easy"]
+    tutor_rows = _read_jsonl(output / "tutor_responses.jsonl")
+    assert [row["raw_output"] for row in tutor_rows] == [
+        "Uploaded mid response",
+        "Uploaded easy response",
+    ]
+    assert tutor_rows[0]["response_source"] == "precomputed_jsonl"
+    assert tutor_rows[0]["source_metadata"] == {"n": 1}
+    manifest = json.loads((output / "manifest.json").read_text())
+    source = manifest["tutor"]["response_source"]
+    assert manifest["tutor"]["model"] == "fixture-tutor"
+    assert manifest["tutor"]["provenance"]["revision"] == "uploaded-revision"
+    assert source["kind"] == "precomputed_jsonl"
+    assert source["declared_sha256"] == source["observed_sha256"]
+    assert source["row_count"] == 3
+    assert source["blank_count"] == 0
+    assert source["exact_bank_coverage"] is True
+
+
+def test_blank_precomputed_response_remains_no_decision_without_qwen(
+    tmp_path: Path,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank", scenario_ids=("mid",))
+    config = _config(bank_paths, max_scenarios=1)
+    _use_precomputed_responses(
+        config,
+        tmp_path / "uploaded.jsonl",
+        [{"scenario_id": "mid", "response": "   "}],
+    )
+    judge = _judge_provider()
+    context, tutor = _context(tmp_path / "run", judge)
+    output = tmp_path / "run/modes/edullm_adaptive"
+
+    result = asyncio.run(EduLLMAdaptiveMode().run(context, config, output))
+
+    assert result.status == ModeStatus.SUCCEEDED
+    assert tutor.requests == []
+    assert judge.requests == []
+    row = _read_jsonl(output / "judge_rows.jsonl")[0]
+    assert row["status"] == "blank_tutor_response"
+    assert row["observation"] is None
+    manifest = json.loads((output / "manifest.json").read_text())
+    assert manifest["tutor"]["response_source"]["blank_count"] == 1
+
+
 def test_reviewed_atomic_checklist_is_used_without_synthetic_splitting(
     tmp_path: Path,
 ) -> None:
@@ -525,6 +620,101 @@ def test_preflight_rejects_candidate_revision_mismatch(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="shared runner revision does not match"):
         EduLLMAdaptiveMode().preflight(context, config)
+
+
+@pytest.mark.parametrize(
+    ("rows", "message"),
+    [
+        (
+            [{"scenario_id": "mid", "response": "one"}],
+            "must exactly cover the fitted bank",
+        ),
+        (
+            [
+                {"scenario_id": "mid", "response": "one"},
+                {"scenario_id": "easy", "response": "two"},
+                {"scenario_id": "extra", "response": "three"},
+            ],
+            "must exactly cover the fitted bank",
+        ),
+        (
+            [
+                {"scenario_id": "mid", "response": "one"},
+                {"scenario_id": "mid", "response": "two"},
+                {"scenario_id": "easy", "response": "three"},
+            ],
+            "duplicate precomputed tutor response",
+        ),
+        (
+            [
+                {"scenario_id": "mid", "response": 1},
+                {"scenario_id": "easy", "response": "two"},
+            ],
+            "response must be a string",
+        ),
+        (
+            [
+                {"scenario_id": "mid", "response": "one", "unknown": True},
+                {"scenario_id": "easy", "response": "two"},
+            ],
+            "fields differ",
+        ),
+    ],
+)
+def test_precomputed_response_preflight_rejects_invalid_rows_or_coverage(
+    tmp_path: Path,
+    rows: list[dict[str, Any]],
+    message: str,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank", scenario_ids=("mid", "easy"))
+    config = _config(bank_paths, max_scenarios=1)
+    _use_precomputed_responses(config, tmp_path / "uploaded.jsonl", rows)
+
+    with pytest.raises(ValueError, match=message):
+        EduLLMAdaptiveMode().preflight_config(config)
+
+
+def test_precomputed_response_preflight_rejects_hash_and_malformed_jsonl(
+    tmp_path: Path,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank", scenario_ids=("mid",))
+    config = _config(bank_paths, max_scenarios=1)
+    path = tmp_path / "uploaded.jsonl"
+    _use_precomputed_responses(
+        config,
+        path,
+        [{"scenario_id": "mid", "response": "one"}],
+    )
+    config["tutor"]["response_source"]["sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
+        EduLLMAdaptiveMode().preflight_config(config)
+
+    malformed = b'{"scenario_id":"mid","response":}\n'
+    path.write_bytes(malformed)
+    config["tutor"]["response_source"]["sha256"] = _sha(malformed)
+    with pytest.raises(ValueError, match="invalid JSON"):
+        EduLLMAdaptiveMode().preflight_config(config)
+
+
+def test_precomputed_response_source_requires_null_generation_and_valid_schema(
+    tmp_path: Path,
+) -> None:
+    bank_paths = _write_bank(tmp_path / "bank", scenario_ids=("mid",))
+    config = _config(bank_paths, max_scenarios=1)
+    generation = config["tutor"]["generation"]
+    _use_precomputed_responses(
+        config,
+        tmp_path / "uploaded.jsonl",
+        [{"scenario_id": "mid", "response": "one"}],
+    )
+    config["tutor"]["generation"] = generation
+    with pytest.raises(ValueError, match="generation must be null"):
+        EduLLMAdaptiveMode().preflight_config(config)
+
+    config["tutor"]["generation"] = None
+    config["tutor"]["response_source"]["schema_version"] = "future-version"
+    with pytest.raises(ValueError, match="unsupported tutor.response_source.schema_version"):
+        EduLLMAdaptiveMode().preflight_config(config)
 
 
 def test_each_criterion_gets_only_its_own_expected_evidence(tmp_path: Path) -> None:

@@ -383,20 +383,42 @@ def parse_mapping(value: Mapping[str, Any]) -> ModeRunConfig:
         from olmo_eval.edullm.mode import parse_adaptive_config
 
         adaptive = parse_adaptive_config(adaptive_modes[0].config)
-        candidate_revision = harness.provider.revision
-        if not isinstance(candidate_revision, str) or not candidate_revision.strip():
+        provenance_source = adaptive.tutor.model_provenance.get("source")
+        provenance_revision = adaptive.tutor.model_provenance.get("revision")
+        if not isinstance(provenance_source, str) or not provenance_source.strip():
+            raise ValueError("edullm_adaptive requires tutor.model_provenance.source")
+        if not isinstance(provenance_revision, str) or not provenance_revision.strip():
+            raise ValueError("edullm_adaptive requires tutor.model_provenance.revision")
+
+        response_source_kind = adaptive.tutor.response_source.kind
+        if response_source_kind == "precomputed_jsonl":
+            if harness.provider.get_provider_name() != "mock":
+                raise ValueError(
+                    "edullm_adaptive precomputed_jsonl requires harness.provider.kind='mock'"
+                )
+            if any(mode.name == "standard_olmo" for mode in modes):
+                raise ValueError(
+                    "standard_olmo cannot run with an edullm_adaptive "
+                    "precomputed_jsonl tutor response source"
+                )
+        elif response_source_kind == "provider":
+            candidate_revision = harness.provider.revision
+            if not isinstance(candidate_revision, str) or not candidate_revision.strip():
+                raise ValueError(
+                    "edullm_adaptive requires an explicit immutable harness.provider.revision"
+                )
+            if adaptive.tutor.expected_model != harness.provider.model:
+                raise ValueError(
+                    "edullm_adaptive tutor.expected_model must equal harness.provider.model"
+                )
+            if provenance_revision != candidate_revision:
+                raise ValueError(
+                    "edullm_adaptive tutor.model_provenance.revision must equal "
+                    "harness.provider.revision"
+                )
+        else:  # pragma: no cover - parse_adaptive_config owns the closed enum.
             raise ValueError(
-                "edullm_adaptive requires an explicit immutable harness.provider.revision"
-            )
-        if adaptive.tutor.expected_model != harness.provider.model:
-            raise ValueError(
-                "edullm_adaptive tutor.expected_model must equal harness.provider.model"
-            )
-        provenance_revision = adaptive.tutor.model_provenance["revision"]
-        if provenance_revision != candidate_revision:
-            raise ValueError(
-                "edullm_adaptive tutor.model_provenance.revision must equal "
-                "harness.provider.revision"
+                f"unsupported edullm_adaptive tutor response source {response_source_kind!r}"
             )
 
     return ModeRunConfig(

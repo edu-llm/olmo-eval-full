@@ -151,6 +151,25 @@ def _config(tmp_path: Path, *, adaptive: bool = False) -> dict[str, Any]:
     }
 
 
+def _use_precomputed_responses(raw: dict[str, Any], tmp_path: Path) -> None:
+    """Convert an adaptive fixture to the provider-free tutor replay mode."""
+
+    adaptive_mode = next(mode for mode in raw["modes"] if mode["name"] == "edullm_adaptive")
+    tutor = adaptive_mode["config"]["tutor"]
+    tutor["expected_model"] = "archived-tutor-model"
+    tutor["model_provenance"] = {
+        "source": "fixture-response-archive",
+        "revision": "archive-revision",
+    }
+    tutor["response_source"] = {
+        "kind": "precomputed_jsonl",
+        "schema_version": "edullm-precomputed-tutor-responses-v1",
+        "path": str(tmp_path / "responses.jsonl"),
+        "sha256": "a" * 64,
+    }
+    tutor["generation"] = None
+
+
 def test_parse_injects_shared_harness_into_standard_mode(tmp_path: Path) -> None:
     raw = _config(tmp_path)
     parsed = parse_mapping(raw)
@@ -204,6 +223,82 @@ def test_adaptive_mode_accepts_exact_frozen_qwen_declaration(tmp_path: Path) -> 
     assert parsed.mode_names == ("standard_olmo", "edullm_adaptive")
     assert parsed.harness.auxiliary_providers["judge"].model == QWEN_JUDGE_MODEL
     assert parsed.modes[1].config["schema_version"] == ADAPTIVE_CONFIG_SCHEMA_VERSION
+
+
+def test_adaptive_precomputed_responses_accept_mock_without_provider_identity_match(
+    tmp_path: Path,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_responses(raw, tmp_path)
+    raw["modes"] = [mode for mode in raw["modes"] if mode["name"] == "edullm_adaptive"]
+    raw["harness"]["provider"] = {
+        "kind": "mock",
+        "model": "precomputed-response-sentinel",
+        "num_instances": 1,
+    }
+
+    parsed = parse_mapping(raw)
+
+    assert parsed.mode_names == ("edullm_adaptive",)
+    assert parsed.harness.provider.kind == "mock"
+    assert parsed.harness.provider.revision is None
+    assert parsed.modes[0].config["tutor"]["expected_model"] == "archived-tutor-model"
+
+
+def test_adaptive_precomputed_responses_require_mock_provider(tmp_path: Path) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_responses(raw, tmp_path)
+    raw["modes"] = [mode for mode in raw["modes"] if mode["name"] == "edullm_adaptive"]
+    raw["harness"]["provider"] = {
+        "kind": "vllm_server",
+        "model": "live-tutor-model",
+        "revision": "live-revision",
+        "num_instances": 1,
+    }
+
+    with pytest.raises(ValueError, match="precomputed_jsonl requires.*kind='mock'"):
+        parse_mapping(raw)
+
+
+def test_adaptive_precomputed_responses_reject_standard_olmo(tmp_path: Path) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_responses(raw, tmp_path)
+
+    with pytest.raises(ValueError, match="standard_olmo cannot run.*precomputed_jsonl"):
+        parse_mapping(raw)
+
+
+def test_adaptive_precomputed_responses_still_require_declared_provenance(
+    tmp_path: Path,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_responses(raw, tmp_path)
+    raw["modes"] = [mode for mode in raw["modes"] if mode["name"] == "edullm_adaptive"]
+    raw["modes"][0]["config"]["tutor"]["model_provenance"]["revision"] = ""
+
+    with pytest.raises(ValueError, match="model_provenance.revision"):
+        parse_mapping(raw)
+
+
+def test_adaptive_precomputed_responses_still_require_frozen_qwen(tmp_path: Path) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    _use_precomputed_responses(raw, tmp_path)
+    raw["modes"] = [mode for mode in raw["modes"] if mode["name"] == "edullm_adaptive"]
+    raw["harness"]["auxiliary_providers"]["judge"]["model"] = "other-judge"
+
+    with pytest.raises(ValueError, match="frozen Qwen judge model"):
+        parse_mapping(raw)
+
+
+def test_explicit_provider_response_source_keeps_candidate_identity_checks(
+    tmp_path: Path,
+) -> None:
+    raw = _config(tmp_path, adaptive=True)
+    raw["modes"][1]["config"]["tutor"]["response_source"] = {"kind": "provider"}
+    raw["modes"][1]["config"]["tutor"]["expected_model"] = "other-model"
+
+    with pytest.raises(ValueError, match="expected_model must equal"):
+        parse_mapping(raw)
 
 
 def test_adaptive_mode_requires_explicit_candidate_revision(tmp_path: Path) -> None:
