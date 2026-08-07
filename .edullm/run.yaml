@@ -1,0 +1,33 @@
+# eduLLM job: steering-vector trustworthiness test over an S3 model checkpoint.
+#
+# Everything here is a property of the code and travels with it in git; the
+# machine, the corpus (--dataset none, this reads a checkpoint not a corpus) and
+# the experiment are supplied at submit time. See SteeringVectors/README.md for
+# how to submit, what env vars parameterize a run, and the one image decision
+# this job depends on.
+#
+# The image the platform builds for olmo-eval-full carries transformers but not
+# torch (INSTALL_TORCH_AND_VLLM defaults to 0 in .edullm/Dockerfile). This
+# pipeline needs torch, so the command first materializes it from the checked-in
+# lockfile's vllm extra -- the run-time alternative the Dockerfile documents --
+# rather than flipping the shared image default for every olmo-eval run. Point a
+# submission at the torch-enabled image instead and drop the `uv sync` prefix if
+# that default is ever flipped on this branch.
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra vllm
+  && python SteeringVectors/run_steering_eval.py
+  "${CHECKPOINT_S3:?set CHECKPOINT_S3 to the s3:// checkpoint prefix under test}"
+  --target "${TARGET_S3:-$CHECKPOINT_S3}"
+  --steering-dataset "${STEERING_DATASET:-stereoset}"
+  --eval-dataset "${EVAL_DATASET:-stereoset}"
+  --layers ${LAYERS:-16}
+  --alphas ${ALPHAS:--1}
+  --max-statements "${MAX_STATEMENTS:-400}"
+  --eval-limit "${EVAL_LIMIT:-200}"
+  --results-s3 "${RESULTS_S3:?set RESULTS_S3 to the s3:// output prefix}"
+  --run-name "${RUN_NAME:-steering-eval}"
+  --device cuda:0'
