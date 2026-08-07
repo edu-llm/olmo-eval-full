@@ -14,6 +14,13 @@
 # (SteeringVectors/run.env.example drives local --dry-run only.) See
 # SteeringVectors/README.md for the image decision this job depends on.
 #
+# olmo_core is pinned to the edu-llm/OLMo-core fork (not PyPI ai2-olmo-core
+# 2.4.0): this checkpoint's config uses a newer schema (sequence_mixer /
+# RoPEConfig.partial_rotary_factor) the fork wrote and 2.4.0 cannot build. The
+# --extra olmo_core sync brings the full dep set (torchao, transformers), then
+# the git install swaps in the fork commit current when the checkpoint was
+# written (2026-07-26, just before the 07-27 checkpoint).
+#
 # The image the platform builds for olmo-eval-full carries transformers but not
 # torch (INSTALL_TORCH_AND_VLLM defaults to 0 in .edullm/Dockerfile). This
 # pipeline needs torch, so the command first materializes it from the checked-in
@@ -27,6 +34,7 @@ suggested_compute: gpu-1xl40s
 command: >-
   bash -lc 'uv sync --frozen --no-default-groups
   --extra beaker --extra hf --extra s3 --extra clients --extra vllm --extra olmo_core
+  && uv pip install "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@7bd6d57120d78e331d29c887f34ed7a4584ce3b5"
   && python SteeringVectors/run_steering_eval.py
   s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-staged-refhq-step1315/checkpoint/
   --steering-dataset stereoset
