@@ -112,6 +112,11 @@ handoff_extract/
 supplement_handoff_build/
 supplement_v2/
 
+# Raw judged matrices / grading verdicts (raw grading output from S3/ORCD; regenerable, never tracked).
+WildBenchGrade/
+bridgegrade/
+tutorbench_tb33_grading/verdicts_merged/
+
 # ---------------------------------------------------------------------------
 # Generated plots (the curated set lives in plots/)
 # ---------------------------------------------------------------------------
