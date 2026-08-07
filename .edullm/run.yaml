@@ -26,7 +26,7 @@ workload_profile: olmo-eval-sweep
 suggested_compute: gpu-1xl40s
 command: >-
   bash -lc 'uv sync --frozen --no-default-groups
-  --extra beaker --extra hf --extra s3 --extra clients --extra vllm
+  --extra beaker --extra hf --extra s3 --extra clients --extra vllm --extra olmo_core
   && python SteeringVectors/run_steering_eval.py
   s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-staged-refhq-step1315/checkpoint/
   --steering-dataset stereoset
