@@ -17,7 +17,6 @@ from pathlib import Path
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER_PATH = ROOT / "scripts" / "run_judge_validation.py"
 RUNNER_SPEC = importlib.util.spec_from_file_location(
@@ -449,24 +448,116 @@ Candidate response with Markdown, commas, and $x^2$.
 
 
 def test_prepare_enforces_complete_scenario_by_tutor_matrix(tmp_path: Path) -> None:
-    scenarios = ROOT / "grader_packets" / "sample_scenarios.jsonl"
-    rubrics = ROOT / "grader_packets" / "sample_rubrics.jsonl"
+    scenarios_path = tmp_path / "scenarios.jsonl"
+    rubrics_path = tmp_path / "rubrics.jsonl"
+    _write_jsonl(
+        scenarios_path,
+        [
+            {
+                "scenario_id": "tb_s1",
+                "prompt": "Scenario one prompt.",
+                "criterion_ids": ["tb_s1_c01"],
+                "conversation_context": [],
+                "reference_solution": "Scenario one reference.",
+            },
+            {
+                "scenario_id": "tb_s2",
+                "prompt": "Scenario two prompt.",
+                "criterion_ids": ["tb_s2_c01"],
+                "conversation_context": [],
+                "reference_solution": "Scenario two reference.",
+            },
+        ],
+    )
+    _write_jsonl(
+        rubrics_path,
+        [
+            {
+                "criterion_id": "tb_s1_c01",
+                "scenario_id": "tb_s1",
+                "criterion": "Meet scenario one criterion.",
+            },
+            {
+                "criterion_id": "tb_s2_c01",
+                "scenario_id": "tb_s2",
+                "criterion": "Meet scenario two criterion.",
+            },
+        ],
+    )
+
+    def packet_item(
+        item_number: int, scenario_id: str, tutor: str, criterion_id: str
+    ) -> str:
+        scenario_number = scenario_id[-1]
+        return f"""
+## grader_01_item_{item_number:02d}
+
+- Scenario ID: `{scenario_id}`
+- Use case: `feedback`
+- Subject: `test`
+- Tutor: `{tutor}`
+
+### Scenario Prompt
+
+Scenario {scenario_number} prompt.
+
+### Conversation Context
+
+_No prior conversation context._
+
+### Reference Solution
+
+Scenario {scenario_number} reference.
+
+### Tutor Response
+
+Synthetic response from {tutor} for {scenario_id}.
+
+### Criteria To Grade
+
+#### {criterion_id}
+
+- Criterion: Meet scenario {"one" if scenario_id == "tb_s1" else "two"} criterion.
+- Primary skill: `content`
+- Criticality: `standard`
+- Grade (P/F): P
+- Notes: ____
+"""
+
+    response_units = [
+        (scenario_id, tutor, f"{scenario_id}_c01")
+        for scenario_id in ("tb_s1", "tb_s2")
+        for tutor in runner.TUTOR_MAP
+    ]
+    complete_packets = tmp_path / "complete_packets"
+    complete_packets.mkdir()
+    complete_text = "# Synthetic complete packet\n" + "".join(
+        packet_item(index, *unit)
+        for index, unit in enumerate(response_units, start=1)
+    )
+    (complete_packets / "grader_01.md").write_text(
+        complete_text, encoding="utf-8"
+    )
 
     complete_cases, _ = runner.prepare_cases(
-        ROOT / "grader_packets", scenarios, rubrics
+        complete_packets, scenarios_path, rubrics_path
     )
     scenario_count = len({case["scenario_id"] for case in complete_cases})
     response_count = len({case["response_id"] for case in complete_cases})
+    assert scenario_count == 2
     assert response_count == scenario_count * len(runner.TUTOR_MAP)
 
     incomplete_packets = tmp_path / "incomplete_packets"
     incomplete_packets.mkdir()
-    source_packet = ROOT / "grader_packets" / "grader_01.md"
-    (incomplete_packets / source_packet.name).write_text(
-        source_packet.read_text(encoding="utf-8"), encoding="utf-8"
+    incomplete_text = "# Synthetic incomplete packet\n" + "".join(
+        packet_item(index, *unit)
+        for index, unit in enumerate(response_units[:-1], start=1)
+    )
+    (incomplete_packets / "grader_01.md").write_text(
+        incomplete_text, encoding="utf-8"
     )
     with pytest.raises(ValueError, match="complete scenario-by-tutor matrix"):
-        runner.prepare_cases(incomplete_packets, scenarios, rubrics)
+        runner.prepare_cases(incomplete_packets, scenarios_path, rubrics_path)
 
 
 def test_packet_not_provided_reference_is_normalized_to_empty(tmp_path: Path) -> None:

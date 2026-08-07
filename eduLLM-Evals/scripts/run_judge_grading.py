@@ -1,19 +1,19 @@
-"""Bridge + ingestion layer between our calibration staging and the teammate's
-FROZEN judge runner, producing the MIRT response matrix.
+"""Bridge + ingestion layer between calibration staging and the retained frozen
+judge runner, producing the MIRT response matrix.
 
-The judge is graded by the teammate's canonical runner
-``aws_judge_handoff/scripts/run_judge_validation.py`` (subcommand ``run``); we do
-NOT reimplement his adapters / normalization / prompt policy here. This script:
+The judge is graded by the canonical runner
+``scripts/run_judge_validation.py`` (subcommand ``run``); this module does not
+reimplement its adapters, normalization, or prompt policy. This script:
 
   1. ``build-cases``  : convert our staged calibration inputs
      ``staging/judge_inputs.jsonl`` (from ``scripts/stage_judge_inputs.py``) into
-     the teammate's EXACT blinded CASE schema (``staging/cases.jsonl``) so his
+     the runner's exact blinded CASE schema (``staging/cases.jsonl``) so its
      ``run`` can grade the full fleet, plus a PRIVATE, non-blinded side-car
      ``staging/cases_index.jsonl`` that maps each ``case_id`` back to our
      ``(model, scenario, criterion)`` -- because ``candidate_model`` is a
-     FORBIDDEN field in his case schema (the judge is blinded to tutor identity).
+     FORBIDDEN field in the case schema (the judge is blinded to tutor identity).
 
-  2. ``grade --mode ingest-verdicts`` (PRIMARY): read the verdict JSONL(s) his
+  2. ``grade --mode ingest-verdicts`` (PRIMARY): read the verdict JSONL(s) that
      ``run`` emits, map ``no_decision``/unscorable VOIDS to MISSING (y = NaN;
      ``--no-decision-policy missing`` default, reason still recorded for audit),
      and assemble the models x criteria pass/fail response matrix in
@@ -32,9 +32,8 @@ End-to-end (see the schema-reconciliation note in the final report):
     python scripts/validate_responses.py
     python scripts/stage_judge_inputs.py
     python scripts/run_judge_grading.py build-cases            # -> staging/cases.jsonl (+ index)
-    # ... ship staging/cases.jsonl to the GPU box as the teammate bundle's
-    #     inputs/judge_cases.blinded.jsonl, then run the FROZEN judge:
-    python aws_judge_handoff/scripts/run_judge_validation.py run \
+    # ... ship staging/cases.jsonl to the GPU box, then run the FROZEN judge:
+    python scripts/run_judge_validation.py run \
         --cases inputs/judge_cases.blinded.jsonl --judge qwen \
         --output outputs/qwen/canonical_r1.jsonl --backend vllm \
         --prompt-variant canonical --replicate-id r1 --resume
@@ -59,9 +58,9 @@ import os
 import sys
 import tempfile
 from collections.abc import Iterable, Iterator
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -82,7 +81,7 @@ from tutor_cat.schemas import Rubric, Scenario  # noqa: E402
 DEFAULT_STAGING = ROOT / "staging"
 DEFAULT_JUDGE_CONFIG = ROOT / "judge_frozen.yaml"
 DEFAULT_APP_CONFIG = ROOT / "config.yaml"
-TEAMMATE_RUNNER = ROOT / "aws_judge_handoff" / "scripts" / "run_judge_validation.py"
+TEAMMATE_RUNNER = ROOT / "scripts" / "run_judge_validation.py"
 
 JUDGE_INPUTS_NAME = "judge_inputs.jsonl"
 JUDGE_INPUTS_MANIFEST_NAME = "judge_inputs_manifest.json"
@@ -93,7 +92,7 @@ MATRIX_CSV_NAME = "response_matrix.csv"
 MATRIX_NPY_NAME = "response_matrix.npy"
 MATRIX_MANIFEST_NAME = "response_matrix_manifest.json"
 
-# Provenance fields we copy verbatim from the teammate's verdict rows.
+# Provenance fields copied verbatim from the canonical runner's verdict rows.
 PROVENANCE_FIELDS = (
     "judge_name",
     "judge_model",
@@ -108,7 +107,7 @@ PROVENANCE_FIELDS = (
     "frozen_configuration_hash",
 )
 
-# The only fields we consume from a teammate verdict row at ingest time. Every
+# The only fields consumed from a runner verdict row at ingest time. Every
 # other field (notably the large ``raw_output`` blob the frozen runner writes for
 # every graded cell) is dropped when indexing so that ingesting ~1-2M cells does
 # not materialize multi-KB payloads per row. Keep this in sync with the readers
@@ -128,13 +127,13 @@ INGEST_ROW_FIELDS = (
 # =====================================================================
 # case_id / response_id derivation (shared by build-cases and ingest)
 # =====================================================================
-# The teammate's case schema FORBIDS candidate_model, so the (model, scenario)
+# The canonical case schema FORBIDS candidate_model, so the (model, scenario)
 # identity must live only in a BLINDED, opaque response_id. We derive it
 # deterministically so build-cases and ingest agree without extra state, and so
 # resume is stable. The private mapping back to the model is kept in the side-car
 # index (never shipped to the judge).
 def response_id_for(model: str, scenario_id: str) -> str:
-    digest = hashlib.sha1(f"{model}\x1f{scenario_id}".encode("utf-8")).hexdigest()
+    digest = hashlib.sha1(f"{model}\x1f{scenario_id}".encode()).hexdigest()
     return f"resp_{digest[:16]}"
 
 
@@ -164,7 +163,7 @@ class FrozenJudgeConfig:
     result_pass_threshold: int = RESULT_PASS_THRESHOLD_DEFAULT
 
     @classmethod
-    def from_dict(cls, block: dict[str, Any]) -> "FrozenJudgeConfig":
+    def from_dict(cls, block: dict[str, Any]) -> FrozenJudgeConfig:
         return cls(
             judge_name=str(block.get("judge_name", "qwen")),
             model=str(block.get("model", "")),
@@ -289,8 +288,8 @@ def _resolve_data_paths(scenarios: Path | None, rubrics: Path | None) -> tuple[P
 
 
 def _import_teammate_runner():
-    """Import the teammate's runner module (stdlib-only at import time) so we can
-    reuse his REQUIRED/FORBIDDEN field sets, JUDGES specs and validate_judge_cases
+    """Import the retained runner module (stdlib-only at import time) so we can
+    reuse its REQUIRED/FORBIDDEN fields, JUDGES specs, and case validator
     instead of duplicating them. Returns None if it cannot be located."""
     if not TEAMMATE_RUNNER.is_file():
         return None
@@ -311,21 +310,21 @@ def _import_teammate_runner():
             raise
         return module
     except Exception as e:  # pragma: no cover - defensive
-        print(f"WARNING: could not import teammate runner for validation: {e!r}",
+        print(f"WARNING: could not import canonical runner for validation: {e!r}",
               file=sys.stderr)
         return None
 
 
 # =====================================================================
-# build-cases : staged inputs -> teammate CASE schema (+ private index)
+# build-cases : staged inputs -> canonical CASE schema (+ private index)
 # =====================================================================
-def build_case_dict(row: dict, bank) -> "dict | None":
-    """Assemble one teammate CASE dict from a staged gradeable row + the ItemBank.
+def build_case_dict(row: dict, bank) -> dict | None:
+    """Assemble one canonical CASE dict from a staged row and the item bank.
 
-    Mirrors the field set emitted by the teammate's ``prepare_cases`` so his
-    ``run`` treats our calibration cases identically to the selection-study cases.
+    Mirrors the field set emitted by ``prepare_cases`` so ``run`` treats the
+    calibration cases identically to the selection-study cases.
     conversation_context is passed through as a SEPARATE list-of-turns field (NOT
-    folded into scenario_prompt) exactly as his prepare/case example does.
+    folded into scenario_prompt), matching the canonical prepare/case example.
     system_prompt is likewise separate: benchmarks that ship a native per-instance
     system prompt (BiGGen) put task-defining state there, so the grader needs it.
     """
@@ -407,7 +406,7 @@ def cmd_build_cases(args: argparse.Namespace) -> int:
         })
         if auto_fail == 1:
             # Auto-fail cells (error/empty/missing responses) are NEVER sent to the
-            # judge: their candidate_response is blank and would fail his case
+            # judge: their candidate_response is blank and would fail case
             # validation. They are scored y=0 downstream at ingest time.
             n_auto_fail += 1
             continue
@@ -420,21 +419,21 @@ def cmd_build_cases(args: argparse.Namespace) -> int:
         cases.append(case)
         n_gradeable += 1
 
-    # Reuse the teammate's own validator so we fail fast on any schema drift.
+    # Reuse the canonical validator so we fail fast on any schema drift.
     runner = _import_teammate_runner()
-    validation_note = "validated with teammate.validate_judge_cases"
+    validation_note = "validated with run_judge_validation.validate_judge_cases"
     if runner is not None and hasattr(runner, "validate_judge_cases"):
         try:
             runner.validate_judge_cases(cases)
         except Exception as e:
-            print(f"ERROR: generated cases failed teammate validation: {e}", file=sys.stderr)
+            print(f"ERROR: generated cases failed canonical validation: {e}", file=sys.stderr)
             return 1
     else:
-        validation_note = "teammate validator unavailable; cases NOT cross-validated"
+        validation_note = "canonical validator unavailable; cases NOT cross-validated"
         print(f"WARNING: {validation_note}", file=sys.stderr)
 
     print("=" * 72)
-    print("build-cases : staged inputs -> teammate CASE schema")
+    print("build-cases : staged inputs -> canonical CASE schema")
     print("=" * 72)
     print(f"staged cells      : {n_total}")
     print(f"  gradeable cases : {n_gradeable}")
@@ -458,12 +457,12 @@ def cmd_build_cases(args: argparse.Namespace) -> int:
     print(f"\nwrote judge cases (SHIP THIS to the GPU box) -> {cases_out}")
     print(f"wrote PRIVATE case index (keep local)        -> {index_out}")
     print("next: run the frozen judge with "
-          "aws_judge_handoff/scripts/run_judge_validation.py run --judge qwen ...")
+          "scripts/run_judge_validation.py run --judge qwen ...")
     return 0
 
 
 # =====================================================================
-# grade : ingest teammate verdicts (primary) or call-judge smoke (fallback)
+# grade : ingest canonical verdicts (primary) or call-judge smoke (fallback)
 # =====================================================================
 class VerdictWriter:
     """Collects verdict rows and rewrites ``verdicts.jsonl`` atomically.
@@ -531,8 +530,8 @@ def is_resume_done(row: dict | None) -> bool:
     return row is not None and row.get("y") is not None
 
 
-def make_verdict_row(key: CellKey, *, y: "int | None", source: str, verdict: str,
-                     extra: "dict | None" = None) -> dict:
+def make_verdict_row(key: CellKey, *, y: int | None, source: str, verdict: str,
+                     extra: dict | None = None) -> dict:
     model, scenario, criterion_id = key
     row: dict[str, Any] = {
         "model": model,
@@ -541,7 +540,7 @@ def make_verdict_row(key: CellKey, *, y: "int | None", source: str, verdict: str
         "y": (int(y) if y is not None else None),
         "verdict": verdict,
         "source": source,
-        "ts": datetime.now(timezone.utc).isoformat(),
+        "ts": datetime.now(UTC).isoformat(),
     }
     if extra:
         row.update(extra)
@@ -565,7 +564,7 @@ def _project_ingest_row(row: dict) -> dict:
 
 
 def load_ingest_index(paths: list[Path]) -> tuple[dict[str, dict], dict[str, set], int]:
-    """Index the teammate's verdict rows by case_id. On duplicate case_id (e.g.
+    """Index the canonical runner's verdict rows by case_id. On duplicate case_id (e.g.
     multiple waves) the LAST file wins; a conflicting verdict is warned. Also
     collects the distinct provenance values seen, for cross-checking.
 
@@ -593,7 +592,7 @@ def load_ingest_index(paths: list[Path]) -> tuple[dict[str, dict], dict[str, set
 def normalize_verdict(
     row: dict, no_decision_policy: str = "missing"
 ) -> tuple[int | None, str, str, dict]:
-    """Map a teammate verdict row to (y, source, verdict_label, extra).
+    """Map a runner verdict row to (y, source, verdict_label, extra).
 
     Per judge-normalization-v3, a cell is pass/fail ONLY when the verdict is
     exactly 'pass'/'fail'; everything else (no_decision, generation_error, or any
@@ -864,7 +863,7 @@ def write_matrix_csv(path: Path, models: list[str], criterion_ids: list[str],
     with path.open("w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
         w.writerow(["model", *criterion_ids])
-        for model, row_cells in zip(models, csv_cells):
+        for model, row_cells in zip(models, csv_cells, strict=True):
             w.writerow([model, *row_cells])
 
 
@@ -934,7 +933,7 @@ def _print_plan(plan: Plan, args: argparse.Namespace, fj: FrozenJudgeConfig,
     if args.mode == "ingest-verdicts":
         print(f"  ingest covered  : {plan.ingest_covered}")
         print(f"  ingest MISSING  : {plan.ingest_missing}"
-              + ("  <-- gradeable cells with no teammate verdict (holes)"
+              + ("  <-- gradeable cells with no runner verdict (holes)"
                  if plan.ingest_missing else ""))
 
 
@@ -950,10 +949,10 @@ def _write_matrix_manifest(path: Path, args: argparse.Namespace, fj: FrozenJudge
     total = n_rows * n_cols
     observed_prov = {f: sorted(v) for f, v in (ingest_prov or {}).items() if v}
     manifest = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "mode": args.mode,
         "frozen_judge_expected": fj.expected_provenance(),
-        "frozen_judge_observed": observed_prov,  # from the teammate verdict rows
+        "frozen_judge_observed": observed_prov,  # from canonical runner verdicts
         "inputs": {
             "judge_inputs": JUDGE_INPUTS_NAME,
             "judge_inputs_manifest": JUDGE_INPUTS_MANIFEST_NAME,
@@ -1006,7 +1005,7 @@ def _print_run_summary(stats: dict, n_holes: int, models: list[str],
         print(f"call-judge failed    : {stats['smoke_failed']} (left ungraded; retry on resume)")
     print(f"skipped (existing)   : {stats['skipped_existing']}")
     if stats["ingest_missing"]:
-        print(f"ingest missing       : {stats['ingest_missing']} (no teammate verdict; hole)")
+        print(f"ingest missing       : {stats['ingest_missing']} (no runner verdict; hole)")
     if stats["bank_missing"]:
         print(f"bank missing         : {stats['bank_missing']}")
     print("-" * 72)
@@ -1030,7 +1029,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = ap.add_subparsers(dest="command", required=True)
 
     pb = sub.add_parser("build-cases",
-                        help="convert staged inputs -> teammate CASE schema (+ private index)")
+                        help="convert staged inputs -> canonical CASE schema (+ private index)")
     pb.add_argument("--staging-dir", type=Path, default=DEFAULT_STAGING)
     pb.add_argument("--scenarios", type=Path, default=None,
                     help="scenarios.jsonl (default: config.yaml data.scenarios)")
@@ -1041,12 +1040,12 @@ def build_parser() -> argparse.ArgumentParser:
     pb.set_defaults(fn=cmd_build_cases)
 
     pg = sub.add_parser("grade",
-                        help="ingest teammate verdicts (primary) or call-judge smoke; build matrix")
+                        help="ingest runner verdicts (primary) or call-judge smoke; build matrix")
     pg.add_argument("--staging-dir", type=Path, default=DEFAULT_STAGING)
     pg.add_argument("--mode", choices=["ingest-verdicts", "call-judge"],
                     default="ingest-verdicts")
     pg.add_argument("--ingest-file", nargs="+", default=None,
-                    help="teammate verdict JSONL(s) or dir(s) of *.jsonl (ingest-verdicts)")
+                    help="runner verdict JSONL(s) or dir(s) of *.jsonl (ingest-verdicts)")
     pg.add_argument("--no-decision-policy", choices=["missing", "fail"], default="missing",
                     help="how to score VOIDED (no_decision/unscorable) judge cells: "
                          "'missing' (DEFAULT; y=NaN, excluded from the MIRT matrix) or "
@@ -1069,7 +1068,7 @@ def build_parser() -> argparse.ArgumentParser:
     return ap
 
 
-def main(argv: "list[str] | None" = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     return args.fn(args)
 

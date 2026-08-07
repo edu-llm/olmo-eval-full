@@ -982,12 +982,22 @@ def resolve_mapping(args: argparse.Namespace) -> ModelMapping:
 def run(args: argparse.Namespace) -> int:
     staging: Path = args.out_dir
     staging.mkdir(parents=True, exist_ok=True)
+    include_optional = bool(getattr(args, "include_optional", False))
+    matrix_basename = str(getattr(args, "matrix_basename", "response_matrix"))
+    audit_basename = str(getattr(args, "audit_basename", "ingest_audit"))
+    jsonl_value = getattr(args, "jsonl", None)
+    jsonl_paths = (
+        [jsonl_value]
+        if isinstance(jsonl_value, Path)
+        else list(jsonl_value or [])
+    )
 
-    columns, criterion_scenario = load_curated(args.curated, include_optional=args.include_optional)
+    columns, criterion_scenario = load_curated(
+        args.curated, include_optional=include_optional
+    )
     cohort_models = load_cohort_models(args.cohort_policy)
 
-    if args.jsonl is not None:
-        jsonl_paths = list(args.jsonl)
+    if jsonl_paths:
         source_path = jsonl_paths[0]
         input_mode = "jsonl-deblinded"
         source_desc = "jsonl-deblinded:" + ",".join(str(p) for p in jsonl_paths)
@@ -1032,11 +1042,11 @@ def run(args: argparse.Namespace) -> int:
         result.matrix, load_curated_meta(args.curated), result.source_populated_columns
     )
 
-    matrix_csv = staging / f"{args.matrix_basename}.csv"
-    matrix_npy = staging / f"{args.matrix_basename}.npy"
-    manifest_path = staging / f"{args.matrix_basename}_manifest.json"
-    audit_json = staging / f"{args.audit_basename}.json"
-    audit_md = staging / f"{args.audit_basename}.md"
+    matrix_csv = staging / f"{matrix_basename}.csv"
+    matrix_npy = staging / f"{matrix_basename}.npy"
+    manifest_path = staging / f"{matrix_basename}_manifest.json"
+    audit_json = staging / f"{audit_basename}.json"
+    audit_md = staging / f"{audit_basename}.md"
 
     write_matrix_csv(result.matrix, matrix_csv)
     write_matrix_npy(result.matrix, matrix_npy)
@@ -1054,15 +1064,15 @@ def run(args: argparse.Namespace) -> int:
         row_order=row_order,
         matrix_report=matrix_report,
     )
-    manifest["include_optional"] = bool(args.include_optional)
+    manifest["include_optional"] = include_optional
     manifest["column_order"] = (
         "curated bank file order, ALL criteria (incl. optional)"
-        if args.include_optional
+        if include_optional
         else manifest["column_order"]
     )
-    if args.jsonl is not None:
+    if jsonl_paths:
         manifest["source_files"] = [
-            {"path": str(p), "sha256": _sha256_file(p)} for p in list(args.jsonl)
+            {"path": str(p), "sha256": _sha256_file(p)} for p in jsonl_paths
         ]
     manifest["category_fill"] = category_fill
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")

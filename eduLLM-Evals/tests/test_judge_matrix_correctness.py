@@ -3,7 +3,7 @@ data-correctness fixes (``scripts/run_all_judge_grading.py``).
 
 Three guarantees are checked with tiny on-disk fixtures:
 
-  (S2a) ``emit_cases`` FAILS FAST when the teammate validator rejects the cases
+  (S2a) ``emit_cases`` FAILS FAST when the canonical validator rejects the cases
         (e.g. a duplicate criterion_id yields a duplicate case_id): it raises and
         writes NO cases file, so invalid cases are never shipped to the GPU box.
 
@@ -18,6 +18,7 @@ Three guarantees are checked with tiny on-disk fixtures:
 
 from __future__ import annotations
 
+import csv
 import importlib.util
 import json
 import sys
@@ -77,7 +78,7 @@ def _make_bench(
 # ---------------------------------------------------------------------------
 def test_emit_fails_fast_on_duplicate_criterion_id(tmp_path: Path) -> None:
     # Same criterion_id twice under the SAME scenario -> two staged rows with the
-    # same (model, scenario, criterion) -> duplicate case_id -> teammate validator
+    # same (model, scenario, criterion) -> duplicate case_id -> canonical validator
     # rejects the batch.
     responses_dir, scenarios_path, rubrics_path = _make_bench(
         tmp_path,
@@ -185,3 +186,154 @@ def test_dead_model_excluded_and_reported(tmp_path: Path) -> None:
     )
     assert sb_keep.models == ["M/dead", "M/good"]
     assert sb_keep.excluded_models == []
+
+
+def test_technical_failures_can_be_staged_as_missing(tmp_path: Path) -> None:
+    responses_dir, scenarios_path, rubrics_path = _make_bench(
+        tmp_path,
+        scenarios=[
+            {"scenario_id": "s1", "prompt": "p1"},
+            {"scenario_id": "s2", "prompt": "p2"},
+        ],
+        rubrics=[
+            {"criterion_id": "c1", "scenario_id": "s1", "criterion": "grade 1"},
+            {"criterion_id": "c2", "scenario_id": "s2", "criterion": "grade 2"},
+        ],
+        responses={
+            "mixed": [
+                _response_row("M/mixed", "s1", "a real answer"),
+                _response_row("M/mixed", "s2", "", finish="error"),
+            ]
+        },
+    )
+
+    sb = driver.stage_benchmark(
+        "Mixed",
+        responses_dir,
+        scenarios_path,
+        rubrics_path,
+        technical_failure_policy="missing",
+    )
+    assert sb.models == ["M/mixed"]
+    assert sb.gradeable_cells == 1
+    assert sb.auto_fail_cells == 0
+    assert sb.technical_missing_cells == 1
+    assert sb.technical_missing_reasons == {"finish_reason_error": 1}
+
+    out_dir = tmp_path / "out_missing"
+    n_cases, n_auto_fail, n_bank_missing = driver.emit_cases(out_dir, sb)
+    assert (n_cases, n_auto_fail, n_bank_missing) == (1, 0, 0)
+    index_rows = [
+        json.loads(line)
+        for line in (out_dir / driver.CASES_INDEX_NAME).read_text().splitlines()
+    ]
+    assert len(index_rows) == 2
+    missing_row = next(row for row in index_rows if row["scenario_id"] == "s2")
+    assert missing_row["technical_missing"] == 1
+
+    driver.write_staging(out_dir, sb)
+    manifest = json.loads((out_dir / driver.JUDGE_INPUTS_MANIFEST_NAME).read_text())
+    assert manifest["technical_failure_policy"] == "missing"
+    assert manifest["technical_missing_cells"] == 1
+
+    verdict_path = tmp_path / "returned_verdicts.jsonl"
+    _write_jsonl(
+        verdict_path,
+        [
+            {
+                "case_id": driver.rjg.case_id_for("M/mixed", "s1", "c1"),
+                "verdict": "pass",
+                "status": "ok",
+            }
+        ],
+    )
+    summary = driver.ingest_benchmark(
+        out_dir,
+        sb,
+        [verdict_path],
+        driver.rjg.FrozenJudgeConfig(),
+        no_decision_policy="missing",
+        resume=False,
+    )
+    assert summary["stats"]["ingested_pass_fail"] == 1
+    assert summary["stats"]["technical_missing"] == 1
+    assert summary["coverage"] == {
+        "complete": False,
+        "n_holes": 1,
+        "n_filled": 1,
+    }
+
+    verdict_rows = {
+        row["scenario"]: row
+        for row in (
+            json.loads(line)
+            for line in (out_dir / driver.VERDICTS_NAME).read_text().splitlines()
+        )
+    }
+    assert verdict_rows["s1"]["y"] == 1
+    assert verdict_rows["s1"]["source"] == "ingest"
+    assert verdict_rows["s2"]["y"] is None
+    assert verdict_rows["s2"]["source"] == "technical_missing"
+    assert verdict_rows["s2"]["technical_missing_reason"] == "finish_reason_error"
+
+    with (out_dir / driver.MATRIX_CSV_NAME).open(newline="", encoding="utf-8") as f:
+        matrix_rows = list(csv.reader(f))
+    assert matrix_rows == [["model", "c1", "c2"], ["M/mixed", "1", ""]]
+
+
+def test_cli_threads_technical_failure_policy_to_staging(tmp_path: Path) -> None:
+    responses_root = tmp_path / "responses"
+    scenarios_root = tmp_path / "data"
+    benchmark = "InFoBench"
+    responses_dir, scenarios_path, rubrics_path = _make_bench(
+        tmp_path / "fixture",
+        scenarios=[
+            {"scenario_id": "s1", "prompt": "p1"},
+            {"scenario_id": "s2", "prompt": "p2"},
+        ],
+        rubrics=[
+            {"criterion_id": "c1", "scenario_id": "s1", "criterion": "grade 1"},
+            {"criterion_id": "c2", "scenario_id": "s2", "criterion": "grade 2"},
+        ],
+        responses={
+            "mixed": [
+                _response_row("M/mixed", "s1", "a real answer"),
+                _response_row("M/mixed", "s2", "", finish="error"),
+            ]
+        },
+    )
+    target_responses = responses_root / benchmark
+    target_responses.parent.mkdir(parents=True, exist_ok=True)
+    responses_dir.rename(target_responses)
+    target_data = scenarios_root / benchmark
+    target_data.mkdir(parents=True, exist_ok=True)
+    scenarios_path.rename(target_data / "scenarios.jsonl")
+    rubrics_map = tmp_path / "rubrics_map.yaml"
+    rubrics_map.write_text(f"{benchmark}: {rubrics_path}\n", encoding="utf-8")
+    out_root = tmp_path / "judge_out"
+
+    rc = driver.main(
+        [
+            "--only",
+            benchmark,
+            "--responses-root",
+            str(responses_root),
+            "--scenarios-root",
+            str(scenarios_root),
+            "--rubrics-map",
+            str(rubrics_map),
+            "--out-root",
+            str(out_root),
+            "--technical-failure-policy",
+            "missing",
+        ]
+    )
+
+    assert rc == 0
+    manifest = json.loads(
+        (out_root / benchmark / driver.JUDGE_INPUTS_MANIFEST_NAME).read_text()
+    )
+    assert manifest["technical_failure_policy"] == "missing"
+    assert manifest["technical_missing_cells"] == 1
+    cases = (out_root / benchmark / driver.CASES_NAME).read_text().splitlines()
+    assert len(cases) == 1

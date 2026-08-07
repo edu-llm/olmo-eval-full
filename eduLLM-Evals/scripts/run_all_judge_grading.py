@@ -2,7 +2,7 @@
 
 This is a thin multi-benchmark DRIVER around the existing single-benchmark judge
 plumbing (``scripts/stage_judge_inputs.py`` + ``scripts/run_judge_grading.py`` +
-the teammate runner ``aws_judge_handoff/scripts/run_judge_validation.py``). It
+the retained runner ``scripts/run_judge_validation.py``). It
 loops the in-scope benchmarks x the tutor-model response shards present on disk
 and, per benchmark, stages one gradeable cell per (model, scenario, criterion),
 emits the frozen judge's blinded CASE inputs, and ingests the returned verdicts
@@ -18,7 +18,7 @@ normalization, resume) is reused from ``run_judge_grading``.
 ==================================================================
 GPU / S3 HAND-OFF (frozen judge = Qwen/Qwen3.5-9B, adapter generic-binary)
 ==================================================================
-The judge is the frozen ``qwen`` spec run by the teammate's canonical runner on a
+The judge is the frozen ``qwen`` spec run by the retained canonical runner on a
 GPU box; this driver never loads the model. The end-to-end flow is a three-move
 prepare -> judge -> ingest, run once per benchmark:
 
@@ -28,8 +28,8 @@ prepare -> judge -> ingest, run once per benchmark:
               runs/judge/<Benchmark>/cases_index.jsonl   (PRIVATE; de-blinds case_id)
               runs/judge/<Benchmark>/judge_inputs.jsonl  (staged cells, for ingest)
 
-  2. JUDGE (GPU box, teammate runner, once per benchmark). Example (TutorBench):
-       python aws_judge_handoff/scripts/run_judge_validation.py run \
+  2. JUDGE (GPU box, canonical runner, once per benchmark). Example (TutorBench):
+       python scripts/run_judge_validation.py run \
          --cases runs/judge/TutorBench/cases.jsonl --judge qwen \
          --output <ingest-root>/TutorBench/canonical_r1.jsonl \
          --backend vllm --prompt-variant canonical --replicate-id r1 --resume \
@@ -61,8 +61,10 @@ S3-AWARE but does not duplicate that orchestration:
   * ``--ingest`` optionally accepts an ``s3://`` root so a standalone ingest
     (run without the wrapper) can pull verdicts down itself.
 
-Auto-fail cells (tutor Output errored / empty / missing) are never sent to the
-judge; they are scored ``verdict=fail`` (y=0) at ingest with the reason recorded.
+Unusable cells are never sent to the judge. Successful-but-empty outputs are
+scored ``verdict=fail`` (y=0). Missing rows and generation errors follow
+``--technical-failure-policy`` (historical default ``fail``; calibration runs
+should normally use ``missing`` so infrastructure failures become NaN).
 Resume is keyed on (model, scenario, criterion_id) against verdicts.jsonl.
 
 Models whose EVERY cell is auto-fail (zero gradeable cells) are excluded from the
@@ -86,7 +88,7 @@ import subprocess
 import sys
 import tempfile
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -117,7 +119,7 @@ DEFAULT_RESPONSES_ROOT = ROOT / "runs" / "responses"
 DEFAULT_OUT_ROOT = ROOT / "runs" / "judge"
 
 class CasesValidationError(RuntimeError):
-    """Raised when emitted cases fail the teammate's ``validate_judge_cases``.
+    """Raised when emitted cases fail the canonical ``validate_judge_cases``.
 
     Emit fails fast on this (like the single-benchmark ``build-cases`` path)
     rather than shipping invalid cases that the GPU ``run`` step would only reject
@@ -190,7 +192,7 @@ def load_scenarios(path: Path) -> dict[str, LiteScenario]:
             use_case=str(obj.get("use_case", "")),
             subject=str(obj.get("subject", "")),
             conversation_context=obj.get("conversation_context") or [],
-            reference_solution=str(obj.get("reference_solution", "")),
+            reference_solution=str(obj.get("reference_solution") or ""),
             system_prompt=str(obj.get("system_prompt") or ""),
         )
     return out
@@ -280,11 +282,14 @@ class StagedBenchmark:
     gradeable_cells: int = 0
     auto_fail_cells: int = 0
     auto_fail_reasons: dict[str, int] = field(default_factory=dict)
+    technical_missing_cells: int = 0
+    technical_missing_reasons: dict[str, int] = field(default_factory=dict)
     missing_scenarios: int = 0
     malformed_lines: int = 0
     # Models dropped before the matrix because every one of their cells was
     # auto-fail (zero gradeable): grading them would inject a full row of y=0.
     excluded_models: list[str] = field(default_factory=list)
+    technical_failure_policy: str = "fail"
 
 
 def stage_benchmark(
@@ -293,7 +298,10 @@ def stage_benchmark(
     scenarios_path: Path,
     rubrics_path: Path,
     exclude_dead_models: bool = True,
+    technical_failure_policy: str = "fail",
 ) -> StagedBenchmark:
+    if technical_failure_policy not in {"fail", "missing"}:
+        raise ValueError("technical_failure_policy must be 'fail' or 'missing'")
     scenarios = load_scenarios(scenarios_path)
     rubrics = load_rubrics(rubrics_path)
 
@@ -337,6 +345,11 @@ def stage_benchmark(
         for sid in ordered_sids:
             rec = index.get(sid)
             af, reason, response = sji.classify_cell(rec, False)
+            technical_missing = bool(
+                af
+                and technical_failure_policy == "missing"
+                and reason in {"missing_response", "finish_reason_error"}
+            )
             for crit in criteria_by_scenario[sid]:
                 model_rows.append(
                     {
@@ -345,8 +358,10 @@ def stage_benchmark(
                         "criterion_id": crit.criterion_id,
                         "rubric": crit.criterion,
                         "response": response,
-                        "auto_fail": af,
-                        "auto_fail_reason": reason,
+                        "auto_fail": int(bool(af) and not technical_missing),
+                        "auto_fail_reason": reason if af and not technical_missing else "",
+                        "technical_missing": int(technical_missing),
+                        "technical_missing_reason": reason if technical_missing else "",
                     }
                 )
                 if not af:
@@ -362,8 +377,9 @@ def stage_benchmark(
     kept_models = [m for m in models if m not in set(excluded_models)]
 
     staged_rows: list[dict] = []
-    total = gradeable = auto_fail = 0
+    total = gradeable = auto_fail = technical_missing = 0
     reasons: dict[str, int] = {}
+    missing_reasons: dict[str, int] = {}
     for model in kept_models:
         for row in rows_by_model[model]:
             staged_rows.append(row)
@@ -371,6 +387,10 @@ def stage_benchmark(
             if row["auto_fail"]:
                 auto_fail += 1
                 reasons[row["auto_fail_reason"]] = reasons.get(row["auto_fail_reason"], 0) + 1
+            elif row["technical_missing"]:
+                technical_missing += 1
+                reason = row["technical_missing_reason"]
+                missing_reasons[reason] = missing_reasons.get(reason, 0) + 1
             else:
                 gradeable += 1
 
@@ -388,9 +408,12 @@ def stage_benchmark(
         gradeable_cells=gradeable,
         auto_fail_cells=auto_fail,
         auto_fail_reasons=reasons,
+        technical_missing_cells=technical_missing,
+        technical_missing_reasons=missing_reasons,
         missing_scenarios=missing_scenarios,
         malformed_lines=malformed_lines,
         excluded_models=excluded_models,
+        technical_failure_policy=technical_failure_policy,
     )
 
 
@@ -400,7 +423,7 @@ def write_staging(out_dir: Path, sb: StagedBenchmark) -> None:
         for row in sb.staged_rows:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
     manifest = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "benchmark": sb.benchmark,
         "responses_dir": _rel(sb.responses_dir),
         "scenarios_path": _rel(sb.scenarios_path),
@@ -412,6 +435,9 @@ def write_staging(out_dir: Path, sb: StagedBenchmark) -> None:
         "gradeable_cells": sb.gradeable_cells,
         "auto_fail_cells": sb.auto_fail_cells,
         "auto_fail_reason_counts": sb.auto_fail_reasons,
+        "technical_missing_cells": sb.technical_missing_cells,
+        "technical_missing_reason_counts": sb.technical_missing_reasons,
+        "technical_failure_policy": sb.technical_failure_policy,
         "missing_scenarios_for_rubrics": sb.missing_scenarios,
         "malformed_response_lines_skipped": sb.malformed_lines,
         "n_excluded_models": len(sb.excluded_models),
@@ -470,10 +496,14 @@ def emit_cases(
                 "criterion_id": cid,
                 "auto_fail": int(row.get("auto_fail", 0)),
                 "auto_fail_reason": row.get("auto_fail_reason", ""),
+                "technical_missing": int(row.get("technical_missing", 0)),
+                "technical_missing_reason": row.get("technical_missing_reason", ""),
             }
         )
         if int(row.get("auto_fail", 0)) == 1:
             n_auto_fail += 1
+            continue
+        if int(row.get("technical_missing", 0)) == 1:
             continue
         case = rjg.build_case_dict(row, sb.bank)
         if case is None:
@@ -490,10 +520,10 @@ def emit_cases(
             runner.validate_judge_cases(cases)
         except Exception as e:
             raise CasesValidationError(
-                f"{sb.benchmark}: generated cases failed teammate validation: {e}"
+                f"{sb.benchmark}: generated cases failed canonical validation: {e}"
             ) from e
     else:
-        print(f"  ! {sb.benchmark}: teammate validator unavailable; cases NOT "
+        print(f"  ! {sb.benchmark}: canonical validator unavailable; cases NOT "
               "cross-validated", file=sys.stderr)
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -525,7 +555,7 @@ def handoff_command(
     out = ingest_root / benchmark / f"canonical_r1{suffix}.jsonl"
     s3_out = f"{s3_prefix.rstrip('/')}/{benchmark}/canonical_r1{suffix}"
     return (
-        "python aws_judge_handoff/scripts/run_judge_validation.py run \\\n"
+        "python scripts/run_judge_validation.py run \\\n"
         f"  --cases {_rel(cases_path)} --judge {judge} \\\n"
         f"  --output {_rel(out)} \\\n"
         "  --backend vllm --prompt-variant canonical --replicate-id r1 --resume \\\n"
@@ -562,6 +592,7 @@ def ingest_benchmark(
 
     stats = {
         "auto_fail": 0,
+        "technical_missing": 0,
         "ingested_pass_fail": 0,
         "ingested_no_decision": 0,
         "skipped_existing": 0,
@@ -591,6 +622,22 @@ def ingest_benchmark(
                     )
                 )
                 stats["auto_fail"] += 1
+                continue
+            if int(row.get("technical_missing", 0)) == 1:
+                writer.write(
+                    rjg.make_verdict_row(
+                        key,
+                        y=None,
+                        source="technical_missing",
+                        verdict="no_decision",
+                        extra={
+                            "technical_missing_reason": row.get(
+                                "technical_missing_reason", ""
+                            )
+                        },
+                    )
+                )
+                stats["technical_missing"] += 1
                 continue
             cid = rjg.case_id_for(*key)
             vrow = by_case.get(cid)
@@ -624,7 +671,7 @@ def ingest_benchmark(
         by_source[s] = by_source.get(s, 0) + 1
     total = len(sb.models) * len(sb.criterion_ids)
     manifest = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "benchmark": sb.benchmark,
         "phase": "ingest",
         "judge_expected": fj.expected_provenance(),
@@ -634,6 +681,7 @@ def ingest_benchmark(
             "normalization_version": fj.normalization_version,
             "evidence_policy_version": fj.evidence_policy_version,
         },
+        "technical_failure_policy": sb.technical_failure_policy,
         "ingest_files": [_rel(p) for p in ingest_paths],
         "counts": {
             "total_cells": total,
@@ -755,6 +803,15 @@ def main(argv: list[str] | None = None) -> int:
                          "command uploads to <prefix>/<Benchmark>/canonical_r1[.shard<i>]. "
                          f"Placeholder default: {S3_PREFIX_PLACEHOLDER}")
     ap.add_argument("--no-decision-policy", choices=["missing", "fail"], default="missing")
+    ap.add_argument(
+        "--technical-failure-policy",
+        choices=["fail", "missing"],
+        default="fail",
+        help=(
+            "score missing response rows and Finish Reason=error as fail (historical "
+            "default) or missing/NaN. Successful empty outputs remain fail."
+        ),
+    )
     ap.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
     ap.add_argument("--keep-dead-models", action="store_true",
                     help="keep models whose every response errored/blanked (zero "
@@ -839,6 +896,7 @@ def main(argv: list[str] | None = None) -> int:
         sb = stage_benchmark(
             benchmark, responses_dir, scenarios_path, rubrics_path,
             exclude_dead_models=not args.keep_dead_models,
+            technical_failure_policy=args.technical_failure_policy,
         )
         if not sb.models:
             print(f"  SKIP: responses dir has no model shards: {_rel(responses_dir)}")
@@ -847,7 +905,8 @@ def main(argv: list[str] | None = None) -> int:
         write_staging(out_dir, sb)
         print(f"  models={len(sb.models)}  criteria={len(sb.criterion_ids)}  "
               f"cells={sb.total_cells} (gradeable={sb.gradeable_cells}, "
-              f"auto_fail={sb.auto_fail_cells})")
+              f"auto_fail={sb.auto_fail_cells}, technical_missing="
+              f"{sb.technical_missing_cells})")
         if sb.excluded_models:
             print(f"  excluded {len(sb.excluded_models)} dead model(s) (zero gradeable "
                   f"cells; would be all-fail rows): {sb.excluded_models[:5]}"
@@ -871,7 +930,7 @@ def main(argv: list[str] | None = None) -> int:
                 roll_up.append({"benchmark": benchmark, "status": "emit_validation_failed",
                                 "error": str(e)})
                 index = {
-                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "generated_at": datetime.now(UTC).isoformat(),
                     "phase": phase,
                     "judge": {"name": judge_name, "model": fj.model,
                               "revision": fj.hf_revision},
@@ -895,6 +954,7 @@ def main(argv: list[str] | None = None) -> int:
                 "benchmark": benchmark, "status": "cases_emitted",
                 "n_models": len(sb.models), "n_criteria": len(sb.criterion_ids),
                 "gradeable_cells": sb.gradeable_cells, "auto_fail_cells": sb.auto_fail_cells,
+                "technical_missing_cells": sb.technical_missing_cells,
                 "cases": n_cases, "num_shards": args.num_shards,
                 "shard_index": args.shard_index,
                 "cases_file": _rel(cases_path),
@@ -914,13 +974,14 @@ def main(argv: list[str] | None = None) -> int:
             cov = summary["coverage"]
             print(f"  ingested {summary['stats']['ingested_pass_fail']} pass/fail, "
                   f"{summary['stats']['auto_fail']} auto-fail; "
+                  f"{summary['stats']['technical_missing']} technical-missing; "
                   f"holes={cov['n_holes']} ({'complete' if cov['complete'] else 'INCOMPLETE'})")
             print(f"  wrote -> {_rel(out_dir / VERDICTS_NAME)}")
             summary["status"] = "ingested"
             roll_up.append(summary)
 
     index = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "phase": phase,
         "judge": {"name": judge_name, "model": fj.model, "revision": fj.hf_revision},
         "benchmarks": roll_up,
