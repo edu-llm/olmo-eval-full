@@ -31,8 +31,8 @@ pytest tests/storage/
 cd tests/integration
 docker compose up -d
 
-# Run integration tests
-pytest tests/integration/test_storage*.py tests/integration/test_repository.py --integration
+# Run integration tests (they run by default; --no-docker turns them off)
+pytest tests/integration/test_storage*.py tests/integration/test_repository.py
 
 # Cleanup
 docker compose down -v
@@ -44,7 +44,7 @@ docker compose down -v
 cd tests/integration && docker compose up -d && cd ../..
 
 # Run all
-pytest tests/storage/ tests/integration/test_storage*.py tests/integration/test_repository.py --integration
+pytest tests/storage/ tests/integration/test_storage*.py tests/integration/test_repository.py
 
 # Cleanup
 cd tests/integration && docker compose down -v

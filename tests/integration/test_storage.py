@@ -1,7 +1,10 @@
 """Integration tests for storage backends.
 
 These tests require Docker to run postgres and localstack containers.
-Run with: pytest --integration tests/integration/test_storage.py
+Run with: pytest tests/integration/test_storage.py
+
+There is no --integration flag; integration is a marker, and these tests run by default.
+Pass --no-docker to skip them when the containers are not up.
 """
 
 from datetime import datetime
