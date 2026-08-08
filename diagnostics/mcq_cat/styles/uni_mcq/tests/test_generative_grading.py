@@ -168,6 +168,19 @@ class TestStopSequences:
     def test_text_without_a_stop_is_left_alone(self) -> None:
         assert generative.truncate_at_stop("plain text", ("Question:",)) == "plain text"
 
+    def test_the_earliest_stop_wins_whichever_order_they_are_declared_in(self) -> None:
+        """Declaration order is not precedence, and each bank declares its own list.
+
+        Worth pinning separately from the case above, which cannot tell the two apart:
+        there the earliest match happens to be the last sequence tried. A rule that
+        depended on order would leave a bank's stops correct only by the accident of how
+        its ``config.yaml`` entry was typed.
+        """
+        text = "answer.\n\nQuestion: next\n\nmore"
+
+        assert generative.truncate_at_stop(text, ("\n\n", "Question:")) == "answer."
+        assert generative.truncate_at_stop(text, ("Question:", "\n\n")) == "answer."
+
 
 class TestPrompt:
     def test_few_shot_block_precedes_the_question(self, stub_fewshot) -> None:

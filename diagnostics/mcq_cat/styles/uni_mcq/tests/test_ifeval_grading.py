@@ -329,19 +329,37 @@ class TestPromptAndSampling:
     def test_the_committed_config_matches_the_leaderboard_task(self, tmp_path: Path) -> None:
         """The settings a run would actually use, read off config.yaml.
 
-        Every one of these is lm-evaluation-harness's ``leaderboard_ifeval`` verbatim:
-        ``doc_to_text`` is the bare ``prompt`` field, ``num_fewshot: 0``, and generation
-        kwargs of ``until: []``, ``do_sample: false``, ``max_gen_toks: 1280``. That
-        includes the completion framing, which the harness applies outside the task
-        through ``--apply_chat_template`` rather than in it.
+        Every one of these that decides whether an item passes is
+        lm-evaluation-harness's ``leaderboard_ifeval`` verbatim: ``doc_to_text`` is the
+        bare ``prompt`` field, ``num_fewshot: 0``, and generation kwargs of
+        ``until: []``, ``do_sample: false``. That includes the completion framing, which
+        the harness applies outside the task through ``--apply_chat_template`` rather
+        than in it.
+
+        The budget is the exception and is pinned separately below, because lm-eval
+        sends 1280 and this style does not.
         """
         config = _resolved_generation_config(DATASET)
 
         assert config.num_fewshot == 0
         assert config.prompt_style == "ifeval"
         assert config.chat_format is False
-        assert config.max_new_tokens == 1280
         assert config.stop_sequences == ()
+
+    def test_the_budget_covers_the_largest_length_constraint_the_bank_states(self) -> None:
+        """1536, not lm-eval's 1280, and the difference is deliberate.
+
+        IFEval has no reference answer to measure, so the budget comes from what the
+        items demand: the largest explicit ``number_words`` constraint in the bank is
+        900 words, about 1,161 tokens. 1280 leaves 10% of headroom over a constraint the
+        grader checks directly, and a response cut short of its own word count fails
+        ``length_constraints:number_words`` as though the model had ignored it.
+
+        Unlike a prompt change this cannot reframe an item -- a longer budget only lets
+        a response finish -- which is why it is the one place this bank departs from
+        lm-eval.
+        """
+        assert _resolved_generation_config(DATASET).max_new_tokens == 1536
 
     def test_no_stop_sequence_survives_a_multi_paragraph_answer(self) -> None:
         """A blank-line stop would cut most responses into a length-constraint failure."""

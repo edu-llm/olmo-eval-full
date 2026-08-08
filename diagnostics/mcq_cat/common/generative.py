@@ -35,12 +35,14 @@ Four small named pieces, smallest first:
   property of the checkpoint rather than of the benchmark.
 - :class:`GenerativeScorer` composes them into a ``ScoringModel``.
 
-Every one of those mirrors the corresponding olmo-eval task exactly. GSM8K: comma
-separators stripped, the last number in the completion taken, ``Question:`` and a
-blank line as stop sequences, 512 new tokens, greedy decoding. MATH: the Minerva
-``Problem:``/``Solution:`` framing, ``\\boxed{}`` extraction and sympy equivalence,
-``Problem:`` and a blank line as stop sequences, 1024 new tokens. IFEval: one chat turn
-carrying the prompt verbatim, no few-shot block, no stop sequences, 1280 new tokens,
+Every one of those mirrors the corresponding olmo-eval task, except where the style's
+``config.yaml`` argues its way off it in writing. GSM8K: comma separators stripped, the
+last number in the completion taken, ``Question:`` and a blank line as stop sequences,
+512 new tokens, greedy decoding. MATH: the Minerva ``Problem:``/``Solution:`` framing,
+``\\boxed{}`` extraction and sympy equivalence, and -- the two departures --
+``Problem:`` as the only stop sequence, matching lm-eval's ``leaderboard_math`` rather
+than the task's added blank line, inside 2048 new tokens. IFEval: the prompt verbatim as
+a completion, no few-shot block, no stop sequences, 1536 new tokens,
 and every named instruction verified. GPQA: the expert-scientist system prompt asking
 for step-by-step reasoning ending in ``ANSWER: X``, the question and its lettered
 choices as the user turn, no stop sequences, 1024 new tokens, and the extracted letter
@@ -922,11 +924,10 @@ class GenerationConfig:
 
     Every sampling default is copied from the olmo-eval GSM8K task's
     ``SamplingParams``, so a diagnostic run and a full eval of the same checkpoint ask
-    the model to do the same thing. A benchmark whose task asks for something else --
-    MATH's ``Problem:``/``Solution:`` framing, its 1024-token budget, its stop
-    sequences -- overrides those defaults from the style's ``config.yaml`` rather than
-    inheriting GSM8K's, since the defaults are one benchmark's convention and not a
-    house style.
+    the model to do the same thing. A benchmark that needs something else -- MATH's
+    ``Problem:``/``Solution:`` framing, its token budget, its stop sequences --
+    overrides those defaults from the style's ``config.yaml`` rather than inheriting
+    GSM8K's, since the defaults are one benchmark's convention and not a house style.
     """
 
     checkpoint_kind: str = "hf"  # "hf" or "olmo_core"
@@ -1045,9 +1046,12 @@ def format_generative_prompt(item: BenchmarkItem, config: GenerationConfig) -> s
     """Build the prompt for ``item`` under the configured style, few-shot block included.
 
     Each layout -- examples joined by a blank line, the live question last with a bare
-    answer cue -- reproduces its olmo-eval task's ``format_request``. The blank-line
-    join is also why a blank line is a stop sequence in both: it is the boundary the
-    model has been shown between one question and the next.
+    answer cue -- reproduces its olmo-eval task's ``format_request``. The join is also
+    what the stop sequences are read against: it is the boundary the model has been
+    shown between one question and the next. GSM8K stops on the blank line itself;
+    MATH stops on the ``Problem:`` header that follows it, because a MATH solution may
+    contain a blank line of its own and a GSM8K answer may not. See the argument on
+    ``stop_sequences`` in the style's ``config.yaml``.
     """
     template = get_prompt_template(config.prompt_style)
     return template.render(item.question, fewshot_examples(config))
@@ -1058,8 +1062,15 @@ def truncate_at_stop(text: str, stop_sequences: Sequence[str]) -> str:
 
     A local ``generate`` call has no server-side stop handling, so the sequences the
     task declares have to be applied here. This changes grades, not just tidiness: the
-    extractor takes the *last* number in the completion, so a model that runs on into
-    a hallucinated next question would otherwise be graded on that question's answer.
+    GSM8K extractor takes the *last* number in the completion, so a model that runs on
+    into a hallucinated next question would otherwise be graded on that question's
+    answer.
+
+    It cuts at the *earliest* match, and that cuts both ways. A sequence that can occur
+    inside a legitimate answer deletes the rest of it, extracted answer included, and
+    the completion is then graded as though the model had stopped there. Which
+    sequences a bank declares is therefore a correctness question for that bank, argued
+    per dataset in the style's ``config.yaml``.
     """
     cut = len(text)
     for stop in stop_sequences:

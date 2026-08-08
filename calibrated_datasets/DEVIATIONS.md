@@ -82,6 +82,7 @@ is in each `manifest.json` and the long form of every note below is in
 
 - Graded by Minerva, not `math_verify`; Windows skips sympy.
 - Re-keyed by content; old composite misnamed 1,178 of 1,183.
+- Stops at `Problem:` alone, as lm-eval; the task's `\n\n` cut the answer off 40.9% of solutions.
 
 ## `ifeval`
 

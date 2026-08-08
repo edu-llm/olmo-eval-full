@@ -94,7 +94,7 @@
       "chat_format": false,
       "system_prompt_source": null,
       "stop_sequences": [],
-      "max_new_tokens": 1280,
+      "max_new_tokens": 1536,
       "max_length": null,
       "grader": "ifeval_prompt_strict"
     },

@@ -227,8 +227,79 @@ generative:
       # `Final Answer:` endings that the symbolic grader extracts; under gsm8k's
       # framing a model states its answer in prose and the grader finds nothing.
       prompt_style: leaderboard_math
-      max_new_tokens: 1024
-      stop_sequences: ["Problem:", "\n\n"]
+      # 2048 = the longest reference solution in this bank, 1,901 tokens, plus 7.7% and rounded up
+      # to a power of two. Derived 2026-08-08 from the 1,183 vendored items joined back to
+      # DigitalLearningGmbH/MATH-lighteval on problem text -- a 1,183 of 1,183 join -- and tokenized
+      # with HuggingFaceTB/SmolLM2-135M, the identifier .edullm/run.yaml names. Median 255, mean
+      # 329, p90 658, p99 1,151, max 1,901 at item 913cf4f81371230a, an intermediate_algebra Level-5
+      # proof seven times the median length.
+      #
+      # It is deliberately NOT derived from metadata["gold_answer"], which is where a reader looks
+      # first and is the wrong field. This bank's gold is the bare final answer -- "4.5",
+      # "\frac{2}{5}", 32 tokens at the longest, and \boxed appears in none of the 1,183 -- because
+      # process_doc extracted it before vendoring. A budget fit to that field would be 320 tokens
+      # under any sane headroom and would cut most responses off mid-derivation.
+      #
+      # Why not 1536, which the stop sequence would justify. ["Problem:", "\n\n"] ends a completion
+      # at the first blank line and 42.3% of these reference solutions contain one, so the longest
+      # text the grader can actually receive is 1,442 tokens. 2048 is set instead so this value does
+      # not depend on the line below it.
+      #
+      # Cost at the cacheless rate TORCH_TODOS.md measured, 31.25 ms/token: 64 s per item that never
+      # stops early, 42.7 minutes for a 40-item session against the 1h olmo-core-check bound.
+      # Realised cost is well under that. Do not round back to 1024 to reclaim the margin: 26 of the
+      # 1,183 references exceed 1024 and 5 of those are a single unbroken block, so the cut lands on
+      # correct answers rather than on run-on text.
+      #
+      # Amended 2026-08-08 in the same commit that changed the stop below. The third paragraph
+      # describes a stop sequence this file no longer sets, so read it as the derivation as it
+      # stood: with ["Problem:"] alone there is no 1,442-token ceiling and the grader can receive a
+      # whole 1,901-token solution. The paragraph's conclusion is unchanged and is now load-bearing
+      # rather than precautionary -- 2048 was chosen not to depend on the stop, and the stop moved.
+      # Nothing else in the derivation moves either: the cost figures are already per item that runs
+      # to the cap, and removing a stop can only add items that do.
+      max_new_tokens: 2048
+      # ["Problem:"] and not ["Problem:", "\n\n"]. Changed 2026-08-08. This diverges from the
+      # olmo-eval task named above, which sets ("Problem:", "\n\n"), and matches
+      # lm-evaluation-harness's leaderboard_math instead -- `until: ["Problem:"]`, do_sample false,
+      # temperature 0, max_gen_toks 1024. The bank settles which one to follow: these difficulties
+      # were harvested from Open LLM Leaderboard v2, which *is* that lm-eval task, so no model in
+      # the calibration population was ever cut at a blank line.
+      #
+      # The blank line was destroying answers rather than bounding them. MathLatexEquivalence
+      # grades through olmo_eval.evals.extract.math.extract_math_answer, and both of its extraction
+      # paths read the end of a solution: last_boxed_only_string does `string.rfind("\boxed")`, and
+      # get_unnormalized_answer matches the "Final Answer: The final answer is X" line that the
+      # Minerva block teaches as the last line. Cut at the first blank line and neither survives.
+      # Measured over the 1,324 Level-5 MATH-lighteval solutions this bank is drawn from: 594
+      # (44.9%) contain a blank line, and for 541 of them -- 40.9% of the bank -- truncation removes
+      # the boxed answer and the Final Answer line together. extract_math_answer then falls all the
+      # way through to normalizing the truncated derivation and returning that as the answer. A
+      # median 32.7% of the solution survives the cut and the worst case leaves 0.3%. The completion
+      # also trips the "no \boxed{} answer" warning, which reads as the prompt convention failing to
+      # take, so the harness's own truncation gets logged as the model's formatting failure.
+      #
+      # The run-on hazard the shared block above names is real, and "Problem:" alone covers it. The
+      # few-shot block teaches `Problem:` as the header of the next question, so a model that runs
+      # on into a hallucinated one emits it and is cut there, and "Problem:" appears in 0 of the
+      # 1,324 reference solutions -- unlike a blank line it cannot fire inside a legitimate answer.
+      # What it does not cover is a run-on that never emits the header, and that residual is the
+      # trade this line makes. The two sides are not symmetric. Losing the answer is a certain false
+      # negative on 40.9% of the bank; the run-on is a possible false positive, and a bounded one,
+      # because extract_math_answer puts the *first* Final Answer line in the candidate list --
+      # get_unnormalized_answer is a re.search -- and MathLatexEquivalence accepts any equivalent
+      # candidate. A run-on can add a spurious candidate; it cannot displace an answer the model
+      # already stated correctly.
+      #
+      # The exemplars point the other way and were checked, because they would have justified
+      # keeping the stop. None of the four solutions in olmo_eval's MINERVA_MATH_FIXED_FEWSHOT
+      # contains a blank line, so the prompt this harness sends does teach that one ends an answer.
+      # lm-eval's copy of the same four -- list_fewshot_samples() in leaderboard/math/utils.py -- is
+      # not de-blank-lined: its fourth solution has two, around the $$...$$ displays. So the
+      # leaderboard showed the calibration population a blank line mid-solution and did not stop on
+      # one, while olmo-eval removed them and did. Inheriting only olmo-eval's half of that pair is
+      # what made the stop look safe here.
+      stop_sequences: ["Problem:"]
 
     # Reproduces olmo-eval's ifeval task (src/olmo_eval/evals/tasks/ifeval.py), which
     # is the Open LLM Leaderboard v2 configuration.
@@ -264,7 +335,36 @@ generative:
       # the harvest is real; it is recorded in the bank's calibration note and in
       # calibrated_datasets/DEVIATIONS.md rather than absorbed silently into theta.
       chat_format: false
-      max_new_tokens: 1280
+      # 1536 = the largest output this bank explicitly asks for, plus a third. Derived 2026-08-08
+      # rather than inherited from lm-eval. IFEval carries no reference answer anywhere -- 0 of 511
+      # items have a gold_answer, and IFEvalPromptStrict grades from instruction_id_list and kwargs
+      # -- so there is no answer length to measure and the budget comes from what the items demand.
+      #
+      # 30 of the 511 name an explicit word count. The largest is
+      # length_constraints:number_words, num_words 900, relation "at least", on item
+      # 9baf1cb36bafc2bb. At 1.29 tokens per word that is 1,161 tokens, and 1536 is 1,161 x 1.32.
+      # The ratio is measured with HuggingFaceTB/SmolLM2-135M over two English-prose corpora that
+      # agree -- these 511 prompts give 1.285, the musr narratives 1.281 -- not assumed. It is an
+      # English number: 31 items demand a non-English response, where this tokenizer runs 5 to 25
+      # tokens per word, and none of those 31 states a word count so none of them sets this value.
+      #
+      # 1536 covers 510 of the 511. The exception is ab5ca590f2d20f37, which asks for at least 4
+      # sections and at least 100 sentences -- roughly 2,000 words, 2,580 tokens on the same ratio.
+      # Covering it needs 2688, which is 56 minutes of decode for a 40-item session against a 1h
+      # bound, so this bank cannot have both full coverage and the bound at max_items 40. If
+      # max_items ever drops, revisit: at the 8-item floor 2688 costs 11 minutes.
+      #
+      # This is the only generative bank that pays its full budget on every item, because
+      # stop_sequences below is [] and this checkpoint never emits eos (measured, probe
+      # run_019fe316-0e47; see TORCH_TODOS.md). So 48 s per item and 32 minutes for 40 items are
+      # realised figures, not worst cases.
+      #
+      # Not a percentile, and not a multiple of any measured length. 378 of the 511 items state no
+      # size constraint at all and need about 52 tokens, so the demand is bimodal -- median 52, max
+      # 2,580 -- and any single number here is wrong for most of the bank in one direction or the
+      # other. The fix is a per-item budget read off each item's own kwargs, which is code rather
+      # than config.
+      max_new_tokens: 1536
       # Deliberately empty. Every other generative bank here stops at a blank line
       # because its few-shot block teaches that as the boundary between questions.
       # IFEval has no few-shot block and asks for multi-paragraph answers, so that stop

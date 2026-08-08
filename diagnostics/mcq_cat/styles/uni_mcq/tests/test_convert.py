@@ -354,9 +354,7 @@ class TestThePrecisionTheSeamWritesAt:
         assert "converts nothing under --checkpoint-prep none" in caplog.text
         assert spy == []
 
-    def test_the_warning_does_not_claim_the_flag_is_dead(
-        self, tmp_path: Path, spy, caplog
-    ) -> None:
+    def test_the_warning_does_not_claim_the_flag_is_dead(self, tmp_path: Path, spy, caplog) -> None:
         """The native backend honours the precision, so "no effect" is now false.
 
         ``_OlmoCoreScoringModel`` passes ``InferenceConfig.dtype`` to

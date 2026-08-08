@@ -106,10 +106,9 @@
       "chat_format": false,
       "system_prompt_source": null,
       "stop_sequences": [
-        "Problem:",
-        "\n\n"
+        "Problem:"
       ],
-      "max_new_tokens": 1024,
+      "max_new_tokens": 2048,
       "max_length": null,
       "grader": "math_latex_equivalence"
     },

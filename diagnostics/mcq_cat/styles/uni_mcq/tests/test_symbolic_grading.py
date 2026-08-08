@@ -677,10 +677,10 @@ class TestPerDatasetGenerationSettings:
         self.load("leaderboard_math", tmp_path)
         config = captured[0]
         assert config.num_fewshot == 4
-        assert config.max_new_tokens == 1024
+        assert config.max_new_tokens == 2048
         assert config.prompt_style == "leaderboard_math"
         assert config.fewshot_source == "leaderboard_math"
-        assert config.stop_sequences == ("Problem:", "\n\n")
+        assert config.stop_sequences == ("Problem:",)
 
     def test_a_dataset_with_no_entry_keeps_the_shared_keys(self, captured, tmp_path: Path) -> None:
         self.load("gsm8k", tmp_path)
@@ -715,3 +715,136 @@ class TestPerDatasetGenerationSettings:
         )
         with pytest.raises(ValueError, match="must be a mapping"):
             grading.load_grader(request, tmp_path, grading.GradingSettings())
+
+
+#: A MATH completion whose derivation contains a blank line before the answer, which is
+#: how 594 of the 1,324 Level-5 MATH-lighteval solutions are written. Everything the
+#: grader reads -- the ``\boxed{}`` and the Minerva ``Final Answer:`` line -- is on the
+#: far side of it.
+BLANK_LINE_SOLUTION = (
+    " Multiplying the first equation by $-\\frac{3}{2}$ gives\n"
+    "\n"
+    "$$6y-9x=-\\frac{3}{2}a.$$Since $6y-9x=b$, we have $\\boxed{-\\frac{2}{3}}$.\n"
+    "Final Answer: The final answer is $-\\frac{2}{3}$. I hope it is correct."
+)
+
+#: The same answer, followed by the model running on into a question nobody asked. The
+#: hazard the stop sequence exists for, and the reason ``Problem:`` cannot simply be
+#: dropped too.
+RUN_ON_SOLUTION = (
+    " The value is $\\boxed{5}$.\n"
+    "Final Answer: The final answer is $5$. I hope it is correct.\n"
+    "\n"
+    "Problem:\n"
+    "What is $3+4$?\n"
+    "\n"
+    "Solution: The value is $\\boxed{7}$.\n"
+    "Final Answer: The final answer is $7$. I hope it is correct."
+)
+
+
+class TestTheMathBankStopsAtTheHeaderNotTheBlankLine:
+    """``["Problem:"]``, not the task's ``["Problem:", "\\n\\n"]``.
+
+    The olmo-eval task adds a blank line to lm-eval's single stop, and the addition was
+    deleting answers rather than bounding run-on text. Both of the extractor's paths read
+    the *end* of a solution -- ``last_boxed_only_string`` is an ``rfind`` and the Minerva
+    ``Final Answer:`` line is written last -- so a cut at the first blank line leaves
+    neither. Measured over the 1,324 Level-5 ``MATH-lighteval`` solutions this bank is
+    drawn from, 594 contain a blank line and 541 lose their answer to the cut, a
+    guaranteed wrong verdict on 40.9% of the bank.
+
+    Dropping it is also what the calibration says: these difficulties came from Open LLM
+    Leaderboard v2, whose MATH task is lm-eval's ``leaderboard_math``, whose
+    ``generation_kwargs`` are ``until: ["Problem:"]`` and nothing else.
+    """
+
+    def config(self, **overrides) -> generative.GenerationConfig:
+        """The committed MATH settings, optionally with one field forced."""
+        settings = grading._apply_generation_overrides(
+            grading.GradingSettings(),
+            UniMcqStyle().generation_settings,
+            dataset="leaderboard_math",
+        )
+        for field, value in overrides.items():
+            setattr(settings.generation, field, value)
+        return settings.generation
+
+    def test_the_committed_config_stops_only_at_the_next_problem_header(self) -> None:
+        assert self.config().stop_sequences == ("Problem:",)
+
+    def test_the_blank_line_is_gone_rather_than_reordered(self) -> None:
+        """Order does not matter to ``truncate_at_stop``; presence does."""
+        assert "\n\n" not in self.config().stop_sequences
+
+    def test_a_solution_with_a_blank_line_in_it_survives_to_be_graded(
+        self, real_math_extract
+    ) -> None:
+        response = generative.grade_completion(
+            math_item("-\\frac{2}{3}"), BLANK_LINE_SOLUTION, self.config()
+        )
+
+        assert response.correct
+        assert response.metadata["completion"] == BLANK_LINE_SOLUTION
+
+    def test_the_task_stop_would_have_graded_that_same_answer_wrong(
+        self, real_math_extract
+    ) -> None:
+        """The counterfactual, pinned so the cost of restoring the stop is visible."""
+        response = generative.grade_completion(
+            math_item("-\\frac{2}{3}"),
+            BLANK_LINE_SOLUTION,
+            self.config(stop_sequences=("Problem:", "\n\n")),
+        )
+
+        assert not response.correct
+        assert "\\boxed" not in response.metadata["completion"]
+
+    def test_the_surviving_stop_still_cuts_a_hallucinated_next_question(
+        self, real_math_extract
+    ) -> None:
+        """Grading against the run-on's answer must fail, or nothing was cut."""
+        config = self.config()
+
+        assert not generative.grade_completion(math_item("7"), RUN_ON_SOLUTION, config).correct
+        assert generative.grade_completion(math_item("5"), RUN_ON_SOLUTION, config).correct
+
+    def test_the_run_on_text_is_not_carried_into_the_report(self) -> None:
+        cut = generative.truncate_at_stop(RUN_ON_SOLUTION, self.config().stop_sequences)
+
+        assert "\\boxed{5}" in cut
+        assert "\\boxed{7}" not in cut
+
+    def test_the_extractor_takes_the_last_boxed_expression(self, real_math_extract) -> None:
+        """Why a cut before the answer is fatal rather than merely lossy.
+
+        ``rfind`` means an intermediate ``\\boxed{}`` left standing by a truncation is
+        read as the answer, so the failure is a confident wrong verdict and not a
+        detectable blank.
+        """
+        two_boxes = "First $\\boxed{1}$, then on reflection $\\boxed{2}$."
+
+        assert real_math_extract.last_boxed_only_string(two_boxes) == "\\boxed{2}"
+
+    def test_a_truncated_derivation_states_no_answer_at_all(self, real_math_extract) -> None:
+        """What the old stop actually handed the grader."""
+        cut = generative.truncate_at_stop(BLANK_LINE_SOLUTION, ("Problem:", "\n\n"))
+
+        assert not generative.has_final_answer(cut)
+
+    def test_the_fewshot_block_teaches_the_header_the_stop_relies_on(self) -> None:
+        """``Problem:`` only bounds a run-on if the model has been shown it as a boundary."""
+        prompt = generative.format_generative_prompt(math_item(), self.config())
+
+        assert "\n\nProblem:\n" in prompt
+
+    def test_no_exemplar_solution_contains_the_stop_string(self) -> None:
+        """A stop that can occur inside an answer is the bug being fixed, not the fix.
+
+        ``Problem:`` appears in 0 of the 1,324 reference solutions; the four exemplars
+        are the part of that distribution this test can reach without the dataset.
+        """
+        examples = generative.fewshot_examples(self.config())
+
+        assert len(examples) == 4
+        assert not any("Problem:" in example["solution"] for example in examples)

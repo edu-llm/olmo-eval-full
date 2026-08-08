@@ -555,9 +555,7 @@ class TestThePrecisionReachesTheLoader:
         config = inference.InferenceConfig(checkpoint_kind="olmo_core", **overrides)
         return load_scorer(monkeypatch, checkpoint, config=config).calls["from_checkpoint"]
 
-    def test_a_named_precision_is_passed_to_from_checkpoint(
-        self, monkeypatch, checkpoint
-    ) -> None:
+    def test_a_named_precision_is_passed_to_from_checkpoint(self, monkeypatch, checkpoint) -> None:
         assert self.loaded_kwargs(monkeypatch, checkpoint, dtype="bfloat16")["dtype"] == "bfloat16"
 
     def test_it_is_passed_as_the_plain_string_the_flag_carries(
@@ -582,7 +580,7 @@ class TestThePrecisionReachesTheLoader:
     def test_the_default_omits_the_kwarg_rather_than_naming_a_precision(
         self, monkeypatch, checkpoint
     ) -> None:
-        """"auto" means "no opinion", and an omitted kwarg is the only way to say it.
+        """ "auto" means "no opinion", and an omitted kwarg is the only way to say it.
 
         Passing ``dtype="auto"`` through would reach ``DType("auto")`` and raise, and
         defaulting the field to bfloat16 instead would silently recast every caller who
