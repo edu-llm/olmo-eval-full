@@ -28,6 +28,18 @@ The replayed final point is compared against the report's own ``ability.theta`` 
 trajectory whose endpoint does not land on the recorded estimate is a picture of some
 other session. See :data:`DEFAULT_TOLERANCE` for why the bar is set where it is.
 
+**It also refits MWLE, which costs nothing and is the point of doing this offline.**
+``--ability-estimator batch_eap+mwle`` changes what a *future* run publishes; every
+report already on disk was written under EAP. But MWLE is a pure function of the same
+``(responses, a, b, c)`` the trajectory is built from, so this script can say what it
+would have reported for a finished run without the checkpoint, the GPU or the network.
+:func:`refit_mwle` does that for every report replayed and :func:`print_estimators`
+prints the three thetas together. Unlike the trajectory it is one number per run and not
+a series: MWLE is applied once, over everything administered, and is not a running
+estimate. A run that *was* launched under MWLE additionally has its recorded estimate
+checked against the refit, which is :func:`verify_replay`'s guarantee extended to the
+estimator that produced its headline number.
+
 **The CSV is the artifact; the figures are a view of it.** ``cat_eval_tutorbench.py``
 builds ``se_trace`` and ``theta_trace``, draws the published SE reduction curve from
 them, and then drops both columns before writing its per-model CSV -- so the figure
@@ -66,7 +78,7 @@ import numpy as np
 
 from ....common.irt_params import load_irt_params
 from .. import resolve as resolve_mod
-from ..irt import eap_theta_se
+from ..irt import ESTIMATOR_BATCH_EAP, MwleResult, eap_theta_se, mwle_theta_se
 
 log = logging.getLogger("uni_mcq.replay")
 
@@ -123,6 +135,11 @@ DEFAULT_TOLERANCE = 1e-9
 #: standard-error figure's reference line is drawn at, and ``n_cross`` beside
 #: ``n_items_administered`` is the whole point of computing it, so a reader holding one
 #: row can see both without a second file.
+#: ``theta_mwle`` and ``mwle_ok`` join the run-level constants for the same reason
+#: ``n_cross`` is one: the number a reader wants beside the trajectory's endpoint is what
+#: the *other* estimator made of the same responses, and a second file to join against
+#: would mean nobody looks. There is no per-step MWLE column because there is no per-step
+#: MWLE -- it is a single refit over the whole administered set, not a running estimate.
 CSV_COLUMNS = (
     "report",
     "benchmark",
@@ -135,6 +152,8 @@ CSV_COLUMNS = (
     "se_threshold",
     "n_cross",
     "n_items_administered",
+    "theta_mwle",
+    "mwle_ok",
 )
 
 #: Stamped into both figure titles. ``CAT_METRICS.md`` records that the published
@@ -186,6 +205,14 @@ class ReplayedRun:
     recorded_se: float
     theta_delta: float
     se_delta: float
+    reported_estimator: str
+    mwle: MwleResult
+    mwle_delta: float | None
+
+    @property
+    def theta_batch(self) -> float:
+        """The batch EAP estimate, which is the verified endpoint of the trajectory."""
+        return self.final.theta
 
     @property
     def n_items(self) -> int:
@@ -424,6 +451,38 @@ def replay(
     return points
 
 
+def recorded_eap(path: Path, report: dict[str, Any]) -> tuple[float, float]:
+    """The report's own batch EAP endpoint, which is what a replay can reproduce.
+
+    Ordinarily that is ``ability``, because ``ability`` is the EAP estimate. A run
+    launched with ``--ability-estimator batch_eap+mwle`` publishes Warm's estimate there
+    instead, and Warm's estimate is not what running EAP over prefixes converges to -- so
+    checking the trajectory against it would reject every MWLE run as a bad
+    reconstruction. Those runs record the EAP endpoint separately, under
+    ``metadata.theta_batch``, and that is the number this returns for them.
+
+    Preferring the metadata pair whenever it exists rather than only when the estimator
+    says MWLE is deliberate: under ``batch_eap`` the two are the same float by
+    construction, so the choice cannot change a default run's outcome, and reading one
+    field instead of two removes the case where a report's estimator label and its
+    numbers disagree.
+
+    Raises:
+        ReplayError: If neither pair is two floats.
+    """
+    metadata = report.get("metadata") or {}
+    if metadata.get("theta_batch") is not None and metadata.get("se_batch") is not None:
+        try:
+            return float(metadata["theta_batch"]), float(metadata["se_batch"])
+        except (TypeError, ValueError) as exc:
+            raise ReplayError(f"{path}: metadata.theta_batch/se_batch are not two floats.") from exc
+    ability = report["ability"]
+    try:
+        return float(ability["theta"]), float(ability["standard_error"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ReplayError(f"{path}: ability.theta/standard_error are not two floats.") from exc
+
+
 def verify_replay(
     path: Path,
     trajectory: Sequence[TrajectoryPoint],
@@ -431,7 +490,7 @@ def verify_replay(
     *,
     tolerance: float,
 ) -> tuple[float, float, float, float]:
-    """Check the replayed endpoint against the report's own final estimate.
+    """Check the replayed endpoint against the report's own final EAP estimate.
 
     This is the property the rest of the script rests on. If it does not hold, the
     trajectory belongs to some other set of parameters or some other response order, and
@@ -445,13 +504,7 @@ def verify_replay(
     Raises:
         ReplayError: On any disagreement beyond ``tolerance``.
     """
-    ability = report["ability"]
-    try:
-        recorded_theta = float(ability["theta"])
-        recorded_se = float(ability["standard_error"])
-    except (KeyError, TypeError, ValueError) as exc:
-        raise ReplayError(f"{path}: ability.theta/standard_error are not two floats.") from exc
-
+    recorded_theta, recorded_se = recorded_eap(path, report)
     final = trajectory[-1]
     theta_delta = abs(final.theta - recorded_theta)
     se_delta = abs(final.se - recorded_se)
@@ -471,6 +524,62 @@ def verify_replay(
             f"ability estimated by something other than this style's EAP."
         )
     return recorded_theta, recorded_se, theta_delta, se_delta
+
+
+def refit_mwle(
+    outcomes: np.ndarray, arrays: tuple[np.ndarray, ...], theta_batch: float
+) -> MwleResult:
+    """Re-fit theta by MWLE over the whole administered set, offline.
+
+    The same call the style makes at report time, over the same inputs, so a report
+    written before ``--ability-estimator`` existed can still be told what MWLE would have
+    said about it. Free: no model, no GPU, no network -- the responses are in the report
+    and the parameters are in ``params.json``.
+
+    Unlike the trajectory this is a single number and not a series. MWLE is applied once,
+    at the end, to everything administered; there is no running MWLE to plot.
+    """
+    a, b, c = arrays
+    if outcomes.size == 0:
+        return MwleResult(theta_batch, float("inf"), False, "nothing was administered")
+    return mwle_theta_se(outcomes, a, b, c, theta0=theta_batch)
+
+
+def check_recorded_mwle(
+    path: Path, report: dict[str, Any], mwle: MwleResult, *, tolerance: float
+) -> float | None:
+    """Compare the offline MWLE refit against one the run itself recorded, if it did.
+
+    Only a run launched under ``batch_eap+mwle`` carries ``metadata.theta_mwle``, and for
+    those this is the same endpoint check :func:`verify_replay` performs on the EAP path,
+    on the estimator that actually produced their headline number. A report whose MWLE
+    was a fallback records the EAP value under that key and ``mwle_ok: false``, so it is
+    skipped -- there is no MWLE estimate in it to disagree with.
+
+    Returns:
+        The absolute disagreement, or ``None`` when there was nothing to compare.
+
+    Raises:
+        ReplayError: On a disagreement beyond ``tolerance``.
+    """
+    metadata = report.get("metadata") or {}
+    if not metadata.get("mwle_ok") or metadata.get("theta_mwle") is None:
+        return None
+    recorded = float(metadata["theta_mwle"])
+    if not mwle.converged:
+        raise ReplayError(
+            f"{path}: the report records a converged MWLE theta of {recorded!r}, but "
+            f"re-solving it here did not converge ({mwle.note}). The bank or the "
+            f"responses are not the ones that produced it."
+        )
+    delta = abs(mwle.theta - recorded)
+    if delta > tolerance:
+        raise ReplayError(
+            f"{path}: the MWLE refit does not reproduce the recorded one.\n"
+            f"    theta_mwle: recorded {recorded!r}, refitted {mwle.theta!r} "
+            f"(delta {delta:.3e}), tolerance {tolerance:.3e}."
+        )
+    return delta
 
 
 def first_crossing(trajectory: Sequence[TrajectoryPoint], threshold: float | None) -> int | None:
@@ -507,10 +616,17 @@ def replay_report(
     hash_note = check_bank_digest(params_path, metadata.get("bank_provenance") or {})
 
     ids, outcomes = response_sequence(report)
-    trajectory = replay(ids, outcomes, item_arrays(ids, params_path))
+    arrays = item_arrays(ids, params_path)
+    trajectory = replay(ids, outcomes, arrays)
     recorded_theta, recorded_se, theta_delta, se_delta = verify_replay(
         path, trajectory, report, tolerance=tolerance
     )
+
+    # After verification, not before: the refit is seeded at the trajectory's endpoint,
+    # and seeding it from an endpoint that has not been shown to be the run's own would
+    # be reporting an MWLE number for a session this replay does not describe.
+    mwle = refit_mwle(outcomes, arrays, trajectory[-1].theta)
+    mwle_delta = check_recorded_mwle(path, report, mwle, tolerance=tolerance)
 
     threshold = se_threshold if se_threshold is not None else settings.get("se_threshold")
     return ReplayedRun(
@@ -528,6 +644,9 @@ def replay_report(
         recorded_se=recorded_se,
         theta_delta=theta_delta,
         se_delta=se_delta,
+        reported_estimator=str(metadata.get("ability_estimator_reported") or ESTIMATOR_BATCH_EAP),
+        mwle=mwle,
+        mwle_delta=mwle_delta,
     )
 
 
@@ -556,6 +675,8 @@ def rows_for(run: ReplayedRun) -> list[dict[str, Any]]:
             "se_threshold": "" if run.se_threshold is None else run.se_threshold,
             "n_cross": "" if n_cross is None else n_cross,
             "n_items_administered": run.n_items,
+            "theta_mwle": run.mwle.theta if run.mwle.converged else "",
+            "mwle_ok": int(run.mwle.converged),
         }
         for point in run.trajectory
     ]
@@ -750,6 +871,50 @@ def render_figures(
 # -- reporting to the terminal ---------------------------------------------------
 
 
+def print_estimators(runs: Sequence[ReplayedRun]) -> None:
+    """Print the three thetas side by side, and how much shrinkage MWLE removed.
+
+    ``theta_online`` is the last sequential estimate and ``theta_batch`` the refit over
+    the same responses. On this style they are the same number -- ``estimate_ability``
+    already conditions on the whole administered set -- and the column is here so that
+    stays visible rather than assumed. The number worth reading is the last one: how far
+    dropping the prior moved theta away from zero, which is the compression the prior was
+    adding to every reported ability.
+    """
+    if not runs:
+        return
+    header = (
+        f"{'benchmark':<18} {'reported':>14} {'theta_online':>13} {'theta_batch':>12} "
+        f"{'theta_mwle':>11} {'shrinkage removed':>18}"
+    )
+    print()
+    print(header)
+    print("-" * len(header))
+    for run in runs:
+        batch = run.theta_batch
+        if run.mwle.converged:
+            mwle = f"{run.mwle.theta:.6f}"
+            removed = f"{abs(run.mwle.theta) - abs(batch):+.6f}"
+        else:
+            mwle = "-"
+            removed = "did not converge"
+        print(
+            f"{run.benchmark[:18]:<18} {run.reported_estimator:>14} "
+            f"{run.recorded_theta:>13.6f} {batch:>12.6f} {mwle:>11} {removed:>18}"
+        )
+    print(
+        "  theta_online is the run's own recorded EAP endpoint; theta_batch is this "
+        "replay's refit of it.\n"
+        "  'shrinkage removed' is |theta_mwle| - |theta_batch|: positive means MWLE "
+        "placed the checkpoint\n"
+        "  further from the prior mean than EAP did, which is the inward pull the prior "
+        "was contributing."
+    )
+    for run in runs:
+        if not run.mwle.converged:
+            print(f"  {run.benchmark}: MWLE did not converge -- {run.mwle.note}.")
+
+
 def print_summary(
     runs: Sequence[ReplayedRun],
     failures: Sequence[tuple[Path, str]],
@@ -787,6 +952,7 @@ def print_summary(
             f"error; the largest disagreement over {len(runs)} run(s) was {worst:.2e}, "
             f"against a tolerance of {tolerance:.0e}."
         )
+    print_estimators(runs)
     for run in runs:
         if run.n_cross is not None and run.n_cross < run.n_items:
             print(

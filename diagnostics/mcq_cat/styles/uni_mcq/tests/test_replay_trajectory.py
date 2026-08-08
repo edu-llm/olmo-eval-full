@@ -39,7 +39,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from ..irt import eap_theta_se
+from ..irt import eap_theta_se, mwle_theta_se
 from ..scripts import replay_trajectory as replay_mod
 from ..scripts.replay_trajectory import (
     DEFAULT_TOLERANCE,
@@ -582,6 +582,179 @@ def trace(errors: list[float]) -> list[replay_mod.TrajectoryPoint]:
     ]
 
 
+def make_mwle_report(root: Path, **kwargs: Any) -> tuple[Path, float, float]:
+    """A report as a run launched under ``batch_eap+mwle`` would have written it.
+
+    ``ability`` carries Warm's estimate, ``metadata.theta_batch`` carries the EAP one.
+    Both are computed here from the estimators themselves rather than written by hand,
+    so the fixture is a report those functions really produce.
+
+    Returns ``(path, theta_batch, theta_mwle)``.
+    """
+    a, b, c = bank_arrays(ORDER)
+    resp = np.asarray([1.0 if ok else 0.0 for ok in OUTCOMES], dtype=float)
+    theta_batch, se_batch = eap_theta_se(resp, a, b, c)
+    mwle = mwle_theta_se(resp, a, b, c, theta0=theta_batch)
+    assert mwle.converged, mwle.note
+
+    path = make_report(root, **kwargs)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["ability"] = {
+        "theta": mwle.theta,
+        "standard_error": mwle.standard_error,
+        "metadata": {},
+    }
+    payload["metadata"].update(
+        {
+            "theta": mwle.theta,
+            "standard_error": mwle.standard_error,
+            "ability_estimator": "batch_eap+mwle",
+            "ability_estimator_reported": "batch_eap+mwle",
+            "theta_online": theta_batch,
+            "se_online": se_batch,
+            "theta_batch": theta_batch,
+            "se_batch": se_batch,
+            "theta_mwle": mwle.theta,
+            "se_mwle": mwle.standard_error,
+            "mwle_ok": True,
+        }
+    )
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return path, theta_batch, mwle.theta
+
+
+class TestTheOfflineMwleRefit:
+    """What MWLE would have said about a run that was reported under EAP.
+
+    The point of doing this here rather than by re-running: every report already on disk
+    predates ``--ability-estimator``, and MWLE is a pure function of the responses and
+    the item parameters, both of which the report and the bank already hold. So the
+    comparison costs nothing -- no checkpoint, no GPU, no network -- and it is the only
+    way to price the toggle before paying for a run under it.
+    """
+
+    def test_it_reports_the_estimator_the_run_used(self, report: Path, bank_dir: Path) -> None:
+        """A report written before the flag existed carries no estimator field, and the
+        only estimator that existed then was EAP."""
+        assert replay_one(report, bank_dir).reported_estimator == "batch_eap"
+
+    def test_the_refit_is_the_estimator_over_the_same_inputs(
+        self, report: Path, bank_dir: Path
+    ) -> None:
+        a, b, c = bank_arrays(ORDER)
+        resp = np.asarray([1.0 if ok else 0.0 for ok in OUTCOMES], dtype=float)
+        run = replay_one(report, bank_dir)
+
+        expected = mwle_theta_se(resp, a, b, c, theta0=run.theta_batch)
+
+        assert run.mwle.converged
+        assert run.mwle.theta == expected.theta
+
+    def test_theta_batch_is_the_verified_endpoint(self, report: Path, bank_dir: Path) -> None:
+        run = replay_one(report, bank_dir)
+
+        assert run.theta_batch == run.final.theta
+        assert run.theta_batch == run.recorded_theta
+
+    def test_a_session_that_administered_nothing_has_no_mwle_estimate(
+        self, tmp_path: Path, bank_dir: Path
+    ) -> None:
+        run = replay_one(make_report(tmp_path / "empty", order=[], outcomes=[]), bank_dir)
+
+        assert run.mwle.converged is False
+        assert "nothing was administered" in run.mwle.note
+
+    def test_the_refit_is_seeded_at_the_verified_endpoint(
+        self, report: Path, bank_dir: Path
+    ) -> None:
+        """Not at the report's ``ability``, which under MWLE is Warm's estimate and not
+        an EAP one. Seeding cannot move the answer, but seeding from an unverified number
+        would mean the refit described a session the replay had not checked."""
+        run = replay_one(report, bank_dir)
+        a, b, c = bank_arrays(ORDER)
+        resp = np.asarray([1.0 if ok else 0.0 for ok in OUTCOMES], dtype=float)
+
+        assert run.mwle.theta == pytest.approx(
+            mwle_theta_se(resp, a, b, c, theta0=-3.0).theta, abs=1e-9
+        )
+
+
+class TestReplayingAnMwleRun:
+    """A report whose headline number is Warm's, not EAP's.
+
+    Verification has to compare like with like. EAP over prefixes converges to the EAP
+    endpoint, so checking it against a published MWLE theta would reject every such run
+    as a bad reconstruction -- the reports record the EAP endpoint separately for exactly
+    this reason.
+    """
+
+    def test_it_verifies_against_the_recorded_batch_eap(
+        self, tmp_path: Path, bank_dir: Path
+    ) -> None:
+        path, theta_batch, theta_mwle = make_mwle_report(tmp_path / "mwle")
+
+        run = replay_one(path, bank_dir)
+
+        assert theta_mwle != pytest.approx(theta_batch, abs=1e-6)
+        assert run.recorded_theta == theta_batch
+        assert run.theta_delta == 0.0
+        assert run.reported_estimator == "batch_eap+mwle"
+
+    def test_the_recorded_mwle_is_checked_against_the_refit(
+        self, tmp_path: Path, bank_dir: Path
+    ) -> None:
+        path, _, theta_mwle = make_mwle_report(tmp_path / "mwle")
+
+        run = replay_one(path, bank_dir)
+
+        assert run.mwle.theta == theta_mwle
+        assert run.mwle_delta == 0.0
+
+    def test_a_recorded_mwle_that_does_not_reproduce_is_refused(
+        self, tmp_path: Path, bank_dir: Path
+    ) -> None:
+        """The same guard :func:`verify_replay` applies to the EAP path, applied to the
+        estimator that actually produced this run's published number."""
+        path, _, theta_mwle = make_mwle_report(tmp_path / "mwle")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["metadata"]["theta_mwle"] = theta_mwle + 0.25
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+        with pytest.raises(ReplayError, match="does not reproduce the recorded one"):
+            replay_one(path, bank_dir)
+
+    def test_a_fallback_report_is_not_cross_checked(self, tmp_path: Path, bank_dir: Path) -> None:
+        """``mwle_ok: false`` means ``theta_mwle`` holds the EAP value the run fell back
+        to, so there is no MWLE estimate in it for the refit to disagree with."""
+        path, theta_batch, _ = make_mwle_report(tmp_path / "fallback")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["ability"] = {
+            "theta": theta_batch,
+            "standard_error": payload["metadata"]["se_batch"],
+            "metadata": {},
+        }
+        payload["metadata"]["mwle_ok"] = False
+        payload["metadata"]["theta_mwle"] = theta_batch
+        payload["metadata"]["ability_estimator_reported"] = "batch_eap"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+        run = replay_one(path, bank_dir)
+
+        assert run.mwle_delta is None
+        assert run.mwle.converged is True
+        assert run.reported_estimator == "batch_eap"
+
+    def test_a_moved_batch_eap_is_still_caught(self, tmp_path: Path, bank_dir: Path) -> None:
+        """Preferring the metadata pair must not weaken the endpoint check."""
+        path, _, _ = make_mwle_report(tmp_path / "mwle")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["metadata"]["theta_batch"] += 1e-6
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+        with pytest.raises(ReplayError, match="does not reproduce the recorded final"):
+            replay_one(path, bank_dir)
+
+
 class TestTheCsv:
     """The primary artifact. Figures are optional; this is not."""
 
@@ -623,6 +796,25 @@ class TestTheCsv:
         assert {row["se_threshold"] for row in rows} == {"0.3"}
         assert {row["benchmark"] for row in rows} == {"toy_bank"}
         assert {row["checkpoint"] for row in rows} == {"s3://bucket/run/step_1000"}
+
+    def test_the_mwle_refit_is_carried_on_every_row(self, tmp_path: Path, bank_dir: Path) -> None:
+        """One number per run, denormalized like ``n_cross``: there is no per-step MWLE
+        to plot, and a second file to join against would mean nobody reads it."""
+        rows = read_csv(run_cli(tmp_path, bank_dir))
+        expected = replay_one(tmp_path / "results" / "cat_report.json", bank_dir)
+
+        assert {row["mwle_ok"] for row in rows} == {"1"}
+        assert {float(row["theta_mwle"]) for row in rows} == {expected.mwle.theta}
+
+    def test_a_run_with_no_mwle_estimate_leaves_the_column_empty(
+        self, tmp_path: Path, bank_dir: Path
+    ) -> None:
+        """Empty rather than the EAP value it fell back to, which would read as an MWLE
+        number that happened to agree."""
+        rows = read_csv(run_cli(tmp_path, bank_dir, order=[], outcomes=[]))
+
+        assert {row["theta_mwle"] for row in rows} == {""}
+        assert {row["mwle_ok"] for row in rows} == {"0"}
 
 
 class TestSeveralReports:

@@ -49,7 +49,17 @@ from ...common.irt_params import load_irt_params
 from . import convention
 from . import resolve as resolve_mod
 from .datasets import MODALITIES
-from .irt import eap_theta_se, fisher_info
+from .irt import (
+    ESTIMATOR_BATCH_EAP,
+    ESTIMATOR_BATCH_EAP_MWLE,
+    ESTIMATORS,
+    MWLE_BOUND,
+    MWLE_RIDGE,
+    MwleResult,
+    eap_theta_se,
+    fisher_info,
+    mwle_theta_se,
+)
 from .pirt import observed_accuracy, pirt_accuracy
 
 log = logging.getLogger("mcq_cat.uni_mcq")
@@ -124,6 +134,19 @@ NO_GRADER_NOTE = "graded by whichever grader each item's answer_type names"
 #: means something systematic, and the cost of saying so on a run that was merely
 #: unlucky is a field in a report.
 UNGRADABLE_ALERT_RATE = 0.2
+
+#: Said in the report, not only in the log, when MWLE was asked for and did not converge.
+#:
+#: A fallback that only logged would be invisible in the artifact, and the artifact is
+#: what gets compared across checkpoints. ``theta_mwle`` equals ``theta_batch`` on a
+#: fallback -- that is what the solver hands back -- so nothing about the numbers
+#: distinguishes a fallback from an MWLE estimate that happened to land on the EAP value.
+MWLE_FALLBACK_ALERT = (
+    "{estimator} was requested but MWLE did not converge: {note}. The reported theta is "
+    "the batch EAP estimate instead, so it carries the prior shrinkage MWLE exists to "
+    "remove and is NOT comparable with a run that reports a converged MWLE. "
+    "ability_estimator_reported records what was actually used."
+)
 
 
 def _scoring_note(
@@ -224,6 +247,12 @@ class UniMcqStyle(CatStyle):
         self.generation_settings: dict[str, Any] = dict(config.get("generative") or {})
         self.mcq_settings: dict[str, Any] = dict(config.get("mcq") or {})
 
+        # Which estimator's answer :meth:`report` publishes. Not read from config.yaml:
+        # this changes the meaning of the headline number, so it belongs on the command
+        # line where the run's own record of itself will show it, alongside se_threshold
+        # and max_items and for the same reason.
+        self.ability_estimator: str = ESTIMATOR_BATCH_EAP
+
         self._resolved: resolve_mod.ResolvedBank | None = None
         self._items: dict[str, BenchmarkItem] = {}
         self._order: list[str] = []
@@ -231,6 +260,29 @@ class UniMcqStyle(CatStyle):
         self._a: np.ndarray | None = None
         self._b: np.ndarray | None = None
         self._c: np.ndarray | None = None
+
+    def set_ability_estimator(self, name: str) -> None:
+        """Choose which estimator :meth:`report` publishes as ``ability``.
+
+        Item selection is unaffected in every mode -- it conditions on the sequential
+        estimate :meth:`estimate_ability` returns, which this does not touch. Only the
+        final number changes.
+
+        The runner calls this by duck typing rather than through
+        :class:`~diagnostics.mcq_cat.base.CatStyle`, so a style with one estimator needs
+        no opinion about estimators and ``base.py`` stays frozen.
+
+        Raises:
+            ValueError: On a name outside :data:`~.irt.ESTIMATORS`. The runner's argparse
+                choices already reject those, so this catches a programmatic caller
+                rather than a typo at the shell -- and silently keeping the default would
+                publish a shrunk theta under a flag that asked for an unshrunk one.
+        """
+        if name not in ESTIMATORS:
+            raise ValueError(
+                f"Unknown ability estimator {name!r}. Known estimators: {', '.join(ESTIMATORS)}."
+            )
+        self.ability_estimator = name
 
     # -- loading -----------------------------------------------------------------
 
@@ -487,6 +539,25 @@ class UniMcqStyle(CatStyle):
 
         EAP is memoryless: it conditions on the full response pattern each time, so
         ``previous`` is not needed and is accepted only to satisfy the interface.
+
+        **This is the online estimate, and it is what item selection conditions on.** It
+        is unaffected by ``--ability-estimator``: a run that reports MWLE administered
+        exactly the items an EAP-reported run would have, because the selector reads
+        ``state.ability`` and the engine fills that from here after every response.
+        Changing what selection sees would make two estimators incomparable on the very
+        thing the toggle exists to compare.
+        """
+        return self._eap(responses)
+
+    def _eap(self, responses: Sequence[ItemResponse]) -> AbilityEstimate:
+        """EAP over ``responses``, which is both the online update and the batch refit.
+
+        One function for both because on this style they are the same computation.
+        ``estimate_ability`` already conditions on the whole administered set rather than
+        accumulating, so the last online estimate *is* the batch estimate -- the "batch
+        EAP" of the recovered spec is a no-op relative to production here, where in the
+        eduLLM-Evals harness it replaced a sequential one-step Laplace update and was
+        worth a slope of 0.591 -> 0.694 on its own.
         """
         if not responses:
             return AbilityEstimate(theta=0.0, standard_error=1.0)
@@ -496,6 +567,19 @@ class UniMcqStyle(CatStyle):
         observed = np.asarray([1.0 if r.correct else 0.0 for r in responses], dtype=float)
         theta, se = eap_theta_se(observed, a[selected], b[selected], c[selected])
         return AbilityEstimate(theta=theta, standard_error=se)
+
+    def _mwle(self, responses: Sequence[ItemResponse], theta0: float) -> MwleResult:
+        """Refit theta by MWLE over the full administered set, seeded at ``theta0``.
+
+        Applied once, at report time, over everything the session administered -- not as
+        a running estimate. ``theta0`` is the batch EAP answer and is only a starting
+        point for the root find; MWLE re-derives theta from the raw responses and the
+        item parameters and consumes neither the online estimate nor the prior.
+        """
+        a, b, c = self._arrays()
+        selected = np.asarray([self._index[r.item_id] for r in responses], dtype=int)
+        observed = np.asarray([1.0 if r.correct else 0.0 for r in responses], dtype=float)
+        return mwle_theta_se(observed, a[selected], b[selected], c[selected], theta0=theta0)
 
     def select_next_item(self, bank: IRTBank, state: CATState) -> str | None:
         """Return the unused item with maximum Fisher information at the current theta.
@@ -540,7 +624,7 @@ class UniMcqStyle(CatStyle):
         Only a bank that has one gets the key, so no other report changes shape.
         """
         a, b, c = self._arrays()
-        ability = state.ability or AbilityEstimate(theta=0.0, standard_error=1.0)
+        ability, estimates = self._final_ability(state)
         theta = float(ability.theta)
 
         order = [self._index[r.item_id] for r in state.administered]
@@ -571,6 +655,7 @@ class UniMcqStyle(CatStyle):
             "fit_family": self._resolved.fit_family if self._resolved else "unknown",
             "theta": theta,
             "standard_error": float(ability.standard_error),
+            **estimates,
             "pirt_accuracy": predicted,
             "observed_accuracy": observed,
             "pirt_accuracy_denominator": (
@@ -618,6 +703,72 @@ class UniMcqStyle(CatStyle):
             responses=tuple(state.administered),
             metadata=metadata,
         )
+
+    def _final_ability(self, state: CATState) -> tuple[AbilityEstimate, dict[str, Any]]:
+        """Return the ability to publish and every estimator's answer for the record.
+
+        Both estimators re-fit over the *whole* administered set; neither replays the
+        session. ``theta_online`` and ``theta_batch`` are recorded whichever estimator
+        was asked for, so a run reported under one is still comparable with a run
+        reported under the other -- which is the only reason a toggle like this is safe
+        to have. ``theta_mwle`` appears only when MWLE was asked for, because otherwise
+        its absence and a converged value are the two honest states and a number nobody
+        requested is neither.
+
+        On this style ``theta_online`` and ``theta_batch`` are the same float, and that
+        is a fact worth recording rather than a redundancy worth removing: it is what
+        says the online estimator here never accumulated, so the order-invariance that
+        batch EAP buys elsewhere was already free. If the two ever diverge, the estimator
+        stopped being memoryless and the report will show it.
+        """
+        online = state.ability or AbilityEstimate(theta=0.0, standard_error=1.0)
+        batch = self._eap(state.administered)
+
+        fields: dict[str, Any] = {
+            "ability_estimator": self.ability_estimator,
+            "ability_estimator_reported": self.ability_estimator,
+            "theta_online": float(online.theta),
+            "se_online": float(online.standard_error),
+            "theta_batch": float(batch.theta),
+            "se_batch": float(batch.standard_error),
+        }
+        if self.ability_estimator != ESTIMATOR_BATCH_EAP_MWLE:
+            return batch, fields
+
+        mwle = (
+            self._mwle(state.administered, float(batch.theta))
+            if state.administered
+            else MwleResult(float(batch.theta), float("inf"), False, "nothing was administered")
+        )
+        fields.update(
+            {
+                "theta_mwle": float(mwle.theta),
+                "se_mwle": float(mwle.standard_error) if np.isfinite(mwle.standard_error) else None,
+                "mwle_ok": bool(mwle.converged),
+                "mwle_settings": {"ridge": MWLE_RIDGE, "bound": MWLE_BOUND},
+                "se_mwle_definition": (
+                    "1/sqrt(I(theta)) over the administered items -- the asymptotic "
+                    "standard error of a likelihood estimate, not a posterior standard "
+                    "deviation. se_batch is the latter. The two are not on one scale and "
+                    "the se_threshold stopping rule was applied to se_online, which is a "
+                    "posterior SD, so a run reported under MWLE stopped on EAP precision."
+                ),
+            }
+        )
+        if mwle.converged:
+            return AbilityEstimate(theta=mwle.theta, standard_error=mwle.standard_error), fields
+
+        fields["ability_estimator_reported"] = ESTIMATOR_BATCH_EAP
+        fields["mwle_fallback"] = MWLE_FALLBACK_ALERT.format(
+            estimator=ESTIMATOR_BATCH_EAP_MWLE, note=mwle.note
+        )
+        log.error(
+            "MWLE did not converge (%s). Falling back to batch EAP: reporting theta=%r "
+            "instead of an MWLE estimate. See the report's mwle_fallback.",
+            mwle.note,
+            float(batch.theta),
+        )
+        return batch, fields
 
     def _ungradable_block(self, state: CATState) -> dict[str, Any]:
         """Account for the administered items that produced no outcome of their own.

@@ -35,6 +35,20 @@ logging.basicConfig(
 )
 log = logging.getLogger("mcq_cat.runner")
 
+#: What ``--ability-estimator`` accepts, and which value is the default.
+#:
+#: Spelled here rather than imported because this module resolves *any* registered style
+#: and must not depend on one. ``uni_mcq`` owns the implementations and its own copy of
+#: these names in ``styles/uni_mcq/irt.py``; ``tests/test_ability_estimator.py`` pins the
+#: two lists equal, so the vocabulary cannot drift without a failure.
+#:
+#: Only the reported number moves. Item selection conditions on the sequential estimate
+#: in every mode, so two runs of one checkpoint under the two values administer the same
+#: items in the same order and differ only in which refit of that response set is
+#: published.
+ABILITY_ESTIMATORS = ("batch_eap", "batch_eap+mwle")
+DEFAULT_ABILITY_ESTIMATOR = ABILITY_ESTIMATORS[0]
+
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the runner's argument parser."""
@@ -58,6 +72,20 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=40,
         help="Maximum number of items to administer (default: 40).",
+    )
+    parser.add_argument(
+        "--ability-estimator",
+        default=DEFAULT_ABILITY_ESTIMATOR,
+        choices=list(ABILITY_ESTIMATORS),
+        help=(
+            "Which re-fit over the administered responses is reported as ability.theta. "
+            f"'{ABILITY_ESTIMATORS[0]}' (default) publishes the EAP posterior mean, which "
+            f"is what every run so far reported. '{ABILITY_ESTIMATORS[1]}' publishes "
+            "Warm's weighted likelihood estimate seeded at that EAP value, which drops "
+            "the standard-normal prior and so removes its inward pull at the tails. "
+            "Selection is identical either way, and both thetas are recorded in the "
+            "report whichever is asked for."
+        ),
     )
     parser.add_argument(
         "--checkpoint-kind",
@@ -104,6 +132,38 @@ def build_parser() -> argparse.ArgumentParser:
         help="Resolve the style and print the plan without loading the model.",
     )
     return parser
+
+
+def _apply_ability_estimator(style: object, estimator: str) -> bool:
+    """Tell ``style`` which estimator to report, and say so when it cannot be told.
+
+    Duck-typed rather than added to :class:`~diagnostics.mcq_cat.base.CatStyle`, which is
+    the frozen contract every style implements: an estimator choice is not something a
+    style with one estimator should have to answer, and the runner already reads
+    ``tokenizer_defaults`` off a model the same way, for the same reason.
+
+    A style that does not implement the seam is fine at the default and refused
+    otherwise. Accepting the flag and ignoring it would publish a shrunk EAP theta out of
+    a run whose command line asked for an unshrunk MWLE one, which is exactly the class
+    of silent mismatch this file's other pre-flight checks exist to prevent.
+
+    Returns:
+        ``True`` when the run may continue.
+    """
+    setter = getattr(style, "set_ability_estimator", None)
+    if callable(setter):
+        setter(estimator)
+        return True
+    if estimator == DEFAULT_ABILITY_ESTIMATOR:
+        return True
+    log.error(
+        "--ability-estimator %s was requested but style %r does not implement one. "
+        "Only %s is available for it.",
+        estimator,
+        getattr(style, "name", type(style).__name__),
+        DEFAULT_ABILITY_ESTIMATOR,
+    )
+    return False
 
 
 def _write_report(report_dict: dict, args: argparse.Namespace) -> str:
@@ -155,10 +215,13 @@ def run(args: argparse.Namespace) -> int:
     style = registry.get_cat(args.cat_style)
     benchmark = args.benchmark or ""
 
+    if not _apply_ability_estimator(style, args.ability_estimator):
+        return 2
+
     if args.dry_run:
         log.info(
             "[dry-run] style=%s benchmark=%s checkpoint=%s kind=%s prep=%s dtype=%s "
-            "se_threshold=%.3f max_items=%d -> %s",
+            "se_threshold=%.3f max_items=%d estimator=%s -> %s",
             args.cat_style,
             benchmark or "<unset>",
             args.checkpoint,
@@ -167,6 +230,7 @@ def run(args: argparse.Namespace) -> int:
             args.dtype,
             args.se_threshold,
             args.max_items,
+            args.ability_estimator,
             args.s3_out,
         )
         return 0
@@ -230,6 +294,7 @@ def run(args: argparse.Namespace) -> int:
         "checkpoint_kind": args.checkpoint_kind,
         "checkpoint_prep": args.checkpoint_prep,
         "dtype": args.dtype,
+        "ability_estimator": args.ability_estimator,
         "modality": request.modality,
         "grader": grading.get_grader(request.modality).summary,
         "timestamp": datetime.now(UTC).isoformat(),
