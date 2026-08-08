@@ -1,0 +1,131 @@
+{
+  "generated_at": "2026-08-08T16:06:22.487666+00:00",
+  "status": "STUDY / reporting only - LOCAL; production engine (tutor_cat/, scripts/scenario_cat_lib.py) untouched; consolidated into eduLLM-Evals/infobench_calibration/ (canonical unidim @ floor 15 / SE_post 0.25).",
+  "benchmark": "InfoBench",
+  "scale": "unidimensional (instruction_following ability)",
+  "op_point": {
+    "floor_min_scenarios": 15,
+    "se_ability_target": 0.25,
+    "reach_rule": "SE_post (EAP posterior SD at stop) <= target ONLY",
+    "stop": "dense 801-node normal_trapezoid EAP posterior-SD; plateau delta=0.005/W=3; cap 70; MWLE theta at stop",
+    "oos": "k=5, seed 20260729, per-fold refit (log-shrinkage-2PL lambda16, 401-node)",
+    "se_total": "sqrt(SE_post^2 + SE_param^2); SE_param = sound observed-info parametric bootstrap (CAT-admin median ~0.084), NOT the stale ~0.19"
+  },
+  "weak_models": [
+    "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+    "BEE-spoke-data/smol_llama-220M-openhermes",
+    "ai-forever/mGPT",
+    "allenai/OLMo-1B-hf"
+  ],
+  "headline_all_52": {
+    "n_models": 52,
+    "length_mean": 17.81,
+    "length_sd": 3.16,
+    "length_median": 17.0,
+    "length_max": 26.0,
+    "n_overran_floor": 31,
+    "pct_reach_se_post": 78.8,
+    "se_post_mean": 0.2553,
+    "se_post_sd": 0.0511,
+    "se_post_median": 0.2451,
+    "se_total_mean": 0.2761,
+    "se_total_sd": 0.0632,
+    "se_total_median": 0.259,
+    "recovery_r": 0.9775,
+    "recovery_slope": 1.1403,
+    "theta_mae": 0.5073
+  },
+  "headline_excl_weak": {
+    "n_models": 48,
+    "length_mean": 17.73,
+    "length_sd": 3.26,
+    "length_median": 17.0,
+    "length_max": 26.0,
+    "n_overran_floor": 27,
+    "pct_reach_se_post": 85.4,
+    "se_post_mean": 0.2423,
+    "se_post_sd": 0.0218,
+    "se_post_median": 0.243,
+    "se_total_mean": 0.2597,
+    "se_total_sd": 0.0238,
+    "se_total_median": 0.258,
+    "recovery_r": 0.9718,
+    "recovery_slope": 1.0699,
+    "theta_mae": 0.4302
+  },
+  "recovery": {
+    "op_point": {
+      "floor": 15,
+      "se_target": 0.25
+    },
+    "headline_excl_weak": {
+      "n": 48,
+      "r": 0.9718,
+      "slope": 1.0699,
+      "intercept": 0.0232,
+      "theta_mae": 0.4302
+    },
+    "all_52": {
+      "n": 52,
+      "r": 0.9775,
+      "slope": 1.1403,
+      "intercept": -0.0525,
+      "theta_mae": 0.5073
+    },
+    "note": "slope>1 => mild scale EXPANSION (opposite of TutorEval's compression)."
+  },
+  "se_components": {
+    "mean_se_post": 0.2423,
+    "sd_se_post": 0.0218,
+    "median_se_post": 0.243,
+    "mean_se_total": 0.2597,
+    "sd_se_total": 0.0238,
+    "median_se_total": 0.258,
+    "median_se_param": 0.0853
+  },
+  "leaderboard": {
+    "top_headline": {
+      "model": "meta-llama/Llama-3.2-3B-Instruct",
+      "theta": 3.764,
+      "se_total": 0.277
+    },
+    "bottom_headline": {
+      "model": "HuggingFaceTB/SmolLM2-360M",
+      "theta": -3.896,
+      "se_total": 0.315
+    }
+  },
+  "pirt": {
+    "op_point": {
+      "floor": 15,
+      "se_target": 0.25
+    },
+    "headline_excl_weak": {
+      "n": 48,
+      "pass_rate_mae": 0.0499,
+      "r": 0.9727
+    },
+    "all_52": {
+      "n": 52,
+      "pass_rate_mae": 0.0469,
+      "r": 0.9775
+    }
+  },
+  "efficiency": {
+    "op_point": {
+      "floor": 15,
+      "se_target": 0.25
+    },
+    "n_held_out_traces": 52,
+    "adaptive_reach_scenarios": 17,
+    "random_reach_scenarios": 30,
+    "scenario_savings_x": 1.76
+  },
+  "figures": {
+    "05_oos_recovery": "experiments/05_oos_recovery/oos_recovery_ability_f15se25.png",
+    "04_efficiency_vs_random": "experiments/04_efficiency_vs_random/adaptive_vs_random_efficiency_f15se25.png",
+    "08_leaderboard": "experiments/08_leaderboard/leaderboard_f15se25.png",
+    "09_pirt_mae": "experiments/09_pirt_mae/pirt_pred_vs_actual_f15se25.png",
+    "07_parameter_uncertainty": "experiments/07_parameter_uncertainty/se_ability_vs_total_bars_f15se25.png"
+  }
+}

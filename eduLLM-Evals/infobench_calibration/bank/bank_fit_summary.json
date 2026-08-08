@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-08-08T00:00:00+00:00",
+  "status": "STUDY ONLY - local; production engine (tutor_cat/, scripts/scenario_cat_lib.py) untouched; nothing committed.",
+  "benchmark": "InFoBench",
+  "scale": "unidimensional 2PL (single latent 'instruction_following')",
+  "latent_structure": {
+    "name": "overall_1d",
+    "dimension_label": "instruction_following",
+    "source_skills": ["content", "format", "number", "style", "linguistic"],
+    "q_modeled": { "instruction_following": 1 }
+  },
+  "bank_representation": {
+    "note": "InfoBench has NO persisted per-item fitted-param jsonl. The of-record OOS grid refits the log-shrinkage-2PL bank on-the-fly from the frozen response matrix (per-fold for OOS; full-data for the sound SE_param). The 'bank' shipped here is therefore the exact calibration INPUT the grid consumed, not an exported param file. To materialise deployment params, re-run scripts/run_oos_grid.py (which fits with the config below).",
+    "calibration_input_matrix": "response_matrix.csv",
+    "judge_manifest": "judge_manifest.json"
+  },
+  "matrix": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+  "matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+  "judge_manifest_sha256": "d2f19c55b8ebb8f3ebe0c641485e0b694ce861f2740835da760b7b51b40698e7",
+  "rubrics_source": "data/InFoBench/rubrics.jsonl",
+  "rubrics_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+  "scenarios_source": "data/InFoBench/scenarios.jsonl",
+  "scenarios_sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b",
+  "config_source": "configs/infobench_calibration_cat_2pl_only_v1.json (spec log_shrinkage_2pl_lambda16)",
+  "cohort": {
+    "n_models": 52,
+    "model_families": 22,
+    "source_scenarios": 500,
+    "source_criteria": 2250,
+    "matrix_fill": 0.9997692307692307,
+    "judge": "frozen Qwen zero-shot binary labels (Qwen/Qwen3.5-9B, prompt judge-validation-v3)"
+  },
+  "fit_config": {
+    "fitter": "scripts/calibrate_mirt.fit_m2pl_em (1 dim)",
+    "family": "log-shrinkage-2pl",
+    "spec_id": "log_shrinkage_2pl_lambda16",
+    "log_a_shrinkage": 16.0,
+    "log_a_prior_sd": 0.25,
+    "fit_grid": 401,
+    "fit_grid_comparator": 801,
+    "fit_quadrature": "normal_trapezoid",
+    "linear_bound": 8.0,
+    "convergence_mode": "returned_iterate",
+    "max_iter": 200,
+    "objective_tol": 1e-4,
+    "parameter_tol": 5e-5,
+    "consecutive_convergence_passes": 2,
+    "export_max_a": 6.0,
+    "negative_loading_policy": "drop nonpositive / a>6 at export"
+  },
+  "fit_result": {
+    "loglik_note": "The of-record grid does NOT persist a single full-data log-likelihood; it refits per fold under returned_iterate convergence (parameter_tol 5e-5). For provenance, the 5 OOS folds ran to max_iter=200 (returned-iterate stop), keeping n_kept in [2088, 2101] variant items each; the full-data SE_param free-2PL fit kept n_items=2096. Re-run scripts/run_oos_grid.py to reproduce; the objective is available from calibrate_mirt at fit time.",
+    "n_kept_items_per_fold": { "0": 2088, "1": 2101, "2": 2096, "3": 2101, "4": 2088 }
+  },
+  "se_param_note": "SE_total = sqrt(SE_post^2 + SE_param^2). SE_param is the SOUND observed-information parametric bootstrap (full-data, reused across folds; CAT-admin median ~0.085, full-admin floor median ~0.041). This SUPERSEDES the earlier teammate ~0.19 from the STALE nonparametric person-resample-refit script scripts/scenario_param_uncertainty.py (see README 'SE_param correction').",
+  "flags": ["low_n", "no_persisted_param_bank"],
+  "identifiability_caveat": "N=52 persons < min_persons_identifiable=150; multi-dim loadings are unstable at this sample size, which is why the canonical InfoBench scale is UNIDIMENSIONAL (instruction_following)."
+}

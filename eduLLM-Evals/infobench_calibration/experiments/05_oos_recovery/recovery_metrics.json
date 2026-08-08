@@ -1,0 +1,21 @@
+{
+  "op_point": {
+    "floor": 15,
+    "se_target": 0.25
+  },
+  "headline_excl_weak": {
+    "n": 48,
+    "r": 0.9718,
+    "slope": 1.0699,
+    "intercept": 0.0232,
+    "theta_mae": 0.4302
+  },
+  "all_52": {
+    "n": 52,
+    "r": 0.9775,
+    "slope": 1.1403,
+    "intercept": -0.0525,
+    "theta_mae": 0.5073
+  },
+  "note": "slope>1 => mild scale EXPANSION (opposite of TutorEval's compression)."
+}

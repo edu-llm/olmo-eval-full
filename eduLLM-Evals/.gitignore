@@ -191,6 +191,28 @@ data/TutorEval/review_queue*.tsv
 !regenerated_figures/
 !regenerated_figures/**
 
+# ---------------------------------------------------------------------------
+# frq/infobench packaging: scratch + cross-branch leftovers that must NOT be
+# committed on this branch. The shareable deliverables were consolidated into
+# infobench_calibration/ (tracked). These ignores come AFTER the reports/
+# re-include above so they override it for the scratch report dirs.
+# ---------------------------------------------------------------------------
+# Scratch grid whose deliverables now live in infobench_calibration/.
+reports/infobench_oos_grid_unidim/
+# Local verification scratch for the sound SE_param recompute.
+_scratch_infobench_verify/
+# Other benches' EAP OOS/stop scratch (deliverables live in their own packages).
+reports/eap_*/
+# Cross-branch raw grading dumps that leaked into the working tree.
+WildBenchGrade/
+bridgegrade/
+TutorEvalGrade/
+tutorbench_tb33_grading/verdicts_merged/
+
+# The infobench_calibration/ package figures ARE deliverables: negate the
+# global *.png rule above so the CAT figures are tracked.
+!infobench_calibration/**/*.png
+
 
 # Criteria-rewording run artifacts: per-item logs are regenerable and stay local
 # (consistent with the qmatrix_logs handling). The reworded scenario copy (~6MB) is
@@ -207,3 +229,6 @@ biggen_results_cache.parquet
 # It contains deblinded tutor identities and must never enter a grader packet
 # or repository commit.
 reports/infobench_judge_audit_v1/audit_analysis_key.csv
+
+# Separate/unrelated grader-validation scratch — not part of the calibration package.
+graderValidationStuff/
