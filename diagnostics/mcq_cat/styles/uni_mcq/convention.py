@@ -152,6 +152,53 @@ def _mcq_convention(config: inference.InferenceConfig) -> dict[str, Any]:
     }
 
 
+#: Key recording the per-item budget policy, for the one bank that has one.
+PER_ITEM_BUDGET_KEY = "per_item_token_budget"
+
+
+def _per_item_budget_record(answer_type: str) -> dict[str, Any] | None:
+    """The per-item generation budget policy, or ``None`` for a bank with none.
+
+    ``max_new_tokens`` keeps its full meaning for this bank and does not narrow: it is the
+    *ceiling*, the cascade may only lower an item below it, and it is what an item gets
+    when no tokenizer is available to lower it with. So the recorded integer still bounds
+    every generation the bank can produce, which is what the guard was protecting.
+
+    What it stops covering is where inside that ceiling each item lands, and the constants
+    that decide it are recorded here instead. The budget is a pure function of these, the
+    item's own ``instruction_id_list``, and the checkpoint's tokenizer; the items are fixed
+    by the manifest's ``sha256``, so pinning the constants pins everything about the policy
+    that belongs to the benchmark. Change one and a run refuses until the bank is
+    re-stamped.
+
+    One term is deliberately *not* pinned, and is recorded as prose so its absence cannot
+    read as an oversight. The words-to-tokens ratio is measured at run time from the
+    evaluated checkpoint's own tokenizer, so it is a property of the model rather than the
+    benchmark -- like the run-time EOS in
+    :func:`~diagnostics.mcq_cat.common.generative.eos_stop_sequences`, and invisible to
+    :func:`check_runtime_convention` for the same reason: that guard runs before the
+    checkpoint is fetched and can only check what the benchmark declares. Pinning a ratio
+    would mean re-stamping the bank for every model evaluated against it.
+
+    Returned as ``None``, and then omitted, for every other bank rather than recorded as
+    null. ``_differences`` reports a key the manifest lacks as loudly as one it
+    disagrees with, so emitting it unconditionally would invalidate all eight sibling
+    manifests and require them re-stamped for a field none of them has a policy for.
+    """
+    if answer_type != generative.IFEVAL_ANSWER_TYPE:
+        return None
+    return {
+        "policy": "ifeval_length_signal_cascade",
+        "tokens_per_word": "resolved at runtime from the checkpoint tokenizer",
+        "detection_headroom_tokens": generative.DETECTION_HEADROOM_TOKENS,
+        "words_per_sentence": generative.WORDS_PER_SENTENCE,
+        "words_per_paragraph": generative.WORDS_PER_PARAGRAPH,
+        "words_per_bullet": generative.WORDS_PER_BULLET,
+        "unconstrained_floor_tokens": generative.UNCONSTRAINED_FLOOR_TOKENS,
+        "truncation_fragile_ids": sorted(generative.TRUNCATION_FRAGILE_IDS),
+    }
+
+
 def _generative_convention(
     spec: DatasetSpec, config: generative.GenerationConfig
 ) -> dict[str, Any]:
@@ -168,8 +215,11 @@ def _generative_convention(
     does with it -- no block is loaded and the field is never read -- so pinning the
     name a 0-shot dataset happens to inherit would fail runs over a setting with no
     effect on any score.
+
+    ``max_new_tokens`` is the flat budget for every bank but ifeval, whose budget is
+    per item; see :func:`_per_item_budget_record` for what that does to this block.
     """
-    return {
+    recorded = {
         "modality": grading.GENERATIVE,
         "prompt_style": config.prompt_style,
         "num_fewshot": config.num_fewshot,
@@ -181,6 +231,10 @@ def _generative_convention(
         "max_length": config.max_length,
         "grader": generative.get_answer_grader(spec.answer_type).name,
     }
+    per_item = _per_item_budget_record(spec.answer_type)
+    if per_item is not None:
+        recorded[PER_ITEM_BUDGET_KEY] = per_item
+    return recorded
 
 
 def runtime_convention(

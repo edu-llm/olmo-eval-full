@@ -88,6 +88,8 @@ is in each `manifest.json` and the long form of every note below is in
 
 - Completion format here, `RequestType.CHAT` in the task; harvest has both.
 - Re-keyed by content; all 541 positions confirmed already correct.
+- Token budget is per item, from each item's own declared constraints; every other bank has one flat number.
+- Truncates at the checkpoint's own leaked end-token text; both upstream harnesses send no stop strings.
 
 The one live deviation whose calibration side is known to be *mixed* rather than
 unrecorded, so it is worth the extra lines. Open LLM Leaderboard v2 applied a chat
@@ -105,6 +107,116 @@ which a checkpoint with no chat template can be scored at all. The gap against t
 templated half lands in theta with a healthy standard error beside it, and chat models
 gain heavily from the template on this benchmark specifically — so a theta from this
 bank is on the completion scale and is not comparable with a chat-format one.
+
+The second change, made 2026-08-08, is the generation budget. Two things happened to it at
+once and they are worth separating, because one is a deviation being *removed* and the
+other is a deviation being added.
+
+**The cap now matches the harness.** It was a flat 1536, derived locally as "the largest
+output this bank explicitly asks for plus a third". Upstream generates IFEval at 1280 —
+`src/olmo_eval/evals/tasks/ifeval.py` line 66, and lm-eval's `leaderboard_ifeval` sends
+`max_gen_toks: 1280` — so the 1,102-model harvest these difficulties were fit over was
+produced at 1280 and 1536 was a local invention. It is now 1280 and this is no longer a
+deviation. Note for anyone tracing the number to the paper: **1280 is a harness convention
+and not a paper value.** arXiv 2311.07911 specifies no generation cap at all, and the
+google-research reference implementation consumes a JSONL of prompt/response pairs, so
+generation was always the caller's business. Matching 1280 is calibration parity, not
+fidelity to a specification.
+
+**A per-item budget below that ceiling is the deviation.** No upstream harness varies the
+budget per document; this one does, and 1280 is now a ceiling the cascade may only lower an
+item beneath. The reason is that a single integer is wrong for most of this bank in one
+direction or the other. 272 of the 511 items declare no size constraint and a prior
+measurement put their typical demand near 52 tokens, while `ab5ca590f2d20f37` — four
+sections of at least 100 sentences — converts to about 3,400. `generative.ifeval_token_budget`
+holds the derivation: a cascade over every length signal an item declares with the largest
+demand winning, `combination:repeat_prompt` additive, `combination:two_responses` doubling,
+a 50-token headroom so an over-run is visible rather than prevented, and a 208-token floor
+for the 84 items that declare no size *and* carry only constraints that survive being cut
+short.
+
+That last split is the part that matters for correctness. Truncating a response fails the
+length, section and ending constraints it would otherwise have satisfied, so a budget set
+too low makes the harness manufacture constraint violations — the same failure class as the
+`leaderboard_math` blank-line stop that deleted 40.9% of answers. So 263 items whose grade
+depends on the response *finishing* keep the full ceiling
+(`generative.TRUNCATION_FRAGILE_IDS`: ending-dependent ones like `startend:end_checker`,
+count-dependent ones like `keywords:frequency`), as do the 31 `language:response_language`
+items, because every conversion constant is an English measurement and a non-English
+response costs 2x to 22x more tokens per word — Thai 158x, being unspaced. The median
+budget over the bank is therefore *at* the ceiling; the saving comes from the other half.
+
+Seven items declare constraints converting to more than 1280 and are truncated at it,
+deliberately, which is the same point the calibration population was truncated. Letting the
+cascade raise them instead would score them on a scale no fitted model was measured on.
+
+Two parts of the policy are resolved at run time and so are invisible to the startup
+convention guard, which runs before the checkpoint is fetched. Words are converted to
+tokens by the **evaluated checkpoint's own tokenizer**, making the budget
+checkpoint-dependent; the manifest records that in words rather than pinning a ratio, since
+pinning one would mean re-stamping the bank for every model. And the result is clamped to
+the checkpoint's context window, which is inert for this bank above a 1,636-token window
+and exists for future small-context submitters. If no tokenizer can be resolved the run is
+**refused** rather than run degraded, because every item would silently take the ceiling
+while the report looked normal; `cat_report.json` carries a `generation_budget` block
+recording the tokenizer, whether the cascade was active, whether the clamp fired, and the
+budget distribution, so a reader can tell computed budgets from defaulted ones. Everything
+else about the policy is pinned in the manifest's
+`scoring_convention.runtime.per_item_token_budget`, so the guard still refuses a run whose
+budget policy differs from the one the bank was stamped under. The cost accounting is in
+`config.yaml`.
+
+Whether this changes comparability with the calibrated difficulties: the ceiling change
+strictly improves it, and the per-item reduction should be neutral, since it only shortens
+budgets for items whose constraints cannot be broken by shortening them. That neutrality is
+an argument rather than a measurement — nothing upstream records per-document generation
+lengths, so it cannot be checked directly. Where a budget could still truncate a compliant
+answer is named in `ifeval_token_budget`.
+
+The third live deviation, added alongside the budget, is a stop sequence — and it is a
+deviation from upstream rather than from a default, which was checked rather than assumed.
+olmo-eval's `ifeval` task builds `SamplingParams(max_tokens=1280, temperature=0.0,
+do_sample=False)` with no stop strings, and lm-eval's `leaderboard_ifeval` sends
+`until: []`. Neither harness cuts an IFEval response anywhere, so the 1,102-model harvest
+these difficulties were fit over was never cut either. So the two halves of the generation
+convention now sit on opposite sides of upstream: the cap matches it exactly, and the stop
+list deliberately does not.
+
+What is added is not a benchmark string. `config.yaml` still declares an empty stop list
+and the manifest still records one; at run time `generative.eos_stop_sequences` appends the
+*evaluated checkpoint's own end-token text*, read from its live tokenizer. Keeping it out
+of both artifacts is the point: which string ends a generation is a property of the model,
+and a benchmark convention that named one would refuse every model spelling it differently.
+
+It buys no compute — `truncate_at_stop` runs on a finished completion — and exists for one
+correctness reason. A model can emit the literal characters of its end marker as ordinary
+vocabulary tokens rather than as the special token; `skip_special_tokens=True` does not
+remove those, so `<|endoftext|>` lands inside the span the verifiers read. That is not
+cosmetic here, because 93 of the 511 items are decided by how the response *ends*:
+`startend:quotation` (40) requires the stripped response to open and close with `"`,
+`startend:end_checker` (26) requires it to end with a given phrase, and
+`detectable_format:json_format` (17) and `detectable_format:constrained_response` (10)
+parse the whole span. A trailing marker fails all four on a response that satisfied them,
+and cutting at it restores the ending — both of the first two strip whitespace, so the cut
+leaves nothing they object to.
+
+It is **conditional**, and the exception is what makes it safe. The 24
+`combination:two_responses` items are excluded, because `TwoResponsesChecker` splits on
+`******` and demands exactly two non-empty parts: a checkpoint leaking its marker between
+the two responses would lose the second to a first-occurrence cut and fail the constraint
+it was being judged on — the same class of harness-manufactured failure as the
+`leaderboard_math` blank-line truncation above. Excluding them costs nothing, since 0 of
+the 24 carry any of the four end-anchored constraints. The residual, stated rather than
+hidden: on a non-two-responses item, a leak strictly before content that would have
+satisfied a constraint loses that content. That ordering is the rarer one, and the
+alternative loses the 93.
+
+Worth knowing when reading either deviation: IFEval currently has no other stopping
+mechanism at all. It is 0-shot so no exemplar teaches EOS, `_HFCompleter.__call__` passes
+no `eos_token_id` to `generate`, and `hf_config_patch._llama_config` writes
+`eos_token_id=None` for a converted checkpoint. Until that plumbing is fixed the per-item
+cap is literally the only thing deciding where an IFEval generation ends, which is why it
+is sized to err long.
 
 `gpqa` was deliberately **not** flipped with it, and then stopped being generative
 altogether; see its own entry below.

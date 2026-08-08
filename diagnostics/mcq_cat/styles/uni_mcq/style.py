@@ -26,6 +26,7 @@ on one.
 from __future__ import annotations
 
 import logging
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -121,6 +122,20 @@ SCORING_NOTES = {
 #: means it administered nothing. Named rather than inlined so the empty-session
 #: wording is not mistaken for a grader's own description.
 NO_GRADER_NOTE = "graded by whichever grader each item's answer_type names"
+
+
+def _single(records: Sequence[Mapping[str, Any]], key: str) -> Any:
+    """The one value ``key`` takes across ``records``, or a sorted list if it varies.
+
+    Every record in a session comes from the same scorer, so these fields are constant in
+    practice and collapsing them keeps the report readable. It does not *assume* that: a
+    session that somehow mixed two tokenizers would be badly worth knowing about, so the
+    disagreement is surfaced rather than silently reduced to the first value.
+    """
+    values = {record.get(key) for record in records}
+    if len(values) == 1:
+        return values.pop()
+    return sorted(values, key=repr)
 
 #: Share of administered items that may come back ungradable before the report stops
 #: describing the checkpoint and starts describing the harness.
@@ -666,6 +681,7 @@ class UniMcqStyle(CatStyle):
             "bank_size": len(self._order),
             "stop_reason": stop_reason,
             "ungradable": self._ungradable_block(state),
+            "generation_budget": self._generation_budget_block(state),
             "selected_item_ids": [r.item_id for r in state.administered],
             "cat_settings": {
                 "se_threshold": threshold,
@@ -769,6 +785,52 @@ class UniMcqStyle(CatStyle):
             float(batch.theta),
         )
         return batch, fields
+
+    def _generation_budget_block(self, state: CATState) -> dict[str, Any] | None:
+        """How this session's generation budgets were arrived at, or ``None`` for an MCQ run.
+
+        The question a reader has to be able to answer from the report alone is whether the
+        budgets were *computed* or *defaulted*. A degraded run -- one where no tokenizer
+        reached the budget code, so every item took the flat ``max_new_tokens`` -- is
+        invisible otherwise: it produces a plausible theta with a healthy standard error and
+        nothing else out of place. ``generative.load_generative_model`` refuses that mode
+        outright, so seeing ``cascade_active: false`` here means something bypassed the
+        loader, which is worth knowing.
+
+        Aggregated off the responses rather than tracked alongside them, for the same reason
+        :meth:`_ungradable_block` counts off them: a tally kept in parallel is free to drift
+        from what was actually administered, and the responses are what the report is.
+
+        ``context_clamp_fired`` is separate from ``context_window`` on purpose. The clamp
+        being *available* is the ordinary case and says nothing; the clamp having actually
+        lowered a budget, or refused an item, means the checkpoint's window was too small for
+        this bank and the session is not comparable with one run on a roomier model.
+        """
+        records = [
+            response.metadata[generative.BUDGET_KEY]
+            for response in state.administered
+            if generative.BUDGET_KEY in response.metadata
+        ]
+        if not records:
+            return None
+        budgets = sorted(int(record["tokens"]) for record in records)
+        sources = Counter(str(record["source"]) for record in records)
+        ceiling = _single(records, "ceiling")
+        return {
+            "tokenizer": _single(records, "tokenizer"),
+            "cascade_active": bool(records[0].get("cascade_active")),
+            "ceiling": ceiling,
+            "context_window": _single(records, "context_window"),
+            "context_clamp_fired": sources.get(generative.BUDGET_FROM_CONTEXT, 0) > 0,
+            "sources": dict(sorted(sources.items())),
+            "tokens": {
+                "min": budgets[0],
+                "median": budgets[len(budgets) // 2],
+                "max": budgets[-1],
+                "total": sum(budgets),
+                "at_ceiling": sum(1 for budget in budgets if budget == ceiling),
+            },
+        }
 
     def _ungradable_block(self, state: CATState) -> dict[str, Any]:
         """Account for the administered items that produced no outcome of their own.
