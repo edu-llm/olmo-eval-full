@@ -75,32 +75,71 @@ The default `CHECKPOINT_S3` in `run.env.example` points at one such checkpoint:
 
 This is an eduLLM platform job. Do not run it against AWS from a laptop — the
 platform holds the credentials and the record (see the repo `AGENTS.md`).
+`edullm submit` cannot inject env vars, so each stage's checkpoints and sweep are
+baked directly into the command in `.edullm/run.yaml` (the env knobs in
+`run.env.example` drive local `--dry-run` only).
 
 Validate the plan locally first (no torch, no S3, no network):
 
 ```bash
-source SteeringVectors/run.env.example   # after filling in CHECKPOINT_S3 / RESULTS_S3
-python SteeringVectors/run_steering_eval.py "$CHECKPOINT_S3" --dry-run
+python SteeringVectors/run_probe_dynamics.py s3://b/run/step625/ --dry-run
+python SteeringVectors/run_steering_eval.py s3://b/run/step750/ \
+  --target s3://b/run/step1315/ --dimensions toxigen truthfulqa confaide --dry-run
 ```
 
-Price and submit through the platform (checkpoint eval reads no corpus, so
+Price and submit through the platform (these read checkpoints, not a corpus, so
 `--dataset none`):
 
 ```bash
-edullm check  --experiment steering-vectors --dataset none
-edullm submit --experiment steering-vectors --dataset none
+edullm check  --dataset none
+edullm submit --dataset none
 ```
 
-The checkpoint and output locations are passed to the run through the submission
-environment (`CHECKPOINT_S3`, `RESULTS_S3`, and the optional knobs in
-`run.env.example`); `.edullm/run.yaml` reads them.
+### The two stages
 
-### Sweeping many checkpoints
+The replication runs as separate submissions that share this image and the
+staged checkpoints. First stage the 10 `refhq-5p5b` steps (125, 250, 375, 500,
+625, 750, 875, 1000, 1125, 1315) under
+`s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step<N>/`
+(the GPU workload role can read `teams/<team>/runs/*` but not `edullm-checkpoints`).
 
-`.edullm/run.yaml` uses the `olmo-eval-sweep` workload profile. Point one cell at
-each checkpoint step with a fan-out (`edullm check --fanout-size N
---fanout-index-parameter ...`) or submit one run per step, grouped under a shared
-`--experiment`.
+**Smoke — what `.edullm/run.yaml` submits as shipped.** A one-checkpoint probing
+run against the already-staged `step1315`, 2 datasets × 3 layers × 200 statements,
+to validate the whole path (OLMo-core→HF conversion, activation capture, probe
+training, S3 upload) cheaply before the full sweep. It needs no new staging.
+
+**Stage A — probing dynamics (full).** Once the 10 steps are staged, swap the
+command to `run_probe_dynamics.py` over all 10 steps × 5 datasets × every layer:
+
+```bash
+python SteeringVectors/run_probe_dynamics.py \
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step125/ \
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step250/ \
+  ... step375 step500 step625 step750 step875 step1000 step1125 step1315 ... \
+  --datasets truthfulqa toxigen confaide stereoset sst2 \
+  --max-statements 1000 --test-ratio 0.2 \
+  --results-s3 "$EDULLM_OUTPUT_PREFIX" --run-name probe-dynamics-refhq --device cuda:0
+```
+
+**Stage B — steering intervention.** Swap the command block in `.edullm/run.yaml`
+to the following, re-push the `edullm/**` branch (rebuilds nothing that changed),
+and submit again:
+
+```bash
+python SteeringVectors/run_steering_eval.py \
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step750/ \
+  --target s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step1315/ \
+  --dimensions toxigen truthfulqa confaide \
+  --layers 8 --alphas -2 -1 1 2 \
+  --max-statements 1000 --eval-limit 200 --toxigen-limit 150 --max-new-tokens 64 \
+  --results-s3 "$EDULLM_OUTPUT_PREFIX" \
+  --run-name steering-refhq-750to1315 --device cuda:0
+```
+
+The steering vector is built from the mid-training source step (750) and applied
+to the latest step (1315); `--eval-limit` / `--toxigen-limit` bound the sweep to
+fit one `olmo-eval-sweep` cell. Raise the alpha/layer grid or the limits once a
+first cell confirms the wiring.
 
 ## The one image decision
 

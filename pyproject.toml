@@ -158,6 +158,8 @@ vllm = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Vendored upstream code (kept verbatim under its own license) is not ours to lint.
+extend-exclude = ["SteeringVectors/vendor"]
 
 [tool.ruff.lint]
 select = [

@@ -1,18 +1,24 @@
-# eduLLM job: steering-vector trustworthiness test over an S3 model checkpoint.
+# eduLLM job: TracingLLM small-scale replication (arXiv 2402.19465) -- SMOKE.
+#
+# As shipped this file runs a cheap one-checkpoint probing smoke to validate the
+# whole path end-to-end (OLMo-core->HF conversion, activation capture, probe
+# training, S3 upload) before the full sweep. The full Stage A (10-step probing)
+# and Stage B (steering intervention) commands live in SteeringVectors/README.md;
+# swap the command block below and re-push the edullm/** branch to run them.
 #
 # Everything here is a property of the code and travels with it in git; only the
-# machine, the corpus (--dataset none, this reads a checkpoint not a corpus) and
+# machine, the corpus (--dataset none: this reads a checkpoint, not a corpus) and
 # the experiment are supplied at submit time. `edullm submit` cannot inject env
 # vars, so the checkpoint under test and the sweep are baked into the command.
 #
 # The checkpoint reads from the outputs bucket, not edullm-checkpoints: the GPU
-# workload role is scoped to teams/<team>/runs/*, so a checkpoint staged under
-# that space is readable by a run and edullm-checkpoints is not. Results write to
-# $EDULLM_OUTPUT_PREFIX (this run's own prefix, injected by the platform), the
-# only place the workload role may write. To test a different checkpoint, stage
-# it under teams/<team>/runs/ and edit the path below, then re-push.
-# (SteeringVectors/run.env.example drives local --dry-run only.) See
-# SteeringVectors/README.md for the image decision this job depends on.
+# workload role is scoped to teams/<team>/runs/*, so a checkpoint staged there is
+# readable and edullm-checkpoints is not. The smoke reuses the already-staged
+# step1315 (steering-staged-refhq-step1315/checkpoint/); the full sweep needs the
+# 10 steps staged under teams/eval-inference/runs/replication-staged/step<N>/.
+# Results write to $EDULLM_OUTPUT_PREFIX (this run's own prefix, injected by the
+# platform), the only place the workload role may write.
+# (SteeringVectors/run.env.example drives local --dry-run only.)
 #
 # olmo_core is pinned to the edu-llm/OLMo-core fork (not PyPI ai2-olmo-core
 # 2.4.0): this checkpoint's config uses a newer schema (sequence_mixer /
@@ -27,23 +33,19 @@
 # --extra vllm ...` on purpose: uv sync is exact and would remove the baked
 # torch/vLLM if the vllm extra were dropped, and it is what adds the small
 # olmo_core dep set on top before the fork git install swaps in the pinned commit.
-# Against the baked image that sync is a fast no-op for torch and only resolves the
-# olmo_core additions.
 schema_version: 1
-workload_profile: olmo-eval-sweep
+workload_profile: olmo-eval-check
 suggested_compute: gpu-1xl40s
 command: >-
   bash -lc 'uv sync --frozen --no-default-groups
   --extra beaker --extra hf --extra s3 --extra clients --extra vllm --extra olmo_core
   && uv pip install "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@7bd6d57120d78e331d29c887f34ed7a4584ce3b5"
-  && python SteeringVectors/run_steering_eval.py
+  && python SteeringVectors/run_probe_dynamics.py
   s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-staged-refhq-step1315/checkpoint/
-  --steering-dataset stereoset
-  --eval-dataset stereoset
-  --layers 8
-  --alphas -1
+  --datasets confaide stereoset
+  --layers 4 8 12
   --max-statements 200
-  --eval-limit 100
+  --test-ratio 0.2
   --results-s3 "$EDULLM_OUTPUT_PREFIX"
-  --run-name steering-eval-refhq-step1315
+  --run-name probe-smoke-step1315
   --device cuda:0'
