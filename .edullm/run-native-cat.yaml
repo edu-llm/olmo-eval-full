@@ -37,12 +37,27 @@
 # run executes. Repin it when the code moves, and push before submitting -- an unpushed sha
 # fails at `git checkout` inside the container, minutes into a paid run rather than here.
 #
-# d5d0bc7c is the pin because 93d42006, the first one tried, could not load this checkpoint.
-# `TransformerGenerationModule.from_checkpoint` builds its own GenerationConfig from the
-# checkpoint's token ids when the caller supplies none, and validates it; these checkpoints
-# write pad == eos == 0, so the config it built refused itself. Run run_019fe265 reached
-# that line having done everything else right -- bank resolved, all 140 objects pulled,
-# tokenizer loaded -- and died there. d5d0bc7c passes a config with a distinct pad id.
+# d5d0bc7c was the pin because 93d42006, the first one tried, could not load this
+# checkpoint. `TransformerGenerationModule.from_checkpoint` builds its own GenerationConfig
+# from the checkpoint's token ids when the caller supplies none, and validates it; these
+# checkpoints write pad == eos == 0, so the config it built refused itself. Run
+# run_019fe265 reached that line having done everything else right -- bank resolved, all
+# 140 objects pulled, tokenizer loaded -- and died there. d5d0bc7c passes a config with a
+# distinct pad id.
+#
+# 6c1d8415 is the pin now, and it is d5d0bc7c plus `--ability-estimator`. Nothing about the
+# load path moved. Repinned rather than left alone so that a re-run of this spec is
+# comparable with the sweep beside it: this file's reports gain `theta_batch` and
+# `theta_online` in their metadata, which is what a comparison against an MWLE-reported
+# run has to be made against.
+#
+# --ability-estimator batch_eap IS THE DEFAULT AND IS NAMED ANYWAY. This spec is the
+# arc_challenge control -- run_019fe277 came out of it, at theta -1.9033900659766525 -- and
+# a control has to keep meaning what it meant. `batch_eap` re-runs the EAP posterior mean
+# over the administered set, which is bit-for-bit the number that run reported, because
+# the online estimator already conditions on the whole response pattern rather than
+# accumulating. Naming it puts that guarantee in the command text instead of in a default
+# that a later commit could move. The sweep spec is where `batch_eap+mwle` is asked for.
 #
 # A CLONE RATHER THAN pip install FROM A TARBALL, WHICH IS A DEPARTURE FROM THE SKILL. His
 # script pip-installs the repo archive, which is enough for his atlas_* evals because they
@@ -73,12 +88,13 @@ command: >-
   bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout d5d0bc7cfcd0a5121b7750556517fde6d085f9bc
+  && git checkout 6c1d8415c306e6756de50dc6682ec1369c990b23
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
   --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
   --benchmark arc_challenge
+  --ability-estimator batch_eap
   --checkpoint-prep none
   --checkpoint-kind olmo_core
   --dtype bfloat16

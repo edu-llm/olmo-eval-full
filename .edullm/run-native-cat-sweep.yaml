@@ -1,0 +1,103 @@
+# Every MCQ bank at once: one fan-out, one cell per benchmark, reporting Warm's estimate.
+#
+# The single-benchmark sibling is run-native-cat.yaml and everything in its header applies
+# here unchanged -- why the submission goes against repository=OLMo-core, why the code
+# arrives by clone rather than by wheel, why --checkpoint-prep none is the native path, and
+# why --dtype bfloat16 belongs in the text even though it converts nothing. Read that file
+# first. This one records only what is different, which is three things.
+#
+# HOW TO SUBMIT THIS. From the OLMo-core clone, as with the other spec:
+#
+#   cd ../OLMo-core
+#   edullm submit --experiment native-olmo-core-cat-sweep --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 \
+#     --spec ../olmo-eval-full/.edullm/run-native-cat-sweep.yaml
+#
+# The fan-out is declared below rather than passed as --fanout-size, so the sweep's shape
+# lives beside the loop it drives and a submission cannot ask for a cell count the command
+# has no benchmark for.
+#
+# ---------------------------------------------------------------------------------------
+# 1. FOUR BENCHMARKS AND NOT SEVEN. THIS IS THE ONE THING TO READ BEFORE APPROVING.
+#
+# `ready_names()` returns seven banks that are vendored and unblocked: arc_challenge, bbh,
+# gpqa, hellaswag, ifeval, leaderboard_math, musr. Only four of them can run *on this
+# path*, and the three that cannot are refused by the harness rather than by policy:
+#
+#   grading.LOADABLE_CHECKPOINT_KINDS = {mcq: ("hf", "olmo_core"), generative: ("hf",)}
+#
+# gpqa, ifeval and leaderboard_math are generative, and `generative.GENERATIVE_BACKENDS`
+# registers only `hf`. `generative._load_olmo_core` exists and raises NotImplementedError
+# on purpose: the MCQ scorer reads this format natively because a forward-only scorer never
+# pads and never stops, and this checkpoint family writes pad_token_id == eos_token_id == 0
+# -- decoding needs a distinct EOS to stop on, so the blocker is real for generation and
+# cannot be waived the way it was for scoring. `runner.run` calls `check_checkpoint_kind`
+# before it fetches anything, so such a cell would fail in seconds having spent nothing;
+# it is left out because a cell certain to fail is noise in a sweep, not insurance.
+#
+# The generative three are not permanently out of reach. `--checkpoint-prep auto
+# --checkpoint-kind hf` converts the DCP to HF first and the generative grader loads that,
+# and the image carries what `convert._olmo_core_imports` wants. Two things make that a
+# separate, cheap experiment rather than three more cells here: the converted copy lives in
+# the same tmpdir as the 1.74 GB original, which is the disk pressure --checkpoint-prep
+# none exists to avoid; and `save_hf_model` on a config using `sequence_mixer` and
+# `partial_rotary_factor` is unverified on OLMo-core main. The argument in the sibling spec
+# -- that main reads these configs because `TransformerConfig.from_dict` never calls a
+# builder -- is about reading one, and says nothing about writing an HF copy of it.
+#
+# ---------------------------------------------------------------------------------------
+# 2. RUNTIME. THE BOUND IS PER CELL, WHICH IS WHY A FAN-OUT AND NOT A LOOP.
+#
+# `olmo-core-check` fixes 1h and refuses any --hours above it
+# (`runtime_above_the_workload_bound`). That bound applies to each cell of an array job
+# independently, so four benchmarks in one container would share one hour while four cells
+# get an hour each. Cost is the same either way -- four cells at $0.8048/h is the same
+# ceiling as one container for four hours would have been, except the latter is not
+# submittable.
+#
+# None of these four is close to the bound. They are scored by continuation
+# log-likelihood, which is one forward pass per answer choice, and the session stops at
+# min_items (8, or 24 for bbh) once SE reaches 0.3 -- run_019fe277 administered 8 items on
+# arc_challenge. Platform history for this workload on this machine is a median of 8m over
+# three runs, between 2m and 21m, and most of that is the pip install and the 1.74 GB pull
+# rather than the CAT.
+#
+# ---------------------------------------------------------------------------------------
+# 3. THE REPORTED ESTIMATOR IS batch_eap+mwle, AND THIS IS THE DELIBERATE CHOICE HERE.
+#
+# EAP's standard-normal prior compresses every ability toward zero, hardest at the tails.
+# MWLE drops it and penalises 1/2 ln I(theta) instead. Both thetas land in every report
+# under `theta_batch` and `theta_mwle` whichever is asked for, so this decides which number
+# `ability.theta` carries and nothing else -- and in particular it does not change which
+# items are administered, because selection conditions on the sequential estimate in both
+# modes. To make this sweep directly comparable with run_019fe277's published theta rather
+# than with its `theta_batch` field, change the one word below to `batch_eap`.
+#
+# The pinned sha carries that flag. A commit without it fails at argparse, immediately and
+# cheaply, which is the failure mode to prefer over one that ignores it.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+fanout:
+  size: 4
+  index_parameter: benchmark
+command: >-
+  bash -lc 'BENCHMARKS=(arc_challenge hellaswag musr bbh)
+  ; CELL="${AWS_BATCH_JOB_ARRAY_INDEX:-0}"
+  ; BENCH="${BENCHMARKS[$CELL]:-}"
+  ; if [ -z "$BENCH" ]; then echo "cell $CELL has no benchmark; fanout.size must equal ${#BENCHMARKS[@]}" >&2; exit 2; fi
+  ; echo "cell $CELL -> $BENCH"
+  ; if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout 6c1d8415c306e6756de50dc6682ec1369c990b23
+  && python -m pip install --no-cache-dir ".[hf,s3]"
+  && python -m diagnostics.mcq_cat.runner
+  --cat-style uni_mcq
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --benchmark "$BENCH"
+  --ability-estimator batch_eap+mwle
+  --checkpoint-prep none
+  --checkpoint-kind olmo_core
+  --dtype bfloat16
+  --s3-out "$EDULLM_OUTPUT_PREFIX"'
