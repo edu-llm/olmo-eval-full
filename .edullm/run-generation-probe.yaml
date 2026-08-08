@@ -80,7 +80,7 @@ command: >-
   bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout d8731c91272c172d75dc914ec91dc99f0d3d3c56
+  && git checkout 8f45ca3fccddf14b53a2aed73a9316dd7857fed7
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python .edullm/generation_probe.py
   --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
