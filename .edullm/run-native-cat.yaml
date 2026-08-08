@@ -1,0 +1,85 @@
+# Native OLMo-core CAT: score a raw training checkpoint with no conversion at all.
+#
+# This spec is submitted against repository=OLMo-core, NOT olmo-eval-full, and that is the
+# whole point of it. The olmo-eval-full image leaves torch out by default and can only run
+# provider.kind=mock; OLMo-core's image carries CUDA torch and ai2-olmo-core built from its
+# own checkout, which is exactly what reading a sharded DCP checkpoint needs. So the image
+# comes from there and the eval code arrives at run time. The argument is recorded in
+# .cursor/skills/eval-platform/scripts/submit_eval_run.sh, which is where this pattern
+# came from.
+#
+# HOW TO SUBMIT THIS. From the OLMo-core clone, because the CLI validates --commit against
+# the clone it is run in and olmo-eval-full holds no OLMo-core objects:
+#
+#   cd ../OLMo-core
+#   edullm submit --experiment native-olmo-core-cat --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 --hours 2 \
+#     --spec ../olmo-eval-full/.edullm/run-native-cat.yaml
+#
+# --spec is read locally and compiled into the submission, so this file does not need to
+# be at the commit being submitted. The code does: see the pin below.
+#
+# WHY OLMo-core main CAN READ THIS CHECKPOINT, WHICH WAS THE OPEN QUESTION. Preston's
+# config uses `sequence_mixer` and `RoPEConfig.partial_rotary_factor`, and PyPI
+# ai2-olmo-core 2.4.0 has no schema for either -- which is why the eval sweep that
+# converted these checkpoints pinned the edullm/memory-split-135m fork. main is not that
+# fork and does not contain it, but main is 2.5.0 and carries all three fields
+# (`sequence_mixer`, `no_global_rope`, `partial_rotary_factor`). Diffing the fork against
+# main over the two files that define them is 85 deletions and no insertions, and every
+# deleted line belongs to a `smollm2_*` classmethod -- builders that CREATE a config.
+# `TransformerConfig.from_dict` never calls a builder; it reads the dict the checkpoint
+# already holds. So the fork was only ever needed to write these configs at training time,
+# and never to read one back.
+#
+# THE CODE IS PINNED BY SHA AND THE PIN IS DELIBERATE. The container clones olmo-eval-full
+# and checks out one commit. That commit necessarily predates this file, because a spec
+# cannot pin the commit that contains it; what matters is that the sha carries the code the
+# run executes. Repin it when the code moves, and push before submitting -- an unpushed sha
+# fails at `git checkout` inside the container, minutes into a paid run rather than here.
+#
+# d5d0bc7c is the pin because 93d42006, the first one tried, could not load this checkpoint.
+# `TransformerGenerationModule.from_checkpoint` builds its own GenerationConfig from the
+# checkpoint's token ids when the caller supplies none, and validates it; these checkpoints
+# write pad == eos == 0, so the config it built refused itself. Run run_019fe265 reached
+# that line having done everything else right -- bank resolved, all 140 objects pulled,
+# tokenizer loaded -- and died there. d5d0bc7c passes a config with a distinct pad id.
+#
+# A CLONE RATHER THAN pip install FROM A TARBALL, WHICH IS A DEPARTURE FROM THE SKILL. His
+# script pip-installs the repo archive, which is enough for his atlas_* evals because they
+# live under src/olmo_eval/ and ship in the wheel. Ours do not: diagnostics/ sits at the
+# repository root, and calibrated_datasets/ is 18 MB of item banks that resolve.py finds
+# via parents[4] -- not a package, not package-data of one, and not movable without
+# changing what REPO_ROOT means. Cloning brings both and touches no packaging.
+#
+# NOT --extra olmo_core ON THE INSTALL, AND THIS ONE WOULD BE SILENT. That extra pins
+# ai2-olmo-core==2.4.0, so asking for it here would install the one release that cannot
+# read this checkpoint over the 2.5.0 the image already has, and the run would die at
+# config parse having looked correct all the way down.
+#
+# --checkpoint-prep none IS WHAT MAKES THIS THE NATIVE PATH. Preparation is skipped
+# entirely, so the 1.74 GB of sharded DCP under model_and_optim/ is read as-is and no HF
+# directory is ever written. --checkpoint-kind olmo_core then selects the native scorer.
+# The two are independent seams and this is the pairing that converts nothing.
+#
+# --dtype bfloat16 IS INERT HERE AND STILL BELONGS IN THE TEXT. Nothing is converted, so
+# the flag changes no weights. It stays because the platform's bfloat16_not_in_the_hardware
+# guard reads the words of this command and nothing else, and the model still runs in
+# bfloat16 on the card -- so naming it turns a Turing shape into a free refusal instead of
+# a machine that dies on its first kernel.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout d5d0bc7cfcd0a5121b7750556517fde6d085f9bc
+  && python -m pip install --no-cache-dir ".[hf,s3]"
+  && python -m diagnostics.mcq_cat.runner
+  --cat-style uni_mcq
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --benchmark arc_challenge
+  --checkpoint-prep none
+  --checkpoint-kind olmo_core
+  --dtype bfloat16
+  --s3-out "$EDULLM_OUTPUT_PREFIX"'
