@@ -39,6 +39,27 @@ def _is_kv_cache_unsupported_error(error: BaseException) -> bool:
     return "kv cach" in str(error).lower()
 
 
+def _resolve_autocast_dtype(dtype: str) -> torch.dtype | None:
+    """Torch dtype to autocast the forward pass in, or ``None`` to disable.
+
+    A mixed-precision checkpoint -- e.g. an Engram memory module whose embedding
+    tables and convolutions stay in float32 beside a bfloat16 transformer -- only
+    reconciles those dtypes under autocast, exactly as it did during training.
+    The eval forward runs without autocast otherwise, so a float32 activation
+    meeting a bfloat16 weight raises a mat1/mat2 dtype mismatch on every instance.
+    A full-precision or ``auto`` load has nothing to reconcile and is left alone.
+    """
+    import torch
+
+    return {
+        "bfloat16": torch.bfloat16,
+        "bf16": torch.bfloat16,
+        "float16": torch.float16,
+        "fp16": torch.float16,
+        "half": torch.float16,
+    }.get(dtype)
+
+
 class _OlmoCoreConfigLogFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         return not record.getMessage().startswith(_OLMO_CORE_CONFIG_LOG_PREFIXES)
@@ -171,6 +192,10 @@ class OlmoCoreProvider(InferenceProvider):
         self.device = imports.torch.device(
             device or ("cuda" if imports.torch.cuda.is_available() else "cpu")
         )
+        # The dtype the model is loaded at, and the autocast dtype that lets a
+        # mixed-precision checkpoint run its forward without a dtype mismatch.
+        self.dtype = dtype
+        self._autocast_dtype = _resolve_autocast_dtype(dtype)
         attention_backend_value = core_utils._resolve_attention_backend(
             attention_backend,
             AttentionBackendName=imports.AttentionBackendName,
@@ -297,6 +322,22 @@ class OlmoCoreProvider(InferenceProvider):
                 border_style="cyan",
             )
         )
+
+    def _autocast(self) -> Any:
+        """Autocast context matching how the checkpoint was trained.
+
+        Reconciles a model that holds parameters in more than one dtype (an
+        Engram memory module in float32 beside a bfloat16 transformer) at the
+        matmul boundary, the same way training's autocast did. A no-op when the
+        load dtype is full precision or the device supports no autocast.
+        """
+        from contextlib import nullcontext
+
+        import torch
+
+        if self._autocast_dtype is None or self.device.type not in ("cuda", "cpu"):
+            return nullcontext()
+        return torch.autocast(device_type=self.device.type, dtype=self._autocast_dtype)
 
     def _free_inference_cache(self) -> None:
         self.generation_module.free_inference_cache()
@@ -582,14 +623,15 @@ class OlmoCoreProvider(InferenceProvider):
         every later chunk is built cache-free rather than failing again.
         """
         try:
-            return self.generation_module.generate_batch(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                return_logprobs=True,
-                completions_only=False,
-                log_timing=False,
-                **generation_kwargs,
-            )
+            with self._autocast():
+                return self.generation_module.generate_batch(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    return_logprobs=True,
+                    completions_only=False,
+                    log_timing=False,
+                    **generation_kwargs,
+                )
         except RuntimeError as error:
             if not (
                 self._kv_cache_supported
@@ -603,14 +645,15 @@ class OlmoCoreProvider(InferenceProvider):
                 error,
             )
             self._kv_cache_supported = False
-            return self.generation_module.generate_batch(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                return_logprobs=True,
-                completions_only=False,
-                log_timing=False,
-                **{**generation_kwargs, "use_cache": False},
-            )
+            with self._autocast():
+                return self.generation_module.generate_batch(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    return_logprobs=True,
+                    completions_only=False,
+                    log_timing=False,
+                    **{**generation_kwargs, "use_cache": False},
+                )
 
     def _generate_chunk(
         self,
@@ -815,7 +858,7 @@ class OlmoCoreProvider(InferenceProvider):
 
         if token_inputs:
             batched_inputs = self._right_pad(token_inputs)
-            with torch.no_grad():
+            with torch.no_grad(), self._autocast():
                 batch_logits = self.generation_module.model_forward(input_ids=batched_inputs)
         else:
             batch_logits = []
