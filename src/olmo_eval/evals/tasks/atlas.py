@@ -1,10 +1,12 @@
 """Config-driven ATLAS offline adaptive-testing tasks (Phase 1, multi-benchmark).
 
-:class:`AtlasAdaptiveMixin` appends an ATLAS Fisher-information CAT report to any
-olmo-eval task: the task runs unchanged, then ``compute_metrics`` derives
-per-item 0/1 from the configured primary metric, joins to the calibrated 3PL
-bank on ``metadata["id"]``, runs the CAT, and appends ``atlas_theta / atlas_se /
-atlas_n_items / atlas_pirt_accuracy`` (+ ``atlas_bank_version``).
+:class:`AtlasAdaptiveMixin` appends an ATLAS 3PL-IRT report to any olmo-eval
+task: the task runs unchanged, then ``compute_metrics`` derives per-item 0/1
+from the configured primary metric, joins to the calibrated 3PL bank on
+``metadata["id"]``, estimates ability over every scored item in the bank
+(full-information EAP -- offline nothing is saved by an adaptive subset, and a
+short subset coincides across similar models), and appends ``atlas_theta /
+atlas_se / atlas_n_items / atlas_pirt_accuracy`` (+ ``atlas_bank_version``).
 
 Because the per-item cell comes from the task's own primary metric, the mixin is
 scoring-agnostic: MCQ tasks feed it a loglik-argmax accuracy (0/1) and gsm8k
@@ -29,7 +31,7 @@ import logging
 from collections.abc import Sequence
 from typing import ClassVar
 
-from olmo_eval.adaptive import TableResponder, load_bank, run_cat
+from olmo_eval.adaptive import TableResponder, load_bank, run_full
 from olmo_eval.adaptive.benchmarks import AtlasBenchmark, bank_dir_for, cat_benchmarks
 from olmo_eval.adaptive.cat import DEFAULT_MAX_ITEMS, DEFAULT_MIN_ITEMS, DEFAULT_SE_STOP
 from olmo_eval.common.types import Response
@@ -51,7 +53,8 @@ class AtlasAdaptiveMixin(Task):
 
     Combine with an olmo-eval :class:`Task` subclass, mixin first in the bases
     (e.g. ``class Foo(AtlasAdaptiveMixin, HellaSwag)``). ``compute_metrics``
-    calls the base implementation, then runs the CAT over per-item correctness.
+    calls the base implementation, then estimates ability (theta) over every
+    scored bank item from this model's per-item correctness.
 
     Per-item correctness comes from the task's configured primary metric, so the
     same code path serves both MCQ (loglik-argmax accuracy) and generative
@@ -68,6 +71,11 @@ class AtlasAdaptiveMixin(Task):
     atlas_benchmark: ClassVar[AtlasBenchmark]
 
     # ATLAS knobs (bank directory defaults to the benchmark's vendored subdir).
+    # The adaptive stopping knobs are retained for configuration/back-compat but
+    # do not gate the offline estimate: a full benchmark run has already scored
+    # every item, so theta is estimated over the whole restricted bank (see
+    # ``compute_metrics``) rather than an adaptive subset that would coincide
+    # across similar models.
     atlas_bank_dir: str | None = None
     atlas_se_stop: float = DEFAULT_SE_STOP
     atlas_min_items: int = DEFAULT_MIN_ITEMS
@@ -137,13 +145,7 @@ class AtlasAdaptiveMixin(Task):
             )
             return result
 
-        cat = run_cat(
-            bank,
-            TableResponder(scores),
-            se_stop=self.atlas_se_stop,
-            min_items=self.atlas_min_items,
-            max_items=self.atlas_max_items,
-        )
+        cat = run_full(bank, TableResponder(scores))
         logger.info(
             "ATLAS CAT [%s]: theta=%.4f se=%.4f n_items=%d pirt_acc=%.4f bank=%s",
             self.atlas_benchmark.name,

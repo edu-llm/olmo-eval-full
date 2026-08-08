@@ -23,6 +23,7 @@ from olmo_eval.adaptive.cat import (
     pirt_accuracy,
     run_cat,
     run_cat_async,
+    run_full,
 )
 from olmo_eval.adaptive.irt import eap_theta_se, fisher_info, prob
 
@@ -47,4 +48,5 @@ __all__ = [
     "resolve_bank_dir",
     "run_cat",
     "run_cat_async",
+    "run_full",
 ]

@@ -166,6 +166,39 @@ def run_cat(
     return session.result()
 
 
+def run_full(bank: ItemBank, responder: Responder) -> CatResult:
+    """Estimate ability from every item in the bank (full-information EAP).
+
+    The adaptive loop exists to spend as few inference calls as possible, which
+    only matters online. When a full benchmark has already been scored, a
+    response exists for every item, so there is nothing to save by subsetting --
+    and stopping after a handful of maximally-informative items throws away most
+    of the observed signal. For a fleet of similar models that handful is the
+    same items with the same answers, so the adaptive theta collapses to one
+    value across models even though the models differ on the items the loop
+    never reaches.
+
+    This administers the whole bank once and estimates theta with the same 3PL
+    EAP the adaptive loop uses, so the estimate reflects this model's actual
+    per-item responses. Selection order does not affect the EAP, so ``order`` is
+    the natural bank order and p-IRT reduces to the observed bank accuracy (every
+    item is observed).
+    """
+    order = list(range(len(bank)))
+    scores = [int(responder(qid)) for qid in bank.question_ids]
+    theta, se = eap_theta_se(np.asarray(scores, dtype=float), bank.a, bank.b, bank.c)
+    return CatResult(
+        theta=theta,
+        se=se,
+        order=order,
+        scores=scores,
+        selected_question_ids=list(bank.question_ids),
+        pirt_accuracy=pirt_accuracy(bank, order, scores, theta),
+        n_items=len(bank),
+        bank_version=bank.version,
+    )
+
+
 async def run_cat_async(
     bank: ItemBank,
     responder: AsyncResponder,
