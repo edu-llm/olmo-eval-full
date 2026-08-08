@@ -1,0 +1,35 @@
+# Originally written by edullm check, from config/workload-catalog.yaml.
+# Everything here is a property of the code and travels with it in git.
+# The machine, the corpus and the experiment are supplied at submit time,
+# because one commit run by two people belongs to two teams.
+#
+# Workload profiles registered for olmo-eval-full: olmo-eval-check, olmo-eval-sweep.
+# edullm check prices this and lists every refusal, without dispatching anything.
+#
+# olmo-eval-sweep rather than olmo-eval-check, because this loads a real model onto a
+# card. The catalog describes olmo-eval-check as the mock-provider path that proves the
+# harness loads without a model, and olmo-eval-sweep as the scoring entry where a GPU
+# first helps. Two hours is the ceiling rather than an estimate; the spike should take
+# minutes, and the ceiling is what gets priced.
+#
+# gpu-1xl4 because capacity.yaml records it as placing `reliably` and an L4 has bfloat16
+# in hardware. Three of the other reliable shapes are T4, which is Turing and has no
+# bfloat16 at all -- a run on one would be priced, released, admitted, given a machine,
+# and then refuse the first kernel that needs the format.
+#
+# --dtype bfloat16 is on the command line rather than set inside the script on purpose.
+# The platform's bfloat16_not_in_the_hardware guard reads the text of the command and
+# cannot see a precision the program chooses in code, so naming it here turns a dead
+# machine into a free refusal if anybody later moves this to a card without it.
+#
+# The checkpoint is passed explicitly rather than left to $EDULLM_CHECKPOINT_DIR. How
+# that variable gets populated is not documented anywhere we could find, so the script
+# prints every EDULLM_* variable it receives and this run answers that question as a
+# side effect rather than depending on the answer.
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'python .edullm/olmo_core_spike.py
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --dtype bfloat16'

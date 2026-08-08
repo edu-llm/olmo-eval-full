@@ -106,6 +106,45 @@ RUN set -eux; \
         --extra vllm; \
     uv cache clean
 
+# Whether this image can read a raw OLMo-core checkpoint. Separate from the ARG above
+# rather than a third value on it, because the two are orthogonal: this branch wants
+# torch without vLLM, and the question "can it serve a model" is not the question "can
+# it read the checkpoints we train".
+#
+# THE ARG ABOVE DOES NOT COVER THIS, WHICH IS THE WHOLE REASON THIS EXISTS. Resolved
+# against uv.lock on 2026-08-07: --extra vllm brings torch 2.10.0 and vLLM 0.19.1 across
+# 242 packages and does NOT contain ai2-olmo-core, because that lives in a separate
+# `olmo_core` extra neither position syncs. So INSTALL_TORCH_AND_VLLM=1 would cost the
+# full 4.54 GiB and still leave the image unable to load a step directory -- an image
+# that looks like it can evaluate our own checkpoints and cannot.
+#
+# WHAT IT COSTS, AND IT IS THE CHEAPER OF THE TWO. --extra olmo-core resolves to 141
+# packages: torch 2.10.0, ai2-olmo-core 2.4.0, torchao 0.17.0 and the CUDA runtime, with
+# no vLLM. That is 101 packages fewer than the vllm path. ai2-olmo-core itself is a
+# 582 KB pure-Python wheel, so essentially all of the weight is torch and CUDA, which is
+# why a hypothetical torch-only extra would save nothing worth having.
+#
+# WHY ai2-olmo-core AND NOT A CONVERSION. A checkpoint written by OLMo-core is sharded
+# DCP -- config.json plus model_and_optim/*.distcp -- and carries no architecture. This
+# library is what rebuilds one via TransformerConfig.from_dict. A HuggingFace directory
+# carries its architecture with it; a step directory does not, so there is no reading it
+# without this. Converting instead means unsharding gigabytes per checkpoint against a
+# CAT session that administers 13-40 items.
+#
+# DEFAULTS TO 1 ON THIS BRANCH, WHICH IS A DEPARTURE FROM THE ARG ABOVE AND DELIBERATE.
+# That one defaults to 0 to reproduce the registered image. This branch exists to run
+# adaptive diagnostics against raw training checkpoints, so an image without the loader
+# is an image with no purpose. The workflow passes BASE_IMAGE and nothing else, so a
+# default is the only way to express it. On a merge to main this would become everyone's
+# default and is worth raising then; on edullm/** it affects this branch alone.
+ARG INSTALL_OLMO_CORE=1
+RUN set -eux; \
+    if [ "${INSTALL_OLMO_CORE}" != "1" ]; then exit 0; fi; \
+    uv sync --frozen --no-default-groups --no-install-project --no-cache \
+        --extra beaker --extra hf --extra s3 --extra clients \
+        --extra olmo-core; \
+    uv cache clean
+
 COPY . .
 RUN set -eux; \
     uv pip install --no-deps .
@@ -200,6 +239,32 @@ RUN set -eux; \
     python -c "import torch; print('torch', torch.__version__, 'cuda', torch.version.cuda); assert torch.version.cuda, 'this is the CPU build of torch, so nothing here can reach a card'"; \
     python -c "from vllm import LLM; print('vllm imports, LLM bound:', LLM.__name__)"; \
     python -c "from olmo_eval.inference.providers import HuggingFaceProvider, VLLMProvider, VLLMServerProvider; print('importable', HuggingFaceProvider.__name__, VLLMProvider.__name__, VLLMServerProvider.__name__)"
+
+# Whether this image can read a raw OLMo-core checkpoint, asserted for the same reason
+# everything above it is: a comment is a claim nothing checks.
+#
+# A SEPARATE BLOCK RATHER THAN THREE MORE LINES ABOVE, AND NOT FOR TIDINESS. That block
+# exits 0 when INSTALL_TORCH_AND_VLLM is not 1, which is this branch's value, so an
+# assertion appended to it would never run in exactly the image it was written to check.
+#
+# IT ASSERTS core_utils._import_olmo_core() RATHER THAN `import olmo_core`, because that
+# is the precise call the loader makes and it is stricter than the sum of its parts. The
+# helper imports TokenizerConfig, get_checkpoint_metadata, GenerationConfig,
+# TransformerGenerationModule and AttentionBackendName inside one try, and converts any
+# failure into an ImportError naming the extra. A bare `import olmo_core` would pass on a
+# version that moved one of those five symbols; this cannot. If it returns, every name
+# the checkpoint path resolves is bound.
+#
+# torch is checked for its CUDA build here too. The block above only does that at
+# INSTALL_TORCH_AND_VLLM=1, so at 0-with-olmo-core -- this branch -- nothing else would
+# notice a CPU-only wheel until a run asked for a device.
+ARG INSTALL_OLMO_CORE
+RUN set -eux; \
+    if [ "${INSTALL_OLMO_CORE}" != "1" ]; then exit 0; fi; \
+    cd /; \
+    python -c "import torch; print('torch', torch.__version__, 'cuda', torch.version.cuda); assert torch.version.cuda, 'this is the CPU build of torch, so nothing here can reach a card'"; \
+    python -c "import olmo_core; print('ai2-olmo-core', getattr(olmo_core, '__version__', 'unknown'))"; \
+    python -c "from olmo_eval.inference.providers import olmo_core_utils as u; i = u._import_olmo_core(); print('olmo_core loader ready:', i.TransformerGenerationModule.__name__, i.TokenizerConfig.__name__, i.AttentionBackendName.__name__)"
 
 # What runs in this image, and it depends on how it was built. At
 # INSTALL_TORCH_AND_VLLM=0 there is no torch, so `mock` and `litellm` run and the
