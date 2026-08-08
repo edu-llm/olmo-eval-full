@@ -81,10 +81,10 @@ schema_version: 1
 workload_profile: olmo-core-check
 suggested_compute: gpu-1xl4
 fanout:
-  size: 4
+  size: 5
   index_parameter: benchmark
 command: >-
-  bash -lc 'BENCHMARKS=(arc_challenge hellaswag musr bbh)
+  bash -lc 'BENCHMARKS=(arc_challenge hellaswag musr bbh gpqa)
   ; CELL="${AWS_BATCH_JOB_ARRAY_INDEX:-0}"
   ; BENCH="${BENCHMARKS[$CELL]:-}"
   ; if [ -z "$BENCH" ]; then echo "cell $CELL has no benchmark; fanout.size must equal ${#BENCHMARKS[@]}" >&2; exit 2; fi
@@ -92,7 +92,7 @@ command: >-
   ; if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout 6c1d8415c306e6756de50dc6682ec1369c990b23
+  && git checkout 49d93da4534169b57d4ff6252fdd954323ab6e9d
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
