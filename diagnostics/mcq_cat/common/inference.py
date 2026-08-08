@@ -896,6 +896,18 @@ class _OlmoCoreScoringModel:
     under the other.
     """
 
+    @staticmethod
+    def _unused_pad_token_id(eos_token_id: int) -> int:
+        """Any id that is not ``eos_token_id``, for a config that only has to validate.
+
+        Returns 0 unless eos is 0, in which case 1. Both are inside every vocabulary this
+        runs against, so the value is well-formed rather than merely accepted, and neither
+        branch can collide with eos. Nothing pads on the scoring path, so which id this is
+        does not reach a tensor -- but a sentinel outside the vocabulary would be a bad
+        thing to leave lying around for whoever wires generation up later.
+        """
+        return 1 if eos_token_id == 0 else 0
+
     def __init__(self, checkpoint_dir: Path, config: InferenceConfig) -> None:
         core_utils = _olmo_core_utils()
         imports = core_utils._import_olmo_core()
@@ -942,13 +954,37 @@ class _OlmoCoreScoringModel:
         # does, so the module and the tensors fed to it cannot end up on different
         # devices over a default that changed.
         self.device = imports.torch.device("cuda" if imports.torch.cuda.is_available() else "cpu")
-        # No generation_config. It is optional, a forward-only scorer never generates,
-        # and it is the object that validates pad against eos -- so leaving it out
-        # removes the same blocker validate_checkpoint=False removes above, rather
-        # than working around it.
+
+        # A GENERATION CONFIG ON A SCORER THAT NEVER GENERATES, WHICH IS NOT THE
+        # CONTRADICTION IT LOOKS LIKE. Omitting it was the obvious move and it was wrong:
+        # `from_checkpoint` builds one itself from the checkpoint's own token ids when the
+        # caller supplies none, and GenerationConfig.__post_init__ validates unconditionally.
+        # These checkpoints write pad_token_id == eos_token_id == 0, so the default it
+        # builds refuses itself, and the run dies at load having done everything else right.
+        #
+        # Measured rather than reasoned: run_019fe265 on 2026-08-08 resolved the bank,
+        # pulled all 140 checkpoint objects, resolved the tokenizer and logged the scoring
+        # line, then failed with "pad_token_id and eos_token_id must be different, got 0 and
+        # 0" from olmo_core/generate/generation_module/config.py:53. The earlier note here
+        # claimed leaving the config out "removes the blocker"; it does not, and this
+        # replaces that claim with what the card actually did.
+        #
+        # WHY A FABRICATED PAD ID IS SAFE HERE AND NOWHERE ELSE. MCQ scoring encodes one
+        # (prompt, continuation) pair at a time and takes a single forward pass, so nothing
+        # is ever padded and pad_token_id is never read -- the arithmetic below indexes
+        # positions, not a pad mask. The value only has to satisfy the validator. A
+        # generative completer gets no such exemption: it stops on EOS and pads real
+        # batches, so it needs a genuinely distinct pad token from the tokenizer rather
+        # than one invented at load time.
+        eos_token_id = int(getattr(tokenizer_config, "eos_token_id", 0) or 0)
         self.model: Any = imports.TransformerGenerationModule.from_checkpoint(
             checkpoint_dir=checkpoint,
             device=self.device,
+            generation_config=imports.GenerationConfig(
+                pad_token_id=self._unused_pad_token_id(eos_token_id),
+                eos_token_id=eos_token_id,
+                max_new_tokens=1,
+            ),
         )
 
     def _check_forward_shape(self, logits: Any, input_ids: Any) -> None:

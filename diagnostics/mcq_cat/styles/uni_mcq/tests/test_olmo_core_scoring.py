@@ -324,10 +324,34 @@ def install_fake_olmo_core(
             calls["from_checkpoint"] = kwargs
             return module
 
+    class FakeGenerationConfig:
+        """Mirrors ``GenerationConfig.__post_init__``, and that is the point of it.
+
+        This used to be ``lambda **kwargs: kwargs``, which accepted anything -- so the
+        suite was green while the real loader built a config olmo_core refuses, and the
+        refusal was discovered on a GPU instead. The three checks below are copied from
+        olmo_core/generate/generation_module/config.py:49-56 so the same argument fails
+        here, in a test that needs no torch.
+        """
+
+        def __init__(self, *, pad_token_id: int, eos_token_id: int, **rest: object) -> None:
+            if pad_token_id < 0:
+                raise ValueError(f"pad_token_id must be non-negative, got {pad_token_id}")
+            if eos_token_id < 0:
+                raise ValueError(f"eos_token_id must be non-negative, got {eos_token_id}")
+            if pad_token_id == eos_token_id:
+                raise ValueError(
+                    "pad_token_id and eos_token_id must be different, "
+                    f"got {pad_token_id} and {eos_token_id}"
+                )
+            self.pad_token_id = pad_token_id
+            self.eos_token_id = eos_token_id
+            self.rest = rest
+
     imports = core_utils.OlmoCoreImports(
         AutoTokenizer=TokenizerFactory,
         AttentionBackendName=lambda backend: backend,
-        GenerationConfig=lambda **kwargs: kwargs,
+        GenerationConfig=FakeGenerationConfig,
         TokenizerConfig=FakeTokenizerConfig,
         TransformerGenerationModule=ModuleFactory,
         cached_path=lambda path: path,
@@ -425,14 +449,39 @@ class TestTheLoaderWiring:
         assert loaded.calls["from_checkpoint"]["checkpoint_dir"] == str(checkpoint)
         assert loaded.calls["from_checkpoint"]["device"] == "cpu"
 
-    def test_no_generation_config_is_built_or_passed(self, monkeypatch, checkpoint) -> None:
-        """The object that validates pad against eos, and a scorer never generates.
+    def test_a_generation_config_is_passed_with_a_pad_distinct_from_eos(
+        self, monkeypatch, checkpoint
+    ) -> None:
+        """Supplying one is the fix; omitting it was the bug, and the card proved it.
 
-        Omitting it is what removes the blocker rather than working around it, so its
-        absence is the behaviour and not an oversight.
+        The earlier reading was that leaving ``generation_config`` out sidesteps the
+        pad/eos validator, because that validator lives on the config. It does not:
+        ``from_checkpoint`` builds its own from the checkpoint's token ids when the caller
+        passes none, and these checkpoints write pad == eos == 0, so the config it builds
+        refuses itself. Run run_019fe265 died exactly there, after resolving the bank,
+        pulling all 140 objects and loading the tokenizer.
+
+        So the config is supplied, with a pad id that only has to differ from eos. Nothing
+        pads on this path, so the value never reaches a tensor.
         """
         loaded = load_scorer(monkeypatch, checkpoint)
-        assert "generation_config" not in loaded.calls["from_checkpoint"]
+        passed = loaded.calls["from_checkpoint"]["generation_config"]
+        assert passed.eos_token_id == 0, "eos must stay the checkpoint's own"
+        assert passed.pad_token_id != passed.eos_token_id, (
+            "a pad equal to eos is what olmo_core refuses at load"
+        )
+
+    def test_the_fabricated_pad_id_is_inside_the_vocabulary(self) -> None:
+        """Not a sentinel like -1 or vocab_size, either of which validate and then bite.
+
+        ``GenerationConfig.validate`` only rejects a negative pad or one equal to eos, so
+        an out-of-range id would pass here and surface later as an index error in whoever
+        wires generation up. Both branches return a real token id.
+        """
+        assert inference._OlmoCoreScoringModel._unused_pad_token_id(0) == 1
+        assert inference._OlmoCoreScoringModel._unused_pad_token_id(1) == 0
+        for eos in range(0, 8):
+            assert inference._OlmoCoreScoringModel._unused_pad_token_id(eos) != eos
 
     def test_a_checkpoint_whose_pad_equals_its_eos_still_loads(
         self, monkeypatch, checkpoint
