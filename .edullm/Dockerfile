@@ -54,28 +54,61 @@ RUN set -eux; \
     uv sync --frozen --no-default-groups --no-install-project \
         --extra beaker --extra hf --extra s3 --extra clients
 
-# Whether this image can hold a model itself, which is one line and is somebody's
-# decision rather than a default. 0 is what every build has produced so far: no torch,
-# so `mock` and `litellm` run and the three providers that load weights do not. 1 adds
-# the `vllm` group, which is what `vllm`, `vllm_server` and `huggingface` need.
+# Which backend this image carries, which is one line and is somebody's decision rather
+# than a default. `none` is what every published build has produced so far: no torch, so
+# `mock` and `litellm` run and the four providers that load weights do not. `vllm` is what
+# `vllm` and `vllm_server` need. `olmo-core` is what `olmo_core` needs, and it is the only
+# position of the three that can read a sharded checkpoint OLMo-core wrote. `hf` needs
+# torch and transformers and nothing else, so it comes with either loaded position.
 #
-# The platform's build workflow passes BASE_IMAGE and nothing else, so this cannot be
-# set per build. Flipping the default here is the whole change, and it is deliberately
-# a one-line diff on the default branch rather than a flag somebody has to find.
+# The platform's build workflow passes BASE_IMAGE and nothing else, so this cannot be set
+# per build. Changing the value here is the whole change, and it is deliberately a one-line
+# diff on the branch being built rather than a flag somebody has to find.
 #
-# WHAT THE 1 COSTS, measured against this lockfile on 2026-08-06 for cp312 linux
-# x86_64 rather than estimated. 99 packages and 138 MB of wheels become 235 packages
-# and 4.54 GiB. Two thirds of that is six files: torch at 873 MiB and the CUDA
-# libraries torch links, cudnn 674, cublas 567, nccl 307, cusparse 275 and cusparselt
-# 274. None of it is reducible while a model runs in this process, because that is the
-# CUDA userspace the wheel links against.
+# THE VALUE IS THE NAME OF THE EXTRA, WHICH IS WHY NOTHING HERE MAPS ONE TO THE OTHER. A
+# table would be a second copy of pyproject.toml's extra names, free to go stale against
+# them in silence; passing the value straight to --extra cannot. `none` is the only value
+# that is not an extra, and it is the one that installs nothing.
+#
+# AN UNRECOGNISED VALUE FAILS THE BUILD RATHER THAN FALLING BACK, which is the one thing
+# this step does that the `!= 1` test it replaces could not. That test read every value
+# except exactly `1` as "install nothing", so `INSTALL_TORCH_AND_VLLM=true` produced a
+# torch-less image that looked like it had been asked for torch, and nothing would have
+# said so until a provider failed to import inside a job that had already been paid for.
+#
+# WHAT EACH POSITION COSTS, measured against this lockfile for cp312 linux x86_64 rather
+# than estimated, by summing the size PyPI reports for the wheel a cp312 manylinux x86_64
+# interpreter selects, over the entries whose markers hold there. The three commands that
+# produce these sets are at the foot of this comment.
+#
+#     none          99 packages      139 MiB
+#     vllm         235 packages     4.92 GiB
+#     olmo-core    138 packages     3.98 GiB
+#
+# Most of both loaded positions is the same six files, and none of it is reducible while a
+# model runs in this process, because that is the CUDA userspace the torch wheel links
+# against: torch at 873 MiB, cudnn 674, cublas 567, nccl 307, cusparse 275 and cusparselt
+# 274. What `olmo-core` saves against `vllm` is 97 packages and 0.94 GiB, all of it vLLM's
+# own engine and the kernels it ships, vllm at 413 MiB and flashinfer-cubin at 255 the
+# largest two. So the position that brings a checkpoint loader is also the cheaper one.
+#
+# THE 4.54 GiB THIS PARAGRAPH USED TO RECORD FOR THE LOADED POSITION DOES NOT REPRODUCE,
+# and the correction is here rather than in a commit of its own because leaving it would
+# put two numbers measured two ways in one comment. uv.lock has not moved since 2026-07-20
+# and the package count and all six per-file figures above are the ones that measurement
+# recorded, so it read the same set. The 0.38 GiB between the two figures is accounted for
+# by flashinfer-cubin at 255.3 MiB and nvidia-nvshmem-cu12 at 132.7, 388.0 together, whose
+# markers both hold on linux x86_64 and which are therefore in the image.
 #
 # THE ALTERNATIVE IS NOT A SMALLER IMAGE, IT IS A DIFFERENT PLACE TO PAY. uv is on
-# PATH inside the venv, so a workload can install the group at the top of a run
-# instead. That moves the same 4.54 GiB off the image and onto every single run, on a
-# GPU that is being billed while it downloads, and it puts a resolution nothing
-# reviewed inside a job that is meant to be reproducible. Paying once per image is the
-# cheaper half of that trade for anything run more than a handful of times.
+# PATH inside the venv, so a workload can install the extra at the top of a run
+# instead. That moves the same several gigabytes off the image and onto every single
+# run, on a GPU that is being billed while it downloads, and it puts a resolution
+# nothing reviewed inside a job that is meant to be reproducible. Paying once per image
+# is the cheaper half of that trade for anything run more than a handful of times, and
+# it is sharper at `olmo-core` than at `vllm`: an adaptive session is minutes of
+# compute, so a 3.98 GiB install in front of it costs more than the work it enables,
+# and it is paid again for every checkpoint in a training run.
 #
 # --extra vllm RATHER THAN --group vllm, AND THE DIFFERENCE IS NOT COSMETIC. The group
 # is a one-line mirror of the extra, `vllm = ["olmo-eval[vllm]"]`, so it reaches vLLM
@@ -91,19 +124,38 @@ RUN set -eux; \
 # multi-gigabyte image that looks like it can self-host and cannot, and nothing but the
 # import check below would have said so.
 #
-# DEFAULTS TO 0, WHICH REPRODUCES THE IMAGE THAT IS REGISTERED TODAY. Whether this
-# account self-hosts vLLM or evaluates against a served endpoint is not a question a
-# Dockerfile should answer, so this leaves it open and makes the answer one character.
-# Set it to 1 and the image can serve a model itself. Built at 1 on run 31078822781,
-# which published sha256:efc0556f38845d0198a79ab33362c3a6f6e1b372f820e9e65464a7336dba51b0
-# with torch 2.10.0+cu128 and vLLM importable, so the 1 path is a thing that has run
-# rather than a thing that should work.
-ARG INSTALL_TORCH_AND_VLLM=0
+# NEITHER POSITION NEEDS A RE-LOCK, WHICH IS THE PART THAT MAKES A THIRD ONE CHEAP.
+# Both extras are already declared in pyproject.toml and both already carry their
+# conflict markers in uv.lock, so turning one on moves nothing else in the resolution.
+# The paragraph below on botocore[crt] is what the other kind of change costs here: one
+# new edge in the s3 extra re-derives the conflicting-extra markers and drags numpy,
+# rich and textual backwards. A `--frozen` sync of an extra the lockfile already
+# describes cannot do that, and `--frozen` is what refuses to find out.
+#
+# DEFAULTS TO none, WHICH REPRODUCES THE IMAGE THAT IS REGISTERED TODAY. Which backend
+# this account evaluates against is not a question a Dockerfile should answer, so this
+# leaves it open and makes the answer one word. Built at what is now spelled `vllm` on
+# run 31078822781, which published
+# sha256:efc0556f38845d0198a79ab33362c3a6f6e1b372f820e9e65464a7336dba51b0 with torch
+# 2.10.0+cu128 and vLLM importable, so that position is a thing that has run rather than
+# a thing that should work. `olmo-core` has been resolved against this lockfile and not
+# yet built, and the assertions below are where that stops being true or fails trying.
+#
+# The sets above are these, and reading one back costs no network and cannot rewrite the
+# lockfile, because --frozen:
+#
+#     uv export --frozen --no-default-groups --no-emit-project \
+#         --extra beaker --extra hf --extra s3 --extra clients [--extra vllm|olmo-core]
+ARG MODEL_BACKEND=none
 RUN set -eux; \
-    if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
+    case "${MODEL_BACKEND}" in \
+        none) exit 0 ;; \
+        vllm|olmo-core) ;; \
+        *) echo "MODEL_BACKEND is '${MODEL_BACKEND}'; it must be none, vllm or olmo-core" >&2; exit 1 ;; \
+    esac; \
     uv sync --frozen --no-default-groups --no-install-project --no-cache \
         --extra beaker --extra hf --extra s3 --extra clients \
-        --extra vllm; \
+        --extra "${MODEL_BACKEND}"; \
     uv cache clean
 
 COPY . .
@@ -173,36 +225,66 @@ RUN set -eux; \
     olmo-eval --help > /dev/null
 
 # Which providers this image can actually run, asserted rather than described, and
-# asserted the same way whichever value INSTALL_TORCH_AND_VLLM took. A comment saying
-# what an image carries is a claim nothing checks, and this file has already been
-# read once as evidence that torch was here.
+# asserted the same way whichever value MODEL_BACKEND took. A comment saying what an
+# image carries is a claim nothing checks, and this file has already been read once as
+# evidence that torch was here.
 #
 # `mock` and `litellm` are always constructible, so they are checked unconditionally
-# and the build at 1 is held to the same floor the build at 0 is.
+# and a loaded build is held to the same floor `none` is.
 #
-# WHY THE 1 CHECKS AN IMPORT AND NOT A DISTRIBUTION. `importlib.metadata.version`
-# answers from a `.dist-info` directory and proves only that an installer wrote one.
-# torch is a C extension linked against the CUDA userspace in the base, and the way
-# it fails is a wheel that unpacks and then cannot resolve a symbol at load, so the
-# import is the first thing that would notice. `torch.version.cuda` separates the
-# CUDA build from the CPU-only build of the same version number, which is otherwise
-# a difference nothing here would see until a run asked for a device.
+# WHY A LOADED POSITION CHECKS AN IMPORT AND NOT A DISTRIBUTION.
+# `importlib.metadata.version` answers from a `.dist-info` directory and proves only
+# that an installer wrote one. torch is a C extension linked against the CUDA userspace
+# in the base, and the way it fails is a wheel that unpacks and then cannot resolve a
+# symbol at load, so the import is the first thing that would notice.
+# `torch.version.cuda` separates the CUDA build from the CPU-only build of the same
+# version number, which is otherwise a difference nothing here would see until a run
+# asked for a device.
 #
 # vLLM is imported rather than merely counted for the same reason, and it is the
 # import a GPU-less builder is most likely to refuse. It does not refuse: the
 # platform layer resolves to a CPU platform with a warning, and `LLM` is bound.
 # Nothing below constructs one, because that needs a device this runner has not got.
+#
+# THE PROVIDER CLASSES ARE NO LONGER IMPORTED HERE, BECAUSE DOING SO PROVED NOTHING.
+# This line used to import HuggingFaceProvider, VLLMProvider and VLLMServerProvider and
+# read as the check that the loaded position worked. Every heavy import in those modules
+# is under `if TYPE_CHECKING` or inside a method -- `providers/__init__.py` is a
+# `__getattr__` shim over lazy submodules -- so all three import on an image with no
+# torch and no vLLM in it. The check passed at `none` as readily as at `1`, which is the
+# definition of vacuous, and the imports above and below it are the ones that bite.
+#
+# WHAT olmo-core CHECKS IS THE PROVIDER'S OWN IMPORT LIST, CALLED RATHER THAN COPIED.
+# `_import_olmo_core` is the single function OlmoCoreProvider calls before it touches a
+# checkpoint, and it reaches torch, cached_path, olmo_core.data,
+# olmo_core.distributed.checkpoint, olmo_core.generate.generation_module,
+# olmo_core.nn.attention and transformers behind one try/except. Calling it here means
+# the build checks whatever the provider currently needs instead of a copy of that list
+# that can drift from it; renaming it fails this build loudly, which is the direction
+# this should fail in. Its underscore is deliberate and is the reason this sentence
+# exists.
+#
+# get_checkpoint_metadata inside that list is the whole point of the position. A
+# HuggingFace directory carries its architecture with it and a sharded DCP checkpoint
+# does not, so rebuilding the model from the run config is the only way to read one, and
+# ai2-olmo-core is the only thing here that can. cached_path arrives with it and with
+# nothing else: it is absent from both other positions.
 RUN set -eux; \
     cd /; \
     python -c "from olmo_eval.inference import create_provider; print('constructed', type(create_provider('mock', 'image-smoke')).__name__)"; \
     python -c "from olmo_eval.inference.providers import LiteLLMProvider; print('importable', LiteLLMProvider.__name__)"; \
-    if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
+    if [ "${MODEL_BACKEND}" = "none" ]; then exit 0; fi; \
     python -c "import torch; print('torch', torch.__version__, 'cuda', torch.version.cuda); assert torch.version.cuda, 'this is the CPU build of torch, so nothing here can reach a card'"; \
-    python -c "from vllm import LLM; print('vllm imports, LLM bound:', LLM.__name__)"; \
-    python -c "from olmo_eval.inference.providers import HuggingFaceProvider, VLLMProvider, VLLMServerProvider; print('importable', HuggingFaceProvider.__name__, VLLMProvider.__name__, VLLMServerProvider.__name__)"
+    if [ "${MODEL_BACKEND}" = "vllm" ]; then \
+        python -c "from vllm import LLM; print('vllm imports, LLM bound:', LLM.__name__)"; \
+    fi; \
+    if [ "${MODEL_BACKEND}" = "olmo-core" ]; then \
+        python -c "from dataclasses import fields; from olmo_eval.inference.providers.olmo_core_utils import _import_olmo_core; resolved = _import_olmo_core(); print('olmo_core loader resolved:', ', '.join(f.name for f in fields(resolved)))"; \
+    fi
 
-# What runs in this image, and it depends on how it was built. At
-# INSTALL_TORCH_AND_VLLM=0 there is no torch, so `mock` and `litellm` run and the
-# three providers that load weights onto a card do not. At 1 all six run. Read the
-# ARG above to see which one this image was built as.
+# What runs in this image, and it depends on how it was built. At MODEL_BACKEND=none
+# there is no torch, so `mock` and `litellm` run and the four providers that load
+# weights onto a card do not. At `vllm` those two plus `vllm`, `vllm_server` and `hf`
+# run. At `olmo-core` those two plus `olmo_core` and `hf` run, and `vllm` and
+# `vllm_server` do not. Read the ARG above to see which one this image was built as.
 CMD ["olmo-eval", "--help"]
