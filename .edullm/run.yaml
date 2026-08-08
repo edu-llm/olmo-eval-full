@@ -21,13 +21,14 @@
 # the git install swaps in the fork commit current when the checkpoint was
 # written (2026-07-26, just before the 07-27 checkpoint).
 #
-# The image the platform builds for olmo-eval-full carries transformers but not
-# torch (INSTALL_TORCH_AND_VLLM defaults to 0 in .edullm/Dockerfile). This
-# pipeline needs torch, so the command first materializes it from the checked-in
-# lockfile's vllm extra -- the run-time alternative the Dockerfile documents --
-# rather than flipping the shared image default for every olmo-eval run. Point a
-# submission at the torch-enabled image instead and drop the `uv sync` prefix if
-# that default is ever flipped on this branch.
+# The image the platform builds on this branch bakes torch + vLLM in
+# (INSTALL_TORCH_AND_VLLM=1 in .edullm/Dockerfile), so the ~4.5 GiB torch pull no
+# longer happens on the billed GPU. The command still runs `uv sync --frozen ...
+# --extra vllm ...` on purpose: uv sync is exact and would remove the baked
+# torch/vLLM if the vllm extra were dropped, and it is what adds the small
+# olmo_core dep set on top before the fork git install swaps in the pinned commit.
+# Against the baked image that sync is a fast no-op for torch and only resolves the
+# olmo_core additions.
 schema_version: 1
 workload_profile: olmo-eval-sweep
 suggested_compute: gpu-1xl40s

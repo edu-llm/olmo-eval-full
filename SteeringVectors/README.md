@@ -104,19 +104,20 @@ each checkpoint step with a fan-out (`edullm check --fanout-size N
 
 ## The one image decision
 
-The image the platform builds for `olmo-eval-full` carries `transformers` but
-**not** `torch` (`INSTALL_TORCH_AND_VLLM` defaults to `0` in
-`.edullm/Dockerfile`). This pipeline needs torch, so the job command in
-`.edullm/run.yaml` first runs `uv sync ... --extra vllm` to materialize torch
-from the checked-in lockfile at the start of the run — the run-time alternative
-the Dockerfile itself documents.
+The image the platform builds for `olmo-eval-full` carries `transformers` but,
+by default, **not** `torch` (`INSTALL_TORCH_AND_VLLM` defaults to `0` upstream).
+This branch flips that default to `1` in `.edullm/Dockerfile`, so torch + vLLM
+are baked into the image and the ~4.5 GiB torch pull no longer happens on the
+billed GPU at the top of every run. The trade-off is the one the Dockerfile
+documents: you pay for it once per image build instead of once per run, which is
+the cheaper half for a job run more than a handful of times.
 
-The trade-off: that download (~4.5 GiB) happens once per run on a billed GPU. If
-this job is run often, flip `ARG INSTALL_TORCH_AND_VLLM=0` to `=1` in
-`.edullm/Dockerfile` on this branch instead (a one-line change that bakes torch
-into the image) and drop the `uv sync` prefix from the command. That changes the
-image for every olmo-eval run built from this branch, which is why it is left as
-a deliberate choice rather than made here.
+The command in `.edullm/run.yaml` still keeps its `uv sync --frozen ...
+--extra vllm ...` prefix on purpose. `uv sync` is exact: dropping the `vllm`
+extra would make it *remove* the baked torch/vLLM, and the sync is also what
+layers the small `olmo_core` dependency set on top before the fork git install
+pins the OLMo-core commit. Against the baked image that sync is a fast no-op for
+torch and only resolves the `olmo_core` additions.
 
 ## Attribution
 

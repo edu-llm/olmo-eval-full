@@ -98,7 +98,13 @@ RUN set -eux; \
 # which published sha256:efc0556f38845d0198a79ab33362c3a6f6e1b372f820e9e65464a7336dba51b0
 # with torch 2.10.0+cu128 and vLLM importable, so the 1 path is a thing that has run
 # rather than a thing that should work.
-ARG INSTALL_TORCH_AND_VLLM=0
+#
+# SET TO 1 ON THE SteeringVectors BRANCH. The steering-vector job needs torch, and
+# with the default 0 it materialized ~4.5 GiB of torch + CUDA wheels at the top of
+# every run, on the billed GPU. Baking it here pays that once per image instead. The
+# run command still runs `uv sync --extra vllm ...` so it must keep that extra: uv
+# sync is exact and would otherwise remove the torch/vLLM this now provides.
+ARG INSTALL_TORCH_AND_VLLM=1
 RUN set -eux; \
     if [ "${INSTALL_TORCH_AND_VLLM}" != "1" ]; then exit 0; fi; \
     uv sync --frozen --no-default-groups --no-install-project --no-cache \
