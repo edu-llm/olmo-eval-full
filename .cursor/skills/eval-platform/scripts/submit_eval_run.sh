@@ -43,6 +43,12 @@
 #                                   a team lead.
 #   --eval-ref SHA                  full 40-hex commit of THIS repo to run.
 #                                   Defaults to HEAD. Must be pushed.
+#   --research-commit SHA|main      commit of the OLMo-core research repo whose
+#                                   image the job rides on (default: main). Set
+#                                   this to a training commit to eval on the exact
+#                                   image that produced a checkpoint -- required
+#                                   when the checkpoint's config imports modules
+#                                   (e.g. olmo_core.nn.memory.*) absent from main.
 # Optional -- how to behave:
 #   --dry-run                       validate, print the submission, dispatch nothing
 #   --no-wait                       dispatch and exit without polling for the run id
@@ -106,6 +112,8 @@ EVAL_REPO="edu-llm/olmo-eval-full"
 OUTPUTS_BUCKET="sbsandbox-intern-edullm-outputs"
 # Bound to OLMo-core because the image is. See WHY above.
 RESEARCH_REPOSITORY="OLMo-core"
+# Default image is built from OLMo-core@main; --research-commit overrides it so a
+# checkpoint can be evaluated on the exact image that trained it.
 RESEARCH_COMMIT="main"
 WORKLOAD_PROFILE="olmo-core-check"
 
@@ -156,6 +164,7 @@ while [[ $# -gt 0 ]]; do
     --compute-profile) COMPUTE_PROFILE="$2"; shift 2 ;;
     --runtime-hours) RUNTIME_HOURS="$2"; shift 2 ;;
     --eval-ref) EVAL_REF="$2"; shift 2 ;;
+    --research-commit) RESEARCH_COMMIT="$2"; shift 2 ;;
     --allow-any-task) ALLOW_ANY_TASK="1"; shift ;;
     --dry-run) DRY_RUN="1"; shift ;;
     --no-wait) NO_WAIT="1"; shift ;;
@@ -293,6 +302,12 @@ if ! git -C "${REPO_ROOT}" merge-base --is-ancestor "${EVAL_REF}" "@{upstream}" 
   echo "      so an unpushed commit fails at pip install rather than at submission." >&2
 fi
 TARBALL="https://github.com/${EVAL_REPO}/archive/${EVAL_REF}.tar.gz"
+
+# The research image commit: either the moving default or a full sha pinning the
+# exact image a checkpoint was trained on. A branch other than main is refused
+# because the image the job rides on must be reproducible from what is printed.
+[[ "${RESEARCH_COMMIT}" == "main" || "${RESEARCH_COMMIT}" =~ ^[0-9a-f]{40}$ ]] ||
+  die "--research-commit must be 'main' or a full 40-character commit sha, got: ${RESEARCH_COMMIT}"
 
 # --- batch size and overrides ---------------------------------------------
 # Both end up inside a single-quoted `bash -lc '...'`, so a value carrying a
