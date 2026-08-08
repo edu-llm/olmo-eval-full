@@ -134,12 +134,29 @@ RUN set -eux; \
 #
 # DEFAULTS TO none, WHICH REPRODUCES THE IMAGE THAT IS REGISTERED TODAY. Which backend
 # this account evaluates against is not a question a Dockerfile should answer, so this
-# leaves it open and makes the answer one word. Built at what is now spelled `vllm` on
-# run 31078822781, which published
-# sha256:efc0556f38845d0198a79ab33362c3a6f6e1b372f820e9e65464a7336dba51b0 with torch
-# 2.10.0+cu128 and vLLM importable, so that position is a thing that has run rather than
-# a thing that should work. `olmo-core` has been resolved against this lockfile and not
-# yet built, and the assertions below are where that stops being true or fails trying.
+# leaves it open and makes the answer one word.
+#
+# ALL THREE POSITIONS HAVE BEEN BUILT, WHICH IS WHY EVERY LINE ABOVE IS A STATEMENT
+# RATHER THAN A PLAN. Each was a push to an `edullm/**` branch with the default moved,
+# and the digests are what the registry holds:
+#
+#   vllm       run 31078822781, at what was then spelled 1
+#              sha256:efc0556f38845d0198a79ab33362c3a6f6e1b372f820e9e65464a7336dba51b0
+#              torch 2.10.0+cu128, vLLM importable
+#   none       run 31231187849
+#              sha256:5c6793ad431d5302ae27a03847492325f2ff72f2b2eb039f5c26afc1043de4ee
+#   olmo-core  run 31231575398
+#              sha256:60f95e9b6ff4b0a0e657059e346a706a615188238135dabe817cb62a9e557262
+#              torch 2.10.0+cu128, and _import_olmo_core() returning all eight of
+#              AutoTokenizer, AttentionBackendName, GenerationConfig, TokenizerConfig,
+#              TransformerGenerationModule, cached_path, get_checkpoint_metadata, torch
+#
+# THE olmo-core BUILD ALSO SETTLES THE PACKAGE COUNTS ABOVE, WHICH ARE DERIVED AND WERE
+# WORTH CHECKING AGAINST AN IMAGE. On top of the cached four-extra layer it uninstalled 2
+# and installed 41, which is 39 net onto 100 for 139 in the venv. The counts above are
+# 138, and the one they do not carry is ifbench: it is the only dependency in this
+# resolution named by git URL rather than by version, so it is not one of the `==` lines
+# they are taken from. Every position is short by that same one.
 #
 # The sets above are these, and reading one back costs no network and cannot rewrite the
 # lockfile, because --frozen:
