@@ -6,7 +6,12 @@ from pathlib import Path
 
 import pytest
 
-from olmo_eval.adaptive.bank import ATLAS_INPUTS_DIR, ENV_BANK_DIR
+from olmo_eval.adaptive.bank import (
+    _BANK_MARKER_FILE,
+    _PACKAGED_BANKS_DIR,
+    ATLAS_INPUTS_DIR,
+    ENV_BANK_DIR,
+)
 from olmo_eval.adaptive.benchmarks import (
     SCORING_GENERATIVE,
     SCORING_MCQ_LOGLIK,
@@ -96,10 +101,19 @@ def test_unknown_benchmark_raises() -> None:
         get_benchmark("does_not_exist")
 
 
+def _expected_default_dir(subdir: str) -> Path:
+    """Where a default resolve should land: the packaged bank when vendored,
+    else the source-checkout location."""
+    packaged = _PACKAGED_BANKS_DIR / subdir
+    if (packaged / _BANK_MARKER_FILE).is_file():
+        return packaged
+    return ATLAS_INPUTS_DIR / subdir
+
+
 def test_bank_dir_defaults_to_subdir(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv(ENV_BANK_DIR, raising=False)
-    assert bank_dir_for(get_benchmark("hellaswag")) == ATLAS_INPUTS_DIR / "hellaswag_2pl"
-    assert bank_dir_for(get_benchmark("arc_challenge")) == ATLAS_INPUTS_DIR / "arc"
+    assert bank_dir_for(get_benchmark("hellaswag")) == _expected_default_dir("hellaswag_2pl")
+    assert bank_dir_for(get_benchmark("arc_challenge")) == _expected_default_dir("arc")
 
 
 def test_hellaswag_resolves_to_the_2pl_bank(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -137,4 +151,4 @@ def test_env_override_is_arc_only(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(ENV_BANK_DIR, "/env/arc/bank")
     assert bank_dir_for(get_benchmark("arc_challenge")) == Path("/env/arc/bank")
     # A non-arc benchmark ignores the env and resolves to its own subdir.
-    assert bank_dir_for(get_benchmark("winogrande")) == ATLAS_INPUTS_DIR / "winogrande"
+    assert bank_dir_for(get_benchmark("winogrande")) == _expected_default_dir("winogrande")

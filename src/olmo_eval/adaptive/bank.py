@@ -19,9 +19,18 @@ import numpy as np
 
 # repo_root/src/olmo_eval/adaptive/bank.py -> parents[3] == repo root
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-#: Root holding one calibrated-bank subdirectory per ATLAS benchmark.
+#: Root holding one calibrated-bank subdirectory per ATLAS benchmark. This is
+#: the source-checkout location; it is NOT present in an installed (site-packages)
+#: layout, where the calibrated CSVs ship inside the package instead (see
+#: ``_PACKAGED_BANKS_DIR``).
 ATLAS_INPUTS_DIR = _REPO_ROOT / "AdaptiveTesting" / "Inputs" / "ATLAS"
+#: Calibrated banks vendored as package data, so a wheel/site-packages install
+#: (the platform image) resolves them next to the code rather than relative to a
+#: repo root that no longer exists once installed.
+_PACKAGED_BANKS_DIR = Path(__file__).resolve().parent / "banks"
 _DEFAULT_ARC_DIR = ATLAS_INPUTS_DIR / "arc"
+#: Presence of this file marks a directory as a real calibrated bank.
+_BANK_MARKER_FILE = "atlas_idx_to_question_id.csv"
 #: Legacy single-bank override; honored for the ARC-compatible default only.
 ENV_BANK_DIR = "OLMO_EVAL_ATLAS_BANK_DIR"
 _ENV_BANK_DIR = ENV_BANK_DIR  # backwards-compatible alias
@@ -76,7 +85,11 @@ def resolve_bank_dir(
     """Resolve a bank directory for a benchmark subdir.
 
     Precedence: explicit ``bank_dir`` > ``$OLMO_EVAL_ATLAS_BANK_DIR`` (only when
-    ``use_env``) > ``AdaptiveTesting/Inputs/ATLAS/<subdir>``. The environment
+    ``use_env``) > the packaged bank vendored in the wheel > the source-checkout
+    ``AdaptiveTesting/Inputs/ATLAS/<subdir>``. The packaged copy is preferred
+    over the source tree because it is the only one present in an installed
+    layout; the source tree wins only when the package data is absent (an
+    editable checkout that has not vendored a given bank). The environment
     override is a single path, so callers should enable it only for the ARC
     default to keep the historical behavior and avoid one benchmark's override
     hijacking another's bank.
@@ -87,6 +100,9 @@ def resolve_bank_dir(
         env = os.environ.get(ENV_BANK_DIR)
         if env:
             return Path(env)
+    packaged = _PACKAGED_BANKS_DIR / subdir
+    if (packaged / _BANK_MARKER_FILE).is_file():
+        return packaged
     return ATLAS_INPUTS_DIR / subdir
 
 

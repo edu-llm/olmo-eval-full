@@ -135,6 +135,9 @@ conflicts = [
 [tool.setuptools.package-data]
 "olmo_eval.analysis.pairwise_viewer" = ["static/*.css", "static/*.js", "templates/*.html"]
 "olmo_eval.evals.tasks" = ["*.jsonl"]
+# Calibrated ATLAS item banks vendored so the CAT report resolves them in an
+# installed (site-packages) layout, not only from a source checkout.
+"olmo_eval.adaptive" = ["banks/*/*.csv"]
 
 [dependency-groups]
 dev = [

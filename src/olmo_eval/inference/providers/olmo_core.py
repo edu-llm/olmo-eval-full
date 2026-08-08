@@ -7,7 +7,7 @@ import gc
 import logging
 from contextlib import suppress
 from dataclasses import replace
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import olmo_eval.inference.providers.olmo_core_utils as core_utils
 from olmo_eval.common.debug import is_debug_requests
@@ -25,6 +25,18 @@ logger = logging.getLogger(__name__)
 
 _OLMO_CORE_GENERATION_LOGGER = "olmo_core.generate.generation_module.transformer.generation_module"
 _OLMO_CORE_CONFIG_LOG_PREFIXES = ("TransformerConfig(", "GenerationConfig(")
+
+
+def _is_kv_cache_unsupported_error(error: BaseException) -> bool:
+    """Whether ``error`` is OLMo-core refusing to KV-cache under this backend.
+
+    The Torch fallback attention backend (selected when a fused/flash backend is
+    unavailable, e.g. an image without flash-attn) raises at generate time
+    because it cannot serve a KV cache. Matched on the message rather than a
+    type so a backend rename does not silently turn the graceful fallback back
+    into a hard failure.
+    """
+    return "kv cach" in str(error).lower()
 
 
 class _OlmoCoreConfigLogFilter(logging.Filter):
@@ -142,6 +154,10 @@ class OlmoCoreProvider(InferenceProvider):
         if getattr(self.tokenizer, "eos_token_id", None) is None:
             self.tokenizer.eos_token_id = resolved_eos_token_id
         self.use_cache = use_cache
+        # Flipped off the first time generation hits an attention backend that
+        # cannot KV-cache, so every later chunk is built cache-free instead of
+        # each one failing and retrying.
+        self._kv_cache_supported = True
         self.share_logprob_forwards = share_logprob_forwards
         self.batch_size = batch_size
         self.chat_template = chat_template
@@ -394,7 +410,7 @@ class OlmoCoreProvider(InferenceProvider):
             "temperature": params.temperature if do_sample else 0.0,
             "top_k": params.top_k if do_sample and params.top_k is not None else -1,
             "top_p": params.top_p if do_sample and params.top_p is not None else 1.0,
-            "use_cache": self.use_cache,
+            "use_cache": self.use_cache and self._kv_cache_supported,
         }
 
     def _decode(self, token_ids: list[int], *, skip_special_tokens: bool) -> str:
@@ -549,6 +565,53 @@ class OlmoCoreProvider(InferenceProvider):
         self._free_inference_cache()
         return results
 
+    def _generate_batch(
+        self,
+        *,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        generation_kwargs: dict[str, object],
+    ) -> tuple[Any, object | None, Any]:
+        """Run OLMo-core generation, falling back to cache-free on backends
+        that cannot KV-cache.
+
+        Some attention backends (the Torch fallback used when no fused/flash
+        backend is available) raise at generate time rather than at load time.
+        Generation is still correct without a KV cache -- only slower -- so the
+        first such failure disables the cache for this provider and retries, and
+        every later chunk is built cache-free rather than failing again.
+        """
+        try:
+            return self.generation_module.generate_batch(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                return_logprobs=True,
+                completions_only=False,
+                log_timing=False,
+                **generation_kwargs,
+            )
+        except RuntimeError as error:
+            if not (
+                self._kv_cache_supported
+                and generation_kwargs.get("use_cache")
+                and _is_kv_cache_unsupported_error(error)
+            ):
+                raise
+            logger.warning(
+                "OLMo-core attention backend does not support KV caching; "
+                "disabling use_cache and retrying generation without it (%s).",
+                error,
+            )
+            self._kv_cache_supported = False
+            return self.generation_module.generate_batch(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                return_logprobs=True,
+                completions_only=False,
+                log_timing=False,
+                **{**generation_kwargs, "use_cache": False},
+            )
+
     def _generate_chunk(
         self,
         requests: list[LMRequest],
@@ -571,13 +634,10 @@ class OlmoCoreProvider(InferenceProvider):
         prompt_len = input_ids.shape[1]
         generation_kwargs["max_length"] = prompt_len + params.max_tokens
 
-        generated_ids, _, logprobs = self.generation_module.generate_batch(
+        generated_ids, _, logprobs = self._generate_batch(
             input_ids=input_ids,
             attention_mask=attention_mask,
-            return_logprobs=True,
-            completions_only=False,
-            log_timing=False,
-            **generation_kwargs,
+            generation_kwargs=generation_kwargs,
         )
 
         generated_rows = [row[prompt_len:] for row in cast(list[list[int]], generated_ids.tolist())]
