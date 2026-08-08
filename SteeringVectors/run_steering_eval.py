@@ -318,7 +318,12 @@ def convert_olmo_core_to_hf(local_dir: Path, out_dir: Path) -> Path:
         load_model_and_optim_state(str(local_dir / "model_and_optim"), model)
 
         out_dir.mkdir(parents=True, exist_ok=True)
-        save_hf_model(str(out_dir), model.state_dict(), model, dtype=DType.bfloat16)
+        # save_overwrite: out_dir is created just above (for the tokenizer save
+        # below), and save_hf_model raises FileExistsError on an existing dir
+        # unless told the directory is ours to write into.
+        save_hf_model(
+            str(out_dir), model.state_dict(), model, dtype=DType.bfloat16, save_overwrite=True
+        )
 
         dataset = config.get("dataset", {})
         tok_cfg = (
@@ -474,10 +479,17 @@ def build_steering_vectors(cfg: Config, tokenizer, model) -> dict[int, Any]:
 
 
 def _make_intervene_hook(direction, alpha: float, token_pos: int = -1):
-    """Reproduces eval_trustworthiness.create_intervene_hook."""
+    """Reproduces eval_trustworthiness.create_intervene_hook.
+
+    A decoder block returns either a ``(hidden, ...)`` tuple or a bare hidden
+    tensor depending on the transformers version, and the steering direction is
+    built in float32 while the model may run in bf16; both are reconciled here so
+    the in-place add neither mis-indexes a tensor nor fails an unsafe dtype cast.
+    """
 
     def hook(_module, _inputs, output):
-        output[0][:, token_pos, :] += direction * alpha
+        hidden = output[0] if isinstance(output, tuple) else output
+        hidden[:, token_pos, :] += (direction * alpha).to(dtype=hidden.dtype, device=hidden.device)
         return output
 
     return hook
