@@ -220,6 +220,11 @@ biggen_results_cache.parquet
 # ---------------------------------------------------------------------------
 reports/eap_unidim_correctness_only_tutorbench/
 
+# Cross-branch scratch report dirs left in the working tree during judge-error work
+# (infobench = other branch; tutoreval oos grid). Excluded after the reports/ re-include.
+reports/infobench_oos_grid_unidim/
+reports/eap_oos_grid_tutoreval_unidim/
+
 # ---------------------------------------------------------------------------
 # 2-skill EAP scratch: data + figures are fully duplicated into
 # tutorbench_calibration/two_skill_OUTDATED/, so these loose working dirs are

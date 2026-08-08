@@ -144,5 +144,12 @@ AdaptiveTesting/Inputs/Open/LLM-Judge/*.tar
 AdaptiveTesting/Test/Inference/*.zip
 AdaptiveTesting/Experiments/**/.mplcache/
 
+# Judge-error work (frq/tutorbench): large untracked grading + cross-branch data.
+# Results live on S3 / other machines; keep the small reproducible _recovery/ artifacts.
+eduLLM-Evals/TutorEvalGrade/
+eduLLM-Evals/_scratch_infobench_verify/
+eduLLM-Evals/graderValidationStuff/judge-v3-results/
+eduLLM-Evals/graderValidationStuff/outputs/
+
 # Local secrets (never commit)
 .apienv
