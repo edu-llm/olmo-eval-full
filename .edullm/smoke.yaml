@@ -1,0 +1,55 @@
+# eduLLM job: Phase 5. Convert one OLMo-core checkpoint, load it, and stop.
+#
+# A SECOND SPEC RATHER THAN AN EDIT TO run.yaml. `edullm check` and `edullm submit` both
+# take --spec, so the CAT job and this one can differ in their command without either
+# being a temporary state of the other. Editing run.yaml to smoke and editing it back
+# would mean the committed spec is whichever edit was last pushed, and the platform
+# builds from the commit -- so the file that says what the CAT run does would spend part
+# of its life saying something else. Two files, two commands, one image.
+#
+# WHAT THIS BUYS OVER JUST RUNNING THE CAT. Conversion is the first thing run.yaml's
+# command does, so a converter bug fails that job early and cheaply too, and on cost
+# alone this spec is not worth its own submission. What it buys is a smaller suspect
+# list. The CAT job can fail in conversion, in the bank join, in item selection or in
+# scoring; this one has no bank, no items and no CAT loop, so its failure is the
+# converter and its success removes the converter from the next failure's suspects.
+#
+# SAME COMPUTE AS THE CAT RUN, DELIBERATELY. Conversion itself is CPU-only -- the model
+# is built with init_device="cpu", the process group is gloo rather than nccl, and
+# save_hf_model is handed a CPU state dict -- so the L4 is idle for that whole stage and
+# a CPU shape would do. It runs here anyway because the forward pass at the end is the
+# one thing a CPU venue could not rehearse: whether these bfloat16 weights compute on
+# the card the CAT will use. cpu-32vcpu also prices higher per hour than gpu-1xl4, so
+# the cheap-shape argument for splitting the venue was never true either.
+#
+# The environment notes on the CAT spec all apply here unchanged and are not repeated:
+# the sync must keep its extras or it uninstalls what INSTALL_OLMO_CORE=1 baked, the
+# fork replaces PyPI ai2-olmo-core 2.4.0 which cannot parse this checkpoint's config,
+# the get_hf_config patch is applied in-process by the converter rather than by a step
+# here, and conversion resolves the tokenizer against the HuggingFace Hub so a node with
+# S3 but no huggingface.co fails after writing the weights. See .edullm/run.yaml.
+#
+# --dtype bfloat16 is named for the same reason it is named there: the platform's
+# bfloat16_not_in_the_hardware guard reads the text of this command and nothing else, so
+# a precision chosen in Python is invisible to it and a Turing shape would be admitted
+# and then die. With the flag present, --compute gpu-1xt4 is refused before it costs
+# anything, which is the behaviour we want from a job whose entire purpose is to find
+# out whether this precision works.
+#
+# Two hours is the profile's ceiling and is left alone. The work is a 1.74 GiB pull and
+# seconds of conversion, so the bound will not bind; a tighter one would only trade a
+# saving that pricing shows is pennies against the risk of killing the run mid-download
+# and learning nothing for the money.
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
+  && export UV_NO_SYNC=1
+  && python .edullm/conversion_smoke.py
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --dtype bfloat16
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"'
