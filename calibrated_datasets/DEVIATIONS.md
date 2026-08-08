@@ -14,6 +14,13 @@ Three entries below record deviations that were deliberate and are still open. T
 record either parity or a fact about the calibration that could not be recovered from
 what was vendored.
 
+**One entry records a deviation that was none of those and has been corrected.** `gpqa`
+was scored generatively, by chain of thought, against difficulties fit behind a
+multiple-choice log-likelihood ranking; on 2026-08-08 it was re-vendored as MCQ. That was
+not a preference between two defensible conventions but a mismatch nobody had noticed,
+because the task's default was mistaken for the only available statement about how the
+bank was calibrated. The harvest turned out to say otherwise, and to be readable.
+
 **All nine are runnable, and one of them is not trustworthy.** `gpqa` was blocked on a
 HuggingFace token scope until that scope was granted; `hellaswag`, `winogrande` and
 `gsm8k` were blocked until their bridges were rebuilt from Open LLM Leaderboard v1
@@ -98,18 +105,62 @@ templated half lands in theta with a healthy standard error beside it, and chat 
 gain heavily from the template on this benchmark specifically — so a theta from this
 bank is on the completion scale and is not comparable with a chat-format one.
 
-`gpqa` is deliberately **not** flipped with it. It has no completion form to fall back
-to: lm-eval's `leaderboard_gpqa` is `output_type: multiple_choice`, ranking `(A)`–`(D)`
-by log-likelihood with no system prompt for any model, so the base-model convention
-there is the `:mc` modality this repo does not select rather than a chain of thought
-with the template stripped off. Pasting the system prompt into a completion prompt would
-be a framing nothing was calibrated under, and
-`GenerationConfig.__post_init__` refuses it. Score an instruct checkpoint for `gpqa`.
+`gpqa` was deliberately **not** flipped with it, and then stopped being generative
+altogether; see its own entry below.
 
 ## `gpqa`
 
+- Multiple choice since 2026-08-08; generative before, on the wrong convention.
 - No Research CAT precedent; 3PL keeps 579 of 1,192.
 - Nested subsets deduplicated to 395; extended over main over diamond.
+
+The one bank here whose *modality* has been corrected rather than its prompt, so it is
+worth the extra lines too.
+
+It was vendored as generative until 2026-08-08, taking the registered olmo-eval task's
+default — an expert-scientist system turn asking for step-by-step reasoning ending in
+`ANSWER: X`, then letter extraction. That was chosen because Research never wired GPQA
+into its CAT and the task's default looked like the only statement available. It was not.
+The harvest is itself a record of the convention: each cell of the fit's own response
+matrix is the Open LLM Leaderboard v2 `acc_norm` outcome of lm-evaluation-harness's
+`leaderboard_gpqa` for that document, which agrees with the leaderboard's per-example
+records on 1,192 of 1,192 columns for both `microsoft/Phi-3-mini-4k-instruct` and
+`01-ai/Yi-1.5-6B-Chat`. That task is `output_type: multiple_choice`, ranking `(A)`–`(D)`
+by log-likelihood at 0-shot with no system prompt for any submission. So the difficulties
+were fit behind a four-way ranking of option letters, chain-of-thought grading was a
+convention mismatch EAP absorbed entirely into theta, and it also put the bank out of
+reach of the base checkpoints it is wanted for, since a chain of thought needs a chat
+template. The run-time convention is now `prompt_style: gpqa` under
+`continuation_logprob_per_character`, which is `acc_norm`, and it reproduces the harvest's
+recorded `arg_0` and `arg_1` byte for byte for a pretrained submission.
+
+**The option ordering is the risk this carried and it is the part to check.**
+`GPQATask.process_doc` shuffles the options per question, so `gold_index` indexes one
+permutation and a rotated choice list is not a broken bank but a working one measuring
+the wrong thing — every count matches, the CAT converges, the standard error collapses on
+schedule and the theta is noise. The generative stems had frozen that ordering as a
+lettered block, so it was *transferred* rather than re-derived:
+`scripts/freeze_choice_order.py` parsed all 395 stems back into `(question, choices)`
+pairs, demanding a unique decomposition and a byte-identical round trip for each, into
+`styles/uni_mcq/bridges/gpqa.choice_order.json`, and `vendor_bank.check_choice_order`
+holds every re-vendored item to it. Today's fresh enumeration matched that file on all
+395 items — texts, order, gold, and a digest of the whole stem.
+
+Because both halves of a transfer are this repo's, two outside checks sit beside it, and
+the control freezes the evidence for both so the tests can re-run them offline. Our four
+options equal GPQA's own `Correct Answer` and `Incorrect Answer` columns as a set on
+395 of 395, and our `gold_index` names the `Correct Answer` on 395 of 395; rotating the
+gold breaks that on 390, the five survivors being questions whose source data repeats an
+option. And replaying `Phi-3-mini-4k-instruct`'s own per-option log-likelihoods through
+our choice list and gold reproduces the leaderboard's `acc_norm` on 388 of 388 replayable
+items and the calibration matrix cell each difficulty was fit from on 388 of 388, against
+178 of 388 with the gold rotated. The seven it cannot reach are the ones lm-eval's own
+preprocessing empties by deleting bracketed spans.
+
+`scripts/check_bridge_alignment.py` reads −0.754 against a scrambled control of
++0.002 ± 0.047, which attests the parameter join and says nothing about option order:
+its p-values come from the calibration matrix rather than from re-scoring, so a permuted
+choice list would leave it unchanged. The two checks above are what cover the ordering.
 
 ## `musr`
 

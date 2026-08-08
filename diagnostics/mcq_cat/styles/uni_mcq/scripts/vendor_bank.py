@@ -19,17 +19,25 @@ run-time behavior matches the published research results:
    ``scripts/build_leaderboard_bridge.py``.
 3. Enumerate the olmo-eval task to recover the item text -- choices and a gold index
    for an MCQ dataset, and for a generative one whatever its grader decides on, which
-   is a gold answer string for most, a set of instruction constraints for IFEval, and
-   for GPQA a shuffled choice block frozen into the stem beside the letter that answers
-   it -- then intersect with the bank.
+   is a gold answer string for most and a set of instruction constraints for IFEval --
+   then intersect with the bank.
 
 A dataset declaring ``frozen_prompt`` takes step 3 one further and keeps the whole
 rendered prompt as its stem, not just the question. BBH is the case that needs it: its
 3-shot block sits behind a description that differs per *subtask*, which no per-dataset
 setting can express, so the alternative was run-time few-shot machinery that could
-disagree with the bank about the exemplars. Freezing it here is the same trade GPQA's
-choice block makes -- the task's rendering stops reaching the bank, and in exchange a run
-cannot present the item any way but the one its difficulty was estimated behind.
+disagree with the bank about the exemplars. The task's rendering stops reaching the bank,
+and in exchange a run cannot present the item any way but the one its difficulty was
+estimated behind.
+
+A dataset declaring ``choice_order_control`` adds a guard rather than a step, and it is
+the one guard here whose absence would be silent. GPQA's options are shuffled per
+question inside ``process_doc``, so its ``gold_index`` is meaningful against exactly one
+permutation and a re-enumeration under a moved seed would produce a different one --
+which every other check in this file would pass. :func:`check_choice_order` holds each
+vendored choice list to the ordering committed in ``bridges/<dataset>.choice_order.json``
+and refuses to write on any departure; see that function and
+``scripts/freeze_choice_order.py``.
 
 Step 3 has two forms, and a dataset takes exactly one. Most banks map onto a single
 task and go through :func:`load_task_items`. A bank calibrated across several tasks
@@ -65,7 +73,7 @@ import math
 import subprocess
 import sys
 from collections import Counter
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from functools import partial
@@ -84,6 +92,7 @@ from ..datasets import (
     get_spec,
     supported_names,
 )
+from . import freeze_choice_order
 
 logging.basicConfig(
     level=logging.INFO,
@@ -155,6 +164,10 @@ class VendorResult:
     upstream_bank_rows: int = 0
     bridge_rows: int = 0
     ungradable_instances: int = 0
+    #: Items held to a committed option ordering, 0 for a bank with no such control.
+    #: Recorded in the manifest so a reader can tell a bank whose choice order was
+    #: verified from one where the check simply did not apply.
+    choice_order_checked: int = 0
 
 
 def git_show(ref: str, path: str, *, repo: Path = REPO_ROOT) -> str:
@@ -672,6 +685,113 @@ def check_choice_gold(item_id: str, instance: Any, gold_answer: str) -> None:
             f"choice is correct, so the shuffled block and the letter that answers it "
             f"came from different orderings. Nothing was written."
         )
+
+
+def check_choice_order(spec: DatasetSpec, items: Sequence[dict[str, Any]]) -> int:
+    """Hold every vendored choice list to the ordering frozen before the bank moved.
+
+    The guard for the one hazard nothing else in this pipeline can see. An MCQ item's
+    options are shuffled per question upstream, ``gold_index`` indexes that shuffle and
+    nothing else, and a choice list in the wrong order is not a broken bank -- it is a
+    working one measuring the wrong thing. Every count matches, the join is total, the
+    overlap floor is cleared, Fisher selection runs on the real difficulties, the CAT
+    converges and the standard error collapses on schedule. The theta is noise.
+
+    So the ordering is not re-derived and then sanity-checked; it is transferred and then
+    *enforced*. ``bridges/<dataset>.choice_order.json`` holds the option texts and gold
+    letter parsed out of the stems the bank shipped before this modality change, and this
+    refuses to write anything that departs from them. Three separate departures are
+    caught, because they fail in different directions and only one of them looks wrong:
+    a choice list whose texts differ, a choice list holding the right texts in a
+    different order, and a gold index naming a different option than the frozen letter
+    did. The third is the one that would otherwise pass every test in the suite.
+
+    The stem digest is checked too, and it is what makes the other three more than a
+    comparison against a file this repo also wrote. It ties the question now being
+    vendored to the *whole* stem the control was read out of: the new question and the
+    frozen block have to reassemble that stem byte for byte, so a question that has
+    drifted, a block that was parsed at the wrong boundary, or a control regenerated
+    against a different bank all fail here rather than agreeing with themselves.
+
+    Coverage is required in both directions. An item with no frozen ordering is one this
+    guard cannot speak for, and a frozen ordering with no item means the bank moved
+    underneath the control, which is exactly when it stops being evidence.
+
+    Returns:
+        How many items were checked, for the log and for the manifest.
+
+    Raises:
+        SystemExit: On any mismatch, any uncovered item and any unused control entry.
+    """
+    control = freeze_choice_order.load_control(spec.name)
+    vendored = {str(item["id"]): item for item in items}
+
+    uncovered = sorted(set(vendored) - set(control))
+    unused = sorted(set(control) - set(vendored))
+    if uncovered or unused:
+        raise SystemExit(
+            f"{spec.name}: the option-ordering control covers {len(control)} items and "
+            f"this vendoring produced {len(vendored)}. "
+            f"{len(uncovered)} items have no frozen ordering (for example "
+            f"{uncovered[:3]}) and {len(unused)} frozen orderings have no item (for "
+            f"example {unused[:3]}). The control is only evidence about the bank it was "
+            f"read from, so a bank it does not cover item for item is one whose choice "
+            f"order is unverified. Nothing was written."
+        )
+
+    for item_id, frozen in control.items():
+        item = vendored[item_id]
+        choices = list(item["choices"])
+        gold_index = int(item["gold_index"])
+
+        if choices != frozen.choices:
+            same_set = sorted(choices) == sorted(frozen.choices)
+            raise SystemExit(
+                f"Item {item_id!r} was vendored with choices {choices!r} and the frozen "
+                f"ordering is {frozen.choices!r}. "
+                + (
+                    "The options are the same and the order is not, which is the failure "
+                    "this check exists for: gold_index indexes one permutation, so every "
+                    "item would be scored against the wrong option while every count, "
+                    "every join and every standard error stayed healthy. The task's "
+                    "per-question shuffle has moved -- its seed, its enumeration index or "
+                    "its choice construction. "
+                    if same_set
+                    else "The option texts themselves differ, so the task's preprocessing "
+                    "has changed and these are not the items the bank holds difficulties "
+                    "for. "
+                )
+                + "Nothing was written."
+            )
+        if gold_index != frozen.gold_index:
+            raise SystemExit(
+                f"Item {item_id!r} was vendored with gold_index {gold_index} "
+                f"({choices[gold_index]!r}) and the frozen ordering names "
+                f"{frozen.gold_letter} ({frozen.choices[frozen.gold_index]!r}). The "
+                f"choice list agrees and the answer does not, which is the quietest way "
+                f"this bank can be wrong: nothing downstream compares the two, so the "
+                f"run would score every item against a distractor and report a confident "
+                f"theta. Nothing was written."
+            )
+
+        stem = str(item["question"]) + freeze_choice_order.BLOCK_SEPARATOR
+        stem += freeze_choice_order.render_block(frozen.choices)
+        if freeze_choice_order.sha256(stem) != frozen.stem_sha256:
+            raise SystemExit(
+                f"Item {item_id!r} has a question that does not reassemble the stem its "
+                f"frozen ordering was read out of. The choices match, so what has moved "
+                f"is the question text or the boundary the control was parsed at, and "
+                f"either way the ordering above is being transferred between two "
+                f"different items. Nothing was written."
+            )
+
+    log.info(
+        "Choice order: %d of %d %s items match the frozen ordering, texts, order and gold",
+        len(control),
+        len(vendored),
+        spec.name,
+    )
+    return len(control)
 
 
 def generative_record(item_id: str, instance: Any, *, answer_type: str) -> dict[str, Any] | None:
@@ -1368,6 +1488,12 @@ def vendor(
         )
         items.append(task_items[bank_item.item_id])
 
+    # Last, and after deduplication rather than before it, because what has to be
+    # verified is the choice list actually about to be written. Checking the pre-dedup
+    # set would leave the surviving copy of a repeated question unexamined, which on this
+    # bank is 395 of the 579 rows -- the whole of it.
+    order_checked = check_choice_order(spec, items) if spec.choice_order_control else 0
+
     return VendorResult(
         items=items,
         params=params,
@@ -1375,6 +1501,7 @@ def vendor(
         upstream_bank_rows=upstream_rows,
         bridge_rows=bridge.rows,
         ungradable_instances=ungradable,
+        choice_order_checked=order_checked,
     )
 
 
@@ -1437,6 +1564,13 @@ def write_artifacts(
         "ungradable_instances": result.ungradable_instances,
         "positional_ids": spec.positional_ids,
         "frozen_prompt": spec.frozen_prompt,
+        # How many items had their option ordering held to a committed control, and
+        # ``null`` where no control applies. Recorded rather than inferred from the
+        # spec because it is a statement about this vendoring run: a bank whose
+        # gold_index was verified against a frozen permutation and one where the
+        # question never arose are indistinguishable on disk otherwise, and only one of
+        # them can be believed about which option its difficulties describe.
+        "choice_order_checked": result.choice_order_checked or None,
         convention.CONVENTION_KEY: convention.manifest_block(
             spec, convention.load_config(), recorded_by=VENDOR_RECORDED_BY
         ),

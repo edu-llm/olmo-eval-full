@@ -35,6 +35,7 @@ import pytest
 from ....base import BenchmarkItem
 from ....common import cat_loop, generative, grading, inference
 from .. import style as style_mod
+from ..datasets import SUPPORTED
 from ..style import UniMcqStyle
 from .conftest import CALIBRATED_DATASETS, SimGenerativeTaker, vendored_params
 
@@ -426,7 +427,11 @@ class TestChatFormatting:
 
     @staticmethod
     def chat_config() -> generative.GenerationConfig:
-        """gpqa's shape: the one bank here still scored through a chat template."""
+        """The shape gpqa was scored in until its modality changed.
+
+        Constructed rather than resolved from ``config.yaml``, because no bank selects
+        it any more and the guard still has to hold for the next one that would.
+        """
         return generative.GenerationConfig(
             num_fewshot=0,
             prompt_style="gpqa",
@@ -493,24 +498,30 @@ class TestChatFormatting:
         assert config.chat_format is False
         assert fake_stack.loaded == ["weights"]
 
-    def test_gpqa_still_refuses_one_because_it_has_no_completion_form(self, fake_stack) -> None:
-        """The asymmetry, pinned so it reads as a decision rather than an omission.
+    def test_the_chat_shape_is_still_refused_for_anything_that_asks_for_it(
+        self, fake_stack
+    ) -> None:
+        """The guard outlived both banks that needed it, and has to keep working.
 
-        lm-eval evaluates GPQA as a log-likelihood ranking over the lettered options
-        with no system prompt for any model, so there is no completion presentation to
-        adopt the way ifeval's was adopted -- only the chain-of-thought one, whose
-        instruction the grader depends on and which needs a template to carry. A base
-        checkpoint is refused here on purpose, and the way to run this bank is an
-        instruct checkpoint.
+        GPQA was this test's subject until 2026-08-08: it kept ``chat_format`` after
+        ifeval gave it up, so a base checkpoint was refused here and the bank was
+        unreachable. That was resolved by changing its modality rather than its framing
+        -- lm-eval scores GPQA as a log-likelihood ranking, which needs no template --
+        so no bank sets ``chat_format`` today. The refusal still matters, because the
+        thing it prevents is silent: sending the prompt raw would complete, grade and
+        report, with the standing instruction simply missing.
         """
         fake_stack(fake_stack.plain())
-        config = grading._apply_generation_overrides(
-            grading.GradingSettings(), UniMcqStyle().generation_settings, dataset="gpqa"
-        ).generation
 
-        assert config.chat_format is True
+        assert not any(
+            grading._apply_generation_overrides(
+                grading.GradingSettings(), UniMcqStyle().generation_settings, dataset=name
+            ).generation.chat_format
+            for name, spec in SUPPORTED.items()
+            if spec.modality == grading.GENERATIVE
+        )
         with pytest.raises(ValueError, match="defines no chat template"):
-            generative._HFCompleter(Path("/ckpt"), config)
+            generative._HFCompleter(Path("/ckpt"), self.chat_config())
 
 
 class TestVendoredBank:

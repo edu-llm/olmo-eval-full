@@ -76,10 +76,12 @@ max_items: 40
 # common/inference.py hold the layouts and the rules; the entries below say which pair
 # each benchmark takes.
 #
-# score_normalization is omitted wherever the task declares LogprobMCAccuracyMetric,
-# which is the default and is what three of these five take. It is spelled out for musr
-# and bbh, the two whose tasks declare LogprobPerCharMCAccuracyMetric, so the exception
-# is visible where it applies rather than restated three times where it does not.
+# score_normalization is omitted wherever the unnormalized sum is right, which is the
+# default and is what three of these six take. It is spelled out for musr, bbh and gpqa,
+# so the exception is visible where it applies rather than restated three times where it
+# does not. The first two take it because their tasks declare
+# LogprobPerCharMCAccuracyMetric; gpqa takes it on the leaderboard's authority rather than
+# the task's, which is a weaker warrant and is spelled out in its entry.
 mcq:
   datasets:
     # olmo-eval's shared evals/tasks/common/format_helpers.format_rc, which
@@ -126,8 +128,9 @@ mcq:
     # description that differs per *subtask*, and this map is per dataset, so there is no
     # entry that could express it. Vendoring calls each bbh task's own format_request and
     # freezes the rendered prompt -- description, three fixed exemplars, the item and its
-    # trailing `A:` cue -- into the item's stem, exactly as gpqa freezes its shuffled
-    # choice block. All that is left is to append ` {choice}`.
+    # trailing `A:` cue -- into the item's stem. All that is left is to append
+    # ` {choice}`. It is the last bank that does this; gpqa froze its shuffled choice
+    # block the same way while it was generative and now ships a real choice list.
     #
     # The style's num_fewshot is 3, not 0, and that is recorded in the manifest: 0 would
     # describe a prompt no model is shown, and the mismatch a stem-framing style would
@@ -139,6 +142,34 @@ mcq:
       # lengths suggest: most subtasks rank bare option letters of equal length, where
       # the two rules agree, but object_counting ranks "0" against "18" and
       # boolean_expressions "True" against "False", and those the divisor decides.
+      score_normalization: continuation_logprob_per_character
+
+    # lm-evaluation-harness's leaderboard_gpqa, which is what this bank was calibrated
+    # under and is deliberately *not* what the registered olmo-eval task does. The task
+    # defaults to chat plus chain of thought and offers log-likelihood only as a `:mc`
+    # variant, and that variant is a third convention again: it writes "A. choice" labels
+    # with no framing sentence and no answer cue, and ranks the choice *text* under a
+    # plain AccuracyMetric. Neither is the presentation these difficulties were estimated
+    # behind, so neither is reproduced here. See calibrated_datasets/DEVIATIONS.md.
+    #
+    # The layout is taken from the leaderboard's own recorded arguments rather than from
+    # the template that generated them:
+    #   "What is the correct answer to this question:{question}\n\nChoices:\n(A) ...
+    #    \n(D) ...\nAnswer: " + " (A)"
+    # The missing space after "question:" and the two-space gap at the cue are upstream's
+    # and are kept; see LetteredChoicesStyle.
+    gpqa:
+      prompt_style: gpqa
+      # acc_norm, which is what Open LLM Leaderboard v2 reported GPQA under and what
+      # `metric_list` in lm-eval's leaderboard/gpqa/_template_yaml declares. Named on the
+      # leaderboard's authority rather than the olmo-eval task's, which is the weaker of
+      # the two warrants the other acc_norm banks have: gpqa_*:mc declares an unnormalized
+      # AccuracyMetric, so the task and the harvest disagree and the harvest is what the
+      # difficulties came from. Against these continuations the rule is nearly inert in
+      # any case -- the four scored spans are " (A)".." (D)", four characters each -- so it
+      # divides every choice by the same number and can only change a ranking through
+      # tokenizer edge cases. It is set because the calibration set it, not because it
+      # decides items.
       score_normalization: continuation_logprob_per_character
 
 # Settings for the generative grader, used only when the resolved bank's modality is
@@ -241,53 +272,29 @@ generative:
       # constraints -- scoring the harness's truncation as the model's mistake.
       stop_sequences: []
 
-    # Reproduces the default of olmo-eval's gpqa tasks
-    # (src/olmo_eval/evals/tasks/gpqa.py), which is chat plus chain of thought and not
-    # the log-likelihood ranking its :mc variant would give. Research never wired GPQA
-    # into its CAT, so there is no precedent to prefer over the task's own default.
-    gpqa:
-      # 0-shot: the registered tasks set no num_fewshot and their formatter is handed
-      # whatever get_fewshot returns, which is nothing.
-      num_fewshot: 0
-      # The item's stem is already the whole user turn -- question plus the lettered
-      # choice block, frozen at vendoring time in the order the per-question shuffle
-      # produced, because the gold letter only indexes that one ordering.
-      prompt_style: gpqa
-      # Stays true where ifeval's went false, so this bank still refuses a checkpoint
-      # with no chat template. The asymmetry is not an oversight and the two banks are
-      # not in the same position.
-      #
-      # IFEval had a completion form to fall back to: the leaderboard evaluated its
-      # pretrained submissions on exactly the prompt this config already sends. GPQA has
-      # none. lm-evaluation-harness's leaderboard_gpqa is not a generative task at all --
-      # it is `output_type: multiple_choice`, ranking the log-likelihoods of "(A)".."(D)"
-      # behind "What is the correct answer to this question:{{Question}}\nChoices:\n..."
-      # at 0-shot under acc_norm, with no system prompt for any model, base or chat. So
-      # the base-model convention for GPQA is a different *modality*, which this repo
-      # already has as the :mc variant it deliberately does not select, and not a
-      # chain-of-thought prompt with the template removed.
-      #
-      # The tempting third option -- keep system_prompt_source and prepend its text to a
-      # completion prompt -- is refused by GenerationConfig.__post_init__ and should be.
-      # It is a presentation nobody calibrated anything under: not the registered task
-      # (chat plus system turn), not lm-eval (log-likelihood, no system turn), and not
-      # the harvest these difficulties were fit from. EAP treats difficulty as fixed, so
-      # inventing a fourth framing would move theta by the whole of the difference and
-      # leave the standard error looking healthy. A base checkpoint cannot run this bank;
-      # score an instruct checkpoint, or run ifeval.
-      chat_format: true
-      # The expert-scientist instruction to reason step by step and end with
-      # "ANSWER: X", read off the registered task's own formatter. It is what produces
-      # the format the grader extracts, so a run without it would be graded on the
-      # model's silence rather than on its answer.
-      system_prompt_source: gpqa
-      # SamplingParams(temperature=0.0, max_tokens=1024) on every registered gpqa task.
-      max_new_tokens: 1024
-      # Deliberately empty, and for a sharper reason than ifeval's. The answer is the
-      # *last* thing a chain of thought says, so a stop at the first blank line would
-      # cut the reasoning off before "ANSWER: X" was ever written and score every item
-      # as unanswered. The task declares no stop sequences either.
-      stop_sequences: []
+    # NOTE: gpqa had an entry here and no longer does. It is now an `mcq` bank; see the
+    # entry under the mcq block above and the DEVIATIONS.md section for the change.
+    #
+    # What was here reproduced the registered olmo-eval task's own default -- 0-shot chat
+    # with the expert-scientist system turn, chain of thought, "ANSWER: X" extracted by
+    # the gpqa_cot_letter grader. That was defensible while the task's default was the
+    # only description of the convention anyone had, and it cost the bank its
+    # reachability: a chain of thought needs a chat template, and a base checkpoint has
+    # none, so the entry made a bank that exists unrunnable for the checkpoints this
+    # harness is pointed at.
+    #
+    # It is gone rather than commented out because it was also, on the evidence, the
+    # wrong convention. These difficulties came from Open LLM Leaderboard v2, whose GPQA
+    # is lm-evaluation-harness's leaderboard_gpqa: `output_type: multiple_choice`, four
+    # letters ranked by log-likelihood under acc_norm at 0-shot with no system prompt for
+    # any submission, base or chat. The task's default was never what the parameters were
+    # fit against, so leaving it available as a flag would leave a way to score this bank
+    # under a convention now known to be a different one.
+    #
+    # The generative machinery it used is still registered and still tested --
+    # generative.GPQACoTLetter, the "gpqa" prompt template and system prompt -- because it
+    # remains a correct implementation of the registered task, and because a future bank
+    # calibrated on that task's own default would want it.
 
 # NOTE: there is deliberately no `fit_family` key.
 #

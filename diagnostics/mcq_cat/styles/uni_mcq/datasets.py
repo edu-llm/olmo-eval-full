@@ -270,8 +270,10 @@ class DatasetSpec:
             it rather than the bare question, so run time appends the choice and adds
             nothing. Set for a benchmark whose presentation this style cannot express --
             BBH's 3-shot block is per *subtask*, and ``config.yaml`` is per dataset -- and
-            it settles the prompt at vendoring instead, which is the same trade gpqa
-            makes with its shuffled choice block. The cost is that a re-render of the
+            it settles the prompt at vendoring instead. gpqa made the same trade with its
+            shuffled choice block while it was generative and no longer needs to, since a
+            choice list carries the ordering without freezing the prompt around it. The
+            cost is that a re-render of the
             task no longer reaches the bank; the gain is that a run cannot disagree with
             the bank about what the exemplars were.
         report_caveat: What a reader of ``cat_report.json`` has to know before using the
@@ -281,6 +283,23 @@ class DatasetSpec:
             both printed as plain floats with a standard error, and a bank whose theta
             does not recover produces exactly the same shape as one whose does. Only bbh
             sets it today.
+        choice_order_control: True when a committed
+            ``bridges/<name>.choice_order.json`` records the option ordering this bank's
+            ``gold_index`` indexes, and vendoring must refuse to write a choice list that
+            departs from it. Set only for gpqa, which needs it because it is the one bank
+            whose options were shuffled per question upstream *and* whose modality
+            changed underneath that shuffle: its ordering was frozen inside the stems of
+            a generative bank and had to be carried across rather than re-derived.
+
+            An MCQ bank does not otherwise need one. The other five present their choices
+            in the dataset's own order, so a fresh enumeration reproduces it or fails
+            visibly, and a content-hashed id covers the texts as well. GPQA has neither
+            property: its order comes from ``Random(f'{seed}:{index}')`` inside
+            ``process_doc``, which would silently produce a different permutation if the
+            seed or the enumeration index moved, and its composite key says nothing about
+            content at all. A permutation there is invisible to every other guard --
+            counts match, the join is total, the CAT converges -- so this is the only
+            thing standing between a moved shuffle and a confident wrong theta.
         duplicate_question_precedence: Subtask labels ordered most-preferred first, for a
             bank whose subtasks are nested rather than disjoint and which therefore
             calibrated some questions more than once. Empty everywhere but gpqa, whose
@@ -308,6 +327,7 @@ class DatasetSpec:
     calibration: CalibrationConvention = UNRECORDED_CALIBRATION
     frozen_prompt: bool = False
     report_caveat: str = ""
+    choice_order_control: bool = False
     duplicate_question_precedence: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
@@ -337,6 +357,13 @@ class DatasetSpec:
                 f"{self.name}: set exactly one of task and subtasks. A single-task "
                 f"dataset names its task; a bank spanning several names them in "
                 f"subtasks and leaves task empty."
+            )
+        if self.choice_order_control and self.modality != "mcq":
+            raise ValueError(
+                f"{self.name}: choice_order_control governs the choice list an MCQ "
+                f"record carries and this spec is {self.modality!r}, whose records carry "
+                f"no choices at all. Vendoring would load the control, find nothing to "
+                f"hold to it, and report a bank as order-checked that has no order in it."
             )
         if self.frozen_prompt and self.modality != "mcq":
             raise ValueError(
@@ -1041,40 +1068,92 @@ SUPPORTED: dict[str, DatasetSpec] = {
         fit_family="3pl",
         expected_bank_rows=1192,
         positional_ids=True,
-        modality="generative",
-        answer_type="gpqa_letter",
+        modality="mcq",
+        choice_order_control=True,
         duplicate_question_precedence=("extended", "main", "diamond"),
         calibration=CalibrationConvention(
+            prompt_style="gpqa",
+            num_fewshot=0,
+            metric="acc_norm",
             note=(
-                "The local fit over the Open LLM Leaderboard v2 harvest records no "
-                "prompt, shot count or metric, and Research never wired GPQA into its "
-                "CAT, so there is no precedent to fall back on either. The chat "
-                "chain-of-thought convention used here is the registered task's own "
-                "default and nothing more."
+                "The only bank here whose calibration convention is known in full and "
+                "matched in full, and it is known because the harvest was identified "
+                "rather than because anything upstream wrote it down -- the local fit "
+                "records no prompt, shot count or metric. Each cell of the fit's own "
+                "response matrix is the Open LLM Leaderboard v2 acc_norm outcome of "
+                "lm-evaluation-harness's leaderboard_gpqa for that document, verified "
+                "cell by cell against the leaderboard's per-example records for two of "
+                "the fitted models over all 1,192 columns each with no disagreement. "
+                "That task is output_type: multiple_choice, ranking '(A)'..'(D)' by "
+                "log-likelihood at 0-shot under acc_norm with no system prompt for any "
+                "submission, and the prompt recorded here is the arg_0 those records "
+                "carry. This bank was vendored as generative until 2026-08-08 on the "
+                "registered olmo-eval task's chat chain-of-thought default; that was "
+                "never the convention the parameters were fit against."
             ),
         ),
         notes=(
-            "Multiple choice on paper and generative in practice, which is the first "
-            "thing to know about it. The registered gpqa tasks default to an "
-            "MCQAChatFormatter carrying an expert-scientist system prompt that asks for "
-            "step-by-step reasoning ending in 'ANSWER: X', 1,024 greedy tokens, and "
-            "AccuracyMetric(scorer=MultipleChoiceScorer) over the extracted letter; the "
-            "log-likelihood formulation exists only as the :mc variant, which nothing "
-            "here selects. Research never wired GPQA into its CAT at all -- "
-            "adaptive/benchmarks.py on origin/Research registers arc_challenge, "
-            "hellaswag, winogrande, csqa, piqa, gsm8k, ifeval, math and truthfulqa, and "
-            "gpqa appears nowhere under src/olmo_eval/adaptive/ -- so there is no CAT "
-            "precedent to match and the task's own default is the convention. "
-            "Two consequences for vendoring. The choices are part of the prompt, so "
-            "each item's stem is the user turn MCQAChatFormatter builds, question and "
-            "lettered block together, and the record's choices list stays empty because "
-            "there is nothing for a log-likelihood ranking to rank. And "
-            "GPQATask.process_doc reshuffles the choices per question from "
-            "Random(f'{seed}:{index}'), so the gold letter means nothing apart from one "
-            "ordering: the block is frozen in the order the shuffle produced and "
-            "metadata['gold_answer'] is the post-shuffle letter beside it, checked "
-            "against the instance's own gold_idx before anything is written. Nothing is "
-            "re-derived at run time. "
+            "Multiple choice on paper, multiple choice in the calibration, and "
+            "generative in this repo until 2026-08-08, which is the first thing to know "
+            "about it. The registered gpqa tasks default to an MCQAChatFormatter "
+            "carrying an expert-scientist system prompt that asks for step-by-step "
+            "reasoning ending in 'ANSWER: X', 1,024 greedy tokens, and "
+            "AccuracyMetric(scorer=MultipleChoiceScorer) over the extracted letter, and "
+            "that default was taken as the convention because Research never wired GPQA "
+            "into its CAT -- adaptive/benchmarks.py on origin/Research registers "
+            "arc_challenge, hellaswag, winogrande, csqa, piqa, gsm8k, ifeval, math and "
+            "truthfulqa, and gpqa appears nowhere under src/olmo_eval/adaptive/. The "
+            "absence of a precedent was read as licence to use the task's default; it "
+            "was not, because the harvest is itself a record of the convention and is "
+            "readable. Each cell of the fit's own gpqa_response_matrix_{train,test}.csv "
+            "is the leaderboard v2 acc_norm outcome of leaderboard_gpqa for that "
+            "document: for microsoft/Phi-3-mini-4k-instruct and 01-ai/Yi-1.5-6B-Chat, "
+            "both fitted rows, the matrix agrees with the leaderboard's own per-example "
+            "records on 1,192 of 1,192 columns each. So the difficulties were estimated "
+            "behind a log-likelihood ranking of four option letters, and grading them by "
+            "chain of thought was a convention mismatch EAP would have absorbed entirely "
+            "into theta. It also made the bank unreachable: a chain of thought needs a "
+            "chat template and a base checkpoint has none. "
+            "The choice ordering is the hazard this change turns on and it is worth "
+            "being exact about. GPQATask.process_doc reshuffles the choices per question "
+            "from Random(f'{seed}:{index}'), so the gold index means nothing apart from "
+            "one ordering, and the generative bank had frozen that ordering into each "
+            "stem as a lettered block with the post-shuffle letter beside it. Rather "
+            "than re-derive the order, vendoring now transfers it: "
+            "scripts/freeze_choice_order.py parsed the 395 committed stems back into "
+            "(question, choices) pairs -- requiring a unique decomposition and a "
+            "byte-identical round trip for each -- into bridges/gpqa.choice_order.json, "
+            "and check_choice_order holds every re-vendored item to that file before "
+            "anything is written. Today's fresh enumeration and the ordering frozen at "
+            "the old vendoring agree on all 395 items, on the choice texts in order, on "
+            "the question, and on which option the gold names. "
+            "That is a transfer with no ordering assumption in it, and it is still not "
+            "enough on its own: both halves of it are this repo's, so a mapping shifted "
+            "before the stems were written would be reproduced faithfully and every "
+            "byte-equality test would pass. Two outside checks answer that, and the "
+            "control carries the evidence for both so a test can re-run them offline. "
+            "The first is about identity and reaches every item. Open LLM Leaderboard "
+            "v2's per-example records carry GPQA's own Correct Answer and Incorrect "
+            "Answer columns untouched, and our four options equal that set on 395 of 395 "
+            "while our gold_index names the Correct Answer on 395 of 395. It "
+            "discriminates: rotating the gold index breaks it on 390 of the 395, and the "
+            "five survivors are questions whose source data repeats an option, where the "
+            "two candidates are the same string; swapping two options breaks it on 188, "
+            "which is every item whose gold sits at one of the two positions moved. "
+            "The second is about behaviour and is the one that closes the loop. Those "
+            "same records carry each option's log-likelihood under "
+            "microsoft/Phi-3-mini-4k-instruct, one of the fitted models; replaying them "
+            "through our choice list and our gold_index reproduces the leaderboard's own "
+            "acc_norm on 388 of 388 replayable items, and equals the cell of the "
+            "calibration response matrix that this item's difficulty was fit from on 388 "
+            "of 388. Controls: 178 of 388 with the gold index rotated by one, 178 with "
+            "the choices rotated, 276 with two swapped. The 7 items it cannot reach are "
+            "the ones lm-evaluation-harness's own preprocessing empties -- it deletes "
+            "bracketed spans, which leaves two options indistinguishable, and on "
+            "extended|476 all four are bracketed and it showed the model four blank "
+            "options -- so they are covered by the identity check and not by this one. "
+            "And the gold lands on all four positions (103/87/110/95), so a wrong "
+            "ordering would fail loudly rather than coincide. "
             "The index-vs-id hazard that would apply to a single-task bank does not "
             "arise here. These tasks emit metadata['index'] and no metadata['id'], so "
             "load_task_items's fallback would key them by a bare integer and find zero "
@@ -1146,13 +1225,6 @@ SUPPORTED: dict[str, DatasetSpec] = {
             "198 / 546 / 448 and the join is total: 579 of 579 filtered rows match, "
             "with each subtask at 100% against its own share, and nothing lost to a "
             "non-finite a, a missing bridge entry or an ambiguous id. "
-            "The frozen choice block is not a formality on this data. Every one of the "
-            "1,192 enumerated instances carries a gold_idx that check_choice_gold "
-            "compares against the letter written beside the block, and the shuffle "
-            "spreads them across all four positions (288 / 329 / 298 / 277), so 904 of "
-            "them would fail the check if the letter came from the pre-shuffle order. "
-            "It is discriminating a real permutation rather than passing on a constant: "
-            "rotating one instance's gold letter by one position aborts vendoring. "
             "Verified by scripts/check_bridge_alignment.py against the calibration's "
             "own response matrices (1,102 models over the 395 vendored items): item "
             "p-value against the bank's implied b = -d/a1 is Spearman -0.754, with a "
@@ -1169,7 +1241,11 @@ SUPPORTED: dict[str, DatasetSpec] = {
             "question each column is. That part rests on the bridge's key being the "
             "self-describing composite and on the per-subtask overlap floor, which is "
             "why both are load-bearing here in a way they are not for a bank with a "
-            "question-keyed harvest. "
+            "question-keyed harvest. It says nothing whatever about the order of the "
+            "options *within* an item, either, and cannot: the p-value is read off the "
+            "calibration's own matrix rather than by re-scoring anything, so a permuted "
+            "choice list leaves the statistic exactly where it is. The option order is "
+            "what the two outside checks above are for, and this is not one of them. "
             "That composite key is no longer an assumption, and this bank keeps it on "
             "purpose rather than for want of trying. Running the same recovery that "
             "re-keyed musr, ifeval and leaderboard_math -- reading the document each "

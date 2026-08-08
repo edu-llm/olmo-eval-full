@@ -272,6 +272,88 @@ class NumberedChoicesStyle:
         )
 
 
+#: Option labels, in the order a lettered block writes them.
+CHOICE_LABELS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+@dataclass(frozen=True, slots=True)
+class LetteredChoicesStyle:
+    """The choice list is in the prompt and what is scored is the *label*, not the text.
+
+    GPQA's shape, and the fourth thing :class:`ScoredChoice` being a pair buys. Its
+    options are bare quantities -- "10^-4 eV", "2.84 MeV, 26.8 MeV" -- whose plausibility
+    as a continuation of a physics question says nothing about which one answers it, and
+    they are frequently permutations of each other's digits, so scoring the option text
+    ranks numerals. ``leaderboard_gpqa`` therefore enumerates the options behind letters
+    and ranks the four letters, which is a question about the block the model was just
+    shown rather than about the strings in it.
+
+    That is also the only reason this bank is reachable by a base checkpoint at all. The
+    registered olmo-eval task grades GPQA by chain of thought behind an
+    expert-scientist system turn, which needs a chat template; the difficulties came from
+    Open LLM Leaderboard v2, which ranked these four letters at 0-shot with no system
+    prompt for pretrained and instruction-tuned submissions alike.
+
+    The layout is reproduced from the harvest's own recorded arguments rather than from
+    the template that generated them, and three details in it are load-bearing. There is
+    no space after ``question:``, which reads as a typo and is upstream's. The answer cue
+    carries a *trailing* space and the continuation a *leading* one, so the two recorded
+    halves join with two spaces between the cue and the label; both are kept as they were
+    recorded, because where a tokenizer draws the boundary between prompt and scored span
+    is a property of the backend and normalizing the strings to look tidy would change
+    the prompt that every difficulty here was estimated behind. And the labels are
+    parenthesized rather than the ``A.`` the olmo-eval ``:mc`` variant writes.
+
+    Attributes:
+        name: Registry name.
+        question_template: The framing around the stem. Formatted with ``question``; a
+            stem containing braces is substituted in, not re-parsed.
+        block_prefix: Joins the framed stem to the lettered block.
+        answer_cue: Closes the prompt after the block.
+        choice_prefix: Joins the prompt to a label. lm-evaluation-harness's
+            ``target_delimiter``, which is a space.
+        num_fewshot: Exemplars already present in the stems this style is given.
+    """
+
+    name: str
+    question_template: str = "{question}"
+    block_prefix: str = "\n\nChoices:\n"
+    answer_cue: str = "\nAnswer: "
+    choice_prefix: str = " "
+    num_fewshot: int = NUM_FEWSHOT
+
+    def scored_choices(self, item: BenchmarkItem) -> tuple[ScoredChoice, ...]:
+        """List the options behind letters, then score each letter after the cue.
+
+        Raises:
+            ValueError: If the item has more options than there are labels. Refused
+                rather than wrapped around, because a second ``(A)`` in one block would
+                make two options indistinguishable to the ranking and the run would look
+                fine.
+        """
+        if len(item.choices) > len(CHOICE_LABELS):
+            raise ValueError(
+                f"Item {item.item_id!r} has {len(item.choices)} options and the "
+                f"{self.name!r} prompt style labels at most {len(CHOICE_LABELS)}. The "
+                f"labels are what this style ranks, so reusing one would put two options "
+                f"behind the same scored span."
+            )
+        labels = [f"({CHOICE_LABELS[index]})" for index in range(len(item.choices))]
+        block = "\n".join(
+            f"{label} {choice}" for label, choice in zip(labels, item.choices, strict=True)
+        )
+        prompt = (
+            self.question_template.format(question=item.question)
+            + self.block_prefix
+            + block
+            + self.answer_cue
+        )
+        return tuple(
+            ScoredChoice(prompt=prompt, continuation=f"{self.choice_prefix}{label}")
+            for label in labels
+        )
+
+
 #: Prompt style name -> layout, selected by :attr:`InferenceConfig.prompt_style` and
 #: overridden per dataset from the style's ``config.yaml``.
 #:
@@ -301,11 +383,22 @@ MCQ_PROMPT_STYLES: dict[str, McqPromptStyle] = {
     # Also one benchmark's, and the only style here that adds nothing at all. BBH is
     # 3-shot behind a description that differs per *subtask*, which no per-dataset
     # setting can express, so the whole prefix is rendered by the task and frozen into
-    # each stem at vendoring -- the same treatment gpqa gives its shuffled choice block.
+    # each stem at vendoring. It is the only bank left that does: gpqa froze its shuffled
+    # choice block the same way while it was generative, and now carries a real choice
+    # list that LetteredChoicesStyle re-renders, which is the better arrangement wherever
+    # a per-dataset setting can express the layout.
     # What reaches run time is a finished prompt ending in the answer cue, and appending
     # the choice is all that is left. The count is 3 rather than 0 because that is what
     # the model reads, and it is what a manifest holds a run to.
     "bbh": SharedPromptStyle(name="bbh", num_fewshot=3),
+    # The third named after a benchmark, and named after it for a blunter reason than
+    # the other two: the framing sentence is GPQA's alone. Nothing else here opens with
+    # "What is the correct answer to this question:", and nothing else ranks option
+    # letters rather than option text.
+    "gpqa": LetteredChoicesStyle(
+        name="gpqa",
+        question_template="What is the correct answer to this question:{question}",
+    ),
 }
 
 #: Used by a dataset that names no style of its own.
@@ -343,7 +436,7 @@ _LONE_BLANK_RE = lone_blank_re("_")
 #: :func:`check_prompt_style_fits` refuses for a cloze bank. Listed rather than inferred
 #: because the property that matters is not visible on the class: what makes a cloze
 #: item unanswerable is the blank being left unfilled, and both of these leave it.
-_APPENDING_STYLES = (SharedPromptStyle, NumberedChoicesStyle)
+_APPENDING_STYLES = (SharedPromptStyle, NumberedChoicesStyle, LetteredChoicesStyle)
 
 #: Fraction of a bank's stems that must carry a lone blank before the bank is taken to
 #: be a cloze benchmark. Decisive rather than tuned: WinoGrande is at 100% and the other

@@ -1,49 +1,42 @@
-"""GPQA's grading convention, and the two things about it that bite.
+"""The chain-of-thought grading GPQA is *not* scored by, and why the machinery survives.
 
-GPQA looks like a multiple-choice benchmark and is not scored as one. Its registered
-tasks default to chat plus chain of thought -- an expert-scientist system prompt asking
-for step-by-step reasoning ending in ``ANSWER: X``, then letter extraction and
-``MultipleChoiceScorer`` -- and the log-likelihood formulation exists only as the ``:mc``
-variant. There is nothing to weigh that against: Research never wired GPQA into its CAT,
-so the task's own default is the whole of the convention. :class:`TestTheConvention`
-reads that off the registry rather than trusting it, because the entire modality choice
-rests on it.
+Until 2026-08-08 this bank was vendored as generative and graded by
+:class:`~diagnostics.mcq_cat.common.generative.GPQACoTLetter`: the registered olmo-eval
+tasks default to an ``MCQAChatFormatter`` carrying an expert-scientist system prompt that
+asks for step-by-step reasoning ending in ``ANSWER: X``, then letter extraction and
+``MultipleChoiceScorer``. That default was taken as the convention because Research never
+wired GPQA into its CAT, so there was nothing to weigh it against.
 
-The two hazards are both about the choice block. It is *part of the prompt*, since a
-chain of thought has to see the options it is choosing among; and it is shuffled per
-question, so the letter that answers it is meaningful only against one ordering.
-Vendoring freezes both together into the item and checks they agree, which is what
-:class:`TestVendoringFreezesTheShuffle` pins.
+There was. The harvest the difficulties came from is itself a record of the convention and
+is readable, and it says multiple choice. :mod:`.test_gpqa_bank` is where the bank lives
+now; what remains here is the road not taken, still tested, for two reasons.
 
-A third thing is peculiar to this bank and is checked here too. The three subsets are
-nested quality filters over one pool of questions rather than different content, so
-upstream calibrated 184 of its 579 surviving rows twice or three times over;
-:class:`TestTheVendoredBank` pins that the committed bank is one calibration per
-question and that the precedence which chose them is recorded beside it.
+The first is that the decision is only legible beside the thing it rejected. A reader
+asking why an obviously multiple-choice benchmark was ever graded by chain of thought is
+answered by :class:`TestTheTaskStillDefaultsToChainOfThought`, which reads that default off
+the live registry rather than off a claim in a note -- and would fail if olmo-eval ever
+changed it, at which point the note in ``datasets.py`` becomes wrong too.
 
-Nothing here enumerates the dataset. ``Idavidrein/gpqa`` is gated -- the bank was blocked
-until this checkout's token was granted the gated-repository scope -- so the tests work
-from a constructed instance, from the task's configuration, or from the committed bank,
-none of which touches the network. :class:`TestTheVendoredBank` is where the frozen
-shuffle is checked against what vendoring actually wrote for all 395 items.
+The second is that the grader is registered code. ``gpqa_letter`` still resolves and
+``get_system_prompt("gpqa")`` still returns the task's own prompt; nothing selects either
+today, and leaving registered machinery untested is how it rots into something that
+raises the first time a future bank reaches for it. GPQA is not the only benchmark whose
+tasks default to this shape.
+
+Nothing here enumerates the dataset. ``Idavidrein/gpqa`` is gated, so the tests work from
+a constructed instance or from the task's configuration, neither of which touches the
+network.
 """
 
 from __future__ import annotations
 
-import json
-from itertools import pairwise
 from typing import Any
 
-import numpy as np
 import pytest
 
 from ....base import BenchmarkItem
-from ....common import cat_loop, generative, grading
-from ..convention import CONFIG_PATH
+from ....common import generative
 from ..datasets import SUPPORTED
-from ..scripts import vendor_bank
-from ..style import UniMcqStyle
-from .conftest import CALIBRATED_DATASETS, SimGenerativeTaker, vendored_params
 
 DATASET = "gpqa"
 ANSWER_TYPE = "gpqa_letter"
@@ -56,13 +49,6 @@ SUBTASKS = ("gpqa_diamond", "gpqa_extended", "gpqa_main")
 def olmo_eval_types() -> Any:
     """``olmo_eval.common.types``, or skip."""
     return pytest.importorskip("olmo_eval.common.types")
-
-
-def gpqa_config() -> dict[str, Any]:
-    """The committed generative entry for gpqa."""
-    yaml = pytest.importorskip("yaml")
-    config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
-    return dict((config["generative"][grading.PER_DATASET_KEY])[DATASET])
 
 
 def instance(**overrides: Any) -> Any:
@@ -78,8 +64,13 @@ def instance(**overrides: Any) -> Any:
     return types.Instance(**fields)
 
 
-class TestTheConvention:
-    """Read off the task registry, because the modality choice rests entirely on it."""
+class TestTheTaskStillDefaultsToChainOfThought:
+    """Read off the registry, because the rejected convention has to stay identifiable.
+
+    If olmo-eval changes this default the reasoning recorded in ``datasets.py`` stops
+    describing anything, and a reader would have no way to tell that from a note that was
+    always wrong.
+    """
 
     @pytest.fixture
     def task(self) -> Any:
@@ -107,7 +98,16 @@ class TestTheConvention:
         assert task.config.sampling_params.max_tokens == 1024
         assert not task.config.sampling_params.stop_sequences
 
-    def test_the_log_likelihood_formulation_is_a_variant_we_do_not_select(self) -> None:
+    def test_the_spec_still_names_the_plain_tasks_rather_than_a_variant(self) -> None:
+        """The ``:mc`` variant is not what this bank switched to, and the difference
+        matters.
+
+        olmo-eval's log-likelihood formulation exists, but it writes ``A.`` labels and
+        is not the presentation Open LLM Leaderboard v2 used. What
+        :mod:`.test_gpqa_bank` reproduces is lm-evaluation-harness's
+        ``leaderboard_gpqa``, which is where the difficulties came from, so the spec goes
+        on naming the plain tasks and the MCQ layout is this style's own.
+        """
         registry = pytest.importorskip("olmo_eval.evals.tasks.common.registry")
         assert "mc" in registry.list_variants("gpqa_diamond")["gpqa_diamond"]
         assert SUPPORTED[DATASET].task_names == SUBTASKS
@@ -117,6 +117,23 @@ class TestTheConvention:
         registry = pytest.importorskip("olmo_eval.evals.tasks.common.registry")
         for name in SUBTASKS:
             assert registry.task_exists(name), name
+
+
+class TestNothingSelectsItAnyMore:
+    """The retirement itself, asserted rather than left to be inferred from an absence."""
+
+    def test_the_bank_is_multiple_choice(self) -> None:
+        assert SUPPORTED[DATASET].modality == "mcq"
+
+    def test_no_dataset_asks_for_this_grader(self) -> None:
+        selected = {
+            spec.answer_type for spec in SUPPORTED.values() if spec.modality == "generative"
+        }
+        assert ANSWER_TYPE not in selected
+
+    def test_the_grader_is_nonetheless_still_reachable(self) -> None:
+        """Registered code with no caller is still code, and is tested below."""
+        assert ANSWER_TYPE in generative.ANSWER_GRADERS
 
 
 class TestTheGrader:
@@ -213,17 +230,15 @@ class TestTheSystemPrompt:
         with pytest.raises(ValueError, match="no system turn"):
             generative.GenerationConfig(system_prompt_source="gpqa", chat_format=False)
 
-    def test_the_refusal_says_why_prepending_it_is_not_the_answer(self) -> None:
+    def test_the_refusal_names_the_alternative_that_was_eventually_taken(self) -> None:
         """The message has to survive the reader who is trying to score a base model.
 
-        Dropping ``chat_format`` and keeping the source is what someone reaches for
-        after ifeval's flip made a base checkpoint runnable, and the guard's job is to
-        be more than a locked door: the reason this one bank cannot follow is that
-        pasting the system prompt into a completion prompt is a presentation nothing was
-        calibrated behind. Not the registered task, which sends it as a system turn; not
-        lm-evaluation-harness, whose GPQA is a log-likelihood ranking with no system
-        prompt at all; and not the harvest these difficulties came from. So the message
-        names the alternative that exists rather than only the setting to restore.
+        Dropping ``chat_format`` and keeping the source is what someone reaches for after
+        ifeval's flip made a base checkpoint runnable, and the guard's job is to be more
+        than a locked door: pasting a system prompt into a completion prompt is a
+        presentation nothing was calibrated behind. So the message names the alternative
+        that exists -- lm-evaluation-harness's GPQA is a log-likelihood ranking with no
+        system prompt at all -- and that alternative is what this bank went on to adopt.
         """
         with pytest.raises(ValueError) as exc:
             generative.GenerationConfig(system_prompt_source="gpqa", chat_format=False)
@@ -245,88 +260,28 @@ class TestTheSystemPrompt:
         assert config.system_prompt_source is None
 
 
-class TestTheConfigEntry:
-    def test_it_reproduces_the_task_defaults(self) -> None:
-        entry = gpqa_config()
-        assert entry["num_fewshot"] == 0
-        assert entry["prompt_style"] == "gpqa"
-        assert entry["chat_format"] is True
-        assert entry["system_prompt_source"] == "gpqa"
-        assert entry["max_new_tokens"] == 1024
+class TestVendoringCanStillFreezeAShuffle:
+    """``generative_record``'s choice-carrying branch, which nothing reaches today.
 
-    def test_it_kept_chat_format_when_ifeval_gave_it_up(self) -> None:
-        """The two generative chat banks parted here, and only one of them could.
+    A generative bank whose instances carry choices has to put the block *in the prompt*,
+    because a chain of thought must see the options it is choosing among, and has to
+    check the frozen letter against the shuffle that produced it. GPQA was the only bank
+    that did, and the equivalent guard for the MCQ bank is now
+    ``vendor_bank.check_choice_order``, which is a stronger one -- it holds the ordering
+    to a committed control rather than only to the instance's own two statements about
+    itself.
 
-        IFEval went to completion format so a base checkpoint could be scored, on the
-        evidence that Open LLM Leaderboard v2 evaluated its own pretrained submissions
-        exactly that way. No such evidence exists for GPQA and the shape of the task is
-        against it: lm-evaluation-harness's ``leaderboard_gpqa`` is
-        ``output_type: multiple_choice``, ranking "(A)".."(D)" by log-likelihood at
-        0-shot under acc_norm with no system prompt for any model. That is a different
-        modality -- the ``:mc`` variant this style does not select -- rather than this
-        one with the template removed, so the base-model path for GPQA is not a config
-        flip and pretending otherwise would put a chain of thought behind a framing
-        nothing was calibrated under.
-        """
-        ifeval = dict(
-            (
-                pytest.importorskip("yaml").safe_load(CONFIG_PATH.read_text(encoding="utf-8"))[
-                    "generative"
-                ][grading.PER_DATASET_KEY]
-            )["ifeval"]
-        )
-
-        assert ifeval["chat_format"] is False
-        assert gpqa_config()["chat_format"] is True
-
-    def test_it_declares_no_stop_sequences(self) -> None:
-        """The answer is the last thing a chain of thought says; a stop would cut it."""
-        assert gpqa_config()["stop_sequences"] == []
-
-    def test_it_reaches_the_generation_config(self, tmp_path, monkeypatch) -> None:
-        from ..style import UniMcqStyle
-
-        seen: list[generative.GenerationConfig] = []
-        monkeypatch.setattr(
-            generative,
-            "load_generative_model",
-            lambda _dir, config: (
-                seen.append(config) or generative.GenerativeScorer(lambda _: "", config)
-            ),
-        )
-        request = grading.GradingRequest(
-            dataset=DATASET,
-            modality=grading.GENERATIVE,
-            generation=UniMcqStyle().generation_settings,
-        )
-        grading.load_grader(request, tmp_path, grading.GradingSettings())
-
-        config = seen[0]
-        assert config.prompt_style == "gpqa"
-        assert config.chat_format is True
-        assert config.system_prompt_source == "gpqa"
-        assert config.max_new_tokens == 1024
-        assert config.stop_sequences == ()
-
-    def test_the_prompt_template_leaves_the_stem_alone(self) -> None:
-        """The stem is already the user turn, choice block included."""
-        template = generative.get_prompt_template("gpqa")
-        assert template.render("Q\n\n(A) a\n(B) b", []) == "Q\n\n(A) a\n(B) b"
-
-    def test_a_few_shot_block_under_it_raises(self) -> None:
-        """0-shot only: the tasks prepend nothing and there is no worked-example form."""
-        with pytest.raises(ValueError, match="0-shot only"):
-            generative.get_prompt_template("gpqa").render("Q", [{"question": "q"}])
-
-
-class TestVendoringFreezesTheShuffle:
-    """The choice block and the letter that answers it must leave as one artifact."""
+    Kept under test because the branch is still live code on the path every generative
+    bank takes, and an unreachable branch that raises is worse than one that works.
+    """
 
     @pytest.fixture(autouse=True)
     def _needs_olmo_eval(self) -> None:
         pytest.importorskip("olmo_eval.common.formatters")
 
     def record(self, **overrides: Any) -> dict[str, Any] | None:
+        from ..scripts import vendor_bank
+
         return vendor_bank.generative_record(
             "diamond|0", instance(**overrides), answer_type=ANSWER_TYPE
         )
@@ -349,12 +304,6 @@ class TestVendoringFreezesTheShuffle:
         assert record["choices"] == []
         assert record["gold_index"] == -1
 
-    def test_the_post_shuffle_gold_letter_is_recorded(self) -> None:
-        metadata = self.record()["metadata"]
-        assert metadata["gold_answer"] == "B"
-        assert metadata["answer_type"] == ANSWER_TYPE
-        assert metadata["modality"] == "generative"
-
     def test_a_gold_letter_outside_the_choice_block_aborts(self) -> None:
         with pytest.raises(SystemExit, match="must be one of"):
             self.record(gold_answer="E")
@@ -365,292 +314,26 @@ class TestVendoringFreezesTheShuffle:
             self.record(metadata={"index": 7, "gold_idx": 2})
 
     def test_a_choiceless_generative_instance_is_untouched(self) -> None:
-        """GSM8K and MATH must be vendored exactly as before."""
+        """GSM8K, MATH and IFEval must be vendored exactly as before."""
+        from ..scripts import vendor_bank
+
         record = vendor_bank.generative_record(
             "0", instance(choices=(), gold_answer="72", metadata={}), answer_type="numeric"
         )
         assert record["question"] == "Which particle mediates the strong interaction?"
         assert record["metadata"]["gold_answer"] == "72"
 
-    def test_the_grader_reads_back_what_vendoring_wrote(self) -> None:
-        """End to end on one item: the frozen gold and a completion that names it."""
-        record = self.record()
-        item = BenchmarkItem(
-            item_id=record["id"],
-            question=record["question"],
-            choices=(),
-            gold_index=-1,
-            metadata=dict(record["metadata"]),
-        )
-        config = generative.GenerationConfig(
-            num_fewshot=0,
-            prompt_style="gpqa",
-            chat_format=True,
-            system_prompt_source="gpqa",
-            max_new_tokens=1024,
-            stop_sequences=(),
-        )
-        prompt = generative.format_generative_prompt(item, config)
-        assert "(B) gluon" in prompt
 
-        response = generative.grade_completion(item, "Colour charge.\n\nANSWER: B", config)
-        assert response.correct
-        assert response.metadata["grader"] == GRADER_NAME
-        assert response.chosen_index == generative.NO_CHOICE_INDEX
+class TestThePromptTemplate:
+    """The generative ``gpqa`` template, which is a different registry from the MCQ style
+    of the same name and is no longer selected by anything."""
 
+    def test_it_leaves_the_stem_alone(self) -> None:
+        """It existed because the stem was already the whole user turn, block included."""
+        template = generative.get_prompt_template("gpqa")
+        assert template.render("Q\n\n(A) a\n(B) b", []) == "Q\n\n(A) a\n(B) b"
 
-#: What each subtask contributes to the bridge, to the bank after the ``a > 0`` filter,
-#: and to the vendored bank after the nested repeats are deduplicated. The join is
-#: total, so the second row is also what each subtask matched.
-#:
-#: Extended is unchanged across the last two rows and that is the precedence working
-#: rather than a coincidence: it is the most preferred tier, so every extended row that
-#: survived the filter survives deduplication too. What the other two lose is the copies
-#: of questions extended already carries.
-SUBTASK_BRIDGE_ROWS = {"diamond": 198, "extended": 546, "main": 448}
-SUBTASK_FILTERED_ROWS = {"diamond": 99, "extended": 252, "main": 228}
-SUBTASK_ITEMS = {"diamond": 24, "extended": 252, "main": 119}
-
-#: The order a repeated question's surviving calibration is chosen in.
-PRECEDENCE = ["extended", "main", "diamond"]
-
-
-def manifest() -> dict[str, Any]:
-    """The committed GPQA manifest, or skip."""
-    path = CALIBRATED_DATASETS / DATASET / "manifest.json"
-    if not path.is_file():
-        pytest.skip("gpqa has not been vendored")
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def vendored_items() -> list[BenchmarkItem]:
-    """The committed GPQA items, loaded through the real loader."""
-    from ....common.benchmark_download import load_items_from_jsonl
-
-    path = CALIBRATED_DATASETS / DATASET / "items.jsonl"
-    if not path.is_file():
-        pytest.skip("gpqa has not been vendored")
-    return list(load_items_from_jsonl(path, name=DATASET).items)
-
-
-class TestTheVendoredBank:
-    """The committed bank, and the frozen shuffle as it survived onto disk."""
-
-    def test_the_counts_are_the_ones_upstream_reports(self) -> None:
-        recorded = manifest()
-        assert recorded["upstream_bank_rows"] == 1192
-        assert recorded["bridge_rows"] == 1192
-        assert recorded["dropped"]["non_positive_discrimination"] == 613
-        assert recorded["dropped"]["not_in_task"] == 0
-        assert recorded["dropped"]["not_in_bridge"] == 0
-        assert recorded["dropped"]["ambiguous_item_id"] == 0
-        assert recorded["dropped"]["duplicate_question"] == 184
-        assert recorded["items"] == 395
-
-    def test_the_nested_repeats_are_accounted_for_separately(self) -> None:
-        """The two filters cost different things and a reader has to be able to tell.
-
-        613 rows went because a negative discrimination scores backwards; 184 went
-        because they are a second or third calibration of a question the bank already
-        carries. Folding them into one number would read as a bank that discriminates
-        even worse than it does.
-        """
-        recorded = manifest()
-        assert sum(SUBTASK_FILTERED_ROWS.values()) == 579
-        assert recorded["items"] + recorded["dropped"]["duplicate_question"] == 579
-        assert recorded["items"] + sum(recorded["dropped"].values()) == 1192
-
-    def test_the_precedence_that_chose_the_survivors_is_recorded(self) -> None:
-        """A distribution nobody can re-derive the rule for is not provenance."""
-        recorded = manifest()
-        assert recorded["duplicate_question_precedence"] == PRECEDENCE
-        assert recorded["subtask_items"] == SUBTASK_ITEMS
-
-    def test_it_spans_the_three_subsets(self) -> None:
-        counts: dict[str, int] = {}
-        for item in vendored_items():
-            label = item.item_id.split("|", 1)[0]
-            counts[label] = counts.get(label, 0) + 1
-        assert counts == SUBTASK_ITEMS
-        assert sum(SUBTASK_BRIDGE_ROWS.values()) == manifest()["bridge_rows"]
-
-    def test_the_diamond_only_questions_survived(self) -> None:
-        """The 24 the precedence must not silently drop.
-
-        Diamond is the least preferred tier, so a row of it reaching the bank means the
-        extended and main calibrations of that question both failed the ``a > 0`` filter
-        and this is the only estimate the question has. A rule that dropped every repeat
-        rather than keeping one would lose all 24 questions outright.
-        """
-        diamond = [i for i in vendored_items() if i.item_id.startswith("diamond|")]
-        assert len(diamond) == SUBTASK_ITEMS["diamond"]
-
-    def test_no_question_is_administered_twice(self) -> None:
-        """What the deduplication exists for, read off the committed stems.
-
-        The CAT masks administered items by id, so two ids over one question let a
-        session score it twice and give EAP the second scoring as fresh evidence. The
-        stems carry a per-subset shuffle of the choices, so equal stems here understate
-        the repeats rather than overstating them.
-        """
-        stems = [item.question for item in vendored_items()]
-        assert len(set(stems)) == len(stems)
-
-    def test_the_ids_are_the_composite_the_bridge_uses(self) -> None:
-        """A bare integer here would mean the single-task fallback had keyed the bank."""
-        for item in vendored_items():
-            label, sep, position = item.item_id.partition("|")
-            assert sep == "|"
-            assert label in SUBTASK_BRIDGE_ROWS
-            assert 0 <= int(position) < SUBTASK_BRIDGE_ROWS[label]
-
-    def test_every_stem_carries_its_frozen_choice_block(self) -> None:
-        """The letters only mean anything against the ordering the shuffle produced."""
-        for item in vendored_items():
-            assert "\n(A) " in item.question
-            assert "\n(D) " in item.question
-            assert item.choices == ()
-            assert item.gold_index == -1
-
-    def test_every_gold_letter_indexes_that_block(self) -> None:
-        for item in vendored_items():
-            assert item.metadata["gold_answer"] in {"A", "B", "C", "D"}
-            assert item.metadata["answer_type"] == ANSWER_TYPE
-
-    def test_the_frozen_gold_is_a_real_shuffle_rather_than_a_constant(self) -> None:
-        """What makes the vendoring-time cross-check a test rather than a formality.
-
-        ``check_choice_gold`` compares the letter written beside the block against the
-        instance's own ``gold_idx``. If the shuffle put the correct answer first every
-        time the comparison would pass on both a correct and a pre-shuffle letter, and
-        would be evidence of nothing. It does not: the letters land on all four
-        positions, so most of the bank would fail the check under the wrong ordering.
-        """
-        letters = [item.metadata["gold_answer"] for item in vendored_items()]
-        assert set(letters) == {"A", "B", "C", "D"}
-        assert max(letters.count(letter) for letter in "ABCD") < 0.5 * len(letters)
-
-    def test_the_cross_check_fires_on_a_committed_item(self) -> None:
-        """Rotate one real gold letter by one position and vendoring must refuse it.
-
-        Driven through the committed stem rather than a constructed instance, so what is
-        exercised is the data actually on disk: the block is real, the letter is the one
-        the shuffle produced, and only the pairing is broken.
-        """
-        types = olmo_eval_types()
-        item = vendored_items()[0]
-        gold = item.metadata["gold_answer"]
-        rotated = chr(ord("A") + (ord(gold) - ord("A") + 1) % 4)
-        instance = types.Instance(
-            question=item.question,
-            choices=("w", "x", "y", "z"),
-            gold_answer=rotated,
-            metadata={"gold_idx": ord(gold) - ord("A")},
-        )
-
-        with pytest.raises(SystemExit, match="disagree about which"):
-            vendor_bank.generative_record(item.item_id, instance, answer_type=ANSWER_TYPE)
-
-
-def gpqa_answer(item: BenchmarkItem, correct: bool) -> str:
-    """A chain of thought that ends in the taught format, naming the right letter or not."""
-    gold = str(item.metadata["gold_answer"])
-    letter = gold if correct else chr(ord("A") + (ord(gold) - ord("A") + 1) % 4)
-    return f"Considering each option in turn, the reasoning points one way.\n\nANSWER: {letter}"
-
-
-def run_real_bank(true_theta: float, *, max_items: int = 40) -> dict:
-    """A full CAT over the committed 395-item bank, tokens simulated and nothing else."""
-    style = UniMcqStyle()
-    bank = style.download_benchmark(DATASET)
-    irt = style.load_irt_params(DATASET)
-    settings = grading._apply_generation_overrides(
-        grading.GradingSettings(), UniMcqStyle().generation_settings, dataset=DATASET
-    )
-    taker = SimGenerativeTaker(
-        true_theta,
-        vendored_params(DATASET),
-        bank.items,
-        recover_question=lambda prompt: prompt,
-        answer=gpqa_answer,
-    )
-    report = cat_loop.run_cat(
-        style,
-        bank=bank,
-        irt_bank=irt,
-        model=generative.GenerativeScorer(taker, settings.generation),
-        se_threshold=0.3,
-        max_items=max_items,
-    )
-    return report.to_dict()
-
-
-class TestAbilityRecoveryOnTheRealBank:
-    """Theta recovery over the committed bank, through the real engine and extractor."""
-
-    @pytest.fixture(autouse=True)
-    def _needs_olmo_eval(self) -> None:
-        pytest.importorskip("olmo_eval.evals.tasks.gpqa")
-
-    run = staticmethod(run_real_bank)
-
-    def test_a_session_converges_and_stops_on_precision(self) -> None:
-        report = self.run(0.5)
-
-        assert report["metadata"]["stop_reason"] == "precision_reached"
-        assert report["metadata"]["standard_error"] <= 0.3
-        assert report["metadata"]["bank_size"] == 395
-        assert np.isfinite(report["ability"]["theta"])
-
-    @pytest.mark.parametrize("true_theta", [-1.0, 0.0, 1.0])
-    def test_the_estimate_lands_near_the_truth(self, true_theta: float) -> None:
-        assert self.run(true_theta)["metadata"]["theta"] == pytest.approx(true_theta, abs=0.6)
-
-    def test_theta_recovers_monotonically(self) -> None:
-        """The ordering is what a checkpoint-to-checkpoint comparison rests on."""
-        estimates = [self.run(theta)["metadata"]["theta"] for theta in (-1.5, -0.5, 0.5, 1.5)]
-
-        assert all(b > a for a, b in pairwise(estimates)), estimates
-
-    def test_the_report_names_the_grader_that_produced_it(self) -> None:
-        report = self.run(0.5)
-
-        assert report["metadata"]["modality"] == "generative"
-        assert "chain of thought" in report["metadata"]["scoring_note"]
-        assert all(r["metadata"]["grader"] == GRADER_NAME for r in report["responses"])
-
-    def test_nothing_came_back_ungradable(self) -> None:
-        """Every item carries a gold letter, so a fabricated zero would be a bank fault."""
-        assert self.run(0.5)["metadata"]["ungradable"]["count"] == 0
-
-
-class TestTheSpec:
-    def test_it_declares_the_generative_modality_and_its_grader(self) -> None:
-        spec = SUPPORTED[DATASET]
-        assert spec.modality == "generative"
-        assert spec.answer_type == ANSWER_TYPE
-        assert spec.answer_type in generative.ANSWER_GRADERS
-
-    def test_it_is_still_multi_task(self) -> None:
-        spec = SUPPORTED[DATASET]
-        assert spec.is_multi_task
-        assert spec.task_names == SUBTASKS
-
-    def test_it_can_run_today(self) -> None:
-        from ..datasets import ready_names, supported_names
-
-        assert SUPPORTED[DATASET].blocked is None
-        assert DATASET in supported_names()
-        assert DATASET in ready_names()
-
-    def test_the_notes_still_record_what_the_blocker_was(self) -> None:
-        """The scope is granted and the diagnosis is worth keeping.
-
-        A fine-grained HuggingFace token without the gated-repository scope resolves
-        ``dataset_info`` and then 403s every data file, which ``datasets`` surfaces as a
-        FileNotFoundError reading like a network fault. Anyone who hits it again on
-        another gated dataset should not have to re-derive that.
-        """
-        notes = SUPPORTED[DATASET].notes
-        assert "token scope" in notes
-        assert "403" in notes
+    def test_a_few_shot_block_under_it_raises(self) -> None:
+        """0-shot only: the tasks prepend nothing and there is no worked-example form."""
+        with pytest.raises(ValueError, match="0-shot only"):
+            generative.get_prompt_template("gpqa").render("Q", [{"question": "q"}])

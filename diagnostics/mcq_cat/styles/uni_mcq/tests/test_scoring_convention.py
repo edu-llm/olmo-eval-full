@@ -144,23 +144,32 @@ class TestEveryCommittedBankRecordsItsConvention:
         assert runtime["stop_sequences"] == []
         assert runtime["num_fewshot"] == 0
 
-    def test_the_two_generative_framings_are_recorded_per_bank(self) -> None:
+    def test_no_generative_bank_is_scored_through_a_chat_template(self) -> None:
         """``chat_format`` decides which checkpoints a bank can be scored on at all.
 
-        Both values are pinned here because the pair is the point. IFEval is the only
-        bank whose calibration is known to contain *both* framings -- Open LLM
-        Leaderboard v2 templated its chat submissions and not its pretrained ones -- so
-        no run-time value matches all of it and the completion half was chosen, being
-        also lm-eval's ``leaderboard_ifeval`` unmodified and the only setting a
-        checkpoint with no chat template can be scored under. GPQA keeps chat because
-        it has no completion form anywhere: lm-eval evaluates it as a log-likelihood
-        ranking rather than a chain of thought, so removing the template would mean
-        inventing a framing rather than adopting one.
+        Both of the two banks that ever set it have since given it up, for different
+        reasons, and the pair is worth pinning together. IFEval is the only bank whose
+        calibration is known to contain *both* framings -- Open LLM Leaderboard v2
+        templated its chat submissions and not its pretrained ones -- so no run-time
+        value matches all of it and the completion half was chosen, being also lm-eval's
+        ``leaderboard_ifeval`` unmodified.
+
+        GPQA held out longer and then left the generative side altogether, which was the
+        right answer rather than a second flip: it has no completion presentation of the
+        chain of thought to adopt, but it does have a presentation, because lm-eval
+        scores it as a log-likelihood ranking over four option letters with no system
+        prompt for any submission. Removing the template would have invented a framing;
+        changing the modality adopted the one the difficulties were fit behind.
         """
         assert recorded_runtime("ifeval")["chat_format"] is False
         assert recorded_runtime("ifeval")["system_prompt_source"] is None
-        assert recorded_runtime("gpqa")["chat_format"] is True
-        assert recorded_runtime("gpqa")["system_prompt_source"] == "gpqa"
+        assert recorded_runtime("gpqa")["modality"] == "mcq"
+        assert "chat_format" not in recorded_runtime("gpqa")
+        assert not any(
+            recorded_runtime(name).get("chat_format")
+            for name, spec in datasets.SUPPORTED.items()
+            if spec.modality == "generative"
+        )
 
     def test_ifevals_mixed_calibration_framing_is_recorded_beside_it(self) -> None:
         """The scale shift has to be readable off the bank, not just off a commit.
@@ -197,15 +206,25 @@ class TestTheCalibrationHalfIsSeparate:
     def test_every_dataset_says_where_its_facts_come_from(self, name: str) -> None:
         assert datasets.SUPPORTED[name].calibration.note
 
-    def test_arc_is_the_only_recorded_shot_count(self) -> None:
-        """The one calibration shot count anything upstream states."""
+    def test_two_banks_record_a_shot_count_and_they_know_it_differently(self) -> None:
+        """One was stated upstream and one was read off the harvest, which is not the
+        same standing.
+
+        ARC's 25 comes from the ATLAS release describing its own calibration. GPQA's 0
+        comes from having identified the harvest itself -- its response matrix is the
+        Open LLM Leaderboard v2 ``acc_norm`` outcome of ``leaderboard_gpqa``, and that
+        task is 0-shot -- so the fit records nothing and the number is nonetheless a
+        fact about it rather than an assumption. Everything else is honestly unknown,
+        and pinning the set is what stops a plausible guess being written into one.
+        """
         with_counts = {
             name
             for name, spec in datasets.SUPPORTED.items()
             if spec.calibration.num_fewshot != UNRECORDED
         }
-        assert with_counts == {"arc_challenge"}
+        assert with_counts == {"arc_challenge", "gpqa"}
         assert datasets.SUPPORTED["arc_challenge"].calibration.num_fewshot == 25
+        assert datasets.SUPPORTED["gpqa"].calibration.num_fewshot == 0
 
     def test_arcs_prompt_and_metric_stay_unknown_beside_its_shot_count(self) -> None:
         """A recorded shot count is not licence to reconstruct the rest."""
