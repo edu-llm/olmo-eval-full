@@ -1,0 +1,64 @@
+# Throwaway generation probe: ask generate_batch what it returns on the real checkpoint.
+#
+# The counterpart of .edullm/run-native-cat.yaml, and it borrows that file's whole shape
+# for the same reasons. Only the differences are argued here; everything the two share --
+# why the image comes from OLMo-core rather than olmo-eval-full, why the code arrives by
+# clone rather than by pip-installing a tarball, why --extra olmo_core would be a silent
+# downgrade to the one ai2-olmo-core release that cannot read this checkpoint -- is
+# argued there and not repeated.
+#
+# HOW TO SUBMIT THIS. From the OLMo-core clone, because the CLI validates --commit
+# against the clone it is run in:
+#
+#   cd ../OLMo-core
+#   edullm submit --experiment olmo-core-generation-probe --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 --hours 1 \
+#     --commit 08df5aa0142465c80b4ea48e84faa46117275d61 \
+#     --spec ../olmo-eval-full/.edullm/run-generation-probe.yaml
+#
+# WHAT THIS BUYS THAT SOURCE READING DOES NOT. OLMo-core 2.5.0 already answers, on paper,
+# what generate_batch returns and what stops it: `generated` is seeded with `input_ids`
+# and concatenated onto, so the prompt is in the return; and the stop test is
+# `next_tokens.eq(eos)`, which never reads pad_token_id. What no amount of reading
+# settles is whether THIS checkpoint -- trained with pad == eos == 0, which is why the
+# scorer has to fabricate a pad id at all -- ever emits token 0 inside a short budget.
+# That single fact decides whether a generative completer can rely on eos to end an item
+# or has to treat every item as running to the full 1024-1280 token budget, which is the
+# difference between a cheap generative CAT and an unaffordable one.
+#
+# THE PIN IS THE PROBE, NOT THE SPEC. The container clones olmo-eval-full and checks out
+# one commit; --spec is read from the laptop and compiled into the submission, so this
+# file does not need to be at that commit and cannot be. What must be at it is
+# .edullm/generation_probe.py. Push before submitting -- an unpushed sha fails at
+# `git checkout` inside the container, minutes into a paid run rather than here.
+#
+# NO --s3-out, WHICH IS THE POINT OF A THROWAWAY. The spike this is modelled on writes no
+# artifact and neither does this: the product is the CloudWatch log, and a report file
+# would imply something downstream reads it. Nothing does, and nothing imports the probe.
+#
+# --max-new-tokens 64 IS THE COST CONTROL AND IS ALSO SUFFICIENT. The banks ask for 1024
+# (leaderboard_math, gpqa) and 1280 (ifeval). Sixty-four tokens cannot tell us what a
+# finished answer looks like and is not meant to; it can tell us whether eos shows up at
+# all, which is the question. Three prompts at 64 tokens is seconds of decode against
+# minutes of checkpoint staging, so the run is priced by the 1.74 GB pull and not by
+# generation.
+#
+# --dtype bfloat16 IS INERT TO THE LOADER AND STILL BELONGS IN THE TEXT, exactly as in
+# run-native-cat.yaml. _OlmoCoreScoringModel passes no dtype to from_checkpoint, so the
+# model builds at whatever the checkpoint's config says; the flag is here because the
+# platform's bfloat16_not_in_the_hardware guard reads the words of this command and
+# nothing else, and it turns a Turing allocation into a free refusal instead of a machine
+# that dies on its first kernel. The probe prints the dtype it actually loaded.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout REPLACE_WITH_PUSHED_SHA
+  && python -m pip install --no-cache-dir ".[hf,s3]"
+  && python .edullm/generation_probe.py
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --max-new-tokens 64
+  --dtype bfloat16'
