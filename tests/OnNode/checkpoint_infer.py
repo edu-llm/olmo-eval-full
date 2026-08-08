@@ -193,7 +193,9 @@ def load_model(cfg: Config, local_dir: Path):
         return _load_hf(cfg, local_dir)
     if cfg.checkpoint_kind == "olmo_core":
         return _load_olmo_core(cfg, local_dir)
-    raise SystemExit(f"Unknown CHECKPOINT_KIND: {cfg.checkpoint_kind} (expected 'hf' or 'olmo_core')")
+    raise SystemExit(
+        f"Unknown CHECKPOINT_KIND: {cfg.checkpoint_kind} (expected 'hf' or 'olmo_core')"
+    )
 
 
 def _load_hf(cfg: Config, local_dir: Path):
@@ -316,8 +318,7 @@ def main() -> int:
         step = parse_step(args.checkpoint_uri)
         prompts = load_prompts(cfg)
         log.info(
-            "[dry-run] would run %d prompts on %s and upload to "
-            "s3://%s/%s/%s/step%s/",
+            "[dry-run] would run %d prompts on %s and upload to s3://%s/%s/%s/step%s/",
             len(prompts),
             args.checkpoint_uri,
             cfg.results_bucket,
