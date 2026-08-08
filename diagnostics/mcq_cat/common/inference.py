@@ -1,8 +1,12 @@
 """Checkpoint load + batched log-likelihood MCQ scoring.
 
-This mirrors the checkpoint-loading patterns in ``tests/OnNode/checkpoint_infer.py``:
-the HuggingFace path is a real implementation and the raw ``olmo_core`` path is a
-marked integration point that raises ``NotImplementedError`` with guidance.
+Two backends load here, and both end in the same arithmetic. The HuggingFace path builds
+the model through ``transformers``, which is what a checkpoint converted by
+:mod:`.convert` is handed to; the raw ``olmo_core`` path reconstructs a training
+checkpoint in place through olmo-eval's own provider helpers, so a diagnostic can read a
+training run's output with no conversion step between the two. Which one runs is
+:attr:`InferenceConfig.checkpoint_kind` against :data:`MCQ_SCORING_BACKENDS`, and it is
+independent of what :mod:`.convert` did to the directory first.
 
 Scoring follows the log-likelihood MCQ convention used across ``olmo_eval``
 (``RequestType.LOGLIKELIHOOD`` in ``src/olmo_eval/evals/tasks``): for each item, score
@@ -48,8 +52,8 @@ never select a variant, and only a task's default metric is reproduced.
 
 This is one of the harness's two grading schemes. Generative benchmarks are graded by
 :mod:`.generative`, and :mod:`.grading` picks between them by dataset modality. Heavy
-dependencies (``torch``, ``transformers``) are imported lazily so this module imports
-without a GPU stack installed.
+dependencies (``torch``, ``transformers``, ``ai2-olmo-core``) are imported lazily so this
+module imports without a GPU stack installed.
 """
 
 from __future__ import annotations
@@ -630,15 +634,18 @@ def continuation_token_count(prompt_tokens: int, full_tokens: int, max_length: i
 #: Checkpoint kind -> the MCQ scoring backend that reads it.
 #:
 #: A table rather than a branch, so a backend is registered rather than wired. Adding one
-#: -- a served vLLM scorer, or the native OLMo-core reader parked in
-#: ``Plan/flows/uni_mcq/HF_CONVERSION.md`` -- is an entry here plus its modality's string
-#: in ``grading.LOADABLE_CHECKPOINT_KINDS``, and nothing on the runner's path changes.
+#: -- a served vLLM scorer, say -- is an entry here plus its modality's string in
+#: ``grading.LOADABLE_CHECKPOINT_KINDS``, and nothing on the runner's path changes. The
+#: ``olmo_core`` row is the evidence that this is true rather than asserted: restoring the
+#: native reader cost exactly those two edits.
 #:
 #: What arrives here has already been through ``convert.prepare_checkpoint``, so the kind
 #: names the backend and not what training wrote: a native checkpoint converted under the
-#: default policy is loaded as ``hf``.
+#: default policy is loaded as ``hf``, and reading one natively means turning preparation
+#: off with ``--checkpoint-prep none`` so the sharded directory survives to be read.
 MCQ_SCORING_BACKENDS: dict[str, Callable[[Path, InferenceConfig], ScoringModel]] = {
     "hf": lambda checkpoint_dir, config: _HFScoringModel(checkpoint_dir, config),
+    "olmo_core": lambda checkpoint_dir, config: _OlmoCoreScoringModel(checkpoint_dir, config),
 }
 
 
@@ -745,25 +752,310 @@ class _HFScoringModel:
         return responses
 
 
-def _load_olmo_core(checkpoint_dir: Path, config: InferenceConfig) -> ScoringModel:
-    """Read a raw OLMo-core checkpoint natively, without converting it first.
+#: The string :func:`describe_tokenizer_defaults` encodes twice. Ordinary prose on
+#: purpose: what is being compared is two encodings of one string, so a probe with
+#: unusual whitespace or punctuation would report the tokenizer's handling of that
+#: instead of its special-token convention.
+_TOKENIZER_PROBE = "The capital of France is Paris."
 
-    Deliberately not in :data:`MCQ_SCORING_BACKENDS`, so it is unreachable rather than
-    half-wired. It is kept as the named landing site for the parked implementation: a
-    working scorer exists in stash ``fed3d925``, and restoring it is popping that stash,
-    registering it under ``"olmo_core"`` here, and adding the same string to
-    ``grading.LOADABLE_CHECKPOINT_KINDS[MCQ]``. Run it with ``--checkpoint-prep none``,
-    which is what keeps the sharded directory intact for it to read.
 
-    It was parked rather than finished because nothing had verified what OLMo-core's
-    forward pass returns or what its tokenizer prepends, and a scorer that is wrong about
-    either produces an ability estimate rather than an error. Conversion sidesteps both by
-    reaching ``transformers``, which is the path the item banks were calibrated behind.
+@dataclass(frozen=True, slots=True)
+class TokenizerDefaults:
+    """What ``tokenizer(text)`` adds that ``add_special_tokens=False`` does not.
+
+    Measured once per load and reported, because the two OLMo-core paths in this
+    checkout disagree about it and the disagreement does not show up in any number a
+    run publishes. :class:`_OlmoCoreScoringModel` tokenizes with the defaults, which is
+    what :class:`_HFScoringModel` does and what every bank's difficulties were
+    calibrated behind; ``OlmoCoreProvider._encode_prompt`` passes
+    ``add_special_tokens=False`` and keeps BOS behind a flag defaulting to ``False``.
+    Comparing the two scorers cannot surface the difference on its own -- a BOS the
+    model never trained with moves every choice in a set by nearly the same amount, so
+    the argmax usually still agrees and the comparison reads as a pass.
+
+    Kept as two halves because they are not equally harmful:
+
+    - :attr:`leading` shifts the numbers and rarely the ranking. Both ``prompt`` and
+      ``prompt + continuation`` get it, so :func:`continuation_token_count` is
+      unchanged and the scored span is taken from the right-hand end regardless.
+    - :attr:`trailing` moves the span itself. An appended EOS is the last token of the
+      pair, so the final ``[-cont_len:]`` slice ends on it and drops the continuation's
+      first real token -- a wrong answer rather than a shifted one.
+
+    Both empty while the two encodings still differ means the defaults rewrote the
+    string's interior rather than wrapping it, which is neither case above and reads as
+    a mis-resolved tokenizer rather than a convention difference.
     """
-    raise NotImplementedError(
-        "Native olmo_core scoring is not registered. The default --checkpoint-prep auto "
-        "converts a raw OLMo-core checkpoint to HF and scores it with the hf backend, so "
-        "this path is only needed to read the sharded checkpoint directly. See "
-        "Plan/flows/uni_mcq/HF_CONVERSION.md and stash fed3d925 for what restoring it "
-        "involves."
-    )
+
+    leading: tuple[int, ...]
+    trailing: tuple[int, ...]
+    default_ids: tuple[int, ...]
+    bare_ids: tuple[int, ...]
+
+    @property
+    def adds_special_tokens(self) -> bool:
+        """Whether the tokenizer's defaults change the encoding at all."""
+        return self.default_ids != self.bare_ids
+
+    def summary(self) -> str:
+        """One line naming what the defaults did, for a log and for a run report."""
+        if not self.adds_special_tokens:
+            return (
+                "tokenizer defaults add no special tokens, so this scorer encodes "
+                "exactly as OlmoCoreProvider's add_special_tokens=False does"
+            )
+        added = ", ".join(
+            clause
+            for clause in (
+                f"prepend {list(self.leading)}" if self.leading else "",
+                f"append {list(self.trailing)}" if self.trailing else "",
+            )
+            if clause
+        )
+        if not added:
+            return (
+                f"tokenizer defaults re-encode the probe string entirely "
+                f"({list(self.bare_ids)} -> {list(self.default_ids)}) rather than "
+                f"wrapping it, which is not a special-token convention difference"
+            )
+        return (
+            f"tokenizer defaults {added}, which this scorer keeps -- matching the HF "
+            f"path and the calibration, and diverging from OlmoCoreProvider"
+        )
+
+    def as_dict(self) -> dict[str, Any]:
+        """The record in the shape a JSON report carries."""
+        return {
+            "adds_special_tokens": self.adds_special_tokens,
+            "leading_token_ids": list(self.leading),
+            "trailing_token_ids": list(self.trailing),
+            "summary": self.summary(),
+        }
+
+
+def describe_tokenizer_defaults(tokenizer: Any) -> TokenizerDefaults:
+    """Encode :data:`_TOKENIZER_PROBE` both ways and record how the two differ.
+
+    Kept apart from the loader, and reading nothing but the tokenizer, so the record a
+    run reports can be checked without a checkpoint or a GPU.
+    """
+    default_ids = tuple(tokenizer(_TOKENIZER_PROBE)["input_ids"])
+    bare_ids = tuple(tokenizer(_TOKENIZER_PROBE, add_special_tokens=False)["input_ids"])
+    for start in range(len(default_ids) - len(bare_ids) + 1):
+        if default_ids[start : start + len(bare_ids)] == bare_ids:
+            return TokenizerDefaults(
+                leading=default_ids[:start],
+                trailing=default_ids[start + len(bare_ids) :],
+                default_ids=default_ids,
+                bare_ids=bare_ids,
+            )
+    return TokenizerDefaults(leading=(), trailing=(), default_ids=default_ids, bare_ids=bare_ids)
+
+
+def _olmo_core_utils() -> Any:
+    """Return olmo-eval's OLMo-core checkpoint helpers, or raise saying what is missing.
+
+    Lazy on the same terms as the graders in :mod:`.generative`: this module has to
+    import in a checkout with neither ``olmo_eval`` nor a GPU stack. The helper module
+    itself costs nothing to import -- stdlib only at module level, ``torch`` under
+    ``TYPE_CHECKING``, every heavy import inside its ``_import_olmo_core()`` -- so what
+    is being deferred is the package being on the path at all.
+    """
+    try:
+        from olmo_eval.inference.providers import olmo_core_utils
+    except ImportError as exc:
+        raise RuntimeError(
+            "Loading a raw OLMo-core checkpoint uses olmo-eval's checkpoint helpers "
+            "(olmo_eval.inference.providers.olmo_core_utils) and olmo_eval is not "
+            "importable here. They are deliberately not vendored into the diagnostic: "
+            "a local copy of the checkpoint layout and tokenizer resolution rules "
+            "would drift from the provider this scorer is checked against."
+        ) from exc
+    return olmo_core_utils
+
+
+class _OlmoCoreScoringModel:
+    """Raw OLMo-core checkpoint scored by the same arithmetic as the HuggingFace path.
+
+    Reached by ``--checkpoint-prep none --checkpoint-kind olmo_core``: preparation has to
+    be off, because ``auto`` would convert the sharded directory this reads and hand back
+    an HF one instead.
+
+    Loading is olmo-eval's, scoring is this module's. The loading helpers take a plain
+    path and hand back plain data, so reusing them costs nothing; the provider's
+    ``logprobs`` is deliberately *not* reused, because its signature would pull
+    olmo-eval's request and response types into a runtime path that otherwise depends
+    on nothing but vendored artifacts, and because two independent implementations of
+    one quantity are the only thing that makes comparing them informative.
+
+    They also disagree in two narrow places, both of which are invisible on ordinary
+    items and neither of which is a reason to prefer one: the provider raises at
+    ``len(continuation_ids) > max_len`` while :func:`continuation_token_count` raises at
+    ``max_length <= count``, and the provider's truncation window starts one token
+    earlier than this one's. Banks calibrated under one convention should not be scored
+    under the other.
+    """
+
+    def __init__(self, checkpoint_dir: Path, config: InferenceConfig) -> None:
+        core_utils = _olmo_core_utils()
+        imports = core_utils._import_olmo_core()
+        checkpoint = str(checkpoint_dir)
+
+        self.config = config
+        self._torch: Any = imports.torch
+        self._forward_shape_checked = False
+
+        # validate_checkpoint=False is a decision, not a shortcut, and it is the
+        # difference between loading this training setup's checkpoints and refusing
+        # all of them. The True branch runs _validate_token_ids, which rejects a
+        # tokenizer whose pad_token_id equals its eos_token_id, and these checkpoints
+        # write both as 0 -- so validating would refuse every real one rather than a
+        # malformed one. MCQ log-likelihood scores a single sequence at a time, so it
+        # never pads and never generates, and pad_token_id is unread everywhere below.
+        # The False branch still parses config.json and resolves the tokenizer config;
+        # it drops only the layout and token-id assertions. A generative completer
+        # does not get this exemption, because it needs a distinct EOS to stop on.
+        _, tokenizer_config = core_utils._resolve_checkpoint(
+            checkpoint,
+            imports=imports,
+            validate_checkpoint=False,
+            allow_tokenizer_fallback=False,
+        )
+        tokenizer_path, _ = core_utils._resolve_tokenizer_path(
+            checkpoint,
+            explicit_tokenizer=None,
+            tokenizer_config=tokenizer_config,
+            TokenizerConfig=imports.TokenizerConfig,
+            allow_tokenizer_fallback=False,
+        )
+        self.tokenizer: Any = imports.AutoTokenizer.from_pretrained(tokenizer_path)
+
+        self.tokenizer_defaults = describe_tokenizer_defaults(self.tokenizer)
+        record = log.warning if self.tokenizer_defaults.adds_special_tokens else log.info
+        record(
+            "Scoring %s as olmo_core: %s.",
+            checkpoint,
+            self.tokenizer_defaults.summary(),
+        )
+
+        # Placed explicitly rather than left to the library's default, as the provider
+        # does, so the module and the tensors fed to it cannot end up on different
+        # devices over a default that changed.
+        self.device = imports.torch.device("cuda" if imports.torch.cuda.is_available() else "cpu")
+        # No generation_config. It is optional, a forward-only scorer never generates,
+        # and it is the object that validates pad against eos -- so leaving it out
+        # removes the same blocker validate_checkpoint=False removes above, rather
+        # than working around it.
+        self.model: Any = imports.TransformerGenerationModule.from_checkpoint(
+            checkpoint_dir=checkpoint,
+            device=self.device,
+        )
+
+    def _check_forward_shape(self, logits: Any, input_ids: Any) -> None:
+        """Refuse a ``model_forward`` output the arithmetic below would misread.
+
+        Whether ``model_forward`` squeezes a batch of one is genuinely open: the
+        provider only ever calls it batched, so it is untested upstream as well.
+
+        Against the arithmetic as written this raises rather than diagnoses -- a
+        two-dimensional ``(seq, vocab)`` meets ``logits[:, :-1, :]``, which is three
+        indices into two dimensions, and torch refuses it. That is worth having anyway,
+        for two reasons. It fails here, naming the axis and the shape, instead of as an
+        ``IndexError`` from the middle of a ``log_softmax`` expression six lines on. And
+        it pins the invariant for the refactor that shares this arithmetic with the
+        provider, whose half works on a per-row ``(seq, vocab)`` tensor -- under that
+        shape a squeezed batch axis is readable, indexes the vocabulary where it means
+        the sequence, and returns a plausible number for every choice.
+
+        Checked once per loaded model rather than per call, and only the rank and the
+        batch axis are the module's: the sequence length is the input's and changes with
+        every choice, so nothing about the first call may be remembered beyond the fact
+        that it was checked.
+        """
+        if self._forward_shape_checked:
+            return
+        shape = tuple(logits.shape)
+        tokens = int(input_ids.shape[1])
+        if len(shape) != 3 or shape[0] != 1 or shape[1] != tokens:
+            raise RuntimeError(
+                f"OLMo-core model_forward returned logits of shape {shape}; MCQ "
+                f"scoring needs (1, {tokens}, vocab) -- rank 3, a batch axis of 1, and "
+                f"one position per input token. The arithmetic below indexes the batch "
+                f"axis at 0 and the time axis at 1, so this is refused here, where the "
+                f"shape can be named, rather than six lines down as an indexing error "
+                f"inside a log_softmax expression -- or, wherever the axes happen to "
+                f"line up, as a plausible log-probability for every choice and a theta "
+                f"computed from them."
+            )
+        self._forward_shape_checked = True
+
+    def _continuation_logprob(self, prompt: str, continuation: str) -> float:
+        """Sum the log-probabilities of ``continuation`` tokens given ``prompt``.
+
+        The same arithmetic as :meth:`_HFScoringModel._continuation_logprob`, written
+        out again rather than shared. Sharing it is a refactor worth making once both
+        backends have run against a real checkpoint; making it first would mean
+        reshaping a working, validated scorer around a backend that had never run.
+        """
+        torch = self._torch
+        prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
+        full_ids = self.tokenizer(prompt + continuation, return_tensors="pt")["input_ids"]
+
+        cont_len = continuation_token_count(
+            prompt_ids.shape[1], full_ids.shape[1], self.config.max_length
+        )
+        if cont_len <= 0:
+            return 0.0
+
+        if self.config.max_length is not None and full_ids.shape[1] > self.config.max_length:
+            full_ids = full_ids[:, -self.config.max_length :]
+
+        full_ids = full_ids.to(self.device)
+
+        with torch.no_grad():
+            logits = self.model.model_forward(input_ids=full_ids)
+        self._check_forward_shape(logits, full_ids)
+
+        log_probs = torch.log_softmax(logits[:, :-1, :], dim=-1)
+        targets = full_ids[:, 1:]
+        token_log_probs = log_probs.gather(-1, targets.unsqueeze(-1)).squeeze(-1)
+        continuation_log_probs = token_log_probs[:, -cont_len:]
+        return float(continuation_log_probs.sum().item())
+
+    def score_items(self, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
+        """Grade each item by scoring every choice's continuation log-likelihood.
+
+        :meth:`_HFScoringModel.score_items` explains the shape and why the
+        normalization is applied here rather than inside the forward pass; this
+        produces the same :class:`~diagnostics.mcq_cat.base.ItemResponse`, populated
+        ``choice_logprobs`` included, so nothing downstream can tell which backend
+        answered.
+        """
+        normalization = get_mcq_score_normalization(self.config.score_normalization)
+        responses: list[ItemResponse] = []
+        for item in items:
+            if not item.choices:
+                raise ValueError(
+                    f"Item {item.item_id!r} has no answer choices, so there is nothing "
+                    f"to rank by log-likelihood. This is a generative item reaching the "
+                    f"MCQ scorer; grade it with common.generative instead. "
+                    f"common.grading.check_bank_modality catches this at the bank level, "
+                    f"before a checkpoint is loaded."
+                )
+            choice_logprobs = tuple(
+                normalization.score(
+                    self._continuation_logprob(choice.prompt, choice.continuation),
+                    choice.continuation,
+                )
+                for choice in scored_choices(item, self.config)
+            )
+            chosen_index = max(range(len(choice_logprobs)), key=lambda i: choice_logprobs[i])
+            responses.append(
+                ItemResponse(
+                    item_id=item.item_id,
+                    chosen_index=chosen_index,
+                    correct=chosen_index == item.gold_index,
+                    choice_logprobs=choice_logprobs,
+                )
+            )
+        return responses

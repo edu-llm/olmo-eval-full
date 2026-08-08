@@ -137,13 +137,80 @@ RUN set -eux; \
 # is an image with no purpose. The workflow passes BASE_IMAGE and nothing else, so a
 # default is the only way to express it. On a merge to main this would become everyone's
 # default and is worth raising then; on edullm/** it affects this branch alone.
+#
+# THE LOCKFILE'S ai2-olmo-core CANNOT READ THE CHECKPOINTS THIS BRANCH EXISTS TO READ,
+# WHICH IS WHY THE SYNC IS NOT THE END OF THIS LAYER. --extra olmo-core resolves PyPI
+# ai2-olmo-core 2.4.0, and 2.4.0's schema has no `sequence_mixer` on
+# TransformerBlockConfig and no `partial_rotary_factor` or `no_global_rope` on RoPEConfig
+# -- read out of allenai/OLMo-core at tag v2.4.0 rather than inferred. Every checkpoint
+# this branch targets writes all three, so TransformerConfig.from_dict raises on
+# config.json before a single weight is read. An image carrying 2.4.0 is an image that
+# can import olmo_core and cannot load anything we train.
+#
+# THE FORK IS INSTALLED HERE RATHER THAN AT THE TOP OF THE RUN, AND THAT IS THE CHANGE.
+# It used to be a `uv pip install --no-deps` line in .edullm/run.yaml, which is a repair
+# performed on a GPU that is already being billed, against a network that may or may not
+# answer, in a command nothing reviews and nothing tests. Pinning it here makes the image
+# either correct or unbuilt.
+#
+# --no-deps, SO THE GIT INSTALL CANNOT MOVE THE RESOLUTION. The fork declares torch and
+# the rest for itself; without this flag it would re-resolve them against PyPI over the
+# top of the set `uv sync --frozen` just installed from uv.lock, and the image would no
+# longer be the lockfile's. It goes after the sync rather than instead of it because the
+# extra is what brings torch, torchao and the surrounding dependency set -- the fork is
+# a 582 KB pure-Python tree and brings none of that.
+#
+# PINNED BY COMMIT, THOUGH THE BRANCH IS WHAT PEOPLE SAY. edullm/memory-split-135m is a
+# branch and a branch moves, so an image built from it is not reproducible and the
+# platform's provenance record would name a base digest beside a ref that can change
+# underneath it. 4f694f72 is what that branch pointed at on 2026-08-08. Moving the fork
+# means moving this line, which is the point.
+#
+# git+https:// RESOLVES HERE BECAUSE THIS FILE ALREADY INSTALLS git, a few layers up --
+# the ifbench dependency is a git URL, so uv could not read uv.lock without it. OLMo-core's
+# own .edullm/Dockerfile reaches for GitHub tarball URLs instead, and that is not a style
+# difference: its registered base is a bare python image with no git, so `pip install
+# git+https://…` there would fail. A tarball would work here too and names the same forty
+# hex digits; git+https is used because uv reports the resolved commit in direct_url.json,
+# which is what the provenance assertion below reads.
+#
+# THE ASSERTIONS ARE THE POINT OF THIS LAYER, NOT THE INSTALL, and `import olmo_core` is
+# not one of them. The top-level package imports lazily, so it passes on 2.4.0, on the
+# fork, and on anything else called ai2-olmo-core -- OLMo-core's image learned that the
+# expensive way, on a GPU run that died four minutes in against an image whose shallow
+# import check had passed. What is asserted instead is the schema, three ways:
+#
+#   1. RoPEConfig(no_global_rope=..., partial_rotary_factor=...) constructs. On 2.4.0
+#      that is a TypeError on an unexpected keyword, because neither field exists.
+#   2. TransformerBlockConfig declares a `sequence_mixer` field. 2.4.0 calls it
+#      `attention`, and the fork keeps `attention` as a deprecated InitVar alias -- so
+#      reading dataclasses.fields() rather than trying an attribute is what separates
+#      the two.
+#   3. The whole round trip the loader actually performs: build this checkpoint's
+#      architecture with TransformerConfig.smollm2_135M -- a builder 2.4.0 does not have
+#      either -- serialize it to the on-disk config schema, and parse it back with
+#      TransformerConfig.from_dict, which is the exact call that fails on 2.4.0. The
+#      partial_rotary_factor is set to a non-default value first so the round trip has
+#      to carry it rather than reproduce a default.
+#
+# The provenance check is separate and answers a different question. The three above
+# prove the code in this image has the schema; direct_url.json proves it came from the
+# commit named on the line above rather than from some other build that happens to.
 ARG INSTALL_OLMO_CORE=1
+ARG OLMO_CORE_FORK_COMMIT=4f694f721b72065caaf117591bd9387f23711a5b
 RUN set -eux; \
     if [ "${INSTALL_OLMO_CORE}" != "1" ]; then exit 0; fi; \
     uv sync --frozen --no-default-groups --no-install-project --no-cache \
         --extra beaker --extra hf --extra s3 --extra clients \
         --extra olmo-core; \
-    uv cache clean
+    uv pip install --no-cache --no-deps \
+        "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@${OLMO_CORE_FORK_COMMIT}"; \
+    uv cache clean; \
+    cd /; \
+    python -c "from olmo_core.nn.rope import RoPEConfig; c = RoPEConfig(no_global_rope=True, partial_rotary_factor=0.25); assert c.partial_rotary_factor == 0.25 and c.no_global_rope is True"; \
+    python -c "import dataclasses; from olmo_core.nn.transformer.config import TransformerBlockConfig; names = {f.name for f in dataclasses.fields(TransformerBlockConfig)}; assert 'sequence_mixer' in names, f'TransformerBlockConfig has no sequence_mixer field, so this is PyPI ai2-olmo-core rather than the fork: {sorted(names)}'"; \
+    python -c "from olmo_core.nn.transformer.config import TransformerConfig; cfg = TransformerConfig.smollm2_135M(vocab_size=49152); cfg.block.sequence_mixer.rope.partial_rotary_factor = 0.25; data = cfg.as_config_dict(); rope = data['block']['sequence_mixer']['rope']; assert rope['partial_rotary_factor'] == 0.25, f'partial_rotary_factor did not survive serialization: {rope}'; back = TransformerConfig.from_dict(data); assert back.block.sequence_mixer.rope.partial_rotary_factor == 0.25; print('TransformerConfig.from_dict parsed sequence_mixer + partial_rotary_factor,', f'{back.num_params:,d} params')"; \
+    python -c "import importlib.metadata as md; text = md.distribution('ai2-olmo-core').read_text('direct_url.json') or ''; assert 'edu-llm/OLMo-core' in text and '${OLMO_CORE_FORK_COMMIT}' in text, f'ai2-olmo-core did not come from the pinned fork commit; direct_url.json says {text!r}'; print('ai2-olmo-core', md.version('ai2-olmo-core'), 'from', text)"
 
 COPY . .
 RUN set -eux; \
@@ -246,6 +313,11 @@ RUN set -eux; \
 # A SEPARATE BLOCK RATHER THAN THREE MORE LINES ABOVE, AND NOT FOR TIDINESS. That block
 # exits 0 when INSTALL_TORCH_AND_VLLM is not 1, which is this branch's value, so an
 # assertion appended to it would never run in exactly the image it was written to check.
+#
+# A DIFFERENT QUESTION FROM THE SCHEMA ASSERTIONS IN THE INSTALL LAYER, WHICH IS WHY BOTH
+# ARE HERE. Those ask whether the olmo_core in this image can parse our checkpoints'
+# config; this asks whether the five symbols *this repository's* loader binds are still
+# where it expects them, which a fork is exactly the sort of thing to move.
 #
 # IT ASSERTS core_utils._import_olmo_core() RATHER THAN `import olmo_core`, because that
 # is the precise call the loader makes and it is stricter than the sum of its parts. The

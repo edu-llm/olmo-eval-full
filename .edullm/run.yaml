@@ -1,4 +1,4 @@
-# eduLLM job: an MCQ CAT session over one OLMo-core checkpoint, converted on the node.
+# eduLLM job: an MCQ CAT session read straight off an OLMo-core checkpoint, unconverted.
 #
 # Originally written by edullm check, from config/workload-catalog.yaml.
 # Everything here is a property of the code and travels with it in git.
@@ -32,81 +32,117 @@
 # readable by a run and edullm-checkpoints is not. Results go to $EDULLM_OUTPUT_PREFIX,
 # this run's own prefix, injected by the platform and the only place the role may write.
 #
-# THE SYNC MUST KEEP ITS EXTRAS. `uv sync` is exact: it removes anything the requested
-# set does not name. .edullm/Dockerfile builds this branch with INSTALL_OLMO_CORE=1,
-# which bakes torch 2.10.0 + ai2-olmo-core across `--extra beaker --extra hf --extra s3
-# --extra clients --extra olmo-core`, so dropping any of them here would uninstall the
-# thing the image was built to carry. Against that image the sync is a fast no-op.
+# ============================================================================
+# THE NATIVE PATH: --checkpoint-prep none --checkpoint-kind olmo_core
+# ============================================================================
 #
-# NOT --extra vllm. That extra appears in the SteeringVectors command to protect a torch
-# baked by INSTALL_TORCH_AND_VLLM=1; this branch's torch comes from INSTALL_OLMO_CORE=1
-# instead, so the olmo_core extra is what has to be preserved and the vllm one would cost
-# 4.54 GiB to protect nothing. Nothing in this pipeline serves a model.
+# Two independent seams, and this line is one cell of the four they make. `--checkpoint-
+# prep` decides what happens to the staged directory before anything loads it, and
+# `--checkpoint-kind` decides which backend loads whatever comes out. `none` hands the
+# sharded DCP directory over untouched; `olmo_core` is the backend that reads that layout
+# through ai2-olmo-core's TransformerConfig.from_dict rather than through transformers.
 #
-# THE FORK, NOT PyPI. ai2-olmo-core 2.4.0 has no schema for this checkpoint's
-# `sequence_mixer` block or its rope fields (`no_global_rope`, `partial_rotary_factor`),
-# so TransformerConfig.from_dict fails on the config before a weight is read.
-# edu-llm/OLMo-core@edullm/memory-split-135m wrote them. --no-deps so the git install
-# cannot drag the pinned resolution around underneath it, and after the sync rather than
-# instead of it, because the extra is what brings the surrounding dependency set.
+# BOTH FLAGS, OR NEITHER IS DOING ANYTHING. `--checkpoint-kind olmo_core` on its own
+# leaves preparation at `auto`, which sniffs the directory, converts it to HuggingFace,
+# and hands the native reader an HF checkpoint it cannot read. `--checkpoint-prep none`
+# on its own leaves the HF backend pointed at raw shards. The pairing is the
+# configuration; either half alone is a misconfiguration that looks like a typo.
 #
-# NO PATCH STEP HERE, DELIBERATELY. Upstream's get_hf_config refuses the plain pre-norm
-# TransformerBlock these checkpoints use, and the converter installs the fix itself --
-# diagnostics/mcq_cat/common/hf_config_patch.py, applied in-process at the top of
-# convert_olmo_core_to_hf. The node drivers ran a script that rewrote site-packages and
-# had to hold two orderings by hand (after uv sync, before the first uv run; UV_NO_SYNC
-# thereafter). An in-process patch has no ordering to get wrong. Only the environment
-# variable it reads is named here, so the converted context length is auditable from this
-# file; 2048 is also the default and this checkpoint's sequence_length.
+# WHAT THIS BUYS OVER THE CONVERSION PATH. The conversion unsharded 1.74 GB of DCP into a
+# second full copy of the weights inside the same tmpdir, ran an upstream converter that
+# needed an in-process patch to accept this architecture at all, and did it once per run
+# to answer a session that administers 13-40 items. None of that happens here. What it
+# costs is that the scorer is new code -- see the honest-risk note at the bottom.
 #
-# UV_NO_SYNC=1 no longer protects the patch -- there is nothing on disk to revert -- and
-# this command never runs `uv run`, so it changes nothing today. It stays because the
-# fork pin above is still revertible by any `uv run` a later edit adds, and reinstating
-# PyPI 2.4.0 silently is a failure that reads as a checkpoint problem.
+# THE CHECKPOINT IS STILL FULLY DOWNLOADED. `prep none` skips the conversion, not the
+# fetch: resolve_checkpoint still pulls all 140 objects and 1.74 GB under the prefix,
+# because the loader reads the shards. This is not a smaller download, only a smaller
+# peak disk and one fewer moving part.
 #
-# CONVERSION NEEDS THE HUGGINGFACE HUB, NOT ONLY S3. The checkpoint carries no tokenizer
-# files, only the identifier HuggingFaceTB/SmolLM2-135M, which AutoTokenizer resolves
-# against the Hub at the very end of the conversion. A node that can reach S3 and not
-# huggingface.co fails after rebuilding the model and writing the weights, and the error
-# looks like a converter bug.
+# ============================================================================
+# NO uv sync HERE, AND THAT IS A REVERSAL
+# ============================================================================
 #
-# --dtype bfloat16 IS NAMED HERE ON PURPOSE, THOUGH IT IS ALSO THE DEFAULT. The platform's
-# bfloat16_not_in_the_hardware guard reads the text of command: and nothing else, so a
-# precision the program picks for itself is invisible to it. While the runner had no such
-# flag -- precision was prepare_checkpoint's bfloat16 default, chosen in code -- this spec
-# drew no bfloat16 refusal on any shape, and a Turing card would have priced, passed, been
-# admitted, been given a machine, and then died on the first kernel wanting the format.
+# This command used to open with `uv sync --frozen ... --extra olmo_core`, and the comment
+# beside it argued the extras had to be preserved or the sync would uninstall what the
+# image was built to carry. That argument is now backwards, and keeping the line would
+# undo this whole change.
 #
-# The flag is real now: runner.py takes --dtype {bfloat16,float16,float32}, threads it
-# through prepare_checkpoint to convert_olmo_core_to_hf, and records it in the report.
-# Writing it here therefore refuses a bad card instead of breaking a good one, which is
-# what an invented flag would have done -- the guard would have read it and the runner
-# would have exited 2 on an unrecognized argument, on every card rather than one.
+# .edullm/Dockerfile installs the fork of ai2-olmo-core over the lockfile's resolution
+# with `uv pip install --no-deps`, so the image carries 2.5.0-from-git where uv.lock names
+# 2.4.0-from-PyPI. `uv sync --frozen` makes the environment match the lock exactly. It
+# would therefore see a version it did not put there and replace the baked fork with the
+# PyPI wheel that cannot parse this checkpoint's config -- silently, in the first second
+# of a billed GPU run, and the failure four minutes later would read as a checkpoint
+# problem rather than as this line.
 #
-# Measured 2026-08-08 with the flag in place: `edullm check --compute gpu-1xt4` now
-# returns bfloat16_not_in_the_hardware, quoting the flag back ("this command asks for
-# bfloat16 with --dtype bfloat16") and naming the shapes that do have the format. The
-# same refusal appears on gpu-4xt4 and gpu-8xt4, the other two Turing shapes, and on no
-# others; gpu-1xl4 and cpu-32vcpu are unaffected, the latter because the guard is about
-# cards and that shape has none. Removing the flag from this line removes all three
-# refusals, which is the test that it is the text and not the code being read.
+# There is also nothing left for it to do. The image already contains every extra the
+# sync would have named, plus the project itself (`uv pip install --no-deps .`), and the
+# Dockerfile asserts at build time that the schema this checkpoint needs actually parses.
+# A sync here is a resolution nothing reviewed, run inside a job that is meant to be
+# reproducible, whose only possible effects are no-op or damage.
 #
-# Changing this to --dtype float16 is a real escape hatch onto a T4 rather than a text
-# substitution: the weights are written at that precision and the report says so. It is
-# not free -- the calibrated banks were fitted behind fp32-accumulated bf16 scoring -- so
-# it is a deliberate measurement change, not a way to quiet a refusal.
+# UV_NO_SYNC=1 STAYS, AND IT IS A GUARD RATHER THAN A FIX. It does nothing today: this
+# command invokes `python` directly, so no implicit sync is reachable from what is written
+# below. It stays because `uv run` is the obvious way anyone would add a step to this line
+# later, `uv run` syncs before it runs, and that sync is the exact failure described in the
+# paragraph above. One environment variable is a cheap standing refusal for a mistake whose
+# symptom is a plausible-looking traceback about a config schema.
+#
+# NO OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS, BECAUSE NOTHING HERE EMITS AN HF CONFIG. That
+# variable is read by diagnostics/mcq_cat/common/hf_config_patch.py, which is applied
+# in-process at the top of convert_olmo_core_to_hf to get past upstream's get_hf_config
+# refusing the plain pre-norm TransformerBlock these checkpoints use. Under `prep none`
+# the converter never runs, so both the patch and the variable are dead. Carrying it
+# anyway would be a line implying a conversion that does not happen.
+#
+# THE HUGGINGFACE HUB IS STILL NEEDED, AND THAT SURVIVED THE CHANGE. The checkpoint
+# carries no tokenizer files, only the identifier HuggingFaceTB/SmolLM2-135M in its
+# config's dataset.tokenizer block. The native scorer resolves that through AutoTokenizer
+# exactly as the converter did, so a node that can reach S3 and not huggingface.co still
+# fails -- now at load rather than at the end of a conversion.
+#
+# --dtype bfloat16 IS KEPT, AND ON THIS PATH IT IS AN ADMISSION DECLARATION RATHER THAN A
+# CONVERSION KNOB. Nothing is converted, so the flag writes no weights and the runner logs
+# a warning saying so; a reader of the job log should expect that line and not read it as
+# a fault. It is kept because the platform's bfloat16_not_in_the_hardware guard reads the
+# text of command: and nothing else, and the hardware requirement did not go away with the
+# conversion -- the weights this checkpoint holds are bfloat16 and the native loader runs
+# them on the card in that format. Dropping the flag drops all three Turing refusals
+# (measured 2026-08-08: gpu-1xt4, gpu-4xt4 and gpu-8xt4 return
+# bfloat16_not_in_the_hardware with it, and none of them without), so a T4 override would
+# price, pass, be admitted, be given a machine, and die on the first kernel wanting the
+# format.
+#
+# That is a flag being used for its side effect on admission rather than for what it
+# names, and it is worth saying plainly rather than leaving as a coincidence. The clean
+# version is a precision flag that the native path also honours; until that exists, this
+# is the only text the guard can read, and a redundant warning line is cheaper than an
+# unadmissible card.
+#
+# ============================================================================
+# WHAT IS NOT PROVEN
+# ============================================================================
+#
+# The native scorer has never executed against a real checkpoint. Its arithmetic is
+# pinned against the HuggingFace scorer's on synthetic logits and its wiring is pinned
+# against olmo-eval's real checkpoint helpers, but what OLMo-core's model_forward returns
+# for a batch of one, what HuggingFaceTB/SmolLM2-135M's tokenizer prepends by default, and
+# whether bfloat16 log_softmax without an intermediate .float() agrees with the provider's
+# cast are all open. Two of the three fail loudly if they are wrong -- there is a
+# permanent shape assertion on the forward output, and the tokenizer's defaults are
+# measured at load and written into the report's run.tokenization block. This run is the
+# test.
 schema_version: 1
 workload_profile: olmo-eval-sweep
 suggested_compute: gpu-1xl4
 command: >-
-  bash -lc 'uv sync --frozen --no-default-groups
-  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
-  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
-  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
-  && export UV_NO_SYNC=1
+  bash -lc 'export UV_NO_SYNC=1
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
   --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
   --benchmark arc_challenge
+  --checkpoint-prep none
+  --checkpoint-kind olmo_core
   --dtype bfloat16
   --s3-out "$EDULLM_OUTPUT_PREFIX"'

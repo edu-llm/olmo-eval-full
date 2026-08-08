@@ -189,6 +189,159 @@ class TestThePreparationSeamIsWiredIn:
             self._run(tmp_path, tmp_path / "out", "--checkpoint-prep", "always")
 
 
+class TestTheTwoSeamsAreIndependent:
+    """The four cells of ``{auto, none} x {hf, olmo_core}``, from the runner's side.
+
+    ``test_olmo_core_scoring.py`` runs the native cell end to end against the real
+    scorer; this runs the same flags with the backend replaced by a sentinel, so the
+    claim that the two seams do not know about each other is checked in a checkout with
+    neither ``olmo_eval`` nor a GPU stack -- which is where the design constraint is
+    actually load-bearing, since that is where anyone would notice it being violated.
+
+    What would break these is any coupling in either direction: preparation reading the
+    backend name and skipping itself for a native one, or the loader inferring a kind
+    from what preparation returned. Both are the sort of shortcut that looks like a
+    simplification and quietly removes a configuration from the table.
+    """
+
+    def _native_dir(self, tmp_path: Path) -> Path:
+        """A directory the layout detector reads as a raw OLMo-core checkpoint."""
+        native = tmp_path / "native"
+        native.mkdir()
+        (native / "config.json").write_text(
+            json.dumps({"model": {"d_model": 576}, "dataset": {}}), encoding="utf-8"
+        )
+        (native / "model_and_optim").mkdir()
+        (native / "model_and_optim" / ".metadata").write_bytes(b"\x00")
+        return native
+
+    @pytest.fixture
+    def native(self, monkeypatch, tmp_path: Path, toy_params):
+        """A native checkpoint staged, and the MCQ registry watched rather than stubbed.
+
+        The registry entry is replaced rather than ``load_scoring_model`` itself, so the
+        lookup that chooses a backend is the shipped one and what is recorded is the
+        directory the chosen backend was handed.
+        """
+        from ....common import convert, inference, s3_io
+        from .conftest import SimScorer
+
+        write_bank(tmp_path / "banks", dataset="arc_challenge")
+        monkeypatch.setattr(resolve, "CALIBRATED_DATASETS", tmp_path / "banks")
+
+        staged = self._native_dir(tmp_path)
+        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: staged)
+
+        seen: dict[str, object] = {"staged": staged, "converted": []}
+
+        def _backend(checkpoint_dir: Path, config: object):
+            seen["loaded_from"] = checkpoint_dir
+            seen["kind"] = config.checkpoint_kind
+            return SimScorer(0.5, toy_params)
+
+        monkeypatch.setitem(inference.MCQ_SCORING_BACKENDS, "olmo_core", _backend)
+        monkeypatch.setitem(inference.MCQ_SCORING_BACKENDS, "hf", _backend)
+
+        def _convert(local_dir: Path, out_dir: Path, **kwargs: object) -> Path:
+            seen["converted"].append(local_dir)  # type: ignore[union-attr]
+            out_dir.mkdir(parents=True, exist_ok=True)
+            return out_dir
+
+        monkeypatch.setattr(convert, "convert_olmo_core_to_hf", _convert)
+        return seen
+
+    def _run(self, tmp_path: Path, out_dir: Path, *extra: str) -> int:
+        return runner.main(
+            [
+                "--cat-style",
+                "uni_mcq",
+                "--checkpoint",
+                "s3://bucket/run/checkpoints/step305176",
+                "--s3-out",
+                str(out_dir),
+                "--benchmark",
+                "arc_challenge",
+                *extra,
+            ]
+        )
+
+    def test_prep_none_hands_the_native_backend_the_staged_directory(
+        self, native, tmp_path: Path
+    ) -> None:
+        assert (
+            self._run(
+                tmp_path,
+                tmp_path / "out",
+                "--checkpoint-prep",
+                "none",
+                "--checkpoint-kind",
+                "olmo_core",
+            )
+            == 0
+        )
+        assert native["converted"] == []
+        assert native["loaded_from"] == native["staged"]
+        assert native["kind"] == "olmo_core"
+
+    def test_prep_auto_converts_first_whichever_backend_is_named(
+        self, native, tmp_path: Path
+    ) -> None:
+        """The mis-composition, and it is the reason both flags have to be set.
+
+        ``--checkpoint-kind olmo_core`` alone leaves preparation at its default, so the
+        native reader is handed the *converted* directory rather than the shards. That is
+        a real thing somebody will type, and what makes it recoverable is that the
+        directory is visibly not the staged one rather than that anything guessed.
+        """
+        assert self._run(tmp_path, tmp_path / "out", "--checkpoint-kind", "olmo_core") == 0
+        assert native["converted"] == [native["staged"]]
+        assert native["loaded_from"] != native["staged"]
+        assert native["kind"] == "olmo_core"
+
+    def test_prep_none_with_the_hf_backend_is_still_reachable(self, native, tmp_path: Path) -> None:
+        """The fourth cell: a checkpoint prepared out of band, or already HF."""
+        assert self._run(tmp_path, tmp_path / "out", "--checkpoint-prep", "none") == 0
+        assert native["converted"] == []
+        assert native["loaded_from"] == native["staged"]
+        assert native["kind"] == "hf"
+
+    def test_the_report_names_the_cell(self, native, tmp_path: Path) -> None:
+        out_dir = tmp_path / "out"
+        assert (
+            self._run(
+                tmp_path,
+                out_dir,
+                "--checkpoint-prep",
+                "none",
+                "--checkpoint-kind",
+                "olmo_core",
+            )
+            == 0
+        )
+        run = json.loads((out_dir / "cat_report.json").read_text(encoding="utf-8"))["run"]
+        assert (run["checkpoint_prep"], run["checkpoint_kind"]) == ("none", "olmo_core")
+
+    def test_the_dry_run_prints_both_flags(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """A dry run whose output cannot distinguish two cells is not a plan."""
+        with caplog.at_level("INFO"):
+            assert (
+                self._run(
+                    tmp_path,
+                    tmp_path / "out",
+                    "--checkpoint-prep",
+                    "none",
+                    "--checkpoint-kind",
+                    "olmo_core",
+                    "--dry-run",
+                )
+                == 0
+            )
+        assert "kind=olmo_core" in caplog.text
+        assert "prep=none" in caplog.text
+
+
 class TestThePrecisionIsOnTheCommandLine:
     """``--dtype``, and the reason it is a flag rather than a default in code.
 

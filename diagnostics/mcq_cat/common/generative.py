@@ -1283,13 +1283,20 @@ def load_generative_model(checkpoint_dir: Path, config: GenerationConfig) -> Sco
 def _load_olmo_core(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
     """Load a raw OLMo-core checkpoint for generation (integration point).
 
-    The same integration point ``inference._load_olmo_core`` marks, and blocked on the
-    same thing: reconstructing the model and tokenizer from the run config. Once that
-    exists, only a completer is needed here -- the grading half is backend-agnostic.
+    Deliberately not in :data:`GENERATIVE_BACKENDS`, so it is unreachable rather than
+    half-wired, and the one place a reader is told why the two modalities disagree about
+    ``olmo_core``. The MCQ half is no longer blocked --
+    ``inference._OlmoCoreScoringModel`` rebuilds the model and resolves the tokenizer
+    already, and this could reuse both. What it cannot reuse is the exemption that makes
+    them work: that scorer skips ``_validate_token_ids`` and builds no
+    ``GenerationConfig`` because a forward-only scorer never pads and never stops, and
+    this checkpoint family writes ``pad_token_id == eos_token_id == 0``. Decoding needs a
+    distinct EOS to stop on, so the blocker is real here and cannot be waved through the
+    same way.
     """
     raise NotImplementedError(
-        "olmo_core generation is a training-env integration point. Provide the run "
-        "config and checkpoint layout, then wrap the reconstructed model in a "
-        "prompt -> completion callable and hand it to GenerativeScorer. See "
-        "tests/OnNode/checkpoint_infer.py and inference._load_olmo_core."
+        "olmo_core generation is a training-env integration point. The MCQ side reads "
+        "this format natively (inference._OlmoCoreScoringModel); what is missing here is "
+        "a prompt -> completion callable to hand to GenerativeScorer, and a stopping "
+        "criterion for a checkpoint whose eos_token_id equals its pad_token_id."
     )

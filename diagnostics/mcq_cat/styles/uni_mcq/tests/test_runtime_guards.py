@@ -483,33 +483,62 @@ class TestTheParameterSourceIsTheOneAskedFor:
 
 
 class TestAnUnloadableCheckpointFormatFailsFirst:
-    """``olmo_core`` is an integration point, and the step after this check downloads.
+    """The step after this check downloads, so a format nothing can load fails here.
 
     Nothing about the failure needs the checkpoint: the format is known from a flag and
-    neither grader has a loader for it. Discovering it inside the loader means
-    discovering it after ``resolve_checkpoint`` has pulled every object under an
-    ``s3://`` prefix, which for a checkpoint is the expensive part of the run.
+    the grader for this bank's modality has no loader for it. Discovering it inside the
+    loader means discovering it after ``resolve_checkpoint`` has pulled every object
+    under an ``s3://`` prefix, which for a checkpoint is the expensive part of the run.
+
+    The case is a *generative* bank asked for ``olmo_core``, and it is the only one left
+    now that the MCQ scorer reads that format natively. That asymmetry is the reason
+    :data:`grading.LOADABLE_CHECKPOINT_KINDS` is a per-modality dict: the generative
+    completer is still a stub for the native layout, and it needs a distinct EOS to stop
+    on, which this checkpoint family does not have.
     """
+
+    _GENERATIVE = grading.GradingRequest(dataset=GENERATIVE_DATASET, modality=grading.GENERATIVE)
 
     def test_hf_passes(self) -> None:
         grading.check_checkpoint_kind(_REQUEST, grading.GradingSettings())
 
-    def test_olmo_core_is_refused(self) -> None:
+    def test_olmo_core_passes_for_an_mcq_bank(self) -> None:
+        """The native reader is registered, so this is no longer a refusal."""
         settings = grading.GradingSettings(
             mcq=inference.InferenceConfig(checkpoint_kind="olmo_core"),
             generation=generative.GenerationConfig(checkpoint_kind="olmo_core"),
         )
-        with pytest.raises(NotImplementedError, match="olmo_core"):
+        grading.check_checkpoint_kind(_REQUEST, settings)
+
+    def test_olmo_core_is_refused_for_a_generative_bank(self) -> None:
+        """Same settings, other modality, and only one half is read."""
+        settings = grading.GradingSettings(
+            mcq=inference.InferenceConfig(checkpoint_kind="olmo_core"),
+            generation=generative.GenerationConfig(checkpoint_kind="olmo_core"),
+        )
+        with pytest.raises(NotImplementedError, match="olmo_core") as excinfo:
+            grading.check_checkpoint_kind(self._GENERATIVE, settings)
+        assert "generative grader" in str(excinfo.value)
+
+    def test_an_unknown_format_is_refused_for_either_modality(self) -> None:
+        """The MCQ half still has a floor; ``olmo_core`` was let in, not the door."""
+        settings = grading.GradingSettings(
+            mcq=inference.InferenceConfig(checkpoint_kind="ollama"),
+            generation=generative.GenerationConfig(checkpoint_kind="ollama"),
+        )
+        with pytest.raises(NotImplementedError, match="ollama"):
             grading.check_checkpoint_kind(_REQUEST, settings)
+        with pytest.raises(NotImplementedError, match="ollama"):
+            grading.check_checkpoint_kind(self._GENERATIVE, settings)
 
     def test_a_style_override_is_folded_on_before_the_check(self) -> None:
         """The format checked has to be the one a model would be built from."""
         request = grading.GradingRequest(
             dataset="arc_challenge",
             modality=grading.MCQ,
-            mcq={"datasets": {"arc_challenge": {"checkpoint_kind": "olmo_core"}}},
+            mcq={"datasets": {"arc_challenge": {"checkpoint_kind": "ollama"}}},
         )
-        with pytest.raises(NotImplementedError, match="olmo_core"):
+        with pytest.raises(NotImplementedError, match="ollama"):
             grading.check_checkpoint_kind(request, grading.GradingSettings())
 
     def test_the_runner_refuses_before_fetching_the_checkpoint(
@@ -522,7 +551,13 @@ class TestAnUnloadableCheckpointFormatFailsFirst:
         guard refusing before it. Asserting only ``== 1`` therefore passes in both
         worlds, including the one this test exists to rule out. What separates them is
         that no fetch was attempted and that the message on the way out is this check's.
+
+        Driven through ``LOADABLE_CHECKPOINT_KINDS`` rather than through a made-up flag
+        value, because ``--checkpoint-kind`` has ``choices`` and argparse would refuse an
+        unregistered name at parse time -- which is a different guard, two steps earlier,
+        and not the one under test.
         """
+        monkeypatch.setitem(grading.LOADABLE_CHECKPOINT_KINDS, grading.MCQ, ("hf",))
         fetched: list[str] = []
 
         def _boom(*args: object, **kwargs: object):
@@ -558,22 +593,23 @@ class TestTheMcqBackendRegistry:
     """Which backend loads a prepared checkpoint is a table lookup, not a branch.
 
     The generative side has the same pair of tests. Both exist because the registries are
-    what keep the parked native reader and a future served backend one line away, and a
-    registry that quietly falls back to ``hf`` would take an unloadable kind, score with
-    the wrong backend, and report a theta for it.
+    what keep a future served backend one line away, and a registry that quietly fell
+    back to ``hf`` would take an unloadable kind, score with the wrong backend, and
+    report a theta for it.
+
+    ``olmo_core`` is the evidence the line is really one line: restoring the native
+    reader added an entry here and a string to
+    :data:`grading.LOADABLE_CHECKPOINT_KINDS`, and nothing on the runner's path moved.
     """
 
+    def test_both_backends_are_registered(self) -> None:
+        assert sorted(inference.MCQ_SCORING_BACKENDS) == ["hf", "olmo_core"]
+
     def test_an_unregistered_kind_is_refused_and_the_message_lists_what_is(self) -> None:
-        config = inference.InferenceConfig(checkpoint_kind="olmo_core")
+        config = inference.InferenceConfig(checkpoint_kind="ollama")
         with pytest.raises(ValueError, match="Unknown checkpoint_kind") as excinfo:
             inference.load_scoring_model(Path("/nowhere"), config)
-        assert "hf" in str(excinfo.value)
-
-    def test_a_genuinely_unknown_kind_fails_the_same_way(self) -> None:
-        """No special case for the one we happen to have parked."""
-        config = inference.InferenceConfig(checkpoint_kind="ollama")
-        with pytest.raises(ValueError, match="Unknown checkpoint_kind"):
-            inference.load_scoring_model(Path("/nowhere"), config)
+        assert "hf, olmo_core" in str(excinfo.value)
 
     def test_registering_a_kind_is_all_it_takes(self) -> None:
         sentinel = object()

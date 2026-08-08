@@ -234,6 +234,15 @@ def run(args: argparse.Namespace) -> int:
         "grader": grading.get_grader(request.modality).summary,
         "timestamp": datetime.now(UTC).isoformat(),
     }
+
+    # Optional, and read off the model rather than asked of it, because only a backend
+    # that has something to say sets it. The olmo_core scorer records what its
+    # tokenizer's defaults add, which decides whether the tokens scored here are the
+    # ones this bank's difficulties were calibrated behind -- a fact about the theta
+    # below it, and one that is otherwise a log line nobody reads twice.
+    tokenization = getattr(model, "tokenizer_defaults", None)
+    if tokenization is not None:
+        report_dict["run"]["tokenization"] = tokenization.as_dict()
     location = _write_report(report_dict, args)
     log.info("Done. Report written to %s", location)
     return 0
