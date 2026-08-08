@@ -146,7 +146,7 @@ RUN set -eux; \
 #
 #     uv export --frozen --no-default-groups --no-emit-project \
 #         --extra beaker --extra hf --extra s3 --extra clients [--extra vllm|olmo-core]
-ARG MODEL_BACKEND=none
+ARG MODEL_BACKEND=olmo-core
 RUN set -eux; \
     case "${MODEL_BACKEND}" in \
         none) exit 0 ;; \
