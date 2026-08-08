@@ -114,16 +114,41 @@ def main() -> int:
         state["imports"] = imports
         state["u"] = u
 
+        # Run 1 found that full validation refuses this checkpoint at
+        # olmo_core_utils.py:244, because its tokenizer has pad_token_id == eos_token_id.
+        # Record that deliberately rather than route around it silently: it is a real
+        # constraint on every checkpoint from this training setup, and phase 4's
+        # generative path has to answer for it even though scoring does not.
+        try:
+            u._resolve_checkpoint(
+                args.checkpoint,
+                imports=imports,
+                validate_checkpoint=True,
+                allow_tokenizer_fallback=False,
+            )
+        except Exception as exc:  # noqa: BLE001 - the failure is the finding
+            record("validate_checkpoint=True", f"REFUSED - {type(exc).__name__}: {exc}")
+        else:
+            record("validate_checkpoint=True", "accepted, so run 1's pad/eos gate is gone")
+
+        # Scoring never pads and never generates, so pad_token_id is unused on this path.
+        # The False branch still loads config.json and the tokenizer config; it only skips
+        # the layout and token-id assertions.
         config, tokenizer_config = u._resolve_checkpoint(
             args.checkpoint,
             imports=imports,
-            validate_checkpoint=True,
+            validate_checkpoint=False,
             allow_tokenizer_fallback=False,
         )
         state["config"] = config
         state["tokenizer_config"] = tokenizer_config
 
-        record("validation", "layout accepted, config.json parsed")
+        record("validate_checkpoint=False", "config.json parsed, tokenizer config resolved")
+        record(
+            "pad / eos from config",
+            f"pad={getattr(tokenizer_config, 'pad_token_id', None)} "
+            f"eos={getattr(tokenizer_config, 'eos_token_id', None)}",
+        )
         record("tokenizer identifier", str(getattr(tokenizer_config, "identifier", None)))
         if isinstance(config, dict):
             model_cfg = config.get("model") or {}
@@ -186,27 +211,27 @@ def main() -> int:
         record("signature", str(sig))
         record("required parameters", ", ".join(required) or "(none beyond cls)")
 
-        tok = state.get("tokenizer")
-        generation_config = imports.GenerationConfig(
-            pad_token_id=getattr(tok, "pad_token_id", None) or 0,
-            eos_token_id=getattr(tok, "eos_token_id", None) or 0,
-            max_new_tokens=args.max_new_tokens,
-        )
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # The checkpoint on hand was written by 8 ranks as 128 .distcp shards. Whether
-        # DCP reshards those into one process without a process group is the question
-        # that decides whether phase 2 is a loader or a distributed setup.
+        # No generation_config, which run 1's signature dump showed is Optional. The MCQ
+        # scorer only ever runs a forward pass, so it needs no sampling parameters -- and
+        # skipping it sidesteps pad/eos entirely, since that is what a GenerationConfig
+        # validates. Run 1 could not establish this because it built one unconditionally
+        # from a tokenizer that probe 2 had failed to load, manufacturing pad=0 eos=0 and
+        # hitting the same error from a second source.
+        #
+        # The checkpoint was written by 8 ranks as 128 .distcp shards. Whether DCP
+        # reshards those into one process, with process_group left at its default None,
+        # is the question that decides whether phase 2 is a loader or a distributed setup.
         started = time.monotonic()
         model = imports.TransformerGenerationModule.from_checkpoint(
             args.checkpoint,
-            generation_config=generation_config,
             device=device,
         )
         record(
             "8-rank -> 1-process reshard",
-            f"LOADED in {time.monotonic() - started:.1f}s with the minimal argument set, "
-            "no distributed initialization",
+            f"LOADED in {time.monotonic() - started:.1f}s from checkpoint_dir alone, "
+            "no generation_config and no distributed initialization",
         )
         state["model"] = model
         state["device"] = device
@@ -261,11 +286,41 @@ def main() -> int:
             f"a 40-item session would spend about {40 * mean_ms / 1000:.1f}s here",
         )
 
-    @probe("6", "What does generate_batch return, and how does it pad?")
+    @probe("6", "Can a GenerationConfig exist at all when pad == eos?")
+    def _gen_config() -> None:
+        imports, tok = state["imports"], state["tokenizer"]
+        pad = getattr(tok, "pad_token_id", None)
+        eos = getattr(tok, "eos_token_id", None)
+        record("tokenizer pad / eos", f"pad={pad} eos={eos}")
+
+        # This is phase 4's blocker rather than phase 2's. Scoring skips GenerationConfig
+        # entirely; generation cannot. If the constructor refuses these two values, the
+        # generative completer needs a distinct pad token from somewhere before it can
+        # run at all, and it is better to learn that here than in phase 4.
+        try:
+            cfg = imports.GenerationConfig(
+                pad_token_id=pad,
+                eos_token_id=eos,
+                max_new_tokens=args.max_new_tokens,
+            )
+        except Exception as exc:  # noqa: BLE001 - the refusal is the finding
+            record(
+                "VERDICT",
+                f"REFUSED by {type(exc).__module__}.{type(exc).__name__}: {exc} "
+                "-- phase 4 needs a distinct pad token, phase 2 is unaffected",
+            )
+            return
+        state["generation_config"] = cfg
+        record("VERDICT", "constructed, so generation is not blocked by pad == eos")
+
+    @probe("7", "What does generate_batch return, and how does it pad?")
     def _generate() -> None:
         model, tok = state["model"], state["tokenizer"]
         if not hasattr(model, "generate_batch"):
             record("generate_batch", "not present on this module")
+            return
+        if "generation_config" not in state:
+            record("generate_batch", "skipped: no GenerationConfig could be built (probe 6)")
             return
 
         prompts = ["The capital of France is", "Two plus two equals"]
