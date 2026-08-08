@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-08-08T01:05:51.408309+00:00",
+  "status": "STUDY / reporting only - LOCAL; production engine untouched; nothing committed.",
+  "benchmark": "TutorEval",
+  "scale": "unidimensional (single 'ability' axis)",
+  "op_point": {
+    "floor_min_scenarios": 15,
+    "se_ability_target": 0.22,
+    "stop": "EAP-posterior dense-grid SD; plateau delta=0.005/W=3; cap 70; MWLE theta at stop",
+    "oos": "k=5, seed 20260729, per-fold refit (ridge 0.01, fit_grid 7, clamp)"
+  },
+  "n_models": 52,
+  "n_weak": 4,
+  "weak_models": [
+    "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+    "ai-forever/mGPT",
+    "allenai/OLMo-1B-hf",
+    "ibm-granite/granite-3.1-2b-instruct"
+  ],
+  "headline_excl_weak": {
+    "recovery_r": 0.95,
+    "recovery_slope": 0.8009,
+    "theta_mae": 0.3329,
+    "median_length_scenarios": 15.0,
+    "median_se_ability": 0.1774,
+    "median_se_total": 0.2171,
+    "median_se_param": 0.112,
+    "pct_reach_corrected": 97.9,
+    "pirt_pass_rate_mae": 0.0361,
+    "pirt_r": 0.9531
+  },
+  "all_52": {
+    "recovery_r": 0.9702,
+    "recovery_slope": 0.8131,
+    "theta_mae": 0.3594,
+    "median_length_scenarios": 15.0,
+    "median_se_total": 0.2231,
+    "pct_reach_corrected": 92.3
+  },
+  "reach_definition_corrected": "SE_ability (EAP posterior SD at stop) <= target ONLY",
+  "reach_old_combined_gate": "SE_ability <= target AND SE_total <= 0.30 (SUPERSEDED)",
+  "pct_reach_delta_vs_old": {
+    "all_52": 5.8,
+    "excl_weak": 4.1
+  },
+  "leaderboard": {
+    "top_headline": {
+      "model": "tiiuae/Falcon3-3B-Instruct",
+      "theta": 2.597,
+      "se_total": 0.323
+    },
+    "bottom_headline": {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -2.984
+    }
+  },
+  "efficiency": {
+    "op_point": {
+      "floor": 15,
+      "se_target": 0.22
+    },
+    "n_held_out_traces": 52,
+    "adaptive_reach_scenarios": 10,
+    "random_reach_scenarios": 79,
+    "scenario_savings_x": 7.9
+  },
+  "figures": {
+    "05_oos_recovery": "experiments/05_oos_recovery/oos_recovery_ability_f15se22.png",
+    "07_parameter_uncertainty": "experiments/07_parameter_uncertainty/se_ability_vs_total_bars_f15se22.png",
+    "08_leaderboard": "experiments/08_leaderboard/leaderboard_f15se22.png",
+    "09_pirt_mae": "experiments/09_pirt_mae/pirt_pred_vs_actual_f15se22.png",
+    "04_efficiency_vs_random": "experiments/04_efficiency_vs_random/adaptive_vs_random_efficiency_f15se22.png"
+  },
+  "job_a_corrected_grid_csv": "../oos_per_cell_grid_reach_corrected.csv"
+}

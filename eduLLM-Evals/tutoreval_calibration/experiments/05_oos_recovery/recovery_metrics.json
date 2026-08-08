@@ -1,0 +1,20 @@
+{
+  "op_point": {
+    "floor": 15,
+    "se_target": 0.22
+  },
+  "headline_excl_weak": {
+    "n": 48,
+    "r": 0.95,
+    "slope": 0.8009,
+    "intercept": -0.0494,
+    "theta_mae": 0.3329
+  },
+  "all_52": {
+    "n": 52,
+    "r": 0.9702,
+    "slope": 0.8131,
+    "intercept": -0.0477,
+    "theta_mae": 0.3594
+  }
+}

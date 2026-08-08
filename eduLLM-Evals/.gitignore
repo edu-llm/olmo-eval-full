@@ -197,3 +197,33 @@ data/TutorEval/scenarios_reworded.jsonl
 
 # cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
 biggen_results_cache.parquet
+
+# ---------------------------------------------------------------------------
+# tutoreval_calibration/ = TRACKED deliverable package (canonical unidim scale,
+# floor 15 / SE 0.22). The global *.png rule above would otherwise swallow this
+# package's figures, so re-include only its PNGs (mirrors the tutorbench
+# !tutorbench_calibration/**/*.png negation). Its CSVs/JSONL/MD are not matched
+# by any broad ignore and stay tracked. Placed AFTER the reports/ re-include so
+# it wins.
+# ---------------------------------------------------------------------------
+!tutoreval_calibration/**/*.png
+
+# Raw TutorEval judged/grading dump (S3-origin, multi-GB; regenerable, never
+# tracked). This is the raw verdict/response dump, not a deliverable.
+TutorEvalGrade/
+
+# Superseded local scratch: the of-record deliverables from this study dir have
+# been copied into tutoreval_calibration/; what remains here is regenerable
+# scratch (input matrices, __pycache__, reconcile/refit helpers, duplicate
+# figures). Ignore the whole dir. Placed AFTER the reports/ re-include so it wins.
+reports/eap_oos_grid_tutoreval_unidim/
+
+# Cross-branch leftovers carried into this working tree (raw grading dumps + other
+# benches' scratch); none belong on frq/tutoreval. Ignore so an `add -A` can't sweep
+# them in. These are tracked/ignored appropriately on their own branches.
+WildBenchGrade/
+bridgegrade/
+tutorbench_tb33_grading/verdicts_merged/
+reports/eap_oos_grid_tutorbench_2skill/
+reports/eap_stop_grid_tutorbench_2skill/
+reports/eap_unidim_correctness_only_tutorbench/
