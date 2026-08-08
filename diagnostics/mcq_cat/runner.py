@@ -27,7 +27,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from . import registry
-from .common import cat_loop, generative, grading, inference, s3_io
+from .common import cat_loop, convert, generative, grading, inference, s3_io
 
 logging.basicConfig(
     level=logging.INFO,
@@ -63,7 +63,30 @@ def build_parser() -> argparse.ArgumentParser:
         "--checkpoint-kind",
         default="hf",
         choices=["hf", "olmo_core"],
-        help="Checkpoint format to load (default: hf).",
+        help="Backend that loads the prepared checkpoint (default: hf).",
+    )
+    parser.add_argument(
+        "--checkpoint-prep",
+        default=convert.PREP_AUTO,
+        choices=list(convert.PREP_POLICIES),
+        help=(
+            "What to do with the staged checkpoint before loading it. "
+            "'auto' converts a raw OLMo-core directory to HF; 'none' hands it over "
+            "untouched, for a backend that reads the native format (default: auto)."
+        ),
+    )
+    parser.add_argument(
+        "--dtype",
+        default=convert.DTYPE_DEFAULT,
+        choices=list(convert.CONVERSION_DTYPES),
+        help=(
+            "Precision to write converted weights at (default: bfloat16). No effect "
+            "under --checkpoint-prep none, which converts nothing. Name it on the "
+            "command line even at the default: the platform's "
+            "bfloat16_not_in_the_hardware guard reads the text of the command and "
+            "cannot see a precision this program picks in code, so a card without the "
+            "format is refused for free here instead of dying on the first kernel."
+        ),
     )
     parser.add_argument(
         "--batch-size", type=int, default=16, help="Scoring batch size (default: 16)."
@@ -134,12 +157,14 @@ def run(args: argparse.Namespace) -> int:
 
     if args.dry_run:
         log.info(
-            "[dry-run] style=%s benchmark=%s checkpoint=%s kind=%s "
+            "[dry-run] style=%s benchmark=%s checkpoint=%s kind=%s prep=%s dtype=%s "
             "se_threshold=%.3f max_items=%d -> %s",
             args.cat_style,
             benchmark or "<unset>",
             args.checkpoint,
             args.checkpoint_kind,
+            args.checkpoint_prep,
+            args.dtype,
             args.se_threshold,
             args.max_items,
             args.s3_out,
@@ -169,22 +194,42 @@ def run(args: argparse.Namespace) -> int:
             region=args.aws_region,
             endpoint_url=args.s3_endpoint_url,
         )
+        # Between the fetch and the load, because preparation reads what training wrote
+        # and the backend reads what preparation produced. Under `auto` both directories
+        # exist at once inside `tmp`, so a shape with room for the checkpoint but not for
+        # its converted copy needs `--checkpoint-prep none` and a native backend.
+        checkpoint_dir = convert.prepare_checkpoint(
+            checkpoint_dir,
+            Path(tmp) / "checkpoint-hf",
+            policy=args.checkpoint_prep,
+            dtype=args.dtype,
+        )
         model = grading.load_grader(request, checkpoint_dir, settings)
 
-        report = cat_loop.run_cat(
-            style,
-            bank=bank,
-            irt_bank=irt_bank,
-            model=model,
-            se_threshold=args.se_threshold,
-            max_items=args.max_items,
-        )
+        try:
+            report = cat_loop.run_cat(
+                style,
+                bank=bank,
+                irt_bank=irt_bank,
+                model=model,
+                se_threshold=args.se_threshold,
+                max_items=args.max_items,
+            )
+        finally:
+            # Neither in-process backend defines this, so it is inert today. A served one
+            # would own a subprocess, and discovering that after the fact means editing
+            # the runner rather than registering a backend.
+            closer = getattr(model, "close", None)
+            if callable(closer):
+                closer()
 
     report_dict = report.to_dict()
     report_dict["run"] = {
         "cat_style": args.cat_style,
         "checkpoint": args.checkpoint,
         "checkpoint_kind": args.checkpoint_kind,
+        "checkpoint_prep": args.checkpoint_prep,
+        "dtype": args.dtype,
         "modality": request.modality,
         "grader": grading.get_grader(request.modality).summary,
         "timestamp": datetime.now(UTC).isoformat(),

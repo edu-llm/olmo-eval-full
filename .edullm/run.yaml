@@ -1,3 +1,5 @@
+# eduLLM job: an MCQ CAT session over one OLMo-core checkpoint, converted on the node.
+#
 # Originally written by edullm check, from config/workload-catalog.yaml.
 # Everything here is a property of the code and travels with it in git.
 # The machine, the corpus and the experiment are supplied at submit time,
@@ -9,27 +11,102 @@
 # olmo-eval-sweep rather than olmo-eval-check, because this loads a real model onto a
 # card. The catalog describes olmo-eval-check as the mock-provider path that proves the
 # harness loads without a model, and olmo-eval-sweep as the scoring entry where a GPU
-# first helps. Two hours is the ceiling rather than an estimate; the spike should take
-# minutes, and the ceiling is what gets priced.
+# first helps. Two hours is the ceiling rather than an estimate; a 13-40 item CAT over a
+# 135M model should take minutes, and the ceiling is what gets priced.
 #
 # gpu-1xl4 because capacity.yaml records it as placing `reliably` and an L4 has bfloat16
 # in hardware. Three of the other reliable shapes are T4, which is Turing and has no
 # bfloat16 at all -- a run on one would be priced, released, admitted, given a machine,
-# and then refuse the first kernel that needs the format.
+# and then refuse the first kernel that needs the format. Overriding --compute onto one
+# is now refused rather than merely inadvisable; the bfloat16 note below says by what.
 #
-# --dtype bfloat16 is on the command line rather than set inside the script on purpose.
-# The platform's bfloat16_not_in_the_hardware guard reads the text of the command and
-# cannot see a precision the program chooses in code, so naming it here turns a dead
-# machine into a free refusal if anybody later moves this to a card without it.
+# EVERYTHING IS BAKED INTO command:. `edullm submit` cannot inject environment variables,
+# so the checkpoint under test, the benchmark and every flag are written here rather than
+# passed in, and pointing this at a different checkpoint means editing this file,
+# committing, and pushing to edullm/** so the image rebuilds. A submission against an
+# edited-but-unpushed working tree evaluates the previous checkpoint and produces a
+# well-formed cat_report.json with a plausible theta for it.
 #
-# The checkpoint is passed explicitly rather than left to $EDULLM_CHECKPOINT_DIR. How
-# that variable gets populated is not documented anywhere we could find, so the script
-# prints every EDULLM_* variable it receives and this run answers that question as a
-# side effect rather than depending on the answer.
+# The checkpoint reads from the outputs bucket, not edullm-checkpoints: the GPU workload
+# role is scoped to teams/<team>/runs/*, so a checkpoint staged under that space is
+# readable by a run and edullm-checkpoints is not. Results go to $EDULLM_OUTPUT_PREFIX,
+# this run's own prefix, injected by the platform and the only place the role may write.
+#
+# THE SYNC MUST KEEP ITS EXTRAS. `uv sync` is exact: it removes anything the requested
+# set does not name. .edullm/Dockerfile builds this branch with INSTALL_OLMO_CORE=1,
+# which bakes torch 2.10.0 + ai2-olmo-core across `--extra beaker --extra hf --extra s3
+# --extra clients --extra olmo-core`, so dropping any of them here would uninstall the
+# thing the image was built to carry. Against that image the sync is a fast no-op.
+#
+# NOT --extra vllm. That extra appears in the SteeringVectors command to protect a torch
+# baked by INSTALL_TORCH_AND_VLLM=1; this branch's torch comes from INSTALL_OLMO_CORE=1
+# instead, so the olmo_core extra is what has to be preserved and the vllm one would cost
+# 4.54 GiB to protect nothing. Nothing in this pipeline serves a model.
+#
+# THE FORK, NOT PyPI. ai2-olmo-core 2.4.0 has no schema for this checkpoint's
+# `sequence_mixer` block or its rope fields (`no_global_rope`, `partial_rotary_factor`),
+# so TransformerConfig.from_dict fails on the config before a weight is read.
+# edu-llm/OLMo-core@edullm/memory-split-135m wrote them. --no-deps so the git install
+# cannot drag the pinned resolution around underneath it, and after the sync rather than
+# instead of it, because the extra is what brings the surrounding dependency set.
+#
+# NO PATCH STEP HERE, DELIBERATELY. Upstream's get_hf_config refuses the plain pre-norm
+# TransformerBlock these checkpoints use, and the converter installs the fix itself --
+# diagnostics/mcq_cat/common/hf_config_patch.py, applied in-process at the top of
+# convert_olmo_core_to_hf. The node drivers ran a script that rewrote site-packages and
+# had to hold two orderings by hand (after uv sync, before the first uv run; UV_NO_SYNC
+# thereafter). An in-process patch has no ordering to get wrong. Only the environment
+# variable it reads is named here, so the converted context length is auditable from this
+# file; 2048 is also the default and this checkpoint's sequence_length.
+#
+# UV_NO_SYNC=1 no longer protects the patch -- there is nothing on disk to revert -- and
+# this command never runs `uv run`, so it changes nothing today. It stays because the
+# fork pin above is still revertible by any `uv run` a later edit adds, and reinstating
+# PyPI 2.4.0 silently is a failure that reads as a checkpoint problem.
+#
+# CONVERSION NEEDS THE HUGGINGFACE HUB, NOT ONLY S3. The checkpoint carries no tokenizer
+# files, only the identifier HuggingFaceTB/SmolLM2-135M, which AutoTokenizer resolves
+# against the Hub at the very end of the conversion. A node that can reach S3 and not
+# huggingface.co fails after rebuilding the model and writing the weights, and the error
+# looks like a converter bug.
+#
+# --dtype bfloat16 IS NAMED HERE ON PURPOSE, THOUGH IT IS ALSO THE DEFAULT. The platform's
+# bfloat16_not_in_the_hardware guard reads the text of command: and nothing else, so a
+# precision the program picks for itself is invisible to it. While the runner had no such
+# flag -- precision was prepare_checkpoint's bfloat16 default, chosen in code -- this spec
+# drew no bfloat16 refusal on any shape, and a Turing card would have priced, passed, been
+# admitted, been given a machine, and then died on the first kernel wanting the format.
+#
+# The flag is real now: runner.py takes --dtype {bfloat16,float16,float32}, threads it
+# through prepare_checkpoint to convert_olmo_core_to_hf, and records it in the report.
+# Writing it here therefore refuses a bad card instead of breaking a good one, which is
+# what an invented flag would have done -- the guard would have read it and the runner
+# would have exited 2 on an unrecognized argument, on every card rather than one.
+#
+# Measured 2026-08-08 with the flag in place: `edullm check --compute gpu-1xt4` now
+# returns bfloat16_not_in_the_hardware, quoting the flag back ("this command asks for
+# bfloat16 with --dtype bfloat16") and naming the shapes that do have the format. The
+# same refusal appears on gpu-4xt4 and gpu-8xt4, the other two Turing shapes, and on no
+# others; gpu-1xl4 and cpu-32vcpu are unaffected, the latter because the guard is about
+# cards and that shape has none. Removing the flag from this line removes all three
+# refusals, which is the test that it is the text and not the code being read.
+#
+# Changing this to --dtype float16 is a real escape hatch onto a T4 rather than a text
+# substitution: the weights are written at that precision and the report says so. It is
+# not free -- the calibrated banks were fitted behind fp32-accumulated bf16 scoring -- so
+# it is a deliberate measurement change, not a way to quiet a refusal.
 schema_version: 1
 workload_profile: olmo-eval-sweep
 suggested_compute: gpu-1xl4
 command: >-
-  bash -lc 'python .edullm/olmo_core_spike.py
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
+  && export UV_NO_SYNC=1
+  && python -m diagnostics.mcq_cat.runner
+  --cat-style uni_mcq
   --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
-  --dtype bfloat16'
+  --benchmark arc_challenge
+  --dtype bfloat16
+  --s3-out "$EDULLM_OUTPUT_PREFIX"'

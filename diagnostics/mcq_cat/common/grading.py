@@ -345,51 +345,69 @@ def resolve_settings(request: GradingRequest, settings: GradingSettings) -> Grad
     return _apply_mcq_overrides(resolved, request.mcq, dataset=request.dataset)
 
 
-#: Checkpoint formats a grader can actually build a model from. One tuple rather than
-#: one per modality because both schemes load through ``transformers`` and both leave
-#: ``olmo_core`` as the same marked integration point, so a second entry would be two
-#: names for one fact.
-LOADABLE_CHECKPOINT_KINDS = ("hf",)
+#: Modality -> the checkpoint formats that modality's grader can build a model from.
+#:
+#: Both entries read the same today, and the dict is still the right shape rather than a
+#: shared tuple. A backend is registered per modality -- ``inference.py`` and
+#: ``generative.py`` keep their own registries -- so the two can legitimately disagree,
+#: and they have: the MCQ scorer gained a native OLMo-core loader while the generative
+#: completer was still a stub. Collapsing this to one tuple makes that state unsayable,
+#: and a single list naming the union would wave a generative run past the one check
+#: standing in front of ``resolve_checkpoint``.
+LOADABLE_CHECKPOINT_KINDS: dict[str, tuple[str, ...]] = {
+    MCQ: ("hf",),
+    GENERATIVE: ("hf",),
+}
+
+#: Modality -> the :class:`GradingSettings` field its grader is built from, and the
+#: loader that would have to grow a branch for a format that field names.
+_CHECKPOINT_SOURCES = {
+    MCQ: ("mcq", "inference.load_scoring_model"),
+    GENERATIVE: ("generation", "generative.load_generative_model"),
+}
 
 
 def check_checkpoint_kind(request: GradingRequest, settings: GradingSettings) -> None:
-    """Refuse a checkpoint format no grader can load, before one is staged.
+    """Refuse a checkpoint format this bank's grader cannot load, before one is staged.
 
     Called by the runner beside the bank and convention checks, and for the same reason
     they are called there rather than left to fail on their own: the failure is already
     certain from a flag, and the step after these is
     :func:`~diagnostics.mcq_cat.common.s3_io.resolve_checkpoint`, which pulls every
-    object under an ``s3://`` prefix. Discovering ``olmo_core`` inside the loader means
-    discovering it after a multi-gigabyte download, and the message it gives -- that the
-    format is an integration point nobody has wired up -- is exactly as useful before
-    the download as after it.
+    object under an ``s3://`` prefix. Discovering an unloadable format inside the loader
+    means discovering it after a multi-gigabyte download, and the message it gives is
+    exactly as useful before the download as after it.
 
     Read off :func:`resolve_settings`, the fold :func:`load_grader` performs, so the
     format checked is the one a model would be built from rather than the one the caller
-    passed before a style's overrides applied. Both halves are checked, because the
-    runner fills them from one ``--checkpoint-kind`` and a value neither grader can load
-    ends the run whichever modality the bank turns out to be -- which keeps this off the
-    modality switch, and :data:`GRADERS` remains the only one.
+    passed before a style's overrides applied.
+
+    Only the half matching ``request.modality`` is read, because only that half is ever
+    loaded from. The runner fills both from one ``--checkpoint-kind``, so an MCQ bank
+    carries a generation half naming a format nothing will ask the generative completer
+    to load; checking it would refuse runs that are fine.
+
+    Note that preparation runs *after* this check: a native OLMo-core directory converted
+    by :mod:`~diagnostics.mcq_cat.common.convert` is loaded as ``hf``, so the kind named
+    here describes the backend, not what is in the bucket.
 
     Raises:
-        NotImplementedError: If either half names a format outside
-            :data:`LOADABLE_CHECKPOINT_KINDS`. The same error the loader would raise, so
-            a caller that skips this check is no worse informed, only later.
+        NotImplementedError: If the half this bank is graded from names a format outside
+            its modality's entry in :data:`LOADABLE_CHECKPOINT_KINDS`. The same error the
+            loader would raise, so a caller that skips this check is no worse informed,
+            only later.
     """
-    resolved = resolve_settings(request, settings)
-    for label, kind in (
-        ("mcq", resolved.mcq.checkpoint_kind),
-        ("generation", resolved.generation.checkpoint_kind),
-    ):
-        if kind not in LOADABLE_CHECKPOINT_KINDS:
-            raise NotImplementedError(
-                f"checkpoint_kind {kind!r} on the {label} settings cannot be loaded by "
-                f"this harness. Loadable formats: "
-                f"{', '.join(LOADABLE_CHECKPOINT_KINDS)}. Raised here rather than at "
-                f"model construction so the checkpoint is not staged first; see "
-                f"_load_olmo_core in common/inference.py and common/generative.py for "
-                f"what implementing it needs."
-            )
+    modality = get_grader(request.modality).modality
+    label, loader = _CHECKPOINT_SOURCES[modality]
+    loadable = LOADABLE_CHECKPOINT_KINDS[modality]
+    kind = getattr(resolve_settings(request, settings), label).checkpoint_kind
+    if kind not in loadable:
+        raise NotImplementedError(
+            f"checkpoint_kind {kind!r} on the {label} settings cannot be loaded by the "
+            f"{modality} grader. Loadable formats: {', '.join(loadable)}. Raised here "
+            f"rather than at model construction so the checkpoint is not staged first; "
+            f"see {loader} for what implementing it needs."
+        )
 
 
 def load_grader(

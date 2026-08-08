@@ -1250,19 +1250,34 @@ class _HFCompleter:
         return pad if pad is not None else getattr(self.tokenizer, "eos_token_id", None)
 
 
+#: Checkpoint kind -> the generative grading backend that reads it.
+#:
+#: The counterpart of ``inference.MCQ_SCORING_BACKENDS``, and separate from it on purpose:
+#: the two modalities register independently, so a backend can exist for one and not the
+#: other. That asymmetry is a real state rather than a hypothetical -- it is what the
+#: native OLMo-core reader was in, and what a served backend would be in if it scored
+#: log-probs before it generated.
+GENERATIVE_BACKENDS: dict[str, Callable[[Path, GenerationConfig], ScoringModel]] = {
+    "hf": lambda checkpoint_dir, config: GenerativeScorer(
+        _HFCompleter(checkpoint_dir, config), config
+    ),
+}
+
+
 def load_generative_model(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
     """Load a sampled-completion grading model for the configured checkpoint kind.
 
     The generative counterpart of ``inference.load_scoring_model``; :mod:`.grading`
     chooses between the two by dataset modality.
     """
-    if config.checkpoint_kind == "hf":
-        return GenerativeScorer(_HFCompleter(checkpoint_dir, config), config)
-    if config.checkpoint_kind == "olmo_core":
-        return _load_olmo_core(checkpoint_dir, config)
-    raise ValueError(
-        f"Unknown checkpoint_kind: {config.checkpoint_kind!r} (expected 'hf' or 'olmo_core')"
-    )
+    try:
+        backend = GENERATIVE_BACKENDS[config.checkpoint_kind]
+    except KeyError:
+        raise ValueError(
+            f"Unknown checkpoint_kind: {config.checkpoint_kind!r}. Registered generative "
+            f"backends: {', '.join(sorted(GENERATIVE_BACKENDS))}."
+        ) from None
+    return backend(checkpoint_dir, config)
 
 
 def _load_olmo_core(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:

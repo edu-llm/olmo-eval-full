@@ -24,7 +24,14 @@ from ....base import BenchmarkItem, ItemResponse, ScoringModel
 from ....common import cat_loop, generative, grading, inference, s3_io
 from .. import datasets, resolve
 from ..style import UniMcqStyle
-from .conftest import GENERATIVE_DATASET, SimScorer, make_spec, unblock, write_bank
+from .conftest import (
+    GENERATIVE_DATASET,
+    SimScorer,
+    make_spec,
+    stage_hf_checkpoint,
+    unblock,
+    write_bank,
+)
 
 
 class FakeLogprobModel:
@@ -352,7 +359,8 @@ class TestThroughTheRunner:
         banks = tmp_path / "banks"
         write_bank(banks, dataset="arc_challenge")
         monkeypatch.setattr(resolve, "CALIBRATED_DATASETS", banks)
-        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: tmp_path / "ckpt")
+        staged = stage_hf_checkpoint(tmp_path)
+        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: staged)
 
         chosen: list[str] = []
         monkeypatch.setattr(
@@ -401,7 +409,8 @@ class TestThroughTheRunner:
         monkeypatch.setattr(resolve, "CALIBRATED_DATASETS", banks)
         monkeypatch.setitem(generative.FEWSHOT_SOURCES, "gsm8k", lambda: STUB_FEWSHOT)
         write_bank(banks, dataset=GENERATIVE_DATASET, modality="generative")
-        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: tmp_path / "ckpt")
+        staged = stage_hf_checkpoint(tmp_path)
+        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: staged)
 
         seen_configs: list[generative.GenerationConfig] = []
         monkeypatch.setattr(

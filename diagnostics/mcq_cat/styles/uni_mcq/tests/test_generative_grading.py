@@ -304,10 +304,29 @@ class TestLazyHeavyImports:
         with pytest.raises(ValueError, match="Unknown checkpoint_kind"):
             generative.load_generative_model(Path("/nowhere"), config)
 
-    def test_olmo_core_points_at_the_integration_point(self) -> None:
+    def test_olmo_core_is_unregistered_and_says_what_is(self) -> None:
+        """Unregistered, not special-cased, and the difference is the point.
+
+        ``olmo_core`` used to have its own branch raising ``NotImplementedError``. It is
+        now simply absent from :data:`generative.GENERATIVE_BACKENDS`, so it fails the
+        same way any unknown kind does and the message enumerates what is registered. A
+        backend nobody registered and a backend nobody has heard of are the same state,
+        and reporting them differently made the table look longer than it was.
+        """
         config = generative.GenerationConfig(checkpoint_kind="olmo_core")
-        with pytest.raises(NotImplementedError, match="GenerativeScorer"):
+        with pytest.raises(ValueError, match="Unknown checkpoint_kind") as excinfo:
             generative.load_generative_model(Path("/nowhere"), config)
+        assert "hf" in str(excinfo.value)
+
+    def test_the_registry_is_what_decides(self) -> None:
+        """Registering a kind is all it takes; nothing else branches on the name."""
+        sentinel = object()
+        generative.GENERATIVE_BACKENDS["fake"] = lambda *a, **k: sentinel
+        try:
+            config = generative.GenerationConfig(checkpoint_kind="fake")
+            assert generative.load_generative_model(Path("/nowhere"), config) is sentinel
+        finally:
+            del generative.GENERATIVE_BACKENDS["fake"]
 
 
 class FakeIds:

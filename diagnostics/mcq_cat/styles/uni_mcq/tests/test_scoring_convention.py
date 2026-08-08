@@ -29,7 +29,14 @@ from .. import convention, datasets, resolve
 from ..datasets import UNRECORDED, CalibrationConvention
 from ..scripts import migrate_manifests, vendor_bank
 from ..style import UniMcqStyle
-from .conftest import CALIBRATED_DATASETS, SimScorer, make_spec, unblock, write_bank
+from .conftest import (
+    CALIBRATED_DATASETS,
+    SimScorer,
+    make_spec,
+    stage_hf_checkpoint,
+    unblock,
+    write_bank,
+)
 
 #: The banks committed to this checkout. Read off disk rather than off the allowlist so
 #: a dataset that has not been vendored yet skips instead of failing.
@@ -446,7 +453,8 @@ class TestThroughTheRunner:
         """``max_items`` moves precision, not scale, and the report already flags it."""
         from ....common import s3_io
 
-        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: tmp_path / "ckpt")
+        staged = stage_hf_checkpoint(tmp_path)
+        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: staged)
         monkeypatch.setattr(
             inference, "load_scoring_model", lambda *a, **k: SimScorer(0.5, toy_params)
         )
@@ -464,7 +472,8 @@ class TestThroughTheRunner:
         """A theta is not interpretable without it, so it travels with the number."""
         from ....common import s3_io
 
-        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: tmp_path / "ckpt")
+        staged = stage_hf_checkpoint(tmp_path)
+        monkeypatch.setattr(s3_io, "resolve_checkpoint", lambda *a, **k: staged)
         monkeypatch.setattr(
             inference, "load_scoring_model", lambda *a, **k: SimScorer(0.5, toy_params)
         )

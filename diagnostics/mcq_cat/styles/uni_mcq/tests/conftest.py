@@ -181,6 +181,29 @@ def toy_bank_dir(tmp_path: Path) -> Path:
     return tmp_path
 
 
+def stage_hf_checkpoint(root: Path, name: str = "ckpt") -> Path:
+    """Create the thinnest directory that reads as an HF checkpoint, and return it.
+
+    For tests that stub ``s3_io.resolve_checkpoint`` and then let the runner continue.
+    The step after the fetch is ``convert.prepare_checkpoint``, which asks what layout
+    arrived and refuses one it cannot name -- so a stub returning a bare path now stops
+    the run before the scorer, which is the correct behaviour and the wrong fixture.
+
+    Nothing reads the contents. These tests inject the scorer, so the files only have to
+    satisfy the detection in :mod:`diagnostics.mcq_cat.common.convert`. Staging them here
+    rather than stubbing preparation away keeps the runner's real ordering under test,
+    which is what several of these tests exist to pin.
+    """
+    checkpoint = root / name
+    checkpoint.mkdir(parents=True, exist_ok=True)
+    (checkpoint / "config.json").write_text(
+        json.dumps({"architectures": ["OlmoForCausalLM"]}), encoding="utf-8"
+    )
+    (checkpoint / "model.safetensors").write_bytes(b"\x00")
+    (checkpoint / "tokenizer.json").write_text("{}", encoding="utf-8")
+    return checkpoint
+
+
 class SimScorer:
     """Answers each item by drawing from the bank's own 3PL at a known true theta.
 

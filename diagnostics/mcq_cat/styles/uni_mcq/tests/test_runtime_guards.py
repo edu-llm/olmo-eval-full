@@ -513,16 +513,27 @@ class TestAnUnloadableCheckpointFormatFailsFirst:
             grading.check_checkpoint_kind(request, grading.GradingSettings())
 
     def test_the_runner_refuses_before_fetching_the_checkpoint(
-        self, monkeypatch, mcq_style, tmp_path: Path
+        self, monkeypatch, mcq_style, tmp_path: Path, caplog
     ) -> None:
+        """Exit 1 on its own does not prove this guard is what fired.
+
+        ``runner.main`` catches everything and returns 1, so the sentinel below raising
+        *because the checkpoint was fetched* produces exactly the same exit code as the
+        guard refusing before it. Asserting only ``== 1`` therefore passes in both
+        worlds, including the one this test exists to rule out. What separates them is
+        that no fetch was attempted and that the message on the way out is this check's.
+        """
+        fetched: list[str] = []
+
         def _boom(*args: object, **kwargs: object):
+            fetched.append("reached")
             raise AssertionError("the checkpoint must not be fetched for an unloadable format")
 
         monkeypatch.setattr(s3_io, "resolve_checkpoint", _boom)
         monkeypatch.setattr(inference, "load_scoring_model", _boom)
 
-        assert (
-            runner.main(
+        with caplog.at_level("ERROR"):
+            exit_code = runner.main(
                 [
                     "--cat-style",
                     "uni_mcq",
@@ -536,9 +547,42 @@ class TestAnUnloadableCheckpointFormatFailsFirst:
                     "olmo_core",
                 ]
             )
-            == 1
-        )
+
+        assert exit_code == 1
+        assert not fetched, "the run reached resolve_checkpoint, so the guard did not fire"
+        assert "cannot be loaded by the mcq grader" in caplog.text
         assert not (tmp_path / "out").exists()
+
+
+class TestTheMcqBackendRegistry:
+    """Which backend loads a prepared checkpoint is a table lookup, not a branch.
+
+    The generative side has the same pair of tests. Both exist because the registries are
+    what keep the parked native reader and a future served backend one line away, and a
+    registry that quietly falls back to ``hf`` would take an unloadable kind, score with
+    the wrong backend, and report a theta for it.
+    """
+
+    def test_an_unregistered_kind_is_refused_and_the_message_lists_what_is(self) -> None:
+        config = inference.InferenceConfig(checkpoint_kind="olmo_core")
+        with pytest.raises(ValueError, match="Unknown checkpoint_kind") as excinfo:
+            inference.load_scoring_model(Path("/nowhere"), config)
+        assert "hf" in str(excinfo.value)
+
+    def test_a_genuinely_unknown_kind_fails_the_same_way(self) -> None:
+        """No special case for the one we happen to have parked."""
+        config = inference.InferenceConfig(checkpoint_kind="ollama")
+        with pytest.raises(ValueError, match="Unknown checkpoint_kind"):
+            inference.load_scoring_model(Path("/nowhere"), config)
+
+    def test_registering_a_kind_is_all_it_takes(self) -> None:
+        sentinel = object()
+        inference.MCQ_SCORING_BACKENDS["fake"] = lambda *a, **k: sentinel
+        try:
+            config = inference.InferenceConfig(checkpoint_kind="fake")
+            assert inference.load_scoring_model(Path("/nowhere"), config) is sentinel
+        finally:
+            del inference.MCQ_SCORING_BACKENDS["fake"]
 
 
 class TestASessionThatAdministersNothing:

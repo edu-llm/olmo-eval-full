@@ -56,7 +56,7 @@ from __future__ import annotations
 
 import logging
 import re
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
@@ -627,15 +627,31 @@ def continuation_token_count(prompt_tokens: int, full_tokens: int, max_length: i
     return count
 
 
+#: Checkpoint kind -> the MCQ scoring backend that reads it.
+#:
+#: A table rather than a branch, so a backend is registered rather than wired. Adding one
+#: -- a served vLLM scorer, or the native OLMo-core reader parked in
+#: ``Plan/flows/uni_mcq/HF_CONVERSION.md`` -- is an entry here plus its modality's string
+#: in ``grading.LOADABLE_CHECKPOINT_KINDS``, and nothing on the runner's path changes.
+#:
+#: What arrives here has already been through ``convert.prepare_checkpoint``, so the kind
+#: names the backend and not what training wrote: a native checkpoint converted under the
+#: default policy is loaded as ``hf``.
+MCQ_SCORING_BACKENDS: dict[str, Callable[[Path, InferenceConfig], ScoringModel]] = {
+    "hf": lambda checkpoint_dir, config: _HFScoringModel(checkpoint_dir, config),
+}
+
+
 def load_scoring_model(checkpoint_dir: Path, config: InferenceConfig) -> ScoringModel:
     """Load an MCQ log-likelihood scoring model for the configured checkpoint kind."""
-    if config.checkpoint_kind == "hf":
-        return _HFScoringModel(checkpoint_dir, config)
-    if config.checkpoint_kind == "olmo_core":
-        return _load_olmo_core(checkpoint_dir, config)
-    raise ValueError(
-        f"Unknown checkpoint_kind: {config.checkpoint_kind!r} (expected 'hf' or 'olmo_core')"
-    )
+    try:
+        backend = MCQ_SCORING_BACKENDS[config.checkpoint_kind]
+    except KeyError:
+        raise ValueError(
+            f"Unknown checkpoint_kind: {config.checkpoint_kind!r}. Registered MCQ "
+            f"backends: {', '.join(sorted(MCQ_SCORING_BACKENDS))}."
+        ) from None
+    return backend(checkpoint_dir, config)
 
 
 class _HFScoringModel:
@@ -730,14 +746,24 @@ class _HFScoringModel:
 
 
 def _load_olmo_core(checkpoint_dir: Path, config: InferenceConfig) -> ScoringModel:
-    """Load a raw OLMo-core checkpoint for scoring (integration point).
+    """Read a raw OLMo-core checkpoint natively, without converting it first.
 
-    Mirrors ``_load_olmo_core`` in ``tests/OnNode/checkpoint_infer.py``: reconstruct
-    the model and tokenizer from the run config and load the checkpoint weights.
-    This depends on the run's config layout and is left as an integration point.
+    Deliberately not in :data:`MCQ_SCORING_BACKENDS`, so it is unreachable rather than
+    half-wired. It is kept as the named landing site for the parked implementation: a
+    working scorer exists in stash ``fed3d925``, and restoring it is popping that stash,
+    registering it under ``"olmo_core"`` here, and adding the same string to
+    ``grading.LOADABLE_CHECKPOINT_KINDS[MCQ]``. Run it with ``--checkpoint-prep none``,
+    which is what keeps the sharded directory intact for it to read.
+
+    It was parked rather than finished because nothing had verified what OLMo-core's
+    forward pass returns or what its tokenizer prepends, and a scorer that is wrong about
+    either produces an ability estimate rather than an error. Conversion sidesteps both by
+    reaching ``transformers``, which is the path the item banks were calibrated behind.
     """
     raise NotImplementedError(
-        "olmo_core scoring is a training-env integration point. Provide the run config "
-        "and checkpoint layout, then implement _load_olmo_core (mirror the HF scorer's "
-        "score_items). See tests/OnNode/checkpoint_infer.py and the plan's open questions."
+        "Native olmo_core scoring is not registered. The default --checkpoint-prep auto "
+        "converts a raw OLMo-core checkpoint to HF and scores it with the hf backend, so "
+        "this path is only needed to read the sharded checkpoint directly. See "
+        "Plan/flows/uni_mcq/HF_CONVERSION.md and stash fed3d925 for what restoring it "
+        "involves."
     )
