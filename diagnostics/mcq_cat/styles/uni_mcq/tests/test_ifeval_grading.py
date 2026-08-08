@@ -326,12 +326,19 @@ class TestPromptAndSampling:
             generative.format_generative_prompt(ifeval_item(), config)
 
     def test_the_committed_config_matches_the_leaderboard_task(self, tmp_path: Path) -> None:
-        """The settings a run would actually use, read off config.yaml."""
+        """The settings a run would actually use, read off config.yaml.
+
+        Every one of these is lm-evaluation-harness's ``leaderboard_ifeval`` verbatim:
+        ``doc_to_text`` is the bare ``prompt`` field, ``num_fewshot: 0``, and generation
+        kwargs of ``until: []``, ``do_sample: false``, ``max_gen_toks: 1280``. That
+        includes the completion framing, which the harness applies outside the task
+        through ``--apply_chat_template`` rather than in it.
+        """
         config = _resolved_generation_config(DATASET)
 
         assert config.num_fewshot == 0
         assert config.prompt_style == "ifeval"
-        assert config.chat_format is True
+        assert config.chat_format is False
         assert config.max_new_tokens == 1280
         assert config.stop_sequences == ()
 
@@ -374,7 +381,17 @@ class FakeChatTokenizer:
 
 
 class TestChatFormatting:
-    """The one part of the pipeline that is the checkpoint's rather than the bank's."""
+    """The one part of the pipeline that is the checkpoint's rather than the bank's.
+
+    Exercised through ``gpqa``'s settings rather than ``ifeval``'s, which is a change of
+    example and not of subject. IFEval is scored in completion format now -- the
+    leaderboard it was harvested from templated its chat submissions and not its
+    pretrained ones, so the completion half is the one a base checkpoint can be measured
+    against -- which leaves gpqa as the only chat-format bank here and therefore the
+    only honest way to drive this path. The two tests at the bottom hold the other side:
+    that ifeval really does bypass the template now, and that gpqa really does still
+    refuse a checkpoint without one.
+    """
 
     @pytest.fixture
     def fake_stack(self, monkeypatch):
@@ -407,11 +424,22 @@ class TestChatFormatting:
         install.loaded = loaded
         return install
 
+    @staticmethod
+    def chat_config() -> generative.GenerationConfig:
+        """gpqa's shape: the one bank here still scored through a chat template."""
+        return generative.GenerationConfig(
+            num_fewshot=0,
+            prompt_style="gpqa",
+            chat_format=True,
+            system_prompt_source="gpqa",
+            stop_sequences=(),
+        )
+
     def test_the_prompt_goes_through_the_checkpoints_template(self, fake_stack) -> None:
         tokenizer = FakeChatTokenizer()
         fake_stack(tokenizer)
         config = generative.GenerationConfig(
-            num_fewshot=0, prompt_style="ifeval", chat_format=True, stop_sequences=()
+            num_fewshot=0, prompt_style="gpqa", chat_format=True, stop_sequences=()
         )
 
         generative._HFCompleter(Path("/ckpt"), config)("Write a summary.")
@@ -424,22 +452,16 @@ class TestChatFormatting:
     def test_a_checkpoint_without_a_chat_template_is_refused(self, fake_stack) -> None:
         """Sending the prompt raw would still complete, still grade, and still report."""
         fake_stack(fake_stack.plain())
-        config = generative.GenerationConfig(
-            num_fewshot=0, prompt_style="ifeval", chat_format=True, stop_sequences=()
-        )
 
         with pytest.raises(ValueError, match="defines no chat template"):
-            generative._HFCompleter(Path("/ckpt"), config)
+            generative._HFCompleter(Path("/ckpt"), self.chat_config())
 
     def test_it_is_refused_before_the_weights_are_loaded(self, fake_stack) -> None:
         """The tokenizer is cheap and the model is not; the check goes between them."""
         fake_stack(fake_stack.plain())
-        config = generative.GenerationConfig(
-            num_fewshot=0, prompt_style="ifeval", chat_format=True, stop_sequences=()
-        )
 
         with pytest.raises(ValueError, match="defines no chat template"):
-            generative._HFCompleter(Path("/ckpt"), config)
+            generative._HFCompleter(Path("/ckpt"), self.chat_config())
         assert fake_stack.loaded == []
 
     def test_a_completion_bank_never_touches_the_template(self, fake_stack) -> None:
@@ -452,6 +474,43 @@ class TestChatFormatting:
         generative._HFCompleter(Path("/ckpt"), config)("Question: how many?\nAnswer:")
 
         assert tokenizer.last is None
+
+    def test_a_checkpoint_with_no_template_can_now_be_scored_on_ifeval(self, fake_stack) -> None:
+        """The whole point of the flip, driven through the real completer.
+
+        A tokenizer carrying no ``chat_template`` is what a base checkpoint has --
+        SmolLM2-135M among them -- and while ifeval was chat-format this raised before
+        the weights were reached, which put every generative bank here out of reach of a
+        base model. Built from the committed ``config.yaml`` rather than a constructed
+        config, so it fails if the setting is flipped back rather than passing on a
+        hand-written copy of what the file used to say.
+        """
+        fake_stack(fake_stack.plain())
+        config = _resolved_generation_config(DATASET)
+
+        generative._HFCompleter(Path("/ckpt"), config)("Write a summary with no commas.")
+
+        assert config.chat_format is False
+        assert fake_stack.loaded == ["weights"]
+
+    def test_gpqa_still_refuses_one_because_it_has_no_completion_form(self, fake_stack) -> None:
+        """The asymmetry, pinned so it reads as a decision rather than an omission.
+
+        lm-eval evaluates GPQA as a log-likelihood ranking over the lettered options
+        with no system prompt for any model, so there is no completion presentation to
+        adopt the way ifeval's was adopted -- only the chain-of-thought one, whose
+        instruction the grader depends on and which needs a template to carry. A base
+        checkpoint is refused here on purpose, and the way to run this bank is an
+        instruct checkpoint.
+        """
+        fake_stack(fake_stack.plain())
+        config = grading._apply_generation_overrides(
+            grading.GradingSettings(), UniMcqStyle().generation_settings, dataset="gpqa"
+        ).generation
+
+        assert config.chat_format is True
+        with pytest.raises(ValueError, match="defines no chat template"):
+            generative._HFCompleter(Path("/ckpt"), config)
 
 
 class TestVendoredBank:

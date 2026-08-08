@@ -209,11 +209,30 @@ generative:
       # than borrowing gsm8k's block.
       num_fewshot: 0
       prompt_style: ifeval
-      # One user turn through the checkpoint's own chat template. The bank was
-      # calibrated on instruction-tuned models answering a bare instruction; the same
-      # text sent as a raw completion prompt is a different task, and a checkpoint with
-      # no chat template is refused rather than sent one.
-      chat_format: true
+      # A raw completion prompt, which is a deviation from the olmo-eval task
+      # (RequestType.CHAT) and is deliberate. It was `true` until this branch, on the
+      # reasoning that the bank was calibrated on instruction-tuned models answering a
+      # bare instruction. That reasoning turned out to describe only part of the
+      # harvest, and the harvest is readable.
+      #
+      # The bank was fit over 1,102 Open LLM Leaderboard v2 models, and the leaderboard
+      # applies a chat template per submission -- automatically for chat models, not for
+      # pretrained ones. Its own per-example records show both framings on one IFEval
+      # document (doc_id 0, key 1000): meta-llama/Meta-Llama-3-8B, a pretrained
+      # submission, was sent the prompt verbatim, while microsoft/Phi-3-mini-4k-instruct
+      # -- the run this bank's bridge ordering was rebuilt from -- was sent
+      # "<|user|>\n...<|end|>\n<|assistant|>\n". Both under identical generation kwargs:
+      # until [], do_sample false, temperature 0, max_gen_toks 1280.
+      #
+      # So neither value matches the whole bank and the choice is which half to match.
+      # False matches lm-evaluation-harness's leaderboard_ifeval exactly -- its
+      # `doc_to_text` is the bare `prompt` field and the template is applied outside the
+      # task, by --apply_chat_template -- and it is the only value under which a base
+      # checkpoint can be scored at all, since a checkpoint with no chat template is
+      # refused rather than sent one. The scale shift against the chat-templated half of
+      # the harvest is real; it is recorded in the bank's calibration note and in
+      # calibrated_datasets/DEVIATIONS.md rather than absorbed silently into theta.
+      chat_format: false
       max_new_tokens: 1280
       # Deliberately empty. Every other generative bank here stops at a blank line
       # because its few-shot block teaches that as the boundary between questions.
@@ -234,6 +253,28 @@ generative:
       # choice block, frozen at vendoring time in the order the per-question shuffle
       # produced, because the gold letter only indexes that one ordering.
       prompt_style: gpqa
+      # Stays true where ifeval's went false, so this bank still refuses a checkpoint
+      # with no chat template. The asymmetry is not an oversight and the two banks are
+      # not in the same position.
+      #
+      # IFEval had a completion form to fall back to: the leaderboard evaluated its
+      # pretrained submissions on exactly the prompt this config already sends. GPQA has
+      # none. lm-evaluation-harness's leaderboard_gpqa is not a generative task at all --
+      # it is `output_type: multiple_choice`, ranking the log-likelihoods of "(A)".."(D)"
+      # behind "What is the correct answer to this question:{{Question}}\nChoices:\n..."
+      # at 0-shot under acc_norm, with no system prompt for any model, base or chat. So
+      # the base-model convention for GPQA is a different *modality*, which this repo
+      # already has as the :mc variant it deliberately does not select, and not a
+      # chain-of-thought prompt with the template removed.
+      #
+      # The tempting third option -- keep system_prompt_source and prepend its text to a
+      # completion prompt -- is refused by GenerationConfig.__post_init__ and should be.
+      # It is a presentation nobody calibrated anything under: not the registered task
+      # (chat plus system turn), not lm-eval (log-likelihood, no system turn), and not
+      # the harvest these difficulties were fit from. EAP treats difficulty as fixed, so
+      # inventing a fourth framing would move theta by the whole of the difference and
+      # leave the standard error looking healthy. A base checkpoint cannot run this bank;
+      # score an instruct checkpoint, or run ifeval.
       chat_format: true
       # The expert-scientist instruction to reason step by step and end with
       # "ANSWER: X", read off the registered task's own formatter. It is what produces

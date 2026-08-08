@@ -790,9 +790,10 @@ def _gpqa_system_prompt() -> str:
 #: Separate from :data:`PROMPT_TEMPLATES` because the two answer different questions. A
 #: template lays out the benchmark's content; a system prompt is a standing instruction
 #: about how to answer, and for GPQA it is the instruction that produces the answer
-#: format the grader reads. IFEval is chat-format and deliberately has no entry: its
-#: constraints are in the prompt text, and a standing instruction beside them is one
-#: more constraint the verifiers were never told about.
+#: format the grader reads. IFEval deliberately has no entry, and would not have one
+#: even back when it was chat-format: its constraints are in the prompt text, and a
+#: standing instruction beside them is one more constraint the verifiers were never
+#: told about.
 SYSTEM_PROMPTS: dict[str, Callable[[], str]] = {
     "gpqa": _gpqa_system_prompt,
 }
@@ -890,8 +891,10 @@ PROMPT_TEMPLATES: dict[str, PromptTemplate] = {
     # The IFEval prompt is the item, unframed: its instructions are addressed to the
     # model in the prompt text itself, and any wrapper -- a "Question:" cue, a worked
     # example, a stop sequence at a blank line -- is another constraint the verifiers
-    # were never told about. The chat turn around it is applied by the completer, from
-    # the checkpoint's own template.
+    # were never told about. Nothing is applied around it either: the bank is scored in
+    # completion format, so what reaches the model is this string exactly, which is what
+    # lm-eval's leaderboard_ifeval sends and what the leaderboard sent its pretrained
+    # submissions.
     "ifeval": PromptTemplate(name="ifeval", question_template="{question}"),
     # Unframed for a different reason: a GPQA item's stem already *is* the user turn
     # MCQAChatFormatter builds, question and lettered choice block together, frozen at
@@ -937,10 +940,15 @@ class GenerationConfig:
     device_map: str = "auto"
     max_length: int | None = None
     #: Send the prompt as a single user turn through the checkpoint's chat template.
-    #: A property of the benchmark, not of the checkpoint: IFEval was harvested from
-    #: chat models answering a bare instruction, and the same instruction pasted into a
-    #: completion prompt is a different task. False for the completion benchmarks, whose
-    #: few-shot blocks already supply the framing.
+    #: A property of the benchmark, not of the checkpoint, and it decides which
+    #: checkpoints can be scored at all: a ``chat_format`` bank refuses one with no
+    #: template. False for the completion benchmarks, whose few-shot blocks already
+    #: supply the framing, and false for ifeval, whose bank was harvested from a
+    #: leaderboard that templated its chat submissions and not its pretrained ones --
+    #: so both framings are in the calibration and the completion half is the one a base
+    #: checkpoint can be measured against. True only for gpqa, which has no completion
+    #: form anywhere: its system prompt is what teaches the answer format its grader
+    #: extracts, and see :meth:`__post_init__` for why that cannot simply be pasted in.
     chat_format: bool = False
     #: Which entry of :data:`SYSTEM_PROMPTS` precedes the user turn, if any. A name
     #: rather than the text, so ``config.yaml`` stays a plain map of field names and the
@@ -956,7 +964,18 @@ class GenerationConfig:
                 f"completion prompt would silently drop it, and for a benchmark whose "
                 f"answer format that prompt teaches -- gpqa's 'end with ANSWER: X' -- "
                 f"dropping it means grading the model against a format it was never "
-                f"asked for. Set chat_format: true, or remove the source."
+                f"asked for. Set chat_format: true, or remove the source.\n"
+                f"Prepending the text to the completion prompt is the third option and "
+                f"is deliberately not offered. It reads like the way to score a base "
+                f"checkpoint on gpqa, and it is not: no bank here was calibrated behind "
+                f"it. The registered task sends a system turn through a chat template, "
+                f"lm-evaluation-harness's leaderboard_gpqa sends no system prompt at all "
+                f"and ranks log-likelihoods over the lettered options, and the harvest "
+                f"these difficulties were fit from is the latter. EAP treats difficulty "
+                f"as fixed, so a fourth framing moves theta by the whole of the "
+                f"difference with the standard error still looking healthy. Score an "
+                f"instruct checkpoint, or run a bank that has a completion form -- "
+                f"ifeval does, and gsm8k and leaderboard_math are completion banks."
             )
         if self.temperature != 0.0:
             raise ValueError(

@@ -213,8 +213,34 @@ class TestTheSystemPrompt:
         with pytest.raises(ValueError, match="no system turn"):
             generative.GenerationConfig(system_prompt_source="gpqa", chat_format=False)
 
+    def test_the_refusal_says_why_prepending_it_is_not_the_answer(self) -> None:
+        """The message has to survive the reader who is trying to score a base model.
+
+        Dropping ``chat_format`` and keeping the source is what someone reaches for
+        after ifeval's flip made a base checkpoint runnable, and the guard's job is to
+        be more than a locked door: the reason this one bank cannot follow is that
+        pasting the system prompt into a completion prompt is a presentation nothing was
+        calibrated behind. Not the registered task, which sends it as a system turn; not
+        lm-evaluation-harness, whose GPQA is a log-likelihood ranking with no system
+        prompt at all; and not the harvest these difficulties came from. So the message
+        names the alternative that exists rather than only the setting to restore.
+        """
+        with pytest.raises(ValueError) as exc:
+            generative.GenerationConfig(system_prompt_source="gpqa", chat_format=False)
+        message = str(exc.value)
+
+        assert "instruct checkpoint" in message
+        assert "log-likelihood" in message
+        assert "ifeval" in message
+
     def test_chat_format_with_no_source_is_still_fine(self) -> None:
-        """IFEval's shape: chat, and deliberately no standing instruction."""
+        """Chat with no standing instruction stays a legal shape.
+
+        It is nothing's shape today -- ifeval had it until the bank's mixed calibration
+        made the completion framing the better half to match -- and it stays permitted
+        because the pairing is a per-benchmark fact rather than a rule: a chat bank whose
+        instructions are all in the prompt text wants exactly this.
+        """
         config = generative.GenerationConfig(chat_format=True, num_fewshot=0)
         assert config.system_prompt_source is None
 
@@ -227,6 +253,31 @@ class TestTheConfigEntry:
         assert entry["chat_format"] is True
         assert entry["system_prompt_source"] == "gpqa"
         assert entry["max_new_tokens"] == 1024
+
+    def test_it_kept_chat_format_when_ifeval_gave_it_up(self) -> None:
+        """The two generative chat banks parted here, and only one of them could.
+
+        IFEval went to completion format so a base checkpoint could be scored, on the
+        evidence that Open LLM Leaderboard v2 evaluated its own pretrained submissions
+        exactly that way. No such evidence exists for GPQA and the shape of the task is
+        against it: lm-evaluation-harness's ``leaderboard_gpqa`` is
+        ``output_type: multiple_choice``, ranking "(A)".."(D)" by log-likelihood at
+        0-shot under acc_norm with no system prompt for any model. That is a different
+        modality -- the ``:mc`` variant this style does not select -- rather than this
+        one with the template removed, so the base-model path for GPQA is not a config
+        flip and pretending otherwise would put a chain of thought behind a framing
+        nothing was calibrated under.
+        """
+        ifeval = dict(
+            (
+                pytest.importorskip("yaml").safe_load(CONFIG_PATH.read_text(encoding="utf-8"))[
+                    "generative"
+                ][grading.PER_DATASET_KEY]
+            )["ifeval"]
+        )
+
+        assert ifeval["chat_format"] is False
+        assert gpqa_config()["chat_format"] is True
 
     def test_it_declares_no_stop_sequences(self) -> None:
         """The answer is the last thing a chain of thought says; a stop would cut it."""

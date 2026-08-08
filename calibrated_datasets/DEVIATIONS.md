@@ -10,7 +10,7 @@ has nowhere to go except theta — arriving with a healthy standard error and no
 sign. So a divergence here is not a style preference; it is a shift in the scale a theta
 is reported on. Published leaderboard conventions are not the target.
 
-Two entries below record deviations that were deliberate and are still open. The rest
+Three entries below record deviations that were deliberate and are still open. The rest
 record either parity or a fact about the calibration that could not be recovered from
 what was vendored.
 
@@ -78,8 +78,33 @@ is in each `manifest.json` and the long form of every note below is in
 
 ## `ifeval`
 
-- No deviation; grading needs `ifbench` plus its NLTK corpora.
+- Completion format here, `RequestType.CHAT` in the task; harvest has both.
 - Re-keyed by content; all 541 positions confirmed already correct.
+
+The one live deviation whose calibration side is known to be *mixed* rather than
+unrecorded, so it is worth the extra lines. Open LLM Leaderboard v2 applied a chat
+template per submission — automatically for chat models, not for pretrained ones — and
+the bank was fit over 1,102 of its models, so both framings sit in the response matrix
+these difficulties came from. Its per-example records show the split on a single
+document (key 1000): `meta-llama/Meta-Llama-3-8B` was sent the prompt verbatim,
+`microsoft/Phi-3-mini-4k-instruct` was sent `<|user|>\n…<|end|>\n<|assistant|>\n`, under
+identical generation kwargs.
+
+No run-time value matches the whole bank, so this one matches the pretrained half, which
+is also lm-evaluation-harness's `leaderboard_ifeval` unmodified (`doc_to_text` is the
+bare `prompt`, `until: []`, greedy, `max_gen_toks: 1280`) and the only setting under
+which a checkpoint with no chat template can be scored at all. The gap against the
+templated half lands in theta with a healthy standard error beside it, and chat models
+gain heavily from the template on this benchmark specifically — so a theta from this
+bank is on the completion scale and is not comparable with a chat-format one.
+
+`gpqa` is deliberately **not** flipped with it. It has no completion form to fall back
+to: lm-eval's `leaderboard_gpqa` is `output_type: multiple_choice`, ranking `(A)`–`(D)`
+by log-likelihood with no system prompt for any model, so the base-model convention
+there is the `:mc` modality this repo does not select rather than a chain of thought
+with the template stripped off. Pasting the system prompt into a completion prompt would
+be a framing nothing was calibrated under, and
+`GenerationConfig.__post_init__` refuses it. Score an instruct checkpoint for `gpqa`.
 
 ## `gpqa`
 

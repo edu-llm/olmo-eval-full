@@ -56,9 +56,15 @@ CALIBRATED_DATASETS = REPO_ROOT / "calibrated_datasets"
 #: Stamped into a block this script had to reconstruct.
 MIGRATION_RECORDED_BY = "migrate_manifests"
 
-#: The block is written before this key, so a migrated manifest and a freshly vendored
-#: one have the same shape as well as the same content.
-INSERT_BEFORE = "notes"
+#: The block is written before the first of these keys the manifest carries, so a
+#: migrated manifest and a freshly vendored one have the same shape as well as the same
+#: content. In ``vendor_bank``'s order the convention block is followed by
+#: ``bank_caveat`` and then ``notes``; naming only the last of them was enough while
+#: every migrated bank predated ``bank_caveat``, and stopped being enough as soon as a
+#: bank vendored with one was re-recorded, which put its block on the far side of the
+#: caveat. Nothing reads a manifest positionally, so the cost is only that one file
+#: would be shaped unlike its eight siblings for no reason a reader could account for.
+INSERT_BEFORE = ("bank_caveat", "notes")
 
 
 def sha256(text: str) -> str:
@@ -108,11 +114,12 @@ def check_artifacts(dataset: str, root: Path, manifest: dict[str, Any]) -> None:
 
 def migrated(manifest: dict[str, Any], block: dict[str, Any]) -> dict[str, Any]:
     """Return ``manifest`` with ``block`` inserted at the position vendoring writes it."""
+    anchor = next((key for key in INSERT_BEFORE if key in manifest), None)
     updated: dict[str, Any] = {}
     for key, value in manifest.items():
         if key == convention.CONVENTION_KEY:
             continue
-        if key == INSERT_BEFORE:
+        if key == anchor:
             updated[convention.CONVENTION_KEY] = block
         updated[key] = value
     updated.setdefault(convention.CONVENTION_KEY, block)

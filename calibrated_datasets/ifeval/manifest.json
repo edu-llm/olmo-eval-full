@@ -85,13 +85,13 @@
   "positional_ids": false,
   "frozen_prompt": false,
   "scoring_convention": {
-    "recorded_by": "vendor_bank",
+    "recorded_by": "migrate_manifests",
     "runtime": {
       "modality": "generative",
       "prompt_style": "ifeval",
       "num_fewshot": 0,
       "fewshot_source": null,
-      "chat_format": true,
+      "chat_format": false,
       "system_prompt_source": null,
       "stop_sequences": [],
       "max_new_tokens": 1280,
@@ -99,10 +99,10 @@
       "grader": "ifeval_prompt_strict"
     },
     "calibration": {
-      "prompt_style": "unrecorded",
+      "prompt_style": "the bare prompt; chat framing mixed across the harvest",
       "num_fewshot": "unrecorded",
       "metric": "prompt_level_strict_acc",
-      "note": "The one bank whose recorded metric this harness matches exactly: it was fit on prompt_level_strict_acc, which is what IFEvalPromptStrict computes. The loose variant the same verifier run also produces would make every item look easier than its difficulty. Nothing records the prompt or shot count, though there is little room for either to differ -- an IFEval prompt is sent verbatim because any framing is one more constraint the verifiers were never told about."
+      "note": "The one bank whose recorded metric this harness matches exactly: it was fit on prompt_level_strict_acc, which is what IFEvalPromptStrict computes. The loose variant the same verifier run also produces would make every item look easier than its difficulty. The prompt text is recorded too, and it is the bare instruction: lm-evaluation-harness's leaderboard_ifeval reads doc_to_text straight off the dataset's prompt field, which is forced rather than convenient -- an IFEval prompt states verifiable constraints about its own text, so any framing is one more constraint the verifiers were never told about. What is *not* uniform, and is the one thing to know before comparing a theta from this bank against a published number, is whether that prompt arrived inside a chat template. Open LLM Leaderboard v2 decided that per submission -- automatically on for chat models, off for pretrained ones -- so the 1,102-model harvest these difficulties were fit over contains both framings and no single run-time value matches all of it. Its own per-example records show the split on one document: for key 1000, meta-llama/Meta-Llama-3-8B was sent the prompt verbatim and microsoft/Phi-3-mini-4k-instruct was sent '<|user|>\\n...<|end|>\\n<|assistant|>\\n'. This harness scores in completion format, matching the pretrained half exactly, prompt text and generation kwargs alike; the gap against the chat-templated half is a scale shift with nowhere to go but theta, and chat models gain substantially from the template on this benchmark in particular. Read a theta from this bank as measured on the completion scale. Nothing records the shot count, and there is little room for it to differ."
     }
   },
   "bank_caveat": null,

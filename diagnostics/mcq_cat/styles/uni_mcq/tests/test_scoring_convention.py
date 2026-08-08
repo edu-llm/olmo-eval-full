@@ -142,8 +142,40 @@ class TestEveryCommittedBankRecordsItsConvention:
         """Deliberately no stop sequences, which is not the same as not saying."""
         runtime = recorded_runtime("ifeval")
         assert runtime["stop_sequences"] == []
-        assert runtime["chat_format"] is True
         assert runtime["num_fewshot"] == 0
+
+    def test_the_two_generative_framings_are_recorded_per_bank(self) -> None:
+        """``chat_format`` decides which checkpoints a bank can be scored on at all.
+
+        Both values are pinned here because the pair is the point. IFEval is the only
+        bank whose calibration is known to contain *both* framings -- Open LLM
+        Leaderboard v2 templated its chat submissions and not its pretrained ones -- so
+        no run-time value matches all of it and the completion half was chosen, being
+        also lm-eval's ``leaderboard_ifeval`` unmodified and the only setting a
+        checkpoint with no chat template can be scored under. GPQA keeps chat because
+        it has no completion form anywhere: lm-eval evaluates it as a log-likelihood
+        ranking rather than a chain of thought, so removing the template would mean
+        inventing a framing rather than adopting one.
+        """
+        assert recorded_runtime("ifeval")["chat_format"] is False
+        assert recorded_runtime("ifeval")["system_prompt_source"] is None
+        assert recorded_runtime("gpqa")["chat_format"] is True
+        assert recorded_runtime("gpqa")["system_prompt_source"] == "gpqa"
+
+    def test_ifevals_mixed_calibration_framing_is_recorded_beside_it(self) -> None:
+        """The scale shift has to be readable off the bank, not just off a commit.
+
+        arc_challenge's 25-shot calibration against an 0-shot run is recorded this way
+        and this is the same case: the run-time half says what this harness does, the
+        calibration half says what the difficulties were fit behind, and a reader
+        comparing a theta against a published number needs the difference in front of
+        them. A note that only said "unrecorded" would let the completion-format theta
+        read as though it were on the bank's own scale.
+        """
+        recorded = manifest_of("ifeval")[convention.CONVENTION_KEY][convention.CALIBRATION_KEY]
+        assert recorded["prompt_style"] != UNRECORDED
+        assert "chat" in recorded["note"]
+        assert "completion" in recorded["note"]
 
     def test_a_zero_shot_bank_names_no_fewshot_block(self) -> None:
         """The inherited source is never read at 0 shots, so pinning it would be noise."""
@@ -589,6 +621,30 @@ class TestTheMigration:
             migrate_manifests.migrate(
                 "arc_challenge", convention.load_config(), root=bank, dry_run=True
             )
+
+    def test_a_re_record_leaves_the_block_where_vendoring_puts_it(self, tmp_path: Path) -> None:
+        """Re-recording a bank that carries a ``bank_caveat`` must not step over it.
+
+        The script inserts the block before a named key, and it named only ``notes``
+        while every bank it had ever migrated predated ``bank_caveat``. Re-recording one
+        vendored with a caveat -- which is what changing a live setting now requires --
+        put the block on the far side of it, leaving that one manifest shaped unlike its
+        siblings. Nothing reads a manifest positionally, so this is only about a
+        difference a reader would have to account for and could not.
+        """
+        import shutil
+
+        root = tmp_path / "bbh"
+        shutil.copytree(CALIBRATED_DATASETS / "bbh", root)
+        manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+        assert manifest["bank_caveat"], "bbh is the bank with a caveat; pick another if it moves"
+        before = list(manifest)
+        del manifest[convention.CONVENTION_KEY]
+        (root / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+
+        migrate_manifests.migrate("bbh", convention.load_config(), root=root, dry_run=False)
+
+        assert list(json.loads((root / "manifest.json").read_text(encoding="utf-8"))) == before
 
     def test_a_dry_run_writes_nothing(self, bank: Path) -> None:
         manifest = json.loads((bank / "manifest.json").read_text(encoding="utf-8"))
