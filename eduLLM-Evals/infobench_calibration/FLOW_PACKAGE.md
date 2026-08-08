@@ -16,7 +16,7 @@ production `tutor_cat.engine` / `scripts/scenario_cat_lib.py`.
   `linguistic`) collapse onto a single `instruction_following` axis at this sample size.
 - Canonical instrument: **unidimensional (`instruction_following`)**.
 - Snapshot tag: `infobench-unidim-52models`.
-- STUDY / reporting only, LOCAL. Production engine untouched; nothing committed.
+- STUDY / reporting only. Production engine (`tutor_cat/`, `scenario_cat_lib.py`) untouched; only the calibration artifacts + exported param bank are committed.
 
 ## Locked config
 
@@ -30,6 +30,7 @@ plateau δ = 0.005 / W = 3, cap 70, MWLE θ at stop. Operating point **floor = 1
 
 | Artifact | Path | Role | Tracked |
 |---|---|---|---|
+| Deployment params bank (canonical) | `bank/rubrics_qmatrix_instruction_following_unidim_fitted.jsonl` | 2,105 fitted criteria; `discrimination.instruction_following` (a) + `difficulty` (b) | yes |
 | Calibration input matrix | `bank/response_matrix.csv` | N=52 × 2250 frozen judge verdicts; the grid refits the bank from this (sha256 087948fc…) | yes |
 | Judge provenance | `bank/judge_manifest.json` | frozen Qwen labels behind the matrix | yes |
 | Bank fit provenance | `bank/bank_fit_summary.json` | matrix sha256, λ16 / 401-node config, loglik note, low-n + no-persisted-param-bank caveat | yes |
@@ -45,8 +46,8 @@ plateau δ = 0.005 / W = 3, cap 70, MWLE θ at stop. Operating point **floor = 1
 1. Generate tutor responses from the checkpoint on `data/InFoBench/scenarios.jsonl`.
 2. Grade per criterion with the frozen judge (see `bank/judge_manifest.json`).
 3. Run the testlet CAT (whole scenario per step) via `tutor_cat.engine` / `scenario_cat_lib` against
-   the log-shrinkage-2PL bank (re-fit from `bank/response_matrix.csv` via `scripts/run_oos_grid.py`,
-   or the future deployment export) at the locked EAP-posterior stop (floor 15 / SE_post 0.25) to
+   the persisted log-shrinkage-2PL bank `bank/rubrics_qmatrix_instruction_following_unidim_fitted.jsonl`
+   at the locked EAP-posterior stop (floor 15 / SE_post 0.25) to
    estimate `instruction_following` with SE_total.
 
 ## Provenance + metrics
@@ -75,8 +76,8 @@ loader must support a **per-benchmark stop rule** (InfoBench = `eap`, 1-D margin
 
 ## Rerun / swap protocol (next cohort)
 
-1. Recalibrate at the larger cohort; re-emit the fitted params (InfoBench currently has no persisted
-   param jsonl — add an export step, or re-fit from the refreshed `response_matrix.csv`).
+1. Recalibrate at the larger cohort; re-emit the fitted params via
+   `scripts/build_infobench_unidim_bank.py` (re-fit from the refreshed `response_matrix.csv`).
 2. Re-run `scripts/run_oos_grid.py --workers 6` + `scripts/build_of_record_f15se25.py` (repointing
    their default paths — see `README.md` "Notes on scripts"); refresh `summary.json` + `experiments/`.
 3. Re-tag `infobench-unidim-<N>models`; re-port to `flow/uni-frq`.

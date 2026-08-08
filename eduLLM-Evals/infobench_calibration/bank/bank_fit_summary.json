@@ -10,7 +10,7 @@
     "q_modeled": { "instruction_following": 1 }
   },
   "bank_representation": {
-    "note": "InfoBench has NO persisted per-item fitted-param jsonl. The of-record OOS grid refits the log-shrinkage-2PL bank on-the-fly from the frozen response matrix (per-fold for OOS; full-data for the sound SE_param). The 'bank' shipped here is therefore the exact calibration INPUT the grid consumed, not an exported param file. To materialise deployment params, re-run scripts/run_oos_grid.py (which fits with the config below).",
+    "note": "Full-data fitted params are now persisted at bank/rubrics_qmatrix_instruction_following_unidim_fitted.jsonl, materialised by scripts/build_infobench_unidim_bank.py (single full-data re-fit of the of-record run_oos_grid.py log-shrinkage-2PL config; reproduces the OOS-grid theta_ref at r=0.9986). response_matrix.csv shipped here is the calibration INPUT the fit consumed; re-run the build script to regenerate the bank.",
     "calibration_input_matrix": "response_matrix.csv",
     "judge_manifest": "judge_manifest.json"
   },
@@ -53,6 +53,6 @@
     "n_kept_items_per_fold": { "0": 2088, "1": 2101, "2": 2096, "3": 2101, "4": 2088 }
   },
   "se_param_note": "SE_total = sqrt(SE_post^2 + SE_param^2). SE_param is the SOUND observed-information parametric bootstrap (full-data, reused across folds; CAT-admin median ~0.085, full-admin floor median ~0.041). This SUPERSEDES the earlier teammate ~0.19 from the STALE nonparametric person-resample-refit script scripts/scenario_param_uncertainty.py (see README 'SE_param correction').",
-  "flags": ["low_n", "no_persisted_param_bank"],
+  "flags": ["low_n"],
   "identifiability_caveat": "N=52 persons < min_persons_identifiable=150; multi-dim loadings are unstable at this sample size, which is why the canonical InfoBench scale is UNIDIMENSIONAL (instruction_following)."
 }
