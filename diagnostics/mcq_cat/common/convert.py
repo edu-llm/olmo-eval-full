@@ -200,13 +200,20 @@ def prepare_checkpoint(
     "this backend cannot read that format" and "preparation was turned off" -- have the
     same shape at the point they surface and different fixes.
 
-    ``dtype`` is the precision conversion writes, so under ``none`` it describes nothing
-    and is warned about rather than ignored quietly -- but only when it was moved off the
-    default, because the default is what a caller gets for not asking. Someone who set
-    ``--dtype float16`` because they were pointed at a card with no bfloat16 believes they
-    have chosen a precision; under ``none`` they have not, the weights load at whatever
-    training wrote, and the failure arrives as a kernel refusing a format on the card,
-    which reads like the flag was broken rather than inapplicable.
+    ``dtype`` is the precision *conversion* writes, so under ``none`` this function
+    honours nothing and says so -- but only when it was moved off the default, because
+    the default is what a caller gets for not asking.
+
+    Saying "the flag had no effect" would now be wrong, and that is a change from what
+    this warned before 2026-08-08. Under ``none`` the precision is settled by whichever
+    backend loads the untouched directory, and the two disagree: the native olmo_core
+    scorer passes :attr:`~diagnostics.mcq_cat.common.inference.InferenceConfig.dtype`
+    to ``from_checkpoint`` and does honour it, while the HuggingFace scorer loads with
+    ``torch_dtype="auto"`` and takes whatever precision is on disk. The runner sets both
+    from one flag, so the distinction the caller needs is not "converted or not" but
+    "which backend", and the warning names it rather than asserting the flag is dead.
+    Someone who set ``--dtype float16`` because they were pointed at a card with no
+    bfloat16 needs to know which of those two they are in before the first kernel does.
     """
     if policy not in PREP_POLICIES:
         raise ValueError(
@@ -222,10 +229,11 @@ def prepare_checkpoint(
         )
         if dtype != DTYPE_DEFAULT:
             log.warning(
-                "dtype=%s has no effect under --checkpoint-prep none: nothing is "
-                "converted, so the weights load at whatever precision they were written "
-                "at. If this was set to avoid a precision the hardware lacks, that has "
-                "not happened.",
+                "dtype=%s converts nothing under --checkpoint-prep none; whether it is "
+                "honoured is now up to the backend. --checkpoint-kind olmo_core builds "
+                "the model at it. --checkpoint-kind hf loads the staged directory with "
+                "torch_dtype=auto and takes the precision on disk, so if this was set "
+                "to avoid a precision the hardware lacks, that has not happened.",
                 dtype,
             )
         return local_dir

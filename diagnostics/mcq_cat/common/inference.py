@@ -529,6 +529,15 @@ MCQ_SCORE_NORMALIZATIONS: dict[str, ScoreNormalization] = {
 #: every one of them at startup over a rule that had not changed.
 DEFAULT_SCORE_NORMALIZATION = "unnormalized_sum_of_continuation_logprobs"
 
+#: :attr:`InferenceConfig.dtype` value meaning "do not name a precision at all".
+#:
+#: Spelled the same as ``OlmoCoreProvider``'s sentinel and read the same way -- the
+#: kwarg is omitted rather than passed -- so the two loaders agree about what "no
+#: opinion" is. It is deliberately not a member of
+#: :data:`~diagnostics.mcq_cat.common.convert.CONVERSION_DTYPES`, so ``--dtype`` cannot
+#: produce it and it stays reachable only from code.
+DTYPE_CHECKPOINT_DEFAULT = "auto"
+
 
 #: Normalization name -> the clause a report uses to say how its choices were ranked.
 #:
@@ -577,6 +586,20 @@ class InferenceConfig:
     are compared -- and each bank was calibrated behind its own pair, so a style's
     ``config.yaml`` overrides them from a ``datasets`` map exactly as it does for the
     generative settings.
+
+    ``dtype`` is the precision the *native* backend builds the model at, and it is a
+    separate quantity from the one ``--dtype`` hands
+    :func:`~diagnostics.mcq_cat.common.convert.prepare_checkpoint`. Under
+    ``--checkpoint-prep auto`` the flag names what the converted HF weights are written
+    at and this field is unread, because ``_HFScoringModel`` loads with
+    ``torch_dtype="auto"`` and takes whatever precision is on disk. Under
+    ``--checkpoint-prep none`` nothing is converted, so this field is the only thing
+    that decides the precision at all. The runner sets both from the one flag, which is
+    what makes it mean the same thing on both paths.
+
+    The default is ``"auto"`` and not ``"bfloat16"`` so that constructing a config
+    without an opinion keeps the checkpoint's own precision, exactly as this did before
+    the field existed. Only a caller that names a precision gets one.
     """
 
     checkpoint_kind: str = "hf"  # "hf" or "olmo_core"
@@ -586,6 +609,7 @@ class InferenceConfig:
     device_map: str = "auto"
     prompt_style: str = DEFAULT_PROMPT_STYLE
     score_normalization: str = DEFAULT_SCORE_NORMALIZATION
+    dtype: str = DTYPE_CHECKPOINT_DEFAULT
 
 
 def scored_choices(item: BenchmarkItem, config: InferenceConfig) -> tuple[ScoredChoice, ...]:
@@ -977,15 +1001,36 @@ class _OlmoCoreScoringModel:
         # batches, so it needs a genuinely distinct pad token from the tokenizer rather
         # than one invented at load time.
         eos_token_id = int(getattr(tokenizer_config, "eos_token_id", 0) or 0)
-        self.model: Any = imports.TransformerGenerationModule.from_checkpoint(
-            checkpoint_dir=checkpoint,
-            device=self.device,
-            generation_config=imports.GenerationConfig(
+        load_kwargs: dict[str, Any] = {
+            "checkpoint_dir": checkpoint,
+            "device": self.device,
+            "generation_config": imports.GenerationConfig(
                 pad_token_id=self._unused_pad_token_id(eos_token_id),
                 eos_token_id=eos_token_id,
                 max_new_tokens=1,
             ),
-        )
+        }
+
+        # THE PRECISION IS PASSED AS A STRING, AND OMITTED RATHER THAN DEFAULTED.
+        # `from_checkpoint(dtype=...)` is typed for olmo_core's `DType`, but `DType` is a
+        # `StrEnum` (olmo_core/config.py:365) and the loader coerces with `DType(dtype)`
+        # before applying it to the transformer config, so "bfloat16" is the value and
+        # not a lossy stand-in for one. This mirrors `OlmoCoreProvider` exactly --
+        # olmo_core.py:184-185 builds the same kwargs dict and adds `dtype` only when it
+        # is not "auto" -- because two loaders that disagree about how to say "fp32"
+        # would be two different measurements wearing one flag's name.
+        #
+        # Omitting the kwarg is not the same as passing a precision that happens to
+        # match. With no `dtype`, the model is built at whatever the checkpoint's
+        # `config.json` names, which for this training setup is float32: run
+        # run_019fe2e6 measured 546 MB of weights for the 135M model, i.e. 4 bytes a
+        # parameter, with `--dtype bfloat16` on the command line. That flag was inert on
+        # this path until this dict existed, so run_019fe277's arc_challenge theta was
+        # produced in fp32 despite a report saying bfloat16.
+        if config.dtype != DTYPE_CHECKPOINT_DEFAULT:
+            load_kwargs["dtype"] = config.dtype
+
+        self.model: Any = imports.TransformerGenerationModule.from_checkpoint(**load_kwargs)
 
     def _check_forward_shape(self, logits: Any, input_ids: Any) -> None:
         """Refuse a ``model_forward`` output the arithmetic below would misread.

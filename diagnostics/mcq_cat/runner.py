@@ -108,9 +108,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=convert.DTYPE_DEFAULT,
         choices=list(convert.CONVERSION_DTYPES),
         help=(
-            "Precision to write converted weights at (default: bfloat16). No effect "
-            "under --checkpoint-prep none, which converts nothing. Name it on the "
-            "command line even at the default: the platform's "
+            "Precision the model is scored at (default: bfloat16). Under "
+            "--checkpoint-prep auto it is what converted weights are written at; under "
+            "--checkpoint-prep none nothing is converted and it is instead what the "
+            "native olmo_core backend builds the model at. Either way it is the "
+            "precision that produced the run's numbers, and the report records it. "
+            "Name it on the command line even at the default: the platform's "
             "bfloat16_not_in_the_hardware guard reads the text of the command and "
             "cannot see a precision this program picks in code, so a card without the "
             "format is refused for free here instead of dying on the first kernel."
@@ -235,10 +238,18 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
 
+    # `--dtype` reaches two places from here, because there are two ways a precision can
+    # be chosen and the flag has to mean the same thing whichever one is live: below it
+    # goes to `prepare_checkpoint`, which writes converted weights at it, and here it
+    # goes to the config the native backend builds its model from. Exactly one of those
+    # applies per run -- conversion happens under `--checkpoint-prep auto`, the native
+    # loader runs under `none` -- so setting both is not a conflict, and setting only the
+    # first is what left the flag inert on the native path.
     settings = grading.GradingSettings(
         mcq=inference.InferenceConfig(
             checkpoint_kind=args.checkpoint_kind,
             batch_size=args.batch_size,
+            dtype=args.dtype,
         ),
         generation=generative.GenerationConfig(checkpoint_kind=args.checkpoint_kind),
     )
@@ -293,6 +304,12 @@ def run(args: argparse.Namespace) -> int:
         "checkpoint": args.checkpoint,
         "checkpoint_kind": args.checkpoint_kind,
         "checkpoint_prep": args.checkpoint_prep,
+        # True of both paths as of 2026-08-08, and true of only one before that. While
+        # the native backend passed no dtype to `from_checkpoint`, a `none`-prep run
+        # recorded whatever was asked for and scored in the checkpoint's own float32,
+        # so this field named an intention rather than a measurement. Reports from
+        # before that date under `--checkpoint-prep none` -- run_019fe277's
+        # arc_challenge theta among them -- say bfloat16 and are fp32.
         "dtype": args.dtype,
         "ability_estimator": args.ability_estimator,
         "modality": request.modality,

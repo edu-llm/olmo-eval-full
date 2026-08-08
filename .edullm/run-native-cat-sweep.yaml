@@ -3,8 +3,10 @@
 # The single-benchmark sibling is run-native-cat.yaml and everything in its header applies
 # here unchanged -- why the submission goes against repository=OLMo-core, why the code
 # arrives by clone rather than by wheel, why --checkpoint-prep none is the native path, and
-# why --dtype bfloat16 belongs in the text even though it converts nothing. Read that file
-# first. This one records only what is different, which is three things.
+# why --dtype bfloat16 sets the precision the native scorer builds the model at even though
+# it converts nothing. Read that file first, and note in particular its warning that any
+# native theta recorded before 2026-08-08 says bfloat16 and was produced in fp32. This one
+# records only what is different, which is three things.
 #
 # HOW TO SUBMIT THIS. From the OLMo-core clone, as with the other spec:
 #

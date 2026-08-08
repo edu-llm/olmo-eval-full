@@ -43,12 +43,36 @@
 # minutes of checkpoint staging, so the run is priced by the 1.74 GB pull and not by
 # generation.
 #
-# --dtype bfloat16 IS INERT TO THE LOADER AND STILL BELONGS IN THE TEXT, exactly as in
-# run-native-cat.yaml. _OlmoCoreScoringModel passes no dtype to from_checkpoint, so the
-# model builds at whatever the checkpoint's config says; the flag is here because the
-# platform's bfloat16_not_in_the_hardware guard reads the words of this command and
-# nothing else, and it turns a Turing allocation into a free refusal instead of a machine
-# that dies on its first kernel. The probe prints the dtype it actually loaded.
+# WHAT THE FIRST SUBMISSION OF THIS SPEC RETURNED, AND WHY THERE IS A SECOND. Run
+# run_019fe2e6 got everything right except the answer: it staged the checkpoint, loaded it,
+# built all three prompts, and then failed every generation with "'TorchAttentionBackend'
+# doesn't support KV caching". GenerationConfig.use_cache defaults to True and the scorer
+# names no attention backend, so olmo_core picks its default one, whose
+# assert_supports_kv_cache raises as soon as prepare_inference_cache is called. MCQ scoring
+# never met this because a forward-only pass prepares no cache. The eos question therefore
+# came back unanswered, which is the one thing a completer cannot be written without.
+#
+# --attention-backend flash_2 IS THE FIX, AND THE SHAPE IS WHY IT IS THAT ONE. The flash
+# backends implement KV caching where the torch one refuses it. An L4 is Ada, SM 8.9: FA3
+# wants Hopper and FA4 Blackwell, so FA2 is the only flash backend this card can run. The
+# probe resolves the name exactly as OlmoCoreProvider does rather than inventing a path.
+#
+# AND IT MIGHT NOT BE IN THE IMAGE, WHICH IS PLANNED FOR RATHER THAN HOPED ABOUT.
+# flash-attn is a binary wheel and this spec installs ".[hf,s3]", which does not pull it.
+# If it is absent the probe falls back to passing use_cache=False straight to
+# generate_batch -- no reload, because generate_batch folds its kwargs onto the config --
+# and decodes without a cache. That is slower per token and irrelevant at 64 tokens on a
+# 135M model. Either way the run comes back with a decode and an eos answer, which is what
+# makes this worth a second card rather than a third.
+#
+# --dtype bfloat16 IS NOW LIVE, AND THAT IS A CHANGE FROM THE FIRST RUN. This spec said the
+# flag was inert to the loader, and it was: InferenceConfig carried no dtype, so
+# from_checkpoint got none and built fp32. run_019fe2e6 measured it -- 546.2 MB of weights
+# for a 135M model, four bytes a parameter, from a command line asking for bfloat16.
+# InferenceConfig.dtype now reaches from_checkpoint, so this run should load at about half
+# that, and the probe prints the figure beside the old one. The flag also still does its
+# original job of letting the platform's bfloat16_not_in_the_hardware guard read the format
+# out of argv and refuse a Turing allocation for free.
 schema_version: 1
 workload_profile: olmo-core-check
 suggested_compute: gpu-1xl4
@@ -56,9 +80,10 @@ command: >-
   bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout REPLACE_WITH_PUSHED_SHA
+  && git checkout d8731c91272c172d75dc914ec91dc99f0d3d3c56
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python .edullm/generation_probe.py
   --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
   --max-new-tokens 64
+  --attention-backend flash_2
   --dtype bfloat16'

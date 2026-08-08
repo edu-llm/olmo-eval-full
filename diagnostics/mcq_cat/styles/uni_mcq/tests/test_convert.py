@@ -343,24 +343,41 @@ class TestThePrecisionTheSeamWritesAt:
         """Silence here is the failure this flag exists to prevent, one policy over.
 
         Somebody sets ``--dtype float16`` because the card they were given has no
-        bfloat16. Under ``none`` nothing is converted, so the weights load at whatever
-        training wrote and the request has done nothing -- and the way they find out is a
-        kernel refusing a format, which reads like the flag is broken rather than
-        inapplicable.
+        bfloat16. Under ``none`` nothing is converted, so this function has honoured
+        nothing -- and if they are on the HF backend the way they find out is a kernel
+        refusing a format, which reads like the flag is broken rather than inapplicable.
         """
         with caplog.at_level("WARNING"):
             convert.prepare_checkpoint(
                 write_olmo_core(tmp_path), tmp_path / "out", policy="none", dtype="float16"
             )
-        assert "no effect under --checkpoint-prep none" in caplog.text
+        assert "converts nothing under --checkpoint-prep none" in caplog.text
         assert spy == []
+
+    def test_the_warning_does_not_claim_the_flag_is_dead(
+        self, tmp_path: Path, spy, caplog
+    ) -> None:
+        """The native backend honours the precision, so "no effect" is now false.
+
+        ``_OlmoCoreScoringModel`` passes ``InferenceConfig.dtype`` to
+        ``from_checkpoint``, and the runner fills that from this same flag. A warning
+        asserting the opposite would be the doc contradicting the behaviour, which is
+        the state this replaced -- the flag reached ``prepare_checkpoint`` and stopped,
+        and a native run recorded bfloat16 while scoring in float32.
+        """
+        with caplog.at_level("WARNING"):
+            convert.prepare_checkpoint(
+                write_olmo_core(tmp_path), tmp_path / "out", policy="none", dtype="float16"
+            )
+        assert "no effect" not in caplog.text
+        assert "olmo_core" in caplog.text, "the backend that does honour it must be named"
 
     def test_none_is_quiet_at_the_default(self, tmp_path: Path, spy, caplog) -> None:
         """The default is what a caller gets for not asking, so warning about it would
         fire on every ``none`` run and tell nobody anything."""
         with caplog.at_level("WARNING"):
             convert.prepare_checkpoint(write_olmo_core(tmp_path), tmp_path / "out", policy="none")
-        assert "no effect under" not in caplog.text
+        assert "converts nothing under" not in caplog.text
 
     def test_the_default_is_named_once(self) -> None:
         """``DTYPE_DEFAULT`` is what the runner's default, the warning's threshold and

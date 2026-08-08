@@ -539,6 +539,92 @@ class TestTheLoaderWiring:
             inference._olmo_core_utils()
 
 
+class TestThePrecisionReachesTheLoader:
+    """``InferenceConfig.dtype`` -> ``from_checkpoint(dtype=...)``, and its sentinel.
+
+    The bug this pins was silent in exactly the way that matters: the runner had a
+    ``--dtype`` with choices, the report carried the value, the help text and two specs
+    described what it did, and none of it reached the model. Probe run_019fe2e6 asked
+    the card and got 546 MB of weights for a 135M model -- four bytes a parameter --
+    from a command line that said ``--dtype bfloat16``. So these assert on the kwargs
+    handed to the loader rather than on the config, because the config was already
+    right when the weights were fp32.
+    """
+
+    def loaded_kwargs(self, monkeypatch, checkpoint: Path, **overrides: Any) -> dict[str, Any]:
+        config = inference.InferenceConfig(checkpoint_kind="olmo_core", **overrides)
+        return load_scorer(monkeypatch, checkpoint, config=config).calls["from_checkpoint"]
+
+    def test_a_named_precision_is_passed_to_from_checkpoint(
+        self, monkeypatch, checkpoint
+    ) -> None:
+        assert self.loaded_kwargs(monkeypatch, checkpoint, dtype="bfloat16")["dtype"] == "bfloat16"
+
+    def test_it_is_passed_as_the_plain_string_the_flag_carries(
+        self, monkeypatch, checkpoint
+    ) -> None:
+        """Not a ``torch.dtype`` and not a ``DType`` member built here.
+
+        ``from_checkpoint``'s parameter is annotated for olmo_core's ``DType``, which
+        reads as though a bare string were the wrong type. It is not: ``DType`` is a
+        ``StrEnum`` (olmo_core/config.py:365) and the loader coerces with
+        ``DType(dtype)`` before applying it. Constructing one here instead would import
+        olmo_core at config time on a path whose whole point is that it does not, and
+        would diverge from ``OlmoCoreProvider``, which passes the string
+        (olmo_core.py:184-185). The value is asserted to be exactly what ``--dtype``
+        accepts, so the flag and the kwarg cannot drift apart.
+        """
+        passed = self.loaded_kwargs(monkeypatch, checkpoint, dtype="float16")["dtype"]
+        assert passed == "float16"
+        assert isinstance(passed, str)
+        assert passed in convert.CONVERSION_DTYPES
+
+    def test_the_default_omits_the_kwarg_rather_than_naming_a_precision(
+        self, monkeypatch, checkpoint
+    ) -> None:
+        """"auto" means "no opinion", and an omitted kwarg is the only way to say it.
+
+        Passing ``dtype="auto"`` through would reach ``DType("auto")`` and raise, and
+        defaulting the field to bfloat16 instead would silently recast every caller who
+        never asked -- including the two suites below, which construct
+        ``InferenceConfig`` with no precision at all. Omission preserves exactly the
+        behaviour that existed before the field did.
+        """
+        assert "dtype" not in self.loaded_kwargs(monkeypatch, checkpoint)
+
+    def test_the_sentinel_is_the_one_the_provider_uses(self) -> None:
+        """Two loaders, one word for "no opinion".
+
+        ``OlmoCoreProvider`` gates on ``dtype != "auto"`` for the same kwarg on the same
+        function. A second spelling here would be a second meaning nobody had chosen.
+        """
+        assert inference.DTYPE_CHECKPOINT_DEFAULT == "auto"
+        assert inference.InferenceConfig().dtype == inference.DTYPE_CHECKPOINT_DEFAULT
+
+    def test_the_sentinel_is_not_something_the_flag_can_produce(self) -> None:
+        """``--dtype`` has choices, and "auto" is deliberately not among them.
+
+        If it were, a run could ask for the sentinel on the command line and get the
+        checkpoint's own precision while the report recorded "auto" -- the same class of
+        untruth this change removes, wearing a different value.
+        """
+        assert inference.DTYPE_CHECKPOINT_DEFAULT not in convert.CONVERSION_DTYPES
+
+    def test_the_generation_config_is_still_built_alongside_it(
+        self, monkeypatch, checkpoint
+    ) -> None:
+        """The kwargs became a dict; the fabricated pad must survive that.
+
+        Building the dict is a refactor of the call, and the pad/eos config is the part
+        of it a GPU already proved load-bearing (run_019fe265 died without it).
+        """
+        kwargs = self.loaded_kwargs(monkeypatch, checkpoint, dtype="bfloat16")
+        assert kwargs["generation_config"].pad_token_id == 1
+        assert kwargs["generation_config"].eos_token_id == 0
+        assert kwargs["checkpoint_dir"] == str(checkpoint)
+        assert kwargs["device"] == "cpu"
+
+
 class TestTheForwardShapeAssertion:
     """``model_forward`` on a batch of one, which is untested upstream too.
 
@@ -752,6 +838,35 @@ class TestTheNativePathComposes:
         payload = self.report(monkeypatch, tmp_path)
         assert isinstance(payload["metadata"]["theta"], float)
 
+    def test_the_dtype_flag_reaches_the_model_and_not_only_the_report(
+        self, monkeypatch, tmp_path: Path
+    ) -> None:
+        """The whole chain, because every link but the last one already worked.
+
+        ``--dtype`` reached the parser, the report and ``prepare_checkpoint``; under
+        ``none`` that last call converts nothing, so the flag ended there and the model
+        was built at the checkpoint's own precision. A unit test on
+        ``InferenceConfig.dtype`` would not have caught it -- the config was never the
+        broken link -- so this asserts the value arrives at ``from_checkpoint`` having
+        been typed on a command line.
+        """
+        _, out_dir, calls = self.native_run(monkeypatch, tmp_path, "--dtype", "float16")
+        assert calls["from_checkpoint"]["dtype"] == "float16"
+
+        payload = json.loads((out_dir / "cat_report.json").read_text(encoding="utf-8"))
+        assert payload["run"]["dtype"] == "float16"
+
+    def test_the_default_flag_value_is_threaded_too(self, monkeypatch, tmp_path: Path) -> None:
+        """Naming no precision still gets bfloat16, because ``--dtype`` defaults to it.
+
+        The config's own default is "auto", and this is what keeps that from leaking out
+        as the runner's behaviour: a native run with no flag builds the model in
+        bfloat16, which is what every spec in ``.edullm/`` claims and what run_019fe277
+        did not do.
+        """
+        _, _, calls = self.native_run(monkeypatch, tmp_path)
+        assert calls["from_checkpoint"]["dtype"] == convert.DTYPE_DEFAULT
+
     def test_the_kind_guard_lets_it_past(self) -> None:
         """``check_checkpoint_kind`` runs before the fetch, so it decides this first."""
         from ....common import grading
@@ -855,21 +970,22 @@ class TestTheNativePathComposes:
         payload = json.loads((out_dir / "cat_report.json").read_text(encoding="utf-8"))
         assert "tokenization" not in payload["run"]
 
-    def test_the_default_precision_is_recorded_and_says_nothing_about_the_weights(
+    def test_the_default_precision_is_recorded_and_now_describes_the_weights(
         self, monkeypatch, tmp_path: Path, caplog
     ) -> None:
-        """Nothing was converted, so ``dtype`` describes no weights on this path.
+        """``dtype`` in the report is a measurement on this path, and once was not.
 
-        It is still recorded, and it is readable only because ``checkpoint_prep`` is
-        recorded beside it -- ``dtype: bfloat16, checkpoint_prep: none`` is a request
-        that did not apply, where ``dtype: bfloat16`` alone would read as a measurement.
-        The default draws no warning, because warning on what a caller gets for not
+        While the flag stopped at ``prepare_checkpoint``, ``dtype: bfloat16,
+        checkpoint_prep: none`` was a request that did not apply and the run scored in
+        the checkpoint's float32. It now names the precision the model was built at, so
+        the pair is readable as what happened rather than as what was asked for. The
+        default still draws no warning, because warning on what a caller gets for not
         asking would fire on every native run and tell nobody anything.
         """
         with caplog.at_level("WARNING", logger="mcq_cat.convert"):
             run = self.report(monkeypatch, tmp_path)["run"]
         assert (run["dtype"], run["checkpoint_prep"]) == ("bfloat16", "none")
-        assert "no effect under" not in caplog.text
+        assert "converts nothing under" not in caplog.text
 
     def test_a_precision_that_was_actually_asked_for_warns(
         self, monkeypatch, tmp_path: Path, caplog
@@ -877,14 +993,14 @@ class TestTheNativePathComposes:
         """The case the warning exists for, reached through the CLI rather than the seam.
 
         Somebody sets ``--dtype float16`` because the card they were given has no
-        bfloat16, gets ``none``, and the weights load at whatever training wrote. Without
-        this line they find out when a kernel refuses the format, which reads like the
-        flag is broken rather than inapplicable.
+        bfloat16 and gets ``none``. Conversion still honours nothing, and on the HF
+        backend the weights load at whatever training wrote; without this line they find
+        out when a kernel refuses the format.
         """
         with caplog.at_level("WARNING", logger="mcq_cat.convert"):
             run = self.report(monkeypatch, tmp_path, "--dtype", "float16")["run"]
         assert run["dtype"] == "float16"
-        assert "no effect under --checkpoint-prep none" in caplog.text
+        assert "converts nothing under --checkpoint-prep none" in caplog.text
 
 
 class TestTheArithmeticMatchesTheHuggingFacePath:

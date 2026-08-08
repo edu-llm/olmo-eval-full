@@ -26,6 +26,26 @@ with ``validate_checkpoint=False``, resolves the tokenizer, and hands ``from_che
 -- run_019fe277 scored 8 arc_challenge items with it -- so it is imported rather than
 copied, and the staging step in front of it is the runner's own ``s3_io.resolve_checkpoint``
 for the same reason.
+
+WHAT THE FIRST RUN OF THIS FILE FOUND, AND WHY THERE IS A SECOND. Run run_019fe2e6 staged
+the checkpoint, loaded it, built all three prompts -- and then every generation died with
+``'TorchAttentionBackend' doesn't support KV caching``. ``GenerationConfig.use_cache``
+defaults to ``True`` and the scorer names no attention backend, so olmo_core picks its
+default one, which raises from ``assert_supports_kv_cache`` (olmo_core/nn/attention/
+backend.py:288-289) the moment ``prepare_inference_cache`` is called. Scoring never hit it
+because a forward-only pass never prepares a cache. So the eos question came back
+unanswered, and it is the one thing a completer cannot be written without.
+
+TWO WAYS PAST IT, AND THIS RUN TAKES WHICHEVER WORKS. The flash backends implement KV
+caching (backend.py:479 for FA2), and an L4 is Ada / SM 8.9, so ``flash_2`` is the fit --
+FA3 wants Hopper and FA4 Blackwell. But flash-attn is a binary wheel and may simply not be
+in the image, and finding that out is not worth a second card. So the flash module is
+built if it can be, and the fallback is ``use_cache=False`` passed straight to
+``generate_batch`` -- which needs no reload at all, because ``generate_batch`` folds its
+kwargs onto the config with ``self._generation_config.replace(**generation_kwargs)``
+(generation_module.py:174). Slower, since every step re-reads the whole prefix, but 64
+tokens on a 135M model is affordable and a decode is a decode. Each prompt tries the
+paths in order and reports which one produced its answer.
 """
 
 from __future__ import annotations
@@ -143,6 +163,16 @@ def main() -> int:
         ),
     )
     parser.add_argument(
+        "--attention-backend",
+        default="flash_2",
+        help=(
+            "Attention backend to ask for, resolved exactly as OlmoCoreProvider resolves "
+            "it. flash_2 because the default torch backend refuses KV caching and an L4 "
+            "is Ada. If it cannot be built, the run falls back to use_cache=False rather "
+            "than giving up on a decode."
+        ),
+    )
+    parser.add_argument(
         "--max-new-tokens",
         type=int,
         default=64,
@@ -157,9 +187,10 @@ def main() -> int:
     print("=" * 78)
     print("OLMo-core generation probe")
     print("=" * 78)
-    print(f"checkpoint:     {args.checkpoint}")
-    print(f"dtype:          {args.dtype}")
-    print(f"max_new_tokens: {args.max_new_tokens}")
+    print(f"checkpoint:        {args.checkpoint}")
+    print(f"dtype:             {args.dtype}")
+    print(f"attention_backend: {args.attention_backend}")
+    print(f"max_new_tokens:    {args.max_new_tokens}")
 
     print("\nEDULLM_* environment:")
     edullm_env = {k: v for k, v in sorted(os.environ.items()) if k.startswith("EDULLM_")}
@@ -226,6 +257,11 @@ def main() -> int:
             _OlmoCoreScoringModel,
         )
 
+        # Read before the download rather than after it. If probe 0 did not get as far as
+        # importing torch, nothing below can work, and staging 1.74 GB to find that out
+        # would be the most expensive way to learn it.
+        torch = state["torch"]
+
         # The runner stages to a TemporaryDirectory and loads inside it. Held open for
         # the life of the process here for the same reason: the module reads the
         # directory lazily and deleting it under a loaded model is not a thing to test
@@ -244,14 +280,36 @@ def main() -> int:
             f"(--checkpoint-prep none has no step after this; nothing is converted)",
         )
 
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            torch.cuda.reset_peak_memory_stats()
+        before = torch.cuda.memory_allocated() if torch.cuda.is_available() else 0
+
         started = time.monotonic()
         scorer = _OlmoCoreScoringModel(
             checkpoint_dir,
-            InferenceConfig(checkpoint_kind="olmo_core"),
+            InferenceConfig(checkpoint_kind="olmo_core", dtype=args.dtype),
         )
         record("load", f"LOADED in {time.monotonic() - started:.1f}s")
 
+        # The point of measuring here: the run before this one asked for bfloat16 on the
+        # command line and got 546.2 MB of weights for a 135M model, because
+        # InferenceConfig carried no dtype and from_checkpoint was given none. Four bytes
+        # a parameter is float32. If the threading works, this is about half of that.
+        if torch.cuda.is_available():
+            after = torch.cuda.memory_allocated()
+            weights_mb = (after - before) / 1e6
+            state["weights_mb"] = weights_mb
+            record(
+                "weights on device",
+                f"{weights_mb:.1f} MB for dtype={args.dtype} "
+                f"(run_019fe2e6 measured 546.2 MB asking for the same dtype, before "
+                f"InferenceConfig.dtype reached from_checkpoint; "
+                f"ratio {546.2 / weights_mb:.2f}x)",
+            )
+
         state["scorer"] = scorer
+        state["checkpoint_dir"] = checkpoint_dir
         state["model"] = scorer.model
         state["tokenizer"] = scorer.tokenizer
         state["device"] = scorer.device
@@ -278,6 +336,76 @@ def main() -> int:
         first = next(iter(scorer.model.model.parameters()), None)
         if first is not None:
             record("weight dtype as loaded", str(first.dtype))
+            state["weight_dtype"] = str(first.dtype)
+
+    @probe("2b", "Can a KV-cache-capable attention backend be built in this image?")
+    def _flash() -> None:
+        """A second module, because the backend is chosen at load and not at decode.
+
+        ``_OlmoCoreScoringModel`` exposes no ``attention_backend`` -- it has never needed
+        one, since scoring takes a single forward pass and never prepares a cache -- so
+        this builds its own module rather than widening the scorer's config for a
+        throwaway. The resolution and the kwargs are lifted from ``OlmoCoreProvider``
+        (olmo_core.py:156-159 and 173-185) rather than invented: the backend name goes
+        through ``_resolve_attention_backend``, and ``dtype`` is passed as the same plain
+        string.
+        """
+        torch = state["torch"]
+        checkpoint_dir = state.get("checkpoint_dir")
+        if checkpoint_dir is None:
+            record("flash module", "skipped: probe 2 staged nothing")
+            return
+
+        from diagnostics.mcq_cat.common.inference import _olmo_core_utils
+
+        core_utils = _olmo_core_utils()
+        imports = core_utils._import_olmo_core()
+
+        try:
+            backend = core_utils._resolve_attention_backend(
+                args.attention_backend,
+                AttentionBackendName=imports.AttentionBackendName,
+            )
+        except Exception as exc:  # noqa: BLE001 - an unknown name is a finding
+            record(
+                "flash module",
+                f"UNAVAILABLE - {args.attention_backend!r} is not a name this olmo_core "
+                f"knows: {type(exc).__name__}: {exc}",
+            )
+            return
+        record("backend name resolved", f"{args.attention_backend!r} -> {backend!r}")
+
+        before = torch.cuda.memory_allocated() if torch.cuda.is_available() else 0
+        started = time.monotonic()
+        try:
+            module = imports.TransformerGenerationModule.from_checkpoint(
+                checkpoint_dir=str(checkpoint_dir),
+                device=state["device"],
+                generation_config=imports.GenerationConfig(
+                    pad_token_id=state.get("pad", 1),
+                    eos_token_id=state.get("eos", 0),
+                    max_new_tokens=args.max_new_tokens,
+                    use_cache=True,
+                ),
+                attention_backend=backend,
+                dtype=args.dtype,
+            )
+        except Exception as exc:  # noqa: BLE001 - a missing wheel is the expected failure
+            record(
+                "flash module",
+                f"UNAVAILABLE - from_checkpoint refused {args.attention_backend!r}: "
+                f"{type(exc).__name__}: {exc}",
+            )
+            traceback.print_exc()
+            return
+
+        state["flash_module"] = module
+        after = torch.cuda.memory_allocated() if torch.cuda.is_available() else 0
+        record(
+            "flash module",
+            f"BUILT in {time.monotonic() - started:.1f}s, a second copy of the weights "
+            f"costing {(after - before) / 1e6:.1f} MB",
+        )
 
     @probe("3", "What does generate_batch return, and is eos ever emitted?")
     def _generate() -> None:
@@ -292,6 +420,23 @@ def main() -> int:
             record("generate_batch", "skipped: probe 1 built no prompts")
             return
 
+        # In order, and the first that survives wins. The flash module decodes with a real
+        # KV cache; the fallback reuses the already-loaded scorer and turns the cache off
+        # per call, which is what makes a missing binary wheel cost nothing but tokens.
+        attempts: list[tuple[str, Any, dict[str, Any]]] = []
+        if state.get("flash_module") is not None:
+            attempts.append((f"{args.attention_backend} + KV cache", state["flash_module"], {}))
+        attempts.append(("default backend + use_cache=False", model, {"use_cache": False}))
+        record(
+            "paths to try",
+            " then ".join(label for label, _, _ in attempts)
+            + (
+                ""
+                if state.get("flash_module") is not None
+                else "  (flash unavailable, so the fallback is the only path)"
+            ),
+        )
+
         for entry in prompts:
             bank = entry["bank"]
             print(f"\n  --- {bank} ---", flush=True)
@@ -300,17 +445,38 @@ def main() -> int:
                 input_ids = torch.tensor([prompt_ids], dtype=torch.long, device=device)
                 prompt_len = input_ids.shape[1]
 
-                if torch.cuda.is_available():
-                    torch.cuda.synchronize()
-                started = time.monotonic()
-                out = model.generate_batch(
-                    input_ids,
-                    max_new_tokens=args.max_new_tokens,
-                )
-                if torch.cuda.is_available():
-                    torch.cuda.synchronize()
-                elapsed = time.monotonic() - started
+                out = None
+                elapsed = 0.0
+                path = None
+                for label, module, extra in attempts:
+                    if torch.cuda.is_available():
+                        torch.cuda.synchronize()
+                    started = time.monotonic()
+                    try:
+                        out = module.generate_batch(
+                            input_ids,
+                            max_new_tokens=args.max_new_tokens,
+                            **extra,
+                        )
+                    except Exception as exc:  # noqa: BLE001 - the next path is the point
+                        record(
+                            f"{bank}: path {label!r}",
+                            f"FAILED - {type(exc).__name__}: {exc}",
+                        )
+                        out = None
+                        continue
+                    if torch.cuda.is_available():
+                        torch.cuda.synchronize()
+                    elapsed = time.monotonic() - started
+                    path = label
+                    state["generating_module"] = module
+                    break
 
+                if out is None:
+                    record(f"{bank}: generate", "FAILED on every path")
+                    continue
+
+                record(f"{bank}: PATH", f"decoded via {path}")
                 record(f"{bank}: return", f"{type(out).__name__} of {len(out)}")
                 for index, part in enumerate(out):
                     record(
@@ -353,6 +519,15 @@ def main() -> int:
                 else:
                     hits = (completion == eos).nonzero().flatten().tolist()
                     in_prompt = int((row[:prompt_len] == eos).sum().item())
+                    state.setdefault("eos_results", []).append(
+                        {
+                            "bank": bank,
+                            "hits": hits,
+                            "new_tokens": new_tokens,
+                            "cap": args.max_new_tokens,
+                            "path": path,
+                        }
+                    )
                     record(
                         f"{bank}: eos ({eos}) emitted?",
                         (
@@ -380,11 +555,21 @@ def main() -> int:
 
     @probe("4", "Does free_inference_cache exist, and what does calling it cost?")
     def _cache() -> None:
+        # Asked of the module that actually decoded, which is the whole difference from
+        # the last run. Calling this on a module that never generated frees a cache that
+        # was never allocated and reports 0.0 MB, which is a true number about nothing.
         torch = state["torch"]
-        model = state.get("model")
+        model = state.get("generating_module") or state.get("model")
         if model is None:
             record("free_inference_cache", "skipped: no model loaded")
             return
+        record(
+            "measured on",
+            "the module that decoded"
+            if state.get("generating_module") is not None
+            else "the scorer's module, which never generated -- so any figure below is "
+            "about an unallocated cache",
+        )
         if not hasattr(model, "free_inference_cache"):
             record("free_inference_cache", "NOT PRESENT on this module")
             return
@@ -410,6 +595,45 @@ def main() -> int:
             "VERDICT",
             f"a 40-item sequential session would spend about {40 * elapsed:.2f}s here",
         )
+
+    # The one question this run exists for, answered in one place rather than left to be
+    # reassembled out of the per-bank lines above.
+    print(f"\n{'=' * 78}\nEOS VERDICT\n{'=' * 78}")
+    eos_results = state.get("eos_results") or []
+    eos_id = state.get("eos")
+    if not eos_results:
+        print("  NO DECODE COMPLETED - the eos question is still unanswered.")
+    else:
+        emitted = [r for r in eos_results if r["hits"]]
+        print(f"  eos_token_id = {eos_id}; {len(eos_results)} prompt(s) decoded.")
+        for result in eos_results:
+            verdict = (
+                f"emitted at completion position(s) {result['hits']}"
+                if result["hits"]
+                else "NOT emitted"
+            )
+            print(
+                f"    {result['bank']:<18} {verdict}; "
+                f"{result['new_tokens']}/{result['cap']} new tokens via {result['path']}"
+            )
+        if emitted and len(emitted) == len(eos_results):
+            print(
+                "\n  VERDICT: this checkpoint DOES emit eos within the budget on every "
+                "prompt tried, so a completer can stop on it and must strip at the first "
+                "occurrence."
+            )
+        elif emitted:
+            print(
+                f"\n  VERDICT: eos is emitted on {len(emitted)} of {len(eos_results)} "
+                "prompts, so it cannot be relied on alone -- a completer needs eos AND a "
+                "token budget, and should treat a budget-length return as unterminated."
+            )
+        else:
+            print(
+                "\n  VERDICT: eos was NEVER emitted within the budget. A completer cannot "
+                "rely on it to stop; it needs stop sequences or the full token budget on "
+                "every item, and should not expect to truncate on token 0."
+            )
 
     print(f"\n{'=' * 78}\nFINDINGS\n{'=' * 78}")
     for question, answer in FINDINGS:

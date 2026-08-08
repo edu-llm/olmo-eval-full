@@ -76,11 +76,23 @@
 # directory is ever written. --checkpoint-kind olmo_core then selects the native scorer.
 # The two are independent seams and this is the pairing that converts nothing.
 #
-# --dtype bfloat16 IS INERT HERE AND STILL BELONGS IN THE TEXT. Nothing is converted, so
-# the flag changes no weights. It stays because the platform's bfloat16_not_in_the_hardware
-# guard reads the words of this command and nothing else, and the model still runs in
-# bfloat16 on the card -- so naming it turns a Turing shape into a free refusal instead of
-# a machine that dies on its first kernel.
+# --dtype bfloat16 IS LIVE HERE, WHICH IT WAS NOT BEFORE 2026-08-08. It converts nothing,
+# because --checkpoint-prep none converts nothing; what it now does is reach the native
+# scorer's InferenceConfig and get passed to from_checkpoint, so the model is built in
+# bfloat16 rather than at whatever config.json names. That was previously a claim about
+# this line and not a fact about the run: the flag stopped at prepare_checkpoint, and probe
+# run_019fe2e6 measured 546 MB of weights for a 135M model -- four bytes a parameter, i.e.
+# float32 -- with this exact flag on the command line.
+#
+# CONSEQUENCE FOR THE CONTROL RUN. run_019fe277 scored arc_challenge natively at
+# theta=-1.9033900659766525 and its report says dtype bfloat16. It was fp32. A rerun of this
+# spec is now genuinely bfloat16 and is not expected to reproduce that number exactly; the
+# comparison to make is against a rerun, not against that report.
+#
+# It also still belongs in the text for the original reason, which has not changed: the
+# platform's bfloat16_not_in_the_hardware guard reads the words of this command and nothing
+# else, so naming the format turns a Turing shape into a free refusal instead of a machine
+# that dies on its first kernel.
 schema_version: 1
 workload_profile: olmo-core-check
 suggested_compute: gpu-1xl4
