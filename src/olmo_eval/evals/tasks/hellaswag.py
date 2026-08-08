@@ -36,7 +36,7 @@ def _process_hellaswag_doc(doc: dict[str, Any], index: int) -> Instance | None:
         choices=choices,
         gold_answer=str(label),
         metadata={
-            "id": doc.get("ind", index),
+            "id": f"hellaswag-val-{index}",
             "index": index,
             "dataset": "hellaswag",
             "gold_idx": label,
