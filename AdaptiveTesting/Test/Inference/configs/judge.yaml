@@ -1,0 +1,20 @@
+# Prometheus LLM-judge configuration (open-ended benchmarks).
+
+# Judge model. Default fits a single 24GB GPU; 8x7b is a higher-quality override.
+model: prometheus-eval/prometheus-7b-v2.0
+backend: vllm            # vllm | hf | mock
+
+# Absolute grading on a 1-5 scale. Scores >= pass_threshold => "pass".
+scale_min: 1
+scale_max: 5
+pass_threshold: 4
+
+# Generation params for the judge.
+max_tokens: 512
+temperature: 0.0
+
+# Where per-benchmark rubrics live (one <benchmark>.rubric.txt each).
+rubric_dir: ../../Inputs/Open/LLM-Judge
+
+# Fallback generic rubric used when a benchmark-specific file is absent.
+default_rubric: default.rubric.txt

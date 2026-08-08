@@ -1,0 +1,37 @@
+{
+  "stage": "score_normal_trapezoid_bound_10p0_fit_061_nodes_2001_ridge_0p1",
+  "kind": "subprocess",
+  "command": [
+    "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+    "scripts/run_infobench_quadrature_resolution.py",
+    "--config",
+    "configs/infobench_quadrature_resolution_v1.json",
+    "--out-dir",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+    "--worker",
+    "score",
+    "--method",
+    "normal_trapezoid",
+    "--nodes",
+    "2001",
+    "--bound",
+    "10.0",
+    "--fit-grid",
+    "61",
+    "--ridge",
+    "0.1"
+  ],
+  "outputs": [
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/per_model.csv",
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/heldout_cells.csv",
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/oos_metrics.csv",
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/score_manifest.json"
+  ],
+  "completed_at": "2026-08-05T03:36:01.045913+00:00",
+  "output_sha256": {
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/per_model.csv": "cf76bd0569efd342667020806e95a903665914868f262dc31720c7be3e46ab40",
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/heldout_cells.csv": "9a3f114480316237def8708892a3b9ae1f60db651024d37c2929c6850d42de4d",
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/oos_metrics.csv": "784eec89cb16de6241d215e862ea2a24c8bdb89e167a4b8a1143632c96ac6e18",
+    "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/score_manifest.json": "df0fe7c494c9c977b416af8b704efc5d9c162cb9036084c25a195968b092bd0e"
+  }
+}

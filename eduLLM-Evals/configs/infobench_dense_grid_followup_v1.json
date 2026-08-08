@@ -1,0 +1,67 @@
+{
+  "schema_version": "infobench-dense-grid-followup-v1",
+  "status": "preregistered_before_followup_results",
+  "created_date": "2026-08-04",
+  "benchmark": "InFoBench",
+  "reason": "The frozen 25-vs-41 fit-grid gate failed only the discrimination-parameter Spearman threshold. This append-only numerical follow-up tests denser grids without changing any gate threshold or overwriting the failed study.",
+  "parent_study": {
+    "config": "configs/infobench_calibration_remediation_v1.json",
+    "run_dir": "runs/calibration/InFoBench_remediation_v1",
+    "study_manifest": "runs/calibration/InFoBench_remediation_v1/study_manifest.json",
+    "study_manifest_sha256": "6c5ce4f205d4d3651b979f1011460381483a1d3af30a3da8ac35fbb7108b3c8c",
+    "failed_fit_gate": "runs/calibration/InFoBench_remediation_v1/dense_grid/fit_grid_stability.json",
+    "failed_fit_gate_sha256": "ff294c6a07ece0193c492d0891678adc0f7de53f172921704d6f035bc673cc71",
+    "required_status": "blocked_fit_grid_stability",
+    "reuse_completed_grid": 41,
+    "reuse_policy": "Copy and hash-verify the completed grid-41 fit and EAP-81 score artifacts; do not refit them."
+  },
+  "output_dir": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+  "initial_ridge": 0.1,
+  "fit_grid_candidates": [
+    41,
+    61,
+    81
+  ],
+  "successive_fit_comparisons": [
+    "41_vs_61",
+    "61_vs_81"
+  ],
+  "fit_grid_lock_rule": {
+    "description": "Run both successive comparisons. Lock 41 only if both comparisons pass. If 41-vs-61 fails but 61-vs-81 passes, lock 61. Otherwise make no numerical lock.",
+    "require_all_fits_converged": true,
+    "minimum_item_parameter_spearman": 0.99,
+    "minimum_exportability_agreement": 0.995,
+    "heldout_metric_stability": {
+      "rule": "absolute_pooled_shift_or_paired_fold_se",
+      "metrics": [
+        "log_loss",
+        "brier"
+      ],
+      "maximum_absolute_pooled_shift": 0.005,
+      "paired_fold_se_multiplier": 2.0,
+      "require_every_metric": true
+    }
+  },
+  "eap_grid_candidates": [
+    21,
+    41,
+    81
+  ],
+  "eap_grid_stability": {
+    "comparison": "41_vs_81",
+    "maximum_median_absolute_theta_shift": 0.02,
+    "maximum_p95_absolute_theta_shift": 0.05,
+    "maximum_recovery_correlation_shift": 0.01,
+    "maximum_recovery_slope_shift": 0.02,
+    "maximum_theta_mae_shift": 0.02,
+    "maximum_pass_rate_mae_shift": 0.005,
+    "require_identical_fixed_bank_orders": true
+  },
+  "ridge_candidates_after_grid_lock": [
+    0.001,
+    0.01,
+    0.1
+  ],
+  "threshold_change_policy": "No threshold may be relaxed after observing follow-up results.",
+  "downstream_policy": "Nested CAT work remains provisional until the two-human InFoBench Qwen audit passes."
+}

@@ -1,0 +1,377 @@
+[
+  {
+    "stage": "score_normal_trapezoid_bound_8p0_fit_061_nodes_0401_ridge_0p1",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "normal_trapezoid",
+      "--nodes",
+      "401",
+      "--bound",
+      "8.0",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.1",
+      "--include-cat"
+    ],
+    "outputs": [
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p1/per_model.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p1/heldout_cells.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p1/oos_metrics.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p1/score_manifest.json",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p1/recovery.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p1/pass_rate.csv"
+    ]
+  },
+  {
+    "stage": "common_cell_fit_grid_gate",
+    "kind": "deterministic_analysis",
+    "command": [
+      "internal-analysis",
+      "common_cell_fit_grid_gate"
+    ],
+    "outputs": [
+      "common_support/common_cells_41_vs_61.csv",
+      "common_support/common_cells_61_vs_81.csv",
+      "common_support/equivalence_41_vs_61.json",
+      "common_support/equivalence_61_vs_81.json",
+      "common_support/common_cell_gate.json"
+    ]
+  },
+  {
+    "stage": "score_normal_trapezoid_bound_8p0_fit_061_nodes_0801_ridge_0p1",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "normal_trapezoid",
+      "--nodes",
+      "801",
+      "--bound",
+      "8.0",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.1",
+      "--include-cat"
+    ],
+    "outputs": [
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0801/ridge_0p1/per_model.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0801/ridge_0p1/heldout_cells.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0801/ridge_0p1/oos_metrics.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0801/ridge_0p1/score_manifest.json",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0801/ridge_0p1/recovery.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0801/ridge_0p1/pass_rate.csv"
+    ]
+  },
+  {
+    "stage": "score_normal_trapezoid_bound_8p0_fit_061_nodes_1601_ridge_0p1",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "normal_trapezoid",
+      "--nodes",
+      "1601",
+      "--bound",
+      "8.0",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.1",
+      "--include-cat"
+    ],
+    "outputs": [
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_1601/ridge_0p1/per_model.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_1601/ridge_0p1/heldout_cells.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_1601/ridge_0p1/oos_metrics.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_1601/ridge_0p1/score_manifest.json",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_1601/ridge_0p1/recovery.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_1601/ridge_0p1/pass_rate.csv"
+    ]
+  },
+  {
+    "stage": "primary_quadrature_gate",
+    "kind": "deterministic_analysis",
+    "command": [
+      "internal-analysis",
+      "primary_quadrature_gate"
+    ],
+    "outputs": [
+      "numerical_gates/primary_grid_summary.csv",
+      "numerical_gates/primary_grid_gate.json"
+    ]
+  },
+  {
+    "stage": "score_normal_trapezoid_bound_10p0_fit_061_nodes_2001_ridge_0p1",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "normal_trapezoid",
+      "--nodes",
+      "2001",
+      "--bound",
+      "10.0",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.1"
+    ],
+    "outputs": [
+      "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/per_model.csv",
+      "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/heldout_cells.csv",
+      "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/oos_metrics.csv",
+      "scores/method_normal_trapezoid/bound_10p0/fit_grid_061/nodes_2001/ridge_0p1/score_manifest.json"
+    ]
+  },
+  {
+    "stage": "bound_sensitivity_gate",
+    "kind": "deterministic_analysis",
+    "command": [
+      "internal-analysis",
+      "bound_sensitivity_gate"
+    ],
+    "outputs": [
+      "numerical_gates/bound_check_per_model.csv",
+      "numerical_gates/bound_check.json"
+    ]
+  },
+  {
+    "stage": "score_gauss_hermite_scipy_bound_none_fit_061_nodes_1601_ridge_0p1",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "gauss_hermite_scipy",
+      "--nodes",
+      "1601",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.1"
+    ],
+    "outputs": [
+      "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/per_model.csv",
+      "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/heldout_cells.csv",
+      "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/oos_metrics.csv",
+      "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/score_manifest.json"
+    ]
+  },
+  {
+    "stage": "cross_family_gate",
+    "kind": "deterministic_analysis",
+    "command": [
+      "internal-analysis",
+      "cross_family_gate"
+    ],
+    "outputs": [
+      "numerical_gates/cross_family_per_model.csv",
+      "numerical_gates/cross_family_check.json"
+    ]
+  },
+  {
+    "stage": "emit_native_grid_lock",
+    "kind": "deterministic_analysis",
+    "command": [
+      "internal-analysis",
+      "emit_native_grid_lock"
+    ],
+    "outputs": [
+      "dense_grid/grid_lock.json"
+    ]
+  },
+  {
+    "stage": "fit_grid_061_ridge_0p001",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "fit-ridge",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.001"
+    ],
+    "outputs": [
+      "fit_cache/grid_061/ridge_0p001/fit_grid_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/full/fit.npz",
+      "fit_cache/grid_061/ridge_0p001/full/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/full/item_params.csv",
+      "fit_cache/grid_061/ridge_0p001/outer_0/fit.npz",
+      "fit_cache/grid_061/ridge_0p001/outer_0/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/outer_0/item_params.csv",
+      "fit_cache/grid_061/ridge_0p001/outer_1/fit.npz",
+      "fit_cache/grid_061/ridge_0p001/outer_1/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/outer_1/item_params.csv",
+      "fit_cache/grid_061/ridge_0p001/outer_2/fit.npz",
+      "fit_cache/grid_061/ridge_0p001/outer_2/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/outer_2/item_params.csv",
+      "fit_cache/grid_061/ridge_0p001/outer_3/fit.npz",
+      "fit_cache/grid_061/ridge_0p001/outer_3/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/outer_3/item_params.csv",
+      "fit_cache/grid_061/ridge_0p001/outer_4/fit.npz",
+      "fit_cache/grid_061/ridge_0p001/outer_4/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p001/outer_4/item_params.csv"
+    ]
+  },
+  {
+    "stage": "score_normal_trapezoid_bound_8p0_fit_061_nodes_0401_ridge_0p001",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "normal_trapezoid",
+      "--nodes",
+      "401",
+      "--bound",
+      "8.0",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.001",
+      "--include-cat"
+    ],
+    "outputs": [
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/per_model.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/heldout_cells.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/oos_metrics.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/score_manifest.json",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/recovery.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/pass_rate.csv"
+    ]
+  },
+  {
+    "stage": "fit_grid_061_ridge_0p01",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "fit-ridge",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.01"
+    ],
+    "outputs": [
+      "fit_cache/grid_061/ridge_0p01/fit_grid_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/full/fit.npz",
+      "fit_cache/grid_061/ridge_0p01/full/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/full/item_params.csv",
+      "fit_cache/grid_061/ridge_0p01/outer_0/fit.npz",
+      "fit_cache/grid_061/ridge_0p01/outer_0/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/outer_0/item_params.csv",
+      "fit_cache/grid_061/ridge_0p01/outer_1/fit.npz",
+      "fit_cache/grid_061/ridge_0p01/outer_1/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/outer_1/item_params.csv",
+      "fit_cache/grid_061/ridge_0p01/outer_2/fit.npz",
+      "fit_cache/grid_061/ridge_0p01/outer_2/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/outer_2/item_params.csv",
+      "fit_cache/grid_061/ridge_0p01/outer_3/fit.npz",
+      "fit_cache/grid_061/ridge_0p01/outer_3/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/outer_3/item_params.csv",
+      "fit_cache/grid_061/ridge_0p01/outer_4/fit.npz",
+      "fit_cache/grid_061/ridge_0p01/outer_4/fit_manifest.json",
+      "fit_cache/grid_061/ridge_0p01/outer_4/item_params.csv"
+    ]
+  },
+  {
+    "stage": "score_normal_trapezoid_bound_8p0_fit_061_nodes_0401_ridge_0p01",
+    "kind": "subprocess",
+    "command": [
+      "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+      "scripts/run_infobench_quadrature_resolution.py",
+      "--config",
+      "configs/infobench_quadrature_resolution_v1.json",
+      "--out-dir",
+      "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+      "--worker",
+      "score",
+      "--method",
+      "normal_trapezoid",
+      "--nodes",
+      "401",
+      "--bound",
+      "8.0",
+      "--fit-grid",
+      "61",
+      "--ridge",
+      "0.01",
+      "--include-cat"
+    ],
+    "outputs": [
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p01/per_model.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p01/heldout_cells.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p01/oos_metrics.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p01/score_manifest.json",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p01/recovery.csv",
+      "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p01/pass_rate.csv"
+    ]
+  },
+  {
+    "stage": "ridge_sensitivity_summary",
+    "kind": "deterministic_analysis",
+    "command": [
+      "internal-analysis",
+      "ridge_sensitivity_summary"
+    ],
+    "outputs": [
+      "ridge/ridge_sensitivity_summary.csv",
+      "ridge/ridge_sensitivity_manifest.json"
+    ]
+  }
+]

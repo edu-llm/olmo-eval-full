@@ -1,0 +1,117 @@
+{
+  "schema_version": "infobench-quadrature-resolution-v1",
+  "status": "frozen_before_official_run_design_informed_by_diagnostics",
+  "created_date": "2026-08-04",
+  "benchmark": "InFoBench",
+  "reason": "The fit-grid study locked EM fit grid 61, but Gauss-Hermite EAP scoring remained quantized through 321 nodes because full-bank posterior uncertainty is narrower than central node spacing. This study changes only the post-fit scoring integration, corrects fit-grid held-out comparisons to common cells, and preserves all earlier failed runs.",
+  "exploratory_disclosure": "The 401/801/1601 panel and validation families were chosen after diagnostic inspection of the failed 41/81/161/321 Gauss-Hermite runs. The thresholds were not relaxed; extra maximum-shift, bound, cross-family, and common-cell checks are stricter. This is a frozen local design, not an independently timestamped preregistration.",
+  "parent_study": {
+    "config": "configs/infobench_eap_grid_followup_v1.json",
+    "config_sha256": "4a38e0ff99fdc76c9b2416a0f3a9771d96e2d016b98a19dcef0a5e4f1ba62239",
+    "runner": "scripts/run_infobench_eap_grid_followup.py",
+    "runner_sha256": "2977aa323532ae158d0ad8b7ab7f302d7063301b633e8280388045adfa05d37d",
+    "run_dir": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+    "study_manifest": "runs/calibration/InFoBench_remediation_v1_eap_followup/study_manifest.json",
+    "study_manifest_sha256": "9d3c3873c369657123970dd0cb9ec10e4f93a840fa1950327713d98ebf0bee12",
+    "required_status": "blocked_eap_grid_stability",
+    "imported_fit_manifest": "runs/calibration/InFoBench_remediation_v1_eap_followup/imported_parent_grid_061.json",
+    "imported_fit_manifest_sha256": "84477dec995c8a15ddee3f164ed3e8b562f719b2ead8b4be4fc0c00691e3be26",
+    "fit_gate": "runs/calibration/InFoBench_remediation_v1_dense_followup/dense_grid/fit_grid_stability.json",
+    "fit_gate_sha256": "c5a86b3631e565e7505453d37504f1f47200b220b78c4a27bf3e5a6ba73f6394",
+    "fit_stage_marker": "runs/calibration/InFoBench_remediation_v1_dense_followup/stage_markers/fit_grid_061_ridge_0p1.json",
+    "fit_stage_marker_sha256": "1bba299976a5da6916c3a9b4d589e6f04ab292378e6ddf6cd2d978dbc6da770f",
+    "grid_41_import_manifest": "runs/calibration/InFoBench_remediation_v1_dense_followup/imported_parent_grid_041.json",
+    "grid_41_import_manifest_sha256": "dbe8f75d3947a5116a33bcc2d0a71f35137f926fa3c465095d97de570c46d5ed",
+    "grid_41_source_stage_marker": "runs/calibration/InFoBench_remediation_v1/stage_markers/fit_grid_041_ridge_0p1.json",
+    "grid_41_source_stage_marker_sha256": "332e55c0525bbdd2270bea2ca5816637af19918d181b1fcdf6fbf5439e4c60ea",
+    "grid_81_stage_marker": "runs/calibration/InFoBench_remediation_v1_dense_followup/stage_markers/fit_grid_081_ridge_0p1.json",
+    "grid_81_stage_marker_sha256": "a20c0c099a2409c2381bcf36b5287e034d2a60d71a7307daee47b8c3ef858ca5"
+  },
+  "frozen_inputs": {
+    "response_matrix": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+    "response_matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "rubrics": "data/InFoBench/rubrics.jsonl",
+    "rubrics_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scenarios": "data/InFoBench/scenarios.jsonl",
+    "scenarios_sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b",
+    "split_manifest": "configs/infobench_remediation_splits_v1.manifest.json",
+    "split_manifest_sha256": "3662ad502585799afa6d0e665a08f94f480f41c09c78ce472a20e209e5f14f95"
+  },
+  "output_dir": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+  "fit_grid": 61,
+  "initial_ridge": 0.1,
+  "fit_grid_common_support_recheck": {
+    "comparisons": [
+      "41_vs_61",
+      "61_vs_81"
+    ],
+    "locked_comparison": "61_vs_81",
+    "evaluation_quadrature_method": "normal_trapezoid",
+    "evaluation_nodes": 401,
+    "linear_bound": 8.0,
+    "common_cell_key": [
+      "outer_fold",
+      "model",
+      "criterion_id"
+    ],
+    "require_identical_keys_and_labels": true,
+    "equivalence_margin": 0.005,
+    "require_absolute_pooled_shift_within_margin": true,
+    "require_family_cluster_bootstrap_ci_within_margin": true,
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 20260804,
+    "note": "The original absolute 0.005 margin is retained. The former OR-with-two-fold-SE rule is not used because uncertainty cannot be evidence of equivalence."
+  },
+  "primary_eap": {
+    "quadrature_method": "normal_trapezoid",
+    "linear_bound": 8.0,
+    "grid_candidates": [
+      401,
+      801,
+      1601
+    ],
+    "successive_comparisons": [
+      "401_vs_801",
+      "801_vs_1601"
+    ],
+    "endpoint_comparison": "401_vs_1601",
+    "lock_rule": "Lock 401 only when both successive comparisons and the direct 401-vs-1601 endpoint pass. If 401-vs-801 fails but 801-vs-1601 passes, lock 801. Otherwise do not lock.",
+    "stability_thresholds": {
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05,
+      "maximum_absolute_theta_shift": 0.005,
+      "maximum_recovery_correlation_shift": 0.01,
+      "maximum_recovery_slope_shift": 0.02,
+      "maximum_theta_mae_shift": 0.02,
+      "maximum_pass_rate_mae_shift": 0.005,
+      "require_identical_fixed_bank_orders": true
+    }
+  },
+  "bound_check": {
+    "reference_method": "normal_trapezoid",
+    "reference_nodes": 1601,
+    "reference_bound": 8.0,
+    "comparison_nodes": 2001,
+    "comparison_bound": 10.0,
+    "shared_step": 0.01,
+    "maximum_full_theta_shift": 0.005,
+    "maximum_heldout_theta_shift": 0.005,
+    "tail_region_absolute_theta_at_least": 7.5,
+    "maximum_posterior_tail_mass": 0.00001
+  },
+  "cross_family_check": {
+    "reference_method": "normal_trapezoid",
+    "reference_nodes": 1601,
+    "comparison_method": "gauss_hermite_scipy",
+    "comparison_nodes": 1601,
+    "maximum_full_theta_shift": 0.005,
+    "maximum_heldout_theta_shift": 0.005
+  },
+  "ridge_candidates_after_numerical_lock": [
+    0.001,
+    0.01,
+    0.1
+  ],
+  "threshold_change_policy": "No gate may be relaxed after official outputs are generated.",
+  "downstream_policy": "All downstream EAP calls must consume quadrature_method and linear_bound from grid_lock.json. Nested CAT results remain provisional until the two-human InFoBench Qwen audit passes."
+}

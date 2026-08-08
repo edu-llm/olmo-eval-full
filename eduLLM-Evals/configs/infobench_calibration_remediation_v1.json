@@ -1,0 +1,214 @@
+{
+  "schema_version": "infobench-calibration-remediation-v1",
+  "status": "preregistered",
+  "benchmark": "InFoBench",
+  "baseline": {
+    "pipeline_commit": "6d1be44",
+    "report_commit": "c321919",
+    "report_dir": "reports/infobench_calibration_20260804",
+    "run_dir": "runs/calibration/InFoBench_playbook_full",
+    "response_matrix": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+    "response_matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "judge_manifest": "runs/calibration/InFoBench_full_20260804/inputs/judge_manifest.json",
+    "judge_manifest_sha256": "d2f19c55b8ebb8f3ebe0c641485e0b694ce861f2740835da760b7b51b40698e7",
+    "rubrics": "data/InFoBench/rubrics.jsonl",
+    "scenarios": "data/InFoBench/scenarios.jsonl",
+    "models": 52,
+    "source_scenarios": 500,
+    "source_criteria": 2250,
+    "fitted_criteria": 2105,
+    "exported_criteria": 2096,
+    "unfitted_all_fail_criteria": 145,
+    "excluded_nonpositive_discrimination": 9
+  },
+  "phase0_artifact": {
+    "provenance_manifest": "reports/infobench_calibration_remediation/phase0_input_artifact.json",
+    "local_archive": "runs/calibration/InFoBench_remediation_phase0/infobench_phase0_inputs.tar.gz",
+    "archive_sha256": "b033f86f0e206197bfff80c057a5793563989b04ab4062f4e7aa476718c62ca3",
+    "archive_members": 60,
+    "storage_status": "local_only_not_published",
+    "stable_storage_uri": null
+  },
+  "immutable_decisions": {
+    "latent_structure": "overall_1d",
+    "latent_dimensions": [
+      "instruction_following"
+    ],
+    "matrix_boundary": "The frozen binary response matrix is the calibration boundary unless the InFoBench-specific Qwen audit fails.",
+    "missing_response_policy": "missing",
+    "primary_final_theta_estimator": "mwle",
+    "preserve_historical_run": true,
+    "new_output_dir": "runs/calibration/InFoBench_remediation_v1"
+  },
+  "judge_audit": {
+    "sample_target": 360,
+    "human_graders": 2,
+    "adjudicate_disagreements": true,
+    "include_all_no_decisions": true,
+    "target_universally_failed_criteria": true,
+    "target_nonpositive_discrimination_criteria": true,
+    "acceptance": {
+      "minimum_macro_f1": 0.8,
+      "minimum_fail_sensitivity": 0.9,
+      "minimum_constraint_category_f1": 0.7,
+      "minimum_repeat_agreement": 0.9
+    }
+  },
+  "dense_grid": {
+    "structure_screen_fit_grid": 5,
+    "initial_ridge": 0.1,
+    "fit_grid_candidates": [
+      5,
+      7,
+      15,
+      25,
+      41
+    ],
+    "eap_grid_candidates": [
+      21,
+      41,
+      81
+    ],
+    "ridge_candidates_after_grid_lock": [
+      0.001,
+      0.01,
+      0.1
+    ],
+    "fit_grid_stability": {
+      "comparison": "25_vs_41",
+      "minimum_item_parameter_spearman": 0.99,
+      "minimum_exportability_agreement": 0.995,
+      "require_all_fits_converged": true,
+      "heldout_metric_stability": {
+        "rule": "absolute_pooled_shift_or_paired_fold_se",
+        "metrics": [
+          "log_loss",
+          "brier"
+        ],
+        "maximum_absolute_pooled_shift": 0.005,
+        "paired_fold_se_multiplier": 2.0,
+        "require_every_metric": true
+      }
+    },
+    "eap_grid_stability": {
+      "comparison": "41_vs_81",
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05,
+      "maximum_recovery_correlation_shift": 0.01,
+      "maximum_recovery_slope_shift": 0.02,
+      "maximum_theta_mae_shift": 0.02,
+      "maximum_pass_rate_mae_shift": 0.005,
+      "require_identical_fixed_bank_orders": true
+    }
+  },
+  "cross_validation": {
+    "fold_manifest": "configs/infobench_remediation_splits_v1.manifest.json",
+    "fold_manifest_sha256": "3662ad502585799afa6d0e665a08f94f480f41c09c78ce472a20e209e5f14f95",
+    "model_assignments": "configs/infobench_remediation_splits_v1.models.csv",
+    "model_assignments_sha256": "46e9c7163c34a5be0cc24d0803d69b01bee5662feddf93de4cdd20dca2ebb966",
+    "scenario_assignments": "configs/infobench_remediation_splits_v1.scenarios.csv",
+    "scenario_assignments_sha256": "10075f8de40cd6677ae233c27e52de803fd9288773fe605a3d52a2159d2d2e4b",
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "seed": 20260729,
+    "group_related_model_families": true,
+    "administration_scenario_fraction": 0.8,
+    "evaluation_scenario_fraction": 0.2,
+    "primary_metrics": [
+      "disjoint_oos_log_loss",
+      "disjoint_oos_brier",
+      "disjoint_pass_rate_mae",
+      "disjoint_pass_rate_bias"
+    ],
+    "secondary_metrics": [
+      "full_bank_theta_recovery_correlation",
+      "full_bank_theta_recovery_slope",
+      "full_bank_theta_mae"
+    ]
+  },
+  "cat_candidates": {
+    "minimum_scenarios": [
+      0,
+      5,
+      8,
+      12,
+      15,
+      20
+    ],
+    "conditional_se_targets": [
+      0.2,
+      0.25,
+      0.3,
+      0.35
+    ],
+    "selectors": [
+      "trace",
+      "dopt"
+    ],
+    "run_full_factorial": true,
+    "estimator": "mwle",
+    "top_n": 5,
+    "maximum_adaptive_scenarios": 50,
+    "minimum_scored_criteria": 15
+  },
+  "selection_gates": {
+    "allow_fallback_if_none_pass": false,
+    "minimum_replay_success_rate": 0.99,
+    "minimum_mwle_convergence_rate": 0.95,
+    "minimum_nominal_precision_rate": 0.95,
+    "minimum_nominal_precision_lower_95_ci": 0.9,
+    "minimum_recovery_correlation_lower_95_ci": 0.85,
+    "minimum_recovery_slope": 0.9,
+    "maximum_recovery_slope": 1.1,
+    "maximum_disjoint_pass_rate_mae": 0.07,
+    "maximum_absolute_disjoint_pass_rate_bias": 0.03,
+    "minimum_scenario_reduction_vs_random": 0.5,
+    "require_paired_ci_favors_cat": true,
+    "minimum_valid_parameter_bootstrap_rate": 0.9,
+    "preferred_outer_fold_configuration_agreement": 0.8,
+    "selection_order": [
+      "lowest_p90_scenario_count",
+      "lowest_mean_scenario_count",
+      "lowest_total_uncertainty",
+      "prefer_trace"
+    ]
+  },
+  "uncertainty": {
+    "parameter_bootstrap_replicates": 100,
+    "metric_bootstrap_replicates": 2000,
+    "order_seeds": [
+      1000,
+      1001,
+      1002,
+      1003,
+      1004,
+      1005,
+      1006,
+      1007,
+      1008,
+      1009,
+      1010,
+      1011,
+      1012,
+      1013,
+      1014,
+      1015,
+      1016,
+      1017,
+      1018,
+      1019
+    ],
+    "parameter_bootstrap_training_models_only": true,
+    "rerun_cat_path_per_bootstrap": true,
+    "total_variance_method": "law_of_total_variance",
+    "report_order_path_sd_separately": true
+  },
+  "release_gates": {
+    "judge_audit_must_pass": true,
+    "dense_grid_must_be_stable": true,
+    "nested_oos_gates_must_pass": true,
+    "total_uncertainty_gate_must_pass": true,
+    "order_stability_gate_must_pass": true,
+    "external_frozen_bank_validation": "pending_new_model_cohort"
+  }
+}

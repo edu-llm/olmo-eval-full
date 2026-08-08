@@ -1,0 +1,180 @@
+{
+  "quadrature_method": "normal_trapezoid",
+  "linear_bound": 8.0,
+  "comparisons": {
+    "401_vs_801": {
+      "comparison": "401_vs_801",
+      "lower_nodes": 401,
+      "upper_nodes": 801,
+      "quadrature_method": "normal_trapezoid",
+      "linear_bound": 8.0,
+      "theta_shift_by_support": {
+        "full": {
+          "median_absolute_theta_shift": 1.7053025658242404e-13,
+          "p95_absolute_theta_shift": 5.221516965678296e-09,
+          "maximum_absolute_theta_shift": 3.365904360785876e-08
+        },
+        "administration_only": {
+          "median_absolute_theta_shift": 8.570921750106208e-14,
+          "p95_absolute_theta_shift": 3.736288223255e-11,
+          "maximum_absolute_theta_shift": 5.51777290525024e-10
+        }
+      },
+      "median_absolute_theta_shift": 1.7053025658242404e-13,
+      "p95_absolute_theta_shift": 5.221516965678296e-09,
+      "maximum_absolute_theta_shift": 3.365904360785876e-08,
+      "recovery_correlation_shift": 5.853839635250324e-11,
+      "recovery_slope_shift": 6.648903649875137e-11,
+      "theta_mae_shift": 5.654665624632571e-10,
+      "pass_rate_mae_shift": 0.0,
+      "fixed_bank_orders_identical": true,
+      "node_pileup_pass": true,
+      "lower_grid_node_pileup_pass": true,
+      "upper_grid_node_pileup_pass": true,
+      "lower_grid_quantization": {
+        "n_models": 52,
+        "unique_theta_rounded_6": 52,
+        "largest_rounded_value_count": 1,
+        "largest_rounded_value_fraction": 0.019230769230769232,
+        "fraction_within_1e_6_of_node": 0.0,
+        "largest_nearest_node_fraction": 0.057692307692307696
+      },
+      "upper_grid_quantization": {
+        "n_models": 52,
+        "unique_theta_rounded_6": 52,
+        "largest_rounded_value_count": 1,
+        "largest_rounded_value_fraction": 0.019230769230769232,
+        "fraction_within_1e_6_of_node": 0.0,
+        "largest_nearest_node_fraction": 0.038461538461538464
+      },
+      "thresholds": {
+        "maximum_median_absolute_theta_shift": 0.02,
+        "maximum_p95_absolute_theta_shift": 0.05,
+        "maximum_absolute_theta_shift": 0.005,
+        "maximum_recovery_correlation_shift": 0.01,
+        "maximum_recovery_slope_shift": 0.02,
+        "maximum_theta_mae_shift": 0.02,
+        "maximum_pass_rate_mae_shift": 0.005,
+        "require_identical_fixed_bank_orders": true
+      },
+      "passed": true
+    },
+    "801_vs_1601": {
+      "comparison": "801_vs_1601",
+      "lower_nodes": 801,
+      "upper_nodes": 1601,
+      "quadrature_method": "normal_trapezoid",
+      "linear_bound": 8.0,
+      "theta_shift_by_support": {
+        "full": {
+          "median_absolute_theta_shift": 4.5630166312093934e-14,
+          "p95_absolute_theta_shift": 1.3948842081390455e-13,
+          "maximum_absolute_theta_shift": 1.270095140171179e-12
+        },
+        "administration_only": {
+          "median_absolute_theta_shift": 3.352873534367973e-14,
+          "p95_absolute_theta_shift": 1.3709033908071425e-13,
+          "maximum_absolute_theta_shift": 5.878852959995129e-12
+        }
+      },
+      "median_absolute_theta_shift": 4.5630166312093934e-14,
+      "p95_absolute_theta_shift": 1.3948842081390455e-13,
+      "maximum_absolute_theta_shift": 5.878852959995129e-12,
+      "recovery_correlation_shift": 9.992007221626409e-15,
+      "recovery_slope_shift": 2.453592884421596e-14,
+      "theta_mae_shift": 1.942890293094024e-14,
+      "pass_rate_mae_shift": 0.0,
+      "fixed_bank_orders_identical": true,
+      "node_pileup_pass": true,
+      "lower_grid_node_pileup_pass": true,
+      "upper_grid_node_pileup_pass": true,
+      "lower_grid_quantization": {
+        "n_models": 52,
+        "unique_theta_rounded_6": 52,
+        "largest_rounded_value_count": 1,
+        "largest_rounded_value_fraction": 0.019230769230769232,
+        "fraction_within_1e_6_of_node": 0.0,
+        "largest_nearest_node_fraction": 0.038461538461538464
+      },
+      "upper_grid_quantization": {
+        "n_models": 52,
+        "unique_theta_rounded_6": 52,
+        "largest_rounded_value_count": 1,
+        "largest_rounded_value_fraction": 0.019230769230769232,
+        "fraction_within_1e_6_of_node": 0.0,
+        "largest_nearest_node_fraction": 0.038461538461538464
+      },
+      "thresholds": {
+        "maximum_median_absolute_theta_shift": 0.02,
+        "maximum_p95_absolute_theta_shift": 0.05,
+        "maximum_absolute_theta_shift": 0.005,
+        "maximum_recovery_correlation_shift": 0.01,
+        "maximum_recovery_slope_shift": 0.02,
+        "maximum_theta_mae_shift": 0.02,
+        "maximum_pass_rate_mae_shift": 0.005,
+        "require_identical_fixed_bank_orders": true
+      },
+      "passed": true
+    },
+    "401_vs_1601": {
+      "comparison": "401_vs_1601",
+      "lower_nodes": 401,
+      "upper_nodes": 1601,
+      "quadrature_method": "normal_trapezoid",
+      "linear_bound": 8.0,
+      "theta_shift_by_support": {
+        "full": {
+          "median_absolute_theta_shift": 1.8407497748285095e-13,
+          "p95_absolute_theta_shift": 5.22152466125858e-09,
+          "maximum_absolute_theta_shift": 3.365900089202789e-08
+        },
+        "administration_only": {
+          "median_absolute_theta_shift": 7.66053886991358e-14,
+          "p95_absolute_theta_shift": 3.7345651571207817e-11,
+          "maximum_absolute_theta_shift": 5.518036028107076e-10
+        }
+      },
+      "median_absolute_theta_shift": 1.8407497748285095e-13,
+      "p95_absolute_theta_shift": 5.22152466125858e-09,
+      "maximum_absolute_theta_shift": 3.365900089202789e-08,
+      "recovery_correlation_shift": 5.852840434528161e-11,
+      "recovery_slope_shift": 6.646450056990716e-11,
+      "theta_mae_shift": 5.654471335603262e-10,
+      "pass_rate_mae_shift": 0.0,
+      "fixed_bank_orders_identical": true,
+      "node_pileup_pass": true,
+      "lower_grid_node_pileup_pass": true,
+      "upper_grid_node_pileup_pass": true,
+      "lower_grid_quantization": {
+        "n_models": 52,
+        "unique_theta_rounded_6": 52,
+        "largest_rounded_value_count": 1,
+        "largest_rounded_value_fraction": 0.019230769230769232,
+        "fraction_within_1e_6_of_node": 0.0,
+        "largest_nearest_node_fraction": 0.057692307692307696
+      },
+      "upper_grid_quantization": {
+        "n_models": 52,
+        "unique_theta_rounded_6": 52,
+        "largest_rounded_value_count": 1,
+        "largest_rounded_value_fraction": 0.019230769230769232,
+        "fraction_within_1e_6_of_node": 0.0,
+        "largest_nearest_node_fraction": 0.038461538461538464
+      },
+      "thresholds": {
+        "maximum_median_absolute_theta_shift": 0.02,
+        "maximum_p95_absolute_theta_shift": 0.05,
+        "maximum_absolute_theta_shift": 0.005,
+        "maximum_recovery_correlation_shift": 0.01,
+        "maximum_recovery_slope_shift": 0.02,
+        "maximum_theta_mae_shift": 0.02,
+        "maximum_pass_rate_mae_shift": 0.005,
+        "require_identical_fixed_bank_orders": true
+      },
+      "passed": true
+    }
+  },
+  "selection_rule": "Lock 401 only when both successive comparisons and the direct 401-vs-1601 endpoint pass. If 401-vs-801 fails but 801-vs-1601 passes, lock 801. Otherwise do not lock.",
+  "passed": true,
+  "locked_eap_grid": 401
+}

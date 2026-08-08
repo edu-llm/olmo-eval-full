@@ -1,0 +1,7 @@
+# This branch ships only InFoBench. The response-generation framework still
+# accepts external registries containing other benchmark labels, but a shipped
+# registry must never point at data that is absent from this checkout.
+benchmarks:
+  - name: InFoBench
+    scenarios: data/InFoBench/scenarios.jsonl
+    enabled: true

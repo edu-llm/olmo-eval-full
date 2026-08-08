@@ -1,0 +1,17 @@
+{
+  "stage": "ridge_sensitivity_summary",
+  "kind": "deterministic_analysis",
+  "command": [
+    "internal-analysis",
+    "ridge_sensitivity_summary"
+  ],
+  "outputs": [
+    "ridge/ridge_sensitivity_summary.csv",
+    "ridge/ridge_sensitivity_manifest.json"
+  ],
+  "completed_at": "2026-08-05T03:36:57.035653+00:00",
+  "output_sha256": {
+    "ridge/ridge_sensitivity_summary.csv": "366809b0fb123715a1032357700132627ca5d05739bb63899811b88e34f87059",
+    "ridge/ridge_sensitivity_manifest.json": "a38d5544dd77138b8d7953719916a821ecbe8614874a978bd52287828dae999b"
+  }
+}

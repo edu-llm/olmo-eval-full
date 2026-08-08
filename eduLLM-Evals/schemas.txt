@@ -1,0 +1,266 @@
+Scenario Schema: 
+{
+  "scenario_id": "tb_001",
+  "use_case": "assessment_feedback",  - TutorBench’s label for the problem
+  "subject": "mathematics",
+  "grade_band": "6-8",
+  "modality": "text", - For now all of these will be text until image/multimodal is added
+  "prompt": "A student claims that 3/5 + 1/5 = 4/10...", - request for the actual tutor LLM
+  "conversation_context": [], 
+  "reference_solution": "The denominator remains five...", - what the LLM should generally be answering with
+  "criterion_ids": ["tb_001_c01", "tb_001_c02"], - link to specific criteria entries used for evaluation,
+  "source": "TutorBench", - which dataset it came from
+  "split": "calibration", - which training portion this is part of
+  "version": "1.0"
+}
+
+Rubric Schema:
+{
+  "criterion_id": "tb_001_c01",
+  "scenario_id": "tb_001",
+  "criterion": "The response identifies that the denominator remains five.", - atomized metric/criteria
+  "expected_evidence": [ 
+    "Fractions with a common denominator retain that denominator.",
+    "3/5 + 1/5 = 4/5."
+  ], - supporting context for the criterion/what’s expected in the response
+  "scoring_type": "binary", - no polytumous for now
+  "score_anchors": null, - if polytumous, specific definitions for each level in the score range
+  "primary_skill": "diagnosis", - most important skill in q_mapping (one of the marked skills; null if none marked)
+  "q_mapping": {
+    "content": 0,
+    "diagnosis": 1,
+    "scaffolding": 0
+  }, - MIRT skill mapping
+  "q_rationale": "The criterion requires identifying the student's specific misconception.",
+  "difficulty": 0.31, - MIRT item difficulty b_i (scalar). Synthetic for now (see irt_params); higher = harder
+  "discrimination": {
+    "content": 0.0,
+    "diagnosis": 1.34,
+    "scaffolding": 0.0
+  }, - MIRT per-skill discrimination a_i; 0.0 where q_mapping=0 (masked by q_i ⊙ a_i regardless)
+  "irt_params": {
+    "source": "synthetic",
+    "method": "metadata_heuristic_v1",
+    "seed": 42,
+    "version": "1.0"
+  }, - provenance for difficulty/discrimination; "synthetic" = generated (not calibrated), swappable later
+  "criticality": "critical", - if it fails here, it’s a major error
+  "objectivity": "objective", - if it’s externally verifiable
+  "explicitness": "explicit", - if the criteria is explicitly asked for in the scenario prompt
+  "source": "TutorBench",
+  "status": "approved", - if the criteria is finalized/approved
+  "version": "1.0"
+}
+
+InFoBench Scenario Schema: - source: https://huggingface.co/datasets/kqsong/InFoBench (500 scenarios / 2250 criteria)
+{
+  "scenario_id": "ifb_0000", - ifb_<zero-based 4-digit index>
+  "source_id": "user_oriented_task_167", - InFoBench "id"; join key back to HuggingFace
+  "use_case": "instruction_following",
+  "subject": "Quora", - InFoBench "category" (raw domain/source string)
+  "subset": "Easy_set", - native InFoBench difficulty band (Easy_set / Hard_set), preserved
+  "grade_band": null,
+  "modality": "text", - all text for now until image/multimodal is added
+  "prompt": "Choose an appealing title for your post.\n\nThe typical avocado is over 300 calories...", - "instruction", with the "input" context block appended after a blank line only when non-empty (225/500 rows)
+  "conversation_context": [], - InFoBench is single-turn
+  "reference_solution": null, - InFoBench ships no reference answer
+  "criterion_ids": ["ifb_0000_c01", "ifb_0000_c02", "ifb_0000_c03"],
+  "source": "https://huggingface.co/datasets/kqsong/InFoBench",
+  "split": "calibration",
+  "version": "1.0"
+}
+
+InFoBench Rubric Schema: - one binary criterion per decomposed_question; multi-label q_mapping
+{
+  "criterion_id": "ifb_0000_c01",
+  "scenario_id": "ifb_0000",
+  "criterion": "Is the generated text a post title?", - one InFoBench decomposed_question
+  "expected_evidence": [], - InFoBench ships none
+  "scoring_type": "binary", - no polytomous for now
+  "score_anchors": null,
+  "question_label": ["Format"], - RAW native InFoBench label list, preserved verbatim (multi-label: e.g. ["Content", "Format"]); the annotation the q_mapping is derived from
+  "primary_skill": "format", - slug of the first label
+  "q_mapping": {
+    "content": 0,
+    "format": 1,
+    "number": 0,
+    "style": 0,
+    "linguistic": 0
+  }, - MIRT skill mapping over the 5 InFoBench constraint types; multi-hot, so may sum to >1
+  "q_rationale": "Derived from the InFoBench question_label(s) ['Format']",
+  "criticality": "critical", - PLACEHOLDER (uniform; InFoBench has no native value), matches WildBench
+  "objectivity": "objective", - PLACEHOLDER (uniform)
+  "explicitness": "explicit", - PLACEHOLDER (uniform)
+  "source": "https://huggingface.co/datasets/kqsong/InFoBench",
+  "status": "approved",
+  "version": "1.0",
+  "difficulty": -0.3878, - MIRT item difficulty b_i (scalar). Synthetic (see irt_params); appended by assign_irt_params.py
+  "discrimination": {
+    "content": 0.0,
+    "format": 1.6381,
+    "number": 0.0,
+    "style": 0.0,
+    "linguistic": 0.0
+  }, - MIRT per-skill discrimination a_i; 0.0 where q_mapping=0 (masked by q_i ⊙ a_i regardless)
+  "irt_params": {
+    "source": "synthetic",
+    "method": "metadata_heuristic_v1",
+    "seed": 42,
+    "version": "1.0"
+  } - provenance; "synthetic" = generated (not calibrated), swappable later
+}
+
+Bridge Scenario Schema: - source: https://huggingface.co/datasets/rose-e-wang/bridge (642 scenarios / 13211 criteria)
+{
+  "scenario_id": "bridge_0000", - bridge_<zero-based 4-digit index>
+  "source_id": "4110653_19", - Bridge "c_id" = the CONVERSATION key. NON-UNIQUE by design:
+                              - Bridge re-annotates the same conversation by several experts and
+                              - each annotation is kept as its own scenario. Repeats share a
+                              - stimulus and criterion set, differing only in reference_solution,
+                              - so group/hold out on this at calibration (local dependence).
+  "use_case": "mistake_remediation", - note respgen keys its system prompt on the BENCHMARK name
+                                     - ("Bridge"), which wins over use_case
+  "subject": "mathematics", - Bridge is math-only (every lesson_topic is a TEKS math code)
+  "grade_band": "1-3", - derived from the lesson_topic grade prefix; "1-3" / "4-5" / "6-12"
+  "topic_domain": "geometry_spatial", - derived math strand, first keyword match on lesson_topic;
+                                      - one of geometry_spatial / fractions / place_value_number /
+                                      - measurement_conversion / data_graphing / algebra_expressions /
+                                      - proportional_reasoning / operations_arithmetic
+  "modality": "text",
+  "prompt": "4 m", - c_h[-1].text, the student's final turn (often terse; it is a real transcript)
+  "conversation_context": [{"role": "tutor", "content": "Sounds great."}], - c_h[:-1]; roles are
+                                                                          - student/tutor
+  "reference_solution": "Hm, not quite...", - c_r_ = THIS row's expert-revised reply (the gold key)
+  "novice_response": "That's incorrect...", - c_r = the original novice tutor reply; provenance only
+  "criterion_ids": ["bridge_0000_c01", "bridge_0000_c02"], - a SUBSET of the 39-criterion bank, so
+                                                           - suffixes are intentionally NON-CONTIGUOUS
+  "error_type": "guess", - this row's expert label `e`; one of guess / right-idea / diagnose /
+                         - careless / imprecise / misinterpret
+  "error_types": ["careless", "guess"], - every label any annotator gave this conversation
+                                        - (provenance: records that experts disagreed)
+  "error_module": "guess", - the CANONICAL module driving criteria; resolved once per conversation
+                           - (first annotation wins) so repeats never get contradictory criteria
+  "visible_mistake": true, - false (91 scenarios) when the final student turn is a bare
+                           - acknowledgment AND no digit appears anywhere: nothing to remediate, so
+                           - D1/D2 are unpassable. KEPT but flagged -- filter on this at calibration.
+  "expert_strategy": "explain_concept", - z_what; provenance
+  "expert_intention": "clarify_misunderstanding", - z_why; provenance
+  "lesson_topic": "3.6D.Decomposing Figures", - TEKS code; drives grade_band + topic_domain
+  "native_split": "train", - the HF split; `split` below is the pipeline role
+  "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
+  "split": "calibration",
+  "version": "3.0"
+}
+
+Bridge Rubric Schema: - HAND-AUTHORED (Bridge ships no per-response criteria); 39-criterion bank
+                      - assembled in 4 tiers: 16 core + 1 error-type + 1 topic + 1 grade module
+{
+  "criterion_id": "bridge_0000_c01",
+  "scenario_id": "bridge_0000",
+  "criterion": "The response correctly identifies the specific error the student made.",
+  "expected_evidence": [], - Bridge ships none
+  "scoring_type": "binary", - no polytomous
+  "score_anchors": null,
+  "criterion_code": "D1", - stable code -> stable id suffix, so _c01 is D1 on EVERY scenario
+  "applicability": "core", - which tier attached it: "core" | "error_type:<module>" |
+                           - "topic_domain:<domain>" | "grade_band:<band>". Survives into
+                           - calibration for grouping/diagnostics.
+  "primary_skill": "diagnosis",
+  "q_mapping": {
+    "diagnosis": 1,
+    "strategy": 0,
+    "math": 0,
+    "communication": 0,
+    "affective": 0
+  }, - MIRT skill mapping over Bridge's OWN 5-skill axis (not content/diagnosis/scaffolding).
+     - Multi-hot: cross-loaded criteria sum to 2. Every skill has >=2 pure single-loading
+     - criteria, enforced in validate(), or its dimension is not separably identified.
+  "q_rationale": "Locating the student's actual error is a pure diagnosis act.",
+  "criticality": "critical", - 7 of each scenario's criteria are critical, by construction
+  "objectivity": "objective",
+  "explicitness": "explicit", - D1/P1/A1 only: the Bridge system prompt in respgen names them
+                              - almost verbatim, so expect those three near ceiling. All other
+                              - criteria are "implicit" (the scenario prompt asks for nothing).
+  "source": "https://huggingface.co/datasets/rose-e-wang/bridge",
+  "status": "approved",
+  "version": "3.0"
+} - NOTE: no difficulty / discrimination / irt_params. Bridge ships PARAMETER-FREE; those are
+  - calibrated from real judge responses rather than synthesized. Rubric.from_json hard-requires
+  - difficulty+discrimination, so loading this bank through dataio.load_bank needs them supplied
+  - first (from a fit, or a deliberate assign_irt_params.py placeholder pass).
+
+Judge Result Schema:
+{
+  "run_id": "run_20260721_001",
+  "candidate_model": "edullm-checkpoint-1200",
+  "scenario_id": "tb_001",
+  "criterion_id": "tb_001_c01",
+  "candidate_response": "...",
+  "judge_model": "prometheus-2",
+  "judge_prompt_version": "judge-v3", - which judging instructions being used
+  "verdict": "pass",
+  "score": 1,
+  "evidence": "The response states that the common denominator stays five.",
+  "rationale": "This directly corrects the identified misconception.",
+  "unscorable_reason": null,
+  "seed": 42
+}
+
+
+Running MIRT Ability Estimate Schema:
+{
+  "run_id": "run_20260721_001",
+  "candidate_model": "edullm-checkpoint-1200",
+  "ability_estimates": {
+    "content": {
+      "theta": 0.91,
+      "standard_error": 0.18
+    },
+    "diagnosis": {
+      "theta": 0.64,
+      "standard_error": 0.23
+    },
+    "scaffolding": {
+      "theta": -0.12,
+      "standard_error": 0.29
+    }
+  },
+  "scenarios_administered": 47,
+  "critical_failures": [
+    {
+      "scenario_id": "tb_019",
+      "criterion_id": "tb_019_c04",
+      "type": "answer_leakage"
+    }
+  ],
+  "calibration_version": "mirt-v1",
+  "q_matrix_version": "q-v2"
+}
+
+Calibration Monitoring Schema:
+{
+  "criterion_id": "tb_001_c01",
+  "monitoring_window": "2026-Q4",
+  "new_models_observed": 35,
+  "expected_pass_rate": 0.61, - MIRT expected value
+  "observed_pass_rate": 0.48, 
+  "average_raw_residual": -0.13, - difference
+  "residual_ci_lower": -0.29,
+  "residual_ci_upper": 0.03,
+  "drift_status": "watch", - whether the criterion MIRT 
+  "practical_threshold_exceeded": true,
+  "statistical_threshold_exceeded": false,
+  "judge_version": "judge-v3",
+  "calibration_version": "mirt-v1"
+}
+{
+  "criterion_id": "tb_001_c01",
+  "monitoring_window": "2026-Q4",
+  "new_models_observed": 35, 
+  "expected_pass_rate": 0.61, - MIRT expected value
+  "observed_pass_rate": 0.48, -
+  "average_residual": -0.13, - difference
+  "drift_flag": true, - large residual given sufficient sample size
+  "judge_version": "judge-v3", 
+  "calibration_version": "mirt-v1"
+}

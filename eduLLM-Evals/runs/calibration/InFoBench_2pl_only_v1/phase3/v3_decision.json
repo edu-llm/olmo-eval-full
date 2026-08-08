@@ -1,0 +1,189 @@
+{
+  "calibration_stability": {
+    "modal_count": 25,
+    "modal_fraction_all_25_panels": 1.0,
+    "passed": true,
+    "required_fraction": 0.8,
+    "tied_modal_spec_ids": [],
+    "unique_modal_spec_id": "log_shrinkage_2pl_lambda16"
+  },
+  "code_sha256": "d01c716ad71bff6a47bd235cea6b46fc693363bf0d4c1e3911fb6a0c95cc4a79",
+  "config_sha256": "f0fa7def908f27b846d489ebc2d292aead091ae8fa7d0ee4191f01b2e1362383",
+  "coverage": {
+    "all_25_panels_evaluated": true,
+    "all_52_models_each_repetition": true,
+    "by_repetition": {
+      "0": {
+        "all_52_models_exactly_once": true,
+        "n_primary_rows": 52,
+        "n_unique_models": 52
+      },
+      "1": {
+        "all_52_models_exactly_once": true,
+        "n_primary_rows": 52,
+        "n_unique_models": 52
+      },
+      "2": {
+        "all_52_models_exactly_once": true,
+        "n_primary_rows": 52,
+        "n_unique_models": 52
+      },
+      "3": {
+        "all_52_models_exactly_once": true,
+        "n_primary_rows": 52,
+        "n_unique_models": 52
+      },
+      "4": {
+        "all_52_models_exactly_once": true,
+        "n_primary_rows": 52,
+        "n_unique_models": 52
+      }
+    },
+    "model_repeat_rows_treated_as_independent": false
+  },
+  "environment_sha256": "e46eadfc3e4c12a1d44d0ef42258b624aa94ca4fc2bd1be6cc7125ee375f53a0",
+  "failed_conditions": [
+    "primary_policy_failed_one_or_more_outer_panels",
+    "primary_policy_failed_one_or_more_pooled_repetitions"
+  ],
+  "gate_scope_contract": {
+    "cross_repeat": {
+      "decision_role": "diagnostic_only_after_per_model_aggregation",
+      "inference_unit": "52_unique_tutors_after_within_tutor_mean_across_5_repetitions",
+      "raw_model_repeat_rows": 260,
+      "raw_model_repeat_rows_treated_as_independent": false
+    },
+    "outer_panel": {
+      "applied_gate_names": [
+        "replay_success_rate",
+        "mwle_convergence_rate",
+        "nominal_precision_rate",
+        "recovery_slope",
+        "disjoint_pass_rate_mae",
+        "absolute_disjoint_pass_rate_bias",
+        "scenario_reduction_vs_random"
+      ],
+      "confidence_intervals_affect_decision": false,
+      "decision_role": "applied_point_estimate_gates",
+      "diagnostic_only_gate_names": [
+        "nominal_precision_lower_95_ci",
+        "recovery_correlation_lower_95_ci",
+        "paired_ci_favors_cat"
+      ],
+      "inference_unit": "unique_outer_test_tutor_within_panel; confidence intervals diagnostic only"
+    },
+    "repetition": {
+      "applied_gate_names": [
+        "replay_success_rate",
+        "mwle_convergence_rate",
+        "nominal_precision_rate",
+        "nominal_precision_lower_95_ci",
+        "recovery_correlation_lower_95_ci",
+        "recovery_slope",
+        "disjoint_pass_rate_mae",
+        "absolute_disjoint_pass_rate_bias",
+        "scenario_reduction_vs_random",
+        "paired_ci_favors_cat"
+      ],
+      "decision_role": "applied_all_absolute_gates",
+      "diagnostic_only_gate_names": [],
+      "expected_unique_oof_tutors": 52,
+      "inference_unit": "52_unique_out_of_fold_tutors_once_per_repetition",
+      "nominal_precision_lower_95_ci_threshold": 0.9
+    }
+  },
+  "inner_selection_fail_closed": {
+    "all_25_panels_complete": true,
+    "all_panel_selections_locked_before_outer_outcomes": true,
+    "expected_spec_fold_combinations_per_panel": 8,
+    "require_all_specs_every_inner_fold": true,
+    "survivor_selection_allowed": false
+  },
+  "input_hashes": {
+    "judge_manifest": "d2f19c55b8ebb8f3ebe0c641485e0b694ce861f2740835da760b7b51b40698e7",
+    "response_matrix": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "rubrics": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scenarios": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+  },
+  "limitations": [
+    "same-cohort internal development, not independent confirmation",
+    "conditional on frozen Qwen labels not human-validated on InFoBench"
+  ],
+  "phase3_pass": false,
+  "phase4_authorized": false,
+  "phase4_not_run_by_this_driver": true,
+  "primary_policy": {
+    "all_outer_panels_pass": false,
+    "all_repetitions_pass": false,
+    "failed_panel_ids": [
+      "repeat_00_outer_00",
+      "repeat_00_outer_01",
+      "repeat_00_outer_02",
+      "repeat_00_outer_03",
+      "repeat_00_outer_04",
+      "repeat_01_outer_00",
+      "repeat_01_outer_01",
+      "repeat_01_outer_02",
+      "repeat_01_outer_03",
+      "repeat_01_outer_04",
+      "repeat_02_outer_00",
+      "repeat_02_outer_01",
+      "repeat_02_outer_02",
+      "repeat_02_outer_03",
+      "repeat_02_outer_04",
+      "repeat_03_outer_00",
+      "repeat_03_outer_01",
+      "repeat_03_outer_02",
+      "repeat_03_outer_03",
+      "repeat_03_outer_04",
+      "repeat_04_outer_00",
+      "repeat_04_outer_01",
+      "repeat_04_outer_02",
+      "repeat_04_outer_03",
+      "repeat_04_outer_04"
+    ],
+    "failed_repetitions": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "policy": {
+      "conditional_se_target": 0.2,
+      "minimum_scenarios": 15,
+      "policy_id": "primary_floor15_se0p20_trace",
+      "role": "primary",
+      "selector": "trace"
+    }
+  },
+  "schema_version": "infobench-2pl-only-v1-phase3-decision-v1",
+  "selected_calibration_specs": {
+    "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/selected_calibration_specs.json",
+    "sha256": "2c773fbedf97825ae9d989b2f227c6239b14182aa5f9c2528bb23fb8013bf21c"
+  },
+  "sensitivities": {
+    "affected_phase3_decision": false,
+    "can_promote": false,
+    "diagnostic_only": true,
+    "policies": [
+      {
+        "conditional_se_target": 0.2,
+        "minimum_scenarios": 12,
+        "policy_id": "sensitivity_floor12_se0p20_trace",
+        "role": "sensitivity",
+        "selector": "trace"
+      },
+      {
+        "conditional_se_target": 0.2,
+        "minimum_scenarios": 15,
+        "policy_id": "sensitivity_floor15_se0p20_dopt",
+        "role": "sensitivity",
+        "selector": "dopt"
+      }
+    ]
+  },
+  "split_sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f",
+  "status": "fail",
+  "study_signature": "45f7f988f1914c88530caac32b313d7ac55081f6fb12d94be43954b485e6d518"
+}

@@ -1,0 +1,202 @@
+# Curated 156 open-source checkpoints in [0.2B, 7.0B] for the 200-model sweep.
+#
+# Curation rules (see Experiments/models_200/curate_models_200.py):
+#   * English-first. Language-targeted checkpoints (Polish/German/Japanese/
+#     Korean/Russian/Spanish/... only) are excluded; genuinely multilingual
+#     models that include English are kept.
+#   * vLLM-clean. Excludes every family that failed the P6 sweep (mamba,
+#     openelm, gemma-3/-it, classic falcon, pythia, opt, gpt-neo/-j, bloomz,
+#     cerebras, mpt, internlm, danube3, tinyllama, phi-2, redpajama, rwkv,
+#     zamba, olmoe). Falcon3 and bloom (non-z) are kept.
+#   * No mirrors. unsloth/* and other byte-identical re-uploads are dropped so
+#     the IRT matrix cannot contain duplicate persons.
+#   * No merges, quantisations, roleplay tunes, or <think>-trace models.
+#   * Family diversity: one checkpoint per (family, size, tuning). Matched
+#     base<->instruct pairs at the SAME size are deliberately kept — they are
+#     the cleanest source of scaffolding variance at fixed correctness
+#     (200-Model Run Pre-Registration §2.2).
+#   * Domain specialists (code/math) are filler only, added last.
+#   * All 28 pre-registered common-person anchors are force-included (§2.3).
+#
+# Registry (models_registry.py) derives chat/gated/backend flags as usual.
+
+defaults:
+  dtype: bfloat16
+  trust_remote_code: true
+  # max_model_len intentionally unset: each model resolves to
+  # min(its declared window, max_model_len_cap). A flat 4096 both over-requested
+  # on 1024/2048-position checkpoints (vLLM rejects that at init) and starved
+  # FRQ - TutorEval prompts reach ~10k tokens, collapsing the answer budget to
+  # the 256-token floor even for models supporting 32k+.
+  tp: 1
+  apply_chat_template: null
+  scoring_method: loglikelihood
+
+models:
+  # --- 0.2-1.0 B ---
+  - {id: BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu, params_b: 0.218, family: smol_llama, arch: transformer}
+  - {id: BEE-spoke-data/smol_llama-220M-openhermes, params_b: 0.218, family: OpenHermes, arch: transformer}
+  - {id: Salesforce/codegen-350M-mono, params_b: 0.35, family: CodeGen, arch: transformer}
+  - {id: facebook/MobileLLM-350M, params_b: 0.35, family: MobileLLM, arch: transformer}
+  - {id: facebook/opt-350m, params_b: 0.35, family: OPT, arch: transformer}
+  - {id: openai-community/gpt2-medium, params_b: 0.355, family: GPT-2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM-360M, params_b: 0.36, family: SmolLM, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM-360M-Instruct, params_b: 0.36, family: SmolLM, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-360M, params_b: 0.36, family: SmolLM2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-360M-Instruct, params_b: 0.36, family: SmolLM2, arch: transformer}
+  # ships a chat_template but no id marker matches; set explicitly
+  - {id: OpenBMB/MiniCPM4-0.5B, params_b: 0.5, family: MiniCPM4, arch: transformer, apply_chat_template: true}
+  - {id: Qwen/Qwen2-0.5B, params_b: 0.5, family: Qwen2, arch: transformer}
+  - {id: Qwen/Qwen2.5-0.5B-Instruct, params_b: 0.5, family: Qwen2.5, arch: transformer}
+  - {id: bigscience/bloom-560m, params_b: 0.56, family: BLOOM, arch: transformer}
+  - {id: facebook/xglm-564M, params_b: 0.56, family: XGLM, arch: transformer}
+  - {id: facebook/MobileLLM-600M, params_b: 0.6, family: MobileLLM, arch: transformer}
+  - {id: MBZUAI/LaMini-GPT-774M, params_b: 0.77, family: LaMini, arch: transformer}
+  - {id: openai-community/gpt2-large, params_b: 0.77, family: GPT-2, arch: transformer}
+  # --- 1.0-2.0 B ---
+  - {id: allenai/OLMo-1B-hf, params_b: 1, family: OLMo, arch: transformer}
+  - {id: allenai/OLMo-2-0425-1B, params_b: 1, family: OLMo2, arch: transformer}
+  - {id: allenai/OLMo-2-0425-1B-DPO, params_b: 1, family: OLMo2, arch: transformer}
+  - {id: allenai/OLMo-2-0425-1B-Instruct, params_b: 1, family: OLMo2, arch: transformer}
+  - {id: bigcode/starcoderbase-1b, params_b: 1, family: StarCoder, arch: transformer}
+  - {id: facebook/MobileLLM-1B, params_b: 1, family: MobileLLM, arch: transformer}
+  - {id: meta-llama/Llama-3.2-1B, params_b: 1, family: Llama3.2, arch: transformer}
+  - {id: meta-llama/Llama-3.2-1B-Instruct, params_b: 1, family: Llama3.2, arch: transformer}
+  - {id: openbmb/MiniCPM-1B-sft-bf16, params_b: 1, family: MiniCPM, arch: transformer}
+  - {id: tiiuae/Falcon3-1B-Base, params_b: 1, family: Falcon3, arch: transformer}
+  - {id: tiiuae/Falcon3-1B-Instruct, params_b: 1, family: Falcon3, arch: transformer}
+  - {id: bigscience/bloom-1b1, params_b: 1.1, family: BLOOM, arch: transformer}
+  - {id: ai-forever/mGPT, params_b: 1.3, family: mGPT, arch: transformer}
+  - {id: deepseek-ai/deepseek-coder-1.3b-base, params_b: 1.3, family: DeepSeek-Coder, arch: transformer}
+  - {id: microsoft/phi-1_5, params_b: 1.3, family: Phi1, arch: transformer}
+  - {id: princeton-nlp/Sheared-LLaMA-1.3B, params_b: 1.3, family: Sheared-LLaMA, arch: transformer}
+  - {id: MBZUAI/LaMini-GPT-1.5B, params_b: 1.5, family: LaMini, arch: transformer}
+  - {id: Qwen/Qwen2-1.5B, params_b: 1.5, family: Qwen2, arch: transformer}
+  - {id: Qwen/Qwen2-1.5B-Instruct, params_b: 1.5, family: Qwen2, arch: transformer}
+  - {id: Qwen/Qwen2.5-1.5B, params_b: 1.5, family: Qwen2.5, arch: transformer}
+  - {id: Qwen/Qwen2.5-1.5B-Instruct, params_b: 1.5, family: Qwen2.5, arch: transformer}
+  - {id: microsoft/BioGPT-Large, params_b: 1.5, family: BioGPT, arch: transformer}
+  - {id: openai-community/gpt2-xl, params_b: 1.5, family: GPT-2, arch: transformer}
+  - {id: stabilityai/stablelm-2-1_6b, params_b: 1.6, family: StableLM2, arch: transformer}
+  - {id: stabilityai/stablelm-2-zephyr-1_6b, params_b: 1.6, family: StableLM2, arch: transformer}
+  - {id: stabilityai/stablelm-2-1_6b-chat, params_b: 1.645, family: StableLM2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM-1.7B, params_b: 1.7, family: SmolLM, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM-1.7B-Instruct, params_b: 1.7, family: SmolLM, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-1.7B, params_b: 1.7, family: SmolLM2, arch: transformer}
+  - {id: HuggingFaceTB/SmolLM2-1.7B-Instruct, params_b: 1.7, family: SmolLM2, arch: transformer}
+  # bare name is the instruct/thinking hybrid; -Base is the base model
+  - {id: Qwen/Qwen3-1.7B, params_b: 1.7, family: Qwen3, arch: transformer, apply_chat_template: true, enable_thinking: false}
+  - {id: Qwen/Qwen3-1.7B-Instruct, params_b: 1.7, family: Qwen3, arch: transformer}
+  - {id: bigscience/bloom-1b7, params_b: 1.7, family: BLOOM, arch: transformer}
+  - {id: facebook/xglm-1.7B, params_b: 1.7, family: XGLM, arch: transformer}
+  - {id: utter-project/EuroLLM-1.7B, params_b: 1.7, family: EuroLLM, arch: transformer}
+  - {id: utter-project/EuroLLM-1.7B-Instruct, params_b: 1.7, family: EuroLLM, arch: transformer}
+  - {id: nvidia/AceInstruct-1.5B, params_b: 1.777, family: AceInstruct, arch: transformer}
+  - {id: Qwen/Qwen1.5-1.8B, params_b: 1.8, family: Qwen1.5, arch: transformer}
+  - {id: Qwen/Qwen1.5-1.8B-Chat, params_b: 1.8, family: Qwen1.5, arch: transformer}
+  - {id: h2oai/h2o-danube2-1.8b-base, params_b: 1.8, family: Danube, arch: transformer}
+  - {id: h2oai/h2o-danube2-1.8b-chat, params_b: 1.8, family: Danube, arch: transformer}
+  - {id: h2oai/h2o-danube-1.8b-chat, params_b: 1.831, family: Danube, arch: transformer}
+  # --- 2.0-3.0 B ---
+  - {id: BSC-LT/salamandra-2b, params_b: 2, family: Salamandra, arch: transformer}
+  - {id: BSC-LT/salamandra-2b-instruct, params_b: 2, family: Salamandra, arch: transformer}
+  - {id: Salesforce/codegen-2B-mono, params_b: 2, family: CodeGen, arch: transformer}
+  - {id: google/gemma-2-2b, params_b: 2, family: Gemma2, arch: transformer}
+  - {id: ibm-granite/granite-3.0-2b-base, params_b: 2, family: Granite3, arch: transformer}
+  - {id: ibm-granite/granite-3.1-2b-base, params_b: 2, family: Granite3, arch: transformer}
+  - {id: ibm-granite/granite-3.1-2b-instruct, params_b: 2, family: Granite3, arch: transformer}
+  - {id: kyutai/helium-1-preview-2b, params_b: 2.173, family: helium-1-preview, arch: transformer}
+  - {id: LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct, params_b: 2.4, family: EXAONE, arch: transformer}
+  - {id: google/gemma-2b, params_b: 2.5, family: Gemma2, arch: transformer}
+  - {id: openbmb/MiniCPM-2B-sft-bf16, params_b: 2.7, family: MiniCPM, arch: transformer}
+  - {id: princeton-nlp/Sheared-LLaMA-2.7B, params_b: 2.7, family: Sheared-LLaMA, arch: transformer}
+  - {id: facebook/xglm-2.9B, params_b: 2.9, family: XGLM, arch: transformer}
+  # --- 3.0-4.0 B ---
+  # bare name is the instruct checkpoint; -Base is the base model
+  - {id: HuggingFaceTB/SmolLM3-3B, params_b: 3, family: SmolLM3, arch: transformer, apply_chat_template: true, enable_thinking: false}
+  - {id: Qwen/Qwen2.5-3B, params_b: 3, family: Qwen2.5, arch: transformer}
+  - {id: Qwen/Qwen2.5-3B-Instruct, params_b: 3, family: Qwen2.5, arch: transformer}
+  - {id: Writer/Palmyra-3B, params_b: 3, family: Palmyra, arch: transformer}
+  - {id: bigcode/starcoder2-3b, params_b: 3, family: StarCoder2, arch: transformer}
+  - {id: bigcode/starcoderbase-3b, params_b: 3, family: StarCoder, arch: transformer}
+  - {id: bigscience/bloom-3b, params_b: 3, family: BLOOM, arch: transformer}
+  - {id: databricks/dolly-v2-3b, params_b: 3, family: Dolly, arch: transformer}
+  - {id: meta-llama/Llama-3.2-3B, params_b: 3, family: Llama3.2, arch: transformer}
+  - {id: meta-llama/Llama-3.2-3B-Instruct, params_b: 3, family: Llama3.2, arch: transformer}
+  - {id: openlm-research/open_llama_3b, params_b: 3, family: OpenLLaMA, arch: transformer}
+  - {id: stabilityai/stablelm-3b-4e1t, params_b: 3, family: StableLM, arch: transformer}
+  - {id: stabilityai/stablelm-zephyr-3b, params_b: 3, family: StableLM, arch: transformer}
+  - {id: tiiuae/Falcon3-3B-Base, params_b: 3, family: Falcon3, arch: transformer}
+  - {id: tiiuae/Falcon3-3B-Instruct, params_b: 3, family: Falcon3, arch: transformer}
+  - {id: arcee-ai/raspberry-3B, params_b: 3.086, family: raspberry, arch: transformer}
+  - {id: pankajmathur/orca_mini_v9_5_3B-Instruct, params_b: 3.213, family: OrcaMini, arch: transformer}
+  - {id: pankajmathur/orca_mini_3b, params_b: 3.426, family: OrcaMini, arch: transformer}
+  - {id: ibm/PowerLM-3b, params_b: 3.512, family: PowerLM, arch: transformer}
+  - {id: microsoft/Phi-3-mini-4k-instruct, params_b: 3.8, family: Phi3, arch: transformer}
+  - {id: microsoft/Phi-3.5-mini-instruct, params_b: 3.8, family: Phi3.5, arch: transformer}
+  - {id: microsoft/Phi-4-mini-instruct, params_b: 3.8, family: Phi4, arch: transformer}
+  # --- 4.0-5.0 B ---
+  - {id: Qwen/Qwen1.5-4B, params_b: 4, family: Qwen1.5, arch: transformer}
+  - {id: Qwen/Qwen1.5-4B-Chat, params_b: 4, family: Qwen1.5, arch: transformer}
+  # bare name is the instruct/thinking hybrid; -Base is the base model
+  - {id: Qwen/Qwen3-4B, params_b: 4, family: Qwen3, arch: transformer, apply_chat_template: true, enable_thinking: false}
+  - {id: Qwen/Qwen3-4B-Instruct, params_b: 4, family: Qwen3, arch: transformer}
+  - {id: nvidia/Llama-3.1-Minitron-4B-Depth-Base, params_b: 4, family: Llama3.1, arch: transformer}
+  - {id: nvidia/Minitron-4B-Base, params_b: 4, family: Minitron, arch: transformer}
+  - {id: nvidia/Nemotron-Mini-4B-Instruct, params_b: 4, family: Nemotron, arch: transformer}
+  # ships a chat_template but no id marker matches; set explicitly
+  - {id: openbmb/MiniCPM3-4B, params_b: 4, family: MiniCPM3, arch: transformer, apply_chat_template: true}
+  - {id: facebook/xglm-4.5B, params_b: 4.5, family: XGLM, arch: transformer}
+  # --- 6.0-7.0 B ---
+  - {id: 01-ai/Yi-1.5-6B, params_b: 6, family: Yi1.5, arch: transformer}
+  - {id: 01-ai/Yi-1.5-6B-Chat, params_b: 6, family: Yi1.5, arch: transformer}
+  - {id: 01-ai/Yi-6B, params_b: 6, family: Yi, arch: transformer}
+  - {id: 01-ai/Yi-6B-Chat, params_b: 6, family: Yi, arch: transformer}
+  - {id: databricks/dolly-v1-6b, params_b: 6, family: Dolly, arch: transformer}
+  - {id: 01-ai/Yi-6B-200K, params_b: 6.061, family: Yi, arch: transformer}
+  - {id: ibm-granite/granite-7b-base, params_b: 6.738, family: Granite, arch: transformer}
+  - {id: ibm-granite/granite-7b-instruct, params_b: 6.738, family: Granite, arch: transformer}
+  - {id: BSC-LT/salamandra-7b, params_b: 7, family: Salamandra, arch: transformer}
+  - {id: BSC-LT/salamandra-7b-instruct, params_b: 7, family: Salamandra, arch: transformer}
+  - {id: CohereForAI/c4ai-command-r7b-12-2024, params_b: 7, family: CommandR, arch: transformer}
+  - {id: Deci/DeciLM-7B, params_b: 7, family: DeciLM, arch: transformer}
+  - {id: Deci/DeciLM-7B-instruct, params_b: 7, family: DeciLM, arch: transformer}
+  - {id: EleutherAI/llemma_7b, params_b: 7, family: Llemma, arch: transformer}
+  - {id: HuggingFaceH4/zephyr-7b-beta, params_b: 7, family: Zephyr, arch: transformer}
+  - {id: HuggingFaceH4/zephyr-7b-gemma-v0.1, params_b: 7, family: Gemma1, arch: transformer}
+  - {id: Intel/neural-chat-7b-v3-2, params_b: 7, family: NeuralChat, arch: transformer}
+  - {id: Nexusflow/Starling-LM-7B-beta, params_b: 7, family: Starling, arch: transformer}
+  - {id: NousResearch/Hermes-2-Pro-Mistral-7B, params_b: 7, family: Hermes, arch: transformer}
+  - {id: Open-Orca/Mistral-7B-OpenOrca, params_b: 7, family: OpenOrca, arch: transformer}
+  - {id: allenai/OLMo-2-1124-7B, params_b: 7, family: OLMo2, arch: transformer}
+  - {id: allenai/OLMo-2-1124-7B-Instruct, params_b: 7, family: OLMo2, arch: transformer}
+  - {id: allenai/OLMo-7B-0724-hf, params_b: 7, family: OLMo, arch: transformer}
+  - {id: allenai/OLMo-7B-Instruct-hf, params_b: 7, family: OLMo, arch: transformer}
+  - {id: argilla/DistilabelBeagle14-7B, params_b: 7, family: Beagle, arch: transformer}
+  - {id: argilla/notus-7b-v1, params_b: 7, family: Notus, arch: transformer}
+  - {id: databricks/dolly-v2-7b, params_b: 7, family: Dolly, arch: transformer}
+  - {id: deepseek-ai/deepseek-llm-7b-base, params_b: 7, family: DeepSeek-LLM, arch: transformer}
+  - {id: deepseek-ai/deepseek-llm-7b-chat, params_b: 7, family: DeepSeek-LLM, arch: transformer}
+  - {id: garage-bAInd/Platypus2-7B, params_b: 7, family: Platypus, arch: transformer}
+  - {id: google/gemma-7b, params_b: 7, family: Gemma1, arch: transformer}
+  - {id: h2oai/h2ogpt-gm-oasst1-en-2048-open-llama-7b, params_b: 7, family: H2OGPT, arch: transformer}
+  - {id: ibm/merlinite-7b, params_b: 7, family: Merlinite, arch: transformer}
+  - {id: jondurbin/airoboros-7b, params_b: 7, family: Airoboros, arch: transformer}
+  - {id: jondurbin/bagel-7b-v0.1, params_b: 7, family: Bagel, arch: transformer}
+  - {id: lmsys/vicuna-7b-v1.5, params_b: 7, family: Vicuna, arch: transformer}
+  - {id: meta-llama/Llama-2-7b-chat-hf, params_b: 7, family: Llama2, arch: transformer}
+  - {id: meta-llama/Llama-2-7b-hf, params_b: 7, family: Llama2, arch: transformer}
+  - {id: microsoft/Orca-2-7b, params_b: 7, family: Orca2, arch: transformer}
+  - {id: microsoft/Phi-3-small-8k-instruct, params_b: 7, family: Phi3, arch: transformer}
+  - {id: microsoft/WizardLM-2-7B, params_b: 7, family: WizardLM, arch: transformer}
+  - {id: migtissera/SynthIA-7B-v1.5, params_b: 7, family: Synthia, arch: transformer}
+  - {id: migtissera/Tess-7B-v1.4, params_b: 7, family: Tess, arch: transformer}
+  - {id: mistralai/Mistral-7B-Instruct-v0.3, params_b: 7, family: Mistral, arch: transformer}
+  - {id: mistralai/Mistral-7B-v0.1, params_b: 7, family: Mistral, arch: transformer}
+  - {id: openchat/openchat_3.5, params_b: 7, family: OpenChat, arch: transformer}
+  - {id: openlm-research/open_llama_7b_v2, params_b: 7, family: OpenLLaMA, arch: transformer}
+  - {id: stabilityai/stablelm-tuned-alpha-7b, params_b: 7, family: StableLM, arch: transformer}
+  - {id: teknium/CollectiveCognition-v1.1-Mistral-7B, params_b: 7, family: CollectiveCognition, arch: transformer}
+  - {id: teknium/OpenHermes-2-Mistral-7B, params_b: 7, family: OpenHermes, arch: transformer}
+  - {id: tiiuae/Falcon3-7B-Base, params_b: 7, family: Falcon3, arch: transformer}
+  - {id: tiiuae/Falcon3-7B-Instruct, params_b: 7, family: Falcon3, arch: transformer}

@@ -1,0 +1,45 @@
+# Inference / sweep configuration.
+
+# Global default sample cap per benchmark (seeded). null => full split.
+max_samples: 2000
+sample_seed: 1234
+
+# Engine backend: vllm | hf | mock
+# - vllm: production (Linux/CUDA)
+# - hf:   transformers fallback for archs vLLM cannot load
+# - mock: deterministic, no weights (local smoke tests / CI)
+backend: vllm
+
+# vLLM engine knobs (no quantization). max_model_len is per model (resolved from
+# each checkpoint's config.json, capped by the manifest) and can exceed
+# max_num_batched_tokens - V1 chunked prefill splits long prompts.
+vllm:
+  gpu_memory_utilization: 0.30   # fraction per model process; co-locate several per B200
+  enable_prefix_caching: true
+  max_num_seqs: 256
+  max_num_batched_tokens: 8192
+  dtype: bfloat16
+  swap_space_gb: 4
+
+# Generation params (greedy by default).
+#
+# `max_tokens` does NOT apply to FRQ. FRQ answers use the model manifest's
+# `max_new_tokens` (4096, respgen parity), fit per item to the model's context
+# window; this 512 is an MCQ-era value and letting it through truncated every
+# long-form answer. To change an FRQ budget deliberately, set `max_new_tokens`
+# here or per benchmark under `overrides:`.
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1234
+
+# Durable-writer cadence (see README 4.4).
+writer:
+  fsync_every_rows: 50
+  fsync_every_seconds: 5
+
+# Per-benchmark overrides (optional). Keys are benchmark names from the registry.
+# FRQ benchmarks read `max_new_tokens` (not `max_tokens`), e.g.
+#   tutoreval: {max_new_tokens: 2048}
+overrides: {}

@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-08-04T23:06:09.365441+00:00",
+  "rule": {
+    "name": "one-standard-error-then-fewest-dimensions",
+    "primary_metric": "log_loss",
+    "direction": "minimize",
+    "standard_error": "sample SD of fold metrics divided by sqrt(number of folds)",
+    "boundary": 0.42053230294444854,
+    "best_mean_structure": "overall_1d",
+    "best_mean": 0.40699016955787765,
+    "best_standard_error": 0.013542133386570879,
+    "tie_breaks": [
+      "fewest_dimensions",
+      "better_cv_mean",
+      "structure_name"
+    ],
+    "fit_gate": "core fit and every fold fit must have converged",
+    "note": "A loss qualifies when mean <= best mean + SE(best); a score qualifies when mean >= best mean - SE(best). AIC/BIC are supporting diagnostics."
+  },
+  "automatic_recommendation": "overall_1d",
+  "override_requested": null,
+  "override_used": false,
+  "selected_structure": "overall_1d",
+  "selected_n_dims": 1,
+  "selected_cv_mean": 0.40699016955787765,
+  "selected_was_one_se_eligible": true,
+  "eligible_structures": [
+    "overall_1d",
+    "correlation_2d",
+    "correlation_3d",
+    "merge_content_style_4d",
+    "merge_format_linguistic_4d",
+    "merge_number_linguistic_4d",
+    "full_5d"
+  ]
+}

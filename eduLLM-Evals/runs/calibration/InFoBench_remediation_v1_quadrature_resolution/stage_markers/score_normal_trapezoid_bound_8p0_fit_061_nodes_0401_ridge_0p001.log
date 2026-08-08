@@ -1,0 +1,5 @@
+COMMAND
+["/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python", "scripts/run_infobench_quadrature_resolution.py", "--config", "configs/infobench_quadrature_resolution_v1.json", "--out-dir", "runs/calibration/InFoBench_remediation_v1_quadrature_resolution", "--worker", "score", "--method", "normal_trapezoid", "--nodes", "401", "--bound", "8.0", "--fit-grid", "61", "--ridge", "0.001", "--include-cat"]
+
+OUTPUT
+scored fit=61 ridge=0.001 with normal_trapezoid nodes=401 bound=8.0 -> /Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/runs/calibration/InFoBench_remediation_v1_quadrature_resolution/scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001

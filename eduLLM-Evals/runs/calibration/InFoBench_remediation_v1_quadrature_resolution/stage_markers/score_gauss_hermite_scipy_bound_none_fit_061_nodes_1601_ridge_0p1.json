@@ -1,0 +1,35 @@
+{
+  "stage": "score_gauss_hermite_scipy_bound_none_fit_061_nodes_1601_ridge_0p1",
+  "kind": "subprocess",
+  "command": [
+    "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+    "scripts/run_infobench_quadrature_resolution.py",
+    "--config",
+    "configs/infobench_quadrature_resolution_v1.json",
+    "--out-dir",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+    "--worker",
+    "score",
+    "--method",
+    "gauss_hermite_scipy",
+    "--nodes",
+    "1601",
+    "--fit-grid",
+    "61",
+    "--ridge",
+    "0.1"
+  ],
+  "outputs": [
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/per_model.csv",
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/heldout_cells.csv",
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/oos_metrics.csv",
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/score_manifest.json"
+  ],
+  "completed_at": "2026-08-05T03:36:04.130797+00:00",
+  "output_sha256": {
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/per_model.csv": "f6c402e66fda4313b53731b8f5654f97f22f221d5f4b66bfc178b1b0b2c86844",
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/heldout_cells.csv": "1f0044dc003b8f5031b8e86fd634bccff9838ccdfd9aad39d9023050ae59bf8d",
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/oos_metrics.csv": "826ec4d07785d89b170e8b52677e241bf693cb9398f33a11633f9e15938b2f61",
+    "scores/method_gauss_hermite_scipy/bound_none/fit_grid_061/nodes_1601/ridge_0p1/score_manifest.json": "905f7234cc45742b34425596ff6ac3f5d95749e6e5d2bc7963ddef616e7bf532"
+  }
+}

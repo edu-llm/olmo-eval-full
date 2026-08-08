@@ -1,0 +1,6 @@
+[Is the response correct, helpful, and appropriate for the instruction, considering the reference answer?]
+Score 1: The response is incorrect, irrelevant, or harmful.
+Score 2: The response is largely incorrect or unhelpful, missing the key point.
+Score 3: The response is partially correct but has notable gaps or errors.
+Score 4: The response is correct and helpful with only minor issues.
+Score 5: The response is fully correct, helpful, and well-justified, matching the reference.

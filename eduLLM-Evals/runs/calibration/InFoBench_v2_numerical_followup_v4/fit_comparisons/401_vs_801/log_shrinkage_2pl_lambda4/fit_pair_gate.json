@@ -1,0 +1,53 @@
+{
+  "adaptive_results_inspected": false,
+  "all_scope_parameter_gates_passed": true,
+  "all_scope_start_agreement_gates_passed": true,
+  "calibration_model_selected": false,
+  "common_support_refit_theta_gate": {
+    "maximum_absolute_theta_shift_diagnostic_only": 3.877471685942435e-05,
+    "maximum_is_a_gate": false,
+    "median_absolute_theta_shift": 3.432086939159085e-05,
+    "n_rows": 208,
+    "p95_absolute_theta_shift": 3.866961842288186e-05,
+    "passed": true,
+    "thresholds": {
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05
+    }
+  },
+  "comparison": "normal_trapezoid_bound8_401_vs_801",
+  "heldout_common_cell_gate": {
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 893486122,
+    "cluster_unit": "tutor_model_family",
+    "metrics": {
+      "brier": {
+        "absolute_pooled_shift": 1.3146241451386762e-10,
+        "equivalence_margin": 0.005,
+        "family_cluster_bootstrap_ci_95": [
+          -3.8213074099948326e-10,
+          5.99118278476612e-10
+        ],
+        "passed": true,
+        "pooled_shift_801_minus_401": 1.3146241451386762e-10
+      },
+      "log_loss": {
+        "absolute_pooled_shift": 2.3402716993128556e-09,
+        "equivalence_margin": 0.005,
+        "family_cluster_bootstrap_ci_95": [
+          -2.2209623864366692e-10,
+          4.667960774871325e-09
+        ],
+        "passed": true,
+        "pooled_shift_801_minus_401": 2.3402716993128556e-09
+      }
+    },
+    "n_common_cells": 21349,
+    "passed": true
+  },
+  "maximum_theta_shift_is_diagnostic_only": true,
+  "passed": true,
+  "posthoc_affine_linking_applied": false,
+  "schema_version": "infobench-v2-numerical-followup-run-v4",
+  "spec_id": "log_shrinkage_2pl_lambda4"
+}

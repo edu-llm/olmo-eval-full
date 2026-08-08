@@ -1,0 +1,30 @@
+{
+  "n_models": 52,
+  "model_keys_identical": true,
+  "maximum_full_theta_shift": 2.622915218353228e-10,
+  "maximum_heldout_theta_shift": 1.3895160577703791e-09,
+  "maximum_full_theta_shift_allowed": 0.005,
+  "maximum_heldout_theta_shift_allowed": 0.005,
+  "passed": true,
+  "reference": {
+    "method": "normal_trapezoid",
+    "nodes": 1601,
+    "bound": 8.0
+  },
+  "comparison": {
+    "method": "normal_trapezoid",
+    "nodes": 2001,
+    "bound": 10.0
+  },
+  "shared_step": 0.01,
+  "tail_region_absolute_theta_at_least": 7.5,
+  "posterior_tail_mass_maxima": {
+    "posterior_tail_mass_full_lower": 1.0851310429676227e-07,
+    "posterior_tail_mass_heldout_lower": 3.696493643909405e-07,
+    "posterior_tail_mass_full_upper": 1.0862284985835518e-07,
+    "posterior_tail_mass_heldout_upper": 3.7023390791473585e-07
+  },
+  "maximum_posterior_tail_mass_observed": 3.7023390791473585e-07,
+  "maximum_posterior_tail_mass_allowed": 1e-05,
+  "posterior_tail_mass_passed": true
+}

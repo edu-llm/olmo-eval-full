@@ -1,0 +1,140 @@
+{
+  "modes": {
+    "baseline": {
+      "n_models": 52,
+      "precision_reached": 52,
+      "precision_rate": 1.0,
+      "scenarios": {
+        "mean": 23.692307692307693,
+        "median": 22.5,
+        "min": 6,
+        "max": 66
+      },
+      "criteria_mean": 98.42307692307692,
+      "mwle_converged": 52,
+      "recovery_vs_full_bank_eap": {
+        "online": {
+          "instruction_following": {
+            "n": 52,
+            "r": 0.9629237919823853,
+            "slope": 0.8720638782111945,
+            "mae": 0.43337251677874106
+          }
+        },
+        "eap": {
+          "instruction_following": {
+            "n": 52,
+            "r": 0.9692597421925111,
+            "slope": 0.9382441942034853,
+            "mae": 0.20642034863952352
+          }
+        },
+        "mwle": {
+          "instruction_following": {
+            "n": 52,
+            "r": 0.9274345581234742,
+            "slope": 1.0620432113942322,
+            "mae": 0.5743157606472891
+          }
+        }
+      },
+      "pass_rate_calibration": {
+        "online": {
+          "n": 52,
+          "mae": 0.04207179427262125,
+          "bias": 0.007662953706067709,
+          "r": 0.9789572599209446
+        },
+        "eap": {
+          "n": 52,
+          "mae": 0.04834028882592296,
+          "bias": 0.014768271111099391,
+          "r": 0.9765052204664368
+        },
+        "mwle": {
+          "n": 52,
+          "mae": 0.03553819587132184,
+          "bias": 0.0023691737725402523,
+          "r": 0.9794587155508327
+        },
+        "full_eap": {
+          "n": 52,
+          "mae": 0.04241655844894619,
+          "bias": -2.961421375766854e-06,
+          "r": 0.9842865061651054
+        }
+      }
+    },
+    "cat": {
+      "n_models": 52,
+      "precision_reached": 52,
+      "precision_rate": 1.0,
+      "scenarios": {
+        "mean": 5.288461538461538,
+        "median": 5.0,
+        "min": 3,
+        "max": 8
+      },
+      "criteria_mean": 19.26923076923077,
+      "mwle_converged": 52,
+      "recovery_vs_full_bank_eap": {
+        "online": {
+          "instruction_following": {
+            "n": 52,
+            "r": 0.9509465946975023,
+            "slope": 0.6417932644397127,
+            "mae": 0.6242768819820237
+          }
+        },
+        "eap": {
+          "instruction_following": {
+            "n": 52,
+            "r": 0.9701206143310814,
+            "slope": 0.9339351893659885,
+            "mae": 0.24115677024176746
+          }
+        },
+        "mwle": {
+          "instruction_following": {
+            "n": 52,
+            "r": 0.9687837259792256,
+            "slope": 1.0487454191989187,
+            "mae": 0.4213952483934754
+          }
+        }
+      },
+      "pass_rate_calibration": {
+        "online": {
+          "n": 52,
+          "mae": 0.075095789124291,
+          "bias": 0.0013597682749114863,
+          "r": 0.9603546978260495
+        },
+        "eap": {
+          "n": 52,
+          "mae": 0.0556569744783385,
+          "bias": -0.008697524039439884,
+          "r": 0.9652169132788255
+        },
+        "mwle": {
+          "n": 52,
+          "mae": 0.05392681037784218,
+          "bias": -0.0022054385830085027,
+          "r": 0.9704043124426426
+        },
+        "full_eap": {
+          "n": 52,
+          "mae": 0.04241655844894619,
+          "bias": -2.961421375766854e-06,
+          "r": 0.9842865061651054
+        }
+      }
+    }
+  },
+  "pass_rate_calibration_note": "Observed rate and every p-IRT prediction use the same model-specific set of observed fitted items. Full-bank EAP is a posterior-reconstruction check, not an out-of-sample prediction.",
+  "paired_cat_vs_random": {
+    "n_models": 52,
+    "mean_cat_minus_random_scenarios": -18.403846153846153,
+    "median_cat_minus_random_scenarios": -17.5
+  }
+}

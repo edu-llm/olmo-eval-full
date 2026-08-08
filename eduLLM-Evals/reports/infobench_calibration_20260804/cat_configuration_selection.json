@@ -1,0 +1,14 @@
+{
+  "rule": {
+    "minimum_precision_rate": 0.95,
+    "minimum_mwle_convergence_rate": 0.95,
+    "maximum_recovery_drop": 0.01,
+    "maximum_slope_error_increase": 0.05,
+    "floor": "shortest mean test among settings meeting coverage, MWLE convergence, near-best r, and near-best slope",
+    "se_target": "strictest (smallest) target meeting the same recovery and coverage gates",
+    "selection": "keep trace unless D-opt shortens mean test length by the configured minimum without a material MWLE-recovery loss"
+  },
+  "selected_min_scenarios": 0,
+  "selected_se_target": 0.25,
+  "selected_selection_rule": "trace"
+}

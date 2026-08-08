@@ -1,0 +1,42 @@
+{
+  "stage": "score_normal_trapezoid_bound_8p0_fit_061_nodes_0401_ridge_0p001",
+  "kind": "subprocess",
+  "command": [
+    "/Users/lawrencerdong/Desktop/olmo-eval-full/eduLLM-Evals/.venv/bin/python",
+    "scripts/run_infobench_quadrature_resolution.py",
+    "--config",
+    "configs/infobench_quadrature_resolution_v1.json",
+    "--out-dir",
+    "runs/calibration/InFoBench_remediation_v1_quadrature_resolution",
+    "--worker",
+    "score",
+    "--method",
+    "normal_trapezoid",
+    "--nodes",
+    "401",
+    "--bound",
+    "8.0",
+    "--fit-grid",
+    "61",
+    "--ridge",
+    "0.001",
+    "--include-cat"
+  ],
+  "outputs": [
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/per_model.csv",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/heldout_cells.csv",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/oos_metrics.csv",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/score_manifest.json",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/recovery.csv",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/pass_rate.csv"
+  ],
+  "completed_at": "2026-08-05T03:36:31.968874+00:00",
+  "output_sha256": {
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/per_model.csv": "0f4bb2a034d58afdf8be821a33e7aebd7aeee4d6bb1b51881f25886af237e649",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/heldout_cells.csv": "eb6024f7d6603a0bdcb823fd7f798cd72e4f53b39d0caee062da43528adb55e6",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/oos_metrics.csv": "0f55a240babe4af7a43e9e238aa0b95d60c005648e511ca1ff59ec5806e8301a",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/score_manifest.json": "e55a6ae64e836cac68e9f45de8c9e180b44340171a764ea89233f678c91fe400",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/recovery.csv": "7568b39b6e538713113416858651350964c3c7bf9fb37697dd37ea8485e8de4a",
+    "scores/method_normal_trapezoid/bound_8p0/fit_grid_061/nodes_0401/ridge_0p001/pass_rate.csv": "afd58e25511dddda094e96b2f86789e04ca22417acaa81b185aca291a23b6bd1"
+  }
+}

@@ -1,0 +1,450 @@
+"""CAT Integration loop (PRD): select scenario -> tutor responds -> judge grades
+each criterion -> update theta/U per criterion -> check stopping rule -> repeat.
+
+Also implements the non-adaptive baseline (seeded-random scenario order, same
+updates and stopping rule) for the CAT-vs-baseline comparison.
+
+Each tutor gets a fully independent run: its own theta, U, administered set,
+scorable-evaluation counts, and RNG stream.
+
+Run outputs (runs/<run_id>/):
+    manifest.json            config echo, seeds, model ids, prompt version
+    judge_results.jsonl      one PRD judge-result record per criterion
+    criterion_updates.jsonl  per-criterion theta/U trace (y, p, theta_after, se_after)
+    steps.jsonl              per-scenario trace (target skill, selection, theta, SE, counts)
+    critical_failures.json   failed criticality=critical criteria (separate report)
+    final_result.json        final theta, SE, counts, stop reason, precision_reached
+"""
+
+from __future__ import annotations
+
+import json
+import zlib
+from dataclasses import dataclass, field
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Protocol
+
+import numpy as np
+
+from . import SKILLS, __version__
+from .dataio import ItemBank
+from .mirt import (
+    PosteriorMoments,
+    initial_state,
+    masked_discrimination,
+    posterior_moments,
+    standard_errors,
+    update,
+)
+from .schemas import JudgeVerdict, Rubric, Scenario
+from .selector import SelectionResult, select_next
+
+
+class JudgeClient(Protocol):
+    name: str
+    prompt_version: str
+    seed: int
+
+    def evaluate(self, scenario: Scenario, rubric: Rubric, response: str) -> JudgeVerdict: ...
+
+
+class TutorLike(Protocol):
+    name: str
+    model: str
+
+    def respond(self, scenario: Scenario) -> str: ...
+
+
+@dataclass
+class RunConfig:
+    seed: int = 42
+    top_n: int = 5
+    theta_init: list[float] | None = None
+    u_init_diag: list[float] | None = None
+    max_se: dict[str, float] = field(
+        default_factory=lambda: {s: 0.30 for s in SKILLS}
+    )
+    min_evals_per_skill: int = 15
+    # Minimum scenarios administered before a precision-based stop is allowed. Default 0
+    # (off) keeps the historical behavior. A scenario-level floor is a stronger minimum
+    # test-length guarantee than min_evals_per_skill (which counts criteria); the SE target
+    # and max_scenarios still apply on top.
+    min_scenarios: int = 0
+    max_scenarios: int = 50
+    output_dir: str = "runs"
+    # Latent skill dimensions this run models. None => the package default (SKILLS).
+    # Set to a shorter/other tuple (e.g. ("correctness", "scaffolding")) to run the
+    # same engine over a different dimensionality; all vectors (theta, U, q, a) must
+    # match its length. The 3-skill path is unaffected when left None.
+    skills: tuple[str, ...] | None = None
+    # Scenario-selection rule. "trace" (default) is the PRD per-criterion Fisher rule for
+    # the argmax-SE skill; "dopt" ranks scenarios by the D-optimality log-det gain using
+    # the posterior covariance U (uncertainty-aware). Default leaves production unchanged.
+    selection: str = "trace"
+    # Write the verbose per-run JSONL logs (manifest, judge_results, criterion_updates,
+    # steps, critical_failures, final_result). Default True (production). Offline replays
+    # over a cached matrix set this False: the administered criterion order is returned in
+    # the result instead, so the heavy per-line flushed I/O is skipped entirely.
+    write_logs: bool = True
+    # Data provenance, echoed into the manifest so runs on different q-matrices /
+    # calibrations are distinguishable after the fact.
+    data_scenarios: str | None = None
+    data_rubrics: str | None = None
+    # All-zero q_mapping criteria carry no skill information; "judge" grades them
+    # anyway so critical failures are still caught, "skip" saves the judge calls.
+    unmapped_criteria: str = "judge"  # "judge" | "skip"
+    # Precision statistic used only for stopping. The online theta/U state remains the
+    # selection state in both modes, isolating the stop-rule experiment.
+    stop_se_method: str = "online"  # "online" | "eap"
+    # Explicit fixed quadrature used for EAP posterior SD. It may also be supplied in
+    # online mode to record the honest post-hoc EAP SD at the online stopping point.
+    eap_stop_grid: np.ndarray | None = field(default=None, repr=False)
+    eap_stop_log_prior: np.ndarray | None = field(default=None, repr=False)
+    eap_stop_metadata: dict[str, Any] | None = None
+
+
+def derive_seed(master_seed: int, tutor_name: str, mode: str) -> int:
+    """Deterministic per-(tutor, mode) seed derived from the master seed."""
+    return (master_seed * 1_000_003 + zlib.crc32(f"{tutor_name}:{mode}".encode())) % (2**32)
+
+
+class _JsonlWriter:
+    def __init__(self, path: Path):
+        self._f = path.open("w", encoding="utf-8")
+
+    def write(self, obj: dict[str, Any]) -> None:
+        self._f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+        self._f.flush()
+
+    def close(self) -> None:
+        self._f.close()
+
+
+class _NullWriter:
+    """No-op writer used when ``RunConfig.write_logs`` is False (offline replays)."""
+
+    def write(self, obj: dict[str, Any]) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
+def run_evaluation(
+    bank: ItemBank,
+    tutor: TutorLike,
+    judge: JudgeClient,
+    cfg: RunConfig,
+    mode: str = "cat",
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    """Run one full evaluation (mode = 'cat' or 'baseline'). Returns final_result."""
+    if mode not in ("cat", "baseline"):
+        raise ValueError("mode must be 'cat' or 'baseline'")
+
+    skills = tuple(cfg.skills) if cfg.skills else SKILLS
+    n_skills = len(skills)
+    write_logs = cfg.write_logs
+    if cfg.stop_se_method not in {"online", "eap"}:
+        raise ValueError("stop_se_method must be 'online' or 'eap'")
+    if (cfg.eap_stop_grid is None) != (cfg.eap_stop_log_prior is None):
+        raise ValueError("eap_stop_grid and eap_stop_log_prior must be supplied together")
+    eap_grid = (
+        None if cfg.eap_stop_grid is None else np.asarray(cfg.eap_stop_grid, dtype=float)
+    )
+    eap_log_prior = (
+        None
+        if cfg.eap_stop_log_prior is None
+        else np.asarray(cfg.eap_stop_log_prior, dtype=float)
+    )
+    if cfg.stop_se_method == "eap" and eap_grid is None:
+        raise ValueError("EAP stopping requires an explicit fixed quadrature grid")
+    if eap_grid is not None and (
+        eap_grid.ndim != 2
+        or eap_grid.shape[1] != n_skills
+        or eap_log_prior is None
+        or eap_log_prior.shape != (eap_grid.shape[0],)
+    ):
+        raise ValueError("EAP stopping quadrature does not match the modeled dimensions")
+
+    run_seed = derive_seed(cfg.seed, tutor.name, mode)
+    rng = np.random.default_rng(run_seed)
+    run_id = run_id or f"run_{datetime.now():%Y%m%d_%H%M%S}_{tutor.name}_{mode}"
+    out_dir = Path(cfg.output_dir) / run_id
+    if write_logs:
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+    theta, U = initial_state(cfg.theta_init, cfg.u_init_diag, n_skills)
+    max_se = np.array([cfg.max_se.get(s, 0.30) for s in skills])
+    counts = np.zeros(n_skills, dtype=int)  # scorable evaluations per skill
+    administered: list[str] = []
+    administered_criteria: list[str] = []  # criterion ids in grading order (returned)
+    critical_failures: list[dict[str, Any]] = []
+    stop_loadings: list[np.ndarray] = []
+    stop_difficulties: list[float] = []
+    stop_responses: list[int] = []
+
+    # Calibration marker for the manifest: the distinct calibration_version(s)
+    # carried by the loaded rubrics (single string if uniform, list if mixed,
+    # None if the file doesn't set one).
+    cal_versions = sorted(
+        {r.calibration_version for r in bank.rubrics.values() if r.calibration_version}
+    )
+    calibration_version = cal_versions[0] if len(cal_versions) == 1 else (cal_versions or None)
+
+    manifest = {
+        "run_id": run_id,
+        "mode": mode,
+        "package_version": __version__,
+        "candidate_model": tutor.model,
+        "tutor_name": tutor.name,
+        "judge_model": judge.name,
+        "judge_prompt_version": judge.prompt_version,
+        "judge_seed": judge.seed,
+        "judge_result_pass_threshold": getattr(judge, "result_pass_threshold", None),
+        "master_seed": cfg.seed,
+        "run_seed": run_seed,
+        "top_n": cfg.top_n,
+        "skills": list(skills),
+        "theta_init": list(cfg.theta_init or [0.0] * n_skills),
+        "u_init_diag": list(cfg.u_init_diag or [1.0] * n_skills),
+        "max_se": cfg.max_se,
+        "min_evals_per_skill": cfg.min_evals_per_skill,
+        "min_scenarios": cfg.min_scenarios,
+        "max_scenarios": cfg.max_scenarios,
+        "stop_se_method": cfg.stop_se_method,
+        "eap_stop_metadata": cfg.eap_stop_metadata if eap_grid is not None else None,
+        "n_scenarios_in_bank": len(bank.scenarios),
+        "data_scenarios": cfg.data_scenarios,
+        "data_rubrics": cfg.data_rubrics,
+        "calibration_version": calibration_version,
+        "started_at": datetime.now().isoformat(timespec="seconds"),
+    }
+    if write_logs:
+        (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        judge_log = _JsonlWriter(out_dir / "judge_results.jsonl")
+        update_log = _JsonlWriter(out_dir / "criterion_updates.jsonl")
+        step_log = _JsonlWriter(out_dir / "steps.jsonl")
+    else:
+        judge_log = update_log = step_log = _NullWriter()
+
+    # Baseline: fixed seeded-random order over the whole bank, decided up front.
+    baseline_order: list[str] = []
+    if mode == "baseline":
+        baseline_order = [str(s) for s in rng.permutation(sorted(bank.scenarios))]
+
+    cached_eap_n = -1
+    cached_eap: PosteriorMoments | None = None
+
+    def eap_state() -> PosteriorMoments | None:
+        nonlocal cached_eap_n, cached_eap
+        if eap_grid is None or eap_log_prior is None:
+            return None
+        if cached_eap_n != len(stop_responses):
+            loadings = (
+                np.vstack(stop_loadings)
+                if stop_loadings
+                else np.empty((0, n_skills), dtype=float)
+            )
+            cached_eap = posterior_moments(
+                np.asarray(stop_responses, dtype=float),
+                loadings,
+                np.asarray(stop_difficulties, dtype=float),
+                eap_grid,
+                eap_log_prior,
+            )
+            cached_eap_n = len(stop_responses)
+        return cached_eap
+
+    def active_standard_errors() -> np.ndarray:
+        if cfg.stop_se_method == "online":
+            return standard_errors(U)
+        state = eap_state()
+        if state is None:  # guarded during configuration validation
+            raise RuntimeError("EAP stopping state is unavailable")
+        return state.se
+
+    def precision_reached() -> bool:
+        return bool(
+            (active_standard_errors() < max_se).all()
+            and (counts >= cfg.min_evals_per_skill).all()
+        )
+
+    stop_reason = None
+    try:
+        while True:
+            # --- stopping rule (checked between scenarios) ---
+            # A precision-based stop also requires the minimum-scenarios floor to be met.
+            if precision_reached() and len(administered) >= cfg.min_scenarios:
+                stop_reason = "precision_reached"
+                break
+            if len(administered) >= cfg.max_scenarios:
+                stop_reason = "max_scenarios_reached"
+                break
+
+            # --- choose next scenario ---
+            unused = [s for s in sorted(bank.scenarios) if s not in administered]
+            if not unused:
+                stop_reason = "bank_exhausted"
+                break
+
+            se = standard_errors(U)
+            if mode == "cat":
+                target_k = int(np.argmax(se))
+                selection: SelectionResult | None = select_next(
+                    theta, bank, unused, target_k, rng, cfg.top_n,
+                    selection=cfg.selection, U=U,
+                )
+                if selection is None:
+                    stop_reason = "bank_exhausted"
+                    break
+                sid = selection.scenario_id
+                selection_info = {
+                    "mode": selection.mode,
+                    "target_skill": skills[target_k],
+                    "scenario_value": selection.value,
+                    "top_candidates": selection.top_candidates,
+                }
+            else:
+                sid = baseline_order[len(administered)]
+                selection_info = {"mode": "baseline_random_order"}
+
+            scenario = bank.scenarios[sid]
+
+            # --- tutor answers, judge grades every criterion in criterion_id order ---
+            response = tutor.respond(scenario)
+            for rubric in bank.rubrics_for(sid):
+                if cfg.unmapped_criteria == "skip" and int(rubric.q.sum()) == 0:
+                    continue
+                verdict = judge.evaluate(scenario, rubric, response)
+                y = verdict.y
+
+                theta, U, p = update(theta, U, rubric.a, rubric.q, rubric.b, y)
+                counts += rubric.q  # scorable evaluation for every skill with q=1
+                administered_criteria.append(rubric.criterion_id)
+                stop_loadings.append(masked_discrimination(rubric.a, rubric.q).copy())
+                stop_difficulties.append(float(rubric.b))
+                stop_responses.append(int(y))
+
+                # dataset uses both "critical" and "critical_negative"
+                if rubric.criticality.startswith("critical") and y == 0:
+                    critical_failures.append(
+                        {
+                            "scenario_id": sid,
+                            "criterion_id": rubric.criterion_id,
+                            "criterion": rubric.criterion,
+                            "rationale": verdict.rationale,
+                            "unscorable_reason": verdict.unscorable_reason,
+                        }
+                    )
+
+                judge_log.write(
+                    {
+                        "run_id": run_id,
+                        "candidate_model": tutor.model,
+                        "scenario_id": sid,
+                        "criterion_id": rubric.criterion_id,
+                        "candidate_response": response,
+                        "judge_model": judge.name,
+                        "judge_prompt_version": judge.prompt_version,
+                        "verdict": verdict.verdict,
+                        "score": y,
+                        "evidence": verdict.evidence,
+                        "rationale": verdict.rationale,
+                        "unscorable_reason": verdict.unscorable_reason,
+                        "raw_output": verdict.raw_output,
+                        "seed": judge.seed,
+                    }
+                )
+                update_log.write(
+                    {
+                        "scenario_id": sid,
+                        "criterion_id": rubric.criterion_id,
+                        "y": y,
+                        "p_before": round(float(p), 6),
+                        "theta_after": [round(float(x), 6) for x in theta],
+                        "se_after": [round(float(x), 6) for x in standard_errors(U)],
+                    }
+                )
+
+            administered.append(sid)
+            online_step_se = standard_errors(U)
+            eap_step = (
+                eap_state()
+                if cfg.stop_se_method == "eap" or write_logs
+                else None
+            )
+            stop_step_se = eap_step.se if cfg.stop_se_method == "eap" else online_step_se
+            step_log.write(
+                {
+                    "step": len(administered),
+                    "scenario_id": sid,
+                    "selection": selection_info,
+                    "theta": [round(float(x), 6) for x in theta],
+                    # Historical field remains the online covariance SE.
+                    "se": [round(float(x), 6) for x in online_step_se],
+                    "se_online": [round(float(x), 6) for x in online_step_se],
+                    "se_eap": (
+                        [round(float(x), 6) for x in eap_step.se]
+                        if eap_step is not None
+                        else None
+                    ),
+                    "se_stop": [round(float(x), 6) for x in stop_step_se],
+                    "stop_se_method": cfg.stop_se_method,
+                    "counts": counts.tolist(),
+                }
+            )
+    finally:
+        judge_log.close()
+        update_log.close()
+        step_log.close()
+
+    se = standard_errors(U)
+    eap_final = eap_state()
+    stop_se = eap_final.se if cfg.stop_se_method == "eap" else se
+    final_precision = bool(
+        (stop_se < max_se).all() and (counts >= cfg.min_evals_per_skill).all()
+    )
+    final = {
+        "run_id": run_id,
+        "mode": mode,
+        "candidate_model": tutor.model,
+        "stop_reason": stop_reason,
+        "precision_reached": final_precision,
+        # PRD: if stopped early, state that precision was not reached.
+        "note": (
+            None
+            if final_precision
+            else "Evaluation ended without reaching the required measurement precision."
+        ),
+        "scenarios_administered": len(administered),
+        "theta": {s: round(float(theta[k]), 6) for k, s in enumerate(skills)},
+        "stop_se_method": cfg.stop_se_method,
+        # ``se`` remains the historical online field for backward compatibility.
+        "se": {s: round(float(se[k]), 6) for k, s in enumerate(skills)},
+        "se_online": {s: round(float(se[k]), 6) for k, s in enumerate(skills)},
+        "se_eap": (
+            {s: round(float(eap_final.se[k]), 6) for k, s in enumerate(skills)}
+            if eap_final is not None
+            else None
+        ),
+        "theta_eap": (
+            {s: round(float(eap_final.theta[k]), 6) for k, s in enumerate(skills)}
+            if eap_final is not None
+            else None
+        ),
+        "se_stop": {s: round(float(stop_se[k]), 6) for k, s in enumerate(skills)},
+        "scorable_evaluations": {s: int(counts[k]) for k, s in enumerate(skills)},
+        "critical_failure_count": len(critical_failures),
+        "administered_criteria": administered_criteria,
+        "finished_at": datetime.now().isoformat(timespec="seconds"),
+    }
+    if write_logs:
+        (out_dir / "critical_failures.json").write_text(
+            json.dumps(critical_failures, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        (out_dir / "final_result.json").write_text(
+            json.dumps(final, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+    return final

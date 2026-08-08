@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-08-05T03:35:57.588641+00:00",
+  "worker": "score-quadrature",
+  "fit_grid": 61,
+  "ridge": 0.1,
+  "quadrature_method": "normal_trapezoid",
+  "linear_bound": 8.0,
+  "requested_node_count": 1601,
+  "effective_node_count": 1601,
+  "quadrature_axis_sha256": "afa856c4fece7b7f5032267beb53cff3c9261d716ba707530df5c9e913077aaf",
+  "quadrature_log_prior_sha256": "5e1fdafb954fd1feb6a57bdc2384562faf0d806a95096a6e917c99ab55566bb4",
+  "fit_cache_dir_relative_to_study": "fit_cache/grid_061/ridge_0p1",
+  "fit_cache_reused": true,
+  "no_refit_during_scoring": true,
+  "include_diagnostic_cat": true,
+  "tail_region_absolute_theta_at_least": 7.5,
+  "heldout_fold_manifest_relative_to_repo": "configs/infobench_remediation_splits_v1.manifest.json",
+  "heldout_fold_manifest_sha256": "3662ad502585799afa6d0e665a08f94f480f41c09c78ce472a20e209e5f14f95",
+  "scenario_split": {
+    "administration": 400,
+    "evaluation": 100,
+    "evaluation_never_enters_theta_or_cat_path": true
+  },
+  "diagnostic_cat_configuration": {
+    "seed": 42,
+    "top_n": 5,
+    "max_se": 0.25,
+    "min_evals_per_skill": 15,
+    "min_scenarios": 0,
+    "max_scenarios": 50,
+    "selection": "trace",
+    "mwle_ridge": 1e-06
+  },
+  "pooled_oos": {
+    "n_cells": 21339,
+    "pos_rate": 0.44013308964806225,
+    "log_loss": 0.39413440435614266,
+    "accuracy": 0.8239373916303482,
+    "auc": 0.9047232174928193,
+    "brier": 0.12332552819818378
+  },
+  "quantization": {
+    "n_models": 52,
+    "unique_theta_rounded_6": 52,
+    "largest_rounded_value_count": 1,
+    "largest_rounded_value_fraction": 0.019230769230769232,
+    "fraction_within_1e_6_of_node": 0.0,
+    "largest_nearest_node_fraction": 0.038461538461538464
+  },
+  "n_models": 52,
+  "n_heldout_cells": 21339
+}

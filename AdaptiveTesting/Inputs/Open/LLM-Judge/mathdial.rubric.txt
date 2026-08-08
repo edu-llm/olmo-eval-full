@@ -1,0 +1,6 @@
+[Is the tutor's next turn a good pedagogical move toward the correct solution?]
+Score 1: Incorrect math or harmful tutoring; just states the answer or misleads.
+Score 2: Weak move; unhelpful or mathematically wrong.
+Score 3: Acceptable move but misses the student's misconception or has minor math issues.
+Score 4: Good move; addresses the misconception and guides toward the ground truth.
+Score 5: Excellent move; correctly targets the misconception and scaffolds the student toward the correct solution.

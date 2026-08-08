@@ -1,0 +1,23 @@
+{
+  "stage": "common_cell_fit_grid_gate",
+  "kind": "deterministic_analysis",
+  "command": [
+    "internal-analysis",
+    "common_cell_fit_grid_gate"
+  ],
+  "outputs": [
+    "common_support/common_cells_41_vs_61.csv",
+    "common_support/common_cells_61_vs_81.csv",
+    "common_support/equivalence_41_vs_61.json",
+    "common_support/equivalence_61_vs_81.json",
+    "common_support/common_cell_gate.json"
+  ],
+  "completed_at": "2026-08-05T03:35:45.909372+00:00",
+  "output_sha256": {
+    "common_support/common_cells_41_vs_61.csv": "833020b88aa546edb913f66f48ceb0706af4483ced8f4ba3cc75a2873d2fff1c",
+    "common_support/common_cells_61_vs_81.csv": "1d6f8369b1b85f0f17e67513486e400a42084877755369d97fe8c20f53c047b0",
+    "common_support/equivalence_41_vs_61.json": "b5a1be647360b2f97683debb2e7d853bd2d910df6dfa157cbd8befa5018d23d6",
+    "common_support/equivalence_61_vs_81.json": "efa5d0cf934ec3aa6d99ca31b3e1d50ea9b269fcfd0790e5d229ba7028921e5a",
+    "common_support/common_cell_gate.json": "b77b1a17af89e02ea4c4f49dd0c68fdf12b7bd812b48c6a42e89369198ec0861"
+  }
+}

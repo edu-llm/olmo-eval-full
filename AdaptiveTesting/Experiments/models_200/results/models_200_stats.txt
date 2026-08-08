@@ -1,0 +1,71 @@
+================================================================
+MODELS_200 ROSTER STATS
+================================================================
+n_models          : 200
+param range       : 0.360 – 7.000 B
+mean / median     : 2.425 / 2.000 B
+std               : 1.535 B
+unique orgs       : 72
+unique families   : 100
+unique arches     : 1
+OLMo models        : 8  ['allenai/OLMo-1B-0724-hf', 'allenai/OLMo-1B-hf', 'allenai/OLMo-2-0425-1B', 'allenai/OLMo-2-0425-1B-DPO', 'allenai/OLMo-2-0425-1B-Instruct', 'allenai/OLMo-2-1124-7B', 'allenai/OLMo-2-1124-7B-Instruct', 'allenai/OLMo-7B-0724-hf']
+vLLM-blocked left? : 0  []
+
+Param bin counts (target ≈ truncated normal):
+  0.2-1.0   actual= 12  target= 12
+  1.0-2.0   actual= 87  target= 55
+  2.0-3.0   actual= 32  target= 40
+  3.0-4.0   actual= 40  target= 42
+  4.0-5.0   actual= 11  target= 20
+  5.0-6.0   actual=  5  target= 18
+  6.0-7.0   actual= 13  target= 13
+
+Architecture counts:
+  transformer          200
+
+Top orgs by count:
+  Qwen                          19
+  unsloth                       13
+  allenai                        8
+  openbmb                        8
+  microsoft                      8
+  ibm-granite                    7
+  HuggingFaceTB                  6
+  stabilityai                    5
+  bigcode                        4
+  facebook                       4
+  meta-llama                     4
+  tiiuae                         4
+  llm-jp                         4
+  BSC-LT                         4
+  nvidia                         4
+  AI-Sweden-Models               3
+  ai-forever                     3
+  cyberagent                     3
+  Iker                           3
+  bigscience                     3
+
+Top families by count:
+  Granite                        9
+  OLMo2                          5
+  Qwen3                          5
+  Llama3.2                       4
+  MiniCPM                        4
+  Falcon3                        4
+  Llama3.2-unsloth               4
+  Qwen2.5-unsloth                4
+  Qwen1.5                        4
+  LLM-JP                         4
+  Salamandra                     4
+  GPT-SW3                        3
+  OpenCALM                       3
+  OLMo                           3
+  CPM-Bee                        3
+  BLOOM                          3
+  Polyglot-KO                    3
+  CroissantLLM                   3
+  Bielik                         3
+  XGLM                           3
+
+yaml -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Inputs/Models/models_200.yaml
+plot -> /Users/arhant/Documents/EDLM/olmo-eval-full/AdaptiveTesting/Outputs/models_200_param_dist.png

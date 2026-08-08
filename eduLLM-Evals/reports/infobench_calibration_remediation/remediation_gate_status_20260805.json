@@ -1,0 +1,57 @@
+{
+  "schema_version": "infobench-remediation-gate-status-v1",
+  "generated_date": "2026-08-05",
+  "overall_status": "blocked_after_phase3_no_complete_five_fold_policy",
+  "final_policy_frozen": false,
+  "release_claims_authorized": false,
+  "gates": {
+    "phase0_frozen_inputs": {
+      "status": "complete",
+      "bundle_sha256": "b033f86f0e206197bfff80c057a5793563989b04ab4062f4e7aa476718c62ca3"
+    },
+    "infobench_qwen_human_audit": {
+      "status": "blocked_missing_two_human_labels_and_adjudication",
+      "packet": "reports/infobench_judge_audit_v1/packet_manifest.json"
+    },
+    "phase2_numerical_resolution": {
+      "status": "passed",
+      "fit_grid": 61,
+      "eap_grid": 401,
+      "quadrature_method": "normal_trapezoid",
+      "linear_bound": 8.0,
+      "lock": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/dense_grid/grid_lock.json"
+    },
+    "phase3_nested_cat_selection": {
+      "status": "blocked_incomplete_fold_coverage",
+      "folds_with_finalists": [
+        0,
+        1,
+        4
+      ],
+      "folds_without_finalists": [
+        2,
+        3
+      ],
+      "fallback_used": false,
+      "manifest": "runs/calibration/InFoBench_remediation_v1_quadrature_resolution/nested_cat_cv/manifest.json"
+    },
+    "phase4_total_uncertainty_and_order": {
+      "status": "not_run_phase3_preflight_refused",
+      "preflight_error": "outer fold 2 has no Phase-3 finalist panel",
+      "distinct_total_se_tolerance_preregistered": false
+    },
+    "phase5_final_fit_and_deployment_replay": {
+      "status": "not_authorized"
+    },
+    "phase6_final_release": {
+      "status": "not_authorized"
+    }
+  },
+  "evidence_bundle": {
+    "path": "runs/calibration/InFoBench_remediation_evidence_20260805.tar.gz",
+    "sha256": "d1748dd77289be9998a52a272cdd677cd1446f30ae7566452bc74a58b86e017f",
+    "size_mib_approx": 44,
+    "entry_count": 593
+  },
+  "human_summary": "reports/infobench_calibration_remediation/remediation_execution_summary_20260805.md"
+}

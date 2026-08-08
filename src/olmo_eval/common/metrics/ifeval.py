@@ -42,6 +42,27 @@ def _instruction_level(results: list[list[bool]]) -> float:
     return correct / total
 
 
+def _response_results(response: Response, key: str) -> list[bool]:
+    if not response.outputs:
+        return []
+    meta = response.outputs[0].metadata or {}
+    return list((meta.get("ifeval") or {}).get(key, []))
+
+
+def _prompt_level_instance(response: Response, key: str) -> float | None:
+    results = _response_results(response, key)
+    if not results:
+        return None
+    return 1.0 if all(results) else 0.0
+
+
+def _instruction_level_instance(response: Response, key: str) -> float | None:
+    results = _response_results(response, key)
+    if not results:
+        return None
+    return sum(1.0 for v in results if v) / len(results)
+
+
 @dataclass(frozen=True, slots=True)
 class IFEvalPromptStrictAccuracy(Metric):
     """Fraction of prompts where every instruction passes under strict scoring."""
@@ -51,6 +72,12 @@ class IFEvalPromptStrictAccuracy(Metric):
 
     def compute(self, responses: Sequence[Response]) -> float:
         return _prompt_level(_iter_results(responses, "strict"))
+
+    def compute_instance(self, response: Response) -> float | None:
+        return _prompt_level_instance(response, "strict")
+
+    def supports_pairwise_scorer_fallback(self) -> bool:
+        return False
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +90,12 @@ class IFEvalPromptLooseAccuracy(Metric):
     def compute(self, responses: Sequence[Response]) -> float:
         return _prompt_level(_iter_results(responses, "loose"))
 
+    def compute_instance(self, response: Response) -> float | None:
+        return _prompt_level_instance(response, "loose")
+
+    def supports_pairwise_scorer_fallback(self) -> bool:
+        return False
+
 
 @dataclass(frozen=True, slots=True)
 class IFEvalInstStrictAccuracy(Metric):
@@ -74,6 +107,12 @@ class IFEvalInstStrictAccuracy(Metric):
     def compute(self, responses: Sequence[Response]) -> float:
         return _instruction_level(_iter_results(responses, "strict"))
 
+    def compute_instance(self, response: Response) -> float | None:
+        return _instruction_level_instance(response, "strict")
+
+    def supports_pairwise_scorer_fallback(self) -> bool:
+        return False
+
 
 @dataclass(frozen=True, slots=True)
 class IFEvalInstLooseAccuracy(Metric):
@@ -84,3 +123,9 @@ class IFEvalInstLooseAccuracy(Metric):
 
     def compute(self, responses: Sequence[Response]) -> float:
         return _instruction_level(_iter_results(responses, "loose"))
+
+    def compute_instance(self, response: Response) -> float | None:
+        return _instruction_level_instance(response, "loose")
+
+    def supports_pairwise_scorer_fallback(self) -> bool:
+        return False

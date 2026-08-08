@@ -1,0 +1,131 @@
+{
+  "schema_version": "infobench-eap-stop-prototype-v1",
+  "status": "frozen_pre_run",
+  "frozen_date": "2026-08-06",
+  "benchmark": "InFoBench",
+  "role": "diagnostic_stop_rule_prototype",
+  "purpose": "Compare the historical online covariance-SE stop with a grid-integrated EAP posterior-SD stop while holding the selected OOF 2PL banks, responses, folds, selection state, policy, and seeds fixed.",
+  "interpretation_limits": {
+    "recalibration_performed": false,
+    "judge_calls_performed": false,
+    "current_primary_policy_previously_passed_validation": false,
+    "deployment_authorized_by_this_prototype_alone": false,
+    "note": "The underlying floor-15/SE-0.20/trace 2PL policy failed Phase-3 validation. This prototype only diagnoses the stopping-estimator mismatch."
+  },
+  "inputs": {
+    "parent_config": {
+      "path": "configs/infobench_calibration_cat_2pl_only_v1.json",
+      "sha256": "f0fa7def908f27b846d489ebc2d292aead091ae8fa7d0ee4191f01b2e1362383"
+    },
+    "split_manifest": {
+      "path": "configs/infobench_v2_splits.manifest.json",
+      "sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f"
+    },
+    "response_matrix": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+      "sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "rubrics": {
+      "path": "data/InFoBench/rubrics.jsonl",
+      "sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10"
+    },
+    "scenarios": {
+      "path": "data/InFoBench/scenarios.jsonl",
+      "sha256": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b"
+    },
+    "selected_calibration_specs": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/selected_calibration_specs.json",
+      "sha256": "2c773fbedf97825ae9d989b2f227c6239b14182aa5f9c2528bb23fb8013bf21c"
+    },
+    "fold_assignments": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/fold_assignments.json",
+      "sha256": "80ba6b4803acbe88677363d5bfc52316c0e062ce2724e79ded55a0f17c0cc206"
+    },
+    "phase3_decision": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/phase3_decision.json",
+      "sha256": "d1fcd9c4f9ad17a586d792ee5ed7ee75e4136b0aca0116f994422fda83ec2c8b"
+    },
+    "historical_outer_rows": {
+      "path": "runs/calibration/InFoBench_2pl_only_v1/phase3/outer_oof_per_model.csv",
+      "sha256": "da108af1ab38ad2d26d9d4ca5b848c0ff5243c25678358635f86ac8d406483db"
+    },
+    "numerical_lock": {
+      "path": "runs/calibration/InFoBench_v2_numerical_followup_v4/numerical_followup_lock.json",
+      "sha256": "2bdc6abcc01b0ef97542673ffdd09374577e1eaaf1dd5fea5c05126f6f723994"
+    }
+  },
+  "expected_scope": {
+    "models": 52,
+    "model_families": 22,
+    "repetitions": 5,
+    "outer_folds_per_repetition": 5,
+    "panels": 25,
+    "paired_model_repeat_cases": 260,
+    "selected_spec_id": "log_shrinkage_2pl_lambda16",
+    "latent_dimension": "instruction_following"
+  },
+  "policy": {
+    "policy_id": "primary_floor15_se0p20_trace",
+    "minimum_scenarios": 15,
+    "minimum_scored_criteria": 15,
+    "conditional_se_target": 0.2,
+    "target_comparator": "strict_less_than",
+    "selector": "trace",
+    "top_n": 5,
+    "maximum_scenarios": 50,
+    "master_seed": 20260805,
+    "final_ability_estimator": "mwle",
+    "mwle_ridge": 0.000001
+  },
+  "arms": [
+    {
+      "arm_id": "online",
+      "stop_se_method": "online",
+      "eap_grid_for_posthoc_scoring": 801
+    },
+    {
+      "arm_id": "eap_801",
+      "stop_se_method": "eap",
+      "eap_grid": 801,
+      "role": "primary_eap_arm"
+    },
+    {
+      "arm_id": "eap_1601",
+      "stop_se_method": "eap",
+      "eap_grid": 1601,
+      "role": "numerical_sensitivity_only"
+    }
+  ],
+  "quadrature": {
+    "method": "normal_trapezoid",
+    "linear_bound": 8.0,
+    "prior": "standard_normal",
+    "primary_nodes": 801,
+    "sensitivity_nodes": 1601,
+    "dense_grid_prerequisite_status": "already_passed_in_v4"
+  },
+  "aggregation": {
+    "aggregate_repeated_predictions_per_model_before_inference": true,
+    "treat_260_repeat_rows_as_independent": false,
+    "bootstrap_unit": "model_family",
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 20260806
+  },
+  "acceptance": {
+    "require_exact_online_reproduction": true,
+    "require_eap_target_rate_strictly_higher": true,
+    "minimum_target_rate_improvement_ci_lower": 0.0,
+    "maximum_recovery_r_drop": 0.01,
+    "maximum_theta_mae_increase": 0.02,
+    "minimum_eap_recovery_slope": 0.9,
+    "maximum_eap_recovery_slope": 1.1,
+    "maximum_median_scenario_increase": 0.0,
+    "minimum_801_vs_1601_stop_agreement": 0.99,
+    "maximum_801_vs_1601_final_se_difference_on_matching_stops": 0.001
+  },
+  "outputs": {
+    "run_dir": "runs/calibration/InFoBench_eap_stop_prototype_v1",
+    "report_dir": "reports/infobench_eap_stop_prototype_v1",
+    "overwrite_existing": false
+  }
+}

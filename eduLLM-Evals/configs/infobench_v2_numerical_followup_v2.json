@@ -1,0 +1,105 @@
+{
+  "schema_version": "infobench-v2-numerical-followup-v2",
+  "status": "preregistered_before_followup_results",
+  "created_date": "2026-08-05",
+  "benchmark": "InFoBench",
+  "purpose": "Corrected append-only numerical follow-up after the v1 attempt was aborted before either fit-comparison gate. This version fixes dynamic grid labels, strengthens exact-spec and material-field validation, and forbids destructive restart behavior.",
+  "design_source": {
+    "config": "configs/infobench_v2_numerical_followup_v1.json",
+    "config_sha256": "59232d67356890d0f20d993ffd23f3682d726bbb0c2457ee1e1b5ab56d9ebdab",
+    "inheritance_policy": "The frozen scientific panel and thresholds are inherited byte-for-byte from the cited preregistration. Only the audited implementation corrections and a new append-only output leaf are allowed."
+  },
+  "superseded_attempt": {
+    "config": "configs/infobench_v2_numerical_followup_v1.json",
+    "config_sha256": "59232d67356890d0f20d993ffd23f3682d726bbb0c2457ee1e1b5ab56d9ebdab",
+    "runner": "scripts/run_infobench_v2_numerical_followup.py",
+    "runner_sha256": "b42ba8d588fdc7c219e4894c9f0a14de607ef69967b5367581fc6d5f76045058",
+    "run_dir": "runs/calibration/InFoBench_v2_numerical_followup_v1",
+    "manifest": "runs/calibration/InFoBench_v2_numerical_followup_v1/study_manifest.json",
+    "manifest_sha256": "ed061990c177d502ed98c3f73290466856dbf3b8861f766075e123ef5d223d66",
+    "aborted_marker": "runs/calibration/InFoBench_v2_numerical_followup_v1/ABORTED.json",
+    "aborted_marker_sha256": "3a6ba15f8ca0d9daebe560a73c92b763b5923bf740178dc97509a2198180d583",
+    "required_aborted_status": "aborted_before_fit_comparison",
+    "output_file_count": 295,
+    "output_tree_sha256": "d6663e5ab17a6d07f5f012a6d5de145b31aa350a250525b078d203e5b2a5ba3c",
+    "reuse_policy": "No fit, checkpoint, comparison, decision, or lock artifact from the aborted v1 output may be reused, deleted, replaced, or promoted. V2 recomputes its grid-101 and grid-121 fits in its own output leaf."
+  },
+  "implementation_corrections": {
+    "dynamic_common_cell_labels": true,
+    "full_parent_exact_spec_contract_match": true,
+    "append_only_no_fresh_mode": true,
+    "terminal_evidence_is_immutable": true,
+    "resume_requires_identical_signature_and_checkpoints": true,
+    "all_material_preregistration_fields_fail_closed": true
+  },
+  "frozen_contract": {
+    "exact_specification_match_fields": [
+      "spec_id",
+      "family",
+      "ridge",
+      "log_a_shrinkage",
+      "canonical_specification"
+    ],
+    "fit_grid_followup": {
+      "grid_candidates": [81, 101, 121],
+      "comparison_schedule": ["81_vs_101", "101_vs_121"],
+      "always_run_both_fit_comparisons": true,
+      "common_grid_required_for_all_exact_specifications": true,
+      "require_all_fits_converged": true,
+      "minimum_item_parameter_spearman": 0.99,
+      "minimum_exportability_agreement": 0.995,
+      "heldout_metrics": ["log_loss", "brier"],
+      "equivalence_margin": 0.005,
+      "bootstrap_replicates": 2000,
+      "bootstrap_seed": 20260805,
+      "theta_quadrature_method": "normal_trapezoid",
+      "theta_quadrature_nodes": 801,
+      "theta_linear_bound": 8.0,
+      "theta_supports": ["full_bank", "administration_only"],
+      "theta_scopes": ["full", "outer_0", "outer_1", "outer_2", "outer_3", "outer_4"],
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05,
+      "maximum_absolute_theta_shift": 0.005,
+      "lock_rule": {
+        "both_comparisons_pass_all_six": 81,
+        "first_fails_second_passes_all_six": 101,
+        "otherwise": null
+      }
+    },
+    "eap_bound_followup": {
+      "run_only_after_common_fit_grid_lock": true,
+      "run_for_every_exact_specification": true,
+      "bound8_density": {
+        "lower": ["normal_trapezoid", 401, 8.0, 0.04, 7.5],
+        "upper": ["normal_trapezoid", 801, 8.0, 0.02, 7.5]
+      },
+      "equal_step_cross_bound": {
+        "lower": ["normal_trapezoid", 401, 8.0, 0.04, 7.5],
+        "upper": ["normal_trapezoid", 501, 10.0, 0.04, 9.5]
+      },
+      "bound10_density": {
+        "lower": ["normal_trapezoid", 501, 10.0, 0.04, 9.5],
+        "upper": ["normal_trapezoid", 1001, 10.0, 0.02, 9.5]
+      },
+      "maximum_median_absolute_theta_shift": 0.02,
+      "maximum_p95_absolute_theta_shift": 0.05,
+      "maximum_absolute_theta_shift": 0.005,
+      "maximum_posterior_tail_mass": 0.00001,
+      "lock_rule": {
+        "all_three_theta_comparisons_must_pass_for_all_six": true,
+        "bound8_eap401_if_all_bound8_tails_pass": true,
+        "bound10_eap501_only_if_bound8_fails_and_all_bound10_tails_pass": true,
+        "otherwise": null
+      }
+    },
+    "runtime": {
+      "fit_max_iter": 200,
+      "fit_tolerance": 0.0001,
+      "master_seed": 20260805
+    }
+  },
+  "output_dir": "runs/calibration/InFoBench_v2_numerical_followup_v2",
+  "lock_path": "runs/calibration/InFoBench_v2_numerical_followup_v2/numerical_followup_lock.json",
+  "threshold_change_policy": "No threshold, candidate, comparison, support, scope, seed, replicate count, runtime tolerance, or lock rule may be added, removed, or relaxed after follow-up outputs are generated.",
+  "selection_policy": "This is numerical verification only. It cannot select a calibration specification, inspect CAT outcomes, reuse aborted-v1 partial results, or promote a subset of specifications."
+}

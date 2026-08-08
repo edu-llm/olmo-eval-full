@@ -1,0 +1,6 @@
+[Is the final numeric answer correct?]
+Score 1: Final answer is wrong and reasoning is incorrect.
+Score 2: Wrong final answer with flawed reasoning.
+Score 3: Correct approach but wrong final answer (arithmetic slip).
+Score 4: Correct final answer with mostly sound reasoning.
+Score 5: Correct final numeric answer with clear, correct reasoning matching the reference.

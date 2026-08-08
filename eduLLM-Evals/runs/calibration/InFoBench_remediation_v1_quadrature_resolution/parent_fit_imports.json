@@ -1,0 +1,405 @@
+{
+  "imported_at": "2026-08-05T03:35:37.608581+00:00",
+  "policy": "portable run-relative imports; grid-61/ridge-0.1 was not refitted",
+  "artifacts": [
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/fit_grid_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/fit_grid_manifest.json",
+      "sha256": "37396d2b52d9b1ab6e9794615e6503afa5ff0eb9487759282c5fc0402da410e8"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/full/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/full/fit.npz",
+      "sha256": "b01dd1bf4bfbce8b221707e28d2305ce627549d72425e867c75bd34a70362902"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/full/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/full/fit_manifest.json",
+      "sha256": "3c9d8430341e44dbb09206903994f2e021ee25862c7921a32ffd90e034ea09a3"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/full/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/full/item_params.csv",
+      "sha256": "94d9150c7a7bff8f10bece46f88a0534976738bde5c16271cb3671a925a48f13"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_0/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_0/fit.npz",
+      "sha256": "51b66e3da1593888eb1a8e842cf32c90f21b454a02083677c023870bddcc7266"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_0/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_0/fit_manifest.json",
+      "sha256": "09471e85bac75b2c1b22830ee30e12b22d4cf02f0b451b61e8c68c76431a11fe"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_0/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_0/item_params.csv",
+      "sha256": "d5bb1e454555640f1fda348f25deaceba329ddd01192d9412f2d0268698af6dc"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_1/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_1/fit.npz",
+      "sha256": "5afad563723020419d7e00f8d753aae489381498e9eb5d067fbaff7c6cc39c52"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_1/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_1/fit_manifest.json",
+      "sha256": "9e6759fb5674dba723798b034a69c4f8acc0014cc09f11e72adc5400215bef2c"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_1/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_1/item_params.csv",
+      "sha256": "5c4147e04d6f16366e75cff176529621b4d3ae260135f2bd3c57f6b92743601a"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_2/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_2/fit.npz",
+      "sha256": "b0415cd45ef3cd4f260b8cd632f07da91bffb267ca4cc98e7cb97d6f2d18808f"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_2/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_2/fit_manifest.json",
+      "sha256": "ae91a6fe9dcc279f75f37f26fc0117466c1b3c3a65922d5be885b86b182320c6"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_2/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_2/item_params.csv",
+      "sha256": "6734be9688a6bed8d64c9200e0f4c41acb66c795092c7520fc8449138087b940"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_3/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_3/fit.npz",
+      "sha256": "efefa1a10321498c562fc21fe026f47a5100341a52de9a54357edab527116a16"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_3/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_3/fit_manifest.json",
+      "sha256": "7d7c78113dde2f0b828bbda0a7aa999955ec1c3af2fb2cd8d166cbe5cea19f00"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_3/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_3/item_params.csv",
+      "sha256": "57f09a24a3f9384d30a84220fa6bb64daaa460fb6814e302f389c3139f1c80ee"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_4/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_4/fit.npz",
+      "sha256": "14d4f17c6d9add8e9401a323503de00d5f8141b5a073c1938344024583cf1c35"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_4/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_4/fit_manifest.json",
+      "sha256": "b0085520932a9c2f6d8a635fad1fd1266b947ea32ee3641019d1dbbac68067b2"
+    },
+    {
+      "fit_grid": 41,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_041/ridge_0p1/outer_4/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_041/ridge_0p1/outer_4/item_params.csv",
+      "sha256": "7092b001d61ccd3b0ce58d720119d5fee2eeebda90155b4f432bc736b559e51e"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/fit_grid_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/fit_grid_manifest.json",
+      "sha256": "427ac6a6a052c1033c66c189a39b5cdc9eb2f13513a86c06bfade541e5c03e22"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/full/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/full/fit.npz",
+      "sha256": "ee77ba5a148cb18db7f94ddb3af600a660f97730afedde70609b079d633e4177"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/full/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/full/fit_manifest.json",
+      "sha256": "4b835eff245bfe12e671326589d8949133fbd9f4bf2b5cb0a73a54d680bb8d67"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/full/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/full/item_params.csv",
+      "sha256": "0a79f332482d7cd9fb712d9d0b92c54a0c941bd1a74e984f5a3b03016f624d96"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_0/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_0/fit.npz",
+      "sha256": "c0f03ac54b531bb77f0a94b90a6edb699e545e7949205809bf5ddf60e0265862"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_0/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_0/fit_manifest.json",
+      "sha256": "f501d70a1346f66f41f9e22a537c31b726eafdce2d700b18a3c27931d9e66034"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_0/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_0/item_params.csv",
+      "sha256": "f47b63f0815f107e7a0386ae0e14a75a7d700faa536f46f80e3ad6d27357b159"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_1/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_1/fit.npz",
+      "sha256": "25a0e701922239ba969df1f63ddd8a3c699c95c219ab95133e214ac91ebe909e"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_1/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_1/fit_manifest.json",
+      "sha256": "ba5d8eb16ac93e62c976678279b41cc5a75476ec74932e76ea17aaaf49cd917f"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_1/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_1/item_params.csv",
+      "sha256": "cf8b75b9cc9dc514840f820d4259ba8bb98729b005cae46b081c52569e5a9167"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_2/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_2/fit.npz",
+      "sha256": "c8997bf12a740bec1efa49172586c331ba96306a19db2ec425502c294bf34e3a"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_2/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_2/fit_manifest.json",
+      "sha256": "4ba21f0af07595af5a76fe6138b974ebe1f2e4e915eec54200b4c7153df57a16"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_2/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_2/item_params.csv",
+      "sha256": "88993a12a1d0241cf0858f28bd64108a69c75f9cdd8ca2efa6af8ad504f5a888"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_3/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_3/fit.npz",
+      "sha256": "4a5ee519aa4dd3dac6ae4bcef5c008b859e70968daf4e427b7807c8b7bdb078f"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_3/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_3/fit_manifest.json",
+      "sha256": "42b77f8b6601978e8009634c47d1ee41d26483975e7a8ef3d20ce11cc3db0137"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_3/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_3/item_params.csv",
+      "sha256": "58515224dec81a089ffec4002fc3d0ca76ea9e2811609055c3d89654bfb647fb"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_4/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_4/fit.npz",
+      "sha256": "a0e704f5bebce08b980a75cf5f08d4f4a19c8a513c4ce4017eab1a638df73082"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_4/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_4/fit_manifest.json",
+      "sha256": "4b7bb4e3701f6200d820347a124a4a506249ebabc526733237703bb120110c17"
+    },
+    {
+      "fit_grid": 61,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_eap_followup",
+      "source_path_relative_to_run": "fit_cache/grid_061/ridge_0p1/outer_4/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_061/ridge_0p1/outer_4/item_params.csv",
+      "sha256": "2b8df5b45d55bfbf406115a66a366df826a733a43e0c2918d6a9ae05eaa3fc54"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/fit_grid_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/fit_grid_manifest.json",
+      "sha256": "76d2c0bb86cea5caacb265beb9c337797b5bd7ce01dbd70b9fa368884d964f0f"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/full/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/full/fit.npz",
+      "sha256": "928592b9e04b9ffc64abcc46ba636a789f869d20b52a98ee339ea884ff5df24b"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/full/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/full/fit_manifest.json",
+      "sha256": "d40e071c61a8c8c45f2431acda89d27fa2e6373b204be5d7eccf5c7ceed007cf"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/full/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/full/item_params.csv",
+      "sha256": "5b479e7af2542ad6ae8e407288099aa91126a69c2ca5bb4b75034e91d3171b7b"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_0/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_0/fit.npz",
+      "sha256": "339d6805b38bf7a2bc774de2c211221038f0ae1c65ef9ba2b563d61f33a2d587"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_0/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_0/fit_manifest.json",
+      "sha256": "98ad7831256dc3a2cf888ba5723db69721924466a15afdd933dc6a976bc7d9b1"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_0/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_0/item_params.csv",
+      "sha256": "ec7738176f9973c72fc284c21eddc5f305168e8537b6a2b603a721973fff1436"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_1/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_1/fit.npz",
+      "sha256": "5bc4c478a3489833e567a21a3741e5cea27910644c5c4bd06a69e6365d493396"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_1/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_1/fit_manifest.json",
+      "sha256": "8447b17df83e4255cdfb5ee000cced1f2d10702784684271fd82789e32a9bae5"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_1/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_1/item_params.csv",
+      "sha256": "89dfd717f1cee0ae45efd5fc11b7e8d3eea121a52fe2f28900e333b63d909ac6"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_2/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_2/fit.npz",
+      "sha256": "cbbd603ca7af82df157dbeba803fa8ba242aedbb61e4d398db7e5061dc0c8b44"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_2/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_2/fit_manifest.json",
+      "sha256": "0c3fc9e951429e85a7cef069ade7838d0c6c2c708ae28eaf4b6fa4f970acf492"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_2/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_2/item_params.csv",
+      "sha256": "0ef3b229f9759c96f2a2d8adcf1369de0e67f8f8a5eab0c418bcbbe052378e0e"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_3/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_3/fit.npz",
+      "sha256": "4a6e956c008699e9b408885ce18b6ed47ab8e3e119b98e46137368d008fad58c"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_3/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_3/fit_manifest.json",
+      "sha256": "53741bf9e3a4290cd1101fef43278c8b0f162c13f9011f10c2d82e6bbd182e36"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_3/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_3/item_params.csv",
+      "sha256": "009767eb8a93d803da964574e58f27f32b0da703f309ef8826e51df5fb2de9c6"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_4/fit.npz",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_4/fit.npz",
+      "sha256": "9c176302f5e4338e4c89f4046c8ce7fac87fd1eb32d6837f3f7152ced5f652df"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_4/fit_manifest.json",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_4/fit_manifest.json",
+      "sha256": "1a0520affa7bb0f038b4ec1967cefe6957ee4d6d7500b9a3a78f00a1ec7702aa"
+    },
+    {
+      "fit_grid": 81,
+      "source_run_relative_to_repo": "runs/calibration/InFoBench_remediation_v1_dense_followup",
+      "source_path_relative_to_run": "fit_cache/grid_081/ridge_0p1/outer_4/item_params.csv",
+      "destination_path_relative_to_study": "fit_cache/grid_081/ridge_0p1/outer_4/item_params.csv",
+      "sha256": "27e85f154458a4e7194610cb00ab0ac207f23634180c8926eddafdc08c8c43bb"
+    }
+  ]
+}

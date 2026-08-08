@@ -1,0 +1,75 @@
+# tutor-cat configuration (all PRD-configurable knobs live here)
+
+data:
+  scenarios: data/TutorBench/scenarios.jsonl
+  # Q-matrix + item params used by the MIRT model. rubrics_qmatrix_final.jsonl
+  # carries metadata_heuristic_v1 params (still synthetic, not empirical MIRT
+  # calibration). Alternatives: rubrics_calibrated.jsonl (heuristic-v0 placeholder),
+  # rubrics_qmatrix.jsonl (q-mapping only). Swap here when real calibration lands.
+  rubrics: data/TutorBench/rubrics_qmatrix_final.jsonl
+
+run:
+  seed: 42                 # master seed; per-(tutor, mode) run seeds derive from it
+  top_n: 5                 # top-n scenarios, uniform seeded pick (exposure control)
+  theta_init: [0.0, 0.0, 0.0]          # [content, diagnosis, scaffolding]
+  u_init_diag: [1.0, 1.0, 1.0]         # initial uncertainty diag (SE = 1.0 each)
+  max_se:                  # stopping rule: every skill below its max SE...
+    content: 0.30
+    diagnosis: 0.30
+    scaffolding: 0.30
+  min_evals_per_skill: 15  # ...and at least this many scorable evaluations each
+  max_scenarios: 50        # hard cap; stopping here reports precision not reached
+  output_dir: runs
+  # 1100 criteria map to no skill (tone/format/affect). "judge" = grade them so
+  # critical failures are caught (they never touch theta/SE); "skip" = save the calls.
+  unmapped_criteria: judge
+
+judge:
+  # Scoring backend: "prometheus" (default, the LLM judge below) or "ifeval_verifier"
+  # (deterministic code verifier for IFEval — no LLM/endpoint used, ignores base_url/
+  # model). Set to ifeval_verifier only for an IFEval run; see data/IFEval/README.md.
+  backend: prometheus
+  # Prometheus 2 7B served by vLLM on an MIT-cluster GPU node, reached through
+  # an SSH tunnel -> appears at localhost:8000. Only the MODEL runs on the
+  # cluster; this pipeline stays local. See scripts/cluster/:
+  #   setup_prometheus.sh (once, on login node) -> sbatch serve_prometheus.sbatch
+  #   -> scripts/cluster/tunnel.sh <node> <user>@<login-host>  (local, keep open)
+  # (Bring-up alternative: point base_url at the TrueFoundry gateway and model
+  #  at openai-group/gpt-5.5 — manifest records judge_model per run.)
+  base_url: http://localhost:8000/v1
+  model: prometheus-eval/prometheus-7b-v2.0
+  api_key_env: JUDGE_API_KEY   # unused for the tunneled vLLM server
+  temperature: 0.0
+  # Prometheus writes a feedback paragraph before the "[RESULT] <n>" line; 512
+  # truncated it mid-feedback (no score -> unparseable), so give it room.
+  max_tokens: 1024
+  seed: 42
+  # Prometheus 2 answers with a 1-5 "[RESULT] <n>" score even though the prompt
+  # asks for pass/fail; map score >= this threshold to a pass. Tune during judge
+  # validation (Macro-F1, critical-failure sensitivity). Recorded per manifest.
+  result_pass_threshold: 4
+
+# All tutors route through the TrueFoundry gateway (OpenAI-compatible).
+# Confirm the exact base_url from the gateway playground's "Get Code" snippet.
+tutors:
+  - name: gpt-5.5
+    provider: openai
+    model: openai-group/gpt-5.5
+    base_url: https://tfy.promptlens.trilogy.com/api/llm/api/inference/openai
+    api_key_env: TFY_API_KEY
+    temperature: 0.0
+  - name: opus-4.8
+    provider: openai          # gateway speaks OpenAI format for Claude too
+    model: claude-group/claude-opus-4-8
+    base_url: https://tfy.promptlens.trilogy.com/api/llm/api/inference/openai
+    api_key_env: TFY_API_KEY
+    temperature: 0.0
+    max_tokens: 4096
+  - name: gemini-3.6-flash    # note: gateway offers 3.6, PRD said 3.5
+    provider: openai
+    model: gemini-group/gemini-3.6-flash
+    base_url: https://tfy.promptlens.trilogy.com/api/llm/api/inference/openai
+    api_key_env: TFY_API_KEY
+    temperature: 0.0
+
+cache_dir: cache               # tutor responses cached per (model, scenario)

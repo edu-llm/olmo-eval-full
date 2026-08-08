@@ -1,0 +1,131 @@
+{
+  "scope": {
+    "panels": 25,
+    "model_repeat_cases": 260,
+    "unique_models": 52,
+    "unique_model_families": 22,
+    "full_frozen_scope": true
+  },
+  "online_reproduction": {
+    "n_cases": 260,
+    "all_exact": true
+  },
+  "arms": {
+    "online": {
+      "n_models": 52,
+      "mean_honest_target_rate": 0.13846153846153847,
+      "mean_nominal_precision_rate": 0.95,
+      "mean_mwle_convergence_rate": 1.0,
+      "scenarios": {
+        "mean_of_model_means": 25.78846153846154,
+        "median_of_model_means": 23.1,
+        "p90_of_model_means": 37.86
+      },
+      "mean_final_eap_se": 0.220968819444749,
+      "mean_disjoint_pass_rate_mae": 0.054221775220964226,
+      "recovery": {
+        "n": 52,
+        "r": 0.9856451257515914,
+        "slope": 1.0959129899534175,
+        "mae": 0.3990746008142416,
+        "bias": 0.010392684313924375
+      }
+    },
+    "eap_801": {
+      "n_models": 52,
+      "mean_honest_target_rate": 0.8576923076923075,
+      "mean_nominal_precision_rate": 0.8576923076923075,
+      "mean_mwle_convergence_rate": 1.0,
+      "scenarios": {
+        "mean_of_model_means": 29.92307692307692,
+        "median_of_model_means": 26.5,
+        "p90_of_model_means": 49.94
+      },
+      "mean_final_eap_se": 0.20789462755054958,
+      "mean_disjoint_pass_rate_mae": 0.05271812778910056,
+      "recovery": {
+        "n": 52,
+        "r": 0.9864735943302994,
+        "slope": 1.0901098327005316,
+        "mae": 0.38006301781923685,
+        "bias": 0.0038166900774115908
+      }
+    },
+    "eap_1601": {
+      "n_models": 52,
+      "mean_honest_target_rate": 0.8576923076923075,
+      "mean_nominal_precision_rate": 0.8576923076923075,
+      "mean_mwle_convergence_rate": 1.0,
+      "scenarios": {
+        "mean_of_model_means": 29.92307692307692,
+        "median_of_model_means": 26.5,
+        "p90_of_model_means": 49.94
+      },
+      "mean_final_eap_se": 0.2078946275506405,
+      "mean_disjoint_pass_rate_mae": 0.05271812778910056,
+      "recovery": {
+        "n": 52,
+        "r": 0.9864735943302992,
+        "slope": 1.0901098327005299,
+        "mae": 0.38006301781923746,
+        "bias": 0.0038166900774164628
+      }
+    }
+  },
+  "paired_online_vs_eap": {
+    "target_rate_improvement": 0.7192307692307693,
+    "mean_scenario_difference": 4.134615384615385,
+    "median_paired_scenario_difference": 2.6000000000000014,
+    "difference_of_arm_median_scenarios": 3.3999999999999986,
+    "recovery_r_difference": 0.0008284685787079971,
+    "theta_mae_difference": -0.019011582995004772
+  },
+  "family_bootstrap_95ci": {
+    "target_rate_improvement": [
+      0.607839366515837,
+      0.8075545689974102
+    ],
+    "mean_scenario_difference": [
+      3.2515991763898424,
+      5.113098747236551
+    ],
+    "median_paired_scenario_difference": [
+      1.8000000000000007,
+      4.199999999999999
+    ],
+    "difference_of_arm_median_scenarios": [
+      1.1000000000000014,
+      5.204999999999972
+    ],
+    "recovery_r_difference": [
+      -6.200671030262283e-05,
+      0.001793096989714673
+    ],
+    "theta_mae_difference": [
+      -0.04077504862570261,
+      0.006282623614976794
+    ]
+  },
+  "numerical_801_vs_1601": {
+    "n_cases": 260,
+    "stop_agreement_rate": 1.0,
+    "path_prefix_consistency_rate": 1.0,
+    "maximum_final_eap_se_difference_on_matching_stops": 8.87023787754515e-12
+  },
+  "acceptance": {
+    "gates": {
+      "online_reproduction_exact": true,
+      "honest_target_rate_strictly_higher": true,
+      "honest_target_improvement_ci_nonnegative": true,
+      "recovery_r_noninferior": true,
+      "theta_mae_noninferior": true,
+      "eap_recovery_slope_in_range": true,
+      "median_length_not_increased": false,
+      "dense_grid_stop_agreement": true,
+      "dense_grid_final_se_stable": true
+    },
+    "all_passed": false,
+    "decision": "do_not_adopt",
+    "note": "Even a passing prototype would not authorize deployment because the underlying CAT policy previously failed Phase-3 validation."
+  }
+}

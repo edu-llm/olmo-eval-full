@@ -1,0 +1,13 @@
+{
+  "rule": "one_standard_error_then_strongest_regularization",
+  "production_grid": 5,
+  "best_mean_ridge": 0.1,
+  "one_standard_error_boundary": 0.4081108318283461,
+  "eligible_ridges": [
+    0.01,
+    0.1
+  ],
+  "selected_ridge": 0.1,
+  "selected_fit_dir": "runs/calibration/InFoBench_playbook_full/sensitivity/grid5_ridge0p1/fit",
+  "grid_sweep_role": "numerical sensitivity only; it does not tune on OOS data"
+}

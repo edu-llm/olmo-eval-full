@@ -1,0 +1,14 @@
+{
+  "n_models": 52,
+  "model_keys_identical": true,
+  "maximum_full_theta_shift": 0.0026471180818530005,
+  "maximum_heldout_theta_shift": 0.0010560083779268814,
+  "maximum_full_theta_shift_allowed": 0.005,
+  "maximum_heldout_theta_shift_allowed": 0.005,
+  "passed": true,
+  "reference_method": "normal_trapezoid",
+  "comparison_method": "gauss_hermite_scipy",
+  "requested_node_count": 1601,
+  "reference_effective_node_count": 1601,
+  "comparison_effective_node_count": 939
+}

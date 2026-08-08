@@ -83,5 +83,66 @@ logs/
 # Eval output
 main/
 
+# HELM Classic downloaded response CSVs + caches/logs
+HELM/*/
+HELM/.cache/
+HELM/download_full.log
+!HELM/README.md
+!HELM/download_classic_responses.py
+
+# OpenLM Leaderboard per-question response CSVs (~26GB); re-download via script
+AdaptiveTesting/Inputs/OpenLM/ifeval/
+AdaptiveTesting/Inputs/OpenLM/bbh/
+AdaptiveTesting/Inputs/OpenLM/gpqa/
+AdaptiveTesting/Inputs/OpenLM/math/
+AdaptiveTesting/Inputs/OpenLM/musr/
+AdaptiveTesting/Inputs/OpenLM/logs/
+AdaptiveTesting/Inputs/OpenLM/__pycache__/
+AdaptiveTesting/Experiments/openlm_*/**/.mplcache/
+AdaptiveTesting/Experiments/openlm_*/**/run_all.pid
+
 # LitSearch rerank pools: built locally, hosted on HF (allenai/litsearch-rerank-pools)
 src/olmo_eval/evals/tasks/data/litsearch_rerank_pools.jsonl
+
+# AdaptiveTesting inference sweep: runtime outputs + normalized dataset caches
+AdaptiveTesting/Outputs/
+AdaptiveTesting/Inputs/MCQ/Benchmarks/
+AdaptiveTesting/Inputs/Open/Benchmarks/
+
+# ATLAS vendor: keep ARC bank + scripts; skip bulky upstream clones
+AdaptiveTesting/Inputs/ATLAS/.git/
+AdaptiveTesting/Inputs/ATLAS/experiments/
+AdaptiveTesting/Inputs/ATLAS/data/data.zip
+AdaptiveTesting/Inputs/ATLAS/gsm8k/*
+AdaptiveTesting/Inputs/ATLAS/hellaswag/*
+AdaptiveTesting/Inputs/ATLAS/truthfulqa/
+AdaptiveTesting/Inputs/ATLAS/winogrande/*
+# ...but keep the calibrated 3PL banks + id bridges the CAT needs to run
+# (small CSVs, same as the committed ARC bank). Everything else in these dirs
+# (random baselines, pirt/plots, response matrices) stays ignored.
+!AdaptiveTesting/Inputs/ATLAS/gsm8k/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/gsm8k/atlas_idx_to_question_id.csv
+!AdaptiveTesting/Inputs/ATLAS/hellaswag/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/hellaswag/atlas_idx_to_question_id.csv
+!AdaptiveTesting/Inputs/ATLAS/winogrande/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/winogrande/atlas_idx_to_question_id.csv
+# OpenLM (Open LLM Leaderboard v2) banks promoted into CAT.
+!AdaptiveTesting/Inputs/ATLAS/ifeval/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/ifeval/atlas_idx_to_question_id.csv
+!AdaptiveTesting/Inputs/ATLAS/math/irt_item_parameters_combined.csv
+!AdaptiveTesting/Inputs/ATLAS/math/atlas_idx_to_question_id.csv
+AdaptiveTesting/Inputs/ATLAS/arc/atlas_arc_random/
+AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/irt_item_parameters_[0-9]*.csv
+AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/irt_person_scores_*.csv
+AdaptiveTesting/Inputs/ATLAS/arc_0p5_7b/m2_*.csv
+
+# macOS archive cruft + large local bundles (results live in S3, not git)
+AdaptiveTesting/**/__MACOSX/
+AdaptiveTesting/Inputs/Open/LLM-Judge/aws_judge_handoff.zip
+AdaptiveTesting/Inputs/Open/LLM-Judge/aws_judge_handoff (1).zip
+AdaptiveTesting/Inputs/Open/LLM-Judge/*.tar
+AdaptiveTesting/Test/Inference/*.zip
+AdaptiveTesting/Experiments/**/.mplcache/
+
+# Local secrets (never commit)
+.apienv

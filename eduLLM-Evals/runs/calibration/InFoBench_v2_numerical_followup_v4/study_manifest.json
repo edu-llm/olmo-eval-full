@@ -1,0 +1,91 @@
+{
+  "adaptive_results_inspected": false,
+  "adaptive_runs": 0,
+  "calibration_model_selection_performed": false,
+  "config": "configs/infobench_v2_numerical_followup_v4.json",
+  "config_sha256": "0e31973f4b27718e2aaffe5b64fd0a994c5c3a07acb221e05be8cb5cb0bb6290",
+  "decision_sha256": "c16a0c3200cf4b53227a5064fee9f879bc7bfa1f34b5f93ae8677f62eac4f108",
+  "finished_at": "2026-08-05T23:06:17.160480+00:00",
+  "historical_fit_or_checkpoint_artifacts_reused": 0,
+  "lock_sha256": "2bdc6abcc01b0ef97542673ffdd09374577e1eaaf1dd5fea5c05126f6f723994",
+  "required_total_new_fits": 54,
+  "schema_version": "infobench-v2-numerical-followup-run-v4",
+  "started_at": "2026-08-05T21:53:16.165126+00:00",
+  "status": "complete_pass",
+  "study_signature": {
+    "adaptive_runs": 0,
+    "canonical_sha256": "238b06cf04dce8920e58d4de9b36cd2ab6d34e1d2288931f5baf074b38e9b561",
+    "code_sha256": {
+      "scripts/calibrate_mirt.py": "e0c296869838062c72c1ea73c9a7bee62800e1069f1f6657a815689189be4272",
+      "scripts/calibrate_partial.py": "4fb26c5a3c99f028a17b4aa3d1d236ab996f76834fac2ee25edd00bfd0734bef",
+      "scripts/run_infobench_v2_numerical_followup_v4.py": "2d18630b648ca681744f07d54b4fbc4ef1a556377accd49ca314314e41b70987",
+      "tutor_cat/__init__.py": "44b2c8b4c704bc4b43d80a3bdb5619a2a50ac8f213404daf8795fb6cf5a32aef",
+      "tutor_cat/mcq_irt/__init__.py": "0e7ccb35385f201e5744682ed281dcad9d7d030b853d665dc9762cfc28f47277",
+      "tutor_cat/mcq_irt/calibrate.py": "8cafce1bfad949b32fa666a49ca7f73448c4c8d7b47f07f480510c602a8e5f6e",
+      "tutor_cat/skill_structure.py": "7f6b600e9675f6fc58b82abcf01fbf176cc62f4897a675e50ee23ae37501a6ee"
+    },
+    "config_sha256": "0e31973f4b27718e2aaffe5b64fd0a994c5c3a07acb221e05be8cb5cb0bb6290",
+    "environment": {
+      "canonical_sha256": "81f9ca6f6833a85ac2bd66c2c6881e03f9ac04b5e4a8f478619bf909c3b2ae66",
+      "implementation": "CPython",
+      "packages": {
+        "numpy": "2.4.6",
+        "pandas": "3.0.5",
+        "scipy": "1.18.0"
+      },
+      "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+      "python": "3.13.13 (main, Apr 14 2026, 14:32:41) [Clang 22.1.3 ]",
+      "thread_environment": {
+        "MKL_NUM_THREADS": null,
+        "OMP_NUM_THREADS": null,
+        "OPENBLAS_NUM_THREADS": null
+      }
+    },
+    "environment_sha256": "81f9ca6f6833a85ac2bd66c2c6881e03f9ac04b5e4a8f478619bf909c3b2ae66",
+    "fit_nodes": [
+      401,
+      801
+    ],
+    "frozen_contract_sha256": "0044a89b24aa0415d16abe123d7d9928c2d30b75a4c947e5d84656a879e7d555",
+    "historical_evidence_sha256": {
+      "v1_aborted": {
+        "output_file_count": 295,
+        "output_tree_sha256": "d6663e5ab17a6d07f5f012a6d5de145b31aa350a250525b078d203e5b2a5ba3c",
+        "promotable": false
+      },
+      "v2_terminal_nonpromotable": {
+        "output_file_count": 544,
+        "output_tree_sha256": "739089f8a1d58fdfb65b141cc03c3c9ff496ddefe02c703f9ed7d35fa8f5b77f",
+        "promotable": false
+      },
+      "v3_terminal_blocked": {
+        "output_file_count": 544,
+        "output_tree_sha256": "76bf3369312648067028d9a1842afa0a0964bd8d37759d6c5a4164732c20991f",
+        "promotable": false
+      }
+    },
+    "historical_fit_or_checkpoint_artifacts_reused": 0,
+    "input_sha256": {
+      "configs/infobench_v2_splits.manifest.json": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f",
+      "data/InFoBench/rubrics.jsonl": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+      "data/InFoBench/scenarios.jsonl": "480540177cd06165587ff0030d60cf6705da0429da6586e3b5f244e409c6416b",
+      "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "required_total_new_fits": 54,
+    "schema_version": "infobench-v2-numerical-followup-run-v4",
+    "scope_ids": [
+      "full",
+      "outer_0",
+      "outer_1",
+      "outer_2",
+      "outer_3",
+      "outer_4"
+    ],
+    "spec_ids": [
+      "1pl_fixed_a1",
+      "log_shrinkage_2pl_lambda16",
+      "log_shrinkage_2pl_lambda4"
+    ]
+  },
+  "study_signature_sha256": "238b06cf04dce8920e58d4de9b36cd2ab6d34e1d2288931f5baf074b38e9b561"
+}

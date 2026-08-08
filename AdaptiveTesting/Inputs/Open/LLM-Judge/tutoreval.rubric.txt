@@ -1,0 +1,6 @@
+[Is the answer factually correct and does it cover the key points from the reference?]
+Score 1: Factually wrong or off-topic; covers none of the key points.
+Score 2: Major factual errors; covers few key points.
+Score 3: Mostly on-topic but with errors or missing several key points.
+Score 4: Factually correct and covers most key points, with minor omissions.
+Score 5: Factually correct, precise, and covers all the key points in the reference.

@@ -1,0 +1,185 @@
+{
+  "schema_version": "infobench-v2-repeated-split-config-v1",
+  "status": "frozen_before_v2_fitting",
+  "benchmark": "InFoBench",
+  "inputs": {
+    "response_matrix": {
+      "path": "runs/calibration/InFoBench_full_20260804/inputs/response_matrix.csv",
+      "sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c"
+    },
+    "v1_split_config": {
+      "path": "configs/infobench_remediation_splits_v1.json",
+      "sha256": "5bce20702cd1e33566321d0a2ae5f0dd8713a173d4f8c0dd1a05a4b6d8021e65"
+    },
+    "v1_split_manifest": {
+      "path": "configs/infobench_remediation_splits_v1.manifest.json",
+      "sha256": "3662ad502585799afa6d0e665a08f94f480f41c09c78ce472a20e209e5f14f95"
+    },
+    "v1_scenario_assignments": {
+      "path": "configs/infobench_remediation_splits_v1.scenarios.csv",
+      "sha256": "10075f8de40cd6677ae233c27e52de803fd9288773fe605a3d52a2159d2d2e4b"
+    }
+  },
+  "expectations": {
+    "models": 52,
+    "model_families": 22,
+    "scenarios": 500,
+    "criteria": 2250
+  },
+  "cross_validation": {
+    "repetitions": 5,
+    "outer_folds": 5,
+    "inner_folds": 4,
+    "master_seed": 20260805,
+    "repeat_zero_source": "exact_v1_outer_family_partition",
+    "generated_repeat_indices": [1, 2, 3, 4],
+    "outer_fold_model_counts": [11, 10, 10, 10, 11],
+    "minimum_families_per_generated_fold": 4,
+    "maximum_families_per_generated_fold": 5,
+    "maximum_families_from_each_balance_stratum_per_generated_fold": 1,
+    "maximum_absolute_model_weighted_stratum_rank_deviation": 0.4,
+    "generation_algorithm": "seeded_sha256_ordered_depth_first_exact_capacity_v1",
+    "balance_field": "frozen_rank_quintile_of_family_mean_observed_pass_rate",
+    "balance_field_role": "categorical_assignment_balance_only",
+    "seed_search": false,
+    "outcome_optimization": false
+  },
+  "balance_strata": {
+    "q1_lowest": [
+      "mgpt",
+      "smol_llama",
+      "smollm",
+      "open_llama",
+      "gemma"
+    ],
+    "q2": [
+      "phi",
+      "eurollm",
+      "salamandra",
+      "olmo"
+    ],
+    "q3": [
+      "qwen",
+      "minicpm",
+      "yi",
+      "danube"
+    ],
+    "q4": [
+      "orca_mini",
+      "llama_3_2",
+      "powerlm",
+      "falcon3"
+    ],
+    "q5_highest": [
+      "granite",
+      "stablelm",
+      "raspberry",
+      "ace",
+      "exaone"
+    ]
+  },
+  "balance_stratum_sizes": [5, 4, 4, 4, 5],
+  "model_families": {
+    "ace": [
+      "nvidia/AceInstruct-1.5B"
+    ],
+    "danube": [
+      "h2oai/h2o-danube-1.8b-chat",
+      "h2oai/h2o-danube2-1.8b-base",
+      "h2oai/h2o-danube2-1.8b-chat"
+    ],
+    "eurollm": [
+      "utter-project/EuroLLM-1.7B",
+      "utter-project/EuroLLM-1.7B-Instruct"
+    ],
+    "exaone": [
+      "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct"
+    ],
+    "falcon3": [
+      "tiiuae/Falcon3-1B-Instruct",
+      "tiiuae/Falcon3-3B-Base",
+      "tiiuae/Falcon3-3B-Instruct"
+    ],
+    "gemma": [
+      "google/gemma-2-2b",
+      "google/gemma-2b"
+    ],
+    "granite": [
+      "ibm-granite/granite-3.0-2b-base",
+      "ibm-granite/granite-3.1-2b-base",
+      "ibm-granite/granite-3.1-2b-instruct",
+      "ibm-granite/granite-7b-instruct"
+    ],
+    "llama_3_2": [
+      "meta-llama/Llama-3.2-1B",
+      "meta-llama/Llama-3.2-1B-Instruct",
+      "meta-llama/Llama-3.2-3B-Instruct"
+    ],
+    "mgpt": [
+      "ai-forever/mGPT"
+    ],
+    "minicpm": [
+      "OpenBMB/MiniCPM4-0.5B",
+      "openbmb/MiniCPM-1B-sft-bf16",
+      "openbmb/MiniCPM-2B-sft-bf16"
+    ],
+    "olmo": [
+      "allenai/OLMo-1B-hf",
+      "allenai/OLMo-2-0425-1B",
+      "allenai/OLMo-2-0425-1B-DPO",
+      "allenai/OLMo-2-0425-1B-Instruct"
+    ],
+    "open_llama": [
+      "openlm-research/open_llama_3b"
+    ],
+    "orca_mini": [
+      "pankajmathur/orca_mini_3b",
+      "pankajmathur/orca_mini_v9_5_3B-Instruct"
+    ],
+    "phi": [
+      "microsoft/phi-1_5"
+    ],
+    "powerlm": [
+      "ibm/PowerLM-3b"
+    ],
+    "qwen": [
+      "Qwen/Qwen1.5-1.8B",
+      "Qwen/Qwen1.5-1.8B-Chat",
+      "Qwen/Qwen2-0.5B",
+      "Qwen/Qwen2.5-0.5B-Instruct"
+    ],
+    "raspberry": [
+      "arcee-ai/raspberry-3B"
+    ],
+    "salamandra": [
+      "BSC-LT/salamandra-2b",
+      "BSC-LT/salamandra-2b-instruct",
+      "BSC-LT/salamandra-7b",
+      "BSC-LT/salamandra-7b-instruct"
+    ],
+    "smol_llama": [
+      "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "BEE-spoke-data/smol_llama-220M-openhermes"
+    ],
+    "smollm": [
+      "HuggingFaceTB/SmolLM2-360M"
+    ],
+    "stablelm": [
+      "stabilityai/stablelm-2-1_6b-chat",
+      "stabilityai/stablelm-2-zephyr-1_6b",
+      "stabilityai/stablelm-zephyr-3b"
+    ],
+    "yi": [
+      "01-ai/Yi-1.5-6B",
+      "01-ai/Yi-1.5-6B-Chat",
+      "01-ai/Yi-6B",
+      "01-ai/Yi-6B-200K",
+      "01-ai/Yi-6B-Chat"
+    ]
+  },
+  "outputs": {
+    "manifest": "configs/infobench_v2_splits.manifest.json",
+    "model_assignments_csv": "configs/infobench_v2_splits.models.csv",
+    "scenario_assignments_csv": "configs/infobench_v2_splits.scenarios.csv"
+  }
+}

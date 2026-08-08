@@ -1,0 +1,138 @@
+{
+  "continuation_source_sha256": null,
+  "family": "log-shrinkage-2pl",
+  "fit_sha256": "f15126a2d5f128a6dd59ca2f9e17f630fc8e0f27faf06d1fd4b7274ddff9424e",
+  "fit_validity": {
+    "all_item_optimizers_finished": true,
+    "arrays_and_objective_finite": true,
+    "converged": true,
+    "final_exact_recomputation": true,
+    "fit_valid": true,
+    "inner_gradient_within_tolerance": true,
+    "loadings_valid": true,
+    "maximum_allowed_inner_gradient": 1e-06,
+    "maximum_observed_inner_gradient": 8.881784197001252e-15,
+    "penalized_objective_monotone": true,
+    "returned_iterate_matches_last_trace": true,
+    "stopped_before_extra_mstep": true
+  },
+  "historical_fit_or_checkpoint_artifacts_reused": 0,
+  "loglik": -30728.081662844346,
+  "n_exportable": 2098,
+  "n_items": 2098,
+  "n_iter": 889,
+  "n_observed_train_cells": 88099,
+  "nodes": 401,
+  "parameter_csv_sha256": "1b55d597669277ef1a339f19c86f68d35d09a1581becb49200f0ad797a63a6dc",
+  "penalized_objective": -31240.110864075716,
+  "schema_version": "infobench-v2-numerical-followup-run-v4",
+  "scope": "outer_1",
+  "spec_id": "log_shrinkage_2pl_lambda16",
+  "stage_inputs": {
+    "canonical_specification": {
+      "cache_key": "calibration-spec-v1-a143fc732de9abd69f65262642bddde579c9d23003f2622104671f075e18066a",
+      "difficulty": {
+        "mode": "estimated",
+        "parameterization": "unpenalized-offset-b"
+      },
+      "discrimination": {
+        "constraint": "strictly-positive",
+        "mode": "estimated",
+        "parameterization": "a=exp(log_a)"
+      },
+      "estimation": "bock-aitkin-marginal-maximum-likelihood-em",
+      "family": "log-shrinkage-2pl",
+      "regularization": {
+        "center": "log(a)=0 (a=1)",
+        "kind": "zero-mean-gaussian-prior-on-log-a",
+        "log_a_prior_sd": 0.25,
+        "log_a_shrinkage": 16.0,
+        "penalty": "0.5 * log_a_shrinkage * sum(log(a)^2)",
+        "ridge": null
+      },
+      "schema_version": 1
+    },
+    "continuation_source_sha256": null,
+    "convergence": {
+      "consecutive_convergence_passes": 2,
+      "fit_max_iter": 1500,
+      "maximum_inner_gradient": 1e-06,
+      "mode": "returned_iterate",
+      "objective_tolerance": 0.0001,
+      "parameter_tolerance": 5e-05,
+      "require_all_item_optimizers_finished": true,
+      "require_monotone_penalized_objective": true,
+      "require_returned_iterate_matches_trace": true
+    },
+    "fit_integration": {
+      "cold_nodes": [
+        401,
+        801
+      ],
+      "comparison": "401_vs_801",
+      "continuation_nodes": [
+        801
+      ],
+      "fit_nodes": [
+        401,
+        801
+      ],
+      "linear_bound": 8.0,
+      "method": "normal_trapezoid"
+    },
+    "nodes": 401,
+    "response_matrix_sha256": "087948fcaa884cde6660df1fb4964072ec60fe8aee398e293ed5f74db8f3f27c",
+    "rubrics_sha256": "a2ebd7bf1665edce945d1b4e117f6e039556e5289f865ed31fd6cb0d6f71ad10",
+    "scope": "outer_1",
+    "spec_id": "log_shrinkage_2pl_lambda16",
+    "split_manifest_sha256": "50744817cb05acaf6cf18cc2e71eaf8833f4fc44ee68c4408c608794ef25208f",
+    "start": "cold",
+    "train_model_ids": [
+      "01-ai/Yi-1.5-6B",
+      "01-ai/Yi-1.5-6B-Chat",
+      "01-ai/Yi-6B",
+      "01-ai/Yi-6B-200K",
+      "01-ai/Yi-6B-Chat",
+      "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "BEE-spoke-data/smol_llama-220M-openhermes",
+      "BSC-LT/salamandra-2b",
+      "BSC-LT/salamandra-2b-instruct",
+      "BSC-LT/salamandra-7b",
+      "BSC-LT/salamandra-7b-instruct",
+      "HuggingFaceTB/SmolLM2-360M",
+      "Qwen/Qwen1.5-1.8B",
+      "Qwen/Qwen1.5-1.8B-Chat",
+      "Qwen/Qwen2-0.5B",
+      "Qwen/Qwen2.5-0.5B-Instruct",
+      "ai-forever/mGPT",
+      "arcee-ai/raspberry-3B",
+      "google/gemma-2-2b",
+      "google/gemma-2b",
+      "h2oai/h2o-danube-1.8b-chat",
+      "h2oai/h2o-danube2-1.8b-base",
+      "h2oai/h2o-danube2-1.8b-chat",
+      "ibm-granite/granite-3.0-2b-base",
+      "ibm-granite/granite-3.1-2b-base",
+      "ibm-granite/granite-3.1-2b-instruct",
+      "ibm-granite/granite-7b-instruct",
+      "ibm/PowerLM-3b",
+      "meta-llama/Llama-3.2-1B",
+      "meta-llama/Llama-3.2-1B-Instruct",
+      "meta-llama/Llama-3.2-3B-Instruct",
+      "microsoft/phi-1_5",
+      "pankajmathur/orca_mini_3b",
+      "pankajmathur/orca_mini_v9_5_3B-Instruct",
+      "stabilityai/stablelm-2-1_6b-chat",
+      "stabilityai/stablelm-2-zephyr-1_6b",
+      "stabilityai/stablelm-zephyr-3b",
+      "tiiuae/Falcon3-1B-Instruct",
+      "tiiuae/Falcon3-3B-Base",
+      "tiiuae/Falcon3-3B-Instruct",
+      "utter-project/EuroLLM-1.7B",
+      "utter-project/EuroLLM-1.7B-Instruct"
+    ]
+  },
+  "stage_inputs_sha256": "5bec72bc757ddf117bf2cd994289bf530b6012755842a47dc06da72a74681175",
+  "start": "cold",
+  "trace_sha256": "367f70eaba060da43ee9cc78795c7bc827b2b2a47352b4460c9dde867afacfa6"
+}

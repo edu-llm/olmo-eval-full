@@ -1,0 +1,234 @@
+# ---------------------------------------------------------------------------
+# Secrets / environment
+# ---------------------------------------------------------------------------
+.env
+!.env.example
+*.pem
+
+# ---------------------------------------------------------------------------
+# Python build + caches
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.mplcache/
+.pytest_cache/
+build/
+full200-results/
+Full200Run/
+# Calibration handoff bundle (huge; lives in S3/local, never in git) + extractions
+qwen_calibration_handoff_32k_20260728/
+qwen_calibration_handoff_32k_20260728.zip
+handoff_extract/
+supplement_handoff_build/
+qwen_calibration_supplement_20260729.zip
+# Ad-hoc local data dumps (hundreds of MB; regenerable from runs)
+run_data.jsonl
+run_data (1).csv
+
+# Virtual environments
+# ---------------------------------------------------------------------------
+.venv
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# IDE / OS cruft
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.impeccable
+
+# ---------------------------------------------------------------------------
+# Run outputs / scratch directories
+# ---------------------------------------------------------------------------
+runs/
+cache/
+dryrun/
+smoke_runs/
+qmatrix_logs/
+qmatrix_verify_logs/
+curation/tranche/
+
+# Allow the human judge-validation grader packet artifacts back in.
+!runs/judge_validation_v1/
+!runs/judge_validation_v1/grader_packets/
+!runs/judge_validation_v1/grader_packets/*.md
+!runs/judge_validation_v1/grader_packets/*.csv
+!runs/judge_validation_v1/sample_scenarios.jsonl
+!runs/judge_validation_v1/sample_rubrics.jsonl
+
+# ---------------------------------------------------------------------------
+# staging/ = scratch (multi-GB total): derived response matrices, supplement
+# extractions (~600MB), k-fold param dumps, ad-hoc fitters, per-run console
+# logs, and the big fitted-item CSV. None of it is a deliverable and it is all
+# regenerable from runs. The shareable CAT + calibration deliverables (figures,
+# summary tables, metrics, manifest) are copied into reports/ (tracked).
+#
+# Written as `staging/**` + a directory re-include rather than a bare `staging/`
+# so the small fit manifests below can be negated: git will not descend into an
+# excluded DIRECTORY, so `staging/` would make any negation a silent no-op.
+# ---------------------------------------------------------------------------
+staging/**
+!staging/**/
+
+# Exception: the fit audit trail (~60KB each). These carry the exact argv, the
+# response-matrix sha256, EM convergence, the AIC/BIC model comparison and the
+# latent correlation matrix -- the evidence behind the dimensionality decisions,
+# which is not reconstructable from the calibrated banks alone.
+!staging/**/*_manifest.json
+!staging/**/coverage_report.json
+
+# ...but not the judge-shard wrappers, which are run plumbing rather than
+# calibration provenance.
+staging/supp_v2/
+
+# ---------------------------------------------------------------------------
+# Heavy / generated artifacts, depth-agnostic: raw model-output dumps, judge
+# run-data, binary matrices, and all archives. These live in S3 or are
+# regenerable, and are never tracked.
+# ---------------------------------------------------------------------------
+aws_judge_results/
+tutorbench-responses*/
+tutorbench-grading*/
+grading/
+run_data*.jsonl
+run_data*.csv
+*.npy
+*.tar.gz
+*.zip
+
+# Calibration handoff / supplement bundles (tens-to-hundreds of MB).
+qwen_calibration_handoff_32k_20260728/
+handoff_extract/
+supplement_handoff_build/
+supplement_v2/
+
+# ---------------------------------------------------------------------------
+# Generated plots (the curated set lives in plots/)
+# ---------------------------------------------------------------------------
+*.png
+!plots/*.png
+
+# ---------------------------------------------------------------------------
+# Data: the benchmark dataset IS tracked (needed on every machine that runs the
+# pipeline); ignore only ad-hoc/derived jsonl dropped at the data/ root. This
+# glob is single-level, so per-benchmark subdirs like data/TutorBench/ and
+# data/IFEval/ are tracked automatically.
+# ---------------------------------------------------------------------------
+data/*.jsonl
+
+# Throwaway A/B experiment banks (regenerable; conclusions live in the memos,
+# the authoritative bank is data/TutorBench/curated/).
+data/TutorBench/experimental/
+data/experimental/
+
+# EduBench: candidate-bank scenario/rubric artifacts (HF-derived, reproducible
+# via scripts/ingest_edubench.py / scripts/build_edubench_merged.py) -- never
+# tracked, regardless of nesting depth (unmerged/, merged/, given_qmat/, ...).
+# Globbed on the stem so sampled variants (scenarios_252.jsonl, rubrics_252.jsonl
+# from scripts/stratified_sample_bank.py) are covered too - the exact filenames
+# used to slip through and put ~20MB of regenerable data in a commit.
+data/EduBench/**/scenarios*.json
+data/EduBench/**/scenarios*.jsonl
+data/EduBench/**/rubrics*.json
+data/EduBench/**/rubrics*.jsonl
+# Raw HF en_data/*.jsonl source (~90MB incl. model_predictions, reproducible).
+data/EduBench/en_data/
+
+# Dr. SCI: large HF-derived parquet + generated scenario/rubric/CSV artifacts
+# (multiple GBs; jsonl regenerable via scripts/build_dr_sci_scenarios.py).
+data/dr-sci/*.parquet
+data/dr-sci/*.json
+data/dr-sci/*.jsonl
+data/dr-sci/*.csv
+
+# TutorEval processing intermediates: only the finalized bank
+# (*_final.{jsonl,json}) and the human-reviewed edit sheet (reframe_review.tsv)
+# are tracked. The clean / coverage / reframed / sample / verification stage
+# files are deterministically regenerable scratch (~6MB each) and stay local.
+data/TutorEval/*_clean.json
+data/TutorEval/*_clean.jsonl
+data/TutorEval/*_coverage.json
+data/TutorEval/*_coverage.jsonl
+data/TutorEval/*_reframed.json
+data/TutorEval/*_reframed.jsonl
+data/TutorEval/*_sample.json
+data/TutorEval/*_sample.jsonl
+data/TutorEval/*.sample*.json
+data/TutorEval/*.sample*.jsonl
+data/TutorEval/rubrics_qmatrix.json
+data/TutorEval/rubrics_qmatrix.jsonl
+data/TutorEval/rubrics_qmatrix.smoke.jsonl
+data/TutorEval/rubrics_qmatrix_verified.json
+data/TutorEval/rubrics_qmatrix_verified.jsonl
+data/TutorEval/review_queue.jsonl
+data/TutorEval/review_queue*.tsv
+
+# ---------------------------------------------------------------------------
+# reports/ = TRACKED deliverables (CAT figures + summary tables). The global
+# *.png rule above (and any other broad ignore) must NOT swallow these, so
+# re-include the whole reports/ tree explicitly. Keep this block LAST.
+# ---------------------------------------------------------------------------
+!reports/
+!reports/**
+
+# ---------------------------------------------------------------------------
+# regenerated_figures/ = TRACKED reproductions of the CAT recovery + pIRT
+# figures on a dense quadrature grid (continuous ability axis), produced by
+# scripts/regen_cat_figures.py. Same rationale as reports/: re-include past the
+# global *.png rule.
+# ---------------------------------------------------------------------------
+!regenerated_figures/
+!regenerated_figures/**
+
+# ---------------------------------------------------------------------------
+# frq/infobench packaging: scratch + cross-branch leftovers that must NOT be
+# committed on this branch. The shareable deliverables were consolidated into
+# infobench_calibration/ (tracked). These ignores come AFTER the reports/
+# re-include above so they override it for the scratch report dirs.
+# ---------------------------------------------------------------------------
+# Scratch grid whose deliverables now live in infobench_calibration/.
+reports/infobench_oos_grid_unidim/
+# Local verification scratch for the sound SE_param recompute.
+_scratch_infobench_verify/
+# Other benches' EAP OOS/stop scratch (deliverables live in their own packages).
+reports/eap_*/
+# Cross-branch raw grading dumps that leaked into the working tree.
+WildBenchGrade/
+bridgegrade/
+TutorEvalGrade/
+tutorbench_tb33_grading/verdicts_merged/
+
+# The infobench_calibration/ package figures ARE deliverables: negate the
+# global *.png rule above so the CAT figures are tracked.
+!infobench_calibration/**/*.png
+
+
+# Criteria-rewording run artifacts: per-item logs are regenerable and stay local
+# (consistent with the qmatrix_logs handling). The reworded scenario copy (~6MB) is
+# regenerable via scripts/build_final_rubrics.py --reword-sheet; only the human-reviewed
+# sheets (wording_flags.tsv, wording_review.tsv) and the reworded rubric bank are tracked.
+reword_logs/
+data/TutorEval/scenarios_reworded.json
+data/TutorEval/scenarios_reworded.jsonl
+
+# cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
+biggen_results_cache.parquet
+
+# Human judge-audit answer key: keep this after the reports/ re-include above.
+# It contains deblinded tutor identities and must never enter a grader packet
+# or repository commit.
+reports/infobench_judge_audit_v1/audit_analysis_key.csv
+
+# Separate/unrelated grader-validation scratch — not part of the calibration package.
+graderValidationStuff/

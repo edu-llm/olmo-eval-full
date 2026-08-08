@@ -1,0 +1,30 @@
+# CPU / multi-machine HF sweep (no vLLM, no judge).
+backend: hf
+max_samples: 2000
+sample_seed: 1234
+writer:
+  fsync_every_rows: 25
+  fsync_every_seconds: 10
+vllm: {}  # unused on CPU
+generation:
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 512
+  seed: 1234
+# FRQ budgets must be stated as `max_new_tokens` (the generic `max_tokens` no
+# longer leaks into FRQ). These are deliberately well below the manifest's 4096:
+# on CPU every extra decoded token costs real wall-clock, and this sweep trades
+# some answer length for finishing at all.
+overrides:
+  tutorbench:
+    max_new_tokens: 768
+  tutoreval:
+    max_new_tokens: 768
+  bridge:
+    max_new_tokens: 512
+  wildbench:
+    max_new_tokens: 1024
+  biggen:
+    max_new_tokens: 1024
+  infobench:
+    max_new_tokens: 1024

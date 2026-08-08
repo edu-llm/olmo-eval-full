@@ -1,0 +1,15 @@
+{
+  "stage": "emit_native_grid_lock",
+  "kind": "deterministic_analysis",
+  "command": [
+    "internal-analysis",
+    "emit_native_grid_lock"
+  ],
+  "outputs": [
+    "dense_grid/grid_lock.json"
+  ],
+  "completed_at": "2026-08-05T03:36:04.138764+00:00",
+  "output_sha256": {
+    "dense_grid/grid_lock.json": "0c1fd1c9e337d6aff32f6e1b2679df37f24840230c6d13a0b190dbecc7c00847"
+  }
+}

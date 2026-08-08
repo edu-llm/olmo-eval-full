@@ -1,0 +1,59 @@
+{
+  "adaptive_results_inspected": false,
+  "all_six_fixed_banks_valid": true,
+  "calibration_model_selected": false,
+  "fixed_fitted_bank_profile": [
+    "normal_trapezoid",
+    401,
+    8.0
+  ],
+  "numerical_scoring_gate": {
+    "all_values_finite": true,
+    "comparisons": {
+      "bound8_801_vs_bound10_1001": {
+        "candidate_profile": "bound10_1001",
+        "maximum_absolute_theta_shift": 3.375077994860476e-13,
+        "passed": true,
+        "reference_profile": "bound8_801",
+        "threshold": 0.005
+      },
+      "bound8_801_vs_bound8_1601": {
+        "candidate_profile": "bound8_1601",
+        "maximum_absolute_theta_shift": 2.957634137601417e-13,
+        "passed": true,
+        "reference_profile": "bound8_801",
+        "threshold": 0.005
+      }
+    },
+    "n_scored_model_support_rows": 208,
+    "passed": true,
+    "tail_mass": {
+      "maximum_posterior_tail_mass": 1.6728782615004903e-10,
+      "passed": true,
+      "threshold": 1e-05
+    }
+  },
+  "passed": true,
+  "profiles": {
+    "bound10_1001": [
+      "normal_trapezoid",
+      1001,
+      10.0,
+      9.5
+    ],
+    "bound8_1601": [
+      "normal_trapezoid",
+      1601,
+      8.0,
+      7.5
+    ],
+    "bound8_801": [
+      "normal_trapezoid",
+      801,
+      8.0,
+      7.5
+    ]
+  },
+  "schema_version": "infobench-v2-numerical-followup-run-v4",
+  "spec_id": "log_shrinkage_2pl_lambda16"
+}
