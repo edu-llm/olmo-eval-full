@@ -41,8 +41,8 @@ last number in the completion taken, ``Question:`` and a blank line as stop sequ
 512 new tokens, greedy decoding. MATH: the Minerva ``Problem:``/``Solution:`` framing,
 ``\\boxed{}`` extraction and sympy equivalence, and -- the two departures --
 ``Problem:`` as the only stop sequence, matching lm-eval's ``leaderboard_math`` rather
-than the task's added blank line, inside 2048 new tokens. IFEval: the prompt verbatim as
-a completion, no few-shot block, no stop sequences, 1536 new tokens,
+than the task's added blank line, inside lm-eval's own 1024 new tokens. IFEval: the
+prompt verbatim as a completion, no few-shot block, no stop sequences, 1536 new tokens,
 and every named instruction verified. GPQA: the expert-scientist system prompt asking
 for step-by-step reasoning ending in ``ANSWER: X``, the question and its lettered
 choices as the user turn, no stop sequences, 1024 new tokens, and the extracted letter
@@ -721,6 +721,15 @@ def _leaderboard_math_fixed_fewshot() -> tuple[dict[str, str], ...]:
     $X$.`` line, which are exactly the two forms :class:`MathLatexEquivalence` reads. A
     0-shot run teaches neither, so the model states its answer in prose and the grader
     finds nothing to compare.
+
+    The end-of-text token this bank's exemplars are closed with is deliberately NOT added
+    here, even though this function is the transformation boundary and adding it would be
+    one line. This returns the same four examples whoever is being scored; the token is
+    the scored checkpoint's. Appending it here would need this function to be handed a
+    tokenizer, which would make a source of prompt data depend on a loaded model, and the
+    result would no longer be cacheable or comparable across runs. It is appended by
+    :meth:`PromptTemplate.render`, where the benchmark's declared convention
+    (``exemplars_end_with_eos``) and the model's string meet for one render.
     """
     try:
         from olmo_eval.evals.tasks.constants.minerva_math import MINERVA_MATH_FIXED_FEWSHOT
@@ -744,6 +753,85 @@ FEWSHOT_SOURCES: dict[str, Callable[[], tuple[dict[str, str], ...]]] = {
     "gsm8k": _gsm8k_fixed_fewshot,
     "leaderboard_math": _leaderboard_math_fixed_fewshot,
 }
+
+
+def resolve_eos_token(tokenizer: Any) -> tuple[str | None, int | None]:
+    """The end-of-text token ``tokenizer`` uses, as ``(text, id)``.
+
+    Read off the loaded checkpoint's own tokenizer, never written down anywhere. The
+    token is a property of the model and not of the benchmark: this checkpoint family
+    resolves ``HuggingFaceTB/SmolLM2-135M`` from its ``dataset.tokenizer.identifier``,
+    which spells it ``<|endoftext|>`` at id 0, and the next submitter's may spell it
+    ``</s>`` or ``<|im_end|>`` at some other id. A literal in ``config.yaml`` or in an
+    exemplar constant would be that model's answer frozen into the benchmark's
+    description of itself, and for every other model it would be ordinary text -- shown
+    to the model as characters to imitate and matched by nothing.
+
+    Both halves can be absent independently and neither is an error:
+
+    - No ``eos_token_id``: nothing to stop on and nothing to teach. ``(None, None)``,
+      and the caller falls back to ``max_new_tokens`` as the only bound.
+    - An id but no text, or text that does not survive a round trip: stop on the id but
+      teach nothing. Inserting a string the tokenizer reads as ordinary characters is
+      strictly worse than inserting nothing, because it teaches the model to type them.
+
+    The round trip is checked rather than assumed for the same reason ``num_fewshot`` is
+    recorded rather than trusted. ``tokenizer.eos_token`` is a label; what decides
+    whether the exemplars teach anything is whether that label encodes back to the id
+    ``generate`` halts on, which holds when the tokenizer registers it as an added
+    special token -- SmolLM2 does, ``normalized: false`` and ``special: true`` -- and
+    fails when it does not.
+
+    Wrapped in ``except Exception`` because this runs against whatever object a backend
+    hands over, and a probe that cannot be performed is a reason to teach nothing rather
+    than to abandon a run that would otherwise score fine.
+    """
+    token_id = getattr(tokenizer, "eos_token_id", None)
+    if token_id is None:
+        return None, None
+    text = getattr(tokenizer, "eos_token", None)
+    if not text:
+        return None, token_id
+    try:
+        encoded = list(tokenizer(text, add_special_tokens=False)["input_ids"])
+    except Exception:  # noqa: BLE001 - see the docstring's last paragraph
+        return None, token_id
+    if encoded != [token_id]:
+        log.warning(
+            "This checkpoint's tokenizer spells its end-of-text token %r but encodes "
+            "that string to %s rather than to its own eos_token_id %s, so it is "
+            "ordinary text here. Generation will still stop on the id; the few-shot "
+            "exemplars will not be closed with the token, because doing so would teach "
+            "the model to spell those characters instead of to stop.",
+            text,
+            encoded,
+            token_id,
+        )
+        return None, token_id
+    return text, token_id
+
+
+def exemplar_eos_token(config: GenerationConfig, eos_token: str | None) -> str | None:
+    """The end-of-text text this run should close its exemplars with, or ``None``.
+
+    Three gates, and each rules out a case where appending would be meaningless rather
+    than merely unnecessary. No token resolved from the checkpoint: nothing to append.
+    ``num_fewshot`` of 0: no exemplar exists to append it to, and with nothing having
+    demonstrated the token there is also no leaked spelling of it to catch. And a prompt
+    style that does not declare the convention -- gsm8k, ifeval, gpqa -- keeps the
+    prompt its own difficulties were estimated behind, since this is a deviation from
+    the calibration harness and is argued per bank rather than applied house-wide.
+
+    Note the asymmetry with :meth:`_HFCompleter._eos_kwargs`, which is deliberate. The
+    stopping id is passed for *every* bank, because a checkpoint that cannot stop is
+    off-convention for all of them and halting early changes no text. The exemplar
+    suffix changes the prompt, so it goes only where it has been argued.
+    """
+    if not eos_token or config.num_fewshot == 0:
+        return None
+    if not get_prompt_template(config.prompt_style).exemplars_end_with_eos:
+        return None
+    return eos_token
 
 
 def _gpqa_system_prompt() -> str:
@@ -837,6 +925,12 @@ class PromptTemplate:
             few-shot convention at all, and rendering an example under such a template
             raises rather than borrowing another benchmark's block.
         separator: Between examples, and before the live question.
+        exemplars_end_with_eos: Whether each worked example is closed with the
+            checkpoint's end-of-text token. A boolean and not the token, which is the
+            whole point: the benchmark declares the convention and the model supplies
+            the string, so nothing model-specific is frozen here. ``False`` everywhere
+            but ``leaderboard_math``, where it is the one deviation from lm-eval's
+            prompt and is argued in ``config.yaml`` beside ``stop_sequences``.
     """
 
     name: str
@@ -844,14 +938,28 @@ class PromptTemplate:
     fewshot_answer_key: str | None = None
     answer_prefix: str = " "
     separator: str = "\n\n"
+    exemplars_end_with_eos: bool = False
 
-    def render(self, question: str, examples: Sequence[Mapping[str, str]]) -> str:
-        """Lay out ``examples`` followed by ``question``, which is left unanswered."""
-        parts = [self._example(example) for example in examples]
+    def render(
+        self,
+        question: str,
+        examples: Sequence[Mapping[str, str]],
+        *,
+        eos_token: str | None = None,
+    ) -> str:
+        """Lay out ``examples`` followed by ``question``, which is left unanswered.
+
+        ``eos_token`` is the loaded checkpoint's end-of-text string, or ``None`` when
+        there is no tokenizer to ask -- which is the case for every caller that builds a
+        prompt offline. ``None`` renders exactly what this template rendered before the
+        setting existed, so the degradation is the old behaviour rather than a new one.
+        """
+        suffix = eos_token if (self.exemplars_end_with_eos and eos_token) else ""
+        parts = [self._example(example, suffix) for example in examples]
         parts.append(self.question_template.format(question=question))
         return self.separator.join(parts)
 
-    def _example(self, example: Mapping[str, str]) -> str:
+    def _example(self, example: Mapping[str, str], suffix: str = "") -> str:
         """Render one worked few-shot example, or say which pairing is inconsistent."""
         if self.fewshot_answer_key is None:
             raise ValueError(
@@ -874,7 +982,7 @@ class PromptTemplate:
                 f"teach the wrong answer format and be graded as though it had not."
             ) from None
         stem = self.question_template.format(question=example["question"])
-        return stem + self.answer_prefix + answer
+        return stem + self.answer_prefix + answer + suffix
 
 
 #: Prompt style name -> layout. Selected by ``GenerationConfig.prompt_style``, and
@@ -885,10 +993,38 @@ PROMPT_TEMPLATES: dict[str, PromptTemplate] = {
         question_template="Question: {question}\nAnswer:",
         fewshot_answer_key="answer",
     ),
+    # The one template that closes its exemplars with the checkpoint's end-of-text token,
+    # which neither lm-eval's leaderboard_math nor the olmo-eval task does. The reason is
+    # a property of what is being scored rather than of MATH: this checkpoint family
+    # writes eos == pad == bos == 0 and shows no sign of having been taught to end a
+    # document, so a generative item decoded the whole token budget however long ago it
+    # finished. A base model has no instruction-following to appeal to, so demonstrating
+    # the token is the only lever, and four exemplars are what there is to demonstrate in.
+    #
+    # ALL FOUR carry it, the last included, and that is the half worth arguing.
+    #
+    # For: the fourth exemplar abuts the live question, so it is the demonstration
+    # recency weights most heavily, and ending it bare would show the model -- last of
+    # all, immediately before being asked to answer -- a finished solution that is not
+    # followed by the token. Uniformity also keeps a reduced shot count honest, since
+    # fewshot_examples() slices this block from the front and a positional exception
+    # would silently change what a 1-shot or 2-shot run teaches.
+    #
+    # Against, and this is the real objection: an end-of-text token followed by more
+    # prompt text arguably demonstrates that the token does *not* end anything. It is
+    # answered by the vocabulary rather than dismissed. SmolLM2 spells eos, bos and unk
+    # with the same "<|endoftext|>" at id 0, so in pretraining that token is precisely
+    # the document *separator* -- it ends one document and opens the next, with text on
+    # both sides. "...correct.<|endoftext|>\n\nProblem:" is therefore the in-distribution
+    # shape of a boundary for this model, not a contradiction of one. And the objection
+    # applies equally to all four occurrences, since each is followed by the next
+    # exemplar, so dropping the fourth pays the cost anyway and loses the demonstration
+    # that adjacency makes most salient.
     "leaderboard_math": PromptTemplate(
         name="leaderboard_math",
         question_template="Problem:\n{question}\n\nSolution:",
         fewshot_answer_key="solution",
+        exemplars_end_with_eos=True,
     ),
     # The IFEval prompt is the item, unframed: its instructions are addressed to the
     # model in the prompt text itself, and any wrapper -- a "Question:" cue, a worked
@@ -999,8 +1135,15 @@ class GenerationConfig:
             )
 
 
-def fewshot_examples(config: GenerationConfig) -> tuple[dict[str, str], ...]:
+def fewshot_examples(
+    config: GenerationConfig, num_fewshot: int | None = None
+) -> tuple[dict[str, str], ...]:
     """Return the few-shot block to prepend, honouring ``config.num_fewshot``.
+
+    ``num_fewshot`` overrides the configured count and exists for one caller,
+    :class:`PromptFitter`, which walks the count down when the block does not fit the
+    model's context window. It slices from the END, so a reduced count keeps the
+    exemplars nearest the live question; see :meth:`PromptFitter.fit` for why.
 
     Prompting few-shot rather than 0-shot is a decision, not an inherited default. An
     item's calibrated ``b`` records how hard it was for the models ATLAS harvested,
@@ -1030,7 +1173,8 @@ def fewshot_examples(config: GenerationConfig) -> tuple[dict[str, str], ...]:
     makes the two likely to coincide, which is a better position than GSM8K's, but it
     is still an inference about the harvest rather than something the bank states.
     """
-    if config.num_fewshot == 0:
+    shots = config.num_fewshot if num_fewshot is None else num_fewshot
+    if shots == 0:
         return ()
     try:
         loader = FEWSHOT_SOURCES[config.fewshot_source]
@@ -1039,11 +1183,24 @@ def fewshot_examples(config: GenerationConfig) -> tuple[dict[str, str], ...]:
             f"Unknown fewshot_source {config.fewshot_source!r}. Known sources: "
             f"{', '.join(sorted(FEWSHOT_SOURCES))}."
         ) from None
-    return loader()[: config.num_fewshot]
+    block = loader()[: config.num_fewshot]
+    return block[len(block) - shots :] if shots < len(block) else block
 
 
-def format_generative_prompt(item: BenchmarkItem, config: GenerationConfig) -> str:
+def format_generative_prompt(
+    item: BenchmarkItem,
+    config: GenerationConfig,
+    *,
+    eos_token: str | None = None,
+    num_fewshot: int | None = None,
+) -> str:
     """Build the prompt for ``item`` under the configured style, few-shot block included.
+
+    ``eos_token`` is the loaded checkpoint's end-of-text string and defaults to ``None``,
+    which renders the prompt this function rendered before the parameter existed. That
+    default is load-bearing rather than convenient: most callers here have no tokenizer
+    to ask, and a prompt built offline has to be the prompt built with one minus only the
+    model-specific part.
 
     Each layout -- examples joined by a blank line, the live question last with a bare
     answer cue -- reproduces its olmo-eval task's ``format_request``. The join is also
@@ -1054,7 +1211,248 @@ def format_generative_prompt(item: BenchmarkItem, config: GenerationConfig) -> s
     ``stop_sequences`` in the style's ``config.yaml``.
     """
     template = get_prompt_template(config.prompt_style)
-    return template.render(item.question, fewshot_examples(config))
+    return template.render(
+        item.question,
+        fewshot_examples(config, num_fewshot),
+        eos_token=exemplar_eos_token(config, eos_token),
+    )
+
+
+def effective_stop_sequences(
+    config: GenerationConfig, eos_token: str | None = None
+) -> tuple[str, ...]:
+    """``config.stop_sequences`` plus the checkpoint's end-of-text text, if there is one.
+
+    Appended here rather than written into ``config.yaml`` for the reason
+    :func:`resolve_eos_token` gives: the string belongs to the model. ``config.yaml``
+    holds ``["Problem:", "problem:"]``, which is what the manifest records and what the
+    convention guard checks; this is the run-time list, and it is checkpoint-specific.
+
+    **This saves no compute and is not what stops generation.**
+    :func:`truncate_at_stop` runs on a completion that has already been generated in
+    full, so every token it removes has been paid for. What halts a completion is
+    ``generate(eos_token_id=...)``, in :meth:`_HFCompleter._eos_kwargs`. Nothing in this
+    function can shorten a run.
+
+    Nor can this entry ever fire on an end-of-text token the model genuinely emits:
+    :meth:`_HFCompleter.__call__` decodes with ``skip_special_tokens=True``, which
+    deletes the token before this list is matched against anything.
+
+    What it does catch is the failure mode that closing the exemplars with the token
+    invites. A model shown the token four times can learn to write its *characters* out of
+    ordinary vocabulary rather than to emit its id. Those tokens are not special, they
+    survive the decode, and they arrive followed by whatever the model hallucinates next.
+
+    That text inflates rather than corrupts, which is worth being precise about.
+    :class:`MathLatexEquivalence` scores ``any(is_equiv(candidate, gold))`` over every
+    candidate the extractor finds, so a run-on can only *add* candidates: it turns wrong
+    answers right and never right answers wrong. An uncut leak therefore reads as ability
+    the checkpoint does not have, on a scale where theta is meant to be comparable. So
+    this is a correctness measure with a narrow and specific target: keep post-end-of-text
+    text out of the graded span. That is all it is.
+    """
+    if not eos_token or eos_token in config.stop_sequences:
+        return config.stop_sequences
+    return (*config.stop_sequences, eos_token)
+
+
+#: Tokens always left for the model to answer in, whatever the context window costs.
+#:
+#: Copied from Research's ``respgen/runner.py`` MIN_GEN, and the value matters less than
+#: the shape it enforces. The version it replaced there computed
+#: ``budget = max(1, max_model_len - max_new_tokens)``, which collapses to 1 whenever the
+#: context is no larger than the nominal budget -- true of every model that branch ran at
+#: ``max_model_len <= 4096`` -- and then left-truncated the prompt to its final token. The
+#: budget has to key off the ACTUAL prompt length with a floor, not off the nominal one.
+#:
+#: 256 is enough for a MATH solution at the median: the reference solutions run 255 tokens
+#: at the median and 329 at the mean. It is not enough for a long one, which is the honest
+#: cost of running this bank on a small-context model and is recorded per item.
+MIN_GEN_TOKENS = 256
+
+#: Where the context length is read from on a Llama-shaped config, which is what
+#: ``hf_config_patch._llama_config`` emits for this checkpoint family. Named because the
+#: attribute's absence is a real state -- skip the clamp and say so -- rather than a bug.
+CONTEXT_LENGTH_ATTR = "max_position_embeddings"
+
+#: ``ungradable_reason`` for an item whose prompt cannot be made to fit at one exemplar.
+#:
+#: Scored 0 like any other ungradable item, and it has to be distinguishable from a
+#: grading failure, because the fix is different: this one is the checkpoint's context
+#: window being too small for the bank, not a malformed row or a missing verifier.
+CONTEXT_OVERFLOW_REASON = "prompt_exceeds_context_window"
+
+
+@dataclass(frozen=True, slots=True)
+class PromptFit:
+    """One item's prompt, sized against the model's context window.
+
+    Attributes:
+        prompt: The rendered prompt, always whole exemplars and a whole question.
+        num_fewshot: Exemplars actually used, which may be fewer than configured.
+        prompt_tokens: Measured length, or ``None`` when nothing measured it.
+        gen_budget: Tokens to generate, or ``None`` to use ``config.max_new_tokens``.
+        context_length: The window this was fitted to, or ``None`` if undeterminable.
+        clamped: Whether ``gen_budget`` came out below ``config.max_new_tokens``.
+        configured_fewshot: What ``config.num_fewshot`` asked for, so a reader can see
+            that a reduced ``num_fewshot`` is the ladder's doing and not the config's.
+        ungradable_reason: Set when even one exemplar will not fit; see
+            :data:`CONTEXT_OVERFLOW_REASON`.
+    """
+
+    prompt: str
+    num_fewshot: int
+    configured_fewshot: int
+    prompt_tokens: int | None = None
+    gen_budget: int | None = None
+    context_length: int | None = None
+    clamped: bool = False
+    ungradable_reason: str | None = None
+
+    @property
+    def dropped_exemplars(self) -> int:
+        """Exemplars the ladder gave up, for the report."""
+        return max(0, self.configured_fewshot - self.num_fewshot)
+
+
+@dataclass(frozen=True, slots=True)
+class PromptFitter:
+    """Fit each prompt into the checkpoint's context window without cutting an exemplar.
+
+    Research's ``_fit_prompt_and_budget`` left-truncates and keeps the tail, which is
+    right for a chat transcript where the latest turn is what matters. **It is destructive
+    here and is deliberately not copied.** The few-shot block is what teaches the
+    ``\\boxed{}`` expression and the ``Final Answer: The final answer is $X$.`` line, and
+    those two forms are exactly what :class:`MathLatexEquivalence` reads;
+    :func:`_leaderboard_math_fixed_fewshot` says as much. Eating the front of that block
+    would leave a prompt of the right length that no longer teaches the answer format, so
+    the grader would find nothing to compare, score the item 0, and every guard in the
+    harness would still pass. That produces a theta rather than an error, which is the
+    failure this whole change exists to remove.
+
+    So the unit of reduction is a whole exemplar. The ladder tries the configured count,
+    measures, and drops one exemplar at a time until the prompt plus
+    :data:`MIN_GEN_TOKENS` fits -- and stops at ONE, never zero. A 0-shot MATH prompt
+    teaches neither answer form, so an item that cannot fit even one exemplar is recorded
+    :data:`CONTEXT_OVERFLOW_REASON` instead of being sent bare. Scoring 0 for a prompt the
+    model was never taught to answer would be a fabricated zero attributed to its
+    mathematics.
+
+    Exemplars are dropped from the FRONT, keeping those nearest the live question.
+    Recency dominates in-context learning, and the adjacent exemplar is doing the most
+    work to establish the answer format -- which is the property that must survive, since
+    losing it is the failure described above. The alternative reading, that the first
+    exemplars set up the task and the last only reinforce it, would matter more if the
+    four differed in kind; they do not, being four worked Level-5 solutions in one format.
+    Measured with SmolLM2-135M they are 146, 118, 221 and 195 tokens closed with
+    end-of-text and joined, so dropping from the front also happens to shed the cheapest
+    exemplar first, which makes the ladder take more steps than dropping the largest
+    would. That is accepted: the step order is chosen for what it preserves.
+
+    Attributes:
+        tokenizer: The loaded checkpoint's tokenizer, used only to measure.
+        context_length: Its window, or ``None`` to skip clamping entirely.
+        eos_token: Passed through to prompt rendering so the measured string is the
+            string that will be sent.
+    """
+
+    tokenizer: Any
+    context_length: int | None
+    eos_token: str | None = None
+
+    def fit(self, item: BenchmarkItem, config: GenerationConfig) -> PromptFit:
+        """Size one item's prompt and generation budget."""
+        configured = config.num_fewshot
+        render = lambda shots: format_generative_prompt(  # noqa: E731
+            item, config, eos_token=self.eos_token, num_fewshot=shots
+        )
+        if self.context_length is None:
+            return PromptFit(render(None), configured, configured)
+
+        floor = 1 if configured >= 1 else 0
+        for shots in range(configured, floor - 1, -1):
+            prompt = render(shots)
+            tokens = self._measure(prompt)
+            if tokens is None:
+                return PromptFit(prompt, shots, configured)
+            if tokens + MIN_GEN_TOKENS <= self.context_length:
+                budget = self._budget(tokens, config)
+                return PromptFit(
+                    prompt,
+                    shots,
+                    configured,
+                    prompt_tokens=tokens,
+                    gen_budget=budget,
+                    context_length=self.context_length,
+                    clamped=budget < config.max_new_tokens,
+                )
+        return PromptFit(
+            "",
+            floor,
+            configured,
+            prompt_tokens=self._measure(render(floor)),
+            context_length=self.context_length,
+            ungradable_reason=CONTEXT_OVERFLOW_REASON,
+        )
+
+    def _budget(self, prompt_tokens: int, config: GenerationConfig) -> int:
+        """Tokens to generate, given a prompt that already fits.
+
+        Two bounds, and the ORDER a reader will ask about. ``config.max_new_tokens`` is
+        applied first and is the benchmark's own cap -- 1024 for MATH, which is what
+        lm-eval's ``leaderboard_math`` ran and therefore the ceiling the calibration
+        population generated behind. The context clamp is applied second and can only
+        lower it. Whichever is smaller wins, so the clamp never *grants* headroom the
+        calibration did not have: a large-context model still stops at 1024, and only a
+        small-context one goes below. Reversing the order would let a 16k model generate
+        15k tokens on a bank calibrated at 1024.
+
+        The floor keeps this off Research's bug. ``max(MIN_GEN_TOKENS, ...)`` means a
+        prompt that fits always gets a usable budget rather than the 1 token that
+        ``context - nominal_budget`` collapses to whenever the window is the smaller of
+        the two. The final ``min(..., context - 1)`` bounds the pathological case where
+        the floor itself exceeds the window.
+
+        Both of those are unreachable from :meth:`fit`, which only accepts a prompt once
+        ``tokens + MIN_GEN_TOKENS`` fits and therefore never arrives here with less room
+        than the floor. They are kept because this method's contract should hold for any
+        caller, not only for the ladder's arithmetic, and the tests exercise them here
+        rather than through ``fit`` for that reason.
+        """
+        room = self.context_length - prompt_tokens  # type: ignore[operator]
+        budget = min(config.max_new_tokens, max(MIN_GEN_TOKENS, room))
+        return max(1, min(budget, self.context_length - 1))  # type: ignore[operator]
+
+    def _measure(self, prompt: str) -> int | None:
+        """Prompt length in tokens, or ``None`` if this tokenizer cannot say."""
+        try:
+            return len(self.tokenizer(prompt, add_special_tokens=False)["input_ids"])
+        except Exception:  # noqa: BLE001 - a window we cannot measure is one we cannot use
+            log.warning(
+                "Could not tokenize a prompt to measure it against the %s-token context "
+                "window, so the generation budget is left at the benchmark's cap and the "
+                "prompt is sent unfitted.",
+                self.context_length,
+            )
+            return None
+
+
+def context_length_of(model: Any) -> int | None:
+    """The model's context window, or ``None`` with a warning saying the clamp is off."""
+    length = getattr(getattr(model, "config", None), CONTEXT_LENGTH_ATTR, None)
+    try:
+        length = int(length)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        log.warning(
+            "This checkpoint's config declares no %s, so the context clamp is disabled "
+            "for this run: the generation budget stays at the benchmark's cap and a "
+            "prompt longer than the window will be truncated by the model rather than "
+            "fitted by dropping whole exemplars. Every item is still bounded by "
+            "max_new_tokens.",
+            CONTEXT_LENGTH_ATTR,
+        )
+        return None
+    return length if length > 0 else None
 
 
 def truncate_at_stop(text: str, stop_sequences: Sequence[str]) -> str:
@@ -1122,9 +1520,25 @@ def apply_grader(grader: Grader, item: BenchmarkItem, completion: str) -> Verdic
 
 
 def grade_completion(
-    item: BenchmarkItem, completion: str, config: GenerationConfig
+    item: BenchmarkItem,
+    completion: str,
+    config: GenerationConfig,
+    *,
+    eos_token: str | None = None,
+    fit: PromptFit | None = None,
 ) -> ItemResponse:
     """Turn one raw completion into a graded :class:`ItemResponse`.
+
+    ``fit`` is the :class:`PromptFitter` outcome for this item, when one ran. It is what
+    makes ``num_fewshot`` in the response the count actually used rather than the count
+    configured, and it adds a ``context_fit`` block whenever the two differ or the budget
+    was clamped. Those two facts have to be per item, not per session: a window that
+    forces 2 exemplars on a long stem and allows 4 on a short one mixes prompts inside one
+    ability estimate, and a single session-level field would average that away.
+
+    ``eos_token`` extends the stop list by the checkpoint's own end-of-text string; see
+    :func:`effective_stop_sequences` for what that does and, more importantly, what it
+    does not. ``None`` grades against ``config.stop_sequences`` alone.
 
     Pure text in, response out, with no model involved, which is what makes the
     grading half of this module testable without a GPU.
@@ -1144,7 +1558,7 @@ def grade_completion(
     produced before the harness could tell.
     """
     grader = get_answer_grader(str(item.metadata.get("answer_type", DEFAULT_ANSWER_TYPE)))
-    text = truncate_at_stop(completion, config.stop_sequences)
+    text = truncate_at_stop(completion, effective_stop_sequences(config, eos_token))
     verdict = apply_grader(grader, item, text)
     metadata: dict[str, Any] = {
         "modality": "generative",
@@ -1152,11 +1566,20 @@ def grade_completion(
         "completion": text,
         "extracted_answer": verdict.extracted,
         "gold_answer": verdict.gold,
-        "num_fewshot": config.num_fewshot,
+        "num_fewshot": config.num_fewshot if fit is None else fit.num_fewshot,
         UNGRADABLE_KEY: verdict.ungradable_reason is not None,
     }
     if verdict.ungradable_reason is not None:
         metadata[UNGRADABLE_REASON_KEY] = verdict.ungradable_reason
+    if fit is not None and (fit.dropped_exemplars or fit.clamped):
+        metadata["context_fit"] = {
+            "context_length": fit.context_length,
+            "prompt_tokens": fit.prompt_tokens,
+            "gen_budget": fit.gen_budget,
+            "max_new_tokens_configured": config.max_new_tokens,
+            "num_fewshot_configured": fit.configured_fewshot,
+            "exemplars_dropped": fit.dropped_exemplars,
+        }
     if verdict.detail:
         metadata["grader_detail"] = dict(verdict.detail)
     return ItemResponse(
@@ -1174,11 +1597,39 @@ class GenerativeScorer:
     Sampling is injected as a plain ``prompt -> completion`` callable. That split is
     what lets the grading path be exercised offline, and it makes a different backend
     (vLLM, a hosted endpoint) a new completer rather than a new scorer.
+
+    ``eos_token`` is the one checkpoint-specific value that reaches this far up. It is a
+    constructor argument rather than a :class:`GenerationConfig` field on purpose: that
+    config is the benchmark's description of itself, it is what
+    ``convention.runtime_convention`` reads and what the manifest guard compares against,
+    and a checkpoint's end-of-text string has no business in either. The backend resolves
+    it from the tokenizer it just loaded and passes it here; ``None`` -- no tokenizer, no
+    end-of-text token, or a bank that does not close its exemplars -- scores exactly as
+    this class scored before the argument existed.
+
+    ``fitter`` is the other one, and it is optional for the same reason. With it, each
+    prompt is measured against the checkpoint's context window and the generation budget
+    sized to what is left; without it, every prompt is rendered at the configured shot
+    count and every completion gets ``config.max_new_tokens``. The backend supplies one
+    because that is where the tokenizer is; the offline tests do not, and exercise the
+    unfitted path on purpose.
     """
 
-    def __init__(self, complete: Callable[[str], str], config: GenerationConfig) -> None:
+    def __init__(
+        self,
+        complete: Callable[..., str],
+        config: GenerationConfig,
+        *,
+        eos_token: str | None = None,
+        fitter: PromptFitter | None = None,
+        checkpoint_facts: Mapping[str, Any] | None = None,
+    ) -> None:
         self.complete = complete
         self.config = config
+        self.eos_token = exemplar_eos_token(config, eos_token)
+        self.fitter = fitter
+        self.checkpoint_facts = dict(checkpoint_facts or {})
+        self._fits: list[PromptFit] = []
 
     def score_items(self, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
         """Grade each item by sampling a greedy completion and extracting its answer."""
@@ -1191,9 +1642,121 @@ class GenerativeScorer:
                     f"text for it would ignore the choice set and grade against a gold "
                     f"answer it does not have. Grade it with common.inference instead."
                 )
-            prompt = format_generative_prompt(item, self.config)
-            responses.append(grade_completion(item, self.complete(prompt), self.config))
+            fit = self._fit(item)
+            self._fits.append(fit)
+            if fit.ungradable_reason is not None:
+                responses.append(self._overflowed(item, fit))
+                continue
+            responses.append(
+                grade_completion(
+                    item, self._complete(fit), self.config, eos_token=self.eos_token, fit=fit
+                )
+            )
         return responses
+
+    def _fit(self, item: BenchmarkItem) -> PromptFit:
+        """This item's prompt and budget, fitted to the context window if one is known."""
+        if self.fitter is None:
+            return PromptFit(
+                format_generative_prompt(item, self.config, eos_token=self.eos_token),
+                self.config.num_fewshot,
+                self.config.num_fewshot,
+            )
+        return self.fitter.fit(item, self.config)
+
+    def _complete(self, fit: PromptFit) -> str:
+        """Sample, passing the fitted budget only when there is one.
+
+        The one-argument call is kept for the many injected completers that are a plain
+        ``lambda prompt: ...``; widening their signature to carry a budget they would
+        ignore would be a change to every test that builds one.
+        """
+        if fit.gen_budget is None:
+            return self.complete(fit.prompt)
+        return self.complete(fit.prompt, fit.gen_budget)
+
+    def _overflowed(self, item: BenchmarkItem, fit: PromptFit) -> ItemResponse:
+        """Record an item whose prompt will not fit at one exemplar, without sampling it.
+
+        Nothing is generated, because there is no prompt to generate from that would still
+        teach the answer format. The item is scored 0 and marked ungradable, which is what
+        ``style._ungradable_block`` counts and reports with its ids and reasons -- so the
+        cost lands in the report as a fabricated zero rather than in theta as mathematics
+        the checkpoint failed.
+        """
+        log.warning(
+            "Item %s needs more than the %s-token context window for even one few-shot "
+            "exemplar plus %d tokens to answer in (%s-token prompt), so it was scored 0 "
+            "and marked %s rather than sent 0-shot. A 0-shot prompt teaches neither the "
+            "boxed form nor the 'Final Answer:' line the grader reads, so that zero would "
+            "have read as weak mathematics.",
+            item.item_id,
+            fit.context_length,
+            MIN_GEN_TOKENS,
+            fit.prompt_tokens,
+            CONTEXT_OVERFLOW_REASON,
+        )
+        return ItemResponse(
+            item_id=item.item_id,
+            chosen_index=NO_CHOICE_INDEX,
+            correct=False,
+            choice_logprobs=(),
+            metadata={
+                "modality": "generative",
+                "completion": "",
+                "extracted_answer": None,
+                "gold_answer": str(item.metadata.get("gold_answer", "")),
+                "num_fewshot": 0,
+                UNGRADABLE_KEY: True,
+                UNGRADABLE_REASON_KEY: CONTEXT_OVERFLOW_REASON,
+                "context_fit": {
+                    "context_length": fit.context_length,
+                    "prompt_tokens": fit.prompt_tokens,
+                    "gen_budget": None,
+                    "max_new_tokens_configured": self.config.max_new_tokens,
+                    "num_fewshot_configured": fit.configured_fewshot,
+                    "exemplars_dropped": fit.configured_fewshot,
+                },
+            },
+        )
+
+    def runtime_facts(self) -> dict[str, Any]:
+        """What this run actually did about end-of-text and the context window.
+
+        Reported rather than only logged, because the artifact is what gets compared across
+        checkpoints and the difference recorded here is large: with a working
+        ``eos_token_id`` a completion stops when the answer is done, and without one every
+        item burns its full budget at the cacheless rate ``TORCH_TODOS.md`` measured. A
+        reader has to be able to tell which run they are holding without the log.
+
+        Session-level facts only. The per-item ones -- shots used, budget granted -- are on
+        each response's ``context_fit`` and ``num_fewshot``, because on a small window they
+        differ item by item, and a session-level summary would hide exactly the mixing that
+        makes theta uninterpretable.
+        """
+        shots = sorted({fit.num_fewshot for fit in self._fits})
+        clamp_on = self.fitter is not None and self.fitter.context_length is not None
+        facts: dict[str, Any] = {
+            **self.checkpoint_facts,
+            "exemplars_end_with_eos": self.eos_token is not None,
+            "context_clamp_active": clamp_on,
+            "context_length": None if self.fitter is None else self.fitter.context_length,
+            "num_fewshot_configured": self.config.num_fewshot,
+            "num_fewshot_used": shots,
+            "context_clamp_fired": any(f.clamped or f.dropped_exemplars for f in self._fits),
+            "items_over_context": sum(1 for f in self._fits if f.ungradable_reason is not None),
+        }
+        if len(shots) > 1:
+            facts["mixed_shot_alert"] = (
+                f"Items in this session were prompted at {shots} exemplars, because the "
+                f"{facts['context_length']}-token context window could not hold "
+                f"{self.config.num_fewshot} for every stem. Every difficulty in this bank "
+                f"was estimated behind a {self.config.num_fewshot}-shot prompt, so this "
+                f"theta mixes scales inside one estimate and is NOT comparable with a run "
+                f"that stayed at {self.config.num_fewshot}. Per-item counts are in each "
+                f"response's num_fewshot."
+            )
+        return facts
 
 
 class _HFCompleter:
@@ -1207,7 +1770,7 @@ class _HFCompleter:
         self.config = config
         set_seed(config.seed)
 
-        self.tokenizer: Any = AutoTokenizer.from_pretrained(str(checkpoint_dir))
+        self.tokenizer: Any = self._load_tokenizer(AutoTokenizer, checkpoint_dir)
         if config.chat_format and not getattr(self.tokenizer, "chat_template", None):
             raise ValueError(
                 f"{checkpoint_dir} defines no chat template, and this bank is scored "
@@ -1224,6 +1787,98 @@ class _HFCompleter:
             device_map=config.device_map,
         )
         self.model.eval()
+        self.eos_token, self.eos_token_id = resolve_eos_token(self.tokenizer)
+        self._require_end_of_text(checkpoint_dir)
+        self._warn_if_tokenizer_outgrows_model()
+        self.context_length = context_length_of(self.model)
+
+    @staticmethod
+    def _load_tokenizer(auto_tokenizer: Any, checkpoint_dir: Path) -> Any:
+        """Load the checkpoint's tokenizer, or refuse the run explaining what that costs.
+
+        A real evaluation always has a tokenizer -- inference is impossible without one --
+        so a missing one is never a deployment mode to accommodate. It is a failure, and
+        the likely one is named in the message: this conversion writes no tokenizer files
+        of its own, resolving the identifier from the checkpoint's
+        ``dataset.tokenizer.identifier`` instead, so a venue that can reach S3 but not
+        huggingface.co produces exactly this. ``HF_CONVERSION.md`` flags that risk.
+
+        Refusing rather than proceeding, because proceeding is the silent-wrong-answer
+        shape: no end-of-text in the exemplars, no ``eos_token_id`` on ``generate``, no
+        context clamp, every item burning its whole budget, and a report that looks
+        entirely normal.
+        """
+        try:
+            return auto_tokenizer.from_pretrained(str(checkpoint_dir))
+        except Exception as exc:
+            raise RuntimeError(
+                f"No usable tokenizer could be loaded from {checkpoint_dir} ({exc}). "
+                f"This is refused rather than worked around, because a generative bank "
+                f"scored without a tokenizer would still produce a plausible report: the "
+                f"few-shot exemplars would carry no end-of-text token, generate would be "
+                f"given no eos_token_id and so would never halt, every item would burn "
+                f"the full max_new_tokens, and a prompt longer than the context window "
+                f"would be truncated into the exemplar block -- destroying the answer "
+                f"format the grader reads -- with nothing in the report to say so. If the "
+                f"checkpoint ships no tokenizer files, its config names one by identifier "
+                f"and this venue must be able to fetch it; check network access to the "
+                f"Hub, or stage the tokenizer beside the weights."
+            ) from exc
+
+    def _require_end_of_text(self, checkpoint_dir: Path) -> None:
+        """Refuse a tokenizer that defines no end-of-text id, for the same reason.
+
+        Without an id there is nothing for ``generate`` to halt on, so every item decodes
+        its whole budget however long ago the answer finished. That is a cost failure and a
+        correctness one -- the run-on text is graded -- and it is invisible in the report.
+        A tokenizer whose id is present but whose *string* does not round-trip is a
+        different, milder case: generation still halts, only the exemplars are left
+        unclosed, and :func:`resolve_eos_token` warns and continues.
+        """
+        if self.eos_token_id is not None:
+            return
+        raise RuntimeError(
+            f"The tokenizer at {checkpoint_dir} defines no eos_token_id, so generate has "
+            f"nothing to halt on: every item would decode the full "
+            f"{self.config.max_new_tokens} new tokens however early its answer finished, "
+            f"the run-on text would be graded, and the report would look normal. This is "
+            f"refused rather than accepted. Stage a tokenizer that declares its "
+            f"end-of-text token, or fix the identifier the checkpoint config names."
+        )
+
+    def _warn_if_tokenizer_outgrows_model(self) -> None:
+        """Say so if the tokenizer has more tokens than the model has embeddings.
+
+        Cheap, and it catches the one mistake this area invites. The conversion writes no
+        tokenizer files of its own, so the identifier is resolved from the checkpoint's
+        ``dataset.tokenizer.identifier`` -- and a wrong resolution produces a plausible
+        tokenizer rather than an error. Reading ``_resolve_tokenizer_id``'s fallback
+        branch as its behaviour, this checkpoint was taken for an ``allenai/dolma2``
+        model, 100,278 tokens against its actual 49,152, which this comparison would have
+        contradicted immediately.
+
+        Only the one direction is checked, because only it is unambiguous: a tokenizer
+        that can emit ids the model has no row for is broken, whereas a model larger than
+        its tokenizer is the ordinary result of padding the embedding to a multiple of
+        128. A warning and not an error -- ``generate`` will fail loudly on its own if
+        this matters, and a run that would otherwise score fine should not be stopped by
+        a heuristic.
+        """
+        try:
+            tokenizer_size = len(self.tokenizer)
+            model_size = int(self.model.config.vocab_size)
+        except Exception:  # noqa: BLE001 - a probe that cannot be made is not a finding
+            return
+        if tokenizer_size > model_size:
+            log.warning(
+                "This checkpoint's tokenizer has %d tokens but the model has embeddings "
+                "for %d, so the tokenizer can produce ids the model cannot represent. "
+                "The usual cause is a wrong tokenizer identifier in the checkpoint "
+                "config rather than a corrupt checkpoint; the prompts and the scores "
+                "that come out of this run are both suspect.",
+                tokenizer_size,
+                model_size,
+            )
 
     def _render(self, prompt: str) -> str:
         """Wrap ``prompt`` in the checkpoint's chat template when the bank asks for chat.
@@ -1249,11 +1904,20 @@ class _HFCompleter:
             add_generation_prompt=True,
         )
 
-    def __call__(self, prompt: str) -> str:
+    def __call__(self, prompt: str, max_new_tokens: int | None = None) -> str:
         """Return the continuation of ``prompt``, with the prompt echo removed.
+
+        ``max_new_tokens`` overrides the config's cap for this one call and is what
+        :class:`PromptFitter` uses to hand back the room the prompt left. ``None`` means
+        the benchmark's cap, which is the only bound when no context length is known.
 
         ``do_sample=False`` is how ``transformers`` spells temperature 0; passing
         ``temperature=0`` to ``generate`` is rejected by the library.
+
+        ``skip_special_tokens=True`` on the decode is why a genuine end-of-text token can
+        never be matched by a ``stop_sequences`` entry: it is removed from the text before
+        :func:`truncate_at_stop` sees any of it. The completion is bounded by
+        ``max_new_tokens`` and by ``**self._eos_kwargs()``, in that order of reliability.
         """
         torch = self._torch
         input_ids = self.tokenizer(self._render(prompt), return_tensors="pt")["input_ids"]
@@ -1264,11 +1928,41 @@ class _HFCompleter:
         with torch.no_grad():
             generated = self.model.generate(
                 input_ids,
-                max_new_tokens=self.config.max_new_tokens,
+                max_new_tokens=(
+                    self.config.max_new_tokens if max_new_tokens is None else max_new_tokens
+                ),
                 do_sample=False,
                 pad_token_id=self._pad_token_id(),
+                **self._eos_kwargs(),
             )
         return self.tokenizer.decode(generated[0][input_ids.shape[1] :], skip_special_tokens=True)
+
+    def _eos_kwargs(self) -> dict[str, int]:
+        """``{"eos_token_id": ...}`` from the tokenizer, or nothing.
+
+        The single change that makes a generative item able to stop early at all, and it
+        applies to every bank rather than to MATH -- ``gsm8k``, ``ifeval`` and ``gpqa``
+        each decode their whole budget without it.
+
+        ``generate`` halts on ``eos_token_id`` and reads that from the model's
+        ``GenerationConfig``, which ``PreTrainedModel.__init__`` builds from
+        ``generation_config.json`` if one exists and from ``config.json`` otherwise. Our
+        conversion writes neither value: ``hf_config_patch._llama_config`` emits
+        ``eos_token_id=None`` because ``olmo_core.save_hf_model`` fills the ids only when
+        handed a tokenizer object, which the call site does not do, and it writes no
+        ``generation_config.json`` at all. The ids reach the output directory in
+        ``tokenizer_config.json``, which ``generate`` does not read -- verified against
+        ``transformers.generation.configuration_utils``, where the only filename is
+        ``generation_config.json``. So the id has to be passed explicitly or generation has
+        nothing to halt on, whatever the checkpoint declares about itself.
+
+        ``is None`` rather than a truth test, which is the trap here. This family's
+        end-of-text id is 0, ``bool(0)`` is ``False``, and ``eos_token_id or None``
+        discards precisely the checkpoint this exists for.
+        """
+        if self.eos_token_id is None:
+            return {}
+        return {"eos_token_id": self.eos_token_id}
 
     def _pad_token_id(self) -> int | None:
         """Fall back to the EOS token when the tokenizer defines no pad token.
@@ -1279,6 +1973,57 @@ class _HFCompleter:
         pad = getattr(self.tokenizer, "pad_token_id", None)
         return pad if pad is not None else getattr(self.tokenizer, "eos_token_id", None)
 
+    def checkpoint_facts(self) -> dict[str, Any]:
+        """What was resolved off this checkpoint, for the report's ``generation_runtime``.
+
+        ``tokenizer_identifier`` is what the loaded tokenizer says it came from. On this
+        path that is the checkpoint directory, because a converted checkpoint that ships
+        tokenizer files is scored from those files; the *upstream* identifier the
+        conversion resolved -- ``dataset.tokenizer.identifier``, ``HuggingFaceTB/SmolLM2-135M``
+        here -- is recorded by the conversion step and is not re-derivable from the output
+        directory. Naming what was actually loaded is the claim this function can support.
+        """
+        return {
+            "tokenizer_identifier": str(getattr(self.tokenizer, "name_or_path", "") or ""),
+            "tokenizer_class": type(self.tokenizer).__name__,
+            "tokenizer_vocab_size": self._tokenizer_size(),
+            "eos_token": self.eos_token,
+            "eos_token_id": self.eos_token_id,
+            "eos_token_id_passed_to_generate": self._eos_kwargs() != {},
+            "context_length_declared": self.context_length,
+        }
+
+    def _tokenizer_size(self) -> int | None:
+        try:
+            return len(self.tokenizer)
+        except Exception:  # noqa: BLE001 - a probe that cannot be made is not a finding
+            return None
+
+
+def _load_hf(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
+    """Grade a converted HF checkpoint by generating from it with ``transformers``.
+
+    A function rather than the lambda this was, because there are now three things to hand
+    from the completer to the scorer, all read off the checkpoint the completer just
+    loaded: the end-of-text token, the tokenizer that measures a prompt, and the context
+    window to measure it against. This is the only place both objects exist, and it is
+    upstream of every prompt, so it is where run-time-resolved values get resolved once.
+    The completer keeps the end-of-text *id*, which is what stops generation; the scorer
+    takes the *text*, which closes the exemplars and guards the graded span.
+    """
+    completer = _HFCompleter(checkpoint_dir, config)
+    return GenerativeScorer(
+        completer,
+        config,
+        eos_token=completer.eos_token,
+        fitter=PromptFitter(
+            tokenizer=completer.tokenizer,
+            context_length=completer.context_length,
+            eos_token=completer.eos_token,
+        ),
+        checkpoint_facts=completer.checkpoint_facts(),
+    )
+
 
 #: Checkpoint kind -> the generative grading backend that reads it.
 #:
@@ -1288,9 +2033,7 @@ class _HFCompleter:
 #: native OLMo-core reader was in, and what a served backend would be in if it scored
 #: log-probs before it generated.
 GENERATIVE_BACKENDS: dict[str, Callable[[Path, GenerationConfig], ScoringModel]] = {
-    "hf": lambda checkpoint_dir, config: GenerativeScorer(
-        _HFCompleter(checkpoint_dir, config), config
-    ),
+    "hf": _load_hf,
 }
 
 

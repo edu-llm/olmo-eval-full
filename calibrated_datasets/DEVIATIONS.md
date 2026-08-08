@@ -83,6 +83,72 @@ is in each `manifest.json` and the long form of every note below is in
 - Graded by Minerva, not `math_verify`; Windows skips sympy.
 - Re-keyed by content; old composite misnamed 1,178 of 1,183.
 - Stops at `Problem:` alone, as lm-eval; the task's `\n\n` cut the answer off 40.9% of solutions.
+- Also stops at lowercase `problem:`, which lm-eval does not, for base models that copy the
+  few-shot header imperfectly. Bounded by count: over the 1,183 questions and the four
+  exemplars, neither cased form occurs, while a bare `problem` occurs 6 and 4 times as prose
+  and is therefore excluded. Neither corpus is the reference solutions, which are not vendored.
+- 1024 new tokens, which is upstream's own cap and the calibration population's. Moved back
+  from 2048 deliberately: 26 of the 1,183 references exceed 1024 and are cut, but they were
+  cut for the population too, so the loss is priced into `b` and matching it keeps theta on
+  the bank's scale. This is the one setting here that reduces a deviation rather than adding
+  one. The pairing is still not upstream's, which runs 1024 with `("Problem:", "\n\n")`.
+- **The few-shot exemplars are not lm-eval's.** Each of the four is closed with the scored
+  checkpoint's end-of-text token, resolved at run time from its tokenizer. lm-eval's
+  `leaderboard_math` closes them with nothing, so every difficulty in this bank was
+  estimated behind a prompt this one does not reproduce. This is the largest deviation
+  recorded for this bank and the direction of its risk is **unknown, not bounded** — it is
+  a change to the prompt itself rather than to what is read out of a completion, and no
+  count over the vendored corpora can bound it the way the stop-sequence entries above are
+  bounded. Theta from this bank moves off the calibrated scale by an amount that cannot be
+  estimated without responses from a model run both ways.
+  - Why it is accepted anyway: this checkpoint writes `eos == pad == bos == 0` and shows no
+    sign of having been trained to end a document, so without it every generative item
+    decodes the full budget. The alternative is not a cleaner prompt, it is 1024 tokens of
+    run-on per item, which is both the cost problem and — because the grader accepts any
+    candidate it finds — accuracy inflation in its own right.
+  - Applies to `leaderboard_math` only. `gsm8k`, `ifeval` and `gpqa` keep their calibrated
+    prompts untouched.
+- **The manifest guard does not cover this, by construction.** `check_runtime_convention`
+  compares `scoring_convention.runtime` against the resolved config *before the checkpoint
+  is fetched*, so a value resolved from that checkpoint's tokenizer cannot be in it. The
+  guard covers benchmark-level settings; the exemplar suffix and the `eos_token_id` passed
+  to `generate` are checkpoint-level and are invisible to it. Two runs of the same bank
+  against two models with different end-of-text spellings therefore pass the same guard on
+  materially different prompts. Do not read a passing convention check as attesting to the
+  prompt. The block records `num_fewshot` and `fewshot_source` and nothing about exemplar
+  content, so this gap predates the change and is merely made load-bearing by it; closing
+  it would mean hashing the rendered exemplar block into the convention, which would touch
+  all nine banks and is not done here.
+- The same run-time token is appended to the effective stop list, which `config.yaml` does
+  not name. It is a leak-catcher for a model that types the token's characters instead of
+  emitting its id, not a stopping mechanism: `skip_special_tokens=True` deletes a genuine
+  end-of-text token before any string stop can match, and truncation happens after the
+  tokens are already generated and paid for.
+- **A small-context checkpoint is prompted at fewer than four shots, per item.** The prompt
+  is measured against the model's `max_position_embeddings` and, when it does not fit, whole
+  exemplars are dropped from the front until it does — never truncating into an exemplar,
+  because the block is what teaches the two answer forms the grader reads. Measured with
+  SmolLM2-135M: the four exemplars are 680 tokens together and the framed stems reach 1,527,
+  so against the 2048 window `hf_config_patch` emits, items run at 4, 2 or 1 exemplars
+  depending on stem length. From 4096 up every item runs 4-shot and the clamp is inert.
+  - This is worse than a uniform deviation. Every difficulty was estimated behind a 4-shot
+    prompt, so a session whose items ran at mixed shot counts mixes calibration scales
+    *inside a single theta*, and nothing about theta or its standard error shows it. The
+    report is the only place that says so: per-item counts in each response's `num_fewshot`
+    and `context_fit`, and a session summary in `generation_runtime` carrying an explicit
+    `mixed_shot_alert` whenever more than one count was used.
+  - The floor is one exemplar. An item that cannot fit even one plus 256 tokens to answer in
+    is recorded ungradable with reason `prompt_exceeds_context_window`, scored 0 and counted
+    in the existing `ungradable` block, rather than sent 0-shot — a 0-shot prompt teaches
+    neither answer form, so its zero would read as weak mathematics.
+- Generation budgets below the 1024 cap on a small window, recorded per item. The cap is
+  applied first and the clamp only lowers it, so a large-context model never gains headroom
+  the calibration population lacked.
+- A checkpoint whose tokenizer cannot be loaded, or which declares no `eos_token_id`, is
+  **refused** rather than scored in a degraded mode. Proceeding would mean no end-of-text in
+  the exemplars, nothing for `generate` to halt on, no context clamp, every item burning its
+  full budget, and a report that looks entirely normal. The run's resolved tokenizer, token,
+  id, and whether the id reached `generate` are recorded in `generation_runtime`.
 
 ## `ifeval`
 

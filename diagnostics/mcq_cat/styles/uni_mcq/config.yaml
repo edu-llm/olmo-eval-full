@@ -227,12 +227,34 @@ generative:
       # `Final Answer:` endings that the symbolic grader extracts; under gsm8k's
       # framing a model states its answer in prose and the grader finds nothing.
       prompt_style: leaderboard_math
-      # 2048 = the longest reference solution in this bank, 1,901 tokens, plus 7.7% and rounded up
-      # to a power of two. Derived 2026-08-08 from the 1,183 vendored items joined back to
-      # DigitalLearningGmbH/MATH-lighteval on problem text -- a 1,183 of 1,183 join -- and tokenized
-      # with HuggingFaceTB/SmolLM2-135M, the identifier .edullm/run.yaml names. Median 255, mean
-      # 329, p90 658, p99 1,151, max 1,901 at item 913cf4f81371230a, an intermediate_algebra Level-5
-      # proof seven times the median length.
+      # 1024 because the benchmark declares 1024. src/olmo_eval/evals/tasks/leaderboard_math.py:73
+      # sets SamplingParams(max_tokens=1024, temperature=0, stop_sequences=("Problem:", "\n\n")),
+      # and lm-evaluation-harness's leaderboard_math runs the same cap as max_gen_toks. This bank's
+      # difficulties were harvested from Open LLM Leaderboard v2, which *is* that lm-eval task, so
+      # 1024 is the ceiling the calibration population generated behind.
+      #
+      # Set to 2048 earlier the same day and reverted 2026-08-08. The reasoning that put it there
+      # was per-item correctness: 2048 is the longest reference solution in this bank, 1,901 tokens,
+      # plus 7.7% and rounded up to a power of two, so no reference length could be cut. That is the
+      # wrong objective for an IRT bank. EAP treats each item's `b` as fixed truth, and `b` was
+      # estimated from models that hit 1024; handing our checkpoint 1,024 tokens of headroom the
+      # population never had makes it look better than the scale describes rather than measuring it
+      # on that scale. Theta is only interpretable against the difficulties it is scored with, so
+      # matching the calibration harness beats maximizing how many items can be answered in full.
+      #
+      # The measured distribution, which is unchanged and still worth having. Derived 2026-08-08
+      # from the 1,183 vendored items joined back to DigitalLearningGmbH/MATH-lighteval on problem
+      # text -- a 1,183 of 1,183 join -- and tokenized with HuggingFaceTB/SmolLM2-135M, the
+      # identifier .edullm/run.yaml names and the identifier this checkpoint's own
+      # dataset.tokenizer.identifier names. Median 255, mean 329, p90 658, p99 1,151, max 1,901 at
+      # item 913cf4f81371230a, an intermediate_algebra Level-5 proof seven times the median length.
+      #
+      # What 1024 costs, stated rather than glossed: 26 of the 1,183 reference solutions exceed it,
+      # 2.2% of the bank, and 5 of those 26 are a single unbroken block with no earlier stopping
+      # point. Those are cut mid-derivation and will grade wrong. That is accepted deliberately.
+      # It is the same truncation the calibration population experienced on the same items, so the
+      # difficulties already embed it -- the 2.2% is priced into `b`, and paying it again is what
+      # keeps our theta on the bank's scale instead of above it.
       #
       # It is deliberately NOT derived from metadata["gold_answer"], which is where a reader looks
       # first and is the wrong field. This bank's gold is the bare final answer -- "4.5",
@@ -240,25 +262,47 @@ generative:
       # process_doc extracted it before vendoring. A budget fit to that field would be 320 tokens
       # under any sane headroom and would cut most responses off mid-derivation.
       #
-      # Why not 1536, which the stop sequence would justify. ["Problem:", "\n\n"] ends a completion
-      # at the first blank line and 42.3% of these reference solutions contain one, so the longest
-      # text the grader can actually receive is 1,442 tokens. 2048 is set instead so this value does
-      # not depend on the line below it.
+      # The one asymmetry, and it is not parity: upstream pairs its 1024 with
+      # ("Problem:", "\n\n"), and the line below does not restore the blank line, because it ended
+      # 40.9% of these solutions before their answer. So this is upstream's cap with upstream's
+      # blank-line bug removed -- strictly closer to the calibration harness than 2048 was, and
+      # still not the same configuration. Do not read the two settings as jointly matching lm-eval.
       #
-      # Cost at the cacheless rate TORCH_TODOS.md measured, 31.25 ms/token: 64 s per item that never
-      # stops early, 42.7 minutes for a 40-item session against the 1h olmo-core-check bound.
-      # Realised cost is well under that. Do not round back to 1024 to reclaim the margin: 26 of the
-      # 1,183 references exceed 1024 and 5 of those are a single unbroken block, so the cut lands on
-      # correct answers rather than on run-on text.
+      # Cost at the cacheless rate TORCH_TODOS.md measured, 31.25 ms/token, recomputed for 1024:
+      # 32 s per item that never stops early, against 64 s at 2048; 21.3 minutes for a 40-item
+      # session against the 1h olmo-core-check bound, against 42.7 minutes. Realised cost is well
+      # under that, and further under it once the checkpoint's own EOS is passed to generate --
+      # see common/generative.py _HFCompleter._eos_kwargs, which is what makes an item stop at all.
       #
-      # Amended 2026-08-08 in the same commit that changed the stop below. The third paragraph
-      # describes a stop sequence this file no longer sets, so read it as the derivation as it
-      # stood: with ["Problem:"] alone there is no 1,442-token ceiling and the grader can receive a
-      # whole 1,901-token solution. The paragraph's conclusion is unchanged and is now load-bearing
-      # rather than precautionary -- 2048 was chosen not to depend on the stop, and the stop moved.
-      # Nothing else in the derivation moves either: the cost figures are already per item that runs
-      # to the cap, and removing a stop can only add items that do.
-      max_new_tokens: 2048
+      # This is the NOMINAL cap and a small-context checkpoint gets less. common/generative.py
+      # PromptFitter measures each prompt against the model's max_position_embeddings and lowers
+      # the budget to what is left, never below a 256-token floor. The cap here is applied first
+      # and the clamp can only reduce it, so a large-context model still stops at 1024 rather
+      # than being handed headroom the calibration population never had.
+      #
+      # That clamp is not insurance for this bank; the prompt genuinely does not fit on a small
+      # model. Measured 2026-08-08 with SmolLM2-135M's own tokenizer, downloaded from the Hub:
+      # the four exemplars closed with end-of-text and joined are 146, 118, 221 and 195 tokens,
+      # 680 together, and the framed "Problem:/Solution:" stems over the 1,183 vendored items run
+      # median 69, mean 100, p90 190, p99 589, max 1,527. So the median item wants 680 + 69 + 1024
+      # = 1,773 tokens and the longest wants 680 + 1,527 + 1,024 = 3,231.
+      #
+      # Against real windows, and this is the number that matters: hf_config_patch emits
+      # max_position_embeddings 2048 for this checkpoint family, and at 2048 the room left after
+      # the block and the longest stem is -159 tokens. So the ladder fires on Preston's
+      # checkpoint as configured -- items are prompted at 4, 2 or 1 exemplars depending on stem
+      # length, with none falling through to ungradable. At 4096 there is 1,889 tokens of room
+      # and every item runs 4-shot at the full 1024, so the clamp is inert from 4096 up.
+      #
+      # When it does fire it drops WHOLE exemplars from the front, never truncating into one:
+      # the exemplars are what teach \boxed{} and the "Final Answer:" line the grader reads, so a
+      # prompt cut mid-block would be the right length and teach nothing, and the item would
+      # score 0 for a reason that is not the model's mathematics. The floor is one exemplar; an
+      # item that cannot fit even one is recorded ungradable instead of being sent 0-shot.
+      # Per-item shot counts land in each response's num_fewshot and context_fit, and the
+      # session summary in the report's generation_runtime -- a session that mixes shot counts
+      # mixes calibration scales inside one theta, so that block carries an explicit alert.
+      max_new_tokens: 1024
       # ["Problem:"] and not ["Problem:", "\n\n"]. Changed 2026-08-08. This diverges from the
       # olmo-eval task named above, which sets ("Problem:", "\n\n"), and matches
       # lm-evaluation-harness's leaderboard_math instead -- `until: ["Problem:"]`, do_sample false,
@@ -299,7 +343,34 @@ generative:
       # leaderboard showed the calibration population a blank line mid-solution and did not stop on
       # one, while olmo-eval removed them and did. Inheriting only olmo-eval's half of that pair is
       # what made the stop look safe here.
-      stop_sequences: ["Problem:"]
+      # The lowercase variant is here because a 135M base model reproduces the few-shot
+      # structure imperfectly, and a header it emits as "problem:" would otherwise run on
+      # into a hallucinated next question that the extractor then reads as part of this
+      # answer. Measured 2026-08-08 before adding it, on the 1,183 vendored questions and
+      # olmo_eval's four MINERVA_MATH_FIXED_FEWSHOT exemplars: "Problem:" 0 and 0,
+      # "problem:" 0 and 0, so neither form can fire inside legitimate text here.
+      #
+      # The colon is load-bearing and a bare "problem" is deliberately NOT in this list.
+      # The same count over the same corpora finds it 6 times in questions and 4 times in
+      # the exemplars, as ordinary prose -- "this problem requires", "the problem states".
+      # Adding it would reintroduce the failure the line above this comment was written to
+      # remove, and would do it to any solution that discusses its own problem.
+      #
+      # What this measurement does not cover: the reference *solutions*, which are not
+      # vendored -- items.jsonl carries metadata["gold_answer"] alone. The 40.9% figure
+      # above came from joining back to DigitalLearningGmbH/MATH-lighteval over the
+      # network. Questions and exemplars are the corpora reachable offline, and both agree.
+      #
+      # A third stop is added at run time and is deliberately absent here: the end-of-text token
+      # of whichever checkpoint is being scored, resolved from its own tokenizer by
+      # common/generative.py resolve_eos_token and appended by effective_stop_sequences. It is not
+      # written here because it is not a property of this benchmark. "<|endoftext|>" is SmolLM2's
+      # spelling and id 0; the next submitter's model may spell it "</s>", "<|im_end|>" or
+      # "<|eot_id|>", and a literal frozen into this file would be ordinary text to all of them --
+      # matching nothing, while quietly claiming in the manifest to be part of the scoring
+      # convention. Two keys away from here, prompt_style: leaderboard_math declares that this
+      # bank's exemplars are closed with that token; the token itself arrives from the checkpoint.
+      stop_sequences: ["Problem:", "problem:"]
 
     # Reproduces olmo-eval's ifeval task (src/olmo_eval/evals/tasks/ifeval.py), which
     # is the Open LLM Leaderboard v2 configuration.

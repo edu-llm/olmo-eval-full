@@ -243,7 +243,7 @@ def resolve_dataset_overrides(
     Benchmarks within a modality do not share a prompting convention, and each bank was
     calibrated under its own. On the generative side GSM8K is 8-shot
     ``Question:``/``Answer:`` inside 512 tokens while MATH is 4-shot
-    ``Problem:``/``Solution:`` inside 2048; on the MCQ side ARC frames the stem as
+    ``Problem:``/``Solution:`` inside 1024; on the MCQ side ARC frames the stem as
     ``Question:``/``Answer:``, HellaSwag frames it not at all, and WinoGrande substitutes
     the choice into the stem. A style holds one block per modality, so a block carries a
     :data:`PER_DATASET_KEY` map and the entry matching the resolved bank wins over the

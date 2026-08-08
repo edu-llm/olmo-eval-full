@@ -677,10 +677,10 @@ class TestPerDatasetGenerationSettings:
         self.load("leaderboard_math", tmp_path)
         config = captured[0]
         assert config.num_fewshot == 4
-        assert config.max_new_tokens == 2048
+        assert config.max_new_tokens == 1024
         assert config.prompt_style == "leaderboard_math"
         assert config.fewshot_source == "leaderboard_math"
-        assert config.stop_sequences == ("Problem:",)
+        assert config.stop_sequences == ("Problem:", "problem:")
 
     def test_a_dataset_with_no_entry_keeps_the_shared_keys(self, captured, tmp_path: Path) -> None:
         self.load("gsm8k", tmp_path)
@@ -742,9 +742,25 @@ RUN_ON_SOLUTION = (
     "Final Answer: The final answer is $7$. I hope it is correct."
 )
 
+#: The same run-on with the header miscased, which is why the lowercase stop exists. A
+#: 135M base model copies the few-shot skeleton approximately, and a header it renders
+#: as ``problem:`` would otherwise leave the hallucinated question inside the graded
+#: completion -- where ``last_boxed_only_string``, an ``rfind``, reads its answer in
+#: preference to the real one.
+LOWERCASE_RUN_ON_SOLUTION = RUN_ON_SOLUTION.replace("Problem:", "problem:")
+
+#: The reason the stop carries a colon and the bare word is not in the list. Six of the
+#: 1,183 vendored questions and four of the exemplars use "problem" in exactly this way,
+#: so a bare stop would cut this solution before its answer and grade it wrong.
+PROSE_PROBLEM_SOLUTION = (
+    " This problem requires the quadratic formula, and the problem states $a=1$.\n"
+    "Rewriting the problem in standard form gives $x^2-5x+6=0$, so $x=\\boxed{3}$.\n"
+    "Final Answer: The final answer is $3$. I hope it is correct."
+)
+
 
 class TestTheMathBankStopsAtTheHeaderNotTheBlankLine:
-    """``["Problem:"]``, not the task's ``["Problem:", "\\n\\n"]``.
+    """``["Problem:", "problem:"]``, not the task's ``["Problem:", "\\n\\n"]``.
 
     The olmo-eval task adds a blank line to lm-eval's single stop, and the addition was
     deleting answers rather than bounding run-on text. Both of the extractor's paths read
@@ -757,6 +773,14 @@ class TestTheMathBankStopsAtTheHeaderNotTheBlankLine:
     Dropping it is also what the calibration says: these difficulties came from Open LLM
     Leaderboard v2, whose MATH task is lm-eval's ``leaderboard_math``, whose
     ``generation_kwargs`` are ``until: ["Problem:"]`` and nothing else.
+
+    The lowercase header is the one addition to that, for a base model that reproduces
+    the few-shot skeleton imperfectly. It is a deviation from the calibration harness, so
+    it is bounded by measurement rather than taste: over the 1,183 vendored questions and
+    the four ``MINERVA_MATH_FIXED_FEWSHOT`` exemplars, ``problem:`` occurs zero times and
+    ``Problem:`` zero times, while the bare word occurs 6 and 4 times as ordinary prose.
+    The colon is therefore what separates a header from a sentence, and
+    :data:`PROSE_PROBLEM_SOLUTION` pins that a bare stop is never added.
     """
 
     def config(self, **overrides) -> generative.GenerationConfig:
@@ -771,7 +795,45 @@ class TestTheMathBankStopsAtTheHeaderNotTheBlankLine:
         return settings.generation
 
     def test_the_committed_config_stops_only_at_the_next_problem_header(self) -> None:
-        assert self.config().stop_sequences == ("Problem:",)
+        assert self.config().stop_sequences == ("Problem:", "problem:")
+
+    def test_the_bare_word_is_not_a_stop(self) -> None:
+        """The colon is the whole difference between a header and a sentence."""
+        assert "problem" not in self.config().stop_sequences
+        assert all(stop.endswith(":") for stop in self.config().stop_sequences)
+
+    def test_a_miscased_header_is_still_cut(self, real_math_extract) -> None:
+        """Grading against the run-on's answer must fail, or the lowercase stop is dead."""
+        config = self.config()
+
+        assert not generative.grade_completion(
+            math_item("7"), LOWERCASE_RUN_ON_SOLUTION, config
+        ).correct
+        assert generative.grade_completion(
+            math_item("5"), LOWERCASE_RUN_ON_SOLUTION, config
+        ).correct
+
+    def test_a_solution_discussing_its_own_problem_survives(self, real_math_extract) -> None:
+        """The regression a bare ``problem`` stop would cause, pinned rather than argued."""
+        response = generative.grade_completion(
+            math_item("3"), PROSE_PROBLEM_SOLUTION, self.config()
+        )
+
+        assert response.correct
+        assert response.metadata["completion"] == PROSE_PROBLEM_SOLUTION
+
+    def test_a_bare_problem_stop_would_have_graded_that_one_wrong(
+        self, real_math_extract
+    ) -> None:
+        """The counterfactual, so the cost of adding the bare word stays visible."""
+        response = generative.grade_completion(
+            math_item("3"),
+            PROSE_PROBLEM_SOLUTION,
+            self.config(stop_sequences=("Problem:", "problem")),
+        )
+
+        assert not response.correct
+        assert "\\boxed" not in response.metadata["completion"]
 
     def test_the_blank_line_is_gone_rather_than_reordered(self) -> None:
         """Order does not matter to ``truncate_at_stop``; presence does."""
@@ -848,3 +910,894 @@ class TestTheMathBankStopsAtTheHeaderNotTheBlankLine:
 
         assert len(examples) == 4
         assert not any("Problem:" in example["solution"] for example in examples)
+
+
+#: SmolLM2-135M's arrangement, which is this checkpoint family's. Written here as a fake
+#: tokenizer's attributes rather than as a constant in ``generative``, which is the whole
+#: design: the string is the model's and the benchmark never learns it.
+SMOL_EOS = "<|endoftext|>"
+SMOL_EOS_ID = 0
+
+#: A different family's spelling, used to prove the resolution is a resolution. Nothing
+#: in the source under test may prefer one of these two.
+LLAMA_EOS = "<|eot_id|>"
+LLAMA_EOS_ID = 128009
+
+#: The two benchmark-level artifacts that may not name any model's end-of-text token.
+CONFIG_YAML = Path(__file__).resolve().parents[1] / "config.yaml"
+MATH_MANIFEST = CALIBRATED_DATASETS / "leaderboard_math" / "manifest.json"
+
+
+#: What closing the exemplars with an end-of-text token risks, and the only case where the
+#: run-time stop entry does any work. A model shown ``<|endoftext|>`` four times can learn
+#: to spell those thirteen characters out of ordinary vocabulary instead of emitting id 0;
+#: they are then not special, they survive ``skip_special_tokens=True``, and generation
+#: does not halt on them.
+#:
+#: Deliberately without a ``Problem:`` header in the continuation. A run-on that reprints
+#: the header is already cut by the two committed stops, so including one would let a test
+#: pass whether or not the end-of-text entry exists.
+#:
+#: The harm runs in one direction, and it is not the direction the header stop's comments
+#: describe. ``MathLatexEquivalence`` scores ``any(is_equiv(candidate, gold))`` over every
+#: candidate ``extract_math_answer`` finds, so extra text can only add candidates:
+#: an uncut leak turns wrong answers right, never right answers wrong. Here the model's
+#: own answer is 5 and its hallucinated continuation says 7, so against a gold of 7 the
+#: uncut completion is credited for an answer the model did not give. Across a bank that
+#: is accuracy inflation, and it lands in theta as ability the checkpoint does not have.
+LEAKED_EOS_RUN_ON = (
+    " The value is $\\boxed{5}$.\n"
+    "Final Answer: The final answer is $5$. I hope it is correct."
+    f"{SMOL_EOS}Next, evaluate $2+5$. That gives $\\boxed{{7}}$.\n"
+    "Final Answer: The final answer is $7$. I hope it is correct."
+)
+
+
+def long_math_item() -> BenchmarkItem:
+    """A stem long enough to force the ladder where a short one does not.
+
+    Real: the framed stems run to 1,527 SmolLM2 tokens over the 1,183 vendored items
+    against a median of 69, and it is that spread -- not the exemplar block -- that makes
+    a single context window produce different shot counts within one session.
+    """
+    return BenchmarkItem(
+        item_id="intermediate_algebra_hard|913",
+        question="Consider the following. " + "Suppose additionally that $x_i > 0$. " * 60,
+        choices=(),
+        gold_index=-1,
+        metadata={"gold_answer": "\\frac{1}{2}", "answer_type": "math_latex"},
+    )
+
+
+def uncommented(text: str) -> str:
+    """``text`` with ``#`` comment lines dropped, so prose about a token is not a token.
+
+    ``config.yaml`` argues at length about why the token is absent from its settings, and
+    naming it there is how that argument gets made. The settings themselves are the claim
+    under test.
+    """
+    return "\n".join(line for line in text.splitlines() if not line.strip().startswith("#"))
+
+
+class FakeTensor:
+    """The slice of a torch tensor ``_HFCompleter`` touches: shape, ``.to``, row 0."""
+
+    def __init__(self, ids: list[int]) -> None:
+        self.ids = list(ids)
+
+    @property
+    def shape(self) -> tuple[int, int]:
+        return (1, len(self.ids))
+
+    def to(self, device: object) -> FakeTensor:
+        return self
+
+    def __getitem__(self, index: int) -> list[int]:
+        if index != 0:
+            raise IndexError(index)
+        return self.ids
+
+
+class SpellingTokenizer:
+    """A tokenizer that encodes its own end-of-text spelling to its own id.
+
+    Ordinary words get ids from 1 upwards so that a count of ``eos_token_id`` in an
+    encoded prompt is a count of real end-of-text tokens and not an artefact of the
+    stub -- which matters here, because this family's id is 0 and a stub that emitted 0
+    for anything else would make the round-trip assertion vacuous.
+    """
+
+    #: Matches :attr:`HaltingModel.config.vocab_size`, so the consistency check passes
+    #: quietly on the ordinary path and only the subclass below trips it.
+    size = 49152
+
+    def __init__(self, eos_token: str | None, eos_token_id: int | None) -> None:
+        self.eos_token = eos_token
+        self.eos_token_id = eos_token_id
+        self.pad_token_id = None
+
+    def __len__(self) -> int:
+        return self.size
+
+    def _encode(self, text: str) -> list[int]:
+        ids: list[int] = []
+        for index, chunk in enumerate(text.split(self.eos_token or "\0")):
+            if index:
+                ids.append(self.eos_token_id)
+            ids.extend(1 + len(word) % 97 for word in chunk.split())
+        return ids
+
+    def __call__(
+        self,
+        text: str,
+        add_special_tokens: bool = True,
+        return_tensors: str | None = None,
+    ) -> dict[str, object]:
+        ids = self._encode(text)
+        return {"input_ids": FakeTensor(ids) if return_tensors else ids}
+
+    def decode(self, ids: list[int], skip_special_tokens: bool = False) -> str:
+        """Model ``skip_special_tokens`` faithfully, because the design turns on it."""
+        kept = [i for i in ids if not (skip_special_tokens and i == self.eos_token_id)]
+        return " ".join(str(i) for i in kept)
+
+
+class MisspellingTokenizer(SpellingTokenizer):
+    """Names an end-of-text token that its own encoder reads as ordinary text.
+
+    Not a hypothetical: a tokenizer registers its special tokens as added tokens, and one
+    that does not will happily report ``eos_token`` while tokenizing those characters
+    piecewise. Teaching a model to type them would be worse than teaching it nothing.
+    """
+
+    def _encode(self, text: str) -> list[int]:
+        return [1 + len(word) % 97 for word in text.split()]
+
+
+class HugeVocabTokenizer(SpellingTokenizer):
+    """A dolma2-sized vocabulary against a SmolLM2-sized model: 100,278 against 49,152."""
+
+    size = 100278
+
+
+class HaltingModel:
+    """A ``generate`` that honours ``eos_token_id`` the way ``transformers`` does.
+
+    It emits an answer, then its end-of-text id, then filler that only a caller who
+    failed to pass the id will receive. The halting itself is the library's behaviour and
+    is modelled here rather than tested -- ``torch`` is not installed, so there is no way
+    to exercise the real one offline. What these tests can pin, and what the bug actually
+    was, is whether the id is passed at all.
+    """
+
+    device = "cpu"
+
+    def __init__(self, eos_token_id: int = SMOL_EOS_ID, context: int | None = 8192) -> None:
+        self.eos_token_id = eos_token_id
+        self.calls: list[dict] = []
+        self.config = types.SimpleNamespace(vocab_size=49152)
+        if context is not None:
+            self.config.max_position_embeddings = context
+
+    def eval(self) -> None:
+        pass
+
+    def generate(self, input_ids: FakeTensor, **kwargs: object) -> FakeTensor:
+        self.calls.append(kwargs)
+        budget = int(kwargs["max_new_tokens"])
+        emitted = [11, 12, self.eos_token_id, 13, 14, 15]
+        if kwargs.get("eos_token_id", "absent") == self.eos_token_id:
+            emitted = emitted[: emitted.index(self.eos_token_id) + 1]
+        return FakeTensor([*input_ids.ids, *emitted[:budget]])
+
+
+class TestTheMathExemplarsCloseWithTheCheckpointsEndOfText:
+    """The prompt-level half of making a base checkpoint stop, and its cost.
+
+    This checkpoint writes ``eos_token_id == pad_token_id == bos_token_id == 0`` and was
+    converted without a ``generation_config.json``, so nothing in the directory tells
+    ``generate`` what to halt on and every generative item decodes its whole budget. The
+    fix is two independent halves, and the tests below keep them independent:
+
+    - ``generate(eos_token_id=...)``, which is what actually stops a completion, applies
+      to every bank, and would work with the prompt untouched.
+    - the end-of-text token closing each of the four exemplars, which is the only way to
+      *induce* the behaviour in a base model with no instruction-following to appeal to,
+      and is a deviation from the prompt this bank's difficulties were estimated behind.
+
+    Every assertion here is about the mechanism rather than about a spelling. The
+    benchmark declares ``exemplars_end_with_eos`` and the checkpoint supplies the string,
+    so both :data:`SMOL_EOS` and :data:`LLAMA_EOS` are put through the same paths: a test
+    that only passed for ``<|endoftext|>`` would be pinning the frozen literal this
+    design exists to avoid.
+    """
+
+    def config(self, **overrides) -> generative.GenerationConfig:
+        settings = grading._apply_generation_overrides(
+            grading.GradingSettings(),
+            UniMcqStyle().generation_settings,
+            dataset="leaderboard_math",
+        )
+        for field, value in overrides.items():
+            setattr(settings.generation, field, value)
+        return settings.generation
+
+    def prompt(self, eos_token: str | None, **overrides) -> str:
+        return generative.format_generative_prompt(
+            math_item(), self.config(**overrides), eos_token=eos_token
+        )
+
+    # --- the benchmark declares the convention, the model supplies the string ---
+
+    def test_the_math_template_declares_that_its_exemplars_close_with_eos(self) -> None:
+        assert generative.PROMPT_TEMPLATES["leaderboard_math"].exemplars_end_with_eos
+
+    def test_no_other_template_declares_it(self) -> None:
+        """The deviation is argued per bank; gsm8k, ifeval and gpqa keep their prompts."""
+        declaring = {
+            name
+            for name, template in generative.PROMPT_TEMPLATES.items()
+            if template.exemplars_end_with_eos
+        }
+
+        assert declaring == {"leaderboard_math"}
+
+    @pytest.mark.parametrize("artifact", [CONFIG_YAML, MATH_MANIFEST])
+    def test_no_benchmark_artifact_names_a_models_end_of_text_token(self, artifact) -> None:
+        """The design rule, as an assertion rather than as a comment.
+
+        Both files describe the benchmark and are read before any checkpoint is fetched --
+        the manifest by ``convention.check_runtime_convention``, which cannot see a
+        run-time value by construction. A literal in either would be one model's answer
+        recorded as the benchmark's, and would be ordinary text to every other model.
+        """
+        settings = uncommented(artifact.read_text(encoding="utf-8"))
+
+        for spelling in (SMOL_EOS, LLAMA_EOS, "</s>", "<|im_end|>", "<EOS>"):
+            assert spelling not in settings
+
+    # --- every exemplar ends with it ---
+
+    @pytest.mark.parametrize("eos", [SMOL_EOS, LLAMA_EOS])
+    def test_every_exemplar_ends_with_the_resolved_token(self, eos: str) -> None:
+        rendered = self.prompt(eos)
+        exemplars = rendered.split("\n\n" + "Problem:\n")
+
+        assert len(exemplars) == 5  # four worked examples, then the live question
+        assert rendered.count(eos) == 4
+        for exemplar in exemplars[:4]:
+            assert exemplar.endswith(eos)
+
+    @pytest.mark.parametrize("eos", [SMOL_EOS, LLAMA_EOS])
+    def test_the_final_exemplar_carries_it_too(self, eos: str) -> None:
+        """Decided deliberately; the reasoning is beside the template, not here.
+
+        Pinned separately from the count above because it is the one placement with an
+        argument against it -- the live question follows immediately, so this token has
+        prompt text after it.
+        """
+        rendered = self.prompt(eos)
+        last_exemplar_end = rendered.rindex(eos) + len(eos)
+
+        assert rendered[last_exemplar_end:].startswith("\n\nProblem:\n")
+        assert "Solution:" in rendered[last_exemplar_end:]  # the live question, unanswered
+
+    def test_it_lands_after_the_final_answer_line_not_before_it(self) -> None:
+        """Order matters: the grader reads the ``Final Answer`` line the exemplars teach.
+
+        Appending ahead of that line would leave the demonstration intact and quietly stop
+        teaching the one thing :class:`MathLatexEquivalence` needs.
+        """
+        for exemplar in self.prompt(SMOL_EOS).split("\n\nProblem:\n")[:4]:
+            assert exemplar.endswith(SMOL_EOS)
+            assert exemplar.index("Final Answer:") < exemplar.rindex(SMOL_EOS)
+
+    def test_the_live_question_is_not_closed_with_it(self) -> None:
+        """It is the model's job to emit the token, not the prompt's to supply it."""
+        assert not self.prompt(SMOL_EOS).endswith(SMOL_EOS)
+
+    # --- the upstream constant is untouched ---
+
+    def test_the_upstream_constant_carries_no_end_of_text_token(self) -> None:
+        """Imported fresh, so an in-place edit of olmo_eval's constant is caught here.
+
+        The block is shared with the real olmo-eval tasks and with ``leaderboard_math.py``
+        and ``minerva_math.py``. Appending there would change what those score.
+        """
+        from olmo_eval.evals.tasks.constants.minerva_math import MINERVA_MATH_FIXED_FEWSHOT
+
+        for example in MINERVA_MATH_FIXED_FEWSHOT:
+            for spelling in (SMOL_EOS, LLAMA_EOS, "</s>", "<|im_end|>", "<EOS>"):
+                assert spelling not in example["solution"]
+
+    def test_the_transformation_boundary_stays_a_pure_data_source(self) -> None:
+        """``_leaderboard_math_fixed_fewshot`` returns the same four examples every run."""
+        for example in generative._leaderboard_math_fixed_fewshot():
+            assert SMOL_EOS not in example["solution"]
+
+    # --- the round trip ---
+
+    def test_the_rendered_prompt_encodes_to_the_real_id_once_per_exemplar(self) -> None:
+        """The point of resolving a string at all: it has to survive tokenization.
+
+        Verified against a stub that models SmolLM2-135M's arrangement -- id 0 as eos,
+        bos and unk alike -- rather than against the real tokenizer, which is not
+        available offline. Its ``tokenizer_config.json`` was read from the Hub and
+        records ``eos_token: "<|endoftext|>"`` at id 0, ``normalized: false`` and
+        ``special: true``, which is the property this stub reproduces.
+        """
+        tokenizer = SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID)
+        encoded = tokenizer(self.prompt(SMOL_EOS), add_special_tokens=False)["input_ids"]
+
+        assert encoded.count(SMOL_EOS_ID) == 4
+
+    def test_the_ids_fall_where_the_string_was_put_not_merely_somewhere(self) -> None:
+        """A count alone would pass on four tokens encoded in the wrong places.
+
+        Each id has to sit at the boundary the rendered string put it at, which is the
+        cumulative length of everything before it plus the ids already emitted.
+        """
+        tokenizer = SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID)
+        rendered = self.prompt(SMOL_EOS)
+        encoded = tokenizer(rendered, add_special_tokens=False)["input_ids"]
+
+        expected: list[int] = []
+        consumed = 0
+        for chunk in rendered.split(SMOL_EOS)[:-1]:
+            consumed += len(tokenizer(chunk, add_special_tokens=False)["input_ids"])
+            expected.append(consumed + len(expected))
+
+        assert [i for i, token in enumerate(encoded) if token == SMOL_EOS_ID] == expected
+
+    def test_resolution_reads_the_tokenizer_and_checks_the_round_trip(self) -> None:
+        assert generative.resolve_eos_token(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID)) == (
+            SMOL_EOS,
+            SMOL_EOS_ID,
+        )
+        assert generative.resolve_eos_token(SpellingTokenizer(LLAMA_EOS, LLAMA_EOS_ID)) == (
+            LLAMA_EOS,
+            LLAMA_EOS_ID,
+        )
+
+    def test_a_token_that_does_not_round_trip_is_refused_as_a_teaching_signal(self, caplog) -> None:
+        """Stop on the id, teach nothing: typing the characters is worse than silence."""
+        with caplog.at_level(logging.WARNING, logger="mcq_cat.generative"):
+            text, token_id = generative.resolve_eos_token(
+                MisspellingTokenizer(SMOL_EOS, SMOL_EOS_ID)
+            )
+
+        assert text is None
+        assert token_id == SMOL_EOS_ID
+        assert "ordinary text" in caplog.text
+
+    # --- the id, which is the half that actually stops generation ---
+
+    @pytest.fixture
+    def fake_stack(self, monkeypatch):
+        """``torch`` and ``transformers`` stubbed; ``torch`` is not installed here."""
+
+        def install(tokenizer: object, model: object):
+            import contextlib
+
+            torch = types.ModuleType("torch")
+            torch.no_grad = contextlib.nullcontext
+            transformers = types.ModuleType("transformers")
+            transformers.AutoTokenizer = types.SimpleNamespace(
+                from_pretrained=lambda *a, **k: tokenizer
+            )
+            transformers.AutoModelForCausalLM = types.SimpleNamespace(
+                from_pretrained=lambda *a, **k: model
+            )
+            transformers.set_seed = lambda seed: None
+            monkeypatch.setitem(sys.modules, "torch", torch)
+            monkeypatch.setitem(sys.modules, "transformers", transformers)
+            return generative._HFCompleter(Path("/ckpt"), self.config())
+
+        return install
+
+    def test_the_resolved_id_is_passed_to_generate(self, fake_stack) -> None:
+        """The whole bug: without this, ``generate`` has nothing to halt on."""
+        model = HaltingModel()
+        completer = fake_stack(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID), model)
+        completer("Problem:\nx?\n\nSolution:")
+
+        assert model.calls[0]["eos_token_id"] == SMOL_EOS_ID
+
+    def test_an_id_of_zero_is_passed_rather_than_treated_as_absent(self, fake_stack) -> None:
+        """``bool(0)`` is ``False``, and 0 is exactly this checkpoint's id.
+
+        A truth test here would discard the one value the fix exists for, and every test
+        above would still pass because the string half is unaffected.
+        """
+        model = HaltingModel()
+        completer = fake_stack(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID), model)
+
+        assert completer.eos_token_id == 0
+        assert completer._eos_kwargs() == {"eos_token_id": 0}
+        completer("Problem:\nx?\n\nSolution:")
+        assert "eos_token_id" in model.calls[0]
+
+    def test_generation_stops_at_the_token_the_model_emits(self, fake_stack) -> None:
+        model = HaltingModel()
+        completer = fake_stack(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID), model)
+
+        assert completer("Problem:\nx?\n\nSolution:") == "11 12"
+
+    def test_without_the_id_the_same_model_runs_past_it(self, fake_stack) -> None:
+        """The counterfactual, which is what this bank was doing before the fix."""
+        tokenizer = SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID)
+        model = HaltingModel()
+        completer = fake_stack(tokenizer, model)
+        completer.eos_token_id = None
+
+        assert completer("Problem:\nx?\n\nSolution:") == "11 12 13 14 15"
+
+    def test_no_kwarg_is_passed_when_nothing_resolved(self) -> None:
+        """The degraded path itself, which the refusal above makes unreachable in a run."""
+        completer = object.__new__(generative._HFCompleter)
+        completer.eos_token_id = None
+
+        assert completer._eos_kwargs() == {}
+
+    def test_a_tokenizer_with_no_end_of_text_id_is_refused_at_load(self, fake_stack) -> None:
+        """A real run always has a tokenizer, so this is a failure and not a mode.
+
+        Without an id there is nothing for ``generate`` to halt on, so every item would
+        decode its whole budget and the report would look entirely normal. The guard is at
+        checkpoint load rather than at prompt build precisely so the offline tests, which
+        load no checkpoint, keep exercising the degraded path deliberately.
+        """
+        with pytest.raises(RuntimeError, match="no eos_token_id") as excinfo:
+            fake_stack(SpellingTokenizer(None, None), HaltingModel())
+
+        assert "full 1024 new tokens" in str(excinfo.value)
+
+    def test_an_unloadable_tokenizer_is_refused_with_the_cost_named(self, monkeypatch) -> None:
+        """The Hub-unreachable case ``HF_CONVERSION.md`` flags, since no files ship."""
+        broken = types.SimpleNamespace(
+            from_pretrained=lambda *a, **k: (_ for _ in ()).throw(OSError("no tokenizer files"))
+        )
+
+        with pytest.raises(RuntimeError, match="No usable tokenizer") as excinfo:
+            generative._HFCompleter._load_tokenizer(broken, Path("/ckpt"))
+
+        assert "never halt" in str(excinfo.value)
+        assert "into the exemplar block" in str(excinfo.value)
+
+    def test_the_backend_hands_the_string_from_the_completer_to_the_scorer(
+        self, fake_stack
+    ) -> None:
+        """The seam: one place where both the tokenizer and the config exist."""
+        fake_stack(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID), HaltingModel())
+        scorer = generative.GENERATIVE_BACKENDS["hf"](Path("/ckpt"), self.config())
+
+        assert isinstance(scorer, generative.GenerativeScorer)
+        assert scorer.eos_token == SMOL_EOS
+
+    def test_a_mismatched_tokenizer_is_reported_rather_than_scored_silently(
+        self, fake_stack, caplog
+    ) -> None:
+        """The check that would have caught reading the wrong identifier off the config.
+
+        A dolma2 tokenizer against this checkpoint is 100,278 tokens against 49,152, which
+        is a tokenizer able to emit ids the model has no embedding for.
+        """
+        with caplog.at_level(logging.WARNING, logger="mcq_cat.generative"):
+            fake_stack(HugeVocabTokenizer(SMOL_EOS, SMOL_EOS_ID), HaltingModel())
+
+        assert "cannot represent" in caplog.text
+
+    def test_a_matching_pair_is_not_complained_about(self, fake_stack, caplog) -> None:
+        """One direction only: a model larger than its tokenizer is ordinary padding."""
+        with caplog.at_level(logging.WARNING, logger="mcq_cat.generative"):
+            fake_stack(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID), HaltingModel())
+
+        assert caplog.text == ""
+
+    # --- the stop list, and what it is and is not for ---
+
+    def test_the_committed_config_names_no_end_of_text_token(self) -> None:
+        """It is checkpoint-level; ``config.yaml`` and the manifest are benchmark-level."""
+        assert self.config().stop_sequences == ("Problem:", "problem:")
+
+    def test_the_runtime_list_carries_it_and_the_committed_one_does_not(self) -> None:
+        config = self.config()
+
+        assert generative.effective_stop_sequences(config, SMOL_EOS) == (
+            "Problem:",
+            "problem:",
+            SMOL_EOS,
+        )
+        assert generative.effective_stop_sequences(config, None) == config.stop_sequences
+
+    def test_a_genuine_special_token_never_reaches_the_stop_list(self, fake_stack) -> None:
+        """Why the entry above is a leak-catcher and not the stopping mechanism.
+
+        ``__call__`` decodes with ``skip_special_tokens=True``, so a real end-of-text
+        token is deleted from the text before ``truncate_at_stop`` sees any of it. A test
+        that merely asserted the string was in the list would pass while pinning nothing.
+        """
+        completer = fake_stack(SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID), HaltingModel())
+
+        assert SMOL_EOS not in completer("Problem:\nx?\n\nSolution:")
+
+    def test_a_typed_out_end_of_text_is_cut_with_what_follows_it(self, real_math_extract) -> None:
+        """The failure closing the exemplars invites; see :data:`LEAKED_EOS_RUN_ON`."""
+        response = generative.grade_completion(
+            math_item("5"), LEAKED_EOS_RUN_ON, self.config(), eos_token=SMOL_EOS
+        )
+
+        assert response.correct
+        assert SMOL_EOS not in response.metadata["completion"]
+        assert "\\boxed{7}" not in response.metadata["completion"]
+
+    def test_without_the_runtime_entry_the_hallucination_is_credited(
+        self, real_math_extract
+    ) -> None:
+        """The counterfactual, so the entry is not dead code asserted into existence.
+
+        The model answered 5. Uncut, it is scored correct against a gold of 7 as well,
+        because the continuation it invented after its own end-of-text token states 7 and
+        the grader accepts any candidate it can find.
+        """
+        assert generative.grade_completion(math_item("7"), LEAKED_EOS_RUN_ON, self.config()).correct
+        assert not generative.grade_completion(
+            math_item("7"), LEAKED_EOS_RUN_ON, self.config(), eos_token=SMOL_EOS
+        ).correct
+
+    def test_the_committed_stops_alone_do_not_cover_it(self) -> None:
+        """Why the entry is added rather than argued away: no header to catch."""
+        assert not any(stop in LEAKED_EOS_RUN_ON for stop in self.config().stop_sequences)
+
+    def test_the_stop_list_is_not_what_bounds_the_cost(self, real_math_extract) -> None:
+        """``truncate_at_stop`` runs on text already generated, so every token is paid for.
+
+        What bounds a run is the token budget and the id passed to ``generate``. The cap is
+        1024, which is what ``leaderboard_math.py`` itself declares and what the
+        calibration population generated behind; see the derivation in ``config.yaml``.
+        """
+        config = self.config()
+        graded = generative.grade_completion(
+            math_item("5"), boxed("5") + SMOL_EOS + " and more", config, eos_token=SMOL_EOS
+        )
+
+        assert config.max_new_tokens == 1024
+        assert graded.metadata["completion"] == boxed("5")
+
+    # --- degradation, which is most of the callers ---
+
+    def test_a_prompt_built_with_no_tokenizer_is_the_calibrated_one(self) -> None:
+        """Most callers here have no tokenizer, and offline is the default path."""
+        bare = self.prompt(None)
+
+        assert SMOL_EOS not in bare
+        assert bare == generative.format_generative_prompt(math_item(), self.config())
+
+    def test_no_token_resolved_means_nothing_appended_anywhere(self) -> None:
+        config = self.config()
+
+        assert generative.exemplar_eos_token(config, None) is None
+        assert generative.exemplar_eos_token(config, "") is None
+        assert generative.effective_stop_sequences(config, None) == config.stop_sequences
+
+    def test_a_zero_shot_run_appends_nothing(self) -> None:
+        """No exemplar to close, and so no spelling demonstrated for a leak to copy."""
+        assert generative.exemplar_eos_token(self.config(num_fewshot=0), SMOL_EOS) is None
+
+    def test_a_bank_that_does_not_declare_the_convention_appends_nothing(self) -> None:
+        config = generative.GenerationConfig(
+            num_fewshot=8, fewshot_source="gsm8k", prompt_style="gsm8k"
+        )
+
+        assert generative.exemplar_eos_token(config, SMOL_EOS) is None
+
+    def test_the_gsm8k_prompt_is_unchanged_by_a_resolved_token(self, monkeypatch) -> None:
+        monkeypatch.setitem(generative.FEWSHOT_SOURCES, "gsm8k", lambda: STUB_FEWSHOT)
+        config = generative.GenerationConfig(
+            num_fewshot=1, fewshot_source="gsm8k", prompt_style="gsm8k"
+        )
+        item = BenchmarkItem(
+            item_id="g0",
+            question="How many clips?",
+            choices=(),
+            gold_index=-1,
+            metadata={"gold_answer": "72", "answer_type": "numeric"},
+        )
+
+        assert generative.format_generative_prompt(
+            item, config, eos_token=SMOL_EOS
+        ) == generative.format_generative_prompt(item, config)
+
+    def test_the_scorer_degrades_without_raising(self, real_math_extract) -> None:
+        """A large number of existing tests construct this with no tokenizer at all."""
+        scorer = generative.GenerativeScorer(lambda _: boxed("\\frac{1}{2}"), self.config())
+
+        assert scorer.eos_token is None
+        assert scorer.score_items([math_item()])[0].metadata["completion"]
+
+
+class TestTheExemplarBlockIsNeverCutIntoToFitTheContextWindow:
+    """The context clamp, and the one rule that makes it different from Research's.
+
+    Research's ``respgen/runner.py`` ``_fit_prompt_and_budget`` left-truncates the prompt
+    and keeps the tail. That is right for a chat transcript and destructive here: the four
+    Minerva exemplars are what teach the ``\\boxed{}`` expression and the ``Final Answer:``
+    line, which are the two forms the grader reads, so eating the front of the block would
+    leave a correctly-sized prompt that no longer teaches the answer format. Grading would
+    then fail while every guard passed, and the run would report a theta instead of an
+    error. So the unit of reduction here is a whole exemplar, and the floor is one.
+
+    Measured with SmolLM2-135M's own tokenizer -- downloaded, 49,152 tokens, ``<|endoftext|>``
+    at id 0 -- the four exemplars are 146, 118, 221 and 195 tokens closed with end-of-text
+    and joined, 680 together, and the framed stems run median 69, p90 190, p99 589, max
+    1,527 over the 1,183 vendored items. Against ``hf_config_patch``'s emitted 2048 that
+    puts the longest-stem items over the window, which is why this exists rather than being
+    insurance: the ladder fires on this checkpoint as configured.
+
+    The fakes below are sized in *words*, not those token counts, so the tests pin the
+    mechanism and stay readable. The measured figures are recorded in ``config.yaml``.
+    """
+
+    def config(self, **overrides) -> generative.GenerationConfig:
+        config = generative.GenerationConfig(
+            num_fewshot=4,
+            fewshot_source="leaderboard_math",
+            prompt_style="leaderboard_math",
+            max_new_tokens=1024,
+            stop_sequences=("Problem:", "problem:"),
+        )
+        for field, value in overrides.items():
+            setattr(config, field, value)
+        return config
+
+    def fitter(self, context: int | None) -> generative.PromptFitter:
+        return generative.PromptFitter(
+            tokenizer=SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID),
+            context_length=context,
+            eos_token=SMOL_EOS,
+        )
+
+    def fit(self, context: int | None, **overrides) -> generative.PromptFit:
+        return self.fitter(context).fit(math_item(), self.config(**overrides))
+
+    def exemplars(self) -> tuple[dict[str, str], ...]:
+        return generative._leaderboard_math_fixed_fewshot()
+
+    # --- a window that fits everything changes nothing ---
+
+    def test_a_roomy_window_leaves_all_four_exemplars_and_the_full_cap(self) -> None:
+        fit = self.fit(8192)
+
+        assert fit.num_fewshot == 4
+        assert fit.dropped_exemplars == 0
+        assert fit.clamped is False
+        assert fit.gen_budget == 1024
+        assert fit.prompt == generative.format_generative_prompt(
+            math_item(), self.config(), eos_token=SMOL_EOS
+        )
+
+    def test_no_context_length_means_no_clamp_and_no_budget_override(self) -> None:
+        """``None`` is the undeterminable case, and it must not silently reduce anything."""
+        fit = self.fit(None)
+
+        assert fit.num_fewshot == 4
+        assert fit.gen_budget is None
+        assert fit.context_length is None
+        assert fit.clamped is False
+
+    def test_a_missing_context_length_is_logged_rather_than_guessed(self, caplog) -> None:
+        with caplog.at_level(logging.WARNING, logger="mcq_cat.generative"):
+            assert generative.context_length_of(HaltingModel(context=None)) is None
+
+        assert "context clamp is disabled" in caplog.text
+
+    # --- the budget clamp, and Research's collapse-to-1 bug ---
+
+    def test_the_bank_cap_wins_when_it_is_the_smaller_bound(self) -> None:
+        """Order matters: the cap is applied first, and the clamp can only lower it.
+
+        Reversing them would let a large-context model generate far past 1024 on a bank
+        whose difficulties were all estimated at 1024.
+        """
+        fit = self.fit(16384)
+
+        assert fit.gen_budget == 1024
+        assert fit.clamped is False
+
+    def test_a_window_smaller_than_the_nominal_budget_still_gives_a_usable_budget(self) -> None:
+        """Research's bug, pinned: ``max(1, context - max_new_tokens)`` collapses to 1.
+
+        Their earlier version hit this on every model at ``max_model_len <= 4096`` and then
+        left-truncated the prompt to its final token. The budget must key off the ACTUAL
+        prompt length with a floor.
+        """
+        fit = self.fit(600)
+
+        assert fit.gen_budget is not None
+        assert fit.gen_budget >= generative.MIN_GEN_TOKENS
+        assert fit.gen_budget != 1
+        assert fit.clamped is True
+
+    def test_the_floor_and_the_window_bound_the_budget_independently(self) -> None:
+        """Both guards on ``_budget``, exercised directly because the ladder hides them.
+
+        The ladder only accepts a prompt once ``tokens + MIN_GEN_TOKENS`` fits, so by then
+        the room already exceeds the floor and neither guard can fire through
+        :meth:`PromptFitter.fit`. They are on ``_budget`` for its own sake, and pinning
+        them here is what keeps them from being untested claims.
+        """
+        assert self.fitter(4096)._budget(4000, self.config()) == generative.MIN_GEN_TOKENS
+        assert self.fitter(100)._budget(10, self.config()) == 99
+
+    # --- the ladder drops whole exemplars, never part of one ---
+
+    def test_a_tight_window_drops_exemplars_rather_than_shrinking_one(self) -> None:
+        fit = self.fit(420)
+
+        assert 1 <= fit.num_fewshot < 4
+        assert fit.dropped_exemplars == 4 - fit.num_fewshot
+
+    @pytest.mark.parametrize("context", [500, 460, 430, 400])
+    def test_every_surviving_exemplar_is_whole_and_they_are_a_suffix(self, context: int) -> None:
+        """Not merely shorter: the block must be whole exemplars, and the LAST ones.
+
+        A left-truncation that happened to land near a boundary would satisfy a
+        length-only assertion. This compares the rendered exemplars against the real four.
+        """
+        fit = self.fit(context)
+        kept = fit.prompt.split("\n\nProblem:\n")[: fit.num_fewshot]
+        expected = self.exemplars()[4 - fit.num_fewshot :]
+
+        assert len(kept) == fit.num_fewshot
+        for rendered, source in zip(kept, expected, strict=True):
+            assert rendered.endswith(source["solution"] + SMOL_EOS)
+            assert source["question"] in rendered
+
+    def test_the_first_exemplars_are_the_ones_dropped(self) -> None:
+        """Recency dominates in-context learning; the adjacent exemplar is kept.
+
+        The reasoning is on :class:`PromptFitter`; this pins the direction so a later
+        change to drop from the back has to argue with a failing test.
+        """
+        fit = self.fit(420)
+        dropped = self.exemplars()[: 4 - fit.num_fewshot]
+        kept = self.exemplars()[4 - fit.num_fewshot :]
+
+        assert fit.num_fewshot < 4
+        assert all(example["question"] not in fit.prompt for example in dropped)
+        assert all(example["question"] in fit.prompt for example in kept)
+
+    def test_the_live_question_always_survives(self) -> None:
+        for context in (400, 500, 8192):
+            assert "What is one half?" in self.fit(context).prompt
+
+    # --- the floor is one exemplar, and below it the item is ungradable ---
+
+    def test_a_window_too_small_for_one_exemplar_is_ungradable_not_zero_shot(self) -> None:
+        """A 0-shot MATH prompt teaches neither answer form, so its zero is fabricated."""
+        fit = self.fit(120)
+
+        assert fit.ungradable_reason == generative.CONTEXT_OVERFLOW_REASON
+        assert fit.prompt == ""
+
+    def test_the_ladder_never_returns_a_zero_shot_prompt(self) -> None:
+        """Swept rather than spot-checked, because one shot is the whole floor."""
+        for context in range(80, 900, 20):
+            fit = self.fit(context)
+            if fit.ungradable_reason is None:
+                assert fit.num_fewshot >= 1
+                assert generative.fewshot_examples(self.config(), fit.num_fewshot)
+
+    def test_an_overflowed_item_is_scored_zero_and_marked_for_the_report(self) -> None:
+        """It reaches ``style._ungradable_block``, which carries count, ids and reasons."""
+        scorer = generative.GenerativeScorer(
+            lambda *a: boxed("\\frac{1}{2}"), self.config(), fitter=self.fitter(120)
+        )
+        response = scorer.score_items([math_item()])[0]
+
+        assert response.correct is False
+        assert response.metadata[generative.UNGRADABLE_KEY] is True
+        assert (
+            response.metadata[generative.UNGRADABLE_REASON_KEY]
+            == generative.CONTEXT_OVERFLOW_REASON
+        )
+        assert response.metadata["completion"] == ""
+
+    def test_an_overflowed_item_is_not_sampled_at_all(self) -> None:
+        """No prompt exists that both fits and teaches the format, so none is sent."""
+        sent: list[str] = []
+        generative.GenerativeScorer(
+            lambda prompt, *a: sent.append(prompt) or "", self.config(), fitter=self.fitter(120)
+        ).score_items([math_item()])
+
+        assert sent == []
+
+    # --- what the report has to carry ---
+
+    def test_the_shot_count_used_is_recorded_per_item(self) -> None:
+        """Per item, not per session: a small window mixes counts across one estimate."""
+        scorer = generative.GenerativeScorer(
+            lambda *a: boxed("\\frac{1}{2}"), self.config(), fitter=self.fitter(420)
+        )
+        metadata = scorer.score_items([math_item()])[0].metadata
+
+        assert metadata["num_fewshot"] < 4
+        assert metadata["context_fit"]["num_fewshot_configured"] == 4
+        assert metadata["context_fit"]["exemplars_dropped"] == 4 - metadata["num_fewshot"]
+        assert metadata["context_fit"]["context_length"] == 420
+
+    def test_an_unclamped_item_carries_no_context_block(self) -> None:
+        """Nine banks' reports keep their shape when the clamp does nothing."""
+        scorer = generative.GenerativeScorer(
+            lambda *a: boxed("\\frac{1}{2}"), self.config(), fitter=self.fitter(8192)
+        )
+        metadata = scorer.score_items([math_item()])[0].metadata
+
+        assert "context_fit" not in metadata
+        assert metadata["num_fewshot"] == 4
+
+    def test_the_session_facts_say_whether_end_of_text_worked(self) -> None:
+        """The report must answer this without the log; the cost difference is every item."""
+        scorer = generative.GenerativeScorer(
+            lambda *a: boxed("\\frac{1}{2}"),
+            self.config(),
+            eos_token=SMOL_EOS,
+            fitter=self.fitter(8192),
+            checkpoint_facts={"eos_token_id": SMOL_EOS_ID, "eos_token_id_passed_to_generate": True},
+        )
+        scorer.score_items([math_item()])
+        facts = scorer.runtime_facts()
+
+        assert facts["exemplars_end_with_eos"] is True
+        assert facts["eos_token_id_passed_to_generate"] is True
+        assert facts["context_clamp_active"] is True
+        assert facts["context_length"] == 8192
+        assert facts["num_fewshot_used"] == [4]
+        assert facts["context_clamp_fired"] is False
+        assert "mixed_shot_alert" not in facts
+
+    def test_mixed_shot_counts_raise_an_alert_in_the_report(self) -> None:
+        """The failure a session-level summary would hide: two scales in one theta."""
+        scorer = generative.GenerativeScorer(
+            lambda *a: boxed("\\frac{1}{2}"), self.config(), fitter=self.fitter(700)
+        )
+        scorer.score_items([math_item(), long_math_item()])
+        facts = scorer.runtime_facts()
+
+        assert len(facts["num_fewshot_used"]) > 1
+        assert "NOT comparable" in facts["mixed_shot_alert"]
+        assert facts["context_clamp_fired"] is True
+
+    def test_a_run_with_no_fitter_reports_the_clamp_as_inactive(self) -> None:
+        scorer = generative.GenerativeScorer(lambda *a: boxed("\\frac{1}{2}"), self.config())
+        scorer.score_items([math_item()])
+
+        assert scorer.runtime_facts()["context_clamp_active"] is False
+        assert scorer.runtime_facts()["context_length"] is None
+
+    # --- the fitted budget reaches generate ---
+
+    def test_the_fitted_budget_is_what_generate_is_given(self, monkeypatch) -> None:
+        import contextlib
+
+        model = HaltingModel(context=700)
+        torch = types.ModuleType("torch")
+        torch.no_grad = contextlib.nullcontext
+        transformers = types.ModuleType("transformers")
+        transformers.AutoTokenizer = types.SimpleNamespace(
+            from_pretrained=lambda *a, **k: SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID)
+        )
+        transformers.AutoModelForCausalLM = types.SimpleNamespace(
+            from_pretrained=lambda *a, **k: model
+        )
+        transformers.set_seed = lambda seed: None
+        monkeypatch.setitem(sys.modules, "torch", torch)
+        monkeypatch.setitem(sys.modules, "transformers", transformers)
+
+        scorer = generative.GENERATIVE_BACKENDS["hf"](Path("/ckpt"), self.config())
+        scorer.score_items([math_item()])
+
+        assert scorer.fitter is not None
+        assert scorer.fitter.context_length == 700
+        assert model.calls[0]["max_new_tokens"] < 1024
+        assert model.calls[0]["max_new_tokens"] >= generative.MIN_GEN_TOKENS

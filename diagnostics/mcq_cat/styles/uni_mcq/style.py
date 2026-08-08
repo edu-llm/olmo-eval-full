@@ -261,6 +261,12 @@ class UniMcqStyle(CatStyle):
         self._b: np.ndarray | None = None
         self._c: np.ndarray | None = None
 
+        # The scoring model the runner hands to score(), kept only so report() can ask a
+        # generative one what it actually did about end-of-text and the context window.
+        # Held rather than threaded through the CAT loop because the loop's signature is
+        # the engine's contract and this is a reporting concern.
+        self._scoring_model: ScoringModel | None = None
+
     def set_ability_estimator(self, name: str) -> None:
         """Choose which estimator :meth:`report` publishes as ``ability``.
 
@@ -526,6 +532,7 @@ class UniMcqStyle(CatStyle):
 
     def score(self, model: ScoringModel, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
         """Grade ``items`` with whichever scorer the runner built for this bank's modality."""
+        self._scoring_model = model
         return model.score_items(items)
 
     def estimate_ability(
@@ -695,6 +702,10 @@ class UniMcqStyle(CatStyle):
             if caveat:
                 metadata["bank_caveat"] = caveat
 
+        runtime = self._generation_runtime()
+        if runtime is not None:
+            metadata["generation_runtime"] = runtime
+
         return CATReport(
             cat_style=type(self).name,
             benchmark=state.benchmark,
@@ -769,6 +780,40 @@ class UniMcqStyle(CatStyle):
             float(batch.theta),
         )
         return batch, fields
+
+    def _generation_runtime(self) -> dict[str, Any] | None:
+        """What the generative scorer resolved off the checkpoint, or ``None`` for MCQ.
+
+        Read off the scoring model rather than tracked here, for the reason
+        :meth:`_ungradable_block` counts off the responses: a tally kept in parallel is
+        free to disagree with what the run actually did. Absent on an MCQ bank and on any
+        scorer that does not offer the facts, so nine banks' reports keep their shape.
+
+        Worth a block of its own because it is the difference between a run whose items
+        stopped when their answers were done and one where every item decoded its whole
+        budget -- and theta alone cannot distinguish them.
+        """
+        facts = getattr(self._scoring_model, "runtime_facts", None)
+        if not callable(facts):
+            return None
+        runtime = facts()
+        if runtime.get("mixed_shot_alert"):
+            log.error(
+                "This session prompted items at %s exemplars rather than a single count, "
+                "because the context window could not hold the configured block for every "
+                "stem. Theta mixes prompt conventions; see the report's "
+                "generation_runtime.mixed_shot_alert.",
+                runtime.get("num_fewshot_used"),
+            )
+        elif runtime.get("context_clamp_fired"):
+            log.warning(
+                "The context clamp fired on this %s-token window: some items were given a "
+                "generation budget below the bank's cap. Per-item figures are in each "
+                "response's context_fit; the session summary is in the report's "
+                "generation_runtime.",
+                runtime.get("context_length"),
+            )
+        return runtime
 
     def _ungradable_block(self, state: CATState) -> dict[str, Any]:
         """Account for the administered items that produced no outcome of their own.
