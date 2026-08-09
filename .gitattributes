@@ -1,0 +1,28 @@
+# Line endings for the vendored bank artifacts.
+#
+# NOT because the checksums would otherwise fail. They would not, and it is worth saying so
+# plainly here so that nobody later "fixes" a problem that does not exist: `vendor_bank`
+# computes a manifest's digests with `_sha256(text)` over the string a `read_text` produced,
+# and Python's universal newlines have already turned CRLF into LF by then. Verification is
+# line-ending agnostic, and `migrate_manifests` was observed passing on a checkout whose
+# `items.jsonl` was entirely CRLF.
+#
+# The reason is that CRLF makes `git status` lie on Windows. `core.autocrlf=true` writes
+# these files with CRLF while the index holds LF, so every artifact reads as modified while
+# `git diff` -- which normalizes -- reports nothing at all to show. A working tree that
+# always looks dirty is one nobody reads carefully, and on 2026-08-09 that cost real work:
+# a genuine revert of nine files sat in a tree that already looked churned, and a commit was
+# made against it without re-reading, silently reverting a document. Four of those nine
+# files turned out to be nothing but line endings, which is exactly the noise this removes.
+#
+# `text eol=lf` rather than `-text`: these stay diffable, which matters because a bank's
+# provenance is reviewed by reading it, and only their line endings are being pinned.
+calibrated_datasets/**/items.jsonl text eol=lf
+calibrated_datasets/**/params.json text eol=lf
+calibrated_datasets/**/manifest.json text eol=lf
+
+# The inputs those artifacts are built from, pinned for the same reason: the bridges carry
+# the content hashes a bank joins on, and the parameter CSVs are what `vendor_bank` reads.
+diagnostics/mcq_cat/styles/uni_mcq/bridges/*.csv text eol=lf
+diagnostics/mcq_cat/styles/uni_mcq/bridges/*.json text eol=lf
+diagnostics/mcq_cat/styles/uni_mcq/banks/**/*.csv text eol=lf
