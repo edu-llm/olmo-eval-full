@@ -136,6 +136,14 @@ def test_submission_spec_matches_what_the_flow_actually_needs() -> None:
     assert spec["workload_profile"] == "olmo-eval-sweep"
     # 4096 is the tutor's hard limit, not a preference.
     assert "TUTOR_MAX_MODEL_LEN=4096" in command
+    # A --filter=blob:none clone that loses a blob still exits 0, so the checkout has to be
+    # audited before the install or a short bank grades as a real one.
+    assert "--filter=blob:none" in command
+    checkout = command.index("git checkout")
+    guard = command.index("git status --porcelain --untracked-files=no")
+    install = command.index("pip install")
+    assert checkout < guard < install, "the guard must sit between the checkout and the install"
+    assert "exit 3" in command
 
 
 def test_warns_when_the_context_window_is_too_small(tmp_path: Path) -> None:

@@ -14,6 +14,23 @@
 # sweep. Two hours is that profile's ceiling, and the timeouts below are sized to fit
 # inside it with room for the clone and the install.
 #
+# THE IMAGE CARRIES NO TORCH, AND FOR THIS FLOW THAT IS THE POINT. .edullm/Dockerfile on
+# this branch syncs `--extra beaker --extra hf --extra s3 --extra clients` and nothing
+# else, so the published olmo-eval-full image has neither torch nor vLLM. That is why the
+# install below is `.[hf,s3,vllm]` and why it costs about 4.54 GiB inside the paid run.
+# Taking OLMo-core's image instead to skip that download trades a known cost for an
+# unknown one: it bakes CUDA torch 2.10 with ai2-olmo-core, vLLM pins its own torch, and
+# installing one over the other moves torch underneath a stack built against it. A base
+# with no torch has nothing for vLLM to disagree with.
+#
+# PUSHING THIS BRANCH BUILDS AN IMAGE, AND THAT IS WHAT MAKES THE COMMIT SUBMITTABLE.
+# edullm/** is the only prefix that fires edullm-platform-build.yml (~4 minutes, one
+# immutable ECR tag per push). tickets/README.md argues against that prefix, correctly,
+# for runs that take their image from OLMo-core and never pull this one. An olmo-eval-*
+# profile does pull it, so here the build is the cost of being submittable rather than
+# waste. The code still arrives by clone at the pin below, not from the image, so the pin
+# and not the image tag is what says which harness ran.
+#
 # WHY THIS SPEC RUNS A SHELL SCRIPT AND THE MCQ SPECS RUN THE RUNNER DIRECTLY. This is the
 # one structural difference between the two flows and everything else follows from it. MCQ
 # scores choice log-likelihoods in-process: the checkpoint is loaded inside the eval
@@ -40,6 +57,17 @@
 # matters is that the sha carries the code the run executes. Push before submitting: an
 # unpushed sha fails at `git checkout` inside the container, minutes into a paid run rather
 # than here.
+#
+# WHY A `git status` CHECK SITS BETWEEN THE CHECKOUT AND THE INSTALL. An unpushed sha fails
+# loudly, which is the easy case. A *partial* clone fails quietly: `--filter=blob:none`
+# defers blobs to checkout time, and when one of those lazy fetches fails, `git checkout`
+# prints `error: unable to read sha1 file`, leaves the path absent, and still exits 0. The
+# `&&` chain would then install and grade against a tree with files missing, and what comes
+# back is a plausible report rather than a crash. This flow is more exposed to that than the
+# MCQ ones: the bank is 8.7 MB of jsonl resolved by __file__ at run time, so a bank blob that
+# never arrived reads as a smaller bank rather than as an error. A fresh checkout of a clean
+# commit has nothing to report, so any tracked path `git status` names is a path the clone
+# did not deliver. `-uno` keeps it from tripping on untracked scratch.
 #
 # THE JUDGE. Three configurations, and only one of them runs on a single 24 GB card:
 #
@@ -73,6 +101,7 @@ command: >-
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
   && git checkout REPLACE_WITH_A_PUSHED_SHA_ON_edullm_uni-frq-style
+  && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
   && python -m pip install --no-cache-dir ".[hf,s3,vllm]"
   && CHECKPOINT=allenai/OLMo-2-1124-7B-Instruct
   OUT="$EDULLM_OUTPUT_PREFIX"
