@@ -1,0 +1,20 @@
+# Small-cluster <2B — L4 shard 1 of 4 (7 models). Size-balanced round-robin of
+# models_small_l4/all.yaml. Run on one L4 (see scripts/aws/run_respgen_small_l4.sh).
+defaults:
+  max_model_len_cap: 32768
+  max_new_tokens: 4096
+  tensor_parallel_size: 1
+  scoring_method: generate
+  temperature: 0.0
+  top_p: 1.0
+  repetition_penalty: 1.1
+  seed: 0
+
+models:
+  - {id: bigscience/bloomz-1b7, params_b: 1.7}
+  - {id: HuggingFaceTB/SmolLM2-1.7B, params_b: 1.7}
+  - {id: Qwen/Qwen2.5-1.5B, params_b: 1.5}
+  - {id: bigscience/bloom-1b1, params_b: 1.1}
+  - {id: openai-community/gpt2-large, params_b: 0.77}
+  - {id: EleutherAI/pythia-410m, params_b: 0.41}
+  - {id: HuggingFaceTB/SmolLM2-135M, params_b: 0.135}

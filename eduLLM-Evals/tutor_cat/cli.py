@@ -11,7 +11,6 @@ import yaml
 
 from .dataio import load_bank, summarize
 from .engine import RunConfig, run_evaluation
-from .ifeval_verifier import IFEvalVerifier
 from .judge import OpenAICompatibleJudge, RESULT_PASS_THRESHOLD_DEFAULT
 from .tutors import build_tutor
 
@@ -84,7 +83,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     backend = jcfg.get("backend", "prometheus")
     if backend == "ifeval_verifier":
         # Deterministic code verifier for IFEval; no LLM/endpoint needed. Used only when
-        # the bank is IFEval (single-axis run) — see data/IFEval/README.md.
+        # the bank is IFEval (single-axis run) — see data/IFEval/README.md. Imported
+        # here so response generation does not pull the IFEval verifier's deps.
+        from .ifeval_verifier import IFEvalVerifier
+
         judge = IFEvalVerifier(seed=jcfg.get("seed", 42))
     elif backend == "prometheus":
         judge = OpenAICompatibleJudge(
