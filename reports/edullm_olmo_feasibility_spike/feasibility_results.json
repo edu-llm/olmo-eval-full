@@ -1,0 +1,80 @@
+{
+  "adaptive_core_feasible": true,
+  "gates": {
+    "adaptive_sidecars_round_trip_losslessly": true,
+    "distinct_tutor_and_judge_providers": true,
+    "eap_matches_recorded_legacy_regression": true,
+    "evaluation_names_align": true,
+    "external_runner_owns_judge_lifecycle": false,
+    "fixture_definition_matches_recorded_oracle": true,
+    "legacy_provenance_resolves": true,
+    "mwle_matches_recorded_legacy_regression": true,
+    "no_decision_is_not_a_failure": true,
+    "sequential_selection_uses_prior_judgments": true,
+    "standard_external_metrics_preserve_adaptive_metadata": false,
+    "third_party_mode_plugin_is_auto_discovered": false,
+    "two_mode_dispatcher_is_extensible": true
+  },
+  "legacy_reference": {
+    "schema_version": "edullm-legacy-regression-v1",
+    "source": {
+      "commit": "b4ea2e8e4b1da75067dd5e38ea5e83270776a07f",
+      "derivation": "The cited commit's build_quadrature, batch_eap, and mwle functions were executed on the fixture below. The numbers are recorded here because they do not appear as literals in the legacy commit.",
+      "files": [
+        {
+          "blob": "20bb1f6177e2ff95506f7a3a55d20d78c2a3f679",
+          "path": "eduLLM-Evals/scripts/scenario_cat_lib.py",
+          "symbols": [
+            "build_quadrature",
+            "batch_eap",
+            "mwle"
+          ]
+        },
+        {
+          "blob": "44c13d5029536569d149ff69857571bfd46f58b7",
+          "path": "eduLLM-Evals/tutor_cat/mirt.py",
+          "symbols": [
+            "pass_probability",
+            "update"
+          ]
+        },
+        {
+          "blob": "19e634ad42c9e522b06c700d8b9ef4c8e22100d1",
+          "path": "eduLLM-Evals/tutor_cat/selector.py",
+          "symbols": [
+            "criterion_information",
+            "scenario_value"
+          ]
+        }
+      ],
+      "git_ref": "origin/frq/infobench"
+    }
+  },
+  "native_integration_ready": false,
+  "recommended_architecture": "two-mode dispatcher with standard OLMo native execution and an EduLLM adaptive adapter; continue the integrated plugin only after provider-lifecycle, artifact, and discovery gates pass",
+  "schema_version": "edullm-olmo-feasibility-result-v1",
+  "strong": {
+    "coverage": 0.6666666666666666,
+    "eap_se": 0.660388754897917,
+    "eap_theta": 0.2836225675788924,
+    "mwle_se": 0.7973517131732913,
+    "mwle_theta": 0.4999997961484246,
+    "scenario_order": [
+      "mid",
+      "hard",
+      "easy"
+    ]
+  },
+  "weak": {
+    "coverage": 0.6666666666666666,
+    "eap_se": 0.660388754897917,
+    "eap_theta": -0.28362256757889254,
+    "mwle_se": 0.7973517131732913,
+    "mwle_theta": -0.49999979614842455,
+    "scenario_order": [
+      "mid",
+      "easy",
+      "hard"
+    ]
+  }
+}

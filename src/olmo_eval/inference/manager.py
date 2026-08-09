@@ -81,8 +81,40 @@ class InferenceManager:
         if self._started:
             return self.get_resolved_configs()
 
+        if len(self.available_gpu_ids) != len(set(self.available_gpu_ids)) or any(
+            isinstance(gpu_id, bool) or not isinstance(gpu_id, int) or gpu_id < 0
+            for gpu_id in self.available_gpu_ids
+        ):
+            raise ValueError("available_gpu_ids must be distinct non-negative integers")
+
+        local_gpu_demand = 0
+        for name, config in self.configs.items():
+            if (
+                isinstance(config.num_instances, bool)
+                or not isinstance(config.num_instances, int)
+                or config.num_instances < 1
+            ):
+                raise ValueError(f"provider {name!r} num_instances must be a positive integer")
+            if not config.requires_local_gpu:
+                continue
+            tensor_parallel = config.kwargs.get("tensor_parallel_size", 1)
+            if (
+                isinstance(tensor_parallel, bool)
+                or not isinstance(tensor_parallel, int)
+                or tensor_parallel < 1
+            ):
+                raise ValueError(
+                    f"provider {name!r} tensor_parallel_size must be a positive integer"
+                )
+            local_gpu_demand += config.num_instances * tensor_parallel
+        if local_gpu_demand > len(self.available_gpu_ids):
+            raise RuntimeError(
+                "Not enough GPUs for configured providers. "
+                f"Need {local_gpu_demand}, available: {len(self.available_gpu_ids)}"
+            )
+
         gpu_pool = list(self.available_gpu_ids)
-        started_servers: list[VLLMServerProcess] = []  # Track for cleanup on failure
+        created_servers: list[VLLMServerProcess] = []
 
         try:
             for name, config in self.configs.items():
@@ -126,6 +158,7 @@ class InferenceManager:
                         server = _create_server(
                             config=config, gpu_ids=instance_gpus, log_dir=instance_log_dir
                         )
+                        created_servers.append(server)
                         pending_servers.append((i, server, instance_gpus))
 
                     # Log using first server's owner
@@ -147,7 +180,6 @@ class InferenceManager:
                         for future in as_completed(futures):
                             idx = futures[future]
                             server, base_url = future.result()
-                            started_servers.append(server)
                             servers[idx] = server
                             resolved_configs[idx] = replace(
                                 config, base_url=base_url, num_instances=1
@@ -171,8 +203,10 @@ class InferenceManager:
                     )
 
         except Exception:
-            # Clean up any started servers on failure
-            for server in started_servers:
+            # A sibling future can finish after another future raises.  Stop
+            # every created process, not only futures consumed before the
+            # exception, so a partial parallel startup cannot leak a server.
+            for server in created_servers:
                 with suppress(Exception):
                     server.stop()
             self._servers.clear()
@@ -193,6 +227,7 @@ class InferenceManager:
         if not self._started:
             return
 
+        errors: list[Exception] = []
         for name, info in self._servers.items():
             for i, server in enumerate(info.servers):
                 if server is not None:
@@ -200,10 +235,26 @@ class InferenceManager:
                         server._log(logging.INFO, f"Stopping server {name!r} instance {i + 1}")
                         server.stop()
                     except Exception as e:
-                        server._log(
-                            logging.WARNING, f"Error stopping server {name!r} instance {i + 1}: {e}"
+                        try:
+                            server._log(
+                                logging.WARNING,
+                                f"Error stopping server {name!r} instance {i + 1}: {e}",
+                            )
+                        except Exception:
+                            logger.warning(
+                                "Error stopping server %r instance %d: %s",
+                                name,
+                                i + 1,
+                                e,
+                            )
+                        errors.append(
+                            RuntimeError(f"failed to stop server {name!r} instance {i + 1}: {e}")
                         )
 
+        if errors:
+            # Retain ownership so callers can retry cleanup. The orchestrator
+            # records this exception as structured cleanup provenance.
+            raise ExceptionGroup("failed to stop one or more inference servers", errors)
         self._servers.clear()
         self._started = False
 

@@ -59,6 +59,7 @@ class TestVLLMServerProviderLogprobs:
             p._server = None
             p._max_length = 4096
             p._prompt_logprobs = 5
+            p.chat_template_kwargs = None
             p._completion_use_prompt_token_ids = False
             p._completion_client_side_stop_trim = False
             p._completion_sentencepiece_cleanup = False
@@ -79,6 +80,8 @@ class TestVLLMServerProviderLogprobs:
         choice = MagicMock()
         choice.text = text
         choice.logprobs = None
+        choice.finish_reason = None
+        choice.token_ids = None
 
         resp = MagicMock()
         resp.choices = [choice]
@@ -94,6 +97,8 @@ class TestVLLMServerProviderLogprobs:
         choice = MagicMock()
         choice.message = message
         choice.logprobs = None
+        choice.finish_reason = None
+        choice.token_ids = None
 
         resp = MagicMock()
         resp.choices = [choice]
@@ -113,6 +118,43 @@ class TestVLLMServerProviderLogprobs:
 
         call_kwargs = client.completions.create.call_args.kwargs
         assert call_kwargs["extra_body"]["add_special_tokens"] is False
+
+    @pytest.mark.anyio
+    async def test_generation_forwards_seed_and_preserves_finish_reason(self, provider):
+        completion_response = self._make_completion_response("done")
+        completion_response.choices[0].finish_reason = "length"
+        completion_response.choices[0].token_ids = [47]
+        completion_client = MagicMock()
+        completion_client.completions.create = AsyncMock(return_value=completion_response)
+
+        completion_outputs = await provider._generate_completion(
+            completion_client,
+            LMRequest(request_type=RequestType.COMPLETION, prompt="Judge"),
+            SamplingParams(max_tokens=1, seed=42),
+        )
+
+        assert completion_client.completions.create.call_args.kwargs["extra_body"]["seed"] == 42
+        assert completion_outputs[0].finish_reason == "length"
+        assert completion_outputs[0].token_ids == (47,)
+
+        chat_response = self._make_chat_response("P")
+        chat_response.choices[0].finish_reason = "stop"
+        chat_response.choices[0].token_ids = [47]
+        chat_client = MagicMock()
+        chat_client.chat.completions.create = AsyncMock(return_value=chat_response)
+
+        chat_outputs = await provider._generate_chat(
+            chat_client,
+            LMRequest(
+                request_type=RequestType.CHAT,
+                messages=({"role": "user", "content": "Judge"},),
+            ),
+            SamplingParams(max_tokens=1, seed=42),
+        )
+
+        assert chat_client.chat.completions.create.call_args.kwargs["extra_body"]["seed"] == 42
+        assert chat_outputs[0].finish_reason == "stop"
+        assert chat_outputs[0].token_ids == (47,)
 
     @pytest.mark.anyio
     async def test_generate_completion_omits_max_tokens_when_none(self, provider):
@@ -135,6 +177,39 @@ class TestVLLMServerProviderLogprobs:
         await provider._generate_completion(client, request, SamplingParams(max_tokens=64))
 
         assert client.completions.create.call_args.kwargs["max_tokens"] == 64
+
+    @pytest.mark.anyio
+    async def test_generate_completion_requests_configured_top_logprobs(self, provider):
+        client = MagicMock()
+        client.completions.create = AsyncMock(return_value=self._make_completion_response())
+
+        request = LMRequest(request_type=RequestType.COMPLETION, prompt="Test prompt")
+        await provider._generate_completion(
+            client,
+            request,
+            SamplingParams(max_tokens=1, logprobs=20),
+        )
+
+        assert client.completions.create.call_args.kwargs["logprobs"] == 20
+
+    @pytest.mark.anyio
+    async def test_generate_completion_passes_json_schema(self, provider):
+        client = MagicMock()
+        client.completions.create = AsyncMock(return_value=self._make_completion_response())
+        request = LMRequest(request_type=RequestType.COMPLETION, prompt="Test prompt")
+
+        await provider._generate_completion(
+            client,
+            request,
+            SamplingParams(
+                max_tokens=1,
+                structured_output_json_schema={"type": "object"},
+            ),
+        )
+
+        assert client.completions.create.call_args.kwargs["extra_body"]["structured_outputs"] == {
+            "json": {"type": "object"}
+        }
 
     @pytest.mark.anyio
     async def test_generate_chat_omits_max_tokens_when_none(self, provider):
@@ -163,6 +238,130 @@ class TestVLLMServerProviderLogprobs:
         await provider._generate_chat(client, request, SamplingParams(max_tokens=128))
 
         assert client.chat.completions.create.call_args.kwargs["max_tokens"] == 128
+
+    @pytest.mark.anyio
+    async def test_generate_chat_preserves_configured_top_logprobs(self, provider):
+        provider.chat_template_kwargs = None
+        message = SimpleNamespace(content="P", tool_calls=None)
+        token_logprob = SimpleNamespace(
+            token="P",
+            logprob=-0.2,
+            bytes=[80],
+            top_logprobs=[
+                SimpleNamespace(token="P", logprob=-0.2, bytes=[80]),
+                SimpleNamespace(token="F", logprob=-0.7, bytes=[70]),
+            ],
+        )
+        choice = SimpleNamespace(
+            message=message,
+            logprobs=SimpleNamespace(content=[token_logprob]),
+        )
+        client = MagicMock()
+        client.chat.completions.create = AsyncMock(
+            return_value=SimpleNamespace(choices=[choice], usage=None)
+        )
+
+        request = LMRequest(
+            request_type=RequestType.CHAT,
+            messages=({"role": "user", "content": "Judge"},),
+        )
+        outputs = await provider._generate_chat(
+            client,
+            request,
+            SamplingParams(max_tokens=1, logprobs=20),
+        )
+
+        assert client.chat.completions.create.call_args.kwargs["top_logprobs"] == 20
+        assert outputs[0].logprobs == [
+            {
+                "token": "P",
+                "logprob": -0.2,
+                "bytes": [80],
+                "top_logprobs": [
+                    {"token": "P", "logprob": -0.2, "bytes": [80]},
+                    {"token": "F", "logprob": -0.7, "bytes": [70]},
+                ],
+            }
+        ]
+
+    @pytest.mark.anyio
+    async def test_generate_chat_passes_explicit_ids_regex_and_template_kwargs(self, provider):
+        provider.chat_template_kwargs = {"enable_thinking": True, "provider_only": "kept"}
+        client = MagicMock()
+        client.chat.completions.create = AsyncMock(return_value=self._make_chat_response("P"))
+        request = LMRequest(
+            request_type=RequestType.CHAT,
+            messages=({"role": "user", "content": "Judge"},),
+            chat_template_kwargs={"enable_thinking": False},
+        )
+
+        await provider._generate_chat(
+            client,
+            request,
+            SamplingParams(
+                max_tokens=1,
+                logprobs=2,
+                logprob_token_ids=(10, 11),
+                structured_output_regex="[PF]",
+            ),
+        )
+
+        call_kwargs = client.chat.completions.create.call_args.kwargs
+        assert call_kwargs["logprobs"] is True
+        assert "top_logprobs" not in call_kwargs
+        assert call_kwargs["extra_body"] == {
+            "logprob_token_ids": [10, 11],
+            "structured_outputs": {"regex": "[PF]"},
+            "chat_template_kwargs": {
+                "enable_thinking": False,
+                "provider_only": "kept",
+            },
+        }
+
+    def test_managed_server_rejects_explicit_ids_when_protocol_is_too_old(self, provider):
+        provider._server = SimpleNamespace(
+            stop=lambda: None,
+            python_executable="/isolated/vllm026/bin/python",
+        )
+        params = SamplingParams(max_tokens=1, logprobs=2, logprob_token_ids=(10, 11))
+
+        with (
+            patch(
+                "olmo_eval.inference.providers.vllm_server.subprocess.run",
+                return_value=SimpleNamespace(returncode=3, stderr="", stdout=""),
+            ) as run,
+            pytest.raises(RuntimeError, match="requires vLLM >= 0.26.0"),
+        ):
+            provider._require_managed_explicit_logprobs_support(
+                params,
+                request_type=RequestType.CHAT,
+            )
+        assert run.call_args.args[0][0] == "/isolated/vllm026/bin/python"
+
+    def test_managed_server_probes_isolated_interpreter_once(self, provider):
+        provider._server = SimpleNamespace(
+            stop=lambda: None,
+            python_executable="/isolated/vllm026/bin/python",
+        )
+        params = SamplingParams(max_tokens=1, logprobs=2, logprob_token_ids=(10, 11))
+
+        with patch(
+            "olmo_eval.inference.providers.vllm_server.subprocess.run",
+            return_value=SimpleNamespace(returncode=0, stderr="", stdout=""),
+        ) as run:
+            provider._require_managed_explicit_logprobs_support(
+                params,
+                request_type=RequestType.CHAT,
+            )
+            provider._require_managed_explicit_logprobs_support(
+                params,
+                request_type=RequestType.CHAT,
+            )
+
+        run.assert_called_once()
+        command = run.call_args.args[0]
+        assert command[0] == "/isolated/vllm026/bin/python"
+        assert "ChatCompletionRequest" in command[2]
 
     def test_describe_request_includes_chat_template_kwargs(self):
         """Chat traces should preserve template kwargs in generation metadata."""
@@ -244,6 +443,13 @@ class TestVLLMServerProviderLogprobs:
         )
 
         assert output.metadata["is_greedy"] is True
+        assert output.logprobs == [
+            {
+                "token": " yes",
+                "logprob": -0.1,
+                "top_logprobs": [{"token": " yes", "logprob": -0.1}],
+            }
+        ]
 
     def test_build_completion_output_detects_non_greedy_from_top_logprobs(self, provider):
         """Completion metadata should mark sampled non-argmax tokens as non-greedy."""

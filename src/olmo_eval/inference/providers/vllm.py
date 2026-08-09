@@ -3,12 +3,21 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
+import inspect
 import logging
 import os
 from typing import TYPE_CHECKING, Any
 
 from olmo_eval.common.debug import is_debug_provider, is_debug_requests
-from olmo_eval.common.types import LMOutput, LMRequest, LogProbEntry, RequestType, SamplingParams
+from olmo_eval.common.types import (
+    LMOutput,
+    LMRequest,
+    LogProbEntry,
+    RequestType,
+    SamplingParams,
+    TopLogProb,
+)
 from olmo_eval.inference.base import InferenceProvider
 from olmo_eval.inference.hf_cache import refresh_hf_cache
 from olmo_eval.inference.tokenizer_utils import encode_context_and_continuation
@@ -54,8 +63,9 @@ def _configure_vllm_logger(worker_id: str | None) -> None:
 
 def _get_token_string(logprob_obj: Any, token_id: int, tokenizer: Any = None) -> str:
     """Extract token string from vLLM logprob object."""
-    if hasattr(logprob_obj, "decoded_token"):
-        return logprob_obj.decoded_token
+    decoded_token = getattr(logprob_obj, "decoded_token", None)
+    if decoded_token is not None:
+        return str(decoded_token)
     if tokenizer is not None:
         return tokenizer.decode([token_id])
     return str(token_id)
@@ -69,6 +79,7 @@ def _coerce_logprob_to_num(logprob: Any) -> float:
 def _convert_logprobs(
     vllm_logprobs: list[dict[int, Any]] | None,
     tokenizer: Any = None,
+    token_ids: list[int] | None = None,
 ) -> list[LogProbEntry] | None:
     """Convert vLLM logprobs format to standard format.
 
@@ -78,22 +89,85 @@ def _convert_logprobs(
         return None
 
     result: list[LogProbEntry] = []
-    for token_logprobs in vllm_logprobs:
+    for position, token_logprobs in enumerate(vllm_logprobs):
         if not token_logprobs:
             continue
-        # vLLM returns dict of {token_id: LogprobInfo}, take first (chosen) token
-        token_id, logprob_obj = next(iter(token_logprobs.items()))
+
+        # vLLM returns the sampled token plus its requested top alternatives in
+        # one {token_id: LogprobInfo} mapping. Prefer the explicit sampled token
+        # ID when available instead of relying on mapping insertion order.
+        sampled_token_id = token_ids[position] if token_ids and position < len(token_ids) else None
+        if sampled_token_id in token_logprobs:
+            token_id = sampled_token_id
+            logprob_obj = token_logprobs[token_id]
+        else:
+            token_id, logprob_obj = next(iter(token_logprobs.items()))
         token_str = _get_token_string(logprob_obj, token_id, tokenizer)
-        logprob_val = _coerce_logprob_to_num(logprob_obj)
-        result.append(
-            {
-                "token": token_str,
-                "logprob": logprob_val,
-                "bytes": list(token_str.encode("utf-8")),
-            }
-        )
+        entry: LogProbEntry = {
+            "token": token_str,
+            "logprob": float(_coerce_logprob_to_num(logprob_obj)),
+            "bytes": list(token_str.encode("utf-8")),
+            "token_id": int(token_id),
+        }
+
+        alternatives: list[TopLogProb] = []
+        for alternative_id, alternative_obj in token_logprobs.items():
+            alternative_token = _get_token_string(alternative_obj, alternative_id, tokenizer)
+            alternatives.append(
+                {
+                    "token": alternative_token,
+                    "logprob": float(_coerce_logprob_to_num(alternative_obj)),
+                    "bytes": list(alternative_token.encode("utf-8")),
+                    "token_id": int(alternative_id),
+                }
+            )
+        if alternatives:
+            entry["top_logprobs"] = alternatives
+        result.append(entry)
 
     return result
+
+
+def _structured_output_kwargs(params: SamplingParams, vllm_params_type: Any) -> dict[str, Any]:
+    """Build the structured-output argument supported by the installed vLLM."""
+    if params.structured_output_regex is None and params.structured_output_json_schema is None:
+        return {}
+
+    constructor_kwargs: dict[str, Any]
+    if params.structured_output_regex is not None:
+        constructor_kwargs = {"regex": params.structured_output_regex}
+    else:
+        constructor_kwargs = {"json": params.structured_output_json_schema}
+
+    parameter_names = set(inspect.signature(vllm_params_type).parameters)
+    candidates = (
+        ("vllm.sampling_params", "StructuredOutputsParams", "structured_outputs"),
+        ("vllm", "StructuredOutputsParams", "structured_outputs"),
+        ("vllm.sampling_params", "GuidedDecodingParams", "guided_decoding"),
+        ("vllm", "GuidedDecodingParams", "guided_decoding"),
+    )
+    for module_name, type_name, parameter_name in candidates:
+        if parameter_name not in parameter_names:
+            continue
+        try:
+            parameter_type = getattr(importlib.import_module(module_name), type_name)
+        except (ImportError, AttributeError):
+            continue
+        return {parameter_name: parameter_type(**constructor_kwargs)}
+
+    raise RuntimeError(
+        "the installed vLLM does not support the requested structured output; "
+        "use a runtime with StructuredOutputsParams or GuidedDecodingParams"
+    )
+
+
+def _requested_generation_logprobs(params: SamplingParams) -> int:
+    """Return the requested generated-token logprob width."""
+    if params.logprobs is not None:
+        return params.logprobs
+    if params.logprob_token_ids is not None:
+        return len(params.logprob_token_ids)
+    return 1
 
 
 class VLLMProvider(InferenceProvider):
@@ -106,6 +180,7 @@ class VLLMProvider(InferenceProvider):
         attention_backend: str | None = None,
         worker_id: str | None = None,
         force_download: bool = False,
+        chat_template_kwargs: dict[str, Any] | None = None,
         **engine_kwargs,
     ) -> None:
         """Initialize the provider.
@@ -119,6 +194,7 @@ class VLLMProvider(InferenceProvider):
                 will include this identifier.
             force_download: Force-refresh Hugging Face model/tokenizer cache entries
                 before initializing vLLM.
+            chat_template_kwargs: Default keyword arguments passed to the model's chat template.
             **engine_kwargs: Additional arguments passed to vLLM LLM engine.
         """
         # Set vLLM logging level - DEBUG if OLMO_EVAL_DEBUG_PROVIDER=1, otherwise WARNING
@@ -142,6 +218,8 @@ class VLLMProvider(InferenceProvider):
 
         super().__init__(model_name)
         self._worker_id = worker_id
+        self.chat_template_kwargs = dict(chat_template_kwargs or {})
+        self.language_model_only = bool(engine_kwargs.get("language_model_only", False))
         if force_download:
             model_revision = engine_kwargs.get("revision")
             cache_dir = engine_kwargs.get("download_dir") or engine_kwargs.get("cache_dir")
@@ -236,10 +314,21 @@ class VLLMProvider(InferenceProvider):
             kwargs["top_p"] = top_p
         if top_k is not None:
             kwargs["top_k"] = top_k
+        if params.seed is not None:
+            kwargs["seed"] = params.seed
         if params.stop_sequences:
             kwargs["stop"] = list(params.stop_sequences)
         # Always request logprobs (default to 1) for metrics computation
-        kwargs["logprobs"] = params.logprobs if params.logprobs is not None else 1
+        kwargs["logprobs"] = _requested_generation_logprobs(params)
+        if params.logprob_token_ids is not None:
+            parameter_names = set(inspect.signature(VLLMSamplingParams).parameters)
+            if "logprob_token_ids" not in parameter_names:
+                raise RuntimeError(
+                    "the installed vLLM cannot return explicit logprob_token_ids; "
+                    "this request requires vLLM >= 0.26.0"
+                )
+            kwargs["logprob_token_ids"] = list(params.logprob_token_ids)
+        kwargs.update(_structured_output_kwargs(params, VLLMSamplingParams))
 
         return VLLMSamplingParams(**kwargs)
 
@@ -249,10 +338,19 @@ class VLLMProvider(InferenceProvider):
             tokenizer = self.llm.get_tokenizer()
             if not hasattr(tokenizer, "apply_chat_template"):
                 raise ValueError("CHAT requests require a tokenizer with apply_chat_template")
+            template_kwargs = {
+                **getattr(self, "chat_template_kwargs", {}),
+                **(request.chat_template_kwargs or {}),
+            }
+            reserved = {"tokenize", "add_generation_prompt"} & template_kwargs.keys()
+            if reserved:
+                names = ", ".join(sorted(reserved))
+                raise ValueError(f"chat_template_kwargs cannot override reserved fields: {names}")
             return tokenizer.apply_chat_template(
                 list(request.messages),
                 tokenize=False,
                 add_generation_prompt=True,
+                **template_kwargs,
             )
 
         return request.prompt
@@ -286,11 +384,16 @@ class VLLMProvider(InferenceProvider):
         # Disable tqdm progress bar - we use our own worker-scoped logging
         outputs: list[RequestOutput] = self.llm.generate(vllm_prompts, vllm_params, use_tqdm=False)
 
+        tokenizer = self.llm.get_tokenizer()
         results: list[list[LMOutput]] = []
         for output in outputs:
             request_outputs: list[LMOutput] = []
             for completion in output.outputs:
-                logprobs = _convert_logprobs(completion.logprobs)
+                logprobs = _convert_logprobs(
+                    completion.logprobs,
+                    tokenizer=tokenizer,
+                    token_ids=getattr(completion, "token_ids", None),
+                )
 
                 # Compute metadata from logprobs
                 metadata: dict[str, Any] = {}
@@ -307,6 +410,14 @@ class VLLMProvider(InferenceProvider):
                     LMOutput(
                         text=completion.text,
                         logprobs=logprobs,
+                        token_ids=(
+                            tuple(
+                                int(value)
+                                for value in (getattr(completion, "token_ids", None) or ())
+                            )
+                            or None
+                        ),
+                        finish_reason=str(getattr(completion, "finish_reason", "") or "") or None,
                         metadata=metadata,
                     )
                 )
@@ -347,12 +458,31 @@ class VLLMProvider(InferenceProvider):
             "logprobs": getattr(vllm_params, "logprobs", None),
             "num_samples": vllm_params.n,
         }
+        if params.logprob_token_ids is not None:
+            trace["generation_kwargs"]["logprob_token_ids"] = list(params.logprob_token_ids)
+        if params.seed is not None:
+            trace["generation_kwargs"]["seed"] = params.seed
+        if params.structured_output_regex is not None:
+            trace["generation_kwargs"]["structured_outputs"] = {
+                "regex": params.structured_output_regex
+            }
+        elif params.structured_output_json_schema is not None:
+            trace["generation_kwargs"]["structured_outputs"] = {
+                "json": dict(params.structured_output_json_schema)
+            }
         if getattr(vllm_params, "top_p", None) is not None:
             trace["generation_kwargs"]["top_p"] = vllm_params.top_p
         if getattr(vllm_params, "top_k", None) is not None:
             trace["generation_kwargs"]["top_k"] = vllm_params.top_k
         trace["stop_sequences"] = list(params.stop_sequences or ())
         trace["input_mode"] = "prompt_token_ids" if self._add_bos_token is False else "text"
+        if request.request_type == RequestType.CHAT:
+            template_kwargs = {
+                **getattr(self, "chat_template_kwargs", {}),
+                **(request.chat_template_kwargs or {}),
+            }
+            if template_kwargs:
+                trace["generation_kwargs"]["chat_template_kwargs"] = template_kwargs
         return trace
 
     def logprobs(

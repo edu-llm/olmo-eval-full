@@ -11,11 +11,13 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
+from olmo_eval.evals.external.context import ExternalEvalContext
 from olmo_eval.evals.external.result import ExternalEvalResult
 
 if TYPE_CHECKING:
     from olmo_eval.inference.base import InferenceProvider
     from olmo_eval.inference.providers.config import ProviderConfig
+    from olmo_eval.inference.registry import ProviderLookup
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +88,27 @@ class ExternalEval(ABC):
         """
         ...
 
+    async def execute_with_context(
+        self,
+        context: ExternalEvalContext,
+        args: dict[str, Any],
+        output_dir: str | None = None,
+        container_runtime: str = "podman",
+    ) -> ExternalEvalResult:
+        """Execute with access to a primary and optional named providers.
+
+        The default implementation preserves the original single-provider
+        contract by delegating to :meth:`execute` with the primary provider.
+        Context-aware evaluations can override this method to resolve named
+        providers with :meth:`ExternalEvalContext.get_provider`.
+        """
+        return await self.execute(
+            provider=context.provider,
+            args=args,
+            output_dir=output_dir,
+            container_runtime=container_runtime,
+        )
+
     async def execute_with_provider(
         self,
         provider: InferenceProvider | None = None,
@@ -93,6 +116,7 @@ class ExternalEval(ABC):
         args: dict[str, Any] | None = None,
         output_dir: str | None = None,
         container_runtime: str = "podman",
+        inference_pool: ProviderLookup | None = None,
     ) -> ExternalEvalResult:
         """Execute the evaluation using a provider or provider configuration.
 
@@ -102,6 +126,7 @@ class ExternalEval(ABC):
             args: Evaluation-specific arguments.
             output_dir: Optional directory to write results.
             container_runtime: Container runtime to use.
+            inference_pool: Optional lookup for named auxiliary providers.
 
         Returns:
             Result of the evaluation.
@@ -111,8 +136,9 @@ class ExternalEval(ABC):
                 raise ValueError("Either provider or provider_config must be provided")
             provider = provider_config.create_provider()
 
-        return await self.execute(
-            provider=provider,
+        context = ExternalEvalContext(provider=provider, inference_pool=inference_pool)
+        return await self.execute_with_context(
+            context=context,
             args=args or {},
             output_dir=output_dir,
             container_runtime=container_runtime,

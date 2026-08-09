@@ -500,8 +500,13 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
     s3_config: S3Config | None = None
 
     # Experiment metadata
+    experiment_id: str | None = None
     experiment_name: str | None = None
     experiment_group: str | None = None
+
+    # Resolved auxiliary endpoints supplied by a parent runner.  When set,
+    # native scorers use these endpoints and do not start their own servers.
+    resolved_auxiliary_providers: dict[str, list[dict[str, Any]]] | None = None
 
     # Output persistence options
     save_predictions: bool = True
@@ -578,7 +583,7 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
         experiment_start = time.time()
 
         # Generate experiment ID early so metrics can include it
-        experiment_id = generate_experiment_id()
+        experiment_id = self.experiment_id or generate_experiment_id()
 
         # Prepare tasks
         expanded_tasks, trackers, items = self._prepare_tasks()
@@ -610,6 +615,7 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
         sandbox_manager = None
         process_pool_manager = None
         inference_manager = None
+        provider_registry = None
 
         try:
             from olmo_eval.inference.gpu_planner import GPUPlanner
@@ -649,8 +655,12 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
             workers = provider_manager.start(ctx, total_instances, init_queue, start_event)
 
             # Start auxiliary inference servers if configured
-            registry_config: dict[str, list[dict[str, Any]]] | None = None
-            if self.harness_config.auxiliary_providers:
+            registry_config = self.resolved_auxiliary_providers
+            if registry_config:
+                runner_logger.info(
+                    f"Using parent-resolved auxiliary providers: {list(registry_config.keys())}"
+                )
+            elif self.harness_config.auxiliary_providers:
                 from olmo_eval.inference.manager import InferenceManager
 
                 auxiliary_gpus = gpu_plan.get_auxiliary_gpus()
@@ -801,7 +811,6 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
                 runner_logger.info("Sandbox manager ready")
 
             # Create provider registry for auxiliary providers
-            provider_registry = None
             if registry_config:
                 from olmo_eval.inference.registry import ProviderRegistry
 
@@ -896,6 +905,9 @@ class AsyncEvalRunner(RunnerResultsMixin, BaseEvalRunner):
                     await sandbox_manager.stop()
             if process_pool_manager is not None:
                 _shutdown_process_scoring_pools(process_pool_manager)
+            if provider_registry is not None:
+                with contextlib.suppress(Exception):
+                    await provider_registry.aclose()
             if inference_manager is not None:
                 inference_manager.shutdown()
             for q in [item_queue, result_queue, init_queue]:

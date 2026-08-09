@@ -1,0 +1,18 @@
+{
+  "artifact_namespace": "edullm_adaptive_feasibility/strong",
+  "calibrated_bank_hash": "c8d0ba6007717e7485cc2a02580aa0fef9ec3d44fa66f910a87dd04960f8c5d8",
+  "candidate_model": "mock-tutor-strong",
+  "config": {
+    "max_scenarios": 3,
+    "min_scenarios": 1,
+    "mwle_ridge": 1e-06,
+    "quadrature_bound": 8.0,
+    "quadrature_nodes": 801,
+    "stop_eap_se": null
+  },
+  "eval_name": "edullm_adaptive_feasibility",
+  "judge_model": "scripted-qwen-strong",
+  "judge_provider_name": "judge",
+  "run_id": "strong",
+  "schema_version": "edullm-olmo-adaptive-spike-v1"
+}

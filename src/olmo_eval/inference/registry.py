@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import itertools
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
@@ -59,6 +60,35 @@ class ReplicaSet:
     def get_config(self, idx: int = 0) -> ProviderConfig:
         return self._configs[idx]
 
+    async def aclose(self) -> None:
+        """Release every provider instance that this replica set created.
+
+        Providers are constructed lazily, so untouched replicas require no
+        cleanup.  Some providers expose an async client cleanup method as well
+        as a synchronous server cleanup method; invoke both when present.
+        """
+
+        errors: list[Exception] = []
+        for provider in self._providers:
+            if provider is None:
+                continue
+            for method_name in ("aclose", "close"):
+                method = getattr(provider, method_name, None)
+                if not callable(method):
+                    continue
+                try:
+                    result = method()
+                    if inspect.isawaitable(result):
+                        await result
+                except Exception as exc:
+                    errors.append(exc)
+        self._providers = [None] * len(self._configs)
+        if errors:
+            raise ExceptionGroup(
+                f"failed to close provider replica set {self._name!r}",
+                errors,
+            )
+
 
 class ProviderRegistry:
     """Registry of providers by name with replica support."""
@@ -112,3 +142,15 @@ class ProviderRegistry:
             name: [rs.get_config(i).to_dict() for i in range(rs.num_replicas)]
             for name, rs in self._replica_sets.items()
         }
+
+    async def aclose(self) -> None:
+        """Release all provider clients while attempting every replica set."""
+
+        errors: list[Exception] = []
+        for replica_set in self._replica_sets.values():
+            try:
+                await replica_set.aclose()
+            except Exception as exc:
+                errors.append(exc)
+        if errors:
+            raise ExceptionGroup("failed to close one or more provider registries", errors)

@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-08-07T19:39:17.914757+00:00",
+  "config": {
+    "kind": "mock",
+    "model": "mock-tutor-strong"
+  },
+  "tasks": [
+    {
+      "task": "edullm_adaptive_feasibility",
+      "metrics": {
+        "coverage": {
+          "external": 0.6666666666666666
+        },
+        "scenarios_administered": {
+          "external": 3.0
+        },
+        "criteria_observed": {
+          "external": 2.0
+        },
+        "eap_theta": {
+          "external": 0.2836225675788924
+        },
+        "eap_se": {
+          "external": 0.660388754897917
+        },
+        "mwle_converged": {
+          "external": 1.0
+        },
+        "mwle_theta": {
+          "external": 0.4999997961484246
+        },
+        "mwle_se": {
+          "external": 0.7973517131732913
+        }
+      },
+      "num_instances": 3,
+      "model": "mock-tutor-strong",
+      "primary_metric": "coverage:external",
+      "config": {
+        "eval_name": "edullm_adaptive_feasibility",
+        "run_id": "strong"
+      },
+      "task_hash": "f94d65956d2ea5e2"
+    }
+  ],
+  "summary": {
+    "edullm_adaptive_feasibility": {
+      "metric": "coverage:external",
+      "score": 0.6666666666666666
+    }
+  },
+  "errors": [],
+  "experiment_id": "77d67acdabfa",
+  "experiment_duration_seconds": 0.002663850784301758
+}

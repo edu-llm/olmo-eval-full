@@ -3,13 +3,22 @@
 from __future__ import annotations
 
 import os
+import subprocess
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 import httpx
 
 from olmo_eval.common.beaker_status import BeakerStatusReporter
 from olmo_eval.common.logging import get_logger
-from olmo_eval.common.types import LMOutput, LMRequest, LogProbEntry, RequestType, SamplingParams
+from olmo_eval.common.types import (
+    LMOutput,
+    LMRequest,
+    LogProbEntry,
+    RequestType,
+    SamplingParams,
+    TopLogProb,
+)
 from olmo_eval.common.types.tools import ToolCall
 from olmo_eval.inference.base import InferenceProvider
 from olmo_eval.inference.hf_cache import refresh_hf_cache
@@ -152,20 +161,68 @@ def _completion_logprob_value(value: Any) -> float | None:
         return None
 
 
-def _completion_top_logprob_values(top_logprobs: Any) -> list[float]:
-    """Extract numeric top-logprob values for one generated token."""
+def _payload_field(payload: Any, name: str, default: Any = None) -> Any:
+    """Read a field from either an SDK object or its JSON representation."""
+    if isinstance(payload, dict):
+        return payload.get(name, default)
+    return getattr(payload, name, default)
+
+
+def _top_logprob_entry(candidate: Any, *, token: str | None = None) -> TopLogProb | None:
+    """Normalize one OpenAI/vLLM top-logprob candidate."""
+    candidate_token = token if token is not None else _payload_field(candidate, "token")
+    logprob = _completion_logprob_value(candidate)
+    if candidate_token is None or logprob is None:
+        return None
+
+    entry: TopLogProb = {"token": str(candidate_token), "logprob": logprob}
+    candidate_token_id = _payload_field(candidate, "token_id")
+    if isinstance(candidate_token_id, int) and not isinstance(candidate_token_id, bool):
+        entry["token_id"] = candidate_token_id
+    candidate_bytes = _payload_field(candidate, "bytes")
+    if isinstance(candidate_bytes, (list, tuple)):
+        entry["bytes"] = [int(byte) for byte in candidate_bytes]
+    return entry
+
+
+def _completion_top_logprob_entries(top_logprobs: Any) -> list[TopLogProb]:
+    """Normalize top alternatives for one generated completion token."""
     if isinstance(top_logprobs, dict):
-        candidates = top_logprobs.values()
+        if "token" in top_logprobs:
+            candidate = _top_logprob_entry(top_logprobs)
+            return [candidate] if candidate is not None else []
+        candidates = (
+            _top_logprob_entry(candidate, token=str(token))
+            for token, candidate in top_logprobs.items()
+        )
     elif isinstance(top_logprobs, (list, tuple)):
-        candidates = top_logprobs
+        candidates = (_top_logprob_entry(candidate) for candidate in top_logprobs)
     else:
         return []
+    return [candidate for candidate in candidates if candidate is not None]
 
-    values: list[float] = []
-    for candidate in candidates:
-        if (logprob := _completion_logprob_value(candidate)) is not None:
-            values.append(logprob)
-    return values
+
+def _completion_top_logprob_values(top_logprobs: Any) -> list[float]:
+    """Extract numeric top-logprob values for one generated token."""
+    return [candidate["logprob"] for candidate in _completion_top_logprob_entries(top_logprobs)]
+
+
+def _requested_generation_logprobs(params: SamplingParams) -> int:
+    """Return the requested number of generated-token alternatives."""
+    if params.logprobs is not None:
+        return params.logprobs
+    if params.logprob_token_ids is not None:
+        return len(params.logprob_token_ids)
+    return 1
+
+
+def _structured_output_body(params: SamplingParams) -> dict[str, Any] | None:
+    """Build the mutually exclusive vLLM structured-output request body."""
+    if params.structured_output_regex is not None:
+        return {"regex": params.structured_output_regex}
+    if params.structured_output_json_schema is not None:
+        return {"json": dict(params.structured_output_json_schema)}
+    return None
 
 
 def _completion_is_greedy(
@@ -314,6 +371,11 @@ class VLLMServerProvider(InferenceProvider):
         self.max_concurrency = max_concurrency
         self.max_retries = max_retries
         self.chat_template_kwargs = chat_template_kwargs
+        self.language_model_only = (
+            bool(server_kwargs["language_model_only"])
+            if "language_model_only" in server_kwargs
+            else None
+        )
         self._add_bos_token = add_bos_token
         self._prompt_logprobs = prompt_logprobs if prompt_logprobs is not None else 5
         self._completion_use_prompt_token_ids = bool(completion_use_prompt_token_ids)
@@ -330,6 +392,7 @@ class VLLMServerProvider(InferenceProvider):
         self._tokenizer: Any = None
         self._server: VLLMServerProcess | None = None  # type: ignore[possibly-unresolved-reference]
         self._max_length: int | None = None
+        self._managed_explicit_logprobs_support: dict[RequestType, bool] = {}
 
         if base_url:
             # Connect to existing server
@@ -378,6 +441,10 @@ class VLLMServerProvider(InferenceProvider):
 
     def close(self) -> None:
         """Close the provider and stop managed server if any."""
+        tokenizer = getattr(self, "_tokenizer", None)
+        if isinstance(tokenizer, RemoteTokenizer):
+            tokenizer.close()
+            self._tokenizer = None
         server = getattr(self, "_server", None)
         if server is not None:
             server.stop()
@@ -464,6 +531,10 @@ class VLLMServerProvider(InferenceProvider):
 
     async def aclose(self) -> None:
         """Close the provider and release resources."""
+        tokenizer = self._tokenizer
+        if isinstance(tokenizer, RemoteTokenizer):
+            tokenizer.close()
+            self._tokenizer = None
         if self._raw_http_client is not None:
             await self._raw_http_client.aclose()
             self._raw_http_client = None
@@ -580,26 +651,40 @@ class VLLMServerProvider(InferenceProvider):
             and request.prompt
         )
         if use_completions:
+            self._require_managed_explicit_logprobs_support(
+                params,
+                request_type=RequestType.COMPLETION,
+            )
             trace["provider"] = "VLLMServerProvider"
             trace["endpoint"] = "/completions"
             trace["generation_kwargs"] = {
                 "max_gen_toks": params.max_tokens,
                 "do_sample": params.do_sample and params.temperature > 0,
                 "temperature": params.temperature,
-                "logprobs": 1,
+                "logprobs": _requested_generation_logprobs(params),
                 "num_samples": params.num_samples,
                 "add_special_tokens": False,
             }
             if params.top_p is not None:
                 trace["generation_kwargs"]["top_p"] = params.top_p
+            if params.seed is not None:
+                trace["generation_kwargs"]["seed"] = params.seed
             if params.do_sample and params.temperature > 0 and params.top_k is not None:
                 trace["generation_kwargs"]["top_k"] = params.top_k
+            if params.logprob_token_ids is not None:
+                trace["generation_kwargs"]["logprob_token_ids"] = list(params.logprob_token_ids)
+            if (structured_outputs := _structured_output_body(params)) is not None:
+                trace["generation_kwargs"]["structured_outputs"] = structured_outputs
             trace["stop_sequences"] = self._get_completion_stop_sequences(params) or []
             trace["input_mode"] = (
                 "prompt_token_ids" if self._completion_use_prompt_token_ids else "text"
             )
             return trace
 
+        self._require_managed_explicit_logprobs_support(
+            params,
+            request_type=RequestType.CHAT,
+        )
         trace["provider"] = "VLLMServerProvider"
         trace["endpoint"] = "/chat/completions"
         generation_kwargs: dict[str, Any] = {
@@ -607,15 +692,26 @@ class VLLMServerProvider(InferenceProvider):
             "do_sample": params.do_sample and params.temperature > 0,
             "temperature": params.temperature,
             "logprobs": True,
-            "top_logprobs": 1,
+            "top_logprobs": _requested_generation_logprobs(params),
             "num_samples": params.num_samples,
         }
+        if params.logprob_token_ids is not None:
+            generation_kwargs.pop("top_logprobs")
+            generation_kwargs["logprob_token_ids"] = list(params.logprob_token_ids)
+        if (structured_outputs := _structured_output_body(params)) is not None:
+            generation_kwargs["structured_outputs"] = structured_outputs
         if params.do_sample and params.temperature > 0 and params.top_k is not None:
             generation_kwargs["top_k"] = params.top_k
         if params.top_p is not None:
             generation_kwargs["top_p"] = params.top_p
-        if self.chat_template_kwargs:
-            generation_kwargs["chat_template_kwargs"] = dict(self.chat_template_kwargs)
+        if params.seed is not None:
+            generation_kwargs["seed"] = params.seed
+        template_kwargs = {
+            **(self.chat_template_kwargs or {}),
+            **(request.chat_template_kwargs or {}),
+        }
+        if template_kwargs:
+            generation_kwargs["chat_template_kwargs"] = template_kwargs
         trace["generation_kwargs"] = generation_kwargs
         trace["stop_sequences"] = list(params.stop_sequences or ())
         trace["input_mode"] = "messages"
@@ -656,6 +752,58 @@ class VLLMServerProvider(InferenceProvider):
         tokenizer = self._get_tokenizer(require_local=True)
         return tokenizer.encode(prompt, add_special_tokens=bool(self._add_bos_token))
 
+    def _require_managed_explicit_logprobs_support(
+        self,
+        params: SamplingParams,
+        *,
+        request_type: RequestType,
+    ) -> None:
+        """Probe the managed server's interpreter, never the OLMo parent vLLM."""
+        if params.logprob_token_ids is None or self._server is None:
+            return
+        cached = getattr(self, "_managed_explicit_logprobs_support", {}).get(request_type)
+        if cached is True:
+            return
+        if request_type == RequestType.CHAT:
+            module_name = "vllm.entrypoints.openai.chat_completion.protocol"
+            class_name = "ChatCompletionRequest"
+        else:
+            module_name = "vllm.entrypoints.openai.completion.protocol"
+            class_name = "CompletionRequest"
+        python_executable = getattr(self._server, "python_executable", None)
+        if not isinstance(python_executable, str) or not python_executable:
+            raise RuntimeError(
+                "managed vLLM did not expose the child Python interpreter needed to "
+                "verify logprob_token_ids support"
+            )
+        probe = (
+            f"from {module_name} import {class_name}; "
+            f"raise SystemExit(0 if 'logprob_token_ids' in {class_name}.model_fields else 3)"
+        )
+        try:
+            completed = subprocess.run(
+                [python_executable, "-c", probe],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise RuntimeError(
+                "managed vLLM cannot verify logprob_token_ids support; "
+                "this request requires vLLM >= 0.26.0"
+            ) from exc
+        if completed.returncode != 0:
+            detail = (completed.stderr or completed.stdout).strip()
+            raise RuntimeError(
+                "managed vLLM does not support logprob_token_ids; "
+                f"this request requires vLLM >= 0.26.0 ({detail[-1000:]})"
+            )
+        self._managed_explicit_logprobs_support = {
+            **getattr(self, "_managed_explicit_logprobs_support", {}),
+            request_type: True,
+        }
+
     def _postprocess_completion_text(self, text: str, stop_sequences: list[str] | None) -> str:
         """Apply optional legacy completion post-processing."""
         if self._completion_sentencepiece_cleanup:
@@ -674,9 +822,14 @@ class VLLMServerProvider(InferenceProvider):
     ) -> list[LogProbEntry] | None:
         """Convert completion logprob payload into standard entries and metadata."""
         logprob_entries: list[LogProbEntry] = []
-        for token, logprob in zip(tokens, token_logprobs, strict=False):
+        for position, (token, logprob) in enumerate(zip(tokens, token_logprobs, strict=False)):
             if logprob is not None:
-                logprob_entries.append({"token": token, "logprob": logprob})
+                entry: LogProbEntry = {"token": token, "logprob": logprob}
+                if top_logprobs and position < len(top_logprobs):
+                    alternatives = _completion_top_logprob_entries(top_logprobs[position])
+                    if alternatives:
+                        entry["top_logprobs"] = alternatives
+                logprob_entries.append(entry)
 
         if logprob_entries:
             sum_logits = sum(entry["logprob"] for entry in logprob_entries)
@@ -720,6 +873,8 @@ class VLLMServerProvider(InferenceProvider):
         logprobs_payload: Any,
         usage: Any,
         stop_sequences: list[str] | None,
+        finish_reason: str | None = None,
+        token_ids: Sequence[int] | None = None,
     ) -> LMOutput:
         """Create a standardized LMOutput from completion response payloads."""
         metadata = self._completion_usage_metadata(usage)
@@ -742,23 +897,40 @@ class VLLMServerProvider(InferenceProvider):
                 metadata=metadata,
             )
 
-        return LMOutput(text=processed_text, logprobs=logprob_entries, metadata=metadata)
+        normalized_token_ids = tuple(int(token_id) for token_id in token_ids) if token_ids else None
+        return LMOutput(
+            text=processed_text,
+            logprobs=logprob_entries,
+            token_ids=normalized_token_ids,
+            finish_reason=str(finish_reason or "") or None,
+            metadata=metadata,
+        )
 
     async def _generate_completion(
         self, client: AsyncOpenAI, request: LMRequest, params: SamplingParams
     ) -> list[LMOutput]:
         """Generate using the /v1/completions endpoint."""
+        self._require_managed_explicit_logprobs_support(
+            params,
+            request_type=RequestType.COMPLETION,
+        )
         kwargs: dict[str, Any] = {
             "model": self.model_name,
             "prompt": request.prompt,
             "n": params.num_samples,
-            "logprobs": 1,  # Request logprobs for metrics
+            "logprobs": _requested_generation_logprobs(params),
         }
         # max_tokens=None means "generate to the context limit"; omit the field
         # rather than sending null, which some OpenAI-compatible servers reject.
         if params.max_tokens is not None:
             kwargs["max_tokens"] = params.max_tokens
         extra_body: dict[str, Any] = {"add_special_tokens": False}
+        if params.seed is not None:
+            extra_body["seed"] = params.seed
+        if params.logprob_token_ids is not None:
+            extra_body["logprob_token_ids"] = list(params.logprob_token_ids)
+        if (structured_outputs := _structured_output_body(params)) is not None:
+            extra_body["structured_outputs"] = structured_outputs
 
         # Always send temperature explicitly to avoid server defaults (OpenAI API defaults to 1.0)
         kwargs["temperature"] = params.temperature
@@ -788,6 +960,8 @@ class VLLMServerProvider(InferenceProvider):
                     logprobs_payload=choice.get("logprobs"),
                     usage=usage,
                     stop_sequences=stop_sequences,
+                    finish_reason=choice.get("finish_reason"),
+                    token_ids=choice.get("token_ids"),
                 )
                 for choice in data.get("choices", [])
             ]
@@ -803,6 +977,8 @@ class VLLMServerProvider(InferenceProvider):
                 logprobs_payload=getattr(choice, "logprobs", None),
                 usage=usage,
                 stop_sequences=stop_sequences,
+                finish_reason=getattr(choice, "finish_reason", None),
+                token_ids=getattr(choice, "token_ids", None),
             )
             for choice in response.choices
         ]
@@ -811,6 +987,10 @@ class VLLMServerProvider(InferenceProvider):
         self, client: AsyncOpenAI, request: LMRequest, params: SamplingParams
     ) -> list[LMOutput]:
         """Generate using the /v1/chat/completions endpoint."""
+        self._require_managed_explicit_logprobs_support(
+            params,
+            request_type=RequestType.CHAT,
+        )
         # Build messages
         if request.messages:
             messages: list[dict[str, Any]] = [dict(m) for m in request.messages]
@@ -838,6 +1018,8 @@ class VLLMServerProvider(InferenceProvider):
         if params.top_p is not None:
             kwargs["top_p"] = params.top_p
         extra_body: dict[str, Any] = {}
+        if params.seed is not None:
+            extra_body["seed"] = params.seed
         if params.do_sample and params.temperature > 0 and params.top_k is not None:
             extra_body["top_k"] = params.top_k
         if params.stop_sequences:
@@ -847,11 +1029,20 @@ class VLLMServerProvider(InferenceProvider):
         # Always request logprobs for metrics computation
         # Both logprobs=True and top_logprobs are required for chat completions API
         kwargs["logprobs"] = True
-        kwargs["top_logprobs"] = 1
+        if params.logprob_token_ids is not None:
+            extra_body["logprob_token_ids"] = list(params.logprob_token_ids)
+        else:
+            kwargs["top_logprobs"] = _requested_generation_logprobs(params)
+        if (structured_outputs := _structured_output_body(params)) is not None:
+            extra_body["structured_outputs"] = structured_outputs
 
         # Pass chat_template_kwargs via extra_body for vLLM
-        if self.chat_template_kwargs:
-            extra_body["chat_template_kwargs"] = self.chat_template_kwargs
+        template_kwargs = {
+            **(self.chat_template_kwargs or {}),
+            **(request.chat_template_kwargs or {}),
+        }
+        if template_kwargs:
+            extra_body["chat_template_kwargs"] = template_kwargs
         if extra_body:
             kwargs["extra_body"] = extra_body
 
@@ -884,13 +1075,25 @@ class VLLMServerProvider(InferenceProvider):
                 metadata["completion_tokens"] = usage.completion_tokens
 
             logprobs_data = getattr(choice, "logprobs", None)
-            if logprobs_data and hasattr(logprobs_data, "content") and logprobs_data.content:
+            content_logprobs = _payload_field(logprobs_data, "content")
+            if content_logprobs:
                 logprob_entries = []
-                for lp in logprobs_data.content:
-                    entry: LogProbEntry = {"token": lp.token, "logprob": lp.logprob}
-                    lp_bytes = getattr(lp, "bytes", None)
+                for lp in content_logprobs:
+                    entry: LogProbEntry = {
+                        "token": str(_payload_field(lp, "token")),
+                        "logprob": float(_payload_field(lp, "logprob")),
+                    }
+                    lp_token_id = _payload_field(lp, "token_id")
+                    if isinstance(lp_token_id, int) and not isinstance(lp_token_id, bool):
+                        entry["token_id"] = lp_token_id
+                    lp_bytes = _payload_field(lp, "bytes")
                     if lp_bytes is not None:
-                        entry["bytes"] = lp_bytes
+                        entry["bytes"] = list(lp_bytes)
+                    alternatives = _completion_top_logprob_entries(
+                        _payload_field(lp, "top_logprobs")
+                    )
+                    if alternatives:
+                        entry["top_logprobs"] = alternatives
                     logprob_entries.append(entry)
 
                 # Compute metadata from logprobs
@@ -904,7 +1107,17 @@ class VLLMServerProvider(InferenceProvider):
 
             outputs.append(
                 LMOutput(
-                    text=text, logprobs=logprob_entries, metadata=metadata, tool_calls=tool_calls
+                    text=text,
+                    logprobs=logprob_entries,
+                    token_ids=(
+                        tuple(
+                            int(token_id) for token_id in (getattr(choice, "token_ids", None) or ())
+                        )
+                        or None
+                    ),
+                    finish_reason=str(getattr(choice, "finish_reason", "") or "") or None,
+                    metadata=metadata,
+                    tool_calls=tool_calls,
                 )
             )
 

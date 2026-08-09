@@ -141,6 +141,18 @@ class InferenceProvider(ABC):
             generation_kwargs["num_samples"] = params.num_samples
         if params.logprobs is not None:
             generation_kwargs["logprobs"] = params.logprobs
+        if params.seed is not None:
+            generation_kwargs["seed"] = params.seed
+        if params.logprob_token_ids is not None:
+            generation_kwargs["logprob_token_ids"] = list(params.logprob_token_ids)
+        if params.structured_output_regex is not None:
+            generation_kwargs["structured_output_regex"] = params.structured_output_regex
+        if params.structured_output_json_schema is not None:
+            generation_kwargs["structured_output_json_schema"] = dict(
+                params.structured_output_json_schema
+            )
+        if request.chat_template_kwargs is not None:
+            generation_kwargs["chat_template_kwargs"] = dict(request.chat_template_kwargs)
 
         trace["generation_kwargs"] = generation_kwargs
         trace["stop_sequences"] = list(params.stop_sequences or ())

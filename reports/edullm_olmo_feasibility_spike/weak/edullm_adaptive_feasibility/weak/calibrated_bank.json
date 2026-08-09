@@ -1,0 +1,26 @@
+[
+  {
+    "criterion": "The response satisfies the medium requirement.",
+    "criterion_id": "mid_c01",
+    "difficulty": 0.0,
+    "discrimination": 2.0,
+    "prompt": "Give a medium-difficulty tutoring response.",
+    "scenario_id": "mid"
+  },
+  {
+    "criterion": "The response satisfies the easy requirement.",
+    "criterion_id": "easy_c01",
+    "difficulty": -2.0,
+    "discrimination": 2.0,
+    "prompt": "Give an easy tutoring response.",
+    "scenario_id": "easy"
+  },
+  {
+    "criterion": "The response satisfies the hard requirement.",
+    "criterion_id": "hard_c01",
+    "difficulty": 2.0,
+    "discrimination": 2.0,
+    "prompt": "Give a hard tutoring response.",
+    "scenario_id": "hard"
+  }
+]

@@ -7,7 +7,14 @@ from typing import TYPE_CHECKING, Any
 
 from olmo_eval.common.debug import is_debug_provider
 from olmo_eval.common.logging import get_logger
-from olmo_eval.common.types import LMOutput, LMRequest, LogProbEntry, RequestType, SamplingParams
+from olmo_eval.common.types import (
+    LMOutput,
+    LMRequest,
+    LogProbEntry,
+    RequestType,
+    SamplingParams,
+    TopLogProb,
+)
 from olmo_eval.inference.base import InferenceProvider
 from olmo_eval.inference.retry import retry_with_backoff
 from olmo_eval.inference.utils import run_async
@@ -19,6 +26,103 @@ if TYPE_CHECKING:
 _MAX_STOP_SEQUENCES = 4
 
 logger = get_logger(__name__)
+
+
+def _payload_field(payload: Any, name: str, default: Any = None) -> Any:
+    """Read a field from either a LiteLLM object or its JSON representation."""
+    if isinstance(payload, dict):
+        return payload.get(name, default)
+    return getattr(payload, name, default)
+
+
+def _top_logprob_entry(candidate: Any, *, token: str | None = None) -> TopLogProb | None:
+    """Normalize one LiteLLM/OpenAI top-logprob candidate."""
+    candidate_token = token if token is not None else _payload_field(candidate, "token")
+    raw_logprob = (
+        candidate
+        if token is not None and isinstance(candidate, (int, float))
+        else _payload_field(candidate, "logprob")
+    )
+    if candidate_token is None or raw_logprob is None:
+        return None
+    try:
+        logprob = float(raw_logprob)
+    except (TypeError, ValueError):
+        return None
+
+    entry: TopLogProb = {"token": str(candidate_token), "logprob": logprob}
+    candidate_bytes = _payload_field(candidate, "bytes")
+    if isinstance(candidate_bytes, (list, tuple)):
+        entry["bytes"] = [int(byte) for byte in candidate_bytes]
+    return entry
+
+
+def _normalize_top_logprobs(top_logprobs: Any) -> list[TopLogProb]:
+    """Normalize the top alternatives returned for one generated token."""
+    if isinstance(top_logprobs, dict):
+        if "token" in top_logprobs:
+            candidate = _top_logprob_entry(top_logprobs)
+            return [candidate] if candidate is not None else []
+        candidates = (
+            _top_logprob_entry(candidate, token=str(token))
+            for token, candidate in top_logprobs.items()
+        )
+    elif isinstance(top_logprobs, (list, tuple)):
+        candidates = (_top_logprob_entry(candidate) for candidate in top_logprobs)
+    else:
+        return []
+    return [candidate for candidate in candidates if candidate is not None]
+
+
+def _convert_content_logprobs(logprobs_data: Any) -> list[LogProbEntry] | None:
+    """Convert LiteLLM/OpenAI chat logprobs to OLMo's common representation."""
+    content = _payload_field(logprobs_data, "content")
+    if not content:
+        return None
+
+    entries: list[LogProbEntry] = []
+    for token_logprob in content:
+        token = _payload_field(token_logprob, "token")
+        raw_logprob = _payload_field(token_logprob, "logprob")
+        if token is None or raw_logprob is None:
+            continue
+        entry: LogProbEntry = {"token": str(token), "logprob": float(raw_logprob)}
+        token_bytes = _payload_field(token_logprob, "bytes")
+        if isinstance(token_bytes, (list, tuple)):
+            entry["bytes"] = [int(byte) for byte in token_bytes]
+        alternatives = _normalize_top_logprobs(_payload_field(token_logprob, "top_logprobs"))
+        if alternatives:
+            entry["top_logprobs"] = alternatives
+        entries.append(entry)
+    return entries or None
+
+
+def _requested_generation_logprobs(params: SamplingParams) -> int:
+    """Return the requested number of generated-token alternatives."""
+    if params.logprobs is not None:
+        return params.logprobs
+    if params.logprob_token_ids is not None:
+        return len(params.logprob_token_ids)
+    return 1
+
+
+def _reject_unsupported_constraints(request: LMRequest, params: SamplingParams) -> None:
+    """Fail closed when LiteLLM cannot guarantee provider-specific constraints."""
+    unsupported: list[str] = []
+    if params.logprob_token_ids is not None:
+        unsupported.append("logprob_token_ids")
+    if params.structured_output_regex is not None:
+        unsupported.append("structured_output_regex")
+    if params.structured_output_json_schema is not None:
+        unsupported.append("structured_output_json_schema")
+    if request.chat_template_kwargs is not None:
+        unsupported.append("chat_template_kwargs")
+    if unsupported:
+        names = ", ".join(unsupported)
+        raise NotImplementedError(
+            f"LiteLLMProvider cannot guarantee these inference constraints: {names}; "
+            "use VLLMProvider or a compatible VLLMServerProvider"
+        )
 
 
 class LiteLLMProvider(InferenceProvider):
@@ -109,10 +213,18 @@ class LiteLLMProvider(InferenceProvider):
 
         return self._client
 
+    async def aclose(self) -> None:
+        """Close the cached OpenAI-compatible client, when one was created."""
+
+        if self._client is not None:
+            await self._client.close()
+            self._client = None
+
     async def _generate_single_impl(
         self, request: LMRequest, params: SamplingParams
     ) -> list[LMOutput]:
         """Generate completions for a single request."""
+        _reject_unsupported_constraints(request, params)
         # Build messages from request
         if request.messages:
             messages = [dict(m) for m in request.messages]
@@ -138,9 +250,7 @@ class LiteLLMProvider(InferenceProvider):
             kwargs["stop"] = list(params.stop_sequences)[:_MAX_STOP_SEQUENCES]
         # Always request logprobs for metrics computation
         kwargs["logprobs"] = True
-        kwargs["top_logprobs"] = (
-            1  # NOTE: workaround for litellm proxy issue https://github.com/BerriAI/litellm/issues/21932
-        )
+        kwargs["top_logprobs"] = _requested_generation_logprobs(params)
 
         response = await self._litellm.acompletion(**kwargs)
 
@@ -151,16 +261,9 @@ class LiteLLMProvider(InferenceProvider):
             # Convert logprobs to standard format
             logprob_entries: list[LogProbEntry] | None = None
             metadata: dict[str, Any] = {}
-            logprobs_data = getattr(choice, "logprobs", None)
-            if logprobs_data and hasattr(logprobs_data, "content") and logprobs_data.content:
-                logprob_entries = []
-                for lp in logprobs_data.content:
-                    entry: LogProbEntry = {"token": lp.token, "logprob": lp.logprob}
-                    lp_bytes = getattr(lp, "bytes", None)
-                    if lp_bytes is not None:
-                        entry["bytes"] = lp_bytes
-                    logprob_entries.append(entry)
-
+            logprobs_data = _payload_field(choice, "logprobs")
+            logprob_entries = _convert_content_logprobs(logprobs_data)
+            if logprob_entries:
                 # Compute metadata from logprobs
                 sum_logits = sum(entry["logprob"] for entry in logprob_entries)
                 num_tokens = len(logprob_entries)
@@ -180,6 +283,7 @@ class LiteLLMProvider(InferenceProvider):
         sampling_params: SamplingParams | None = None,
     ) -> dict[str, Any] | None:
         params = self._default_sampling_params(sampling_params)
+        _reject_unsupported_constraints(request, params)
         trace = super().describe_request(request, sampling_params)
         if trace is None:
             return None
@@ -192,7 +296,7 @@ class LiteLLMProvider(InferenceProvider):
                 "do_sample": False,
                 "temperature": params.temperature,
                 "logprobs": True,
-                "top_logprobs": 1,
+                "top_logprobs": _requested_generation_logprobs(params),
             }
             trace["stop_sequences"] = []
             return trace
@@ -204,7 +308,7 @@ class LiteLLMProvider(InferenceProvider):
             "do_sample": params.do_sample and params.temperature > 0,
             "temperature": params.temperature,
             "logprobs": True,
-            "top_logprobs": 1,
+            "top_logprobs": _requested_generation_logprobs(params),
             "num_samples": params.num_samples,
         }
         if params.top_p is not None:
@@ -293,6 +397,7 @@ class LiteLLMProvider(InferenceProvider):
     ) -> list[LMOutput]:
         """Compute logprobs for a single request."""
         params = self._default_sampling_params(params)
+        _reject_unsupported_constraints(request, params)
         if request.messages:
             default_content = request.messages[0].get("content", "") if request.messages else ""
         else:
@@ -310,21 +415,16 @@ class LiteLLMProvider(InferenceProvider):
                 max_completion_tokens=50,
                 temperature=params.temperature,
                 logprobs=True,
-                top_logprobs=1,  # NOTE: workaround for litellm proxy issue https://github.com/BerriAI/litellm/issues/21932
+                top_logprobs=_requested_generation_logprobs(params),
                 **self.api_kwargs,
             )
 
             completion_logprobs: list[LogProbEntry] = []
             if response.choices:
                 choice = response.choices[0]
-                logprobs_data = getattr(choice, "logprobs", None)
-                if logprobs_data and hasattr(logprobs_data, "content") and logprobs_data.content:
-                    for lp in logprobs_data.content:
-                        entry: LogProbEntry = {"token": lp.token, "logprob": lp.logprob}
-                        lp_bytes = getattr(lp, "bytes", None)
-                        if lp_bytes is not None:
-                            entry["bytes"] = lp_bytes
-                        completion_logprobs.append(entry)
+                completion_logprobs = (
+                    _convert_content_logprobs(_payload_field(choice, "logprobs")) or []
+                )
 
             total = (
                 sum(lp["logprob"] for lp in completion_logprobs[:5]) if completion_logprobs else 0.0

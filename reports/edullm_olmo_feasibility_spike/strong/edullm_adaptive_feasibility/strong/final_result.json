@@ -1,0 +1,218 @@
+{
+  "metadata": {
+    "artifact_namespace": "edullm_adaptive_feasibility/strong",
+    "artifacts": [
+      "edullm_adaptive_feasibility/strong/manifest.json",
+      "edullm_adaptive_feasibility/strong/calibrated_bank.json",
+      "edullm_adaptive_feasibility/strong/steps.jsonl",
+      "edullm_adaptive_feasibility/strong/judgments.jsonl",
+      "edullm_adaptive_feasibility/strong/final_result.json"
+    ],
+    "calibrated_bank_hash": "c8d0ba6007717e7485cc2a02580aa0fef9ec3d44fa66f910a87dd04960f8c5d8",
+    "candidate_model": "mock-tutor-strong",
+    "config": {
+      "max_scenarios": 3,
+      "min_scenarios": 1,
+      "mwle_ridge": 1e-06,
+      "quadrature_bound": 8.0,
+      "quadrature_nodes": 801,
+      "stop_eap_se": null
+    },
+    "criteria_no_decision": 1,
+    "criteria_observed": 2,
+    "eval_name": "edullm_adaptive_feasibility",
+    "final_eap": {
+      "converged": true,
+      "message": "",
+      "method": "batch_eap",
+      "n_items": 2,
+      "se": 0.660388754897917,
+      "theta": 0.2836225675788924
+    },
+    "final_mwle": {
+      "converged": true,
+      "message": "",
+      "method": "mwle",
+      "n_items": 2,
+      "se": 0.7973517131732913,
+      "theta": 0.4999997961484246
+    },
+    "final_online_se": 0.599065831056563,
+    "final_online_theta": 0.3069646753547889,
+    "judge_model": "scripted-qwen-strong",
+    "judge_provider_name": "judge",
+    "num_tasks": 3,
+    "run_id": "strong",
+    "scenarios_administered": [
+      "mid",
+      "hard",
+      "easy"
+    ],
+    "schema_version": "edullm-olmo-adaptive-spike-v1",
+    "stop_reason": "bank_exhausted"
+  },
+  "metrics": {
+    "coverage": 0.6666666666666666,
+    "criteria_observed": 2.0,
+    "eap_se": 0.660388754897917,
+    "eap_theta": 0.2836225675788924,
+    "mwle_converged": 1.0,
+    "mwle_se": 0.7973517131732913,
+    "mwle_theta": 0.4999997961484246,
+    "scenarios_administered": 3.0
+  },
+  "name": "edullm_adaptive_feasibility",
+  "predictions": [
+    {
+      "criterion_id": "mid_c01",
+      "eap_after": {
+        "converged": true,
+        "message": "",
+        "method": "batch_eap",
+        "n_items": 1,
+        "se": 0.7956889063179903,
+        "theta": 0.6057055096021494
+      },
+      "judge_request": "Decide whether the tutor response satisfies exactly one criterion. Return strict JSON with verdict, evidence, and rationale.\n\nSCENARIO_ID: mid\nCRITERION_ID: mid_c01\nCRITERION: The response satisfies the medium requirement.\nTUTOR_RESPONSE:  mock response. The answer is (A), or \\boxed{42}",
+      "judgment": {
+        "error_code": null,
+        "evidence": "Evidence for mid",
+        "parser_status": "parsed",
+        "rationale": "Deterministic fixture rationale for mid",
+        "raw_output": "{\"verdict\": \"pass\", \"evidence\": \"Evidence for mid\", \"rationale\": \"Deterministic fixture rationale for mid\"}",
+        "verdict": "pass",
+        "y": 1
+      },
+      "mwle_after": {
+        "converged": true,
+        "message": "",
+        "method": "mwle",
+        "n_items": 1,
+        "se": 1.1547000231635223,
+        "theta": 0.5493065852869224
+      },
+      "observed_after": 1,
+      "observed_before": 0,
+      "online_theta_after": 0.5,
+      "online_variance_after": 0.5,
+      "pre_update_pass_probability": 0.5,
+      "raw_tutor_output": " mock response. The answer is (A), or \\boxed{42}",
+      "scenario_id": "mid",
+      "selection_candidates": [
+        {
+          "information": 1.0,
+          "scenario_id": "mid"
+        },
+        {
+          "information": 0.41997434161402647,
+          "scenario_id": "easy"
+        },
+        {
+          "information": 0.419974341614026,
+          "scenario_id": "hard"
+        }
+      ],
+      "selection_theta": 0.0,
+      "selection_variance": 1.0,
+      "step": 1,
+      "tutor_request": "SCENARIO_ID: mid\nCRITERION_ID: mid_c01\n\nGive a medium-difficulty tutoring response."
+    },
+    {
+      "criterion_id": "hard_c01",
+      "eap_after": {
+        "converged": true,
+        "message": "",
+        "method": "batch_eap",
+        "n_items": 2,
+        "se": 0.660388754897917,
+        "theta": 0.2836225675788924
+      },
+      "judge_request": "Decide whether the tutor response satisfies exactly one criterion. Return strict JSON with verdict, evidence, and rationale.\n\nSCENARIO_ID: hard\nCRITERION_ID: hard_c01\nCRITERION: The response satisfies the hard requirement.\nTUTOR_RESPONSE:  mock response. The answer is (A), or \\boxed{42}",
+      "judgment": {
+        "error_code": null,
+        "evidence": "Evidence for hard",
+        "parser_status": "parsed",
+        "rationale": "Deterministic fixture rationale for hard",
+        "raw_output": "{\"verdict\": \"fail\", \"evidence\": \"Evidence for hard\", \"rationale\": \"Deterministic fixture rationale for hard\"}",
+        "verdict": "fail",
+        "y": 0
+      },
+      "mwle_after": {
+        "converged": true,
+        "message": "",
+        "method": "mwle",
+        "n_items": 2,
+        "se": 0.7973517131732913,
+        "theta": 0.4999997961484246
+      },
+      "observed_after": 2,
+      "observed_before": 1,
+      "online_theta_after": 0.3069646753547889,
+      "online_variance_after": 0.35887986993949045,
+      "pre_update_pass_probability": 0.2689414213699951,
+      "raw_tutor_output": " mock response. The answer is (A), or \\boxed{42}",
+      "scenario_id": "hard",
+      "selection_candidates": [
+        {
+          "information": 0.7864477329659274,
+          "scenario_id": "hard"
+        },
+        {
+          "information": 0.180706638923648,
+          "scenario_id": "easy"
+        }
+      ],
+      "selection_theta": 0.5,
+      "selection_variance": 0.5,
+      "step": 2,
+      "tutor_request": "SCENARIO_ID: hard\nCRITERION_ID: hard_c01\n\nGive a hard tutoring response."
+    },
+    {
+      "criterion_id": "easy_c01",
+      "eap_after": {
+        "converged": true,
+        "message": "",
+        "method": "batch_eap",
+        "n_items": 2,
+        "se": 0.660388754897917,
+        "theta": 0.2836225675788924
+      },
+      "judge_request": "Decide whether the tutor response satisfies exactly one criterion. Return strict JSON with verdict, evidence, and rationale.\n\nSCENARIO_ID: easy\nCRITERION_ID: easy_c01\nCRITERION: The response satisfies the easy requirement.\nTUTOR_RESPONSE:  mock response. The answer is (A), or \\boxed{42}",
+      "judgment": {
+        "error_code": "invalid_json",
+        "evidence": null,
+        "parser_status": "parse_error",
+        "rationale": null,
+        "raw_output": "deliberately malformed judge output",
+        "verdict": "no_decision",
+        "y": null
+      },
+      "mwle_after": {
+        "converged": true,
+        "message": "",
+        "method": "mwle",
+        "n_items": 2,
+        "se": 0.7973517131732913,
+        "theta": 0.4999997961484246
+      },
+      "observed_after": 2,
+      "observed_before": 2,
+      "online_theta_after": 0.3069646753547889,
+      "online_variance_after": 0.35887986993949045,
+      "pre_update_pass_probability": 0.9317526864823984,
+      "raw_tutor_output": " mock response. The answer is (A), or \\boxed{42}",
+      "scenario_id": "easy",
+      "selection_candidates": [
+        {
+          "information": 0.25435847086092717,
+          "scenario_id": "easy"
+        }
+      ],
+      "selection_theta": 0.3069646753547889,
+      "selection_variance": 0.35887986993949045,
+      "step": 3,
+      "tutor_request": "SCENARIO_ID: easy\nCRITERION_ID: easy_c01\n\nGive an easy tutoring response."
+    }
+  ],
+  "success": true
+}

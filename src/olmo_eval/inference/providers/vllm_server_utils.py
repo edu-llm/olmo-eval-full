@@ -237,7 +237,7 @@ def _get_olmo3_tool_template_path() -> str:
 
 
 # Kwargs that are used for deployment/setup, not vLLM server CLI arguments
-_NON_VLLM_KWARGS = frozenset({"patch_olmo3_tool_parser"})
+_NON_VLLM_KWARGS = frozenset({"patch_olmo3_tool_parser", "environment_unset", "python_executable"})
 
 
 def _apply_olmo3_tool_parser_patch() -> None:
@@ -277,6 +277,7 @@ def _build_server_command(
     tool_call_parser: str | None = None,
     enable_prefix_caching: bool = True,
     chat_template_kwargs: dict[str, Any] | None = None,
+    python_executable: str | None = None,
     **kwargs: Any,
 ) -> list[str]:
     """Build the vLLM server command.
@@ -296,6 +297,8 @@ def _build_server_command(
         chat_template_kwargs: Extra kwargs for chat template (e.g., {"enable_thinking": false}).
             These are applied at request time by the provider for broad vLLM compatibility,
             rather than being forwarded as server CLI flags.
+        python_executable: Per-server Python interpreter. Falls back to
+            ``VLLM_PYTHON`` and then the current interpreter.
         **kwargs: Additional vLLM server arguments. May include patch_olmo3_tool_parser
             which controls whether to use the custom OLMo3 chat template.
 
@@ -313,7 +316,7 @@ def _build_server_command(
         _apply_olmo3_tool_parser_patch()
 
     # Use VLLM_PYTHON env var if set (for isolated venv setups)
-    python_executable = _get_vllm_python()
+    python_executable = python_executable or _get_vllm_python()
 
     cmd = [
         python_executable,
@@ -397,6 +400,8 @@ class VLLMServerProcess:
         startup_timeout: float = DEFAULT_STARTUP_TIMEOUT,
         log_dir: str | None = None,
         owner: str | None = None,
+        environment_unset: list[str] | tuple[str, ...] = (),
+        python_executable: str | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize the server manager.
@@ -410,6 +415,9 @@ class VLLMServerProcess:
             startup_timeout: Maximum time to wait for server startup
             log_dir: Directory to write server logs to (if set, logs are persisted)
             owner: Owner identifier for log messages (e.g., worker ID)
+            environment_unset: Environment variables to remove from the child
+                process without mutating the parent process.
+            python_executable: Optional interpreter used only for this server.
             **kwargs: Additional arguments passed to vLLM server
         """
         from olmo_eval.common.logging import get_current_worker_id
@@ -422,6 +430,20 @@ class VLLMServerProcess:
         self.startup_timeout = startup_timeout
         self.log_dir = log_dir
         self.owner = owner or get_current_worker_id()
+        invalid_environment_names = [
+            name
+            for name in environment_unset
+            if not isinstance(name, str) or not name or "=" in name or "\x00" in name
+        ]
+        if invalid_environment_names:
+            raise ValueError(
+                f"invalid environment variable name(s) to unset: {invalid_environment_names!r}"
+            )
+        self.environment_unset = tuple(environment_unset)
+        # Resolve once and retain the exact interpreter that will launch the
+        # child. Provider-side capability probes must inspect this interpreter,
+        # not whichever vLLM happens to be installed in the OLMo parent.
+        self.python_executable = python_executable or _get_vllm_python()
         self.server_kwargs = kwargs
         self._vllm_port = _find_free_internal_port(exclude={self.port})
         self._process: subprocess.Popen | None = None
@@ -487,6 +509,7 @@ class VLLMServerProcess:
             model_name=self.model_name,
             port=self.port,
             tensor_parallel_size=self.tensor_parallel_size,
+            python_executable=self.python_executable,
             **self.server_kwargs,
         )
 
@@ -503,6 +526,8 @@ class VLLMServerProcess:
         # itself does not need to see it, and forwarding it triggers a warning
         # because vLLM treats unknown VLLM_* variables as suspicious.
         env.pop("VLLM_PYTHON", None)
+        for variable in self.environment_unset:
+            env.pop(variable, None)
         # vLLM uses VLLM_PORT as the starting point for internal port
         # selection, including torch distributed rendezvous. Give each managed
         # server a low base port so concurrent cold starts do not collide in

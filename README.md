@@ -62,6 +62,14 @@ uv run olmo-eval run -m mock -t gsm8k --dry-run
 uv run olmo-eval run -m mock -t humaneval:3shot:bpb --dry-run
 ```
 
+### Standard OLMo and EduLLM adaptive modes
+
+The optional multi-mode entry point can run ordinary OLMo tasks/suites,
+EduLLM's calibrated adaptive pipeline, or both under one OLMo-owned run. See
+[`examples/edullm/README.md`](examples/edullm/README.md) for its strict config,
+frozen Qwen runtime, and artifact contract. The existing `olmo-eval run`
+command is unchanged.
+
 ## Key Concepts
 
 The evaluation framework is built around these core abstractions:
