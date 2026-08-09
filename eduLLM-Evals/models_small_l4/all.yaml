@@ -13,12 +13,12 @@
 
 defaults:
   max_model_len_cap: 32768      # hard ceiling; clamped down to each model's own limit
-  max_new_tokens: 4096          # output budget (bounds base-model rambling)
+  max_new_tokens: 768           # P1-3: no tutor turn needs 4k; the 4k budget mostly financed loops
   tensor_parallel_size: 1       # one <2B model per L4; parallelism is across models/shards
   scoring_method: generate
   temperature: 0.0              # deterministic decode for construct validity
   top_p: 1.0                    # inert at temperature 0
-  repetition_penalty: 1.1       # low + uniform; still shifts argmax at temp 0
+  repetition_penalty: 1.15      # P1-3: 1.1 too weak for small base models (severe loops); per-model 1.3 for gpt2/pythia
   seed: 0
 
 models:

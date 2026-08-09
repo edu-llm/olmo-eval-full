@@ -13,7 +13,14 @@ encoder-decoder (flan-t5) models via AutoModelForSeq2SeqLM.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+# Force at least this many generated tokens before EOS can win (P0-2). At
+# temperature 0 a base model that judges EOS most likely right after a long
+# flat-rendered context otherwise emits a single EOS token and yields an empty
+# response that is silently logged as a successful "stop". A small floor makes
+# that impossible without meaningfully changing a real answer.
+MIN_OUTPUT_TOKENS = 8
 
 
 @dataclass
@@ -23,6 +30,21 @@ class GenParams:
     max_new_tokens: int = 4096
     repetition_penalty: float = 1.1
     seed: int = 0
+    # Sequences that halt generation the moment the model starts another
+    # speaker's turn (P1-1). Empty => no stop strings. Sourced from
+    # prompts.STOP_SEQUENCES so the stop list and the flat renderer's role labels
+    # stay in one place.
+    stop: tuple[str, ...] = field(default_factory=tuple)
+
+
+def _strip_stop(text: str, stop: tuple[str, ...]) -> str:
+    """Cut `text` at the earliest stop sequence. vLLM removes the stop string
+    itself; the transformers path may leave it in, so trim explicitly there so a
+    leaked "\\nStudent:" header never reaches the judge."""
+    if not text or not stop:
+        return text
+    cut = min((i for i in (text.find(s) for s in stop) if i != -1), default=-1)
+    return text[:cut] if cut != -1 else text
 
 
 @dataclass
@@ -84,8 +106,11 @@ class VLLMBackend:
                 temperature=params.temperature,
                 top_p=params.top_p,
                 max_tokens=max_tokens,
+                # EOS cannot win before this many tokens (never above the budget).
+                min_tokens=min(MIN_OUTPUT_TOKENS, max_tokens),
                 repetition_penalty=params.repetition_penalty,
                 seed=params.seed,
+                stop=list(params.stop) or None,
             )
 
         # vLLM accepts a list of SamplingParams aligned to prompts, so each
@@ -191,6 +216,7 @@ class HFBackend:
         if not greedy:
             base_kwargs.update(temperature=params.temperature, top_p=params.top_p)
 
+        stop = list(params.stop)
         results: list[GenResult] = []
         for i, prompt in enumerate(prompts):
             mt = params.max_new_tokens if max_tokens_per_prompt is None else max_tokens_per_prompt[i]
@@ -204,12 +230,18 @@ class HFBackend:
                 prompt, return_tensors="pt", truncation=True, max_length=input_cap
             ).to(self.model.device)
             n_in = int(enc["input_ids"].shape[1])
+            gen_kwargs = dict(base_kwargs)
+            # EOS cannot win before MIN_OUTPUT_TOKENS (P0-2); never above budget.
+            gen_kwargs["min_new_tokens"] = min(MIN_OUTPUT_TOKENS, mt)
+            if stop:  # halt on another speaker's turn (P1-1)
+                gen_kwargs["stop_strings"] = stop
+                gen_kwargs["tokenizer"] = self.tokenizer
             with torch.no_grad():
-                out = self.model.generate(**enc, max_new_tokens=mt, **base_kwargs)
+                out = self.model.generate(**enc, max_new_tokens=mt, **gen_kwargs)
             # seq2seq returns only new tokens; causal LM returns prompt + new.
             gen_ids = out[0] if self.architecture == "seq2seq" else out[0][n_in:]
-            text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
             n_out = int(gen_ids.shape[0])
+            text = _strip_stop(self.tokenizer.decode(gen_ids, skip_special_tokens=True), params.stop)
             results.append(
                 GenResult(
                     text=text,

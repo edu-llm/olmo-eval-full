@@ -98,6 +98,21 @@ _COALESCE_LABEL = {
 # Flat role labels for base (no chat template) models.
 _BASE_ROLE_LABEL = {"user": "Student", "assistant": "Tutor", "system": "System"}
 
+# Stop sequences: a base model, having no EOS discipline, otherwise keeps writing
+# the transcript and invents the *other* speakers' turns (P1-1). Generation must
+# halt the moment the model starts a turn that isn't the tutor's own. These are
+# the "other side" role headers from `_BASE_ROLE_LABEL` (Student/System) plus the
+# common chat-scaffold aliases (User/Human), each in the bare and blank-line form
+# the flat renderer emits. The tutor's own label ("Tutor:") is deliberately absent
+# — stopping on it would truncate a legitimate answer. Kept here beside the role
+# labels so the two cannot drift apart.
+STOP_SEQUENCES: tuple[str, ...] = (
+    "\nStudent:", "\n\nStudent:",
+    "\nSystem:", "\n\nSystem:",
+    "\nUser:", "\n\nUser:",
+    "\nHuman:", "\n\nHuman:",
+)
+
 
 def system_prompt_for(use_case: str) -> str:
     return SYSTEM_PROMPTS.get(use_case, SYSTEM_PROMPTS[_DEFAULT_USE_CASE])

@@ -2,12 +2,12 @@
 # models_small_l4/all.yaml. Run on one L4 (see scripts/aws/run_respgen_small_l4.sh).
 defaults:
   max_model_len_cap: 32768
-  max_new_tokens: 4096
+  max_new_tokens: 768           # P1-3: no tutor turn needs 4k; 4k mostly financed loops
   tensor_parallel_size: 1
   scoring_method: generate
   temperature: 0.0
   top_p: 1.0
-  repetition_penalty: 1.1
+  repetition_penalty: 1.15      # P1-3: 1.1 too weak; small base models loop
   seed: 0
 
 models:
@@ -17,4 +17,4 @@ models:
   - {id: TinyLlama/TinyLlama-1.1B-Chat-v1.0, params_b: 1.1}
   - {id: Qwen/Qwen3-0.6B, params_b: 0.752}
   - {id: HuggingFaceTB/SmolLM2-360M-Instruct, params_b: 0.36}
-  - {id: openai-community/gpt2, params_b: 0.124}
+  - {id: openai-community/gpt2, params_b: 0.124, repetition_penalty: 1.3}

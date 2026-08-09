@@ -75,6 +75,28 @@ def guess_tokenizer_id(model_id: str) -> str | None:
 
 # --- max_model_len clamp ---------------------------------------------------
 
+# Static context windows for families whose config.json misreports (BLOOM
+# advertises 32768 via a cap that never gets clamped; some repos fail the config
+# read entirely) or that the Hub read can't be trusted for (P1-2). Matched by id
+# substring. The resolved window is the MINIMUM of the cap, the config's own
+# max-positions, and this table, so a model is never fed a longer prompt than its
+# architecture can actually attend to. BLOOM in particular uses ALiBi and so
+# degenerates into loops rather than erroring when over-fed, which is why its true
+# 2048 window must win over the mis-declared 32768.
+KNOWN_CONTEXT_WINDOWS: dict[str, int] = {
+    "bloom": 2048,          # bloom-*/bloomz-* (ALiBi, true window 2048)
+    "gpt2": 1024,           # openai-community/gpt2*
+    "pythia": 2048,         # EleutherAI/pythia-*
+    "opt-": 2048,           # facebook/opt-*
+}
+
+
+def _known_window(model_id: str) -> int | None:
+    mid = model_id.lower()
+    hits = [w for key, w in KNOWN_CONTEXT_WINDOWS.items() if key in mid]
+    return min(hits) if hits else None
+
+
 def _max_position_embeddings(cfg: dict) -> int | None:
     # "max_context_length" is OpenELM's key; without it OpenELM (and any repo that
     # names its window that way) would fall through to the 32768 cap instead of its
@@ -103,15 +125,24 @@ def resolve_max_model_len(
     cap: int,
     fetch_config: Callable[[str], dict] | None = None,
 ) -> int:
-    """min(cap, model's max positions). Falls back to cap when the config can't
-    be read (offline) or has no positional limit (SSM/mamba)."""
+    """min(cap, model's max positions, known-good window). Falls back to cap when
+    the config can't be read (offline) or has no positional limit (SSM/mamba) —
+    but a static KNOWN_CONTEXT_WINDOWS entry, when present, always clamps too, so a
+    family that misreports its window (BLOOM) or whose config read fails is still
+    capped to its real limit rather than the 32768 default (P1-2)."""
+    known = _known_window(model_id)
     fetch = fetch_config or _default_fetch_config
     try:
         cfg = fetch(model_id)
     except Exception:
-        return cap
+        return cap if known is None else min(cap, known)
     mpe = _max_position_embeddings(cfg)
-    return cap if mpe is None else min(cap, mpe)
+    candidates = [cap]
+    if mpe is not None:
+        candidates.append(mpe)
+    if known is not None:
+        candidates.append(known)
+    return min(candidates)
 
 
 @dataclass

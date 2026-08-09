@@ -75,7 +75,7 @@ This is the whole pipeline on **one** machine. Do this first.
 3. **AMI:** choose an **AWS Deep Learning AMI** (Ubuntu, with NVIDIA drivers/CUDA
    preinstalled). Search the AMI catalog for "Deep Learning".
 4. **Instance type:** pick a **GPU instance**. A single modern data-center GPU (e.g. an
-   **A100 / L40S / L4-class** instance family) is plenty for one judge process. The judge
+   **L40S (`g6e.xlarge`, 48 GB) / A100-class** instance family) is plenty for one judge process. The judge
    is a 9B model in bf16 — a GPU with **≥24 GB** of memory is comfortable; more headroom
    is better.
    > ℹ️ Don't take my instance-family names as gospel or assume a price — availability and

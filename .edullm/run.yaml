@@ -1,0 +1,46 @@
+# eduLLM job: <2B tutor-response generation on a SINGLE L40S, with the QA fixes.
+#
+# What this runs: `tutor-cat generate` (eduLLM-Evals/) over TutorEval + BiGGen for
+# the small-cluster (<2B) roster, one model loaded at a time on ONE GPU, writing
+# one JSONL shard per (benchmark, model) to S3, then gating the result with
+# scripts/audit_responses.py (exits non-zero if any blocking defect from
+# RESPONSE-QA-FINDINGS.md remains: empty/single-token output, lost system header,
+# collapsed prompt, transcript leak, or a hard error).
+#
+# GPU: one L40S. `suggested_compute: gpu-1xl40s` picks the machine; `--gpu-ids 0`
+# pins the fleet to that single device (one model at a time, data-parallel width 1),
+# so this never fans out across GPUs.
+#
+# Precision: vLLM decodes in bf16 on the L40S (which has bf16 in hardware), so the
+# platform's bfloat16_not_in_the_hardware guard is satisfied by the machine choice.
+#
+# Corpus: `edullm submit --dataset none`. Response generation reads the benchmark
+# scenarios vendored in this repo (data/TutorEval, data/BiGGen), not a registered
+# eduLLM dataset, so there is no corpus to name.
+#
+# Image: workload_profile builds this repo's .edullm/Dockerfile (olmo-eval image),
+# which does NOT bake torch/vLLM. The command therefore `uv sync --extra gen` inside
+# eduLLM-Evals/ (its own uv project + lockfile) to add vLLM/torch/transformers/boto3
+# before generating. Results write to $EDULLM_OUTPUT_PREFIX (the only prefix the GPU
+# workload role may write).
+#
+# PHASE 1 (this file): a single fast model (SmolLM2-135M) over both benchmarks, to
+# prove the fixed pipeline end-to-end and confirm shards land in S3 before spending
+# on the whole roster. PHASE 2 swaps `--model ...` out (or points --models at the
+# remaining roster) to run the rest; see scripts/aws/RUNBOOK.md.
+schema_version: 1
+workload_profile: olmo-eval-check
+suggested_compute: gpu-1xl40s
+command: >-
+  bash -lc 'cd eduLLM-Evals
+  && export UV_PROJECT_ENVIRONMENT="$PWD/.venv"
+  && uv sync --frozen --extra gen
+  && uv run tutor-cat generate
+  --models models_small_l4/all.yaml
+  --benchmarks benchmarks.yaml
+  --only TutorEval,BiGGen
+  --model HuggingFaceTB/SmolLM2-135M
+  --gpu-ids 0
+  --out-dir runs/responses
+  --s3-uri "$EDULLM_OUTPUT_PREFIX"
+  && uv run python scripts/audit_responses.py runs/responses'

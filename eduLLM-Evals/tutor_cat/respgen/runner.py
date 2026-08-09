@@ -29,6 +29,19 @@ from .shard import ShardWriter, rewrite_shard, scan_shard, shard_path
 # context is left, so a real prompt survives even when max_model_len is small.
 MIN_GEN = 256
 
+# Middle-out truncation marker (P0-1). When a prompt overflows the window we keep
+# both ends — the head (system instruction + the student's opening) and the tail
+# (the actual question + the "Tutor:" generation cue) — and drop from the MIDDLE
+# (the reference passage), splicing this marker in so the model and the judge can
+# both see that material is missing. The old code kept only the tail, which
+# discarded the system instruction on 100% of truncated rows.
+_TRUNCATION_MARKER = "\n\n[... reference material truncated ...]\n\n"
+
+# Of the surviving prompt budget, protect this fraction as the TAIL. The question
+# and the generation cue live at the very end and must never be the part that is
+# dropped; the reference body in the middle is what gets trimmed.
+_TAIL_KEEP_FRACTION = 0.75
+
 # Load robustness: retry a construction a few times (transient Hub 429s / network
 # blips resolve on retry — Bug #1 Group B) before giving up on a backend.
 _LOAD_ATTEMPTS = 3
@@ -100,6 +113,23 @@ def _render_prompt(resolved: ResolvedModel, scenario, tokenizer) -> tuple[str, b
     return P.render_base_prompt(scenario), False
 
 
+def _middle_out(ids: list[int], cap: int, marker_ids: list[int]) -> list[int]:
+    """Trim ``ids`` to at most ``cap`` tokens by dropping from the MIDDLE, keeping
+    both ends and splicing ``marker_ids`` where the middle was removed. The tail
+    (question + generation cue) is protected ahead of the head (system prompt), so
+    the material sacrificed is the reference body in between — never the task
+    instruction and never the cue that makes the model answer."""
+    if len(ids) <= cap:
+        return ids
+    budget = max(1, cap - len(marker_ids))
+    tail_keep = min(len(ids), int(budget * _TAIL_KEEP_FRACTION))
+    head_keep = max(0, budget - tail_keep)
+    tail = ids[len(ids) - tail_keep:] if tail_keep else []
+    if head_keep == 0:  # budget too small even for a head; keep marker + tail only
+        return (marker_ids + tail)[-cap:]
+    return ids[:head_keep] + marker_ids + tail
+
+
 def _fit_prompt_and_budget(
     text: str, tokenizer, max_model_len: int, max_new_tokens: int
 ) -> tuple[str, int, bool, int]:
@@ -108,17 +138,28 @@ def _fit_prompt_and_budget(
 
     The prompt is kept up to ``max_model_len - MIN_GEN`` tokens, so a genuine
     prompt always survives; generation then gets ``min(max_new_tokens,
-    max_model_len - prompt_tokens)`` (never below MIN_GEN). This replaces the old
-    ``budget = max(1, max_model_len - max_new_tokens)`` which collapsed to 1 —
-    left-truncating the whole prompt to its final token — whenever the model's
-    context window was <= max_new_tokens (every model at max_model_len <= 4096).
+    max_model_len - prompt_tokens)`` (never below MIN_GEN). When the prompt
+    overflows, truncation is MIDDLE-OUT (:func:`_middle_out`): both ends are kept
+    and the reference body in the middle is dropped, so the system instruction at
+    the head and the "Tutor:" cue at the tail both survive. This replaces the old
+    tail-only ``ids[-prompt_cap:]``, which discarded the system instruction on
+    every truncated row (P0-1) — and the even older ``max(1, ...)`` budget that
+    collapsed the whole prompt to a single token.
     """
     ids = tokenizer(text, add_special_tokens=False)["input_ids"]
     prompt_cap = max(1, max_model_len - MIN_GEN)
     truncated = len(ids) > prompt_cap
     if truncated:
-        ids = ids[-prompt_cap:]  # keep the most recent turn (the student's latest prompt)
+        marker_ids = tokenizer(_TRUNCATION_MARKER, add_special_tokens=False)["input_ids"]
+        ids = _middle_out(ids, prompt_cap, marker_ids)
         text = tokenizer.decode(ids, skip_special_tokens=False)
+        # decode -> re-encode can drift a token or two; re-fit middle-out (never
+        # tail-only, which would re-lose the head) so the hard cap still holds.
+        ids = tokenizer(text, add_special_tokens=False)["input_ids"]
+        if len(ids) > prompt_cap:
+            ids = _middle_out(ids, prompt_cap, marker_ids)
+            text = tokenizer.decode(ids, skip_special_tokens=False)
+            ids = tokenizer(text, add_special_tokens=False)["input_ids"]
     prompt_tokens = len(ids)
     gen_budget = min(max_new_tokens, max(MIN_GEN, max_model_len - prompt_tokens))
     gen_budget = max(1, min(gen_budget, max_model_len - 1))
@@ -417,6 +458,7 @@ def run_model(
         max_new_tokens=spec.max_new_tokens,
         repetition_penalty=spec.repetition_penalty,
         seed=spec.seed,
+        stop=tuple(P.STOP_SEQUENCES),
     )
     t0 = time.time()
     gen_error: str | None = None
@@ -451,6 +493,15 @@ def run_model(
             )
         else:
             g = results[i]
+            # P0-2 safety net: an empty or single-token output is a degenerate
+            # generation (immediate EOS), not a real answer. Flag it as an Issue
+            # so it is NOT logged as a silent success and IS retried on resume,
+            # rather than counted toward coverage. The min_tokens floor in the
+            # backends should make this rare; this catches whatever slips through.
+            out_text = g.text or ""
+            degenerate = (not out_text.strip()) or (
+                isinstance(g.output_tokens, int) and g.output_tokens <= 1
+            )
             rec = R.build_record(
                 scenario_id=s.scenario_id,
                 model_id=spec.id,
@@ -464,7 +515,12 @@ def run_model(
                 finish_reason=g.finish_reason,
                 truncated=truncated[i],
                 latency_s=_effective_latency(g.latency_s, elapsed, len(todo)),
-                output=g.text,
+                output=out_text,
+                issue=degenerate,
+                issue_description=(
+                    "empty or single-token output (model emitted EOS immediately)"
+                    if degenerate else ""
+                ),
                 benchmark=benchmark,
             )
         router.write(benchmark, rec)
