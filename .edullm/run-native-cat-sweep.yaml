@@ -130,6 +130,7 @@ command: >-
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
   && git checkout 49d93da4534169b57d4ff6252fdd954323ab6e9d
+  && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq

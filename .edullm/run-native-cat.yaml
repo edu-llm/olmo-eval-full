@@ -37,6 +37,17 @@
 # run executes. Repin it when the code moves, and push before submitting -- an unpushed sha
 # fails at `git checkout` inside the container, minutes into a paid run rather than here.
 #
+# WHY A `git status` CHECK SITS BETWEEN THE CHECKOUT AND THE INSTALL. An unpushed sha fails
+# loudly, which is the easy case. A *partial* clone fails quietly: `--filter=blob:none`
+# defers blobs to checkout time, and when one of those lazy fetches fails, `git checkout`
+# prints `error: unable to read sha1 file`, leaves the path absent, and still exits 0. The
+# `&&` chain then proceeds into the install and the runner against a tree with files
+# missing, and what comes back is a report rather than a crash. Every spec here carries the
+# same three-clause guard: a fresh checkout of a clean commit has nothing to report, so any
+# tracked path that `git status` names is a path the clone did not deliver. `-uno` is not
+# decoration -- without it the guard also trips on untracked scratch, which is not what is
+# being tested and would make it noise people learn to ignore.
+#
 # d5d0bc7c was the pin because 93d42006, the first one tried, could not load this
 # checkpoint. `TransformerGenerationModule.from_checkpoint` builds its own GenerationConfig
 # from the checkpoint's token ids when the caller supplies none, and validates it; these
@@ -101,6 +112,7 @@ command: >-
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
   && git checkout 6c1d8415c306e6756de50dc6682ec1369c990b23
+  && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
