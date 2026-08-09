@@ -25,16 +25,20 @@ restate its refusal codes, its exit codes or its prices.
 
 ## The mistake that produces a confident wrong answer
 
-**The container clones this repository at a pinned sha. Your working tree is not in the
-run.** The spec's `command:` does `git clone … && git checkout <sha>`, so an edit you made
-and did not push is simply absent: the run executes the *previous* code, succeeds, and
-writes a well-formed `cat_report.json` with a plausible theta and a healthy standard
-error. Nothing downstream catches it, because nothing about the artifact is wrong — it is
-an accurate measurement of code you no longer have.
+**The container clones this repository at a pinned sha on your ticket branch. Your working
+tree is not in the run.** The spec's `command:` does `git clone … && git checkout <sha>`, so
+an edit you made and did not push is simply absent: the run executes the *previous* code,
+succeeds, and writes a well-formed `cat_report.json` with a plausible theta and a healthy
+standard error. Nothing downstream catches it, because nothing about the artifact is wrong —
+it is an accurate measurement of code you no longer have.
 
-So, in this order, every time: **commit → push → repin the sha in the spec → submit.**
-An unpushed sha is the better of the two failures; it dies at `git checkout` a few minutes
-into a paid run. An unpushed *edit* on top of a pushed sha dies silently and never.
+So, in this order, every time: **commit → push → repin the sha in the spec → submit → commit
+the spec and the run id.** The unit is one ticket branch per submission and Step 0 cuts it
+before anything else happens. The fifth step is last because it cannot be earlier: committing
+the spec moves `HEAD` past the sha the spec names, so the spec is a record of a submission
+rather than an input to one. An unpushed sha is the better of the two failures; it dies at
+`git checkout` a few minutes into a paid run. An unpushed *edit* on top of a pushed sha dies
+silently and never.
 
 Two asymmetries that make this easy to get wrong:
 
@@ -100,6 +104,41 @@ meaning what it meant. Put it in the command either way, and decide it yourself.
 
 ---
 
+## Step 0 — cut the ticket branch, before you commit anything
+
+**One submission gets one branch, `<submitter>-<model>-ticket`, cut from the harness branch
+you are standing on.** Everything the rest of this page produces lands on it: the harness
+changes this checkpoint needed, the spec that was submitted, the run id, and the report that
+came back. Nothing travels with a submission — the container clones a sha — so a run is
+reproducible only if the commit it ran is still identifiable when somebody reads the report,
+and a shared branch cannot supply that because by then it has moved.
+
+```bash
+git switch -c <submitter>-<model>-ticket
+```
+
+**Cut it now rather than after Step 1, because Step 1 is a loop and every turn of it commits
+and pushes.** The sha the spec pins is the one that has to carry the probe, so an amendment is
+a commit before it is a resubmission; the one loop anyone has run took two passes, and that
+step's exhaustion rule contemplates at least three before conversion may even be discussed.
+Cut the ticket afterwards and all of those commits have already landed on the branch everybody
+else pulls, which is the single thing the ticket exists to prevent, and getting them off again
+means rewriting a history other people have.
+
+**Not `edullm/<anything>`.** That is the only prefix in this repository that fires
+[`edullm-platform-build.yml`](../../../.github/workflows/edullm-platform-build.yml), and a CAT
+run takes its image from OLMo-core, so a ticket named that way would spend several gigabytes
+publishing an immutable ECR tag nothing ever pulls. Step 6's check refuses the prefix outright
+rather than warning about it, and it matches the rest of the name against
+`[a-z0-9][a-z0-9._-]*-ticket` — lowercase, ending in `-ticket`, `alice-smollm2-ticket` being
+the shape.
+
+[`tickets/README.md`](../../../tickets/README.md) is the convention: what a ticket may and may
+not change, why nothing on one is ever amended or force-pushed, and the layout of the record
+it leaves behind. Read it once. This page does not restate it.
+
+---
+
 ## Step 1 — make the checkpoint generate, natively, before you evaluate it
 
 **Prove the submitter's own weights load and decode through the raw native OLMo-core path
@@ -130,9 +169,12 @@ sufficient — 64 tokens cannot show what a finished answer looks like and can s
 one ever ends. At that budget the decode is seconds against minutes of checkpoint staging,
 so a pass is priced by the pull and an amendment does not double it. **The sha the spec pins
 is the one that has to carry the probe**, not the spec, which is read off your laptop; so
-Step 5 applies here first, before every resubmission and before it applies to any eval. Do
-not push twice inside a minute to fix a probe — that is the one part of the loop that is not
-cheap, and Step 5 says why.
+Step 5 and Step 6's pin check apply here first, before every resubmission, and before either
+applies to an eval. Push as often as the loop needs: a push to the ticket branch fires no
+workflow at all, so an amendment costs the card it is submitted on and nothing else. An
+earlier version of this paragraph told you not to push twice inside a minute to fix a probe,
+which priced a build that does not happen on a branch named this way and slowed the loop it
+was governing.
 
 **A pass that fails usefully is the loop working, and the one loop anyone has run here took
 two of them.** `run_019fe2e6` staged the checkpoint, loaded it, built all three prompts, and
@@ -514,9 +556,13 @@ is the reverse of the native path.
 Specs live in `.edullm/`. Start from the closest sibling rather than from nothing:
 [`run-native-cat.yaml`](../../../.edullm/run-native-cat.yaml) is the single-benchmark
 control, [`run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml) is the
-MCQ fan-out, and [`run-native-math.yaml`](../../../.edullm/run-native-math.yaml) is the
-generative one — the spec `run_019fe78d` was submitted from. Their headers carry the
-arguments for every flag below and are worth reading once.
+MCQ fan-out, [`run-native-math.yaml`](../../../.edullm/run-native-math.yaml) is the
+generative one — the spec `run_019fe78d` was submitted from — and
+[`run-new-banks-cat.yaml`](../../../.edullm/run-new-banks-cat.yaml) is the three-cell run of
+the locally fitted banks and the only one whose header writes the submit line out with
+`--commit 08df5aa0…` on it, together with the argument for naming a `main` commit rather than
+whatever OLMo-core happens to have checked out. Their headers carry the arguments for every
+flag below and are worth reading once.
 
 The on-node command, with the parts that are yours in caps:
 
@@ -528,7 +574,8 @@ command: >-
   bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout PUSHED_SHA_OF_THIS_REPO
+  && git checkout HEAD_OF_YOUR_TICKET_BRANCH
+  && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
@@ -545,9 +592,18 @@ command: >-
 nothing is converted, the sharded DCP is read as-is, and no HF directory is written. They
 are independent seams and this is the pairing that converts nothing.
 
-Only the two capitalised values come from the user. Everything else is the default or the
-house standard named above, and `--ability-estimator` is in the skeleton because leaving it
-out is not neutral: the run takes `batch_eap` and the MWLE number is never computed.
+Three values are capitalised and only two of them come from the user. The third,
+`HEAD_OF_YOUR_TICKET_BRANCH`, is whatever `git rev-parse HEAD` prints on the ticket once
+Step 5 has pushed it, and Step 6's check writes it into this line for you — nobody is asked
+for a sha and nobody should be copying one. Everything else is the default or the house
+standard named above, and `--ability-estimator` is in the skeleton because leaving it out is
+not neutral: the run takes `batch_eap` and the MWLE number is never computed.
+
+The three-clause `git status` guard between the checkout and the install is not optional
+either, and every spec in `.edullm/` that clones carries it: `--filter=blob:none` defers blobs
+to checkout time, and a lazy fetch that fails leaves the path absent while `git checkout`
+still exits 0, so the `&&` chain walks into the install on a tree with files missing and
+returns a report rather than a crash. `run-native-cat.yaml`'s header has the argument in full.
 
 **Not `--extra olmo_core` on the install.** That extra pins `ai2-olmo-core==2.4.0`, so it
 would install over the 2.5.0 the image already carries — the one release that cannot read
@@ -636,31 +692,76 @@ cell count to the user before submitting any of them, because `cost` is per subm
 
 ---
 
-## Step 5 — commit, push, repin
+## Step 5 — commit the ticket and push it
 
-Commit the paths the run actually clones — `diagnostics/`, `calibrated_datasets/`, and
-anything they import — rather than `-A`; other people work in this tree and scratch files
-live in it.
+The branch from Step 0 is what gets committed and pushed, and it is the only branch that
+does. Commit the paths the run actually clones — `diagnostics/`, `calibrated_datasets/`, and
+anything they import — rather than `-A`: scratch files live in this tree, and a probe's
+leftovers on a ticket are noise in the one record of the run.
 
 ```bash
-git log --oneline -5        # somebody else may have just pushed
-git commit … && git push
-git rev-parse HEAD          # → the sha that goes in the spec's git checkout
+git branch --show-current   # <submitter>-<model>-ticket, not the harness branch
+git commit … && git push -u origin HEAD
+git rev-parse HEAD          # the sha the pin will name — Step 6 writes it, you do not
 ```
 
-Put that sha in the spec and read it back before submitting.
+Step 6's check writes that sha into the spec's `git checkout` line and then verifies what it
+wrote, which is the whole reason a pin can be trusted at all; a sha carried across by hand is
+how a spec ends up naming the previous run.
 
-**Whether a push costs anything depends on the branch name, and on a working branch it costs
-nothing.** `edullm-platform-build.yml` fires only on `edullm/**` and `main`, so a push to any
-other branch builds no image and runs no CI — `ci.yml` is `main`-only. Pushing twice in a
-minute to fix a probe is free there. On an `edullm/**` branch each push publishes an
-immutable ECR tag and re-verifies source identity, so batch the commits instead. Note that
-this repository does not supply the image for a CAT run in any case; the image comes from
-OLMo-core, and a build here would produce something nothing pulls.
+**A push to a ticket costs nothing, so push as often as the work needs.**
+`edullm-platform-build.yml` fires only on `edullm/**` and `main`, so a push to a
+`<submitter>-<model>-ticket` branch builds no image and runs no CI — `ci.yml` is `main`-only.
+That is the reason for the naming rule and not a happy accident of it, and it is why Step 1's
+probe loop can amend and resubmit as often as it needs to. On an `edullm/**` branch each push
+publishes an immutable ECR tag and re-verifies source identity, which is spend with nothing at
+the other end: this repository does not supply the image for a CAT run in any case, the image
+comes from OLMo-core, and a build here would produce something nothing pulls.
+
+### What belongs on a ticket, and what does not
+
+A tokenizer the config names wrongly, a dtype that never reached the loader, a context clamp,
+a pip-installable dependency: these are the checkpoint's business, they are why the branch
+exists, and they live here without reaching anybody else's run. The container installs from
+the ticket's own `pyproject.toml`, so a dependency is as much a ticket's business as a code
+change is.
+
+**A bank's `items.jsonl` and its IRT parameters are not the checkpoint's business, whatever
+the checkpoint does to them.** Those are what a theta means — an ability estimate is a
+position on a scale that a calibration population fixed — so a run against an edited bank
+comes back well-formed, with a plausible theta and a healthy standard error, and comparable to
+nothing: not to another checkpoint, and not to the same bank yesterday. If a bank looks wrong
+that is a finding for the harness branch and a refit, never an edit here.
 
 ---
 
-## Step 6 — check, then submit
+## Step 6 — check the pin, then check the submission, then submit
+
+**Run this first, from this repository, and treat it as required rather than advisory.** It
+writes the pin and then verifies what it wrote, in that order, which is why writing the pin
+any other way is not the same thing:
+
+```bash
+python -m diagnostics.mcq_cat.styles.uni_mcq.scripts.check_submission_pin \
+  --spec .edullm/<your-spec>.yaml --repin
+```
+
+It refuses, naming the fix each time: a working tree with uncommitted tracked changes outside
+`.edullm/`, a checkout whose `HEAD` the remote does not have, a spec naming a branch or an
+abbreviation where a full 40-character sha is required, a spec pinning a sha that is not this
+checkout's `HEAD`, and a branch under `edullm/`. A branch that is not a
+`<submitter>-<model>-ticket` is refused too, and `--any-branch` is there for submitting from
+somewhere else deliberately rather than for getting past the message. `.edullm/` is exempt
+from the clean-tree check on purpose: a spec is never cloned, so its edits cannot reach the
+container, and leaving it dirty at submit time is exactly what lets Step 7 commit it
+afterwards.
+
+**Two things it cannot see, and it says so on the way out.** Whether this is the ticket, the
+checkpoint and the benchmarks you meant — it reads a pin, not an intent — and whether the
+OLMo-core `--commit` below published an image. Compile decides the second and refuses a commit
+that published none, with `build commit <sha> before submitting it`; that is what the first
+attempt at `run-new-banks-cat.yaml` hit on 2026-08-09, having left `--commit` off and been
+handed whatever the OLMo-core clone had checked out.
 
 **Submit from the OLMo-core clone.** The job runs on OLMo-core's image, not this
 repository's: the published `olmo-eval-full` image leaves torch out and can only run
@@ -678,7 +779,11 @@ edullm check --experiment <slug> --dataset none \
 
 Swap `check` for `submit` once it comes back clean. Every completed native run so far used
 OLMo-core `08df5aa0142465c80b4ea48e84faa46117275d61`; confirm it is still what you want
-rather than assuming it.
+rather than assuming it. It is a `main` commit, which is the class the build workflow covers
+deliberately — naming an `edullm/*` working branch instead is how you reach the refusal above,
+and building that branch is not the fix: `edullm/p3-math-split` fails the build's own lint
+gate on 33 pre-existing syntax errors that have nothing to do with this run, and several other
+working branches fail the same way.
 
 - **`--dataset none` is a statement**, not an omission. This run reads no corpus.
 - **Do not pass `--hours` above the workload's bound.** `--hours 2` against
@@ -722,7 +827,23 @@ admitted and given a machine. Do not call any shape the cheapest without reading
 
 ---
 
-## Step 7 — watch it
+## Step 7 — record the run id, then watch it
+
+**Commit the spec and the run id to the ticket before you poll anything.** `submit` prints the
+run id once and that is the only place it exists; the spec on your laptop is still dirty from
+`--repin` and still names the sha that ran. Freeze the pair now, while they are demonstrably
+the pair that went out — this is the fifth step of the order at the top of the page, and the
+step that turns the branch into a record rather than a place work happened.
+
+```bash
+mkdir -p tickets/<submitter>-<model>-ticket/<run_id>
+cp .edullm/<your-spec>.yaml tickets/<submitter>-<model>-ticket/<run_id>/spec.yaml
+git add tickets/ .edullm/<your-spec>.yaml && git commit … && git push
+```
+
+Freeze a copy per run rather than relying on `.edullm/<name>.yaml`, which is edited between
+attempts and would otherwise retain only the last one. A probe pass that failed gets its line
+in the ticket's `RUNS.md` — Step 8 — and no directory; there is no report to keep.
 
 `edullm status --json` answers from GitHub, dispatches nothing, is free and **may be
 polled**. Plain `edullm status`, `edullm status --ask-aws` and `edullm logs` all start a
@@ -762,9 +883,22 @@ only through the broker, by log stream.
 
 ---
 
-## Step 8 — read the report
+## Step 8 — read the report, and put it on the ticket
 
-`cat_report.json` lands under the platform's output prefix. The fields that matter:
+`cat_report.json` lands under the platform's output prefix. Pull it through the sb-aws broker,
+read-only, as everywhere else on this page, and commit it to
+`tickets/<submitter>-<model>-ticket/<run_id>/` beside the spec Step 7 froze.
+
+**The report alone does not make the branch a record. Append the `RUNS.md` line in the same
+commit** — run id, harness sha, OLMo-core sha, benchmark, outcome, newest last. The first
+three are there because `cat_report.json` carries none of them: its `run` block records what
+was asked for — the checkpoint, the kind, the prep, the dtype, the estimator, the grader, a
+timestamp — and nothing that names the submission or the code that ran. Commit the file by
+itself and the ticket holds a theta nobody can trace back to a commit, which is the failure
+this whole ordering exists to avoid.
+[`tickets/README.md`](../../../tickets/README.md) has the columns and the full field list.
+
+The fields that matter:
 
 - `ability.theta` — the ability estimate, on a logit scale centred near 0. **Comparable
   across runs of the same benchmark only**, never across benchmarks: each bank's scale is
@@ -876,8 +1010,10 @@ MCQ banks and eight cells. Size a fan-out from what `ready_names()` returns when
 never from an example.
 
 The spec is [`.edullm/run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml),
-already committed, pinning `49d93da4…` — which is now several commits behind, so Step 5
-applies before this is submitted again rather than after:
+already committed, pinning `49d93da4…`. **That sha is a record of the submission it was
+written for, not a value to copy.** A pin names the `HEAD` of the ticket the run went out
+from, so submitting this again means a ticket of your own and Step 6 repinning the line to its
+`HEAD`; `49d93da4` is several commits behind, and so is every other sha printed on this page:
 
 ```yaml
 schema_version: 1
@@ -896,6 +1032,7 @@ command: >-
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
   && git checkout 49d93da4534169b57d4ff6252fdd954323ab6e9d
+  && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
@@ -936,8 +1073,9 @@ The same spec at `--hours 2` is refused with `runtime_above_the_workload_bound`,
 one cell, same everything else — came back `automatic` / `run-approval-automatic` instead,
 which is the whole reason you read the class rather than predicting it.
 
-Swapping `check` for `submit` is the only remaining step, and it is the one that spends
-money. Show the user the resolved plan, the cost block and the class first.
+Swapping `check` for `submit` is the step that spends money, and it is not the last one: the
+pin check runs before it, and Steps 7 and 8 put the run id and the report on the ticket after.
+Show the user the resolved plan, the cost block and the class first.
 
 ---
 
@@ -948,8 +1086,10 @@ spec is [`.edullm/run-native-math.yaml`](../../../.edullm/run-native-math.yaml),
 in `a18d44f1`, and its header records the three things it does not share with the MCQ specs:
 why one cell rather than a fan-out, where the 2048 window comes from, and why the estimator
 is `batch_eap+mwle`. The run below asked for plain `batch_eap`; the spec was corrected
-afterwards, for the reason Step 4 gives. It pins `ff816927`, the first pushed commit
-carrying the native completer, so Step 5 applies before it is submitted again.
+afterwards, for the reason Step 4 gives. It pins `ff816927`, the first pushed commit carrying
+the native completer — which is a fact about the submission that produced the numbers below
+and not a pin to reuse. Resubmitting means your own ticket and Step 6 writing that ticket's
+`HEAD` over the line, once per submission.
 
 ```bash
 cd ../OLMo-core
@@ -977,8 +1117,10 @@ current ones:
   that rate, not the wall clock, when a submitter's checkpoint is larger: it is what the 1h
   per-cell bound binds against, and there is no second attempt.
 - **The report landed at the run's S3 output prefix, once, at the end.** Nothing appeared
-  there while it ran. A pulled copy sits beside this repository in
-  `cat_runs/run_019fe78d-math/`, uncommitted.
+  there while it ran. The pulled copy sits beside this repository in
+  `cat_runs/run_019fe78d-math/`, uncommitted, which predates the convention and is not the
+  example to follow: a report belongs on the ticket at
+  `tickets/<submitter>-<model>-ticket/<run_id>/`, with its `RUNS.md` line, per Step 8.
 - **The result was theta -1.6523 at se 0.5475 with 0 of 40 correct, and is not quotable**
   — Step 8 says why, and it is the part of this example most likely to be misreported. What
   the run establishes is that a raw training checkpoint can be graded generatively end to
@@ -989,7 +1131,16 @@ current ones:
 ## What not to do
 
 - **Do not submit with uncommitted or unpushed changes to `diagnostics/` or
-  `calibrated_datasets/`.** See the top of this file. This is the expensive one.
+  `calibrated_datasets/`.** See the top of this file. This is the expensive one, and Step 6's
+  check is the only thing standing between you and it.
+- **Do not submit from the harness branch.** One submission gets one
+  `<submitter>-<model>-ticket`, cut in Step 0. `--any-branch` exists for submitting from
+  somewhere else deliberately; reaching for it to get past a refusal puts one checkpoint's
+  accommodations on the branch everybody pulls, and leaves the run with no record.
+- **Do not edit a bank's `items.jsonl` or its IRT parameters on a ticket**, however plainly
+  the bank looks wrong. Those are what a theta means, and a run against an edited bank comes
+  back well-formed and comparable to nothing. A wrong bank is a finding for the harness branch
+  and a refit.
 - Do not pass `--benchmark` more than once. Fan out.
 - Do not guess a checkpoint path, and do not promise an output location — the platform
   mints it.
