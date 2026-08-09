@@ -404,6 +404,36 @@ The earlier tutorbench audit was false-pass-only; re-scored with the full metric
 - Benchmark-specific configs confirmed: biggen -> gemini-3+v1; tutorbench -> opus (quality)
   or gpt-4.1 (min false-pass). Await the tutoreval gold set for its own selection.
 
+## Cheaper-model screen on tutorbench (v1, 4096)
+
+Screened cheaper tiers to cut cost (input-token-dominated; rough $/M: sonnet 3/15,
+gpt-4.1 2/8, haiku-4-5 ~1/5, gemini/gpt-5-mini ~0.3/2.5, gpt-4.1-nano ~0.1/0.4):
+
+| model | FP% | macroF1 | MCC | acc | falseFail% | unsc |
+| --- | --- | --- | --- | --- | --- | --- |
+| sonnet-4-6 | 25.9 | 76.0 | 0.520 | 76.2 | 22.1 | 0 |
+| claude-haiku-4-5 | 22.4 | 74.3 | 0.490 | 74.3 | 28.3 | 0 |
+| gpt-4.1 (prefers v4) | 37.1 | 73.1 | 0.469 | 74.0 | 17.2 | 0 |
+| gemini-2.5-flash | 34.5 | 73.7 | 0.477 | 74.3 | 18.6 | 0 (fixed at 4096) |
+| gemini-3-flash-preview | 24.1 | 73.5 | 0.473 | 73.6 | 28.3 | 12 (v1 truncates) |
+| gpt-5-mini | 40.5 | 71.0 | 0.429 | 72.0 | 17.9 | 1 |
+| gpt-4.1-nano | 60.3 | 62.0 | 0.296 | 65.5 | 13.8 | 5 |
+
+- Ultra-cheap tiers fail as judges: gpt-4.1-nano 60% false-pass / MCC 0.30; gpt-5-mini weak.
+- gemini-2.5-flash unscorable fixed at 4096 (was an unfair 2048 handicap) but still middling.
+- gemini-3 truncates under v1 on long tutorbench responses (needs v4 verdict-early there;
+  opposite of biggen) -> adapter is benchmark-specific even within a model.
+
+Finalists full metrics (v1, 4096, 2 replicates, 2 perturbations):
+
+| model | FP% | macroF1 | MCC | acc | falseFail% | testRetest | promptFlip | unsc |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| sonnet-4-6 | 24.1 | 76.4 | 0.529 | 76.6 | 22.8 | 1.9 | 3.8 | 0 |
+| claude-haiku-4-5 | 22.4 | 74.6 | 0.497 | 74.7 | 27.6 | 1.5 | 4.2 | 0 |
+
+Affordable tutorbench pick: haiku-4-5 + v1 (~94% of sonnet MCC, lower false-pass, ~1/3 cost)
+for value, or sonnet-4-6 + v1 for max quality. Both stable, 0 unscorable.
+
 ## Caveats
 
 - Gemini numbers are not a fair read (format non-compliance under `max_tokens 512`).
