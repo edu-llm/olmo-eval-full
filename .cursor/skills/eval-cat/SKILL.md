@@ -48,67 +48,115 @@ Two asymmetries that make this easy to get wrong:
 
 ## What to get from the user
 
-Five things, none of which you may invent. Ask for anything missing before doing anything
+Three things, none of which you may invent. Ask for anything missing before doing anything
 else, and **never construct a checkpoint path** — it cannot be derived.
 
 | # | Input | Where it lands |
 |---|---|---|
 | 1 | **Checkpoint** — one or more `s3://` prefixes | `--checkpoint` inside the spec's `command:` |
-| 2 | **A basic inference example** — the runner file plus ~200 tokens of its real output, verbatim, and the library and commit it was loaded with | Step 1, which produces the same thing yourself when it does not arrive |
-| 3 | **Benchmarks** | `--benchmark`, or the `BENCHMARKS` array of a fan-out |
-| 4 | **CAT settings** | `--se-threshold`, `--max-items`, `--ability-estimator`, `--batch-size` |
-| 5 | **Hardware** — recommend `gpu-1xl4` | `--compute` on the submit line |
+| 2 | **Benchmarks** | `--benchmark`, or the `BENCHMARKS` array of a fan-out |
+| 3 | **Hardware** — ask which shape, recommending `gpu-1xl4` | `--compute` on the submit line |
 
 The eval job's role reads only under `s3://sbsandbox-intern-edullm-outputs/teams/<team>/runs/…`.
 A checkpoint anywhere else is admitted, placed, and then fails its first read.
 
-Inputs 1 and 2 are what [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) asks a submitter
-for, in terms that mean something to them. Hand them that file rather than paraphrasing it.
+Hardware is a question and not an announcement: the user pays for it and may be working
+against a quota you cannot see. Recommend `gpu-1xl4`, give them the one-line reason — every
+validated run used it, and the platform refuses the Turing shapes for this command outright
+— and take their answer. The argument is under "Hardware" in Step 6.
 
-**Input 2 is the only one you can produce yourself, and Step 1 is how.** Ask for it, because
-a submitter's own decode costs nobody a card; but a missing or unreadable answer is not a
-reason to stop, and an answer that arrives is not a reason to skip Step 1 on a checkpoint
-whose architecture you have not read before.
+**Do not ask for a runner file, and do not ask for sample output.** Step 1 produces both,
+on the platform, for the checkpoint you were actually given, at a price set by the
+checkpoint pull. Asking a submitter for them hands a GPU-shaped task to somebody who came
+here to be told a number, and their answer would still not license skipping Step 1 on an
+architecture you have not read before. If a runner and ~200 tokens of its real output
+arrive unasked, read them — Step 2 says what to take from them, and the one thing no probe
+of yours can see is the library and commit theirs loaded under. Their absence blocks
+nothing. [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) is the submitter-facing form of
+the three questions above, and it is safe to hand over as-is: it asks for the checkpoint,
+the benchmarks and the hardware, and it says in as many words that a runner is not needed
+because producing one is your job. What it describes beyond that is the volunteered
+cross-check, offered rather than required.
+
+**CAT settings are not a fourth question. The defaults are used, and you should be able to
+name them rather than saying "defaults".** `--se-threshold` 0.3 and `--max-items` 40 are the
+runner's argparse defaults and are also what the style's `config.yaml` pins, which is the
+whole point of the pin: an ordinary invocation is comparable with every run already recorded
+without passing a flag. `min_items` is 8, and 24 for `bbh`; it has no CLI flag at all and is
+read only from that file. Initial state is theta 0 at se 1, so the `min_items` floor always
+binds before the precision rule and an ordinary session administers 8–40 items.
+`--batch-size` is 16, reaches MCQ scoring's `InferenceConfig` and nothing else, and is
+deliberately outside the recorded scoring convention on the grounds that it cannot change
+whether an item is answered correctly. Moving `--max-items` off 40 is recorded as
+`max_items_is_pinned_value: false` and nowhere else — one boolean against a theta a reader
+will otherwise compare.
+
+`--ability-estimator` is the one flag a validated run moves off its default, and it is a
+house standard rather than a knob a user picked. Argparse defaults to `batch_eap`; the MCQ
+sweep and `run-native-math.yaml` both ask for `batch_eap+mwle`, because the estimator you do
+not ask for is not computed — Step 4 has the run that proved it. `run-native-cat.yaml` names
+`batch_eap`, which is the default spelled out so that an `arc_challenge` control keeps
+meaning what it meant. Put it in the command either way, and decide it yourself.
 
 ---
 
 ## Step 1 — make the checkpoint generate, natively, before you evaluate it
 
-**Get a runner and real output for the submitter's own checkpoint, through the raw native
-OLMo-core path, before anything is spent on a bank.** This is an active first task, not a
-form to collect: prove the weights load and decode, then use what that proves to decide
-whether the pipeline needs changing for this particular model. It is a submission like
-every other on this page — the weights are in S3 and the loader wants a GPU — but it is one
-cell, priced by the 1.74 GB checkpoint pull rather than by generation, and every question
-below is one that otherwise gets answered by a paid eval returning a number nobody can read.
+**Prove the submitter's own weights load and decode through the raw native OLMo-core path
+before anything is spent on a bank, and prove it yourself.** This is an active first task
+and it is a loop, not a form to collect: write a probe, submit it, read the log, diagnose
+what it died of, amend the probe, resubmit — until the checkpoint demonstrably loads and
+decodes natively, or until the loop has exhausted in the specific sense the last subsection
+here defines. Nobody is asked for a runner and nothing waits on one. Each pass is a
+submission like every other on this page — the weights are in S3 and the loader wants a GPU
+— but it is one cell, priced by the 1.74 GB checkpoint pull rather than by generation, and
+every question below is one that otherwise gets answered by a paid eval returning a number
+nobody can read.
 
-[`.edullm/generation_probe.py`](../../../.edullm/generation_probe.py) is the worked example.
-It is a throwaway that nothing imports, written for exactly this, and its header is the
-model to copy: it separates what was already known from reading OLMo-core 2.5.0 at
-`08df5aa0` from what could only be observed on a card, and it guards each prompt separately
-so a checkpoint that decodes for one bank and dies on another still reports the first
-finding. Its spec is
-[`run-generation-probe.yaml`](../../../.edullm/run-generation-probe.yaml), which passes no
-`--s3-out` on purpose — the product is the CloudWatch log, read the way Step 7 describes,
-and nothing downstream consumes a file. It asks for `--max-new-tokens 64` against banks
-configured for 1,024 and 1,280, which is the cost control and is also sufficient: 64 tokens
-cannot show what a finished answer looks like and can show whether one ever ends. **The sha
-the spec pins is the one that has to carry the probe**, not the spec, which is read off your
-laptop; so Step 5 applies here first, before it applies to any eval.
+[`.edullm/generation_probe.py`](../../../.edullm/generation_probe.py) is the worked example,
+and it is where the loop starts rather than a file to run unchanged. It is a throwaway that
+nothing imports, written for exactly this, and its header is the model to copy: it separates
+what was already known from reading OLMo-core 2.5.0 at `08df5aa0` from what could only be
+observed on a card, and it guards each prompt separately so a checkpoint that decodes for
+one bank and dies on another still reports the first finding. Its spec is
+[`run-generation-probe.yaml`](../../../.edullm/run-generation-probe.yaml).
+
+**Keep an iteration cheap, because you should expect to pay for several.** One cell, no
+`--s3-out`, and `--max-new-tokens 64` against banks configured for 1,024 and 1,280. The
+missing `--s3-out` is deliberate: the product of a pass is the CloudWatch log, read the way
+Step 7 describes, and nothing downstream consumes a file, so there is no artifact to keep
+and writing one would imply otherwise. The 64 tokens are the cost control and are also
+sufficient — 64 tokens cannot show what a finished answer looks like and can show whether
+one ever ends. At that budget the decode is seconds against minutes of checkpoint staging,
+so a pass is priced by the pull and an amendment does not double it. **The sha the spec pins
+is the one that has to carry the probe**, not the spec, which is read off your laptop; so
+Step 5 applies here first, before every resubmission and before it applies to any eval. Do
+not push twice inside a minute to fix a probe — that is the one part of the loop that is not
+cheap, and Step 5 says why.
+
+**A pass that fails usefully is the loop working, and the one loop anyone has run here took
+two of them.** `run_019fe2e6` staged the checkpoint, loaded it, built all three prompts, and
+then failed every generation with `'TorchAttentionBackend' doesn't support KV caching`:
+`GenerationConfig.use_cache` defaults to true and the scorer names no attention backend, so
+olmo_core picks its default one, whose `assert_supports_kv_cache` raises the moment
+`prepare_inference_cache` runs. That is a diagnosis and not a verdict. The probe was amended
+to ask for `--attention-backend flash_2`, with a `use_cache=False` fallback for an image
+that may not carry the flash wheel — and the fallback is the branch that fired, because it
+does not. The next submission, `run_019fe316-0e47`, decoded 64 tokens on each of three
+prompts and answered the eos question the first pass had left open. Two cards, one finding
+each, and no conversion in either.
 
 **The hard constraint: nothing is converted, anywhere in this step.** Generation goes
 through `TransformerGenerationModule.from_checkpoint` against the raw sharded DCP directory
 — the shape `inference._OlmoCoreScoringModel` builds and the probe drives end to end — and
 never through `save_hf_model` or `convert.ensure_hf_checkpoint`, and never under
-`--checkpoint-prep auto`. Conversion is the fallback, documented in Step 3, and part of what
-this step exists to establish is that it is not needed. The reason is generality rather than
-price: `save_hf_model` calls `get_hf_config`, which upstream builds a config only for
-`ReorderedNormTransformerBlock` — the OLMo-2/OLMo-3 post-norm family — and raises
-`NotImplementedError` for everything else, which is why this project carries
-`hf_config_patch` at all; these checkpoints are plain pre-norm `TransformerBlock` models and
-the conversion fails on them, *after* the model has been rebuilt and 1.7 GB of shards read
-into it. That patch is one submitter's architecture taught to one exporter. The native
-reader takes whatever `TransformerConfig.from_dict` parses.
+`--checkpoint-prep auto`. Conversion is the fallback, gated in Step 3, and part of what this
+step exists to establish is that it is not needed. The reason is generality rather than
+price. The native reader takes whatever `TransformerConfig.from_dict` parses; the exporter
+takes two block shapes and one of those only because `hf_config_patch` is in this
+repository, which is one submitter's architecture taught to one exporter. So a probe that
+fails is not evidence that conversion would have worked, and for most architectures there is
+no fallback to fail over to — which is why the effort belongs in the loop.
 
 ### What the probe has to answer, and what each answer costs
 
@@ -208,20 +256,50 @@ is still worth doing for that, but it is a different claim than the user asked f
 **A clean probe is itself the result.** It licenses Step 3's preflight and a real
 submission, and it is the evidence behind telling a user that nothing in the pipeline needed
 changing for their model — which is a stronger statement than a green eval, because it names
-what was checked. [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) is the submitter-facing
-artifact for the same information; hand them that when you want them to answer it themselves.
+what was checked. [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) describes the same
+findings in a submitter's terms, under a heading that tells them plainly they do not need to
+send a runner. Hand it over for the three things it asks for, not as a precondition on this
+step, which does not need anything from them.
+
+### When the loop has exhausted, and how to tell that from not having tried
+
+Conversion is the fallback and Step 3 holds the gate on it. This is the half of that gate
+you establish here, and it is a rule rather than a feeling, because the failure it guards
+against is an agent declaring an architecture unreadable on its second card.
+
+The loop has exhausted when **at least three passes have each diagnosed a distinct failure,
+each amendment addressed the failure it diagnosed, and the failure that remains is a loader
+or architecture incompatibility rather than a bug in the probe.** All three clauses bind.
+Three passes that die the same way are one pass billed three times: an identical traceback
+after an amendment means the amendment did not reach the failure, and what to change next is
+your reading of the log, not the checkpoint's format. **Repeated identical failures are not
+progress.** Three is a floor rather than a measurement, and it is set there because the loop
+above took two passes and the second one worked: a rule that let an agent stop at two would
+have sent `run_019fe2e6`'s missing command-line flag to a converter.
+
+The last clause is the one to be honest about. A failure is a probe bug whenever the fix is
+in the file you wrote: a wrong flag, a backend the card cannot run, a prompt the tokenizer
+refuses, a missing fallback of the kind `run_019fe2e6` needed. It is a loader or
+architecture incompatibility only when `TransformerConfig.from_dict` cannot parse the
+config, or the rebuilt model refuses the checkpoint's state, or `from_checkpoint` refuses a
+configuration the checkpoint itself determines. Name which of the two it is, and quote the
+line you are naming it from, before you go any further — and note that each pass costs a
+card and a GPU allocation, and so does every pass you skipped by concluding early.
 
 ---
 
-## Step 2 — read the inference example
+## Step 2 — read a volunteered inference example, if one arrived
 
-Input 2 is not paperwork. Ask for the output more insistently than for the script: the
-output is what shows where the model stops and what the call returns. Four facts come out
-of it and each one changes the command — the same four Step 1 measures for itself, asked
-here of the submitter's evidence rather than yours. When Step 1 has run you already hold
-better answers than a pasted example can give, and what is left to read off theirs is what
-no probe of yours can see: the library and commit it loaded under, and whether their runner
-and yours agree about the model at all.
+**Optional, and skipped without comment when nothing arrived.** Nobody is asked for this,
+and Step 1 answers the same questions better and for the checkpoint you actually hold. When
+a submitter volunteers a runner and its output anyway, read it, and ask for the output more
+insistently than for the script: the output is what shows where the model stops and what the
+call returns. Four facts come out of it and each one changes the command — the same four
+Step 1 measures for itself, asked here of the submitter's evidence rather than yours. When
+Step 1 has run you already hold better answers than a pasted example can give, and what is
+left to read off theirs is what no probe of yours can see: the library and commit it loaded
+under, and whether their runner and yours agree about the model at all. Agreement is a free
+cross-check; a disagreement is the finding.
 
 **Does `pad_token_id == eos_token_id`?** On this checkpoint family it does — SmolLM2-135M
 writes `pad == eos == bos == 0`. MCQ scoring survives that only by exemption: the native
@@ -379,14 +457,52 @@ Read them, do not recall them. `runner.run` calls `check_checkpoint_kind` before
 fetches anything, so a kind neither registry knows still fails in seconds having spent
 nothing, ahead of the multi-gigabyte `resolve_checkpoint` that guard exists to run before.
 
+### Conversion is the fallback, and two conditions gate it
+
 Converting first (`--checkpoint-prep auto --checkpoint-kind hf`) still reaches the
-generative bank and still has never once been executed. It is now the fallback rather than
-the route, and the reason is generality rather than price: `save_hf_model` has to
-understand each submitter's architecture — this checkpoint already needed the
-`get_hf_config` patch because a plain pre-norm block raises upstream — while the native
-reader takes whatever `TransformerConfig.from_dict` parses. Note the asymmetry if you ever
-do take it: on the converted path the kind names the *backend*, so `--checkpoint-kind hf`
-is correct and `olmo_core` is refused up front, which is the reverse of the native path.
+generative bank and still has never once been executed. It is the fallback rather than the
+route, and the reason is generality rather than price: `save_hf_model` has to understand
+each submitter's architecture, while the native reader takes whatever
+`TransformerConfig.from_dict` parses. Both conditions below are required before you may
+reach for it, and neither is a call you get to make quickly.
+
+**(a) Step 1's loop has genuinely exhausted**, by the rule that step states: three passes,
+three distinct diagnosed failures, and a remaining failure you can name as a loader or
+architecture incompatibility rather than a bug in your own probe.
+
+**(b) The checkpoint is a block shape this exporter can actually export.** Read this as a
+whitelist and not as a caveat, because the facts invert easily.
+`olmo_core.nn.hf.get_hf_config` upstream builds a config **only** for
+`ReorderedNormTransformerBlock`, the OLMo-2/OLMo-3 post-norm family, and raises
+`NotImplementedError` for everything else. This repository's
+[`hf_config_patch`](../../../diagnostics/mcq_cat/common/hf_config_patch.py) adds exactly one
+more case — the plain pre-norm `TransformerBlock`, which is the SmolLM2 shape and is
+Preston's checkpoint — by returning a `LlamaConfig`, which is enough because
+`convert_state_to_hf` dispatches on `config.model_type` and already carries `llama` weight
+mappings. **Two block shapes, therefore, and no others. For any other architecture the
+fallback is not slower or riskier but unavailable, and it must be refused rather than
+attempted**, because `convert_olmo_core_to_hf` applies the patch, rebuilds the model from
+the experiment config, reads 1.7 GB of shards into it with `load_model_and_optim_state`, and
+only then calls `save_hf_model` — so the refusal lands at the end of the expensive part
+rather than at the start of it.
+
+Find out which shape you have before committing to any of it, from the checkpoint's own
+`config.json` — the same file `TransformerConfig.from_dict` parses, and one object read
+rather than a card. `model.block._CLASS_` names
+`olmo_core.nn.transformer.config.TransformerBlockConfig` and `model.block.name` is
+`"default"` for the plain pre-norm case, which is what was read off this checkpoint; the
+post-norm family names its reordered-norm block there instead. MoE and normalized
+transformers are handed straight back to upstream by the patch untouched, so whatever
+upstream does with them, including refusing them, is what happens. And the patch refuses
+more than it accepts even inside the plain-block case, each refusal a `NotImplementedError`
+raised after the shards are read: QK-norm, rope scaling, sliding-window attention, a
+sequence mixer that is not `Attention`, and blocks that disagree with one another.
+`model.block.sequence_mixer` answers the fourth of those from the same `config.json` —
+`"default"` under `AttentionConfig` here.
+
+Note the asymmetry if you ever do take it: on the converted path the kind names the
+*backend*, so `--checkpoint-kind hf` is correct and `olmo_core` is refused up front, which
+is the reverse of the native path.
 
 ---
 
@@ -415,6 +531,7 @@ command: >-
   --cat-style uni_mcq
   --checkpoint S3_URI_FROM_THE_USER
   --benchmark ONE_NAME
+  --ability-estimator batch_eap+mwle
   --checkpoint-prep none
   --checkpoint-kind olmo_core
   --dtype bfloat16
@@ -425,6 +542,10 @@ command: >-
 nothing is converted, the sharded DCP is read as-is, and no HF directory is written. They
 are independent seams and this is the pairing that converts nothing.
 
+Only the two capitalised values come from the user. Everything else is the default or the
+house standard named above, and `--ability-estimator` is in the skeleton because leaving it
+out is not neutral: the run takes `batch_eap` and the MWLE number is never computed.
+
 **Not `--extra olmo_core` on the install.** That extra pins `ai2-olmo-core==2.4.0`, so it
 would install over the 2.5.0 the image already carries — the one release that cannot read
 this config — and the run would die at config parse having looked correct all the way down.
@@ -432,8 +553,9 @@ this config — and the run would die at config parse having looked correct all 
 ### MATH is the same spec with two words changed
 
 `leaderboard_math` is the one generative name in `ready_names()`, and on the native path
-its spec differs from the MCQ control in the benchmark name and the reported estimator,
-and in nothing structural:
+its spec differs from the `arc_challenge` control in `run-native-cat.yaml` — which names the
+default estimator rather than the standard one — in the benchmark name and the reported
+estimator, and in nothing structural:
 
 ```yaml
   --benchmark leaderboard_math
@@ -576,7 +698,10 @@ rather than assuming it.
 
 ### Hardware
 
-Recommend `gpu-1xl4`. It is what every validated run has used, and the platform's
+**Ask the user which shape, and recommend `gpu-1xl4` while you ask.** It is the one input of
+the three that has a right answer you already know, and it is still theirs to make: they pay
+for the allocation and may be holding a quota you cannot see. Recommend it on the evidence
+rather than by assertion. It is what every validated run has used, and the platform's
 `bfloat16_not_in_the_hardware` guard refuses the Turing shapes for this command — verified
 on `gpu-1xt4`, whose refusal names the provisioned shapes whose cards do have the format.
 That guard **reads the text of the command and nothing else**, which is why `--dtype` is
@@ -638,9 +763,12 @@ only through the broker, by log stream.
   0.3. Under `batch_eap+mwle` this is `se_mwle`, `1/sqrt(I(theta))`, an asymptotic
   likelihood SE and not a posterior SD; the stopping rule was still applied to the
   posterior one, so do not read it against 0.3.
-- `metadata.theta_batch` / `metadata.theta_mwle` — both estimators' answers are recorded
-  whichever was asked for, so a run reported under one stays comparable with a run reported
-  under the other. `ability_estimator_reported` says which is published.
+- `metadata.theta_online` / `metadata.theta_batch` — recorded whichever estimator was asked
+  for, and the same float on this style, so a run reported under one stays comparable with a
+  run reported under the other. `metadata.theta_mwle` is **not** in that guarantee:
+  `_final_ability` computes it only when `batch_eap+mwle` was asked for, which is why Step 4
+  says to ask for the pair by name. `ability_estimator_reported` says which is published,
+  and drops back to `batch_eap` when MWLE was requested and did not converge.
 - `metadata.pirt_accuracy` — predicted accuracy, and the number to quote to a user who
   wants "how good is it". Report it with `metadata.pirt_accuracy_denominator`, because it
   is over the **calibrated subset**, not the full benchmark split.
@@ -710,23 +838,27 @@ than restating it at length to a user.
 
 ## Worked example — the MCQ sweep
 
-**The five inputs, as given.** (1) `s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/`.
-(2) An inference example loaded with `ai2-olmo-core` 2.5.0, whose tokenizer
-`HuggingFaceTB/SmolLM2-135M` reports `pad == eos == bos == 0`, and whose weights measured
-546.2 MB for 135M parameters — fp32, against a command line that said bfloat16. The example
-did not settle whether this checkpoint emits EOS, which is the case Step 1 exists for: the
-64-token probe `run_019fe316-0e47` settled it, and settled the degeneracy question with it —
-token 0 appeared in none of the 192 tokens it decoded, and all three decodes were
-degenerate, ifeval echoing its own instruction back.
-(3) All MCQ banks. (4) Defaults, with Warm's estimate reported instead of EAP.
-(5) `gpu-1xl4`.
+**The three inputs, as given.** (1) `s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/`.
+(2) All MCQ banks. (3) `gpu-1xl4`, recommended and agreed. Nothing else was asked: the CAT
+settings are the defaults above, and `--ability-estimator batch_eap+mwle` is the house
+standard rather than a preference anyone was consulted about.
 
-Input 2 settles two things before anything is written: the pad/eos collision is why
+**What Step 1 and a volunteered example produced between them.** An inference example did
+arrive here, unasked, loaded with `ai2-olmo-core` 2.5.0: its tokenizer
+`HuggingFaceTB/SmolLM2-135M` reports `pad == eos == bos == 0`, and its weights measured
+546.2 MB for 135M parameters — fp32, against a command line that said bfloat16. It did not
+settle whether this checkpoint emits EOS, which is exactly why an example is a cross-check
+and not a substitute: the 64-token probe `run_019fe316-0e47` settled it on the loop's second
+pass, and settled the degeneracy question with it — token 0 appeared in none of the 192
+tokens it decoded, and all three decodes were degenerate, ifeval echoing its own instruction
+back.
+
+Those findings settle two things before anything is written: the pad/eos collision is why
 `--checkpoint-kind olmo_core` needs the fabricated pad id, and the fp32 measurement is why
 `--dtype bfloat16` is a real change here rather than a restatement — a rerun is not
 expected to reproduce the fp32 theta. Neither the EOS answer nor the echo costs anything on
 this submission, because MCQ scoring is forward-only and never decodes; both are what price
-a generative bank, and the echo is what withdrew `ifeval` outright. Input 3 plus Step 3's
+a generative bank, and the echo is what withdrew `ifeval` outright. Input 2 plus Step 3's
 preflight gives five MCQ banks at the pinned sha, so it becomes a five-cell fan-out rather
 than five submissions.
 
@@ -798,13 +930,13 @@ money. Show the user the resolved plan, the cost block and the class first.
 
 ## Worked example — the generative one, which has been run
 
-Same checkpoint, same hardware, same five inputs except (3) `leaderboard_math` alone and
-(4) defaults with `batch_eap` reported. The spec is
-[`.edullm/run-native-math.yaml`](../../../.edullm/run-native-math.yaml), committed in
-`a18d44f1`, and its header records the three things it does not share with the MCQ specs:
-why one cell rather than a fan-out, where the 2048 window comes from, and why the reported
-estimator is `batch_eap`. It pins `ff816927`, the first pushed commit carrying the native
-completer, so Step 5 applies before it is submitted again.
+Same checkpoint, same hardware, same three inputs except (2) `leaderboard_math` alone. The
+spec is [`.edullm/run-native-math.yaml`](../../../.edullm/run-native-math.yaml), committed
+in `a18d44f1`, and its header records the three things it does not share with the MCQ specs:
+why one cell rather than a fan-out, where the 2048 window comes from, and why the estimator
+is `batch_eap+mwle`. The run below asked for plain `batch_eap`; the spec was corrected
+afterwards, for the reason Step 4 gives. It pins `ff816927`, the first pushed commit
+carrying the native completer, so Step 5 applies before it is submitted again.
 
 ```bash
 cd ../OLMo-core
@@ -850,9 +982,13 @@ current ones:
   mints it.
 - Do not pass `--force`, and do not edit a spec to silence a refusal without reading it.
 - Do not lower `--se-threshold` or raise `--max-items` to "get a better number". A wider
-  cap buys precision, not accuracy, and breaks comparability with every existing run. The
-  session floor is `min_items` (8, and 24 for `bbh`), which always binds before precision
-  does, so an ordinary run administers 8–40 items.
+  cap buys precision, not accuracy, and breaks comparability with every existing run. These
+  are defaults rather than anything a user asked for, so a departure is yours to defend and
+  the report carries it as one boolean, `max_items_is_pinned_value`. The session floor is
+  `min_items` (8, and 24 for `bbh`), which always binds before precision does, so an
+  ordinary run administers 8–40 items.
+- Do not ask a submitter for a runner file or a sample decode, and never wait on one. Step 1
+  produces both, on the platform, for the checkpoint you were actually given.
 - Do not run a benchmark absent from `ready_names()` by pointing at its bank directly. The
   exclusions are recorded, and several of them are that the resulting number would be
   meaningless. **`ifeval` in particular is not available on any request**, however the user
@@ -862,12 +998,14 @@ current ones:
 - Do not present a theta from a report carrying an `ungradable` alert as a measurement of
   the model.
 - Do not submit a generative bank without having read a real decode from this checkpoint for
-  an echo — the submitter's sample output, or Step 1's — and do not report the theta if you
+  an echo — Step 1's, or a volunteered sample output — and do not report the theta if you
   skipped it. That failure carries no alert, an `ungradable.rate` of 0.0 and the tightest SE
   in the sweep.
 - Do not convert a checkpoint to get a first decode out of it. Step 1 is native by
   construction, and `save_hf_model` refusing an unfamiliar block is a fact about the exporter
-  rather than about the checkpoint.
+  rather than about the checkpoint. Conversion is reachable only through Step 3's two
+  conditions, and for a block that is neither `ReorderedNormTransformerBlock` nor a plain
+  pre-norm `TransformerBlock` it is not reachable at all.
 - Do not quote a `leaderboard_math` theta without checking that the completions contain
   `\boxed{}` or `Final Answer`, and do not quote one at all from a session that scored
   zero. Both failures produce a healthy-looking report; see Step 8.
