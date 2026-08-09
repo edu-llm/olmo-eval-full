@@ -54,7 +54,7 @@ else, and **never construct a checkpoint path** — it cannot be derived.
 | # | Input | Where it lands |
 |---|---|---|
 | 1 | **Checkpoint** — one or more `s3://` prefixes | `--checkpoint` inside the spec's `command:` |
-| 2 | **A basic inference example** — the runner file plus ~200 tokens of its real output, verbatim, and the library and commit it was loaded with | `--dtype`, and whether a generative bank will return anything worth reporting |
+| 2 | **A basic inference example** — the runner file plus ~200 tokens of its real output, verbatim, and the library and commit it was loaded with | Step 1, which produces the same thing yourself when it does not arrive |
 | 3 | **Benchmarks** | `--benchmark`, or the `BENCHMARKS` array of a fan-out |
 | 4 | **CAT settings** | `--se-threshold`, `--max-items`, `--ability-estimator`, `--batch-size` |
 | 5 | **Hardware** — recommend `gpu-1xl4` | `--compute` on the submit line |
@@ -65,13 +65,163 @@ A checkpoint anywhere else is admitted, placed, and then fails its first read.
 Inputs 1 and 2 are what [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) asks a submitter
 for, in terms that mean something to them. Hand them that file rather than paraphrasing it.
 
+**Input 2 is the only one you can produce yourself, and Step 1 is how.** Ask for it, because
+a submitter's own decode costs nobody a card; but a missing or unreadable answer is not a
+reason to stop, and an answer that arrives is not a reason to skip Step 1 on a checkpoint
+whose architecture you have not read before.
+
 ---
 
-## Step 1 — read the inference example
+## Step 1 — make the checkpoint generate, natively, before you evaluate it
+
+**Get a runner and real output for the submitter's own checkpoint, through the raw native
+OLMo-core path, before anything is spent on a bank.** This is an active first task, not a
+form to collect: prove the weights load and decode, then use what that proves to decide
+whether the pipeline needs changing for this particular model. It is a submission like
+every other on this page — the weights are in S3 and the loader wants a GPU — but it is one
+cell, priced by the 1.74 GB checkpoint pull rather than by generation, and every question
+below is one that otherwise gets answered by a paid eval returning a number nobody can read.
+
+[`.edullm/generation_probe.py`](../../../.edullm/generation_probe.py) is the worked example.
+It is a throwaway that nothing imports, written for exactly this, and its header is the
+model to copy: it separates what was already known from reading OLMo-core 2.5.0 at
+`08df5aa0` from what could only be observed on a card, and it guards each prompt separately
+so a checkpoint that decodes for one bank and dies on another still reports the first
+finding. Its spec is
+[`run-generation-probe.yaml`](../../../.edullm/run-generation-probe.yaml), which passes no
+`--s3-out` on purpose — the product is the CloudWatch log, read the way Step 7 describes,
+and nothing downstream consumes a file. It asks for `--max-new-tokens 64` against banks
+configured for 1,024 and 1,280, which is the cost control and is also sufficient: 64 tokens
+cannot show what a finished answer looks like and can show whether one ever ends. **The sha
+the spec pins is the one that has to carry the probe**, not the spec, which is read off your
+laptop; so Step 5 applies here first, before it applies to any eval.
+
+**The hard constraint: nothing is converted, anywhere in this step.** Generation goes
+through `TransformerGenerationModule.from_checkpoint` against the raw sharded DCP directory
+— the shape `inference._OlmoCoreScoringModel` builds and the probe drives end to end — and
+never through `save_hf_model` or `convert.ensure_hf_checkpoint`, and never under
+`--checkpoint-prep auto`. Conversion is the fallback, documented in Step 3, and part of what
+this step exists to establish is that it is not needed. The reason is generality rather than
+price: `save_hf_model` calls `get_hf_config`, which upstream builds a config only for
+`ReorderedNormTransformerBlock` — the OLMo-2/OLMo-3 post-norm family — and raises
+`NotImplementedError` for everything else, which is why this project carries
+`hf_config_patch` at all; these checkpoints are plain pre-norm `TransformerBlock` models and
+the conversion fails on them, *after* the model has been rebuilt and 1.7 GB of shards read
+into it. That patch is one submitter's architecture taught to one exporter. The native
+reader takes whatever `TransformerConfig.from_dict` parses.
+
+### What the probe has to answer, and what each answer costs
+
+1. **Are `pad_token_id` and `eos_token_id` the same value?** This family writes both as 0.
+   `GenerationConfig.validate` refuses `pad == eos`, and the fix is to fabricate the *pad* —
+   `_OlmoCoreScoringModel._unused_pad_token_id` returns 1 when eos is 0 — leaving the real
+   end-of-text where the checkpoint put it. **The older belief that this collision blocked
+   generation outright was measured and withdrawn**: probe `run_019fe316-0e47` loaded with
+   `pad_token_id=1, eos_token_id=0` and decoded 64 tokens on each of three prompts. Say that
+   plainly, because the withdrawn claim was written down widely enough that its correction
+   now sits in five places — twice in `inference.py`, in `_load_olmo_core`'s docstring, in
+   `test_olmo_core_generation.py` and in `Plan/flows/uni_mcq/GENERATIVE_RUN.md`. If the
+   checkpoint's ids are distinct, none of this applies and you should say so rather than
+   carrying the workaround forward.
+2. **Does the model ever emit its end-of-text token?** Ask it of the returned *ids* — does
+   the eos id appear in them — and not of whether generation stopped. Those are different
+   questions, and the second has a cause that is not the model: on the converted path
+   `generate` was being handed `eos_token_id=None`, because `hf_config_patch._llama_config`
+   writes no id and `save_hf_model` fills them only when handed a tokenizer object, so a
+   decode could run to the cap for a reason that had nothing to do with the weights. On this
+   checkpoint the answer is no: `run_019fe316-0e47` found token 0 in none of the 192 tokens
+   it decoded, and all three prompts ran their full 64. The consequence is the whole price
+   of a generative CAT — every item pays `max_new_tokens` instead of stopping, which is the
+   difference between a cheap generative bank and one not worth submitting.
+3. **How fast does it decode without a KV cache, which is the only way it decodes today?**
+   OLMo-core's default torch attention backend refuses KV caching outright —
+   `assert_supports_kv_cache` raises at `olmo_core/nn/attention/backend.py:288-289` the
+   moment `prepare_inference_cache` runs, which is how probe `run_019fe2e6` died before
+   emitting a token — and only the flash backends implement it, from a binary wheel this
+   image does not carry. So `use_cache=False` is the working configuration and every step
+   re-reads the whole prefix. Measured on an L4: `run_019fe78d` decoded at **39.6 tokens/sec,
+   about 25.8s for a 1,024-token item**, so roughly 17 minutes for a 40-item bank against a
+   1h per-cell bound with no second attempt.
+   `TORCH_TODOS.md` extrapolates ~32s an item from the probe's 64-token samples instead; both
+   are floors, since both extrapolate linearly from a path both call quadratic. Scale the
+   *rate* when a submitter's checkpoint is larger. That file also holds the two-part fix —
+   the wheel in the image, and `attention_backend` threaded through the `from_checkpoint`
+   the completer reaches — and why neither is on the critical path.
+4. **What context window does the checkpoint declare, and what declared it?** Read it from
+   the checkpoint's own config, never from a constant. `olmo_core_context_length` tries
+   `OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS` first, then olmo-eval's own
+   `_MAX_LENGTH_CONFIG_KEYS` under `model.*` — `max_sequence_length`, `max_seq_len`,
+   `max_position_embeddings` — and only then `dataset.sequence_length`. On this family the
+   last is the only one present: 2048, no model-level key, which is what `run_019fe78d`
+   recorded as its `context_length_source`. A checkpoint declaring none of them is **refused
+   at load** rather than run unclamped, and the tokenizer's `model_max_length` is
+   deliberately not a fallback — SmolLM2's says 8192 against weights trained at 2048, and a
+   window four times too large is worse than none.
+5. **What precision did the weights actually load at?** Take it from the output, not from
+   `config.json`: measure the bytes that land on the device. The failure here was measured —
+   546.2 MB for a 135M model in `run_019fe2e6`, four bytes a parameter, from a command line
+   that said `--dtype bfloat16` — because `InferenceConfig` carried no dtype and
+   `from_checkpoint` was given none. The flag reaches the loader now, and the runner sends it
+   to all three places a precision can be chosen: `prepare_checkpoint` on the converted path,
+   `InferenceConfig` for scoring, `GenerationConfig` for decoding.
+6. **Which tokenizer resolved, and does it fit the model?** A raw checkpoint ships no
+   tokenizer files and names one by identifier at `dataset.tokenizer.identifier`, so it is
+   fetched from the Hub — which means this step also proves the venue can reach the Hub.
+   Cross-check the model's `vocab_size` against `len(tokenizer)`: 49,152 against
+   `HuggingFaceTB/SmolLM2-135M` here. That check is worth the two lines because a wrong
+   identifier produces a plausible tokenizer rather than an error, and an agent on this
+   project did exactly that — reading `_resolve_tokenizer_id`'s fallback branch and a test
+   fixture, it concluded the tokenizer was `allenai/dolma2-tokenizer`, whose ~100k against
+   49,152 would have contradicted it in seconds. **Nothing on the native path makes the
+   comparison for you**: `_warn_if_tokenizer_outgrows_model` belongs to `_HFCompleter`, and
+   `_OlmoCoreCompleter.checkpoint_facts` records `tokenizer_vocab_size` without comparing it.
+   Print both numbers.
+7. **What does `generate_batch` return?** It seeds its output with `input_ids` and
+   concatenates onto it, so the prompt is in the return unless `completions_only=True` — and
+   the completer slices `[prompt_tokens:]` rather than passing that flag, because slicing is
+   what the probe measured and the flag was only ever read off the source. Print the raw
+   type and shape so the stripping logic is checked against a real return rather than a
+   remembered one.
+8. **What does the model actually write?** Look here first; it costs nothing and it decides
+   what a generative bank can be claimed to have measured. Two distinct degeneracies show up
+   in the text, and **both produce confident wrong numbers rather than errors.** A model that
+   **echoes its prompt** passes 129 of IFEval's 511 vendored items and reports a high, tight
+   theta at `ungradable.rate` 0.0 with no field indicating anything is wrong — which is why
+   `ifeval` is blocked outright (Step 3). A model that **loops a clause** never reaches
+   `\boxed{}` or a `Final Answer:` line, the only two forms MATH's grader reads, so every
+   item scores 0 for a formatting reason rather than a mathematical one: on `run_019fe78d`,
+   zero of 40 completions carried either. Both are written up in
+   [`RESULT_CAVEATS.md`](../../../RESULT_CAVEATS.md); cite the entry rather than restating
+   it. This checkpoint did all of it on 64 tokens — ifeval echoed its instruction, math
+   looped, gpqa invented options (E) through (H) after the real four.
+
+### End with a decision, not a log
+
+The probe's output is only worth its card if it changes what you do next. Say which of the
+above apply to *this* checkpoint and therefore what has to change before a real run: a
+budget that must absorb an end-of-text token the model never emits, a generative bank not
+worth submitting because the decode is degenerate, a `--dtype` that did not reach the
+weights, a window or a tokenizer that will refuse the load outright. When the decode loops,
+say before submitting that the run will establish the pipeline and not the checkpoint — it
+is still worth doing for that, but it is a different claim than the user asked for.
+
+**A clean probe is itself the result.** It licenses Step 3's preflight and a real
+submission, and it is the evidence behind telling a user that nothing in the pipeline needed
+changing for their model — which is a stronger statement than a green eval, because it names
+what was checked. [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) is the submitter-facing
+artifact for the same information; hand them that when you want them to answer it themselves.
+
+---
+
+## Step 2 — read the inference example
 
 Input 2 is not paperwork. Ask for the output more insistently than for the script: the
 output is what shows where the model stops and what the call returns. Four facts come out
-of it and each one changes the command.
+of it and each one changes the command — the same four Step 1 measures for itself, asked
+here of the submitter's evidence rather than yours. When Step 1 has run you already hold
+better answers than a pasted example can give, and what is left to read off theirs is what
+no probe of yours can see: the library and commit it loaded under, and whether their runner
+and yours agree about the model at all.
 
 **Does `pad_token_id == eos_token_id`?** On this checkpoint family it does — SmolLM2-135M
 writes `pad == eos == bos == 0`. MCQ scoring survives that only by exemption: the native
@@ -121,7 +271,7 @@ path over the 511 vendored items, a verbatim echo passes 129 of them, 25.2%; sim
 against this style's own Fisher selection and EAP it reports theta +0.19 to +1.11 at
 se 0.11–0.23 and stops on precision after 8 or 9 items — the highest and tightest number
 in a sweep whose MCQ cells run -0.25 to -3.9, at `ungradable.rate` 0.0 with no field
-indicating anything is wrong. That is why `ifeval` is blocked (Step 2); the evidence is in
+indicating anything is wrong. That is why `ifeval` is blocked (Step 3); the evidence is in
 [`RESULT_CAVEATS.md`](../../../RESULT_CAVEATS.md) and is not worth restating here. The
 point for you is that a submitter's 200 tokens predict it for free, before anything is
 spent: a model that repeats its prompt back will report inflated ability on a generative
@@ -154,7 +304,7 @@ carries — can.
 
 ---
 
-## Step 2 — preflight, free
+## Step 3 — preflight, free
 
 `edullm check --json` costs a fraction of a second and reaches no network. Run the bank
 resolution first, though: it is the only thing that will tell you a benchmark is not
@@ -201,11 +351,11 @@ when they say they understand the caveat.** There is no flag that reaches it and
 correct way to point at its bank directly; `ready_names()` returns six names and `ifeval`
 is not among them. Its block is unlike the other two, which are join-evidence questions:
 this bank's join is fine and its grading is faithful, and that is exactly the problem — see
-Step 1's fourth fact, and read the `blocked` reason out of `datasets.py` for the
-authoritative wording to relay, because it is long and specific and paraphrasing it as
-"not supported" loses the argument. The short of it is that a verbatim prompt echo passes
-129 of the 511 vendored items, so a reciting model reports a high, tight theta at
-`ungradable.rate` 0.0 with no field indicating anything is wrong. What lifts it is the
+Step 1's last question and Step 2's third fact, and read the `blocked` reason out of
+`datasets.py` for the authoritative wording to relay, because it is long and specific and
+paraphrasing it as "not supported" loses the argument. The short of it is that a verbatim
+prompt echo passes 129 of the 511 vendored items, so a reciting model reports a high, tight
+theta at `ungradable.rate` 0.0 with no field indicating anything is wrong. What lifts it is the
 echo-baseline guard: stamp each item offline with whether an echo passes it, then report
 the share of a session's passes an echo would also have produced. **Re-checking a join
 does not lift it**, and neither does converting the checkpoint or picking a better model;
@@ -219,7 +369,7 @@ generative the same `("hf", "olmo_core")`, because `GENERATIVE_BACKENDS` registe
 be submitted natively.** Commit `0d25d4ba` wrote `_OlmoCoreCompleter` and registered it;
 `run_019fe78d` then graded `leaderboard_math` on a raw sharded checkpoint end to end with
 no conversion anywhere in it. So `--benchmark leaderboard_math --checkpoint-prep none
---checkpoint-kind olmo_core` is a submission you can make today, and Step 3 has the spec.
+--checkpoint-kind olmo_core` is a submission you can make today, and Step 4 has the spec.
 
 The two registries stay separate dicts rather than collapsing to one tuple, and the
 docstrings say why: a backend registers per modality, the two legitimately diverged for
@@ -240,7 +390,7 @@ is correct and `olmo_core` is refused up front, which is the reverse of the nati
 
 ---
 
-## Step 3 — write the spec
+## Step 4 — write the spec
 
 Specs live in `.edullm/`. Start from the closest sibling rather than from nothing:
 [`run-native-cat.yaml`](../../../.edullm/run-native-cat.yaml) is the single-benchmark
@@ -287,7 +437,7 @@ and in nothing structural:
 
 ```yaml
   --benchmark leaderboard_math
-  --ability-estimator batch_eap
+  --ability-estimator batch_eap+mwle
 ```
 
 Everything else — `--checkpoint-prep none --checkpoint-kind olmo_core --dtype bfloat16`,
@@ -296,15 +446,28 @@ claim the per-modality registry makes: a backend is a completer plus a row in
 `GENERATIVE_BACKENDS`, and everything between a prompt and a graded response is
 backend-agnostic and already written.
 
-`batch_eap` rather than the sweep's `batch_eap+mwle`, and the choice is worth copying on a
-first run of any path. Both thetas land in the report either way, so this only decides
-which pair of numbers `ability.theta` and `ability.standard_error` carry — and under MWLE
-the published SE is `se_mwle` while the stopping rule acted on the posterior `se_online`.
-`batch_eap` makes the report self-consistent, which is what you want when the thing under
-test is the pipeline.
+**`batch_eap+mwle` is the standard, and ask for it explicitly.** An earlier version of this
+page recommended plain `batch_eap` on a first run and justified it with the claim that
+"both thetas land in the report either way." **That claim is false**, and the first native
+MATH run proved it: `run_019fe78d` asked for `batch_eap` and its report carries
+`theta_online` and `theta_batch` and **no `theta_mwle` at all**. The estimator you do not
+ask for is not computed, so asking for the pair is the only way to get both.
+
+Why the pair is worth having: EAP's standard-normal prior compresses every ability toward
+zero, hardest at the tails, which is exactly where a small checkpoint sits. MWLE drops the
+prior and penalises `1/2 ln I(theta)` instead. Reporting both lets a reader see how much of
+a theta is prior and how much is evidence — on the MCQ sweep the two differed by 0.008 to
+0.18, all smaller than the standard error except on musr.
+
+The real caveat is about the SE, not the estimator, and it is a reading instruction rather
+than a reason to avoid MWLE: under `batch_eap+mwle` the published
+`ability.standard_error` is `se_mwle`, an asymptotic `1/sqrt(I(theta))`, while the stopping
+rule acted on the posterior `se_online`. Quote `se_online` when discussing precision. See
+`RESULT_CAVEATS.md`, which records how this inverted the apparent precision ordering across
+the five MCQ cells.
 
 **Keep it one cell.** There is one generative bank, so there is nothing to fan out over,
-and a single cell is also what auto-approves — see Step 5, which is where that decision
+and a single cell is also what auto-approves — see Step 6, which is where that decision
 actually costs you something.
 
 ### More than one benchmark means a fan-out
@@ -348,7 +511,7 @@ cell count to the user before submitting any of them, because `cost` is per subm
 
 ---
 
-## Step 4 — commit, push, repin
+## Step 5 — commit, push, repin
 
 Commit the paths the run actually clones — `diagnostics/`, `calibrated_datasets/`, and
 anything they import — rather than `-A`; other people work in this tree and scratch files
@@ -365,7 +528,7 @@ minute**: the image build re-verifies source identity, and a second push kills t
 
 ---
 
-## Step 5 — check, then submit
+## Step 6 — check, then submit
 
 **Submit from the OLMo-core clone.** The job runs on OLMo-core's image, not this
 repository's: the published `olmo-eval-full` image leaves torch out and can only run
@@ -424,7 +587,7 @@ admitted and given a machine. Do not call any shape the cheapest without reading
 
 ---
 
-## Step 6 — watch it
+## Step 7 — watch it
 
 `edullm status --json` answers from GitHub, dispatches nothing, is free and **may be
 polled**. Plain `edullm status`, `edullm status --ask-aws` and `edullm logs` all start a
@@ -464,7 +627,7 @@ only through the broker, by log stream.
 
 ---
 
-## Step 7 — read the report
+## Step 8 — read the report
 
 `cat_report.json` lands under the platform's output prefix. The fields that matter:
 
@@ -551,8 +714,8 @@ than restating it at length to a user.
 (2) An inference example loaded with `ai2-olmo-core` 2.5.0, whose tokenizer
 `HuggingFaceTB/SmolLM2-135M` reports `pad == eos == bos == 0`, and whose weights measured
 546.2 MB for 135M parameters — fp32, against a command line that said bfloat16. The example
-did not settle whether this checkpoint emits EOS, which is why a separate 64-token probe
-exists; `run_019fe316-0e47` has since settled it, and settled the fourth fact with it —
+did not settle whether this checkpoint emits EOS, which is the case Step 1 exists for: the
+64-token probe `run_019fe316-0e47` settled it, and settled the degeneracy question with it —
 token 0 appeared in none of the 192 tokens it decoded, and all three decodes were
 degenerate, ifeval echoing its own instruction back.
 (3) All MCQ banks. (4) Defaults, with Warm's estimate reported instead of EAP.
@@ -563,12 +726,12 @@ Input 2 settles two things before anything is written: the pad/eos collision is 
 `--dtype bfloat16` is a real change here rather than a restatement — a rerun is not
 expected to reproduce the fp32 theta. Neither the EOS answer nor the echo costs anything on
 this submission, because MCQ scoring is forward-only and never decodes; both are what price
-a generative bank, and the echo is what withdrew `ifeval` outright. Input 3 plus Step 2's
+a generative bank, and the echo is what withdrew `ifeval` outright. Input 3 plus Step 3's
 preflight gives five MCQ banks at the pinned sha, so it becomes a five-cell fan-out rather
 than five submissions.
 
 The spec is [`.edullm/run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml),
-already committed, pinning `49d93da4…` — which is now several commits behind, so Step 4
+already committed, pinning `49d93da4…` — which is now several commits behind, so Step 5
 applies before this is submitted again rather than after:
 
 ```yaml
@@ -641,7 +804,7 @@ Same checkpoint, same hardware, same five inputs except (3) `leaderboard_math` a
 `a18d44f1`, and its header records the three things it does not share with the MCQ specs:
 why one cell rather than a fan-out, where the 2048 window comes from, and why the reported
 estimator is `batch_eap`. It pins `ff816927`, the first pushed commit carrying the native
-completer, so Step 4 applies before it is submitted again.
+completer, so Step 5 applies before it is submitted again.
 
 ```bash
 cd ../OLMo-core
@@ -672,7 +835,7 @@ current ones:
   there while it ran. A pulled copy sits beside this repository in
   `cat_runs/run_019fe78d-math/`, uncommitted.
 - **The result was theta -1.6523 at se 0.5475 with 0 of 40 correct, and is not quotable**
-  — Step 7 says why, and it is the part of this example most likely to be misreported. What
+  — Step 8 says why, and it is the part of this example most likely to be misreported. What
   the run establishes is that a raw training checkpoint can be graded generatively end to
   end, which is what a future submitter needs and what no offline test can show.
 
@@ -698,12 +861,16 @@ current ones:
   quantity.
 - Do not present a theta from a report carrying an `ungradable` alert as a measurement of
   the model.
-- Do not submit a generative bank without having read the submitter's sample output for an
-  echo, and do not report the theta if you skipped it. That failure carries no alert, an
-  `ungradable.rate` of 0.0 and the tightest SE in the sweep.
+- Do not submit a generative bank without having read a real decode from this checkpoint for
+  an echo — the submitter's sample output, or Step 1's — and do not report the theta if you
+  skipped it. That failure carries no alert, an `ungradable.rate` of 0.0 and the tightest SE
+  in the sweep.
+- Do not convert a checkpoint to get a first decode out of it. Step 1 is native by
+  construction, and `save_hf_model` refusing an unfamiliar block is a fact about the exporter
+  rather than about the checkpoint.
 - Do not quote a `leaderboard_math` theta without checking that the completions contain
   `\boxed{}` or `Final Answer`, and do not quote one at all from a session that scored
-  zero. Both failures produce a healthy-looking report; see Step 7.
+  zero. Both failures produce a healthy-looking report; see Step 8.
 - Do not poll `edullm logs` while a run is in flight. It dispatches a workflow and buys the
   last 50 lines; S3, which is free, answers the only question you usually have.
 - Do not quote a price, a runtime bound, a cost ceiling or an approver from memory or from
