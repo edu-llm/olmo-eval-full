@@ -1,63 +1,57 @@
-# Biggen gold set — handoff for judge-candidate scoring
+# Gold sets — handoff for judge-candidate scoring (biggen + tutoreval)
 
-## What this is
-A **representative-core human-gold set** for biggen, built to measure judge candidates'
-**false-pass rate** (and accuracy) on real graded cells, since biggen has no prior human labels.
+Two **representative-core human-gold sets** for measuring judge candidates' **false-pass rate**
+(and accuracy) on real graded cells, since these benchmarks had no prior human labels.
 
-- **Population:** 121,028 gradable cells (52 models × biggen criteria, auto-fail cells excluded).
-- **Sample:** 100 cells, **stratified by `capability`** (biggen's `criticality`/`primary_skill` are null),
-  proportional allocation, seed 20260809. Reference balance: 52 Qwen-fail / 48 Qwen-pass.
-- **Labels:** two independent, blinded proposers (`claude-opus-5` + `openai-group/gpt-5.5`) each gave a
-  structured PASS/FAIL with evidence; concordant → provisional gold; discordant → human-adjudicated.
-  (`opus-4.8` and `sonnet-5` are catalog-listed but **denied by the gateway**; opus-5 substituted.)
+## The two gold artifacts
+| Benchmark | Gold file | Cases dir | Stratum | Qwen baseline |
+|---|---|---|---|---|
+| **biggen** | `biggen_core/gold_labels.jsonl` | `biggen_core/sample.jsonl` | `capability` (8 buckets) | `_qwen_verdict` present |
+| **tutoreval** | `tutoreval_core/gold_labels.jsonl` | `tutoreval_core/sample.jsonl` | `primary_skill` (conceptual_understanding / quantitative_procedural / unknown) | `_qwen_verdict` = null (no matrix locally) |
 
-## The gold artifact
-`biggen_core/gold_labels.jsonl` — one row per cell:
+Each is **100 cells, FINAL, 0 pending**. `gold_labels.jsonl` row schema:
 ```json
-{"gold_case_id","model","scenario_id","criterion_id","capability",
- "gold_label": "pass"|"fail"|null, "provenance", "_qwen_verdict"}
+{"gold_case_id","model","scenario_id","criterion_id","stratum","criticality",
+ "gold_label": "pass"|"fail", "provenance", "_qwen_verdict"}
 ```
 `provenance`: `human_adjudicated` | `ai_concordant_spotchecked` | `ai_concordant_accepted`.
-**Score only rows where `gold_label` is not null.** Status (see `gold_manifest.json`): **FINAL —
-100/100 resolved, 0 pending** (7 human-adjudicated + 18 owner-spot-checked + 75 two-model-concordant;
-55 fail / 45 pass).
+
+- **biggen:** 55 fail / 45 pass; 7 human-adjudicated + 18 spot-checked + 75 concordant. `criticality` is null
+  (biggen rubrics carry none) → no critical-FP slice for biggen.
+- **tutoreval:** 80 fail / 20 pass (fail-heavy — small models on hard tutoring criteria);
+  9 human-adjudicated + 18 spot-checked + 73 concordant. `criticality` **present**
+  (critical / not_critical) → **critical-FP is computable** for tutoreval.
 
 ## The cases to grade
-`biggen_core/sample.jsonl` has the full case per `gold_case_id`:
-`scenario_prompt`, `conversation_context`, `reference_solution`, `criterion`, `candidate_response`.
+`<bench>_core/sample.jsonl` has the full case per `gold_case_id`: `scenario_prompt`,
+`conversation_context`, `reference_solution`, `criterion`, `candidate_response`.
 These are the exact fields `run_api_judge_pilot.build_messages` / `regrade_benchmark.build_cases` render.
 
 ## How to score the candidates
-Grade the 100 gold cells with each candidate using the **same chosen judge config** as the pilot
-(`--adapter generic-binary-strict`, JSON mode, temp 0), one call per (candidate, gold_case) = ~500 calls.
+Grade each gold set's 100 cases with each candidate using the **chosen judge config**
+(`--adapter generic-binary-strict`, JSON mode, temp 0), one call per (candidate, gold_case).
 Candidates (gateway slugs):
 - `claude-group/claude-sonnet-4-6`, `claude-group/claude-opus-4-6`
-- `gemini-group/gemini-2.5-flash`, `gemini-group/gemini-3-flash-preview` (**use max_tokens ≥ 4096** — it truncates/over-fails otherwise, see FINDINGS.md)
+- `gemini-group/gemini-2.5-flash`, `gemini-group/gemini-3-flash-preview` (**max_tokens ≥ 4096**, see FINDINGS.md)
 - `openai-group/gpt-4.1`
 
-Then join verdict → gold on `gold_case_id` and report **per candidate**:
-- **false-pass rate** = P(judge=pass | gold=fail) — the headline; overall + per `capability`.
+Join verdict → gold on `gold_case_id`, then report **per candidate per benchmark**:
+- **false-pass rate = P(judge=pass | gold=fail)** — headline; overall + per `stratum`
+  (+ per `criticality` and a **critical-FP** for tutoreval).
 - accuracy, false-fail rate, balanced accuracy, coverage/unscorable.
-- Also compute the same for the **frozen Qwen judge** using `_qwen_verdict` (free baseline).
-
-Only join on `gold_label != null`. Report on the 93 provisional now; refresh when the 7 land.
+- For **biggen only**, compute the same for the frozen Qwen judge from `_qwen_verdict` (free baseline).
 
 ## Caveats to carry into any report
-- **Representative probability sample** → the FP rate is an unbiased estimate for the biggen grading
-  matrix (weight by capability strata if needed; see `sample_manifest.json`).
-- **Single-annotator gold**, AI-assisted (opus-5 + gpt-5.5 proposers, human-adjudicated disagreements).
-  Concordant cells are two-model-agreed, owner-spot-checked, not each individually human-verified.
-- Proposers are **independent of the candidate set** (opus-5 ≠ opus-4-6; gpt-5.5 ≠ gpt-4.1), so scoring
-  candidates against this gold is not self-agreement.
-- Only ~100 cells → per-capability rates are directional (small n per stratum).
+- **Representative probability samples** (weights in `<bench>_core/sample_manifest.json`) → the FP rate is
+  an unbiased estimate for that benchmark's grading matrix. biggen pop = 121,028 cells / 52 models;
+  tutoreval pop = 92,438 cells / 52 models.
+- **Single-annotator**, AI-assisted gold: proposers **opus-5 + gpt-5.5** (independent of the candidate set —
+  opus-5 ≠ opus-4-6, gpt-5.5 ≠ gpt-4.1), owner-adjudicated on disagreement, owner-spot-checked a random 18.
+  (`claude-opus-4-8` / `sonnet-5` were denied by the gateway; opus-5 substituted.)
+- ~100 cells each → per-stratum rates are directional (small n per bucket; tutoreval is 82% conceptual).
 
-## Reproduce / refresh
-```bash
-# finalize after the 7 verdicts (example):
-uv run --no-project python api_judge_pilot/gold/adjudicate.py \
-  --packets api_judge_pilot/gold/biggen_core/packets.jsonl \
-  --sample  api_judge_pilot/gold/biggen_core/sample.jsonl \
-  --out     api_judge_pilot/gold/biggen_core/gold_labels.jsonl \
-  --set biggen__0021=fail --set biggen__0048=fail ...   # owner verdicts
-```
-Pipeline scripts: `sample_cells.py`, `make_packets.py`, `adjudicate.py`, `review.py`, `summarize_packets.py`.
+## Pipeline (reusable) / refresh
+`sample_cells.py` (`--stratify-field`, `--benchmark`), `make_packets.py`, `adjudicate.py`
+(`--set id=label`, `--spotchecked ...`), `review.py`, `dump_ids.py`, `dump_spotcheck.py`, `summarize_packets.py`.
+tutoreval bank was extracted from git tag `tutoreval-unidim-52models:eduLLM-Evals/data/TutorEval/`
+into `tutoreval_src/`.

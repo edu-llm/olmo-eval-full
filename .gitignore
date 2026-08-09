@@ -146,3 +146,7 @@ AdaptiveTesting/Experiments/**/.mplcache/
 
 # Local secrets (never commit)
 .apienv
+
+# EduLLM API-judge pilot: local scratch / generated artifacts (regenerable; do not push)
+.edullm_gen/
+.venv-judge-vllm026/
