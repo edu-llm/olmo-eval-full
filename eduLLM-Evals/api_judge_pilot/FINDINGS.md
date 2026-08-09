@@ -456,7 +456,7 @@ Cross-benchmark summary of finalized/leading judge configs (all v1 evidence-firs
 regex parser; max_tokens 4096 for gemini):
 - biggen: gemini-3-flash-preview + v1 (FINALIZED).
 - tutoreval: gemini-3-flash-preview + v1 (leading).
-- tutorbench: haiku-4-5 + v1 (value) or sonnet-4-6 + v1 (quality); gemini-3 truncates there.
+- tutorbench: haiku-4-5 + v1 (FINALIZED; sonnet-4-6 + v1 is the quality alternative); gemini-3 truncates there.
 
 ## Caveats
 

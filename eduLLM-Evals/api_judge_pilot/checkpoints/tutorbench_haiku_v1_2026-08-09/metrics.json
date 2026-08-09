@@ -1,0 +1,24 @@
+{
+  "dataset": "tutorbench 261-cell human set (gold/tutorbench_core/); capability = criticality bucket",
+  "model": "claude-group/claude-haiku-4-5",
+  "adapter": "generic-binary-strict",
+  "max_tokens": 4096,
+  "false_pass_rate": 0.224,
+  "macro_f1": 0.746,
+  "mcc": 0.497,
+  "accuracy": 0.747,
+  "false_fail_rate": 0.276,
+  "test_retest_flip": 0.015,
+  "prompt_flip_worst": 0.042,
+  "unscorable": 0,
+  "qwen_baseline": {"false_pass_rate": 0.371, "macro_f1": 0.727, "mcc": 0.461, "accuracy": 0.736},
+  "quality_alternative_sonnet_v1": {"mcc": 0.529, "macro_f1": 0.764, "false_pass_rate": 0.241},
+  "regression_thresholds": {
+    "false_pass_rate_max": 0.28,
+    "macro_f1_min": 0.71,
+    "mcc_min": 0.45,
+    "test_retest_flip_max": 0.06,
+    "unscorable_max": 3
+  },
+  "note": "261 cells with known human-label noise -> tutorbench is hard (all judges ~0.5 MCC). Directional. All candidates beat the frozen Qwen baseline."
+}
