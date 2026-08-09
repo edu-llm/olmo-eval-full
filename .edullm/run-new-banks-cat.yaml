@@ -32,16 +32,45 @@
 # 1. THIS IS THE FIRST GPU RUN OF THESE THREE BANKS. THAT IS THE POINT OF IT.
 #
 # pedagogy, piqa and socialiqa were fit from the 2026-08-01 sweep and vendored at
-# fbfb11e9. Everything establishing them is offline: the joins were measured item by item
-# against the sweep's frozen cache, the parameters reproduce the published 318 / 831 / 969
-# kept-item counts, and the suite passes. No GPU has scored a single item from any of
-# them. This run is what turns that into evidence, and a failure here is a result rather
-# than a setback.
+# fbfb11e9. Everything establishing them was offline: the joins measured item by item
+# against the sweep's frozen cache, the parameters reproducing the published
+# 318 / 831 / 969 kept-item counts, and the suite passing. Nothing had run on a GPU.
 #
-# What would make it a wrong answer rather than a failure, and so is worth checking in the
-# reports rather than assuming: `metadata.overlap` should be total on all three, because
-# vendoring already matched every bank item to a task instance and anything less means the
-# container enumerated a different split than this laptop did.
+# IT HAS NOW, AND IT PASSED. run_019fe82c-708b-703f-b4ab-58f699b728c9, 2026-08-09:
+#
+#   pedagogy   theta -0.476  se_mwle 0.321 (se_online 0.308)  40 items  max_items_reached
+#   piqa       theta -1.458  se_mwle 0.168 (se_online 0.176)   8 items  precision_reached
+#   socialiqa  theta -0.713  se_mwle 0.319 (se_online 0.307)  40 items  max_items_reached
+#
+# Nothing ungradable on any cell, bank sizes 379 / 896 / 992 as vendored, and every report
+# recording prompt_style question_answer with score_normalization
+# continuation_logprob_per_token -- so the run-time convention matched the calibration
+# rather than merely claiming to.
+#
+# The stop reasons are the result worth keeping. piqa converged at the 8-item floor while
+# the other two ran to the 40-item cap without reaching SE 0.3, which is the ordering their
+# calibration predicts: piqa is the bank that separates models (r = 0.937), and the other
+# two barely separate their own calibration population. A session can administer everything
+# a weak bank has and still not sharpen. That is the bank behaving as characterised.
+#
+# A GPU RUN CANNOT VERIFY THE JOIN, AND AN EARLIER VERSION OF THIS HEADER SAID IT COULD.
+# It asked a reader to check `metadata.overlap` was total, on the reasoning that anything
+# less meant the container had enumerated a different split than the vendoring laptop.
+# Three things wrong with that: no report carries an `overlap` key, the container
+# enumerates no split at all, and so the check it prescribed cannot be performed.
+#
+# A vendored bank ships its items. `download_benchmark` resolves `items.jsonl` off the
+# local filesystem and downloads nothing, which is the same property that lets pedagogy run
+# without a HuggingFace token despite being gated. So the join is settled before a
+# submission exists and cannot be re-tested by one.
+#
+# What the report does carry is `bank_provenance.dropped`, with `not_in_bridge` and
+# `not_in_task` at 0 and `bridge_rows` equal to `upstream_bank_rows`. Read those for what
+# they are: vendor-time facts copied verbatim into the report, carrying the
+# `generated_at` of the vendoring run rather than of this one. They confirm the bank was
+# built consistently, not that it is aimed at the right questions. The evidence for that is
+# offline and stronger -- every item compared against the sweep's frozen cache, then each
+# task enumerated against that same cache position by position.
 #
 # pedagogy's report carries a `bank_caveat` the other two do not. Its predicted accuracy
 # has a mean absolute error of 0.101 against a 0.087 span of real accuracies, so that
@@ -56,11 +85,17 @@
 # these difficulties was estimated against. It is here because it is the checkpoint whose
 # native path is proven, not because its theta means anything.
 #
-# Read this run for whether the pipeline works, not for how good the model is. Expect
-# piqa in particular to produce a predicted accuracy below its own 0.50 chance floor: a
-# 2PL has no guessing parameter, and the one sub-1B model in the held-out diagnostics was
-# handed 0.371. That is the documented behaviour outside the supported range rather than a
-# defect, and it is exactly why the range is worth stating.
+# Read this run for whether the pipeline works, not for how good the model is. piqa was
+# the one to watch: a 2PL has no guessing parameter, and the single sub-1B model in the
+# held-out diagnostics was handed a predicted accuracy of 0.371 on a bank whose chance
+# floor is 0.50. This checkpoint is sub-1B, so the same impossible value was the expected
+# outcome.
+#
+# It did not happen. run_019fe82c predicted 0.580 for piqa, above the floor. One
+# checkpoint is not a refutation of a documented failure mode, and the reason to keep
+# stating the supported ability range is unchanged; but the range is a guard against
+# something that has not yet been observed here rather than a description of what this
+# checkpoint does.
 #
 # ---------------------------------------------------------------------------------------
 # 3. A FAN-OUT OF THREE, WHICH COSTS A LEAD'S APPROVAL AND IS STILL THE RIGHT SHAPE.
