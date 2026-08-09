@@ -35,6 +35,12 @@ Nothing is built from it and no branch of it matters; it is there so the CLI has
 objects to resolve a sha against. Push access to *this* repository is required — Step 0 cuts
 a branch and Step 5 pushes it — and none is needed there.
 
+**On Windows, PowerShell prints a succeeding command's stderr as a red `NativeCommandError`
+block.** `git checkout`, `git push` and this page's Python all write ordinary progress to
+stderr, so a working command renders as a failure and an agent reading its own transcript
+will report one. Trust `$LASTEXITCODE`, not the colour: `git switch -c` announcing
+`Switched to branch` inside an error block has still switched the branch.
+
 ---
 
 ## The mistake that produces a confident wrong answer
@@ -475,6 +481,21 @@ cd <repo-root> && PYTHONPATH=.:src .venv/bin/python /tmp/preflight.py        # U
 cd <repo-root>; $env:PYTHONPATH=".;src"; & .venv\Scripts\python.exe "$env:TEMP\preflight.py"
 ```
 
+**This reads your working tree; the run reads the pinned sha.** The two agree only once
+everything is committed, so the answer is provisional until Step 6 pins. If the tree was
+dirty when you ran it — or you are sizing a fan-out, where the count decides the cell count —
+enumerate at the sha instead:
+
+```bash
+git worktree add /tmp/pin <sha> && (cd /tmp/pin && PYTHONPATH=.:src python /tmp/preflight.py)
+git worktree remove /tmp/pin
+```
+
+A tree that has drifted from `HEAD` reports a bank set the run will not load, and it reports
+it in the same confident shape as a correct answer. During the first ticket an uncommitted
+revert showed six names where the sha held nine; trusting it would have told the submitter
+that three freshly vendored banks were blocked.
+
 Three of the twelve supported banks are blocked today — `winogrande`, `gsm8k` and, since
 2026-08-08, `ifeval` — so `ready_names()` returns nine: eight MCQ banks and `leaderboard_math`.
 `pedagogy`, `piqa` and `socialiqa` joined on 2026-08-09 and are the only three fit in this
@@ -861,7 +882,10 @@ in the ticket's `RUNS.md` — Step 8 — and no directory; there is no report to
 
 `edullm status --json` answers from GitHub, dispatches nothing, is free and **may be
 polled**. Plain `edullm status`, `edullm status --ask-aws` and `edullm logs` all start a
-workflow, so none of them belongs in a loop.
+workflow, so none of them belongs in a loop. Free is not fast: it queries the Actions API on
+every call and takes 20–33 seconds to answer, which is slow enough that a caller who expected
+it to be instant will read the wait as a hang and kill it. Budget for it, and do not wrap it
+in a short timeout.
 
 Real progress lives in CloudWatch, log group `/aws/batch/sbsandbox-intern-edullm-gpu`.
 Reach it through the sb-aws broker, read-only — AGENTS.md rules out `boto3`, the `aws` CLI
@@ -893,7 +917,32 @@ check that returned nothing:
 id to one job and reads `container.logStreamName` off it; an array parent runs no
 container, so that field is empty and the workflow correctly reports that there is no
 stream yet. It is not a fault and there is no flag for it — a cell's output is reachable
-only through the broker, by log stream.
+only through the broker, and only in three hops.
+
+**The Batch job name is the run id.** That is the join, and nothing in the CLI states it;
+without it the log group is a wall of streams named `gpu-1xl4-run/default/<uuid>` with no
+way to tell which is yours. These are broker argument arrays, not a local shell:
+
+```bash
+# 1. run id -> jobId. The queue matches the hardware. arrayProperties.size is
+#    null for a single cell and the cell count for a fan-out.
+batch list-jobs --job-queue sbsandbox-intern-edullm-gpu-1xl4 --job-status RUNNING
+  --query "jobSummaryList[?jobName=='<run-id>'].[jobId,arrayProperties.size]" --output text
+
+# 2. jobId -> stream. A fan-out's cells are <jobId>:<index>, index being the cell
+#    number. Address them directly; --array-job-id returns an empty list.
+batch describe-jobs --jobs <jobId>:0 <jobId>:1
+  --query "jobs[].[arrayProperties.index,status,container.logStreamName]" --output text
+
+# 3. stream -> lines.
+logs get-log-events --log-group-name /aws/batch/sbsandbox-intern-edullm-gpu
+  --log-stream-name <stream> --limit 50 --query "events[].message" --output text
+```
+
+Match `--job-status` to where the run is — `RUNNING` in flight, `SUCCEEDED` or `FAILED`
+afterwards — because a job is listed under one status only and the wrong one returns nothing
+rather than an error. A cell's first log line is `cell <n> -> <benchmark>`, so one call
+confirms you are reading the stream you meant.
 
 ---
 
