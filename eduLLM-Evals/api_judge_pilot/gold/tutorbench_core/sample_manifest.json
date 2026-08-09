@@ -1,0 +1,8 @@
+{
+  "benchmark": "tutorbench",
+  "population_gradable_cells": null,
+  "sample_size": 261,
+  "stratify_by": "criticality",
+  "capability_population": {},
+  "note": "Full 261-case human set (not a probability sample); no population weighting."
+}

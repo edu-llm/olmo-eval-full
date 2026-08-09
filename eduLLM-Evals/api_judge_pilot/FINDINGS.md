@@ -378,6 +378,32 @@ Multi-metric tradeoff (no dominant winner):
   tutorbench, where v4/analysis-first helped gpt-4.1 -> config is benchmark-specific.
 - 100 cells -> per-capability rates directional; test-retest/prompt-flip on temp 0.
 
+## TUTORBENCH revisited with full metrics (261 cells, v4)
+
+The earlier tutorbench audit was false-pass-only; re-scored with the full metric set
+(`gold/tutorbench_core/` via build_tutorbench_gold.py + score_gold.py, adapter v4,
+2 replicates, 2 perturbations). capability = criticality bucket; no population weighting
+(full set, not a sample).
+
+| model | FP% | macroF1 | MCC | acc | falseFail% | testRetest | promptFlip | unsc |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Qwen baseline | 37.1 | 72.7 | 0.461 | 73.6 | 17.9 | 0.0 | 0.0 | 0 |
+| sonnet-4-6 | 29.3 | 75.1 | 0.502 | 75.5 | 20.7 | 0.4 | 2.3 | 0 |
+| opus-4-6 | 34.5 | 75.8 | 0.525 | 76.6 | 14.5 | 0.8 | 1.9 | 0 |
+| gemini-2.5-flash | 35.3 | 74.3 | 0.493 | 75.1 | 16.6 | 5.4 | 8.4 | 8 |
+| gemini-3-flash-preview | 29.3 | 74.4 | 0.487 | 74.7 | 22.1 | 5.4 | 5.4 | 0 |
+| gpt-4.1 | 25.9 | 74.2 | 0.484 | 74.3 | 25.5 | 1.1 | 4.2 | 0 |
+
+- The full metrics REVISE the earlier tutorbench pick: **opus-4-6 is the best-quality judge**
+  (highest MCC 0.525 / macroF1 75.8 / acc 76.6, lowest false-fail 14.5, very stable), while
+  gpt-4.1 only wins if false-pass is the sole objective (lowest FP 25.9, but worst false-fail
+  25.5 and middling MCC). The prior "gpt-4.1 + v4 best on tutorbench" was a false-pass-only
+  conclusion.
+- tutorbench is hard/noisy for all judges (MCC ~0.5) vs biggen (~0.87); all beat Qwen.
+- gemini-2.5-flash truncates on long tutorbench responses (8 unscorable) + unstable -> out.
+- Benchmark-specific configs confirmed: biggen -> gemini-3+v1; tutorbench -> opus (quality)
+  or gpt-4.1 (min false-pass). Await the tutoreval gold set for its own selection.
+
 ## Caveats
 
 - Gemini numbers are not a fair read (format non-compliance under `max_tokens 512`).
