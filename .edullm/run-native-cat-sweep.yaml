@@ -20,44 +20,57 @@
 # has no benchmark for.
 #
 # ---------------------------------------------------------------------------------------
-# 1. FOUR BENCHMARKS AND NOT SEVEN. THIS IS THE ONE THING TO READ BEFORE APPROVING.
+# 1. FIVE MCQ BENCHMARKS. THIS IS THE ONE THING TO READ BEFORE APPROVING.
 #
-# `ready_names()` returns seven banks that are vendored and unblocked: arc_challenge, bbh,
-# gpqa, hellaswag, ifeval, leaderboard_math, musr. Only four of them can run *on this
-# path*, and the three that cannot are refused by the harness rather than by policy:
+# The array below is five cells: arc_challenge, hellaswag, musr, bbh, gpqa. Every one is
+# MCQ, scored by continuation log-likelihood, and reads this checkpoint format natively.
 #
-#   grading.LOADABLE_CHECKPOINT_KINDS = {mcq: ("hf", "olmo_core"), generative: ("hf",)}
+# THIS HEADER WAS REWRITTEN 2026-08-08 AND SAID SOMETHING DIFFERENT FROM ITS OWN BODY.
+# It claimed four benchmarks and not seven, listed `ifeval` among the ready banks, called
+# `gpqa` generative and therefore excluded, and justified all of it with an objection that
+# has since been measured and withdrawn -- while the `fanout` below it was already five
+# cells with `gpqa` in the array. A lead reading it was told the opposite of what would
+# run. Three things changed underneath it and none updated it:
 #
-# gpqa, ifeval and leaderboard_math are generative, and `generative.GENERATIVE_BACKENDS`
-# registers only `hf`. `generative._load_olmo_core` exists and raises NotImplementedError
-# on purpose: the MCQ scorer reads this format natively because a forward-only scorer never
-# pads and never stops, and this checkpoint family writes pad_token_id == eos_token_id == 0
-# -- decoding needs a distinct EOS to stop on, so the blocker is real for generation and
-# cannot be waived the way it was for scoring. `runner.run` calls `check_checkpoint_kind`
-# before it fetches anything, so such a cell would fail in seconds having spent nothing;
-# it is left out because a cell certain to fail is noise in a sweep, not insurance.
+#   * `gpqa` was re-vendored as MCQ, which is why it is a cell here.
+#   * `ifeval` is now blocked outright. A model reciting its prompt passes 129 of its 511
+#     items, so it reports a high, tight theta that means nothing. See its `blocked`
+#     reason in datasets.py and RESULT_CAVEATS.md. It is not a candidate for any sweep
+#     until the echo-baseline guard exists.
+#   * The pad/eos objection is gone. `GenerationConfig.validate` rejects only pad == eos,
+#     and fabricating the *pad* leaves the real EOS at 0 -- which is what the MCQ scorer
+#     already does. Probe run_019fe316-0e47 loaded this checkpoint that way and decoded 64
+#     tokens on each of three prompts.
 #
-# The generative three are not permanently out of reach. `--checkpoint-prep auto
-# --checkpoint-kind hf` converts the DCP to HF first and the generative grader loads that,
-# and the image carries what `convert._olmo_core_imports` wants. Two things make that a
-# separate, cheap experiment rather than three more cells here: the converted copy lives in
-# the same tmpdir as the 1.74 GB original, which is the disk pressure --checkpoint-prep
-# none exists to avoid; and `save_hf_model` on a config using `sequence_mixer` and
-# `partial_rotary_factor` is unverified on OLMo-core main. The argument in the sibling spec
-# -- that main reads these configs because `TransformerConfig.from_dict` never calls a
-# builder -- is about reading one, and says nothing about writing an HF copy of it.
+# So `generative.GENERATIVE_BACKENDS` now registers `olmo_core` alongside `hf`, and
+# `leaderboard_math` can be graded natively with no conversion step. It is absent here
+# because this spec is the MCQ sweep, not because it cannot run; see
+# Plan/flows/uni_mcq/GENERATIVE_RUN.md for the generative submission.
+#
+# Conversion via `--checkpoint-prep auto --checkpoint-kind hf` remains available and is
+# now the fallback rather than the route: it costs a converted copy beside the 1.74 GB
+# original, needs Hub egress for the tokenizer, and `save_hf_model` on a config using
+# `sequence_mixer` is unverified. The native path needs none of that.
 #
 # ---------------------------------------------------------------------------------------
 # 2. RUNTIME. THE BOUND IS PER CELL, WHICH IS WHY A FAN-OUT AND NOT A LOOP.
 #
 # `olmo-core-check` fixes 1h and refuses any --hours above it
 # (`runtime_above_the_workload_bound`). That bound applies to each cell of an array job
-# independently, so four benchmarks in one container would share one hour while four cells
-# get an hour each. Cost is the same either way -- four cells at $0.8048/h is the same
-# ceiling as one container for four hours would have been, except the latter is not
+# independently, so five benchmarks in one container would share one hour while five cells
+# get an hour each. Cost is the same either way -- five cells at $0.8048/h is the same
+# $4.02 ceiling as one container for five hours would have been, except the latter is not
 # submittable.
 #
-# None of these four is close to the bound. They are scored by continuation
+# WORTH KNOWING BEFORE CHOOSING A FAN-OUT AT ALL: approval class is decided in
+# `classify_request`, not by a cost threshold. A fan-out never auto-approves whatever it
+# costs, while a single cell routes to `automatic`. This sweep classified `routine` and
+# waited about 16 minutes for a lead. Five single-cell submissions would have cost the same
+# $4.02 and waited for nobody. A fan-out is the right shape when the cells are one
+# experiment; it is the wrong shape when they are five independent runs that happen to be
+# convenient to launch together.
+#
+# None of these five is close to the bound. They are scored by continuation
 # log-likelihood, which is one forward pass per answer choice, and the session stops at
 # min_items (8, or 24 for bbh) once SE reaches 0.3 -- run_019fe277 administered 8 items on
 # arc_challenge. Platform history for this workload on this machine is a median of 8m over
@@ -77,6 +90,30 @@
 #
 # The pinned sha carries that flag. A commit without it fails at argparse, immediately and
 # cheaply, which is the failure mode to prefer over one that ignores it.
+#
+# ONE THING THIS SWEEP TAUGHT, FOR WHOEVER READS ITS REPORTS. Under batch_eap+mwle the
+# `ability.standard_error` in the report is `se_mwle`, an asymptotic 1/sqrt(I(theta)) over
+# the administered items -- NOT the posterior SD the stopping rule used, which is
+# `se_online`. The two are not on one scale, so reading the reported SE against the 0.3
+# threshold compares quantities that were never compared during the run. On run_019fe33f
+# this inverted the apparent precision ordering: musr looks anomalously sharp at 0.060 on
+# se_mwle and is an unremarkable 0.172 on se_online, where bbh is tightest at 0.108 simply
+# for having administered 24 items. The report says so itself in
+# `metadata.se_mwle_definition`; see RESULT_CAVEATS.md.
+#
+# ---------------------------------------------------------------------------------------
+# 4. THE PINNED SHA IS STALE. REPIN BEFORE SUBMITTING.
+#
+# `git checkout 49d93da4...` below is now several commits behind, and the gap is not
+# cosmetic: it predates the per-item generation budgets, the runtime end-of-text
+# resolution, the exemplar ladder, the ifeval block and the native generative backend. The
+# container clones from GitHub at whatever this names, so submitting as-is evaluates a
+# harness nobody has and returns a well-formed report with a plausible theta. That is a
+# wrong answer rather than a failure, and nothing downstream catches it.
+#
+# Commit, push, then repin this line. Note that `edullm check`'s `uncommitted_changes`
+# refusal reads the OLMo-core tree rather than this one, so a clean check says nothing
+# about whether this repository's work is pushed.
 schema_version: 1
 workload_profile: olmo-core-check
 suggested_compute: gpu-1xl4

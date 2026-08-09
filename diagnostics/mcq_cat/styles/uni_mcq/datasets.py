@@ -252,16 +252,27 @@ class DatasetSpec:
             stays listed because the bank exists upstream and the work is understood;
             the resolver surfaces this string instead of a bare "bank missing".
 
-            Nothing sets it today, and the field stays because both situations that
-            once did recur. One is a bank that cannot be *vendored* -- gpqa's items
-            were behind a HuggingFace token scope until that scope was granted -- where
-            nothing is on disk and any ladder order would fail anyway. The other is a
-            bank already vendored whose join was later shown wrong, which is why
-            :func:`~.resolve.resolve` consults this field before it looks for
-            artifacts: ``params.json`` and ``items.jsonl`` are present and load
-            cleanly, so a ladder that checked the disk first would run the dataset and
-            report a confident theta computed from parameters attributed to the wrong
-            questions. The three ATLAS banks were in exactly that state.
+            Three set it today -- ``winogrande``, ``gsm8k`` and ``ifeval`` -- and they
+            are two different kinds of reason, which is worth keeping straight when
+            deciding whether one can be lifted. The first two are withheld over how
+            well a rebuilt bridge can be *checked*, not over anything known to be
+            wrong, so they lift when better evidence appears. ``ifeval`` is withheld
+            because something *is* known to be wrong with what a run would report: an
+            IFEval instruction names its own success token, so a model reciting its
+            prompt passes 129 of the 511 items and reports a high, tight theta that
+            stops on precision. It lifts when the echo-baseline guard exists.
+
+            The field also covers a bank that cannot be *vendored* -- gpqa's items were
+            behind a HuggingFace token scope until that scope was granted -- where
+            nothing is on disk and any ladder order would fail anyway. The case that
+            decides the ordering, though, is a bank already vendored whose join was
+            later shown wrong, which is why :func:`~.resolve.resolve` consults this
+            field before it looks for artifacts: ``params.json`` and ``items.jsonl``
+            are present and load cleanly, so a ladder that checked the disk first would
+            run the dataset and report a confident theta computed from parameters
+            attributed to the wrong questions. The three ATLAS banks were in exactly
+            that state, and ``ifeval`` is in a worse one -- its artifacts are correct
+            and it is the *scoring* that misleads.
         calibration: What is known about the convention the parameters were estimated
             under. Copied into the bank's manifest at vendoring time and never checked
             against a run, because it describes the past rather than the present; the
@@ -1033,10 +1044,17 @@ SUPPORTED: dict[str, DatasetSpec] = {
             "on everything that decides whether an item passes -- doc_to_text is the "
             "bare prompt field, until [], do_sample false, temperature 0 -- and the "
             "leaderboard's own records confirm that is what a pretrained submission was "
-            "sent. The token budget is the one place it departs: lm-eval sends "
-            "max_gen_toks 1280 and this style sends 1536, derived from the largest "
-            "length constraint the items themselves state and argued in config.yaml. "
-            "It can only lengthen a response, never reframe one. The scale "
+            "sent. The token budget is the one place it departs, and it departs the "
+            "other way now: this style takes lm-eval's own max_gen_toks 1280 as a "
+            "ceiling and derives a per-item budget below it from the length "
+            "constraints each item states, so most items get less rather than more. "
+            "Half the bank keeps the full 1280 on purpose -- 214 of the 308 items "
+            "declaring no length carry a constraint that truncation breaks, an ending "
+            "phrase or a closing quote or valid JSON -- and only the truncation-"
+            "tolerant items drop to the floor. Items demanding a non-English response "
+            "bypass the conversion entirely, because the words-to-tokens ratio must be "
+            "measured on target-language text and the prompt is English asking for "
+            "Marathi. Argued in config.yaml. The scale "
             "shift against the templated half is in the calibration note and in "
             "DEVIATIONS.md. Grading needs the ifbench verifier registry, a declared "
             "dependency of this project installed from a git URL; vendoring does not. "
