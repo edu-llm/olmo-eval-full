@@ -6,12 +6,27 @@
 # the native scorer builds at even though it converts nothing. Read it first. This file
 # records only what is different, which is three things.
 #
-# HOW TO SUBMIT. From the OLMo-core clone, as with the other specs:
+# HOW TO SUBMIT. From the OLMo-core clone, and NAME THE COMMIT:
 #
 #   cd ../OLMo-core
 #   edullm submit --experiment new-banks-cat --dataset none \
 #     --workload olmo-core-check --compute gpu-1xl4 \
+#     --commit 08df5aa0142465c80b4ea48e84faa46117275d61 \
 #     --spec ../olmo-eval-full/.edullm/run-new-banks-cat.yaml
+#
+# `--commit` is not optional here, and leaving it off is what the first attempt at this
+# run did. Without it the submission resolves whatever OLMo-core commit is checked out,
+# and compile refuses any commit that published no image: "build commit <sha> before
+# submitting it". Building the working branch is not the fix -- `edullm/p3-math-split`
+# fails the build's own lint gate on 33 pre-existing syntax errors under
+# `research/p3_corpus/scripts/`, which have nothing to do with this run, and several other
+# working branches fail the same way.
+#
+# So name a `main` commit, which the build workflow covers deliberately for this reason.
+# `08df5aa0` is chosen over the newer `4336ccc0` because it is the OLMo-core 2.5.0 the
+# native decode was proven against, including probe run_019fe316-0e47. These banks have
+# never run on a GPU, so this run changes the banks and holds the environment fixed; a
+# failure under a base image nobody has used would not say which of the two caused it.
 #
 # ---------------------------------------------------------------------------------------
 # 1. THIS IS THE FIRST GPU RUN OF THESE THREE BANKS. THAT IS THE POINT OF IT.
