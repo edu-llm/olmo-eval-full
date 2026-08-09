@@ -25,7 +25,7 @@ import os
 import random
 import re
 import time
-from typing import Any
+from typing import Any, cast
 
 from ...base import Criterion, JudgeVerdict, Scenario
 from ...common.judge import JudgeSpec, build_messages
@@ -88,7 +88,7 @@ def extract_content(payload: object) -> str | None:
     """
     if not isinstance(payload, dict):
         return None
-    choices = payload.get("choices")
+    choices = cast("dict[str, Any]", payload).get("choices")
     if not isinstance(choices, list) or not choices:
         return None
     first = choices[0]
