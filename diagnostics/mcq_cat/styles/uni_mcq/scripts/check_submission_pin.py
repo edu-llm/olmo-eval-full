@@ -56,8 +56,22 @@ import yaml
 #: structure. Two clones or two checkouts is not a spec this can reason about, and
 #: guessing which one the container would honour is the kind of assumption this file
 #: exists to remove.
-_CLONE = re.compile(r"git clone\b[^&;]*?(?P<url>https://\S+?)(?:\.git)?(?=\s)")
+#:
+#: The URL is found by shape rather than by scheme. Every committed spec clones over
+#: ``https``, but pinning that here would make the check refuse to reason about any spec
+#: written differently -- and would make it untestable against a local remote, which is
+#: the only way to exercise the push checks without a network.
+_CLONE_SEGMENT = re.compile(r"git clone\b(?P<args>[^&;']*)")
 _CHECKOUT = re.compile(r"git checkout\s+(?P<ref>\S+)")
+
+
+def _clone_url(segment: str) -> str | None:
+    """Return the first argument of a `git clone` that names a location, or None."""
+    for token in segment.split():
+        if "://" in token or token.startswith("git@"):
+            return token.removesuffix(".git")
+    return None
+
 
 #: A full object name. An abbreviation cannot be compared for equality against
 #: ``rev-parse`` output, and a branch name resolves in the container to whatever was
@@ -153,7 +167,11 @@ def read_spec(spec_path: Path) -> tuple[str, str]:
         raise Refused(f"{spec_path} could not be read as YAML: {err}.") from err
 
     command = (document or {}).get("command", "")
-    clones = _CLONE.findall(command)
+    clones = [
+        url
+        for segment in _CLONE_SEGMENT.findall(command)
+        if (url := _clone_url(segment)) is not None
+    ]
     checkouts = _CHECKOUT.findall(command)
     if len(clones) != 1 or len(checkouts) != 1:
         raise Refused(

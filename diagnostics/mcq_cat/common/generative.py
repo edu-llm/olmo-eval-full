@@ -920,9 +920,7 @@ def count_words(text: str) -> int:
     return len(_WORD_RE.findall(text))
 
 
-def _declared_word_demand(
-    instruction_id: str, kwargs: Mapping[str, Any]
-) -> int | None:
+def _declared_word_demand(instruction_id: str, kwargs: Mapping[str, Any]) -> int | None:
     """Words a single declared instruction obliges the response to produce, if any.
 
     ``None`` for an instruction that carries no length signal, which is most of them.
@@ -1049,9 +1047,7 @@ def ifeval_token_budget(
     # instruction list is a malformed bank, which IFEvalPromptStrict already scores 0 and
     # marks ungradable. Budgeting must not be the thing that raises first, so a short
     # list simply contributes no demand.
-    declared = list(
-        zip(instruction_ids, [dict(kw or {}) for kw in raw_kwargs], strict=False)
-    )
+    declared = list(zip(instruction_ids, [dict(kw or {}) for kw in raw_kwargs], strict=False))
     signals = set(instruction_ids)
 
     # The non-English exemption, taken before anything is converted.
@@ -1198,9 +1194,7 @@ def item_token_budget(
     )
 
 
-def fit_budget_to_context(
-    budget: int, prompt_tokens: int, context_window: int
-) -> int | None:
+def fit_budget_to_context(budget: int, prompt_tokens: int, context_window: int) -> int | None:
     """``budget`` reduced to what the context window actually leaves, or ``None`` to refuse.
 
     The last of three stages, and the ordering is the thing to be clear about because a
@@ -2404,15 +2398,11 @@ class GenerativeScorer:
         self.eos_text = str(published_eos) if published_eos else None
         self.eos_token = exemplar_eos_token(config, eos_token or self.eos_text)
         counter = getattr(complete, TOKEN_COUNTER_ATTR, None)
-        self._count_tokens: Callable[[str], int] | None = (
-            counter if callable(counter) else None
-        )
+        self._count_tokens: Callable[[str], int] | None = counter if callable(counter) else None
         tokenizer_id = getattr(complete, TOKENIZER_ID_ATTR, None)
         self._tokenizer_id = str(tokenizer_id) if tokenizer_id else None
         context = getattr(complete, CONTEXT_WINDOW_ATTR, None)
-        self._context_window = (
-            int(context) if isinstance(context, int) and context > 0 else None
-        )
+        self._context_window = int(context) if isinstance(context, int) and context > 0 else None
         if self._context_window is None and self._count_tokens is not None:
             log.info(
                 "The completer publishes no usable %s, so per-item budgets will not be "
