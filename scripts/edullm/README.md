@@ -1,4 +1,16 @@
-# Live two-machine EduLLM CAT run
+# EduLLM GPU handoffs
+
+## OLMoE native benchmark smoke
+
+[`run_olmoe_benchmark_smoke.py`](run_olmoe_benchmark_smoke.py) loads the pinned
+`allenai/OLMoE-1B-7B-0924-Instruct` checkpoint and runs three deterministic GSM8K cases
+through OLMo Eval's native `standard_olmo` runner. It uses the benchmark's own data,
+few-shot formatter, scorer, request/prediction artifacts, and managed vLLM lifecycle;
+there are no handwritten tutor prompts. See
+[`OLMOE_BENCHMARK_SMOKE.md`](OLMOE_BENCHMARK_SMOKE.md) for the GPU command and strict
+compatibility gates. The benchmark score is diagnostic and does not gate this smoke.
+
+## Live two-machine EduLLM CAT run
 
 Tooling to run a live Computerized Adaptive Test (CAT) where the **candidate Tutor LLM**
 runs locally on the eval job's GPU and the **frozen Qwen judge** runs on a **separate
