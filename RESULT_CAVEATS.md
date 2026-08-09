@@ -144,7 +144,47 @@ the taught `Final Answer:` line, so a looping model produces neither and matches
 and the exemplar answers match 0, 2, 7 and 1 of the 1,183 golds, so copying them buys
 almost nothing.
 
-## A `leaderboard_math` theta can average several prompt regimes
+## A `leaderboard_math` theta on a weak checkpoint is the prior, not a measurement
+
+Measured, not predicted from theory: run `run_019fe78d-13f9` on Preston's `step305176`
+returned **theta -1.6523 with se 0.5475**, having administered all 40 items and got 0 of 40
+correct, stopping on `max_items_reached`.
+
+**That number was computed before the run, from the bank alone, as -1.652 +/- 0.547.** The
+agreement to four significant figures is the finding: the theta carries no information about
+the checkpoint beyond "everything was wrong". It is the standard-normal prior conditioned on
+an all-wrong response pattern, which is a statement about where this bank's difficulties sit
+rather than about the model.
+
+The mechanism is the SE floor recorded in the entry below -- at theta -2 the 40 most
+informative of 1,183 items carry Fisher information 0.97. Any all-wrong session on this bank
+returns approximately this pair of numbers, for any checkpoint, however bad.
+
+What to do: on a checkpoint scoring 0, quote nothing. Two checkpoints that both score 0 will
+return the same theta and it will not order them.
+
+## Nothing distinguishes a wrong answer from an unreadable one
+
+Found by the same run, and it is why the theta above is doubly uninformative.
+
+`MathLatexEquivalence` reads exactly two forms: a `\boxed{}` expression, or the Minerva
+`Final Answer: The final answer is $X$.` line. **Zero of the 40 completions contained
+either.** The decode looped -- "The area of the triangle is 12 inches." repeated until the
+budget ran out -- so there was never an answer to grade, and every item scored 0 for a
+formatting reason rather than a mathematical one.
+
+The report cannot tell you that. `extract_math_answer` falls through to normalizing the whole
+completion, so `extracted_answer` reads `'Thefollowingissimplifiedsolutiontothe'` and sits in
+the same field, with the same shape, as a genuine `\boxed{}` read. A session that is 100%
+extraction failure is indistinguishable from one that is 100% wrong answers.
+
+What to do: add an `extraction_path` field recording `boxed`, `final_answer` or
+`whole_completion`. A session that is entirely `whole_completion` is a prompt-convention
+failure, and the runner already warns about it per item -- "Repeated across a run this is the
+prompt convention failing to take, not a weak checkpoint" -- but nothing aggregates that
+warning into the report.
+
+## A `leaderboard_math` theta can average several prompt regimes -- MEASURED INERT at 2048
 
 Applies to any generative MATH run on a checkpoint whose context window is small, which
 includes Preston's `step305176`.
@@ -164,11 +204,24 @@ because a uniform one at least shifts every item the same way. Measured: at 2048
 ladder settles between 4 and 1 shots with nothing ungradable; at 4096 and above it never
 fires and every item runs 4-shot.
 
-What to do: read `num_fewshot` per response and the `context_fit` block before comparing a
-MATH theta with anything. They are per item rather than per session precisely because a
-session-level field would average the mixing away. A MATH theta from a >=4096-context
-model is comparable with the bank; one from a 2048-context model is not straightforwardly
-comparable with it or with another 2048 model of different stem luck.
+**Settled by measurement 2026-08-09, and the hazard did not materialise.** Two agents
+disagreed on how many items would ladder at a 2048 window -- one measured with the real
+tokenizer and predicted 4-, 2- and 1-shot mixing, another used a character proxy and found a
+single qualifying item. Run `run_019fe78d-13f9` administered 40 items at a 2048 window and
+`num_fewshot` was **4 for every one of them**. The ladder never fired; the character-proxy
+estimate was right.
+
+What did fire, once, was the budget clamp: a 1,645-token prompt had its generation budget
+reduced to 403 rather than losing an exemplar, which is the designed order of operations --
+shrink the budget first, drop exemplars only when the prompt itself will not fit.
+
+So this caveat is inert for a 2048-context checkpoint and the concern was theoretical. It is
+retained because it is a property of the configuration rather than of the harness: a bank
+with longer stems, or a smaller window, would reach the ladder.
+
+What to do: read `num_fewshot` per response before comparing a MATH theta with anything.
+They are per item rather than per session precisely because a session-level field would
+average any mixing away.
 
 ## A high `ungradable` rate is recorded but never warned about
 

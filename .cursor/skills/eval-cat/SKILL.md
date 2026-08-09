@@ -54,7 +54,7 @@ else, and **never construct a checkpoint path** — it cannot be derived.
 | # | Input | Where it lands |
 |---|---|---|
 | 1 | **Checkpoint** — one or more `s3://` prefixes | `--checkpoint` inside the spec's `command:` |
-| 2 | **A basic inference example** — the runner file plus ~200 tokens of its real output, verbatim, and the library and commit it was loaded with | `--dtype`, and whether generative banks are reachable at all |
+| 2 | **A basic inference example** — the runner file plus ~200 tokens of its real output, verbatim, and the library and commit it was loaded with | `--dtype`, and whether a generative bank will return anything worth reporting |
 | 3 | **Benchmarks** | `--benchmark`, or the `BENCHMARKS` array of a fan-out |
 | 4 | **CAT settings** | `--se-threshold`, `--max-items`, `--ability-estimator`, `--batch-size` |
 | 5 | **Hardware** — recommend `gpu-1xl4` | `--compute` on the submit line |
@@ -91,17 +91,31 @@ is cheap and one that is not worth submitting.
 
 Two consequences of that token now land at checkpoint load rather than in the report. The
 end-of-text token is resolved from the checkpoint's *own* tokenizer at run time, closes
-MATH's few-shot exemplars and is appended to that bank's effective stop list, so a
-checkpoint shipping no tokenizer files and naming one the Hub cannot serve is **refused**
-at load rather than degraded into scoring every item at the flat cap. And MATH drops whole
-exemplars, never part of one, until the prompt fits the window — flooring at 1 shot and
-marking the item ungradable below that — so `num_fewshot` can differ item to item inside a
-single session.
+MATH's few-shot exemplars (`exemplar_eos_token`) and is appended to that bank's effective
+stop list (`eos_stop_sequences`), so a checkpoint shipping no tokenizer files and naming
+one the Hub cannot serve is **refused** at load rather than degraded into scoring every
+item at the flat cap — `require_live_tokenizer`, which probes the counter rather than
+testing for the attribute. The same load reads the checkpoint's context window out of
+`config.json`, trying `OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS`, then olmo-eval's own
+`model.*` spellings, then `dataset.sequence_length`; a checkpoint declaring none of them
+is **refused** by `olmo_core_context_length` with a message naming every path it searched
+and the override variable, because unclamped is not a degraded generative run but a wrong
+one that looks right.
+
+When a prompt does not fit, the clamp acts before the ladder: the generation budget is
+reduced first, and whole exemplars are dropped only when the prompt itself will not fit,
+flooring at 1 shot. That order is measured, not asserted — in `run_019fe78d` the clamp
+fired on exactly one of 40 items, cutting a 1,645-token prompt's budget from 1,024 to 403
+with `exemplars_dropped: 0`, and every one of the 40 ran at `num_fewshot: 4`. **So on a
+2048-token window the exemplar ladder is measured inert and `num_fewshot` mixing is not a
+hazard you will meet**; it becomes one on a smaller window or a bank with longer stems.
+Read `num_fewshot` per response and the `context_fit` block rather than assuming either
+way.
 
 **Does the model recite its prompt, loop a clause, or otherwise decode degenerately?** Of
-the four, look for this one first. It costs nothing and it decides whether a generative
-bank may be selected at all. An IFEval instruction is verifiable precisely because it names
-its own success token, so stating the constraint puts that token in the prompt, and a
+the four, look for this one first. It costs nothing and it decides what a generative bank
+can be claimed to have measured. An IFEval instruction is verifiable precisely because it
+names its own success token, so stating the constraint puts that token in the prompt, and a
 response quoting the prompt satisfies the checker. Measured through this repo's own grading
 path over the 511 vendored items, a verbatim echo passes 129 of them, 25.2%; simulated
 against this style's own Fisher selection and EAP it reports theta +0.19 to +1.11 at
@@ -114,11 +128,24 @@ spent: a model that repeats its prompt back will report inflated ability on a ge
 bank rather than the floor it deserves. MCQ scoring is unaffected — it is forward-only and
 decodes nothing.
 
+**On MATH the same degeneracy fails in the opposite direction, and it is not free.** A
+looping decode never reaches `\boxed{}` or `Final Answer:`, so the grader has nothing to
+extract and scores every item 0 for a formatting reason. That is what happened on
+`run_019fe78d`: 40 items, 40,339 tokens, 0 correct, no answer form in any completion. The
+run still cost its GPU minutes and still produced a report a reader would take at face
+value. So when the pasted output loops, say before submitting that the run will establish
+the pipeline and not the checkpoint — it is still worth doing for that, and the header of
+[`run-native-math.yaml`](../../../.edullm/run-native-math.yaml) says so in as many words,
+but it is a different claim than the user probably asked for.
+
 **What dtype do the weights load at?** Take it from the output, not from `config.json`.
 The measured case here was 546.2 MB of weights for a 135M model — four bytes a parameter,
 i.e. fp32 — from a command line that said `--dtype bfloat16`, because the flag did not
-reach the loader at the time. It does now. Any theta recorded before 2026-08-08 says
-bfloat16 and was produced in fp32, so it is not a baseline for a rerun.
+reach the loader at the time. It does now, and it reaches **both** configs the runner
+builds — `InferenceConfig` for scoring and `GenerationConfig` for decoding — so a native
+generative run is built at the precision the command names rather than at the
+checkpoint's. Any theta recorded before 2026-08-08 says bfloat16 and was produced in fp32,
+so it is not a baseline for a rerun.
 
 Also record the library and commit the example was loaded with. A release wheel and `main`
 disagree: PyPI `ai2-olmo-core` 2.4.0 has no schema for `sequence_mixer` or
@@ -169,31 +196,47 @@ Three of the nine supported banks are blocked today — `winogrande`, `gsm8k` an
 says specifically why, and it distinguishes no bank from a blocked bank from an unknown
 name; relay that reason verbatim rather than paraphrasing it as "not supported".
 
-**`ifeval` cannot be selected today, whatever the user asks for.** Its block is unlike the
-other two, which are join-evidence questions: this bank's join is fine and its grading is
-faithful, and that is exactly the problem — see Step 1's fourth fact, and read the reason
-out of `datasets.py` for the wording to relay. What lifts it is the echo-baseline guard:
-stamp each item offline with whether an echo passes it, then report the share of a
-session's passes an echo would also have produced. Re-checking a join does not lift it, and
-neither does converting the checkpoint; the exploit belongs to the bank's verifiers rather
-than to any model.
+**`ifeval` cannot be selected, whatever the user asks for — including by name, including
+when they say they understand the caveat.** There is no flag that reaches it and no
+correct way to point at its bank directly; `ready_names()` returns six names and `ifeval`
+is not among them. Its block is unlike the other two, which are join-evidence questions:
+this bank's join is fine and its grading is faithful, and that is exactly the problem — see
+Step 1's fourth fact, and read the `blocked` reason out of `datasets.py` for the
+authoritative wording to relay, because it is long and specific and paraphrasing it as
+"not supported" loses the argument. The short of it is that a verbatim prompt echo passes
+129 of the 511 vendored items, so a reciting model reports a high, tight theta at
+`ungradable.rate` 0.0 with no field indicating anything is wrong. What lifts it is the
+echo-baseline guard: stamp each item offline with whether an echo passes it, then report
+the share of a session's passes an echo would also have produced. **Re-checking a join
+does not lift it**, and neither does converting the checkpoint or picking a better model;
+the exploit belongs to the bank's verifiers rather than to any checkpoint. Say that to a
+user who asks for it by name, and offer the five MCQ banks and MATH instead.
 
-**Only `modality == "mcq"` banks can run on the native path** — five of the six ready
-names, `leaderboard_math` being the generative sixth. `LOADABLE_CHECKPOINT_KINDS` gives MCQ
-`("hf", "olmo_core")` and generative `("hf",)`, because `GENERATIVE_BACKENDS` registers
-`hf` alone. **The reason is no longer the EOS collision, and this page said it was until
-today.** `_load_olmo_core` exists, is deliberately unregistered, and its docstring records
-the withdrawal: `GenerationConfig.validate` rejects only `pad == eos`, fabricating the
-*pad* leaves the real EOS at 0 exactly as the MCQ scorer already does, and probe
-`run_019fe316-0e47` decoded 64 tokens on each of three prompts that way. What is missing is
-a completer publishing the token counter, context window, budget-awareness and EOS text
-that the budget machinery reads off one. A native completer is being written now, so read
-the registry rather than this sentence. `runner.run` calls `check_checkpoint_kind` before
-it fetches anything, so a generative cell fails in seconds having spent nothing — which
-makes it noise in a sweep, not insurance. Converting first
-(`--checkpoint-prep auto --checkpoint-kind hf`) also reaches those banks and has never once
-been executed; it is the recorded fallback, not the plan, and does not belong in an MCQ
-submission.
+**Both modalities now run on the native path.** `LOADABLE_CHECKPOINT_KINDS` gives MCQ and
+generative the same `("hf", "olmo_core")`, because `GENERATIVE_BACKENDS` registers
+`"olmo_core": _load_olmo_core` beside `hf`. **This page said the opposite until
+2026-08-09, and an agent reading the old sentence would have told a user that MATH cannot
+be submitted natively.** Commit `0d25d4ba` wrote `_OlmoCoreCompleter` and registered it;
+`run_019fe78d` then graded `leaderboard_math` on a raw sharded checkpoint end to end with
+no conversion anywhere in it. So `--benchmark leaderboard_math --checkpoint-prep none
+--checkpoint-kind olmo_core` is a submission you can make today, and Step 3 has the spec.
+
+The two registries stay separate dicts rather than collapsing to one tuple, and the
+docstrings say why: a backend registers per modality, the two legitimately diverged for
+weeks while the MCQ scorer read this format and the generative stub refused it, and the
+next backend will arrive the same way. **They agree today; that is a fact about today.**
+Read them, do not recall them. `runner.run` calls `check_checkpoint_kind` before it
+fetches anything, so a kind neither registry knows still fails in seconds having spent
+nothing, ahead of the multi-gigabyte `resolve_checkpoint` that guard exists to run before.
+
+Converting first (`--checkpoint-prep auto --checkpoint-kind hf`) still reaches the
+generative bank and still has never once been executed. It is now the fallback rather than
+the route, and the reason is generality rather than price: `save_hf_model` has to
+understand each submitter's architecture — this checkpoint already needed the
+`get_hf_config` patch because a plain pre-norm block raises upstream — while the native
+reader takes whatever `TransformerConfig.from_dict` parses. Note the asymmetry if you ever
+do take it: on the converted path the kind names the *backend*, so `--checkpoint-kind hf`
+is correct and `olmo_core` is refused up front, which is the reverse of the native path.
 
 ---
 
@@ -201,9 +244,10 @@ submission.
 
 Specs live in `.edullm/`. Start from the closest sibling rather than from nothing:
 [`run-native-cat.yaml`](../../../.edullm/run-native-cat.yaml) is the single-benchmark
-control and [`run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml) is
-the MCQ fan-out. Their headers carry the arguments for every flag below and are worth
-reading once.
+control, [`run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml) is the
+MCQ fan-out, and [`run-native-math.yaml`](../../../.edullm/run-native-math.yaml) is the
+generative one — the spec `run_019fe78d` was submitted from. Their headers carry the
+arguments for every flag below and are worth reading once.
 
 The on-node command, with the parts that are yours in caps:
 
@@ -234,6 +278,34 @@ are independent seams and this is the pairing that converts nothing.
 **Not `--extra olmo_core` on the install.** That extra pins `ai2-olmo-core==2.4.0`, so it
 would install over the 2.5.0 the image already carries — the one release that cannot read
 this config — and the run would die at config parse having looked correct all the way down.
+
+### MATH is the same spec with two words changed
+
+`leaderboard_math` is the one generative name in `ready_names()`, and on the native path
+its spec differs from the MCQ control in the benchmark name and the reported estimator,
+and in nothing structural:
+
+```yaml
+  --benchmark leaderboard_math
+  --ability-estimator batch_eap
+```
+
+Everything else — `--checkpoint-prep none --checkpoint-kind olmo_core --dtype bfloat16`,
+the clone, the pinned sha, `--s3-out "$EDULLM_OUTPUT_PREFIX"` — is unchanged, which is the
+claim the per-modality registry makes: a backend is a completer plus a row in
+`GENERATIVE_BACKENDS`, and everything between a prompt and a graded response is
+backend-agnostic and already written.
+
+`batch_eap` rather than the sweep's `batch_eap+mwle`, and the choice is worth copying on a
+first run of any path. Both thetas land in the report either way, so this only decides
+which pair of numbers `ability.theta` and `ability.standard_error` carry — and under MWLE
+the published SE is `se_mwle` while the stopping rule acted on the posterior `se_online`.
+`batch_eap` makes the report self-consistent, which is what you want when the thing under
+test is the pipeline.
+
+**Keep it one cell.** There is one generative bank, so there is nothing to fan out over,
+and a single cell is also what auto-approves — see Step 5, which is where that decision
+actually costs you something.
 
 ### More than one benchmark means a fan-out
 
@@ -320,12 +392,22 @@ rather than assuming it.
   shows `--hours 2`; that line no longer validates.)
 - **Read `cost` and `approval_class` out of the JSON and quote nothing from memory** —
   AGENTS.md forbids it, and the numbers live in reviewed configuration that moves. Also
-  read `approving_environment`, and note that cell count can change the class: the same
-  spec at one cell and at four came back in different classes on 2026-08-08.
+  read `approving_environment`.
+- **Shape decides approval, and price does not.** This is the single most useful
+  operational fact when you are submitting one benchmark. The class comes out of
+  `classify_request`, not out of a cost threshold: **a fan-out never auto-approves at any
+  price, while a single cell routes to `automatic`.** Measured both ways on the same
+  checkpoint and the same hardware — the five-cell MCQ sweep classified `routine` /
+  `run-approval-lead` and sat about sixteen minutes waiting for a lead, and single-cell
+  `run_019fe78d` was, in the CLI's words, "released automatically. Nothing is waiting on a
+  person." Five separate single-cell submissions cost the same as a five-cell fan-out and
+  wait for nobody. So fan out when the cells are one experiment, and do not fan out merely
+  because several runs are convenient to launch together.
 - **`approval_class: automatic` does not mean it will start.** Runs classified automatic
-  have repeatedly still parked at `PENDING_APPROVAL` behind the `run-approval-lead` GitHub
-  environment, which the CLI cannot see. Tell the user a run may wait; do not promise it
-  will not.
+  have still parked at `PENDING_APPROVAL` behind the `run-approval-lead` GitHub
+  environment, which the CLI cannot see, and the automatic class also closes once the
+  day's unattended spend reaches its ceiling. Tell the user a run may wait; do not promise
+  it will not.
 - Three `deferred` entries are normal. They are image-registry questions only a pushed
   commit and the submission workflow's credential can answer.
 
@@ -353,6 +435,32 @@ Reach it through the sb-aws broker, read-only — AGENTS.md rules out `boto3`, t
 and `curl` at an AWS endpoint, and a broker call is attributable where a laptop shell is
 not. **Read the events, not `lastEventTimestamp`**: that field lags badly enough on a live
 stream to make a working job look dead.
+
+### A generative run in flight looks different, and the difference wastes checks
+
+Three things about `run_019fe78d` that an MCQ run does not teach you, and each one cost a
+check that returned nothing:
+
+- **S3 is written once, at the end.** `runner._write_report` uploads `cat_report.json`
+  after the session finishes; nothing is streamed and no partial artifact appears. So an
+  absent output prefix at minute ten means the run has not finished, and nothing else. Do
+  not read it as failure.
+- **`edullm status` tops out at `ADMITTED`.** It did not report a terminal state for this
+  run at any point, so waiting for one is waiting for something that does not arrive.
+  Absence of `SUCCEEDED` is not evidence.
+- **`edullm logs <full-run-id>` is the only live view of the container**, and it is not
+  free in the way `status --json` is. It dispatches `cancel-run.yml`, which holds the
+  `run-canceller` role — the one identity granted `batch:DescribeJobs` and
+  `logs:GetLogEvents` on the two Batch log groups — and prints the stream's last 50 lines
+  into the workflow's step summary. Nothing is cancelled unless you tick `stop`. It costs a
+  GitHub runner minute per call, so **check S3 first and reach for logs only once absence
+  has stopped being informative.**
+
+**For a fan-out, `edullm logs` cannot read a cell at all.** The workflow resolves the run
+id to one job and reads `container.logStreamName` off it; an array parent runs no
+container, so that field is empty and the workflow correctly reports that there is no
+stream yet. It is not a fault and there is no flag for it — a cell's output is reachable
+only through the broker, by log stream.
 
 ---
 
@@ -389,18 +497,55 @@ stream to make a working job look dead.
   Always surface these. Several banks were calibrated under a different prompting
   convention than we administer, which shifts theta's absolute value while leaving
   checkpoint-to-checkpoint comparison intact; a user told only the number will over-read it.
+- `metadata.generation_runtime` and `metadata.generation_budget` — **generative runs only**,
+  and they are how you check that the run was administered the way you think. Between them
+  they record `context_length_declared` with the `context_length_source` that supplied it,
+  `dtype_requested`, `kv_cache`, `eos_token` with `eos_token_id_passed_to_generate`,
+  `exemplars_end_with_eos`, the set of `num_fewshot_used`, `items_over_context`, and a
+  budget breakdown counting how many items came from the cascade against
+  `context_clamped`. On `run_019fe78d` that read `dataset.sequence_length` / 2048,
+  `num_fewshot_used: [4]`, and 39 cascade against 1 clamped.
 
 Then read [`RESULT_CAVEATS.md`](../../../RESULT_CAVEATS.md), which is the companion to this
-list and is not summarised here on purpose. Six entries, four of which change how a report
-should be read today: `gpqa`'s theta measures a constant-"A" responder rather than
-knowledge, `ability.standard_error` is not the quantity the stopping rule compared against
-0.3, a `leaderboard_math` theta cannot resolve a weak checkpoint at all — the bank's own
-information gives an SE floor of 1.01 at theta -2 — and the `ifeval` echo. Each entry names
-the run it was found in, so cite the entry rather than restating it.
+list and is not summarised here on purpose. Its entries name the run each was found in, so
+cite the entry rather than restating it. The ones that change how a report is read today:
+`gpqa`'s theta measures a constant-"A" responder rather than knowledge,
+`ability.standard_error` is not the quantity the stopping rule compared against 0.3, the
+`ifeval` echo, and the two `leaderboard_math` entries the next section acts on.
+
+### A MATH theta is not a result until you have checked two things
+
+An agent will otherwise report a number, and on this bank the number arrives looking
+entirely healthy: no `ungradable`, no alert, an SE that would pass a glance.
+`run_019fe78d` returned **theta -1.6523, se 0.5475, `observed_accuracy` 0.0 over 40 of
+1,183 items, `stop_reason: max_items_reached`** — and that theta had been computed *before
+the run, from the bank alone*, as -1.652 ± 0.547. The agreement to four significant
+figures is the whole point.
+
+- **Did it score anything?** On a checkpoint that scores zero, theta is the standard-normal
+  prior conditioned on all-wrong — a statement about where this bank's difficulties sit, not
+  a measurement of the model. The bank's information gives an SE floor of 1.01 at theta -2,
+  so any all-wrong session returns approximately that same pair, and **two checkpoints that
+  both score zero return the same theta and it will not order them.** Quote nothing.
+- **Did the completions contain an answer at all?** `MathLatexEquivalence` reads exactly
+  two forms, a `\boxed{}` expression or the Minerva `Final Answer:` line. **Zero of the 40
+  completions contained either**; the decode looped a clause until the budget ran out, so
+  every item scored 0 for a formatting reason rather than a mathematical one. Nothing in
+  the report says so: `extract_math_answer` falls through to normalizing the whole
+  completion, so `extracted_answer` reads `'Thefollowingissimplifiedsolutiontothe'` in the
+  same field, with the same shape, that a genuine `\boxed{}` read would occupy. The
+  runner does warn per item — "Repeated across a run this is the prompt convention failing
+  to take, not a weak checkpoint" — but nothing aggregates it into the report, so the check
+  is yours: grep the `completion` fields for `\boxed{` and `Final Answer` before quoting a
+  MATH theta, and say the run measured extraction rather than mathematics if neither
+  appears.
+
+Both are written up in [`RESULT_CAVEATS.md`](../../../RESULT_CAVEATS.md); cite it rather
+than restating it at length to a user.
 
 ---
 
-## Worked example
+## Worked example — the MCQ sweep
 
 **The five inputs, as given.** (1) `s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/`.
 (2) An inference example loaded with `ai2-olmo-core` 2.5.0, whose tokenizer
@@ -488,6 +633,51 @@ money. Show the user the resolved plan, the cost block and the class first.
 
 ---
 
+## Worked example — the generative one, which has been run
+
+Same checkpoint, same hardware, same five inputs except (3) `leaderboard_math` alone and
+(4) defaults with `batch_eap` reported. The spec is
+[`.edullm/run-native-math.yaml`](../../../.edullm/run-native-math.yaml), committed in
+`a18d44f1`, and its header records the three things it does not share with the MCQ specs:
+why one cell rather than a fan-out, where the 2048 window comes from, and why the reported
+estimator is `batch_eap`. It pins `ff816927`, the first pushed commit carrying the native
+completer, so Step 4 applies before it is submitted again.
+
+```bash
+cd ../OLMo-core
+edullm submit --experiment native-olmo-core-math --dataset none \
+  --workload olmo-core-check --compute gpu-1xl4 \
+  --commit 08df5aa0142465c80b4ea48e84faa46117275d61 \
+  --spec ../olmo-eval-full/.edullm/run-native-math.yaml
+```
+
+`--commit` is on that line and is **not** in the spec's header, which shows the command
+without it. Omitted, the CLI takes the OLMo-core clone's current HEAD, and different
+`edullm/*` branches build materially different images — the image is what supplies
+`olmo_core` on the container's `PYTHONPATH`, so it decides whether
+`TransformerConfig.from_dict` parses the checkpoint at all.
+
+What happened, as expectations rather than as numbers to quote — read `check` for the
+current ones:
+
+- **It auto-approved.** One cell, so `classify_request` routed it to `automatic` and the
+  CLI reported that it was "released automatically. Nothing is waiting on a person." The
+  five-cell sweep above waited about sixteen minutes for a lead at comparable money.
+- **About 22 minutes wall clock and roughly $0.30 against a $0.80 ceiling.** Decode ran at
+  39.6 tokens/sec with no KV cache — 1,024 tokens in about 25.8s, so roughly 17 minutes for
+  40 items — and the balance was the clone, the pip install and the 1.74 GB pull. Scale
+  that rate, not the wall clock, when a submitter's checkpoint is larger: it is what the 1h
+  per-cell bound binds against, and there is no second attempt.
+- **The report landed at the run's S3 output prefix, once, at the end.** Nothing appeared
+  there while it ran. A pulled copy sits beside this repository in
+  `cat_runs/run_019fe78d-math/`, uncommitted.
+- **The result was theta -1.6523 at se 0.5475 with 0 of 40 correct, and is not quotable**
+  — Step 7 says why, and it is the part of this example most likely to be misreported. What
+  the run establishes is that a raw training checkpoint can be graded generatively end to
+  end, which is what a future submitter needs and what no offline test can show.
+
+---
+
 ## What not to do
 
 - **Do not submit with uncommitted or unpushed changes to `diagnostics/` or
@@ -502,7 +692,8 @@ money. Show the user the resolved plan, the cost block and the class first.
   does, so an ordinary run administers 8–40 items.
 - Do not run a benchmark absent from `ready_names()` by pointing at its bank directly. The
   exclusions are recorded, and several of them are that the resulting number would be
-  meaningless.
+  meaningless. **`ifeval` in particular is not available on any request**, however the user
+  frames it; relay the `blocked` reason and offer the six ready names.
 - Do not compare theta across benchmarks. Predicted accuracy is the cross-benchmark
   quantity.
 - Do not present a theta from a report carrying an `ungradable` alert as a measurement of
@@ -510,5 +701,10 @@ money. Show the user the resolved plan, the cost block and the class first.
 - Do not submit a generative bank without having read the submitter's sample output for an
   echo, and do not report the theta if you skipped it. That failure carries no alert, an
   `ungradable.rate` of 0.0 and the tightest SE in the sweep.
+- Do not quote a `leaderboard_math` theta without checking that the completions contain
+  `\boxed{}` or `Final Answer`, and do not quote one at all from a session that scored
+  zero. Both failures produce a healthy-looking report; see Step 7.
+- Do not poll `edullm logs` while a run is in flight. It dispatches a workflow and buys the
+  last 50 lines; S3, which is free, answers the only question you usually have.
 - Do not quote a price, a runtime bound, a cost ceiling or an approver from memory or from
   a document — including this one.

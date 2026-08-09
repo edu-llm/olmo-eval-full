@@ -1,5 +1,36 @@
 # Running the two generative banks
 
+> **EXECUTED 2026-08-09. Read this header before the body, which is the plan as it stood
+> beforehand and is stale in several places.**
+>
+> Route B was chosen and built. `GENERATIVE_BACKENDS` now registers
+> `{"hf", "olmo_core"}` and `LOADABLE_CHECKPOINT_KINDS[GENERATIVE]` is `("hf", "olmo_core")`
+> (commit `0d25d4ba`), so every claim below that generative accepts `hf` alone, or that
+> `_load_olmo_core` raises `NotImplementedError`, describes the world before that commit.
+> Conversion was never attempted and is not needed.
+>
+> `leaderboard_math` ran natively on Preston's `step305176` as
+> `run_019fe78d-13f9-701c-9db4-c9df2e973e88`: single cell, auto-approved with no lead wait,
+> about 22 minutes, roughly $0.30 of a $0.80 ceiling, 39.6 tokens/sec. Spec at
+> `.edullm/run-native-math.yaml`. Report in `cat_runs/run_019fe78d-math/`.
+>
+> `ifeval` is blocked and is no longer one of "the two generative banks" -- a verbatim
+> prompt echo passes 129 of its 511 items. The scope of this file is now MATH alone.
+>
+> **What the run settled.** The checkpoint config confirmed `dataset.sequence_length` 2048
+> with no model-level window, so the completer's fallback is the only source. The exemplar
+> ladder never fired -- all 40 items ran 4-shot -- so the mixed-shot hazard is measured
+> inert at this window; the budget clamp fired once, reducing a 1,645-token prompt to 403
+> tokens, which is the designed order. Theta came back -1.6523 +/- 0.5475 on 0 of 40
+> correct, matching a pre-run prediction of -1.652 +/- 0.547 computed from the bank alone.
+> That agreement is the result: the number is the prior conditioned on all-wrong, and zero
+> completions contained `\boxed{}` or `Final Answer`, so nothing was ever graded on its
+> mathematics. See `RESULT_CAVEATS.md`.
+>
+> **Still open:** flash-attn and KV caching (Phase 1 below, still accurate and still not on
+> the critical path), and the `extraction_path` field that would make a formatting failure
+> legible as one rather than as forty wrong answers.
+
 Everything the MCQ sweep proved is done: `run_019fe33f` administered all five MCQ banks
 natively, 61 items against 10,486, every cell stopping on precision. What remains is
 `ifeval` and `leaderboard_math`, and this file is the plan for getting a number out of them.
