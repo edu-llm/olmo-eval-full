@@ -490,11 +490,12 @@ class TestAnUnloadableCheckpointFormatFailsFirst:
     loader means discovering it after ``resolve_checkpoint`` has pulled every object
     under an ``s3://`` prefix, which for a checkpoint is the expensive part of the run.
 
-    The case is a *generative* bank asked for ``olmo_core``, and it is the only one left
-    now that the MCQ scorer reads that format natively. That asymmetry is the reason
-    :data:`grading.LOADABLE_CHECKPOINT_KINDS` is a per-modality dict: the generative
-    completer is still a stub for the native layout, and it needs a distinct EOS to stop
-    on, which this checkpoint family does not have.
+    ``olmo_core`` used to be that case for a *generative* bank and no longer is: both
+    modalities read the native layout now. What these keep pinning is that the guard is a
+    per-modality table rather than one list -- the entries agree today, and the check has
+    to keep reading only the half the bank is graded from, because the runner fills both
+    from one ``--checkpoint-kind`` and a bank must not be refused over the half nothing
+    will load.
     """
 
     _GENERATIVE = grading.GradingRequest(dataset=GENERATIVE_DATASET, modality=grading.GENERATIVE)
@@ -510,18 +511,39 @@ class TestAnUnloadableCheckpointFormatFailsFirst:
         )
         grading.check_checkpoint_kind(_REQUEST, settings)
 
-    def test_olmo_core_is_refused_for_a_generative_bank(self) -> None:
-        """Same settings, other modality, and only one half is read."""
+    def test_olmo_core_now_passes_for_a_generative_bank_too(self) -> None:
+        """The refusal this used to assert was the stub, and the stub is gone.
+
+        ``generative._load_olmo_core`` is a real backend now, so a native generative run
+        has to get past this guard to reach it. The guard runs before
+        ``resolve_checkpoint``, so leaving the old entry in place would have refused the
+        run at the one point where nothing had been downloaded yet and the message would
+        have described a completer that exists.
+        """
         settings = grading.GradingSettings(
             mcq=inference.InferenceConfig(checkpoint_kind="olmo_core"),
             generation=generative.GenerationConfig(checkpoint_kind="olmo_core"),
         )
-        with pytest.raises(NotImplementedError, match="olmo_core") as excinfo:
-            grading.check_checkpoint_kind(self._GENERATIVE, settings)
-        assert "generative grader" in str(excinfo.value)
+        grading.check_checkpoint_kind(self._GENERATIVE, settings)
+
+    def test_the_table_stays_per_modality_even_while_the_halves_agree(self) -> None:
+        """Agreement is today's state, not the shape of the thing.
+
+        Both registries name both kinds now, which is exactly when someone is tempted to
+        collapse this to a single tuple. The next backend re-opens the gap -- a served one
+        would score log-probs before it generated -- and a union list would wave that
+        run past the guard and into a multi-gigabyte download.
+        """
+        assert set(grading.LOADABLE_CHECKPOINT_KINDS) == {grading.MCQ, grading.GENERATIVE}
+        assert set(grading.LOADABLE_CHECKPOINT_KINDS[grading.GENERATIVE]) == set(
+            generative.GENERATIVE_BACKENDS
+        )
+        assert set(grading.LOADABLE_CHECKPOINT_KINDS[grading.MCQ]) == set(
+            inference.MCQ_SCORING_BACKENDS
+        )
 
     def test_an_unknown_format_is_refused_for_either_modality(self) -> None:
-        """The MCQ half still has a floor; ``olmo_core`` was let in, not the door."""
+        """Neither door was left open; ``olmo_core`` was let in by name."""
         settings = grading.GradingSettings(
             mcq=inference.InferenceConfig(checkpoint_kind="ollama"),
             generation=generative.GenerationConfig(checkpoint_kind="ollama"),

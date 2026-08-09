@@ -317,19 +317,18 @@ class TestLazyHeavyImports:
         with pytest.raises(ValueError, match="Unknown checkpoint_kind"):
             generative.load_generative_model(Path("/nowhere"), config)
 
-    def test_olmo_core_is_unregistered_and_says_what_is(self) -> None:
-        """Unregistered, not special-cased, and the difference is the point.
+    def test_an_unknown_kind_says_what_is_registered(self) -> None:
+        """Both names, so the message grows with the table rather than being written out.
 
-        ``olmo_core`` used to have its own branch raising ``NotImplementedError``. It is
-        now simply absent from :data:`generative.GENERATIVE_BACKENDS`, so it fails the
-        same way any unknown kind does and the message enumerates what is registered. A
-        backend nobody registered and a backend nobody has heard of are the same state,
-        and reporting them differently made the table look longer than it was.
+        ``olmo_core`` used to be the example here, as the kind that was absent rather
+        than special-cased. It is registered now, so what this pins is the property that
+        made its absence readable: the refusal enumerates the registry, and a backend
+        nobody has heard of fails the same way one nobody wrote would.
         """
-        config = generative.GenerationConfig(checkpoint_kind="olmo_core")
+        config = generative.GenerationConfig(checkpoint_kind="ollama")
         with pytest.raises(ValueError, match="Unknown checkpoint_kind") as excinfo:
             generative.load_generative_model(Path("/nowhere"), config)
-        assert "hf" in str(excinfo.value)
+        assert "hf, olmo_core" in str(excinfo.value)
 
     def test_the_registry_is_what_decides(self) -> None:
         """Registering a kind is all it takes; nothing else branches on the name."""

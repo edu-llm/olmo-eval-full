@@ -347,13 +347,16 @@ def resolve_settings(request: GradingRequest, settings: GradingSettings) -> Grad
 
 #: Modality -> the checkpoint formats that modality's grader can build a model from.
 #:
-#: The two entries disagree, which is why this is a dict rather than a shared tuple. A
+#: The two entries agree today and this stays a dict rather than collapsing to a shared
+#: tuple, because agreement is a fact about today and not a property of the design. A
 #: backend is registered per modality -- ``inference.py`` and ``generative.py`` keep their
-#: own registries -- so the two can legitimately diverge, and they do: the MCQ scorer
-#: reads a raw OLMo-core checkpoint natively while the generative completer is still a
-#: stub for that format. Collapsing this to one tuple makes that state unsayable, and a
-#: single list naming the union would wave a generative run past the one check standing in
-#: front of ``resolve_checkpoint``.
+#: own registries -- so the two can legitimately diverge, and they did: the MCQ scorer
+#: read raw OLMo-core natively for some time while the generative completer was still a
+#: stub, and the next backend arrives the same way, since a served one would score
+#: log-probs long before it generated. One tuple naming the union would make that state
+#: unsayable and would wave a generative run past the only check standing in front of
+#: ``resolve_checkpoint``, which is the multi-gigabyte step this guard exists to run
+#: before.
 #:
 #: ``olmo_core`` here is about the *backend*, not about the bucket. A native checkpoint run
 #: under the default ``--checkpoint-prep auto`` is converted before anything loads it and
@@ -361,7 +364,7 @@ def resolve_settings(request: GradingRequest, settings: GradingSettings) -> Grad
 #: with ``--checkpoint-prep none``.
 LOADABLE_CHECKPOINT_KINDS: dict[str, tuple[str, ...]] = {
     MCQ: ("hf", "olmo_core"),
-    GENERATIVE: ("hf",),
+    GENERATIVE: ("hf", "olmo_core"),
 }
 
 #: Modality -> the :class:`GradingSettings` field its grader is built from, and the

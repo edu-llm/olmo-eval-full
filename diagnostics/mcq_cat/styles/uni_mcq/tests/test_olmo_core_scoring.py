@@ -128,6 +128,10 @@ class Tensor:
     def item(self) -> float:
         return float(self.data)
 
+    def tolist(self) -> Any:
+        """What the generative completer calls before handing a row to ``decode``."""
+        return self.data
+
 
 class FakeTorch:
     """``no_grad``, ``log_softmax`` and the two attributes the loader reads."""
@@ -162,7 +166,14 @@ class FakeTorch:
 # ---------------------------------------------------------------------------
 
 
-def write_checkpoint(root: Path, *, pad_token_id: int = 0, eos_token_id: int = 0) -> Path:
+def write_checkpoint(
+    root: Path,
+    *,
+    pad_token_id: int = 0,
+    eos_token_id: int = 0,
+    model: dict[str, Any] | None = None,
+    dataset: dict[str, Any] | None = None,
+) -> Path:
     """A checkpoint directory in the layout ``olmo_core_utils`` parses.
 
     ``pad_token_id == eos_token_id == 0`` by default, because that is what this
@@ -171,18 +182,25 @@ def write_checkpoint(root: Path, *, pad_token_id: int = 0, eos_token_id: int = 0
     The sharded marker is written too, so :func:`convert.is_olmo_core_checkpoint` reads
     this as native. That matters only for the composition tests, where the point is that
     ``--checkpoint-prep none`` hands over a directory ``auto`` would have converted.
+
+    ``model`` and ``dataset`` merge extra keys into those two blocks. Neither is needed
+    to score, and both are needed to *generate*: a raw checkpoint's context window is
+    read out of one or the other, and the generation tests turn on which spelling is
+    present. Merged rather than replaced, so a caller adding a sequence length does not
+    silently drop the tokenizer block the loader needs.
     """
     root.mkdir(parents=True, exist_ok=True)
     (root / "config.json").write_text(
         json.dumps(
             {
-                "model": {"d_model": 8, "vocab_size": VOCAB},
+                "model": {"d_model": 8, "vocab_size": VOCAB, **(model or {})},
                 "dataset": {
                     "tokenizer": {
                         "identifier": TOKENIZER_ID,
                         "pad_token_id": pad_token_id,
                         "eos_token_id": eos_token_id,
-                    }
+                    },
+                    **(dataset or {}),
                 },
             }
         ),
@@ -263,13 +281,31 @@ class FakeGenerationModule:
     The logits vary along both the time and the vocabulary axis, so a slice that reads
     one where it meant the other comes back with a different number rather than the
     same one.
+
+    It also generates, because the real ``TransformerGenerationModule`` is one object
+    that both scores and decodes and the two paths load it identically. See
+    :meth:`generate_batch`.
     """
 
     device = "cpu"
 
+    #: Tokens :meth:`generate_batch` appends, cut to whatever budget it is handed. Long
+    #: enough that a per-item budget below the flat cap produces a visibly shorter
+    #: completion, which is how the budget is asserted without a model.
+    completion_tokens: tuple[int, ...] = (5, 6, 7, 8, 9, 10, 11, 12)
+
+    #: Whether to hand back ``(tokens, logprobs, timings)`` rather than bare tokens. The
+    #: real one does both -- ``OlmoCoreProvider`` unpacks three values, the probe
+    #: received one -- so the completer reads it defensively and both shapes are driven.
+    returns_tuple = False
+
     def __init__(self, reshape: Any = None) -> None:
         self.reshape = reshape
         self.forwarded: list[tuple[int, ...]] = []
+        self.generated: list[dict[str, Any]] = []
+        # Prompt length per generate_batch call. The kwargs say what was asked for; this
+        # says what was sent, which is the only way to see a left-truncated prompt.
+        self.prompted: list[int] = []
 
     def _logits(self, input_ids: Tensor) -> Tensor:
         rows = input_ids.data[0]
@@ -286,6 +322,21 @@ class FakeGenerationModule:
 
     def model_forward(self, *, input_ids: Tensor) -> Tensor:
         return self._logits(input_ids)
+
+    def generate_batch(self, input_ids: Tensor, **kwargs: Any) -> Any:
+        """Return the prompt with a completion concatenated onto it.
+
+        The prompt is in the return because the real one puts it there: ``generate_batch``
+        seeds ``generated`` with ``input_ids`` and concatenates, and probe
+        ``run_019fe316-0e47`` confirmed the returned prefix equals the input verbatim on
+        all three banks. A fake that returned only the completion would let a completer
+        that forgot to slice pass.
+        """
+        self.generated.append(dict(kwargs))
+        self.prompted.append(int(input_ids.shape[1]))
+        budget = int(kwargs["max_new_tokens"])
+        tokens = Tensor([[*input_ids.data[0], *self.completion_tokens[:budget]]])
+        return (tokens, None, None) if self.returns_tuple else tokens
 
     def __call__(self, input_ids: Tensor) -> Any:
         """The HuggingFace calling convention, so one module can drive both scorers."""
@@ -420,16 +471,22 @@ class TestTheRegistryReachesIt:
             inference.load_scoring_model(checkpoint, config)
         assert "hf, olmo_core" in str(excinfo.value)
 
-    def test_the_generative_side_still_refuses_it(self) -> None:
-        """The asymmetry the per-modality split exists to express, pinned from both ends.
+    def test_the_generative_side_registers_it_separately(self) -> None:
+        """The per-modality split, pinned from both ends now that both ends are filled.
 
-        A backend registered for one modality and not the other is a real state, and it
-        is this one. Collapsing the two registries would make an MCQ-only reader look
-        like a generative one.
+        This used to assert the *absence* of a generative entry, which was the honest
+        state while ``_load_olmo_core`` was a stub. What survives that state passing is
+        the claim underneath it: the two registries are separate objects that happen to
+        agree, so a reader of one says nothing about the other, and the generative entry
+        is its own callable rather than the MCQ one reused.
         """
         from ....common import generative
 
-        assert "olmo_core" not in generative.GENERATIVE_BACKENDS
+        assert "olmo_core" in generative.GENERATIVE_BACKENDS
+        assert (
+            generative.GENERATIVE_BACKENDS["olmo_core"]
+            is not inference.MCQ_SCORING_BACKENDS["olmo_core"]
+        )
 
 
 class TestTheLoaderWiring:

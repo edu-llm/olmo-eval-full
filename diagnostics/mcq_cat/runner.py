@@ -238,20 +238,26 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
 
-    # `--dtype` reaches two places from here, because there are two ways a precision can
-    # be chosen and the flag has to mean the same thing whichever one is live: below it
-    # goes to `prepare_checkpoint`, which writes converted weights at it, and here it
-    # goes to the config the native backend builds its model from. Exactly one of those
-    # applies per run -- conversion happens under `--checkpoint-prep auto`, the native
-    # loader runs under `none` -- so setting both is not a conflict, and setting only the
-    # first is what left the flag inert on the native path.
+    # `--dtype` reaches three places from here, because there are two ways a precision
+    # can be chosen and two modalities that can choose it, and the flag has to mean the
+    # same thing whichever is live: below it goes to `prepare_checkpoint`, which writes
+    # converted weights at it, and here it goes to both configs a native backend builds
+    # its model from. Exactly one of the three applies per run -- conversion happens
+    # under `--checkpoint-prep auto`, a native loader runs under `none`, and a run has
+    # one modality -- so setting all three is not a conflict, and setting only the first
+    # is what left the flag inert on the native path. The generative half was added with
+    # the native completer rather than after it, because the MCQ half spent a whole run
+    # reporting bfloat16 while scoring in float32 and nothing in the artifact said so.
     settings = grading.GradingSettings(
         mcq=inference.InferenceConfig(
             checkpoint_kind=args.checkpoint_kind,
             batch_size=args.batch_size,
             dtype=args.dtype,
         ),
-        generation=generative.GenerationConfig(checkpoint_kind=args.checkpoint_kind),
+        generation=generative.GenerationConfig(
+            checkpoint_kind=args.checkpoint_kind,
+            dtype=args.dtype,
+        ),
     )
 
     with tempfile.TemporaryDirectory(prefix="mcq-cat-") as tmp:

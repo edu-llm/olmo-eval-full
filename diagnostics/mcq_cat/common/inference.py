@@ -1042,14 +1042,23 @@ class _OlmoCoreScoringModel:
         # malformed one. MCQ log-likelihood scores a single sequence at a time, so it
         # never pads and never generates, and pad_token_id is unread everywhere below.
         # The False branch still parses config.json and resolves the tokenizer config;
-        # it drops only the layout and token-id assertions. A generative completer
-        # does not get this exemption, because it needs a distinct EOS to stop on.
-        _, tokenizer_config = core_utils._resolve_checkpoint(
+        # it drops only the layout and token-id assertions. The generative completer
+        # takes the same exemption for the same reason -- see
+        # `generative._OlmoCoreCompleter`, which reuses this loader whole: the id that
+        # collides is `pad`, and it is fabricated below rather than read.
+        checkpoint_config, tokenizer_config = core_utils._resolve_checkpoint(
             checkpoint,
             imports=imports,
             validate_checkpoint=False,
             allow_tokenizer_fallback=False,
         )
+        # Kept rather than discarded, because this parse is the only reader of the
+        # checkpoint's own config.json on the native path and `generative` needs one
+        # field out of it that nothing here wants: the sequence length the model was
+        # trained at, which is the context window the prompt fitter measures against.
+        # Re-reading it there would be a second parse of the same file and a second
+        # place for the two to disagree about what a raw checkpoint declares.
+        self.checkpoint_config: dict[str, Any] | None = checkpoint_config
         tokenizer_path, _ = core_utils._resolve_tokenizer_path(
             checkpoint,
             explicit_tokenizer=None,
@@ -1086,13 +1095,20 @@ class _OlmoCoreScoringModel:
         # claimed leaving the config out "removes the blocker"; it does not, and this
         # replaces that claim with what the card actually did.
         #
-        # WHY A FABRICATED PAD ID IS SAFE HERE AND NOWHERE ELSE. MCQ scoring encodes one
-        # (prompt, continuation) pair at a time and takes a single forward pass, so nothing
-        # is ever padded and pad_token_id is never read -- the arithmetic below indexes
-        # positions, not a pad mask. The value only has to satisfy the validator. A
-        # generative completer gets no such exemption: it stops on EOS and pads real
-        # batches, so it needs a genuinely distinct pad token from the tokenizer rather
-        # than one invented at load time.
+        # WHY A FABRICATED PAD ID IS SAFE HERE. MCQ scoring encodes one (prompt,
+        # continuation) pair at a time and takes a single forward pass, so nothing is ever
+        # padded and pad_token_id is never read -- the arithmetic below indexes positions,
+        # not a pad mask. The value only has to satisfy the validator.
+        #
+        # An earlier note here added "and nowhere else", claiming a generative completer
+        # would need a real pad token because it stops on EOS and pads real batches. That
+        # was wrong twice over and probe run_019fe316-0e47 measured both halves. Nothing
+        # about the fabricated pad touches stopping: the id that stops generation is
+        # `eos_token_id`, which stays the checkpoint's own 0 here, and the decode loop's
+        # test is `next_tokens.eq(eos)`, which never reads pad. And the completer decodes
+        # one prompt at a time exactly as this scores one pair at a time, so it pads
+        # nothing either. `generative._OlmoCoreCompleter` therefore reuses this whole
+        # loader rather than reimplementing it under a stricter rule.
         eos_token_id = int(getattr(tokenizer_config, "eos_token_id", 0) or 0)
         load_kwargs: dict[str, Any] = {
             "checkpoint_dir": checkpoint,

@@ -1,12 +1,21 @@
 """Checkpoint load + sampled-completion grading for generative benchmarks.
 
 This is the second of the harness's two grading schemes and is deliberately a module
-of its own rather than a branch inside :mod:`.inference`. The two share nothing but
-the :class:`~diagnostics.mcq_cat.base.ScoringModel` protocol: the MCQ path ranks a
-fixed choice set by continuation log-likelihood and never generates a token, while
+of its own rather than a branch inside :mod:`.inference`. The two share no *grading*
+beyond the :class:`~diagnostics.mcq_cat.base.ScoringModel` protocol: the MCQ path ranks
+a fixed choice set by continuation log-likelihood and never generates a token, while
 this path generates a completion and then decides whether the answer inside it is
 right. Kept apart, neither can quietly acquire the other's behaviour, and a reader
 asking "how is GSM8K graded" has one file to read.
+
+They do share one *loader*, and only one. :class:`_OlmoCoreCompleter` builds its model
+by instantiating ``inference._OlmoCoreScoringModel`` and taking the model, tokenizer and
+device off it, because reading a raw OLMo-core checkpoint -- resolving its layout, its
+tokenizer identifier, its device and its precision, and fabricating the pad id its
+``GenerationConfig`` validator demands -- is a statement about the checkpoint format and
+not about how a bank is graded. Two copies of it would be two places to fix the next
+thing training changes, and the copy that rots is the one nobody has run. Nothing of
+that class's *scoring* is used or reachable from here.
 
 Everything above the scorer is untouched. Fisher-information selection, EAP and p-IRT
 only ever see a binary correct/incorrect, so a generative bank runs through the same
@@ -65,6 +74,7 @@ from __future__ import annotations
 
 import logging
 import math
+import os
 import re
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -72,6 +82,7 @@ from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
 from ..base import BenchmarkItem, ItemResponse, ScoringModel
+from . import hf_config_patch, inference
 
 log = logging.getLogger("mcq_cat.generative")
 
@@ -1706,6 +1717,25 @@ class GenerationConfig:
     seed: int = 1234
     device_map: str = "auto"
     max_length: int | None = None
+    #: Precision the *native* backend builds the model at, and the twin of
+    #: :attr:`~diagnostics.mcq_cat.common.inference.InferenceConfig.dtype`. It sits on
+    #: this config for the same reason ``checkpoint_kind`` and ``device_map`` do -- it
+    #: describes how the checkpoint is loaded, not what the benchmark asks of it, and
+    #: :func:`~diagnostics.mcq_cat.styles.uni_mcq.convention._generative_convention`
+    #: therefore does not record it and no manifest changes shape.
+    #:
+    #: It exists because the MCQ half of this flag was inert for a whole run and nobody
+    #: could tell: run_019fe277 reported ``bfloat16`` and scored in the checkpoint's
+    #: float32, because ``--dtype`` reached ``prepare_checkpoint``, which converts
+    #: nothing under ``--checkpoint-prep none``. The generative half had exactly the same
+    #: gap the moment a native completer existed, so it is closed in the same commit
+    #: rather than left to be discovered on a second card.
+    #:
+    #: Unread on the ``hf`` path, which loads with ``torch_dtype="auto"`` and takes
+    #: whatever precision conversion wrote. The sentinel is the one the MCQ config and
+    #: ``OlmoCoreProvider`` both use, and it means "no opinion": the kwarg is omitted
+    #: rather than passed, because ``DType("auto")`` raises.
+    dtype: str = inference.DTYPE_CHECKPOINT_DEFAULT
     #: Send the prompt as a single user turn through the checkpoint's chat template.
     #: A property of the benchmark, not of the checkpoint, and it decides which
     #: checkpoints can be scored at all: a ``chat_format`` bank refuses one with no
@@ -2656,6 +2686,55 @@ class GenerativeScorer:
         }
 
 
+def require_chat_template(tokenizer: Any, checkpoint_dir: Path, config: GenerationConfig) -> None:
+    """Refuse a chat-format bank on a checkpoint whose tokenizer has no chat template.
+
+    A completer's guard rather than the scorer's, because only a backend holds a
+    tokenizer -- but it is the *same* guard for every backend, since what it refuses is a
+    property of the loaded tokenizer and of the bank, and neither of those is
+    backend-specific. Shared rather than copied for the reason the budget machinery is
+    shared: a second copy is a second thing to keep true, and the one that rots is the one
+    on the newer path, which is also the one nobody has run yet.
+    """
+    if not config.chat_format or getattr(tokenizer, "chat_template", None):
+        return
+    raise ValueError(
+        f"{checkpoint_dir} defines no chat template, and this bank is scored "
+        f"in chat format. The bank was calibrated on instruction-tuned models "
+        f"answering a single user turn; sending the prompt raw instead would "
+        f"still produce a completion and still be graded, and the whole gap "
+        f"between a base continuation and an assistant reply would land in "
+        f"theta with a healthy standard error beside it. Score a chat "
+        f"checkpoint, or run a completion-format bank."
+    )
+
+
+def render_chat_prompt(prompt: str, tokenizer: Any, config: GenerationConfig) -> str:
+    """Wrap ``prompt`` in the checkpoint's chat template when the bank asks for chat.
+
+    The chat turn belongs to the completer rather than to :class:`PromptTemplate`
+    because its text is the checkpoint's, not the benchmark's: two instruction-tuned
+    models spell the same user turn with different special tokens, and the prompt a
+    benchmark defines is the content inside it. A system turn is the same kind of thing
+    one level up -- a standing instruction about how to answer rather than content -- so
+    it is named in the config and its text loaded from olmo-eval here.
+
+    Free rather than a method for the reason :func:`require_chat_template` is: the
+    template is the tokenizer's and the decision is the bank's, so nothing in it belongs
+    to one backend. Both callers pass an ordinary ``transformers`` tokenizer, the native
+    path included -- ``olmo_core`` resolves its tokenizer through ``AutoTokenizer`` too.
+    """
+    if not config.chat_format:
+        return prompt
+    messages: list[dict[str, str]] = []
+    if config.system_prompt_source is not None:
+        messages.append(
+            {"role": "system", "content": get_system_prompt(config.system_prompt_source)}
+        )
+    messages.append({"role": "user", "content": prompt})
+    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+
+
 class _HFCompleter:
     """Greedy ``transformers`` generation, one prompt at a time."""
 
@@ -2672,16 +2751,7 @@ class _HFCompleter:
         set_seed(config.seed)
 
         self.tokenizer: Any = self._load_tokenizer(AutoTokenizer, checkpoint_dir)
-        if config.chat_format and not getattr(self.tokenizer, "chat_template", None):
-            raise ValueError(
-                f"{checkpoint_dir} defines no chat template, and this bank is scored "
-                f"in chat format. The bank was calibrated on instruction-tuned models "
-                f"answering a single user turn; sending the prompt raw instead would "
-                f"still produce a completion and still be graded, and the whole gap "
-                f"between a base continuation and an assistant reply would land in "
-                f"theta with a healthy standard error beside it. Score a chat "
-                f"checkpoint, or run a completion-format bank."
-            )
+        require_chat_template(self.tokenizer, checkpoint_dir, config)
         self.model: Any = AutoModelForCausalLM.from_pretrained(
             str(checkpoint_dir),
             torch_dtype="auto",
@@ -2792,28 +2862,8 @@ class _HFCompleter:
             )
 
     def _render(self, prompt: str) -> str:
-        """Wrap ``prompt`` in the checkpoint's chat template when the bank asks for chat.
-
-        The chat turn belongs here rather than in :class:`PromptTemplate` because its
-        text is the checkpoint's, not the benchmark's: two instruction-tuned models
-        spell the same user turn with different special tokens, and the prompt a
-        benchmark defines is the content inside it. A system turn is the same kind of
-        thing one level up -- a standing instruction about how to answer rather than
-        content -- so it is named in the config and its text loaded from olmo-eval here.
-        """
-        if not self.config.chat_format:
-            return prompt
-        messages: list[dict[str, str]] = []
-        if self.config.system_prompt_source is not None:
-            messages.append(
-                {"role": "system", "content": get_system_prompt(self.config.system_prompt_source)}
-            )
-        messages.append({"role": "user", "content": prompt})
-        return self.tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True,
-        )
+        """This checkpoint's chat framing for ``prompt``. See :func:`render_chat_prompt`."""
+        return render_chat_prompt(prompt, self.tokenizer, self.config)
 
     def __call__(self, prompt: str, max_new_tokens: int | None = None) -> str:
         """Return the continuation of ``prompt``, with the prompt echo removed.
@@ -2978,15 +3028,386 @@ def _load_hf(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
     )
 
 
+#: ``config.json`` path -> what that number means, for a raw OLMo-core checkpoint's
+#: context window, most authoritative first. Used by :func:`olmo_core_context_length`.
+#:
+#: The ``model.*`` spellings are not retyped here: they are olmo-eval's own
+#: ``olmo_core_utils._MAX_LENGTH_CONFIG_KEYS``, read off that module at resolution time so
+#: the diagnostic and ``OlmoCoreProvider`` cannot end up disagreeing about the window one
+#: checkpoint declares. Only the second entry is added, and it is the one this checkpoint
+#: family actually writes -- ``hf_config_patch`` exists precisely because "the model object
+#: does not know the sequence length it was trained at", so the architecture block is
+#: silent and the dataset block is not.
+OLMO_CORE_DATASET_SEQUENCE_LENGTH = ("dataset", "sequence_length")
+
+
+def olmo_core_context_length(
+    checkpoint_config: Mapping[str, Any] | None,
+    *,
+    checkpoint_dir: Path,
+    model_keys: Sequence[str],
+) -> tuple[int, str]:
+    """This raw checkpoint's context window, and the name of what declared it.
+
+    **Why this cannot be a constant.** On the converted path the window arrives as
+    ``max_position_embeddings``, which the conversion writes from
+    ``hf_config_patch.DEFAULT_MAX_POSITION_EMBEDDINGS`` -- 2048 for this family. There is
+    no converted config here, so that constant is a number from a different code path
+    with no claim on the directory being read, and hardcoding it would mean every future
+    checkpoint silently inheriting one checkpoint's training length.
+
+    **Why the tokenizer is not a fallback**, although ``_resolve_max_length`` uses it as
+    one. A raw checkpoint ships no tokenizer and names one by identifier, so
+    ``model_max_length`` here is a *third party's* number: this family resolves
+    ``HuggingFaceTB/SmolLM2-135M``, whose tokenizer declares 8192 while the weights were
+    trained at 2048. Taking it would leave the clamp nominally on and inert, four
+    exemplars in front of every MATH stem, and a 2600-token prompt sent to a 2048-token
+    model -- which is the exact silent failure the clamp exists to prevent, wearing the
+    appearance of a resolved window. A wrong window is worse than no window, and a wrong
+    window that is four times too large is worse than one that is too small.
+
+    **Why an unreadable window is refused rather than run unclamped.** Running unclamped
+    is what happens today when a completer publishes no
+    :data:`CONTEXT_WINDOW_ATTR`, and on this bank it fabricates zeroes: MATH's long stems
+    keep all four exemplars, the prompt overflows, and the model is truncated into the
+    block that teaches ``\\boxed{}`` and ``Final Answer:`` -- so the grader finds nothing,
+    scores 0, and the report reads as a checkpoint that cannot do mathematics. That costs
+    a GPU hour and produces a number that is wrong in a direction nobody can see. This
+    costs a load, names every place it looked, and is fixed either by a checkpoint that
+    declares its length or by one environment variable. ``_HFCompleter`` warns instead
+    of refusing in the same situation, and the asymmetry is real rather than an
+    oversight: there the config is one *our own* conversion wrote and always populates,
+    so its absence means a foreign checkpoint whose window may legitimately be
+    unbounded; here the value comes from training and its absence means nobody knows.
+
+    Returns:
+        ``(tokens, source)``, where ``source`` names what supplied the number so the
+        report can say it. Nothing branches on ``source``.
+
+    Raises:
+        RuntimeError: If no source declares one.
+    """
+    override = os.environ.get(hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV)
+    if override is not None:
+        # Deliberately the variable the converted path already reads, rather than a
+        # second one. It names one quantity -- this checkpoint family's context window --
+        # and two spellings of it would let a native run and a converted run of the same
+        # weights be clamped differently while both reports looked normal.
+        # ``hf_config_patch.max_position_embeddings`` is NOT called, because it falls back
+        # to its 2048 constant and this must not acquire a default by reusing a parser.
+        try:
+            length = int(override)
+        except ValueError as exc:
+            raise RuntimeError(
+                f"{hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV}={override!r} is not an "
+                f"integer. On this path it is the context window every prompt is measured "
+                f"against, so a bad value either refuses items that would have generated "
+                f"fine or lets an overflowing prompt through."
+            ) from exc
+        if length <= 0:
+            raise RuntimeError(
+                f"{hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV}={override!r} is not a "
+                f"positive number of tokens, so no prompt could fit it and every item "
+                f"would be refused."
+            )
+        return length, hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV
+
+    config = checkpoint_config or {}
+    lookups = [("model", key) for key in model_keys]
+    lookups.append(OLMO_CORE_DATASET_SEQUENCE_LENGTH)
+    for block, key in lookups:
+        section = config.get(block)
+        if not isinstance(section, Mapping):
+            continue
+        value = section.get(key)
+        if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+            return value, f"{block}.{key}"
+
+    searched = ", ".join(f"{block}.{key}" for block, key in lookups)
+    raise RuntimeError(
+        f"{checkpoint_dir} declares no context window: none of {searched} is a positive "
+        f"integer in its config.json (top-level keys: "
+        f"{', '.join(sorted(str(key) for key in config)) or '<none>'}). This is refused "
+        f"rather than run unclamped, because unclamped is not a degraded run on a "
+        f"generative bank -- it is a wrong one that looks right. A prompt longer than the "
+        f"window is truncated by the model into the few-shot block that teaches the "
+        f"answer format, so the grader finds nothing to extract, the item scores 0, and "
+        f"the report attributes that to the checkpoint. The tokenizer's model_max_length "
+        f"is deliberately not used as a fallback: a raw checkpoint names its tokenizer by "
+        f"identifier, so that number belongs to whatever model the identifier points at "
+        f"and not to these weights. Either add the length to the checkpoint config, or "
+        f"set {hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV} to the sequence length this "
+        f"run was trained at -- the same variable the conversion path reads."
+    )
+
+
+class _OlmoCoreCompleter:
+    """Greedy OLMo-core generation from a raw training checkpoint, one prompt at a time.
+
+    The generative twin of ``inference._OlmoCoreScoringModel``, and an *adapter* over it
+    rather than a second loader. Everything about reading this checkpoint format --
+    resolving the sharded layout, resolving the tokenizer through
+    ``dataset.tokenizer.identifier``, choosing the device, threading ``dtype``, and
+    fabricating the pad id that ``GenerationConfig.validate`` demands -- happens by
+    constructing that class and taking its ``model``, ``tokenizer`` and ``device``. That
+    is what probe ``run_019fe316-0e47`` did, so the combination is measured rather than
+    assumed, and it means the next thing training changes about the format is fixed in
+    one place. None of that class's scoring is reachable from here.
+
+    What this adds is the four lines of decoding the probe established, and the
+    *contract* the merged budget machinery reads off a completer. That contract is the
+    real content of this class, because three of its five parts fail silently:
+
+    - :data:`TOKEN_COUNTER_ATTR` (``count_tokens``) -- the only one whose absence is
+      caught, by :func:`require_live_tokenizer`, which refuses the load.
+    - :data:`BUDGET_AWARE_ATTR` (``accepts_token_budget``) -- without it every item
+      quietly takes the flat ``max_new_tokens``, and on a checkpoint that never emits
+      end-of-text that is the whole cap on every item.
+    - :data:`CONTEXT_WINDOW_ATTR` (``max_context_tokens``) -- without it
+      :meth:`PromptFitter.fit` returns unclamped and the exemplar ladder never runs. The
+      dangerous one; see :func:`olmo_core_context_length`.
+    - :data:`EOS_TEXT_ATTR` (``eos_text``) -- without it the leak-catching stop in
+      :func:`eos_stop_sequences` is weakened.
+    - :data:`TOKENIZER_ID_ATTR` and :meth:`checkpoint_facts` -- report only.
+
+    **Two measured facts this is built around and does not try to fix.**
+
+    ``use_cache=False`` on every call. OLMo-core's default torch attention backend
+    refuses KV caching outright -- ``assert_supports_kv_cache`` raises the moment
+    ``prepare_inference_cache`` runs -- and the flash backends that implement it need a
+    binary wheel this image does not have. Run run_019fe2e6 died exactly there. Every
+    step therefore re-reads the whole prefix, which is quadratic and slow and correct.
+    ``TORCH_TODOS.md`` holds the measurement and what would lift it; note that the
+    backend is fixed at ``from_checkpoint`` rather than chosen per call, so lifting it
+    means a differently-built module and not a keyword here.
+
+    This checkpoint **never emits its end-of-text token**: the probe decoded 192 tokens
+    across three prompts and token 0 appeared in none of them. So the ``eos_token_id``
+    the loader passed is inert for this model and every item pays its whole budget. That
+    is a cost property of these weights, bounded by ``max_new_tokens`` and by the context
+    clamp, and it is why the per-item budget is worth publishing rather than a nicety.
+    """
+
+    #: See :data:`BUDGET_AWARE_ATTR`. Declared on the class so the scorer can read it off
+    #: the instance without constructing anything -- and so a test can assert it without
+    #: a checkpoint, which is the only way this one gets asserted at all: a completer that
+    #: dropped it would still load, still generate, and still produce a report.
+    accepts_token_budget = True
+
+    def __init__(self, checkpoint_dir: Path, config: GenerationConfig) -> None:
+        self.config = config
+        # The whole native loader, reused. `InferenceConfig` is built here rather than
+        # threaded in because the caller has a GenerationConfig and the two agree on
+        # exactly one field, `dtype`; passing more would mean an MCQ setting silently
+        # steering a generative run.
+        self._loaded = inference._OlmoCoreScoringModel(
+            checkpoint_dir,
+            inference.InferenceConfig(checkpoint_kind="olmo_core", dtype=config.dtype),
+        )
+        self._torch: Any = self._loaded._torch
+        self.tokenizer: Any = self._loaded.tokenizer
+        self.model: Any = self._loaded.model
+        self.device: Any = self._loaded.device
+
+        require_chat_template(self.tokenizer, checkpoint_dir, config)
+        self.eos_token, self.eos_token_id = resolve_eos_token(self.tokenizer)
+        core_utils = inference._olmo_core_utils()
+        self.context_length, self.context_length_source = olmo_core_context_length(
+            self._loaded.checkpoint_config,
+            checkpoint_dir=checkpoint_dir,
+            model_keys=core_utils._MAX_LENGTH_CONFIG_KEYS,
+        )
+        log.info(
+            "Generating from %s natively at a %d-token context window declared by %s, "
+            "with KV caching off (see TORCH_TODOS.md).",
+            checkpoint_dir,
+            self.context_length,
+            self.context_length_source,
+        )
+
+    def __call__(self, prompt: str, max_new_tokens: int | None = None) -> str:
+        """Return the continuation of ``prompt``, with the prompt echo removed.
+
+        ``max_new_tokens`` is the per-item budget :class:`GenerativeScorer` derives, and
+        it defaults to the configured flat value so this is still usable as a bare
+        ``prompt -> completion`` callable.
+
+        **The prompt is in the return and has to be sliced off.** ``generate_batch``
+        seeds its output with ``input_ids`` and concatenates onto it, so the first
+        ``prompt_len`` positions are the prompt verbatim unless ``completions_only=True``
+        is passed. Slicing is chosen over that flag because slicing is what the probe
+        measured -- on all three banks the returned prefix compared equal to the input --
+        while ``completions_only`` was read off the source and never exercised on these
+        weights.
+
+        Greedy decoding is spelled the way ``OlmoCoreProvider._build_generation_kwargs``
+        spells it, and it is passed explicitly rather than left to the module's config.
+        :meth:`GenerationConfig.__post_init__` refuses a nonzero temperature on the
+        grounds that this grader decodes greedily, so a completer that inherited a
+        sampling default would quietly break a promise the config enforces.
+        """
+        torch = self._torch
+        input_ids = self.tokenizer(
+            render_chat_prompt(prompt, self.tokenizer, self.config), return_tensors="pt"
+        )["input_ids"]
+        if self.config.max_length is not None and input_ids.shape[1] > self.config.max_length:
+            input_ids = input_ids[:, -self.config.max_length :]
+        input_ids = input_ids.to(self.device)
+        prompt_tokens = input_ids.shape[1]
+
+        with torch.no_grad():
+            output = self.model.generate_batch(
+                input_ids,
+                max_new_tokens=(
+                    self.config.max_new_tokens if max_new_tokens is None else max_new_tokens
+                ),
+                **self._decoding_kwargs(),
+            )
+        # `generate_batch` returns `(tokens, logprobs, ...)` when asked for logprobs and
+        # the bare tokens otherwise. Read defensively exactly as the probe read it, since
+        # the probe is the only thing that has seen the real return.
+        generated = output[0] if isinstance(output, tuple) else output
+        completion = generated[0][prompt_tokens:]
+        return self.tokenizer.decode(completion.tolist(), skip_special_tokens=True)
+
+    def _decoding_kwargs(self) -> dict[str, Any]:
+        """Greedy decoding with the cache off, in the provider's own spelling.
+
+        ``do_sample``/``temperature``/``top_k``/``top_p`` are lifted from
+        ``OlmoCoreProvider._build_generation_kwargs`` at ``temperature == 0``, which is
+        the only temperature :class:`GenerationConfig` permits.
+
+        ``use_cache=False`` is the probe's fallback path and is not currently optional;
+        see the class docstring. It is a keyword on the call rather than on the loaded
+        module because ``generate_batch`` folds its kwargs onto the module's config with
+        ``replace(**generation_kwargs)``, so turning caching back on later needs no
+        reload -- while the attention backend that would make it work is fixed at
+        ``from_checkpoint`` and does.
+        """
+        return {
+            "do_sample": False,
+            "temperature": 0.0,
+            "top_k": -1,
+            "top_p": 1.0,
+            "use_cache": False,
+        }
+
+    @property
+    def eos_text(self) -> str | None:
+        """The literal text of this checkpoint's end token. See :data:`EOS_TEXT_ATTR`.
+
+        The tokenizer's label as written, not the round-tripped spelling, for the reason
+        :attr:`_HFCompleter.eos_text` gives: this one is used to cut a *leaked* literal
+        out of the graded span, and a spelling the tokenizer does not recognize is
+        exactly the one a model types as ordinary characters.
+        """
+        token = getattr(self.tokenizer, "eos_token", None)
+        return str(token) if token else None
+
+    def count_tokens(self, text: str) -> int:
+        """Tokens ``text`` costs in this checkpoint's tokenizer. See :data:`TOKEN_COUNTER_ATTR`.
+
+        ``add_special_tokens=False`` for the reason :meth:`_HFCompleter.count_tokens`
+        gives, and it matters more here: ``inference.describe_tokenizer_defaults`` exists
+        because this family's tokenizer is resolved from an identifier and may well
+        prepend a BOS, which would inflate every words-to-tokens ratio measured on short
+        text.
+        """
+        return len(self.tokenizer(text, add_special_tokens=False)["input_ids"])
+
+    @property
+    def tokenizer_id(self) -> str | None:
+        """Which tokenizer this resolved, for the report. See :data:`TOKENIZER_ID_ATTR`."""
+        name = getattr(self.tokenizer, "name_or_path", None)
+        return str(name) if name else None
+
+    @property
+    def max_context_tokens(self) -> int:
+        """This checkpoint's context window. See :data:`CONTEXT_WINDOW_ATTR`.
+
+        Never ``None`` on this backend, unlike the HuggingFace one:
+        :func:`olmo_core_context_length` refuses the load instead of returning nothing,
+        so a native generative run either has a window or does not start.
+        """
+        return self.context_length
+
+    def checkpoint_facts(self) -> dict[str, Any]:
+        """What was resolved off this checkpoint, for the report's ``generation_runtime``.
+
+        ``context_length_source`` is the field that makes the number auditable, and it is
+        the reason the resolver returns a name alongside a value: 2048 read out of a
+        training config and 2048 supplied by an environment variable are the same clamp
+        and very different claims.
+
+        ``kv_cache`` is recorded because it is the largest single term in what a run
+        costs and it is invisible in the theta. ``tokenization`` is the same record the
+        MCQ path publishes under ``run.tokenization``, carried here because a generative
+        scorer is not the object the runner reads that off.
+        """
+        return {
+            "tokenizer_identifier": str(getattr(self.tokenizer, "name_or_path", "") or ""),
+            "tokenizer_class": type(self.tokenizer).__name__,
+            "tokenizer_vocab_size": self._tokenizer_size(),
+            "eos_token": self.eos_token,
+            "eos_token_id": self.eos_token_id,
+            "eos_token_id_passed_to_generate": self.eos_token_id is not None,
+            "context_length_declared": self.context_length,
+            "context_length_source": self.context_length_source,
+            "dtype_requested": self.config.dtype,
+            "kv_cache": False,
+            "tokenization": self._loaded.tokenizer_defaults.as_dict(),
+        }
+
+    def _tokenizer_size(self) -> int | None:
+        try:
+            return len(self.tokenizer)
+        except Exception:  # noqa: BLE001 - a probe that cannot be made is not a finding
+            return None
+
+
+def _load_olmo_core(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
+    """Grade a raw OLMo-core checkpoint by generating from it, with no conversion step.
+
+    The same two lines as :func:`_load_hf` over a different completer, which is the
+    claim the per-modality registry makes: a backend is a completer plus a row in
+    :data:`GENERATIVE_BACKENDS`, and everything between a prompt and a graded response
+    is backend-agnostic and already written.
+
+    Reached by ``--checkpoint-prep none --checkpoint-kind olmo_core``. Preparation has to
+    be off, exactly as on the MCQ side: ``auto`` converts the sharded directory this
+    reads and hands back an HF one, which ``_load_hf`` would then be the right loader
+    for.
+
+    **What this replaced.** The stub that used to be here refused, and the reason it gave
+    was withdrawn by measurement rather than by argument. It held that decoding needs an
+    end-of-text id distinct from the pad id, that this family writes both as 0, and that
+    the exemption ``inference._OlmoCoreScoringModel`` takes therefore could not carry
+    over. That confused two ids: ``GenerationConfig.validate`` rejects only ``pad ==
+    eos``, so fabricating the *pad* leaves the real end-of-text at 0 and satisfies it,
+    which is what that scorer already does and what probe ``run_019fe316-0e47`` decoded
+    64 tokens for each of three prompts with. What was genuinely missing was the
+    completer contract, and that is what :class:`_OlmoCoreCompleter` is.
+    """
+    completer = _OlmoCoreCompleter(checkpoint_dir, config)
+    return GenerativeScorer(
+        completer,
+        config,
+        eos_token=completer.eos_token,
+        checkpoint_facts=completer.checkpoint_facts(),
+    )
+
+
 #: Checkpoint kind -> the generative grading backend that reads it.
 #:
 #: The counterpart of ``inference.MCQ_SCORING_BACKENDS``, and separate from it on purpose:
 #: the two modalities register independently, so a backend can exist for one and not the
 #: other. That asymmetry is a real state rather than a hypothetical -- it is what the
-#: native OLMo-core reader was in, and what a served backend would be in if it scored
-#: log-probs before it generated.
+#: native OLMo-core reader was in until :func:`_load_olmo_core` was written, and what a
+#: served backend would be in if it scored log-probs before it generated. The two tables
+#: agreeing today is a fact about today, not a reason to merge them.
 GENERATIVE_BACKENDS: dict[str, Callable[[Path, GenerationConfig], ScoringModel]] = {
     "hf": _load_hf,
+    "olmo_core": _load_olmo_core,
 }
 
 
@@ -3072,26 +3493,4 @@ def require_live_tokenizer(scorer: GenerativeScorer, checkpoint_dir: Path) -> No
         f"not be resolved (a checkpoint naming it by Hub identifier while shipping no "
         f"tokenizer files, with the Hub unreachable) or it was resolved and not threaded "
         f"through to the completer. Both are faults to fix rather than to run past."
-    )
-
-
-def _load_olmo_core(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
-    """Load a raw OLMo-core checkpoint for generation (integration point).
-
-    Deliberately not in :data:`GENERATIVE_BACKENDS`, so it is unreachable rather than
-    half-wired, and the one place a reader is told why the two modalities disagree about
-    ``olmo_core``. The MCQ half is no longer blocked --
-    ``inference._OlmoCoreScoringModel`` rebuilds the model and resolves the tokenizer
-    already, and this could reuse both. What it cannot reuse is the exemption that makes
-    them work: that scorer skips ``_validate_token_ids`` and builds no
-    ``GenerationConfig`` because a forward-only scorer never pads and never stops, and
-    this checkpoint family writes ``pad_token_id == eos_token_id == 0``. Decoding needs a
-    distinct EOS to stop on, so the blocker is real here and cannot be waved through the
-    same way.
-    """
-    raise NotImplementedError(
-        "olmo_core generation is a training-env integration point. The MCQ side reads "
-        "this format natively (inference._OlmoCoreScoringModel); what is missing here is "
-        "a prompt -> completion callable to hand to GenerativeScorer, and a stopping "
-        "criterion for a checkpoint whose eos_token_id equals its pad_token_id."
     )

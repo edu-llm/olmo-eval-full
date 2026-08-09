@@ -65,10 +65,28 @@ three prompts (ifeval 2.20s, leaderboard_math 1.99s, gpqa 1.67s). About 32s per
    build for torch 2.10 -- only cu13. Matching it would mean reaching back to v2.8.1 for an
    untested combination, which is a problem created by leaving their image rather than one
    that needed solving.
-2. Thread `attention_backend` through `InferenceConfig` the way `--dtype` was threaded in
-   `8f45ca3f`. `OlmoCoreProvider` already exposes it at
-   `src/olmo_eval/inference/providers/olmo_core.py:156-159`; `_OlmoCoreScoringModel` has no
-   such field. This alone is not enough — it only helps once the wheel exists.
+2. Thread `attention_backend` into whatever calls `TransformerGenerationModule.from_checkpoint`
+   **for generation**, resolving the name as `OlmoCoreProvider` does at
+   `src/olmo_eval/inference/providers/olmo_core.py:156-159`. This alone is not enough — it
+   only helps once the wheel exists.
+
+   **Not into `_OlmoCoreScoringModel`, which an earlier version of this note got wrong.**
+   That class calls `model_forward` and nothing else (`inference.py:1189-1190`): it never
+   calls `generate_batch`, never reaches `prepare_inference_cache`, and so never touches
+   the `assert_supports_kv_cache` that refuses. Giving the MCQ scorer a backend field would
+   change no behaviour and buy no speed. The backend is also fixed at `from_checkpoint`
+   rather than selectable per call, which is why the probe builds a *second* module for
+   flash rather than reconfiguring the scorer's. On the converted HF path it is moot,
+   because transformers does its own caching.
+
+   **This half now has a home, which it did not when the note was written.**
+   `generative._OlmoCoreCompleter` exists and decodes, and it reaches
+   `from_checkpoint` by constructing `_OlmoCoreScoringModel` — so the backend has to be
+   threaded through that constructor after all, but *for the completer's sake* and not
+   the scorer's. Whoever does it should give `_OlmoCoreScoringModel` the field and leave
+   the MCQ path passing nothing, rather than splitting the loader in two. Until then the
+   completer passes `use_cache=False` on every `generate_batch` call, which is the
+   probe's fallback and costs only tokens.
 
 **Revisit when** any of: a bank needs materially longer outputs than the measured maxima,
 a generative CAT run approaches the 1h bound, or a larger checkpoint makes the quadratic
