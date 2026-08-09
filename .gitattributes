@@ -26,3 +26,9 @@ calibrated_datasets/**/manifest.json text eol=lf
 diagnostics/mcq_cat/styles/uni_mcq/bridges/*.csv text eol=lf
 diagnostics/mcq_cat/styles/uni_mcq/bridges/*.json text eol=lf
 diagnostics/mcq_cat/styles/uni_mcq/banks/**/*.csv text eol=lf
+
+# A ticket's record, for a different reason: these are archival copies of what a run wrote
+# to S3, and a report rewritten with CRLF on checkout no longer matches the object it is a
+# copy of. Committing the first one warned six times that git would do exactly that.
+tickets/**/*.json text eol=lf
+tickets/**/*.yaml text eol=lf
