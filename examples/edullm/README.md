@@ -123,6 +123,61 @@ fields, malformed rows, duplicate model-scenario pairs, inconsistent identities,
 missing or extra scenarios, and a file whose bytes do not match the declared
 SHA-256. This validation completes before Qwen is started.
 
+#### Preparing a strict batch from response shards
+
+`olmo-eval edullm prepare-response-batch` validates and combines existing
+response artifacts without loading a tutor or judge model. It takes an explicit
+JSONL source manifest; paths in the manifest are resolved relative to that
+manifest. Start with
+[`response_batch_sources.example.jsonl`](response_batch_sources.example.jsonl).
+
+Each manifest row uses one named format:
+
+- `single-jsonl-v1` reads strict `{scenario_id,response,metadata?}` rows and
+  requires `model_id`, `model_family`, and `model_revision` on the manifest row.
+- `tutorbench-output-jsonl-v1` reads the legacy TutorBench Title-Case model-output
+  schema and likewise requires an explicit model identity on the manifest row.
+  Its original `Rendered Prompt` and digest are retained as generation-request
+  provenance; flagged issue/error rows must be blank and internally consistent.
+- `batch-jsonl-v1` reads rows already using the strict multi-model schema; model
+  identity comes from those rows.
+
+An optional lowercase `sha256` on any manifest row pins the exact source bytes.
+Formats and identities are never inferred from filenames.
+
+```bash
+# Validate and calculate the exact prospective output hash without writing files.
+olmo-eval edullm prepare-response-batch \
+  --source-manifest /path/to/response-sources.jsonl \
+  --fitted-scenarios /path/to/fitted_bank/scenarios.jsonl \
+  --output /path/to/all_tutor_responses.jsonl \
+  --check
+
+# Run the same command without --check to write the JSONL and its report.
+olmo-eval edullm prepare-response-batch \
+  --source-manifest /path/to/response-sources.jsonl \
+  --fitted-scenarios /path/to/fitted_bank/scenarios.jsonl \
+  --output /path/to/all_tutor_responses.jsonl
+```
+
+The default report is
+`/path/to/all_tutor_responses.jsonl.report.json`. Both it and the command's JSON
+summary contain the exact output SHA-256 and validation counts. Missing
+model-scenario pairs, duplicates, identity conflicts, and scenarios outside the
+fitted bank are errors by default. `--missing blank` is an explicit opt-in that
+synthesizes absent pairs as blank responses; already blank or whitespace-only
+responses are preserved and counted. Existing outputs are not replaced unless
+`--overwrite` is passed, and source inputs are never valid output targets even
+with that flag.
+The batch and report must be placed in the same directory. They are published
+as one recoverable transaction under an exclusive directory lock: a failed
+second write restores both previous files, and the next invocation automatically
+recovers a process interruption recorded in the transaction journal. Until that
+recovery completes, the precomputed-response loader refuses to consume either
+destination named by the unresolved journal; rerun `prepare-response-batch` with
+the original arguments to recover the pair. The report records and verifies the
+prepared payload digest, so it cannot silently describe different batch bytes.
+
 Qwen is loaded once and reused for every model in the batch. Each model then
 gets its own independent CAT session and its own EAP and MWLE estimates. CAT
 selects scenarios adaptively, so it judges only the selected responses for each
@@ -137,24 +192,79 @@ A completed batch run has this adaptive-mode layout:
   manifest.json
   batch_summary.json
   model_results.jsonl
+  attempt_history.jsonl
+  progress.json
+  batch_results.json
+  batch_results.csv
+  BATCH_REPORT.md
+  checkpoints/
+    checkpoint-000001.json
+    ...
+    latest.json
   mode_result.json
   models/
     candidate-0000-<stable-hash>/
-      manifest.json
-      tutor_responses.jsonl
-      judge_rows.jsonl
-      cat_result.json
-      cat_trace.jsonl
+      attempt-0001/
+        manifest.json
+        tutor_responses.jsonl
+        judge_rows.jsonl
+        cat_result.json
+        cat_trace.jsonl
     candidate-0001-<stable-hash>/
       ...
 ```
 
 `model_results.jsonl` maps each original model identity to its safe output
-directory, terminal status, CAT metrics, warnings, and error if any.
+attempt directory, terminal status, CAT metrics, warnings, and error if any.
 `batch_summary.json` provides aggregate model, scenario, criterion, and
-`no_decision` counts. A runtime failure for one tutor is recorded in that
-tutor's directory and does not prevent later tutors from running, although the
-overall adaptive mode is marked failed if any tutor failed.
+`no_decision` counts. `batch_results.json`, `batch_results.csv`, and
+`BATCH_REPORT.md` are consolidated derived views; they preserve per-skill EAP
+and MWLE estimates and do not invent a global score or model ranking.
+`attempt_history.jsonl` and the immutable checkpoint chain retain failed and
+superseded attempts. A runtime failure for one tutor does not prevent later
+tutors from running, although the overall adaptive mode is marked failed if any
+tutor failed.
+
+Batch runs can be resumed only at tutor-model boundaries and only with the
+exact same run ID, configuration, fitted bank, response batch, prompt/judge
+contract, top-level run metadata, and runtime contract:
+
+```bash
+uv run olmo-eval run-modes --config /path/to/final-run.yaml --resume
+```
+
+Before Qwen starts, the runner validates the stored resume fingerprint and
+checkpoint hash chain. After providers start, it builds the exact in-memory
+bank/response snapshot, re-hashes the source inputs once more under the run
+lock, and executes that retained snapshot rather than reloading mutable files.
+It then reuses only successful attempts whose candidate
+manifest and child artifact hashes still match. Failed or interrupted models
+receive a new `attempt-NNNN` directory; old attempts are never deleted or
+overwritten. A different input or a modified committed artifact makes resume
+fail closed. The prompt portion of that fingerprint binds the complete rendered
+atomic and classification templates, prompt branches, JSON schema, grading
+policies, sampling settings, token IDs, probability policy, and failure
+threshold—not only a prompt-version label.
+Batch outputs created by the earlier non-checkpointed layout are not resumable;
+start those evaluations in a new output directory.
+
+To inspect persisted progress without checking GPUs or starting providers:
+
+```bash
+uv run olmo-eval run-modes --config /path/to/final-run.yaml --status
+```
+
+`progress.json` includes the active model and scenario, committed counts,
+session throughput, and an estimated remaining time once enough work has
+completed to estimate it. The status command reconciles both committed JSONL
+views—`model_results.jsonl` and `attempt_history.jsonl`—with each other and with
+`batch_summary.json`, `manifest.json`, and the newest valid immutable checkpoint.
+It rejects mismatched run IDs, resume fingerprints, checkpoint generations, or
+states rather than combining stale artifacts. The checkpoint chain is
+authoritative: stale root manifests or summaries cannot override it, and the
+derived model counts, terminal statuses, attempt count, and result paths must
+agree across every view. Inconsistent views must be regenerated by resuming the
+run before status is reported.
 
 Run read-only validation explicitly when desired:
 

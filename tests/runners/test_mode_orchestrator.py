@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 import olmo_eval.runners.mode_orchestrator as orchestrator_module
+from olmo_eval.edullm.batch_resume import build_resume_contract, exclusive_run_lock
 from olmo_eval.harness.config import HarnessConfig
 from olmo_eval.inference.providers.config import ProviderConfig
 from olmo_eval.inference.registry import ProviderRegistry
@@ -68,6 +69,91 @@ def _config(
         modes=modes or (_standard_spec(harness),),
         metadata={"fixture": True},
     )
+
+
+def _batch_resume_spec(*, contract_marker: str) -> ModeSpec:
+    return ModeSpec(
+        "edullm_adaptive",
+        {
+            "contract_marker": contract_marker,
+            "tutor": {
+                "response_source": {
+                    "kind": "precomputed_batch_jsonl",
+                }
+            },
+        },
+    )
+
+
+def _batch_resume_config(tmp_path: Path, *, contract_marker: str) -> ModeRunConfig:
+    auxiliaries = {"judge": _provider(JUDGE_MODEL)}
+    return _config(
+        tmp_path,
+        modes=(_batch_resume_spec(contract_marker=contract_marker),),
+        auxiliaries=auxiliaries,
+    )
+
+
+def _fixture_batch_resume_payload(
+    raw_config: Mapping[str, Any],
+    *,
+    run_id: str,
+    metadata: Mapping[str, Any],
+    harness_config: Mapping[str, Any],
+    runtime_contract: Mapping[str, Any],
+) -> dict[str, Any]:
+    return {
+        "run_id": run_id,
+        "adaptive_config": dict(raw_config),
+        "metadata": dict(metadata),
+        "harness_config": dict(harness_config),
+        "runtime_contract": dict(runtime_contract),
+    }
+
+
+def _expected_fixture_resume_payload(config: ModeRunConfig) -> dict[str, Any]:
+    return _fixture_batch_resume_payload(
+        config.modes[0].config,
+        run_id=config.run_id,
+        metadata=config.metadata,
+        harness_config=config.harness.to_dict(),
+        runtime_contract={
+            "vllm_version": orchestrator_module.FROZEN_QWEN_VLLM_VERSION,
+            "explicit_token_logprobs": True,
+            "environment_unset": list(orchestrator_module.QWEN_UNSET_ENVIRONMENT),
+        },
+    )
+
+
+def _write_fixture_resume_contract(config: ModeRunConfig) -> dict[str, Any]:
+    document = build_resume_contract(_expected_fixture_resume_payload(config))
+    config.output_dir.mkdir(parents=True, exist_ok=True)
+    (config.output_dir / "resume_contract.json").write_text(
+        json.dumps(document) + "\n",
+        encoding="utf-8",
+    )
+    return document
+
+
+def _patch_fixture_batch_resume(
+    monkeypatch: pytest.MonkeyPatch,
+) -> _RecordingMode:
+    adaptive = _RecordingMode(
+        "edullm_adaptive",
+        required_auxiliaries=("judge",),
+    )
+    monkeypatch.setattr(orchestrator_module, "_registry", _registry_factory(adaptive))
+    monkeypatch.setattr(
+        orchestrator_module,
+        "build_batch_resume_contract_payload",
+        _fixture_batch_resume_payload,
+    )
+    monkeypatch.setattr(
+        orchestrator_module,
+        "validate_batch_resume_artifacts",
+        lambda *args, **kwargs: None,
+    )
+    return adaptive
 
 
 @dataclass
@@ -314,6 +400,8 @@ def test_manager_startup_failure_writes_shared_failure_and_always_shuts_down(
         "candidate_provider": "mock",
         "provider_names": ["candidate"],
         "judge_runtime": {},
+        "resume_requested": False,
+        "resume_contract_fingerprint": None,
     }
     assert manifest["shared_error"] == {
         "stage": "provider_startup",
@@ -505,3 +593,247 @@ def test_candidate_is_reserved_and_cannot_be_declared_as_an_auxiliary(tmp_path: 
 
     with pytest.raises(ValueError, match="reserved for the shared candidate provider"):
         ModeRunOrchestrator(config, available_gpu_ids=()).preflight()
+
+
+@pytest.mark.parametrize("create_empty_root", [False, True])
+def test_resume_requires_existing_nonempty_output_root_before_manager_creation(
+    tmp_path: Path,
+    create_empty_root: bool,
+) -> None:
+    config = _config(tmp_path)
+    if create_empty_root:
+        config.output_dir.mkdir(parents=True)
+    managers = _ManagerFactory()
+
+    with pytest.raises(ValueError, match="existing non-empty mode output root"):
+        ModeRunOrchestrator(
+            config,
+            manager_factory=managers,
+            available_gpu_ids=(),
+            resume=True,
+        ).run()
+
+    assert managers.instances == []
+    assert config.output_dir.exists() is create_empty_root
+
+
+def test_resume_preflight_rejects_missing_contract_before_runtime_or_manager(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config = _batch_resume_config(tmp_path, contract_marker="original")
+    config.output_dir.mkdir(parents=True)
+    sentinel = config.output_dir / "interrupted-run.txt"
+    sentinel.write_text("preserve me\n", encoding="utf-8")
+    _patch_fixture_batch_resume(monkeypatch)
+    managers = _ManagerFactory()
+    runtime_checks: list[str] = []
+
+    def runtime_checker(provider: ProviderConfig) -> Mapping[str, Any]:
+        runtime_checks.append(provider.model)
+        return {"deployment": "fixture"}
+
+    with pytest.raises(ValueError, match=r"resume_contract\.json"):
+        ModeRunOrchestrator(
+            config,
+            manager_factory=managers,
+            runtime_checker=runtime_checker,
+            available_gpu_ids=(),
+            resume=True,
+        ).run()
+
+    assert runtime_checks == []
+    assert managers.instances == []
+    assert sentinel.read_text(encoding="utf-8") == "preserve me\n"
+
+
+def test_resume_preflight_rejects_changed_config_fingerprint_before_runtime_or_manager(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = _batch_resume_config(tmp_path, contract_marker="original")
+    original_contract = _write_fixture_resume_contract(original)
+    requested = _batch_resume_config(tmp_path, contract_marker="changed")
+    _patch_fixture_batch_resume(monkeypatch)
+    managers = _ManagerFactory()
+    runtime_checks: list[str] = []
+
+    def runtime_checker(provider: ProviderConfig) -> Mapping[str, Any]:
+        runtime_checks.append(provider.model)
+        return {"deployment": "fixture"}
+
+    with pytest.raises(ValueError, match="resume contract fingerprint differs"):
+        ModeRunOrchestrator(
+            requested,
+            manager_factory=managers,
+            runtime_checker=runtime_checker,
+            available_gpu_ids=(),
+            resume=True,
+        ).run()
+
+    assert runtime_checks == []
+    assert managers.instances == []
+    stored_contract = json.loads(
+        (requested.output_dir / "resume_contract.json").read_text(encoding="utf-8")
+    )
+    assert stored_contract == original_contract
+
+
+def test_resume_preflight_rejects_changed_top_level_metadata_fingerprint(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = _batch_resume_config(tmp_path, contract_marker="original")
+    original_contract = _write_fixture_resume_contract(original)
+    requested = replace(
+        original,
+        metadata={"fixture": True, "campaign": "changed"},
+    )
+    _patch_fixture_batch_resume(monkeypatch)
+    managers = _ManagerFactory()
+    runtime_checks: list[str] = []
+
+    def runtime_checker(provider: ProviderConfig) -> Mapping[str, Any]:
+        runtime_checks.append(provider.model)
+        return {"deployment": "fixture"}
+
+    with pytest.raises(ValueError, match="resume contract fingerprint differs"):
+        ModeRunOrchestrator(
+            requested,
+            manager_factory=managers,
+            runtime_checker=runtime_checker,
+            available_gpu_ids=(),
+            resume=True,
+        ).run()
+
+    assert original_contract["payload"]["metadata"] == {"fixture": True}
+    assert runtime_checks == []
+    assert managers.instances == []
+
+
+def test_resume_run_lock_collision_happens_before_manager_creation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config = _batch_resume_config(tmp_path, contract_marker="original")
+    _write_fixture_resume_contract(config)
+    _patch_fixture_batch_resume(monkeypatch)
+    managers = _ManagerFactory()
+    runtime_checks: list[str] = []
+
+    def runtime_checker(provider: ProviderConfig) -> Mapping[str, Any]:
+        runtime_checks.append(provider.model)
+        return {"deployment": "fixture"}
+
+    with (
+        exclusive_run_lock(config.output_dir, "concurrent-holder"),
+        pytest.raises(RuntimeError, match="another process already holds the run lock"),
+    ):
+        ModeRunOrchestrator(
+            config,
+            manager_factory=managers,
+            runtime_checker=runtime_checker,
+            available_gpu_ids=(),
+            resume=True,
+        ).run()
+
+    assert runtime_checks == [JUDGE_MODEL]
+    assert managers.instances == []
+
+
+def test_locked_execution_rejects_inputs_changed_after_preflight(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config = _batch_resume_config(tmp_path, contract_marker="original")
+    _patch_fixture_batch_resume(monkeypatch)
+    payload_calls = 0
+
+    def changing_payload(
+        raw_config: Mapping[str, Any],
+        *,
+        run_id: str,
+        metadata: Mapping[str, Any],
+        harness_config: Mapping[str, Any],
+        runtime_contract: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        nonlocal payload_calls
+        payload_calls += 1
+        return {
+            **_fixture_batch_resume_payload(
+                raw_config,
+                run_id=run_id,
+                metadata=metadata,
+                harness_config=harness_config,
+                runtime_contract=runtime_contract,
+            ),
+            "mutable_input_snapshot": payload_calls,
+        }
+
+    monkeypatch.setattr(
+        orchestrator_module,
+        "build_batch_resume_contract_payload",
+        changing_payload,
+    )
+    managers = _ManagerFactory()
+
+    with pytest.raises(RuntimeError, match="inputs changed between preflight and execution"):
+        ModeRunOrchestrator(
+            config,
+            manager_factory=managers,
+            runtime_checker=lambda _provider: {"deployment": "fixture"},
+            available_gpu_ids=(),
+        ).run()
+
+    assert payload_calls == 2
+    assert managers.instances == []
+
+
+def test_locked_execution_rejects_inputs_changed_after_mode_preparation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config = _batch_resume_config(tmp_path, contract_marker="original")
+    adaptive = _patch_fixture_batch_resume(monkeypatch)
+    payload_calls = 0
+
+    def changing_after_mode_preflight(
+        raw_config: Mapping[str, Any],
+        *,
+        run_id: str,
+        metadata: Mapping[str, Any],
+        harness_config: Mapping[str, Any],
+        runtime_contract: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        nonlocal payload_calls
+        payload_calls += 1
+        payload = _fixture_batch_resume_payload(
+            raw_config,
+            run_id=run_id,
+            metadata=metadata,
+            harness_config=harness_config,
+            runtime_contract=runtime_contract,
+        )
+        payload["mutable_input_snapshot"] = "changed" if payload_calls == 4 else "stable"
+        return payload
+
+    monkeypatch.setattr(
+        orchestrator_module,
+        "build_batch_resume_contract_payload",
+        changing_after_mode_preflight,
+    )
+    managers = _ManagerFactory()
+
+    with pytest.raises(RuntimeError, match="inputs changed between preflight and execution"):
+        ModeRunOrchestrator(
+            config,
+            manager_factory=managers,
+            runtime_checker=lambda _provider: {"deployment": "fixture"},
+            available_gpu_ids=(),
+        ).run()
+
+    assert payload_calls == 4
+    assert adaptive.contexts == []
+    assert len(managers.instances) == 1
+    assert managers.instances[0].start_calls == 1
+    assert managers.instances[0].shutdown_calls == 1

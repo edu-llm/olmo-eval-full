@@ -508,6 +508,78 @@ def build_classification_messages(
     )
 
 
+def judge_prompt_contract_payload() -> dict[str, Any]:
+    """Return a content-complete, strict-JSON snapshot of the frozen judge contract."""
+
+    cases = (
+        BlindedJudgeCase(
+            scenario_prompt="CONTRACT_SCENARIO_WITH_CONTEXT_TEXT",
+            candidate_response="CONTRACT_CANDIDATE_RESPONSE_ONE",
+            conversation_context_text="CONTRACT_CONTEXT_TEXT",
+            reference_solution="CONTRACT_REFERENCE_SOLUTION",
+            expected_evidence=("CONTRACT_EXPECTED_EVIDENCE",),
+        ),
+        BlindedJudgeCase(
+            scenario_prompt="CONTRACT_SCENARIO_WITH_TURNS",
+            candidate_response="CONTRACT_CANDIDATE_RESPONSE_TWO",
+            conversation_context=(
+                {"role": "user", "content": "CONTRACT_PRIOR_USER_TURN"},
+                {"role": "assistant", "content": "CONTRACT_PRIOR_ASSISTANT_TURN"},
+            ),
+            expected_evidence=("CONTRACT_EVIDENCE_WITHOUT_REFERENCE",),
+        ),
+        BlindedJudgeCase(
+            scenario_prompt="CONTRACT_SCENARIO_MINIMAL",
+            candidate_response="CONTRACT_CANDIDATE_RESPONSE_THREE",
+        ),
+    )
+    requirements = tuple(
+        AtomicRequirement(f"R{index}", f"CONTRACT_REQUIREMENT_{index}")
+        for index in range(1, len(cases) + 1)
+    )
+    atomic_messages = [
+        build_atomic_messages(case, requirement)
+        for case, requirement in zip(cases, requirements, strict=True)
+    ]
+    native_output = (
+        '{"verdict":"pass","rationale":"CONTRACT_RATIONALE","evidence":"CONTRACT_EVIDENCE"}'
+    )
+    return {
+        "prompt_version": PROMPT_VERSION,
+        "prompt_profile": PROMPT_PROFILE,
+        "prompt_variant": PROMPT_VARIANT,
+        "adapter_version": ADAPTER_VERSION,
+        "atomic_instruction": ATOMIC_INSTRUCTION,
+        "evidence_decision_policy": EVIDENCE_DECISION_POLICY,
+        "curated_grading_policy": CURATED_GRADING_POLICY,
+        "classification_instruction": CLASSIFICATION_INSTRUCTION,
+        "atomic_json_schema": ATOMIC_JSON_SCHEMA,
+        "forbidden_blinded_fields": sorted(FORBIDDEN_BLINDED_FIELDS),
+        "rendered_atomic_messages": atomic_messages,
+        "rendered_classification_messages": [
+            build_classification_messages(messages, native_output) for messages in atomic_messages
+        ],
+        "sampling": {
+            "seed": QWEN_JUDGE_SEED,
+            "main_max_tokens": QWEN_MAIN_MAX_TOKENS,
+            "classification_max_tokens": 1,
+            "temperature": 0.0,
+            "top_p": 1.0,
+            "enable_thinking": False,
+            "classification_regex": "[PF]",
+        },
+        "classification_token_ids": {
+            "pass": list(QWEN_PASS_TOKEN_IDS),
+            "fail": list(QWEN_FAIL_TOKEN_IDS),
+            "canonical_pass": QWEN_CANONICAL_PASS_TOKEN_ID,
+            "canonical_fail": QWEN_CANONICAL_FAIL_TOKEN_ID,
+        },
+        "failure_probability_threshold": FAILURE_PROBABILITY_THRESHOLD,
+        "probability_aggregation": PROBABILITY_AGGREGATION,
+        "probability_source": PROBABILITY_SOURCE,
+    }
+
+
 def _json_object_without_duplicate_keys(raw: str) -> dict[str, object]:
     def reject_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
         value: dict[str, object] = {}

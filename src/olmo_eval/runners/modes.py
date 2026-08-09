@@ -14,7 +14,7 @@ import math
 import os
 import re
 import uuid
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
@@ -150,6 +150,8 @@ class ModeRunContext:
     provider: InferenceProvider
     inference_pool: ProviderLookup | None = None
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    resume: bool = False
+    resume_contract_fingerprint: str | None = None
 
     def __post_init__(self) -> None:
         if not self.run_id.strip() or self.run_id in {".", ".."}:
@@ -158,6 +160,16 @@ class ModeRunContext:
         object.__setattr__(self, "output_root", root)
         object.__setattr__(self, "metadata", _frozen_mapping(self.metadata))
         _json_safe(self.metadata, path="context.metadata")
+        if not isinstance(self.resume, bool):
+            raise ValueError("resume must be boolean")
+        fingerprint = self.resume_contract_fingerprint
+        if fingerprint is not None and (
+            len(fingerprint) != 64
+            or any(character not in "0123456789abcdef" for character in fingerprint)
+        ):
+            raise ValueError("resume_contract_fingerprint must be a lowercase SHA-256 digest")
+        if self.resume and fingerprint is None:
+            raise ValueError("resume requires a resume_contract_fingerprint")
 
     def get_provider(self, name: str) -> InferenceProvider:
         if self.inference_pool is None:
@@ -244,6 +256,7 @@ class EvaluationModeRunner:
         context: ModeRunContext,
         modes: Sequence[ModeSpec],
         continue_on_mode_failure: bool = True,
+        pre_dispatch_validation: Callable[[], None] | None = None,
     ) -> None:
         if not modes:
             raise ValueError("at least one evaluation mode is required")
@@ -254,6 +267,7 @@ class EvaluationModeRunner:
         self.context = context
         self.modes = tuple(modes)
         self.continue_on_mode_failure = continue_on_mode_failure
+        self.pre_dispatch_validation = pre_dispatch_validation
 
     def preflight(self) -> None:
         """Validate shared declarations without running inference."""
@@ -296,6 +310,13 @@ class EvaluationModeRunner:
                     status=ModeStatus.BLOCKED_PREFLIGHT,
                     error=f"{type(exc).__name__}: {exc}",
                 )
+
+        # The EduLLM orchestrator uses this boundary to re-hash the mutable
+        # scientific inputs after the mode has built the exact in-memory
+        # snapshot it will execute. The mode then consumes that cached snapshot
+        # rather than loading the files again.
+        if self.pre_dispatch_validation is not None:
+            self.pre_dispatch_validation()
 
         for spec in self.modes:
             mode = self.registry.get(spec.name)

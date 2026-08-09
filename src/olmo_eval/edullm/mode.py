@@ -13,11 +13,14 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
 import math
 import os
+import time
 import uuid
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, cast
 
@@ -25,12 +28,26 @@ import numpy as np
 
 from olmo_eval.edullm.ability import Quadrature, build_quadrature
 from olmo_eval.edullm.bank import FittedBank, Rubric, Scenario, load_fitted_bank, sha256_file
+from olmo_eval.edullm.batch_report import (
+    BATCH_REPORT_MARKDOWN,
+    BATCH_RESULTS_CSV,
+    BATCH_RESULTS_JSON,
+    build_batch_report,
+    write_batch_reports,
+)
+from olmo_eval.edullm.batch_resume import (
+    BatchCheckpointState,
+    allocate_attempt_path,
+    commit_checkpoint,
+    load_checkpoint_chain,
+    read_strict_json_object,
+    repair_checkpoint_pointer,
+    safe_relative_path,
+    verify_hashed_artifacts,
+)
 from olmo_eval.edullm.cat import CatConfig, CatResult, ScenarioStep, run_cat
 from olmo_eval.edullm.judge import (
     ADAPTER_VERSION,
-    CLASSIFICATION_INSTRUCTION,
-    CURATED_GRADING_POLICY,
-    EVIDENCE_DECISION_POLICY,
     FAILURE_PROBABILITY_THRESHOLD,
     PROMPT_PROFILE,
     PROMPT_VARIANT,
@@ -44,6 +61,7 @@ from olmo_eval.edullm.judge import (
     QwenZeroShotBinaryJudge,
     build_atomic_messages,
     build_classification_messages,
+    judge_prompt_contract_payload,
 )
 from olmo_eval.edullm.precomputed import (
     PRECOMPUTED_RESPONSE_BATCH_SCHEMA_VERSION,
@@ -63,10 +81,11 @@ from olmo_eval.edullm.tutor import (
 from olmo_eval.runners.modes import ModeResult, ModeRunContext, ModeStatus
 
 MODE_NAME = "edullm_adaptive"
-IMPLEMENTATION_VERSION = "edullm-adaptive-olmo-v3"
+IMPLEMENTATION_VERSION = "edullm-adaptive-olmo-v4"
 MODE_CONFIG_SCHEMA_VERSION = "edullm-adaptive-mode-config-v1"
 ARTIFACT_SCHEMA_VERSION = "edullm-adaptive-artifacts-v1"
-BATCH_ARTIFACT_SCHEMA_VERSION = "edullm-adaptive-batch-artifacts-v1"
+BATCH_ARTIFACT_SCHEMA_VERSION = "edullm-adaptive-batch-artifacts-v2"
+BATCH_PROGRESS_SCHEMA_VERSION = "edullm-adaptive-batch-progress-v1"
 ATOMIC_REQUIREMENT_POLICY = "criterion_as_single_atomic_unless_curation_finalized"
 TUTOR_PROMPT_SOURCE = "origin/frq/infobench:eduLLM-Evals/tutor_cat/respgen/prompts.py"
 TUTOR_PROMPT_VERSION = "frq-infobench-prompts-b4ea2e8"
@@ -74,6 +93,8 @@ TUTOR_PROMPT_VERSION = "frq-infobench-prompts-b4ea2e8"
 _CURATION_FINALIZED_STATUS = "curation_v1_finalized"
 _SCIENCE_STATUSES = frozenset({"validated", "experimental"})
 _HEX_SHA256 = frozenset("0123456789abcdef")
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True)
@@ -158,6 +179,7 @@ class TutorIdentity:
 class _PreparedRun:
     config: EduLLMAdaptiveConfig
     bank: FittedBank
+    bank_provenance: Mapping[str, Any]
     quadrature: Quadrature
     judge: QwenZeroShotBinaryJudge
     requirement_plans: Mapping[str, RequirementPlan]
@@ -172,6 +194,7 @@ class _PreparedRun:
 class _PreparedInputs:
     config: EduLLMAdaptiveConfig
     bank: FittedBank
+    bank_provenance: Mapping[str, Any]
     quadrature: Quadrature
     requirement_plans: Mapping[str, RequirementPlan]
     single_precomputed_source: PrecomputedTutorResponses | None
@@ -828,6 +851,7 @@ def preflight_adaptive_config(raw_config: Mapping[str, Any]) -> _PreparedInputs:
     return _PreparedInputs(
         config=config,
         bank=bank,
+        bank_provenance=_bank_provenance_values(config.bank, bank),
         quadrature=quadrature,
         requirement_plans=plans,
         single_precomputed_source=single_precomputed_source,
@@ -917,6 +941,7 @@ def _prepare(context: ModeRunContext, raw_config: Mapping[str, Any]) -> _Prepare
     return _PreparedRun(
         config=config,
         bank=inputs.bank,
+        bank_provenance=inputs.bank_provenance,
         quadrature=inputs.quadrature,
         judge=judge,
         requirement_plans=inputs.requirement_plans,
@@ -1018,9 +1043,10 @@ def _cat_result_row(result: CatResult) -> dict[str, Any]:
     }
 
 
-def _bank_provenance(prepared: _PreparedRun) -> dict[str, Any]:
-    bank = prepared.bank
-    config = prepared.config.bank
+def _bank_provenance_values(
+    config: BankRuntimeConfig,
+    bank: FittedBank,
+) -> dict[str, Any]:
     irt_sources = sorted(
         {
             str(record.get("irt_params", {}).get("source") or "")
@@ -1057,6 +1083,12 @@ def _bank_provenance(prepared: _PreparedRun) -> dict[str, Any]:
         "files": files,
         "bundle_sha256": _canonical_hash(files),
     }
+
+
+def _bank_provenance(prepared: _PreparedRun) -> dict[str, Any]:
+    # This is the file-hash snapshot captured while the in-memory bank was
+    # prepared. Do not re-read mutable source paths while writing later views.
+    return cast(dict[str, Any], _json_value(prepared.bank_provenance, path="bank provenance"))
 
 
 def _tutor_response_source_provenance(prepared: _PreparedRun) -> dict[str, Any]:
@@ -1132,14 +1164,77 @@ def _prompt_provenance() -> dict[str, Any]:
         "judge_prompt_profile": PROMPT_PROFILE,
         "judge_prompt_variant": PROMPT_VARIANT,
         "judge_adapter_version": ADAPTER_VERSION,
-        "judge_contract_sha256": _canonical_hash(
-            {
-                "evidence": EVIDENCE_DECISION_POLICY,
-                "curated": CURATED_GRADING_POLICY,
-                "classification": CLASSIFICATION_INSTRUCTION,
-            }
-        ),
+        "judge_contract_sha256": _canonical_hash(judge_prompt_contract_payload()),
     }
+
+
+def build_batch_resume_contract_payload(
+    raw_config: Mapping[str, Any],
+    *,
+    run_id: str,
+    metadata: Mapping[str, Any],
+    harness_config: Mapping[str, Any],
+    runtime_contract: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Bind every scientific and software input needed for safe batch resume.
+
+    This performs only local validation and file hashing.  It intentionally does
+    not construct an inference provider or inspect mutable progress artifacts.
+    """
+
+    inputs = preflight_adaptive_config(raw_config)
+    batch = inputs.precomputed_batch
+    if batch is None:
+        raise ValueError("resume contracts are supported only for precomputed response batches")
+    source = inputs.config.tutor.response_source
+    bank = cast(dict[str, Any], _json_value(inputs.bank_provenance, path="bank provenance"))
+    prompts = _prompt_provenance()
+    scientific_contract = {
+        "benchmark_id": inputs.config.bank.benchmark_id,
+        "calibration_version": inputs.config.bank.calibration_version,
+        "policy_id": inputs.config.bank.policy_id,
+        "scientific_status": inputs.config.bank.scientific_status,
+        "bank_bundle_sha256": bank["bundle_sha256"],
+        "cat": inputs.config.raw["cat"],
+        "quadrature": inputs.config.raw["quadrature"],
+        "judge": inputs.config.raw["judge"],
+        "judge_contract_sha256": prompts["judge_contract_sha256"],
+    }
+    return cast(
+        dict[str, Any],
+        _json_value(
+            {
+                "schema_version": "edullm-adaptive-batch-resume-payload-v1",
+                "run_id": run_id,
+                "mode": MODE_NAME,
+                "implementation_version": IMPLEMENTATION_VERSION,
+                "artifact_schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+                "adaptive_config": inputs.config.raw,
+                "metadata": metadata,
+                "harness_config": harness_config,
+                "runtime_contract": runtime_contract,
+                "response_batch": {
+                    "schema_version": source.schema_version,
+                    "observed_sha256": batch.sha256,
+                    "provenance": dict(source.provenance or {}),
+                    "model_roster": [
+                        {
+                            "model_id": model.model_id,
+                            "model_family": model.model_family,
+                            "model_revision": model.model_revision,
+                            "row_count": model.row_count,
+                            "blank_count": model.blank_count,
+                        }
+                        for model in batch.models
+                    ],
+                },
+                "bank": bank,
+                "prompts": prompts,
+                "scientific_contract_sha256": _canonical_hash(scientific_contract),
+            },
+            path="batch resume contract",
+        ),
+    )
 
 
 def _manifest(
@@ -1219,6 +1314,12 @@ def _batch_counts(
     succeeded = sum(row.get("status") == ModeStatus.SUCCEEDED.value for row in model_rows)
     failed = sum(row.get("status") == ModeStatus.FAILED.value for row in model_rows)
     cancelled = sum(row.get("status") == ModeStatus.CANCELLED.value for row in model_rows)
+    metric_rows = [
+        row
+        for row in model_rows
+        if row.get("status") == ModeStatus.SUCCEEDED.value
+        and isinstance(row.get("metrics"), Mapping)
+    ]
     return {
         "models_total": batch.model_count,
         "models_completed": len(model_rows),
@@ -1226,17 +1327,31 @@ def _batch_counts(
         "models_failed": failed,
         "models_cancelled": cancelled,
         "models_pending": batch.model_count - len(model_rows),
-        "scenarios_administered": sum(
+        "models_with_metrics": len(metric_rows),
+        "models_precision_reached": sum(
+            cast(Mapping[str, Any], row["metrics"]).get("precision_reached") is True
+            for row in metric_rows
+        ),
+        "models_mwle_converged": sum(
+            cast(Mapping[str, Any], row["metrics"]).get("mwle_converged") is True
+            for row in metric_rows
+        ),
+        "scenario_administrations_with_metrics": sum(
             int(cast(Mapping[str, Any], row.get("metrics", {})).get("scenarios_administered", 0))
-            for row in model_rows
+            for row in metric_rows
         ),
-        "criteria_observed": sum(
+        "criterion_observations_with_metrics": sum(
             int(cast(Mapping[str, Any], row.get("metrics", {})).get("criteria_observed", 0))
-            for row in model_rows
+            for row in metric_rows
         ),
-        "criteria_no_decision": sum(
+        "criterion_no_decisions_with_metrics": sum(
             int(cast(Mapping[str, Any], row.get("metrics", {})).get("criteria_no_decision", 0))
+            for row in metric_rows
+        ),
+        "partial_completed_units_failed_models": sum(
+            int(row.get("completed_units") or 0)
             for row in model_rows
+            if row.get("status") == ModeStatus.FAILED.value
         ),
     }
 
@@ -1247,6 +1362,7 @@ def _batch_manifest(
     *,
     status: str,
     model_rows: Sequence[Mapping[str, Any]],
+    checkpoint_generation: int,
     artifacts: Mapping[str, str] | None = None,
     error: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -1260,6 +1376,10 @@ def _batch_manifest(
         "execution": "precomputed_batch",
         "run_id": context.run_id,
         "status": status,
+        "resume_contract_fingerprint": (
+            context.resume_contract_fingerprint or _batch_fingerprint(context, prepared)
+        ),
+        "checkpoint_generation": checkpoint_generation,
         "config_sha256": _canonical_hash(prepared.config.raw),
         "config": prepared.config.raw,
         "context_metadata": dict(context.metadata),
@@ -1275,12 +1395,386 @@ def _batch_manifest(
     }
 
 
+def _batch_fingerprint(context: ModeRunContext, prepared: _PreparedRun) -> str:
+    """Return the orchestrator fingerprint or a deterministic direct-run fallback."""
+
+    if context.resume_contract_fingerprint is not None:
+        return context.resume_contract_fingerprint
+    batch = prepared.precomputed_batch
+    if batch is None:
+        raise ValueError("batch fingerprint requested for a non-batch run")
+    return _canonical_hash(
+        {
+            "schema_version": "edullm-direct-batch-fingerprint-v1",
+            "run_id": context.run_id,
+            "implementation_version": IMPLEMENTATION_VERSION,
+            "config": prepared.config.raw,
+            "context_metadata": dict(context.metadata),
+            "response_batch_sha256": batch.sha256,
+            "bank": _bank_provenance(prepared),
+            "prompts": _prompt_provenance(),
+        }
+    )
+
+
+def _candidate_id(model_index: int, batch_model: PrecomputedTutorResponseBatchModel) -> str:
+    return f"candidate-{model_index:04d}-{_text_hash(batch_model.model_id)[:12]}"
+
+
+def _candidate_prepared_run(
+    prepared: _PreparedRun,
+    batch_model: PrecomputedTutorResponseBatchModel,
+    source_provenance: Mapping[str, Any],
+) -> _PreparedRun:
+    batch = prepared.precomputed_batch
+    if batch is None:
+        raise ValueError("candidate preparation requested for a non-batch run")
+    identity = TutorIdentity(
+        model=batch_model.model_id,
+        model_family=batch_model.model_family,
+        provenance={
+            "source": source_provenance["source"],
+            "revision": batch_model.model_revision,
+            "batch_revision": source_provenance["revision"],
+            "batch_sha256": batch.sha256,
+        },
+    )
+    return replace(
+        prepared,
+        tutor_identity=identity,
+        response_rows=batch_model.responses,
+        batch_model=batch_model,
+    )
+
+
+def _validate_attempt_row(
+    row: Mapping[str, Any],
+    *,
+    run_id: str,
+    config_raw: Mapping[str, Any],
+    mode_root: Path,
+    model_index: int,
+    batch_model: PrecomputedTutorResponseBatchModel,
+) -> dict[str, Any]:
+    """Validate one committed candidate attempt and every artifact it names."""
+
+    candidate_id = _candidate_id(model_index, batch_model)
+    prefix = f"committed attempt for {candidate_id}"
+    _exact_keys(
+        row,
+        {
+            "schema_version",
+            "model_index",
+            "candidate_id",
+            "attempt_number",
+            "model_id",
+            "model_family",
+            "model_revision",
+            "output_dir",
+            "status",
+            "metrics",
+            "warnings",
+            "completed_units",
+            "error",
+            "committed_at",
+            "manifest_sha256",
+        },
+        prefix,
+    )
+    if row.get("schema_version") != BATCH_ARTIFACT_SCHEMA_VERSION:
+        raise ValueError(f"{prefix} has an unsupported schema_version")
+    if row.get("model_index") != model_index:
+        raise ValueError(f"{prefix} has the wrong model_index")
+    if row.get("candidate_id") != candidate_id:
+        raise ValueError(f"{prefix} has the wrong candidate_id")
+    for field, expected in (
+        ("model_id", batch_model.model_id),
+        ("model_family", batch_model.model_family),
+        ("model_revision", batch_model.model_revision),
+    ):
+        if row.get(field) != expected:
+            raise ValueError(f"{prefix} has the wrong {field}")
+
+    attempt_number = row.get("attempt_number")
+    if (
+        isinstance(attempt_number, bool)
+        or not isinstance(attempt_number, int)
+        or attempt_number < 1
+    ):
+        raise ValueError(f"{prefix}.attempt_number must be a positive integer")
+    expected_relative = Path("models") / candidate_id / f"attempt-{attempt_number:04d}"
+    raw_output_dir = row.get("output_dir")
+    if not isinstance(raw_output_dir, str):
+        raise ValueError(f"{prefix}.output_dir must be a string")
+    relative_output = safe_relative_path(raw_output_dir, prefix="models")
+    if relative_output != expected_relative:
+        raise ValueError(f"{prefix}.output_dir does not match its attempt number")
+    candidate_output = mode_root / relative_output
+    if candidate_output.is_symlink() or not candidate_output.is_dir():
+        raise ValueError(f"{prefix} output directory is missing or unsafe")
+    resolved_root = mode_root.resolve()
+    if resolved_root not in candidate_output.resolve().parents:
+        raise ValueError(f"{prefix} output directory escapes the mode root")
+
+    status = row.get("status")
+    if status not in {
+        ModeStatus.SUCCEEDED.value,
+        ModeStatus.FAILED.value,
+        ModeStatus.CANCELLED.value,
+    }:
+        raise ValueError(f"{prefix}.status is not terminal")
+    metrics = row.get("metrics")
+    if not isinstance(metrics, Mapping):
+        raise ValueError(f"{prefix}.metrics must be an object")
+    warnings = row.get("warnings")
+    if not isinstance(warnings, list) or not all(isinstance(item, str) for item in warnings):
+        raise ValueError(f"{prefix}.warnings must be a string array")
+    completed_units = row.get("completed_units")
+    if (
+        isinstance(completed_units, bool)
+        or not isinstance(completed_units, int)
+        or completed_units < 0
+    ):
+        raise ValueError(f"{prefix}.completed_units must be a non-negative integer")
+    error = row.get("error")
+    if status == ModeStatus.SUCCEEDED.value and error is not None:
+        raise ValueError(f"{prefix} succeeded but carries an error")
+    if status != ModeStatus.SUCCEEDED.value and not isinstance(error, str):
+        raise ValueError(f"{prefix} failed or was cancelled without an error string")
+    committed_at = row.get("committed_at")
+    if not isinstance(committed_at, str):
+        raise ValueError(f"{prefix}.committed_at must be an ISO-8601 string")
+    try:
+        committed_datetime = datetime.fromisoformat(committed_at)
+    except ValueError as exc:
+        raise ValueError(f"{prefix}.committed_at must be an ISO-8601 string") from exc
+    if committed_datetime.tzinfo is None:
+        raise ValueError(f"{prefix}.committed_at must include a timezone")
+
+    manifest_digest = row.get("manifest_sha256")
+    if (
+        not isinstance(manifest_digest, str)
+        or len(manifest_digest) != 64
+        or any(character not in _HEX_SHA256 for character in manifest_digest)
+    ):
+        raise ValueError(f"{prefix}.manifest_sha256 must be a lowercase SHA-256 digest")
+    manifest_path = candidate_output / "manifest.json"
+    if not manifest_path.is_file() or sha256_file(manifest_path) != manifest_digest:
+        raise ValueError(f"{prefix} candidate manifest hash does not match")
+    manifest = read_strict_json_object(manifest_path)
+    if manifest.get("schema_version") != ARTIFACT_SCHEMA_VERSION:
+        raise ValueError(f"{prefix} candidate manifest has an unsupported schema_version")
+    if manifest.get("implementation_version") != IMPLEMENTATION_VERSION:
+        raise ValueError(f"{prefix} candidate manifest implementation changed")
+    if manifest.get("mode") != MODE_NAME or manifest.get("run_id") != run_id:
+        raise ValueError(f"{prefix} candidate manifest belongs to another run")
+    if manifest.get("status") != status:
+        raise ValueError(f"{prefix} status disagrees with its candidate manifest")
+    if manifest.get("config_sha256") != _canonical_hash(config_raw):
+        raise ValueError(f"{prefix} candidate manifest config hash changed")
+    tutor = manifest.get("tutor")
+    if not isinstance(tutor, Mapping):
+        raise ValueError(f"{prefix} candidate manifest tutor must be an object")
+    if tutor.get("model") != batch_model.model_id or tutor.get("model_family") != (
+        batch_model.model_family
+    ):
+        raise ValueError(f"{prefix} candidate manifest tutor identity changed")
+    tutor_provenance = tutor.get("provenance")
+    if not isinstance(tutor_provenance, Mapping) or tutor_provenance.get("revision") != (
+        batch_model.model_revision
+    ):
+        raise ValueError(f"{prefix} candidate manifest tutor revision changed")
+    artifact_hashes = manifest.get("artifact_sha256")
+    if not isinstance(artifact_hashes, Mapping):
+        raise ValueError(f"{prefix} candidate manifest artifact hashes must be an object")
+    required_artifacts = {
+        "tutor_responses.jsonl",
+        "judge_rows.jsonl",
+        "cat_result.json",
+        "cat_trace.jsonl",
+    }
+    if status != ModeStatus.SUCCEEDED.value:
+        required_artifacts.add("failure.json")
+    missing_artifacts = sorted(required_artifacts - set(artifact_hashes))
+    if missing_artifacts:
+        raise ValueError(f"{prefix} is missing artifact hash(es): {missing_artifacts}")
+    verify_hashed_artifacts(candidate_output, artifact_hashes)
+    if status == ModeStatus.SUCCEEDED.value:
+        cat_result = read_strict_json_object(candidate_output / "cat_result.json")
+        if cat_result.get("schema_version") != ARTIFACT_SCHEMA_VERSION:
+            raise ValueError(f"{prefix} CAT result has an unsupported schema_version")
+        scenarios = cat_result.get("scenarios_administered")
+        if not isinstance(scenarios, list):
+            raise ValueError(f"{prefix} CAT scenarios_administered must be an array")
+        expected_metrics = {
+            "stop_reason": cat_result.get("stop_reason"),
+            "precision_reached": cat_result.get("precision_reached"),
+            "stop_se_method": cat_result.get("stop_se_method"),
+            "scenarios_administered": len(scenarios),
+            "criteria_observed": cat_result.get("criteria_observed"),
+            "criteria_no_decision": cat_result.get("criteria_no_decision"),
+            "counts": cat_result.get("counts"),
+            "mwle_converged": cat_result.get("mwle_converged"),
+            "mwle_message": cat_result.get("mwle_message"),
+            "critical_failures": cat_result.get("critical_failures"),
+            "theta_eap": cat_result.get("theta_eap"),
+            "se_eap": cat_result.get("se_eap"),
+            "theta_mwle": cat_result.get("theta_mwle"),
+            "se_mwle": cat_result.get("se_mwle"),
+        }
+        if dict(metrics) != expected_metrics:
+            raise ValueError(f"{prefix} metrics disagree with the hashed CAT result")
+    return cast(dict[str, Any], _json_value(row, path=prefix))
+
+
+def _validate_restored_checkpoint(
+    state: BatchCheckpointState,
+    *,
+    run_id: str,
+    config_raw: Mapping[str, Any],
+    batch: PrecomputedTutorResponseBatch,
+    mode_root: Path,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Bind a validated checkpoint chain to the exact uploaded model roster."""
+
+    validated_attempts: list[dict[str, Any]] = []
+    attempts_by_candidate: dict[str, list[dict[str, Any]]] = {}
+    seen_outputs: set[str] = set()
+    last_attempt_number: dict[str, int] = {}
+    roster = {
+        _candidate_id(index, model): (index, model) for index, model in enumerate(batch.models)
+    }
+    for position, raw_attempt in enumerate(state.attempts):
+        candidate_id = raw_attempt.get("candidate_id")
+        if not isinstance(candidate_id, str) or candidate_id not in roster:
+            raise ValueError(f"checkpoint attempt {position} references an unknown candidate")
+        model_index, batch_model = roster[candidate_id]
+        attempt = _validate_attempt_row(
+            raw_attempt,
+            run_id=run_id,
+            config_raw=config_raw,
+            mode_root=mode_root,
+            model_index=model_index,
+            batch_model=batch_model,
+        )
+        output_dir = cast(str, attempt["output_dir"])
+        if output_dir in seen_outputs:
+            raise ValueError("checkpoint attempts contain a duplicate output_dir")
+        seen_outputs.add(output_dir)
+        attempt_number = cast(int, attempt["attempt_number"])
+        if attempt_number <= last_attempt_number.get(candidate_id, 0):
+            raise ValueError("checkpoint attempt numbers must increase for each candidate")
+        last_attempt_number[candidate_id] = attempt_number
+        attempts_by_candidate.setdefault(candidate_id, []).append(attempt)
+        validated_attempts.append(attempt)
+
+    validated_rows: list[dict[str, Any]] = []
+    seen_candidates: set[str] = set()
+    for position, raw_row in enumerate(state.model_results):
+        candidate_id = raw_row.get("candidate_id")
+        if not isinstance(candidate_id, str) or candidate_id not in roster:
+            raise ValueError(f"checkpoint model result {position} references an unknown candidate")
+        if candidate_id in seen_candidates:
+            raise ValueError("checkpoint model results contain a duplicate candidate")
+        seen_candidates.add(candidate_id)
+        model_index, batch_model = roster[candidate_id]
+        row = _validate_attempt_row(
+            raw_row,
+            run_id=run_id,
+            config_raw=config_raw,
+            mode_root=mode_root,
+            model_index=model_index,
+            batch_model=batch_model,
+        )
+        candidate_attempts = attempts_by_candidate.get(candidate_id, [])
+        if not candidate_attempts or row != candidate_attempts[-1]:
+            raise ValueError("checkpoint model result is not the candidate's latest attempt")
+        validated_rows.append(row)
+
+    if not seen_candidates.issubset(attempts_by_candidate):
+        raise ValueError("checkpoint model results are missing their committed attempt history")
+    validated_rows.sort(key=lambda row: cast(int, row["model_index"]))
+    return validated_rows, validated_attempts
+
+
+def validate_batch_resume_artifacts(
+    raw_config: Mapping[str, Any],
+    *,
+    run_id: str,
+    mode_root: Path,
+    fingerprint_sha256: str,
+) -> BatchCheckpointState:
+    """Validate a resume checkpoint and candidate artifacts without a provider."""
+
+    inputs = preflight_adaptive_config(raw_config)
+    batch = inputs.precomputed_batch
+    if batch is None:
+        raise ValueError("batch resume validation requires precomputed_batch_jsonl input")
+    state = load_checkpoint_chain(mode_root, fingerprint_sha256=fingerprint_sha256)
+    _validate_restored_checkpoint(
+        state,
+        run_id=run_id,
+        config_raw=inputs.config.raw,
+        batch=batch,
+        mode_root=mode_root,
+    )
+    return state
+
+
+def _attempt_result_row(
+    result: ModeResult,
+    *,
+    context: ModeRunContext,
+    prepared: _PreparedRun,
+    mode_root: Path,
+    model_index: int,
+    batch_model: PrecomputedTutorResponseBatchModel,
+    attempt_number: int,
+    relative_output: Path,
+) -> dict[str, Any]:
+    manifest_path = mode_root / relative_output / "manifest.json"
+    row = {
+        "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+        "model_index": model_index,
+        "candidate_id": _candidate_id(model_index, batch_model),
+        "attempt_number": attempt_number,
+        "model_id": batch_model.model_id,
+        "model_family": batch_model.model_family,
+        "model_revision": batch_model.model_revision,
+        "output_dir": relative_output.as_posix(),
+        "status": result.status.value,
+        "metrics": dict(result.metrics),
+        "warnings": list(result.warnings),
+        "completed_units": int(result.completed_units or 0),
+        "error": result.error,
+        "committed_at": datetime.now(UTC).isoformat(),
+        "manifest_sha256": sha256_file(manifest_path),
+    }
+    return _validate_attempt_row(
+        row,
+        run_id=context.run_id,
+        config_raw=prepared.config.raw,
+        mode_root=mode_root,
+        model_index=model_index,
+        batch_model=batch_model,
+    )
+
+
 class EduLLMAdaptiveMode:
     """EvaluationMode implementation for adaptive EduLLM criterion grading."""
 
     name = MODE_NAME
     implementation_version = IMPLEMENTATION_VERSION
     required_auxiliary_providers = ("judge",)
+
+    def __init__(self) -> None:
+        # The dispatcher calls ``preflight`` immediately before its final
+        # locked input validation. Retaining that exact prepared snapshot means
+        # execution cannot silently reload different bank/response bytes after
+        # the validation boundary.
+        self._prepared_context: ModeRunContext | None = None
+        self._prepared_config_sha256: str | None = None
+        self._prepared_run: _PreparedRun | None = None
 
     def preflight_config(self, config: Mapping[str, Any]) -> None:
         """Validate bank and scientific inputs before providers are started."""
@@ -1290,7 +1784,10 @@ class EduLLMAdaptiveMode:
     def preflight(self, context: ModeRunContext, config: Mapping[str, Any]) -> None:
         """Fail closed before generation for config, provider, bank, or CAT errors."""
 
-        _prepare(context, config)
+        prepared = _prepare(context, config)
+        self._prepared_context = context
+        self._prepared_config_sha256 = _canonical_hash(prepared.config.raw)
+        self._prepared_run = prepared
 
     async def run(
         self,
@@ -1298,7 +1795,20 @@ class EduLLMAdaptiveMode:
         config: Mapping[str, Any],
         output_dir: Path,
     ) -> ModeResult:
-        prepared = _prepare(context, config)
+        requested_config_sha256 = _canonical_hash(_parse_config(config).raw)
+        if (
+            self._prepared_context is context
+            and self._prepared_config_sha256 == requested_config_sha256
+            and self._prepared_run is not None
+        ):
+            prepared = self._prepared_run
+        else:
+            # Direct library callers are allowed to invoke ``run`` without the
+            # OLMo dispatcher's preflight phase.
+            prepared = _prepare(context, config)
+        self._prepared_context = None
+        self._prepared_config_sha256 = None
+        self._prepared_run = None
         if prepared.precomputed_batch is not None:
             return await self._run_batch(context, prepared, output_dir)
         if prepared.tutor_identity is None:
@@ -1310,6 +1820,7 @@ class EduLLMAdaptiveMode:
         context: ModeRunContext,
         prepared: _PreparedRun,
         output_dir: Path,
+        progress_callback: Callable[[Mapping[str, Any]], None] | None = None,
     ) -> ModeResult:
         paths = {
             "manifest.json": output_dir / "manifest.json",
@@ -1351,6 +1862,16 @@ class EduLLMAdaptiveMode:
             rubrics: tuple[Rubric, ...],
         ) -> Mapping[str, int | None]:
             selected_scenarios.append(scenario.scenario_id)
+            if progress_callback is not None:
+                progress_callback(
+                    {
+                        "phase": "judging_scenario",
+                        "scenario_id": scenario.scenario_id,
+                        "selected_scenarios": len(selected_scenarios),
+                        "completed_scenarios": len(completed_scenarios),
+                        "criterion_judgments": len(judge_rows),
+                    }
+                )
             identity = prepared.tutor_identity
             if identity is None:
                 raise RuntimeError("candidate tutor identity is unavailable")
@@ -1367,6 +1888,9 @@ class EduLLMAdaptiveMode:
                 )
                 messages = [dict(message) for message in generated.request.messages]
                 response_text = generated.output.text
+                request_sha256: str | None = _canonical_hash(messages)
+                request_provenance = "provider_generation_request"
+                messages_provenance = "provider_generation_request"
             else:
                 response_rows = prepared.response_rows
                 if response_rows is None:
@@ -1376,6 +1900,25 @@ class EduLLMAdaptiveMode:
                 response_text = source_row.response
                 source_metadata = source_row.metadata
                 source_row_sha256 = source_row.source_row_sha256
+                rendered_prompt = source_metadata.get("rendered_prompt")
+                declared_prompt_sha256 = source_metadata.get("rendered_prompt_sha256")
+                if rendered_prompt is None and declared_prompt_sha256 is None:
+                    request_sha256 = None
+                    request_provenance = "unavailable_for_precomputed_response"
+                elif isinstance(rendered_prompt, str) and isinstance(declared_prompt_sha256, str):
+                    observed_prompt_sha256 = _text_hash(rendered_prompt)
+                    if declared_prompt_sha256 != observed_prompt_sha256:
+                        raise ValueError(
+                            "precomputed rendered_prompt_sha256 does not match rendered_prompt"
+                        )
+                    request_sha256 = observed_prompt_sha256
+                    request_provenance = "uploaded_rendered_prompt"
+                else:
+                    raise ValueError(
+                        "precomputed rendered prompt provenance must provide both "
+                        "rendered_prompt and rendered_prompt_sha256 strings"
+                    )
+                messages_provenance = "reconstructed_evaluation_context_not_generation_request"
             tutor_row = {
                 "schema_version": ARTIFACT_SCHEMA_VERSION,
                 "scenario_id": scenario.scenario_id,
@@ -1384,7 +1927,10 @@ class EduLLMAdaptiveMode:
                 "source_metadata": dict(source_metadata),
                 "source_row_sha256": source_row_sha256,
                 "messages": messages,
-                "request_sha256": _canonical_hash(messages),
+                "messages_provenance": messages_provenance,
+                "evaluation_context_sha256": _canonical_hash(messages),
+                "request_sha256": request_sha256,
+                "request_provenance": request_provenance,
                 "raw_output": response_text,
                 "raw_output_sha256": _text_hash(response_text),
                 "blank_response": not bool(response_text.strip()),
@@ -1485,6 +2031,16 @@ class EduLLMAdaptiveMode:
             )
             _atomic_write_jsonl(paths["cat_trace.jsonl"], partial_trace)
             completed_scenarios.append(scenario.scenario_id)
+            if progress_callback is not None:
+                progress_callback(
+                    {
+                        "phase": "scenario_completed",
+                        "scenario_id": scenario.scenario_id,
+                        "selected_scenarios": len(selected_scenarios),
+                        "completed_scenarios": len(completed_scenarios),
+                        "criterion_judgments": len(judge_rows),
+                    }
+                )
             return observations
 
         try:
@@ -1527,12 +2083,18 @@ class EduLLMAdaptiveMode:
                 metrics={
                     "stop_reason": result.stop_reason,
                     "precision_reached": result.precision_reached,
+                    "stop_se_method": result.stop_se_method,
                     "scenarios_administered": len(result.scenarios_administered),
                     "criteria_observed": result.criteria_observed,
                     "criteria_no_decision": result.criteria_no_decision,
+                    "counts": dict(result.counts),
                     "mwle_converged": result.mwle_converged,
+                    "mwle_message": result.mwle_message,
+                    "critical_failures": list(result.critical_failures),
                     "theta_eap": dict(result.theta_eap),
+                    "se_eap": dict(result.se_eap),
                     "theta_mwle": (None if result.theta_mwle is None else dict(result.theta_mwle)),
+                    "se_mwle": (None if result.se_mwle is None else dict(result.se_mwle)),
                 },
                 artifacts=tuple(paths),
                 warnings=tuple(warnings),
@@ -1582,146 +2144,359 @@ class EduLLMAdaptiveMode:
         source_provenance = prepared.config.tutor.response_source.provenance
         if batch is None or source_provenance is None:
             raise RuntimeError("precomputed tutor response batch is unavailable")
+        if not context.resume and output_dir.exists() and any(output_dir.iterdir()):
+            raise ValueError("fresh batch run refuses to overwrite a non-empty mode directory")
+        output_dir.mkdir(parents=True, exist_ok=True)
         paths = {
             "manifest.json": output_dir / "manifest.json",
             "model_results.jsonl": output_dir / "model_results.jsonl",
+            "attempt_history.jsonl": output_dir / "attempt_history.jsonl",
             "batch_summary.json": output_dir / "batch_summary.json",
+            "progress.json": output_dir / "progress.json",
+            BATCH_RESULTS_JSON: output_dir / BATCH_RESULTS_JSON,
+            BATCH_RESULTS_CSV: output_dir / BATCH_RESULTS_CSV,
+            BATCH_REPORT_MARKDOWN: output_dir / BATCH_REPORT_MARKDOWN,
         }
-        model_rows: list[dict[str, Any]] = []
-        output_dir.mkdir(parents=True, exist_ok=True)
+        fingerprint = _batch_fingerprint(context, prepared)
+        state = load_checkpoint_chain(output_dir, fingerprint_sha256=fingerprint)
+        if not context.resume and state.generation:
+            raise ValueError("fresh batch run found an existing checkpoint chain")
+        if state.pointer_stale:
+            if not context.resume:
+                raise ValueError("fresh batch run found a stale checkpoint pointer")
+            repair_checkpoint_pointer(output_dir, state)
+        restored_rows, attempts = _validate_restored_checkpoint(
+            state,
+            run_id=context.run_id,
+            config_raw=prepared.config.raw,
+            batch=batch,
+            mode_root=output_dir,
+        )
+        model_rows = list(restored_rows)
+        session_started_at = datetime.now(UTC)
+        session_started_monotonic = time.monotonic()
+        attempts_started_this_session = 0
+        attempts_completed_this_session = 0
 
-        def checkpoint(
+        def ordered_rows() -> list[dict[str, Any]]:
+            return sorted(model_rows, key=lambda row: cast(int, row["model_index"]))
+
+        def write_progress(
+            status: str,
+            *,
+            phase: str,
+            current_model: Mapping[str, Any] | None = None,
+            error: Mapping[str, Any] | None = None,
+        ) -> None:
+            elapsed = max(0.0, time.monotonic() - session_started_monotonic)
+            counts = _batch_counts(batch, ordered_rows())
+            models_per_hour = (
+                attempts_completed_this_session / elapsed * 3600.0
+                if attempts_completed_this_session and elapsed > 0
+                else None
+            )
+            estimated_remaining_seconds = (
+                counts["models_pending"] / models_per_hour * 3600.0
+                if models_per_hour and models_per_hour > 0
+                else None
+            )
+            _atomic_write_json(
+                paths["progress.json"],
+                {
+                    "schema_version": BATCH_PROGRESS_SCHEMA_VERSION,
+                    "run_id": context.run_id,
+                    "status": status,
+                    "phase": phase,
+                    "resumed": context.resume,
+                    "resume_contract_fingerprint": fingerprint,
+                    "checkpoint_generation": state.generation,
+                    "session_started_at": session_started_at.isoformat(),
+                    "updated_at": datetime.now(UTC).isoformat(),
+                    "elapsed_seconds": elapsed,
+                    "attempts_started_this_session": attempts_started_this_session,
+                    "attempts_completed_this_session": attempts_completed_this_session,
+                    "models_per_hour_this_session": models_per_hour,
+                    "estimated_remaining_seconds": estimated_remaining_seconds,
+                    **counts,
+                    "current_model": None if current_model is None else dict(current_model),
+                    "error": None if error is None else dict(error),
+                },
+            )
+
+        def write_views(
             status: str,
             *,
             error: Mapping[str, Any] | None = None,
         ) -> None:
-            counts = _batch_counts(batch, model_rows)
-            _atomic_write_jsonl(paths["model_results.jsonl"], model_rows)
-            _atomic_write_json(
-                paths["batch_summary.json"],
-                {
-                    "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
-                    "status": status,
-                    **counts,
-                    "response_batch_sha256": batch.sha256,
-                    "model_results_path": "model_results.jsonl",
-                    "error": None if error is None else dict(error),
-                },
-            )
-            artifact_hashes = {
-                name: sha256_file(path) for name, path in paths.items() if name != "manifest.json"
+            rows = ordered_rows()
+            counts = _batch_counts(batch, rows)
+            _atomic_write_jsonl(paths["model_results.jsonl"], rows)
+            _atomic_write_jsonl(paths["attempt_history.jsonl"], attempts)
+            summary = {
+                "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
+                "run_id": context.run_id,
+                "status": status,
+                "checkpoint_generation": state.generation,
+                "resume_contract_fingerprint": fingerprint,
+                **counts,
+                "response_batch_sha256": batch.sha256,
+                "model_results_path": "model_results.jsonl",
+                "attempt_history_path": "attempt_history.jsonl",
+                "attempts_committed": len(attempts),
+                "error": None if error is None else dict(error),
             }
+            _atomic_write_json(paths["batch_summary.json"], summary)
+            artifact_hashes = {
+                name: sha256_file(paths[name])
+                for name in (
+                    "model_results.jsonl",
+                    "attempt_history.jsonl",
+                    "batch_summary.json",
+                )
+            }
+            checkpoint_pointer = output_dir / "checkpoints/latest.json"
+            if checkpoint_pointer.is_file():
+                artifact_hashes["checkpoints/latest.json"] = sha256_file(checkpoint_pointer)
+            manifest = _batch_manifest(
+                context,
+                prepared,
+                status=status,
+                model_rows=rows,
+                checkpoint_generation=state.generation,
+                artifacts=artifact_hashes,
+                error=error,
+            )
+            _atomic_write_json(paths["manifest.json"], manifest)
+            report = build_batch_report(manifest, summary, rows)
+            write_batch_reports(output_dir, report)
+            artifact_hashes.update(
+                {
+                    name: sha256_file(paths[name])
+                    for name in (BATCH_RESULTS_JSON, BATCH_RESULTS_CSV, BATCH_REPORT_MARKDOWN)
+                }
+            )
             _atomic_write_json(
                 paths["manifest.json"],
                 _batch_manifest(
                     context,
                     prepared,
                     status=status,
-                    model_rows=model_rows,
+                    model_rows=rows,
+                    checkpoint_generation=state.generation,
                     artifacts=artifact_hashes,
                     error=error,
                 ),
             )
 
-        checkpoint("running")
+        def commit_and_publish(
+            status: str,
+            *,
+            phase: str,
+            error: Mapping[str, Any] | None = None,
+        ) -> None:
+            nonlocal state
+            state = commit_checkpoint(
+                output_dir,
+                fingerprint_sha256=fingerprint,
+                model_results=ordered_rows(),
+                attempts=attempts,
+            )
+            write_views(status, error=error)
+            write_progress(status, phase=phase, error=error)
+
+        if state.generation == 0:
+            commit_and_publish("running", phase="batch_initialized")
+        else:
+            write_views("running")
+
+        reusable_candidate_ids = {
+            cast(str, row["candidate_id"])
+            for row in model_rows
+            if row.get("status") == ModeStatus.SUCCEEDED.value
+        }
+        if context.resume:
+            retry_rows = [
+                row for row in model_rows if row.get("status") != ModeStatus.SUCCEEDED.value
+            ]
+            if retry_rows:
+                retry_ids = {cast(str, row["candidate_id"]) for row in retry_rows}
+                model_rows[:] = [
+                    row for row in model_rows if cast(str, row["candidate_id"]) not in retry_ids
+                ]
+                commit_and_publish("running", phase="resume_requeued_incomplete_models")
+        elif any(row.get("status") != ModeStatus.SUCCEEDED.value for row in model_rows):
+            raise ValueError("fresh batch run cannot inherit prior failed model results")
+
+        write_progress("running", phase="batch_running")
+
         for model_index, batch_model in enumerate(batch.models):
-            candidate_id = f"candidate-{model_index:04d}-{_text_hash(batch_model.model_id)[:12]}"
-            relative_output = Path("models") / candidate_id
+            candidate_id = _candidate_id(model_index, batch_model)
+            if candidate_id in reusable_candidate_ids:
+                logger.info(
+                    "Reusing verified EduLLM result for model %s (%d/%d)",
+                    batch_model.model_id,
+                    model_index + 1,
+                    batch.model_count,
+                )
+                continue
+
+            attempt_number, relative_output = allocate_attempt_path(output_dir, candidate_id)
             candidate_output = output_dir / relative_output
-            identity = TutorIdentity(
-                model=batch_model.model_id,
-                model_family=batch_model.model_family,
-                provenance={
-                    "source": source_provenance["source"],
-                    "revision": batch_model.model_revision,
-                    "batch_revision": source_provenance["revision"],
-                    "batch_sha256": batch.sha256,
-                },
-            )
-            candidate_prepared = replace(
+            candidate_prepared = _candidate_prepared_run(
                 prepared,
-                tutor_identity=identity,
-                response_rows=batch_model.responses,
-                batch_model=batch_model,
+                batch_model,
+                source_provenance,
             )
+            attempts_started_this_session += 1
+            current_base = {
+                "model_index": model_index,
+                "candidate_id": candidate_id,
+                "model_id": batch_model.model_id,
+                "attempt_number": attempt_number,
+                "output_dir": relative_output.as_posix(),
+            }
+            write_progress(
+                "running",
+                phase="candidate_started",
+                current_model={**current_base, "candidate_phase": "initializing"},
+            )
+            logger.info(
+                "Starting EduLLM model %s (%d/%d), attempt %d",
+                batch_model.model_id,
+                model_index + 1,
+                batch.model_count,
+                attempt_number,
+            )
+
+            def candidate_progress(
+                event: Mapping[str, Any],
+                current: Mapping[str, Any] = current_base,
+            ) -> None:
+                candidate_phase = str(event.get("phase") or "running")
+                write_progress(
+                    "running",
+                    phase="candidate_running",
+                    current_model={
+                        **current,
+                        "candidate_phase": candidate_phase,
+                        "scenario_id": event.get("scenario_id"),
+                        "selected_scenarios": event.get("selected_scenarios"),
+                        "completed_scenarios": event.get("completed_scenarios"),
+                        "criterion_judgments": event.get("criterion_judgments"),
+                    },
+                )
+
             try:
                 result = await self._run_candidate(
                     context,
                     candidate_prepared,
                     candidate_output,
+                    progress_callback=candidate_progress,
                 )
             except asyncio.CancelledError:
-                model_rows.append(
-                    {
-                        "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
-                        "model_index": model_index,
-                        "candidate_id": candidate_id,
-                        "model_id": batch_model.model_id,
-                        "model_family": batch_model.model_family,
-                        "model_revision": batch_model.model_revision,
-                        "output_dir": relative_output.as_posix(),
-                        "status": ModeStatus.CANCELLED.value,
-                        "metrics": {},
-                        "warnings": [],
-                        "error": "evaluation mode was cancelled",
-                        "manifest_sha256": (
-                            sha256_file(candidate_output / "manifest.json")
-                            if (candidate_output / "manifest.json").is_file()
-                            else None
-                        ),
-                    }
-                )
                 error_row = {
                     "type": "CancelledError",
                     "message": "batch evaluation was cancelled",
                 }
-                checkpoint(ModeStatus.CANCELLED.value, error=error_row)
+                # The interrupted attempt is intentionally left uncommitted and
+                # preserved. A resume allocates a new attempt directory.
+                write_views(ModeStatus.CANCELLED.value, error=error_row)
+                write_progress(
+                    ModeStatus.CANCELLED.value,
+                    phase="candidate_cancelled_uncommitted",
+                    current_model={**current_base, "candidate_phase": "cancelled"},
+                    error=error_row,
+                )
                 raise
-
-            candidate_manifest = candidate_output / "manifest.json"
-            model_rows.append(
-                {
-                    "schema_version": BATCH_ARTIFACT_SCHEMA_VERSION,
-                    "model_index": model_index,
-                    "candidate_id": candidate_id,
-                    "model_id": batch_model.model_id,
-                    "model_family": batch_model.model_family,
-                    "model_revision": batch_model.model_revision,
-                    "output_dir": relative_output.as_posix(),
-                    "status": result.status.value,
-                    "metrics": dict(result.metrics),
-                    "warnings": list(result.warnings),
-                    "error": result.error,
-                    "manifest_sha256": sha256_file(candidate_manifest),
+            except Exception as exc:
+                # Preserve the possibly partial attempt and record a separate,
+                # complete failure envelope that can be safely checkpointed.
+                logger.exception(
+                    "Unexpected candidate wrapper failure for %s", batch_model.model_id
+                )
+                attempt_number, relative_output = allocate_attempt_path(output_dir, candidate_id)
+                candidate_output = output_dir / relative_output
+                failure_paths = {
+                    "manifest.json": candidate_output / "manifest.json",
+                    "tutor_responses.jsonl": candidate_output / "tutor_responses.jsonl",
+                    "judge_rows.jsonl": candidate_output / "judge_rows.jsonl",
+                    "cat_result.json": candidate_output / "cat_result.json",
+                    "cat_trace.jsonl": candidate_output / "cat_trace.jsonl",
                 }
-            )
-            checkpoint("running")
+                failure_path = self._write_failure(
+                    context,
+                    candidate_prepared,
+                    failure_paths,
+                    (),
+                    (),
+                    (),
+                    (),
+                    status=ModeStatus.FAILED.value,
+                    error=exc,
+                )
+                result = ModeResult(
+                    mode=self.name,
+                    implementation_version=self.implementation_version,
+                    status=ModeStatus.FAILED,
+                    artifacts=(*tuple(failure_paths), failure_path.name),
+                    completed_units=0,
+                    error=f"{type(exc).__name__}: {exc}",
+                )
 
-        counts = _batch_counts(batch, model_rows)
+            if result.status == ModeStatus.CANCELLED:
+                raise asyncio.CancelledError("candidate returned cancelled status")
+            row = _attempt_result_row(
+                result,
+                context=context,
+                prepared=prepared,
+                mode_root=output_dir,
+                model_index=model_index,
+                batch_model=batch_model,
+                attempt_number=attempt_number,
+                relative_output=relative_output,
+            )
+            model_rows[:] = [
+                previous for previous in model_rows if previous.get("candidate_id") != candidate_id
+            ]
+            model_rows.append(row)
+            attempts.append(dict(row))
+            attempts_completed_this_session += 1
+            commit_and_publish("running", phase="candidate_committed")
+            logger.info(
+                "Committed EduLLM model %s with status %s (%d/%d)",
+                batch_model.model_id,
+                result.status.value,
+                model_index + 1,
+                batch.model_count,
+            )
+
+        counts = _batch_counts(batch, ordered_rows())
         failed = counts["models_failed"]
         status = ModeStatus.FAILED if failed else ModeStatus.SUCCEEDED
         error_text = None if not failed else f"{failed} tutor model evaluation(s) failed"
         error_row = (
             None if error_text is None else {"type": "BatchModelFailure", "message": error_text}
         )
-        checkpoint(status.value, error=error_row)
+        write_views(status.value, error=error_row)
+        write_progress(status.value, phase="batch_completed", error=error_row)
         warnings: list[str] = []
         if prepared.config.bank.scientific_status == "experimental":
             warnings.append("fitted bank and CAT policy are explicitly experimental")
         if failed:
             warnings.append(error_text or "one or more tutor model evaluations failed")
-        if counts["criteria_no_decision"]:
+        if counts["criterion_no_decisions_with_metrics"]:
             warnings.append(
-                f"{counts['criteria_no_decision']} criterion judgment(s) were no-decision"
+                f"{counts['criterion_no_decisions_with_metrics']} criterion judgment(s) "
+                "were no-decision"
             )
         return ModeResult(
             mode=self.name,
             implementation_version=self.implementation_version,
             status=status,
             metrics=counts,
-            artifacts=tuple(paths),
+            artifacts=(*tuple(paths), "checkpoints/latest.json"),
             warnings=tuple(warnings),
-            completed_units=len(model_rows),
+            completed_units=len(ordered_rows()),
             error=error_text,
         )
 
@@ -1745,6 +2520,8 @@ class EduLLMAdaptiveMode:
         failure_path = paths["manifest.json"].with_name("failure.json")
         _atomic_write_jsonl(paths["tutor_responses.jsonl"], tutor_rows)
         _atomic_write_jsonl(paths["judge_rows.jsonl"], judge_rows)
+        if not paths["cat_trace.jsonl"].is_file():
+            _atomic_write_jsonl(paths["cat_trace.jsonl"], ())
         _atomic_write_json(
             paths["cat_result.json"],
             {
@@ -1801,6 +2578,8 @@ __all__ = [
     "MODE_NAME",
     "RequirementPlan",
     "TutorResponseSourceConfig",
+    "build_batch_resume_contract_payload",
     "parse_adaptive_config",
     "preflight_adaptive_config",
+    "validate_batch_resume_artifacts",
 ]

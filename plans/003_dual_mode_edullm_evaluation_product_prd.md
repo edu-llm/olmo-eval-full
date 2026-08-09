@@ -507,6 +507,36 @@ evaluation through the finished runner.
 - No-GPU direct-versus-wrapped fixtures are the parity oracle; real benchmark and model
   runs remain separate explicit operations.
 
+### Operational hardening extension
+
+The multi-model replay path also provides:
+
+- `olmo-eval edullm prepare-response-batch` for explicitly typed, hashable response
+  sources with strict model/scenario coverage validation, prompt provenance, and
+  cryptographically bound, recoverable paired publication of the batch plus validation
+  report; loaders refuse a destination while its publication journal is unresolved;
+- candidate-boundary `run-modes --resume`, bound to the exact configuration, fitted
+  bank, response batch, prompt/judge contract, top-level metadata, and runtime
+  contract;
+- locked post-provider validation of the exact prepared bank/response snapshot, which
+  is retained for execution instead of reloading mutable source files;
+- a content-complete judge-prompt fingerprint covering rendered atomic and
+  classification templates, prompt branches, schemas, grading policies, sampling,
+  token/probability handling, and the failure threshold;
+- immutable hash-chained checkpoints and never-overwritten candidate attempt folders;
+- `run-modes --status` plus atomic `progress.json` updates without GPU/provider startup,
+  with the validated checkpoint chain as authority and strict cross-view
+  run/fingerprint/checkpoint/status/count/path reconciliation;
+- consolidated JSON, long-form CSV, and Markdown reports with per-skill EAP/MWLE
+  estimates; and
+- explicit scientific-status, adaptive-selection scope, no-decision denominator, and
+  no-global-ranking safeguards in the generated report.
+
+Only fully committed, hash-verified successful candidates are reused. Failed,
+cancelled, partial, or uncommitted attempts remain preserved and receive a new attempt
+folder. These changes harden execution and reporting; they do not change Qwen judgment,
+CAT selection/stopping, EAP, MWLE, or calibrated-bank mathematics.
+
 ## Recommended next step
 
 Review the integration diff, prepare one approved benchmark-specific configuration and

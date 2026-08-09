@@ -17,7 +17,17 @@ from urllib.parse import urlsplit, urlunsplit
 
 import httpx
 
-from olmo_eval.edullm.mode import EduLLMAdaptiveMode
+from olmo_eval.edullm.batch_resume import (
+    build_resume_contract,
+    exclusive_run_lock,
+    validate_resume_contract,
+    write_or_validate_resume_contract,
+)
+from olmo_eval.edullm.mode import (
+    EduLLMAdaptiveMode,
+    build_batch_resume_contract_payload,
+    validate_batch_resume_artifacts,
+)
 from olmo_eval.inference.manager import InferenceManager
 from olmo_eval.inference.providers.config import ProviderConfig
 from olmo_eval.inference.registry import ProviderRegistry
@@ -61,6 +71,8 @@ class ModeRunPreflight:
     provider_names: tuple[str, ...]
     available_gpu_ids: tuple[int, ...]
     judge_runtime: Mapping[str, Any] | None = None
+    resume_contract_payload: Mapping[str, Any] | None = None
+    resume_contract_fingerprint: str | None = None
 
 
 def _atomic_write_json(path: Path, value: Mapping[str, Any]) -> None:
@@ -227,6 +239,7 @@ class ModeRunOrchestrator:
         manager_factory: InferenceManagerFactory = InferenceManager,
         runtime_checker: RuntimeChecker = validate_qwen_vllm_runtime,
         available_gpu_ids: Sequence[int] | None = None,
+        resume: bool = False,
     ) -> None:
         self.config = config
         self._manager_factory = manager_factory
@@ -234,6 +247,9 @@ class ModeRunOrchestrator:
         self._available_gpu_ids = (
             tuple(available_gpu_ids) if available_gpu_ids is not None else None
         )
+        if not isinstance(resume, bool):
+            raise ValueError("resume must be boolean")
+        self.resume = resume
 
     def _normalized_modes(self) -> tuple[ModeSpec, ...]:
         normalized: list[ModeSpec] = []
@@ -282,26 +298,73 @@ class ModeRunOrchestrator:
         return configs
 
     @staticmethod
-    def _validate_output_root(output_root: Path) -> None:
+    def _validate_output_root(output_root: Path, *, resume: bool) -> None:
+        if resume:
+            if not output_root.is_dir() or not any(output_root.iterdir()):
+                raise ValueError("resume requires an existing non-empty mode output root")
+            return
         if output_root.exists():
             if not output_root.is_dir():
                 raise ValueError("mode output root must be a directory")
-            entries = list(output_root.iterdir())
-            if entries:
+            if any(output_root.iterdir()):
                 raise ValueError(
                     "mode output root must be new or empty; choose a new run directory"
                 )
 
+    def _batch_resume_payload(self, modes: Sequence[ModeSpec]) -> Mapping[str, Any] | None:
+        adaptive = [mode for mode in modes if mode.name == "edullm_adaptive"]
+        if len(adaptive) != 1:
+            return None
+        tutor = adaptive[0].config.get("tutor")
+        if not isinstance(tutor, Mapping):
+            return None
+        source = tutor.get("response_source")
+        if not isinstance(source, Mapping) or source.get("kind") != "precomputed_batch_jsonl":
+            return None
+        return build_batch_resume_contract_payload(
+            adaptive[0].config,
+            run_id=self.config.run_id,
+            metadata=self.config.metadata,
+            harness_config=self.config.harness.to_dict(),
+            runtime_contract={
+                "vllm_version": FROZEN_QWEN_VLLM_VERSION,
+                "explicit_token_logprobs": True,
+                "environment_unset": list(QWEN_UNSET_ENVIRONMENT),
+            },
+        )
+
     def preflight(self) -> ModeRunPreflight:
         """Perform read-only shared validation without starting a provider."""
 
-        self._validate_output_root(self.config.output_dir)
+        self._validate_output_root(self.config.output_dir, resume=self.resume)
         modes = self._normalized_modes()
         required = self._required_auxiliaries(modes)
         configs = self._provider_configs(required)
         mode_registry = _registry()
         for spec in modes:
             mode_registry.get(spec.name).preflight_config(spec.config)
+        resume_payload = self._batch_resume_payload(modes)
+        if self.resume and (
+            resume_payload is None or len(modes) != 1 or modes[0].name != "edullm_adaptive"
+        ):
+            raise ValueError(
+                "resume is supported only for a single edullm_adaptive precomputed_batch_jsonl mode"
+            )
+        resume_fingerprint: str | None = None
+        if resume_payload is not None:
+            resume_document = build_resume_contract(resume_payload)
+            resume_fingerprint = str(resume_document["fingerprint_sha256"])
+            if self.resume:
+                validate_resume_contract(
+                    self.config.output_dir / "resume_contract.json",
+                    resume_payload,
+                )
+                validate_batch_resume_artifacts(
+                    modes[0].config,
+                    run_id=self.config.run_id,
+                    mode_root=self.config.output_dir / "modes" / "edullm_adaptive",
+                    fingerprint_sha256=resume_fingerprint,
+                )
         gpu_ids = (
             self._available_gpu_ids
             if self._available_gpu_ids is not None
@@ -318,6 +381,8 @@ class ModeRunOrchestrator:
             provider_names=tuple(configs),
             available_gpu_ids=tuple(gpu_ids),
             judge_runtime=judge_runtime,
+            resume_contract_payload=resume_payload,
+            resume_contract_fingerprint=resume_fingerprint,
         )
 
     def _runtime_provider_configs(
@@ -338,6 +403,26 @@ class ModeRunOrchestrator:
             configs["judge"] = replace(judge, kwargs=kwargs)
         return configs
 
+    def _assert_batch_inputs_unchanged(
+        self,
+        preflight: ModeRunPreflight,
+        modes: Sequence[ModeSpec],
+    ) -> Mapping[str, Any] | None:
+        """Re-hash mutable scientific inputs at the locked execution boundary."""
+
+        observed = self._batch_resume_payload(modes)
+        expected = preflight.resume_contract_payload
+        if observed != expected:
+            raise RuntimeError(
+                "batch resume-contract inputs changed between preflight and execution; "
+                "restart from a stable fitted bank and response batch"
+            )
+        if observed is not None:
+            fingerprint = str(build_resume_contract(observed)["fingerprint_sha256"])
+            if fingerprint != preflight.resume_contract_fingerprint:
+                raise RuntimeError("batch resume-contract fingerprint changed during execution")
+        return observed
+
     def _context_metadata(self, preflight: ModeRunPreflight) -> dict[str, Any]:
         metadata = dict(self.config.metadata)
         metadata["mode_runner"] = {
@@ -347,6 +432,8 @@ class ModeRunOrchestrator:
             "candidate_provider": self.config.harness.provider.get_provider_name(),
             "provider_names": list(preflight.provider_names),
             "judge_runtime": dict(preflight.judge_runtime or {}),
+            "resume_requested": self.resume,
+            "resume_contract_fingerprint": preflight.resume_contract_fingerprint,
         }
         return metadata
 
@@ -432,6 +519,40 @@ class ModeRunOrchestrator:
         modes = self._normalized_modes()
         provider_configs = self._runtime_provider_configs(preflight)
         self.config.output_dir.mkdir(parents=True, exist_ok=True)
+        with exclusive_run_lock(self.config.output_dir, self.config.run_id):
+            locked_resume_payload = self._assert_batch_inputs_unchanged(preflight, modes)
+            if locked_resume_payload is not None:
+                contract = write_or_validate_resume_contract(
+                    self.config.output_dir,
+                    locked_resume_payload,
+                    resume=self.resume,
+                )
+                fingerprint = str(contract["fingerprint_sha256"])
+                if fingerprint != preflight.resume_contract_fingerprint:
+                    raise RuntimeError("resume contract changed between preflight and execution")
+                if self.resume:
+                    validate_batch_resume_artifacts(
+                        modes[0].config,
+                        run_id=self.config.run_id,
+                        mode_root=self.config.output_dir / "modes" / "edullm_adaptive",
+                        fingerprint_sha256=fingerprint,
+                    )
+            elif self.resume:
+                raise RuntimeError("resume contract is unavailable")
+            return await self._run_with_providers(
+                preflight,
+                modes,
+                provider_configs,
+            )
+
+    async def _run_with_providers(
+        self,
+        preflight: ModeRunPreflight,
+        modes: Sequence[ModeSpec],
+        provider_configs: Mapping[str, ProviderConfig],
+    ) -> dict[str, ModeResult]:
+        """Run providers and modes while the caller holds the exclusive run lock."""
+
         manager: InferenceManagerLike | None = None
         providers: ProviderRegistry | None = None
         results: dict[str, ModeResult] | None = None
@@ -448,6 +569,7 @@ class ModeRunOrchestrator:
             providers = ProviderRegistry.from_serialized(serialized)
             if providers is None:
                 raise RuntimeError("inference manager returned no resolved providers")
+            self._assert_batch_inputs_unchanged(preflight, modes)
             resolved_primary = providers.get_replica_set(PRIMARY_PROVIDER_NAME).get_config(0)
             resolved_auxiliaries = {
                 name: providers.get_replica_set(name).get_config(0)
@@ -459,13 +581,20 @@ class ModeRunOrchestrator:
                 provider=providers.get(PRIMARY_PROVIDER_NAME),
                 inference_pool=providers,
                 metadata=self._context_metadata(preflight),
+                resume=self.resume,
+                resume_contract_fingerprint=preflight.resume_contract_fingerprint,
             )
+
+            def validate_inputs_after_mode_preflight() -> None:
+                self._assert_batch_inputs_unchanged(preflight, modes)
+
             stage = "mode_dispatch"
             results = await EvaluationModeRunner(
                 registry=_registry(resolved_primary, resolved_auxiliaries),
                 context=context,
                 modes=modes,
                 continue_on_mode_failure=self.config.continue_on_mode_failure,
+                pre_dispatch_validation=validate_inputs_after_mode_preflight,
             ).run_async()
         except BaseException as exc:
             active_error = exc

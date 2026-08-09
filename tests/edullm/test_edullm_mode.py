@@ -6,12 +6,14 @@ import asyncio
 import hashlib
 import json
 import math
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+import olmo_eval.edullm.judge as judge_module
+import olmo_eval.edullm.mode as mode_module
 from olmo_eval.common.types import LMOutput, LMRequest, SamplingParams
 from olmo_eval.edullm.bank import FITTED_BANK_SCHEMA_VERSION
 from olmo_eval.edullm.judge import (
@@ -27,7 +29,7 @@ from olmo_eval.edullm.mode import (
     EduLLMAdaptiveMode,
 )
 from olmo_eval.inference.base import InferenceProvider
-from olmo_eval.runners.modes import ModeResult, ModeRunContext, ModeStatus
+from olmo_eval.runners.modes import ModeRunContext, ModeStatus
 
 
 class _Provider(InferenceProvider):
@@ -421,6 +423,10 @@ def test_mode_branches_and_uses_primary_tutor_plus_named_judge(
     assert manifest["judge"]["failure_probability_threshold"] == 0.33
     assert manifest["bank"]["bundle_sha256"]
     assert manifest["prompts"]["judge_contract_sha256"]
+    provider_tutor_row = _read_jsonl(output / "tutor_responses.jsonl")[0]
+    assert provider_tutor_row["request_provenance"] == "provider_generation_request"
+    assert provider_tutor_row["messages_provenance"] == "provider_generation_request"
+    assert provider_tutor_row["request_sha256"] == provider_tutor_row["evaluation_context_sha256"]
     first_judge_row = _read_jsonl(output / "judge_rows.jsonl")[0]
     assert first_judge_row["requirement_source"] == "criterion_text"
     assert first_judge_row["requirements"] == [
@@ -433,6 +439,21 @@ def test_mode_branches_and_uses_primary_tutor_plus_named_judge(
         "cat_result.json",
         "cat_trace.jsonl",
     }
+
+
+def test_prompt_contract_digest_changes_with_material_prompt_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    before = mode_module._prompt_provenance()["judge_contract_sha256"]
+    monkeypatch.setattr(
+        judge_module,
+        "ATOMIC_INSTRUCTION",
+        judge_module.ATOMIC_INSTRUCTION + " CONTRACT_CHANGE",
+    )
+
+    after = mode_module._prompt_provenance()["judge_contract_sha256"]
+
+    assert after != before
 
 
 def test_missing_judgment_remains_none_and_is_excluded(tmp_path: Path) -> None:
@@ -494,7 +515,17 @@ def test_precomputed_responses_skip_tutor_generation_and_reach_qwen_cat(
         config,
         tmp_path / "uploaded.jsonl",
         [
-            {"scenario_id": "mid", "response": "Uploaded mid response", "metadata": {"n": 1}},
+            {
+                "scenario_id": "mid",
+                "response": "Uploaded mid response",
+                "metadata": {
+                    "n": 1,
+                    "rendered_prompt": "original generation prompt",
+                    "rendered_prompt_sha256": hashlib.sha256(
+                        b"original generation prompt"
+                    ).hexdigest(),
+                },
+            },
             {"scenario_id": "easy", "response": "Uploaded easy response"},
             {"scenario_id": "hard", "response": "Uploaded hard response"},
         ],
@@ -522,7 +553,14 @@ def test_precomputed_responses_skip_tutor_generation_and_reach_qwen_cat(
         "Uploaded easy response",
     ]
     assert tutor_rows[0]["response_source"] == "precomputed_jsonl"
-    assert tutor_rows[0]["source_metadata"] == {"n": 1}
+    assert tutor_rows[0]["source_metadata"]["n"] == 1
+    assert (
+        tutor_rows[0]["request_sha256"] == hashlib.sha256(b"original generation prompt").hexdigest()
+    )
+    assert tutor_rows[0]["request_provenance"] == "uploaded_rendered_prompt"
+    assert tutor_rows[0]["messages_provenance"] == (
+        "reconstructed_evaluation_context_not_generation_request"
+    )
     manifest = json.loads((output / "manifest.json").read_text())
     source = manifest["tutor"]["response_source"]
     assert manifest["tutor"]["model"] == "fixture-tutor"
@@ -626,7 +664,13 @@ def test_precomputed_batch_reuses_qwen_and_runs_independent_cat_per_model(
     assert set(result.artifacts) == {
         "manifest.json",
         "model_results.jsonl",
+        "attempt_history.jsonl",
         "batch_summary.json",
+        "progress.json",
+        "batch_results.json",
+        "batch_results.csv",
+        "BATCH_REPORT.md",
+        "checkpoints/latest.json",
     }
 
 
@@ -666,29 +710,18 @@ def test_precomputed_batch_continues_after_one_model_runtime_failure(
         candidate_context: ModeRunContext,
         prepared: Any,
         candidate_output: Path,
-    ) -> ModeResult:
+        progress_callback: Callable[[Mapping[str, Any]], None] | None = None,
+    ) -> Any:
         if prepared.tutor_identity.model == "a-broken":
             candidate_output.mkdir(parents=True)
-            (candidate_output / "manifest.json").write_text(
-                json.dumps({"status": "failed"}) + "\n",
-                encoding="utf-8",
-            )
-            (candidate_output / "failure.json").write_text(
-                json.dumps({"error": "fixture model-specific failure"}) + "\n",
-                encoding="utf-8",
-            )
-            return ModeResult(
-                mode="edullm_adaptive",
-                implementation_version=self.implementation_version,
-                status=ModeStatus.FAILED,
-                artifacts=("manifest.json", "failure.json"),
-                error="fixture model-specific failure",
-            )
+            (candidate_output / "orphaned_partial.txt").write_text("preserved\n", encoding="utf-8")
+            raise RuntimeError("fixture model-specific failure")
         return await original_run_candidate(
             self,
             candidate_context,
             prepared,
             candidate_output,
+            progress_callback=progress_callback,
         )
 
     monkeypatch.setattr(EduLLMAdaptiveMode, "_run_candidate", controlled_run_candidate)
@@ -820,6 +853,29 @@ def test_preflight_rejects_candidate_revision_mismatch(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="shared runner revision does not match"):
         EduLLMAdaptiveMode().preflight(context, config)
+
+
+def test_run_consumes_the_exact_snapshot_built_during_preflight(tmp_path: Path) -> None:
+    bank_paths = _write_bank(tmp_path / "bank", scenario_ids=("mid",))
+    rubric_path = bank_paths[0]
+    prepared_rubric_sha256 = _sha(rubric_path.read_bytes())
+    context, _ = _context(tmp_path / "run", _judge_provider())
+    config = _config(bank_paths, max_scenarios=1)
+    mode = EduLLMAdaptiveMode()
+
+    mode.preflight(context, config)
+    # A mutation after the orchestrator's final validation must not make the
+    # execution reload a different scientific bank. The real orchestrator also
+    # detects mutations that happen before this boundary.
+    rubric_path.write_text("{}\n", encoding="utf-8")
+
+    result = asyncio.run(mode.run(context, config, tmp_path / "run/modes/edullm_adaptive"))
+
+    assert result.status == ModeStatus.SUCCEEDED
+    manifest = json.loads(
+        (tmp_path / "run/modes/edullm_adaptive/manifest.json").read_text(encoding="utf-8")
+    )
+    assert manifest["bank"]["files"]["rubrics"]["sha256"] == prepared_rubric_sha256
 
 
 @pytest.mark.parametrize(

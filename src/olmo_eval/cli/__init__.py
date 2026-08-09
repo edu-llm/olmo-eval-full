@@ -15,6 +15,7 @@ from rich.table import Table
 import olmo_eval.evals  # noqa: F401 - triggers suite registration
 import olmo_eval.evals.tasks  # noqa: F401 - triggers task registration
 from olmo_eval.cli.beaker import beaker
+from olmo_eval.cli.edullm import edullm
 from olmo_eval.cli.metrics import metrics
 from olmo_eval.cli.results import results
 from olmo_eval.cli.run import run
@@ -37,6 +38,7 @@ def main() -> None:
 # Register command groups
 main.add_command(run)
 main.add_command(beaker)
+main.add_command(edullm)
 main.add_command(results)
 main.add_command(metrics)
 main.add_command(task)
