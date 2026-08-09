@@ -419,14 +419,17 @@ cd <repo-root> && PYTHONPATH=.:src .venv/bin/python /tmp/preflight.py        # U
 cd <repo-root>; $env:PYTHONPATH=".;src"; & .venv\Scripts\python.exe "$env:TEMP\preflight.py"
 ```
 
-Three of the nine supported banks are blocked today — `winogrande`, `gsm8k` and, since
-2026-08-08, `ifeval` — so `ready_names()` returns six. When a bank is blocked the exception
+Three of the twelve supported banks are blocked today — `winogrande`, `gsm8k` and, since
+2026-08-08, `ifeval` — so `ready_names()` returns nine: eight MCQ banks and `leaderboard_math`.
+`pedagogy`, `piqa` and `socialiqa` joined on 2026-08-09 and are the only three fit in this
+repository rather than inherited; read their `notes` before quoting a theta from one, because
+each carries a reservation the older banks do not. When a bank is blocked the exception
 says specifically why, and it distinguishes no bank from a blocked bank from an unknown
 name; relay that reason verbatim rather than paraphrasing it as "not supported".
 
 **`ifeval` cannot be selected, whatever the user asks for — including by name, including
 when they say they understand the caveat.** There is no flag that reaches it and no
-correct way to point at its bank directly; `ready_names()` returns six names and `ifeval`
+correct way to point at its bank directly; `ready_names()` returns nine names and `ifeval`
 is not among them. Its block is unlike the other two, which are join-evidence questions:
 this bank's join is fine and its grading is faithful, and that is exactly the problem — see
 Step 1's last question and Step 2's third fact, and read the `blocked` reason out of
@@ -438,7 +441,7 @@ echo-baseline guard: stamp each item offline with whether an echo passes it, the
 the share of a session's passes an echo would also have produced. **Re-checking a join
 does not lift it**, and neither does converting the checkpoint or picking a better model;
 the exploit belongs to the bank's verifiers rather than to any checkpoint. Say that to a
-user who asks for it by name, and offer the five MCQ banks and MATH instead.
+user who asks for it by name, and offer the eight MCQ banks and MATH instead.
 
 **Both modalities now run on the native path.** `LOADABLE_CHECKPOINT_KINDS` gives MCQ and
 generative the same `("hf", "olmo_core")`, because `GENERATIVE_BACKENDS` registers
@@ -645,8 +648,15 @@ git commit … && git push
 git rev-parse HEAD          # → the sha that goes in the spec's git checkout
 ```
 
-Put that sha in the spec and read it back before submitting. **Do not push twice inside a
-minute**: the image build re-verifies source identity, and a second push kills the first.
+Put that sha in the spec and read it back before submitting.
+
+**Whether a push costs anything depends on the branch name, and on a working branch it costs
+nothing.** `edullm-platform-build.yml` fires only on `edullm/**` and `main`, so a push to any
+other branch builds no image and runs no CI — `ci.yml` is `main`-only. Pushing twice in a
+minute to fix a probe is free there. On an `edullm/**` branch each push publishes an
+immutable ECR tag and re-verifies source identity, so batch the commits instead. Note that
+this repository does not supply the image for a CAT run in any case; the image comes from
+OLMo-core, and a build here would produce something nothing pulls.
 
 ---
 
@@ -860,7 +870,10 @@ expected to reproduce the fp32 theta. Neither the EOS answer nor the echo costs 
 this submission, because MCQ scoring is forward-only and never decodes; both are what price
 a generative bank, and the echo is what withdrew `ifeval` outright. Input 2 plus Step 3's
 preflight gives five MCQ banks at the pinned sha, so it becomes a five-cell fan-out rather
-than five submissions.
+than five submissions. **Read the five as history rather than as the count.** `pedagogy`,
+`piqa` and `socialiqa` were vendored on 2026-08-09, so the same request today resolves eight
+MCQ banks and eight cells. Size a fan-out from what `ready_names()` returns when you run it,
+never from an example.
 
 The spec is [`.edullm/run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml),
 already committed, pinning `49d93da4…` — which is now several commits behind, so Step 5
@@ -992,7 +1005,7 @@ current ones:
 - Do not run a benchmark absent from `ready_names()` by pointing at its bank directly. The
   exclusions are recorded, and several of them are that the resulting number would be
   meaningless. **`ifeval` in particular is not available on any request**, however the user
-  frames it; relay the `blocked` reason and offer the six ready names.
+  frames it; relay the `blocked` reason and offer the nine ready names.
 - Do not compare theta across benchmarks. Predicted accuracy is the cross-benchmark
   quantity.
 - Do not present a theta from a report carrying an `ungradable` alert as a measurement of
