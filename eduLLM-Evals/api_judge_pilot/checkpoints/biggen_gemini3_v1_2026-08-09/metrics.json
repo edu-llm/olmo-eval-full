@@ -1,0 +1,25 @@
+{
+  "dataset": "biggen gold set, 100 stratified cells (gold/biggen_core/), stratified by capability",
+  "model": "gemini-group/gemini-3-flash-preview",
+  "adapter": "generic-binary-strict",
+  "max_tokens": 4096,
+  "false_pass_rate": 0.0,
+  "false_pass_rate_weighted": 0.0,
+  "macro_f1": 0.928,
+  "mcc": 0.866,
+  "accuracy": 0.93,
+  "false_fail_rate": 0.156,
+  "balanced_accuracy": 0.902,
+  "test_retest_flip": 0.04,
+  "prompt_flip_worst": 0.06,
+  "unscorable": 0,
+  "qwen_baseline": {"false_pass_rate": 0.127, "macro_f1": 0.889, "mcc": 0.780, "accuracy": 0.89},
+  "regression_thresholds": {
+    "false_pass_rate_max": 0.05,
+    "macro_f1_min": 0.90,
+    "mcc_min": 0.83,
+    "test_retest_flip_max": 0.08,
+    "unscorable_max": 2
+  },
+  "note": "100 cells with AI-assisted single-annotator gold (opus-5 + gpt-5.5 proposers, human-adjudicated disagreements). Per-capability rates directional. test-retest/prompt-flip measured at temp 0."
+}
