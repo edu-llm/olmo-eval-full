@@ -1,8 +1,21 @@
 """Phase 4 spike: ask generate_batch what it does on this checkpoint, rather than assume it.
 
-Throwaway, on the same terms as ``.edullm/olmo_core_spike.py``. This is not a test and
-nothing imports it. Its only product is the text it prints, which becomes the written
-record the generative completer is designed against. Delete it once that record exists.
+Written as a throwaway on the same terms as ``.edullm/olmo_core_spike.py``, to produce the
+written record the generative completer was designed against. That record now exists, in
+``TORCH_TODOS.md``, ``RESULT_CAVEATS.md`` and ``generative._load_olmo_core``'s docstring.
+
+**Kept anyway, and the instruction to delete it is withdrawn.** The ``eval-cat`` skill's
+first step tells an agent to prove a submitter's checkpoint decodes natively before spending
+anything on an eval, and cites this file as the worked example to copy. So its audience is
+no longer this project's own record but the next submitter's agent, and the questions it
+asks -- what ``generate_batch`` returns, whether the model emits eos, which attention
+backend survives -- are asked fresh for every checkpoint rather than once.
+
+Still not a test, still imported by nothing, and still free to be edited into whatever the
+next checkpoint needs. Among the first things it prints is the model's ``vocab_size``
+against the tokenizer's, which is what catches a wrong tokenizer in seconds and is worth
+reading before anything below it -- the completer now makes the same comparison at load
+time, in ``_OlmoCoreCompleter._warn_if_vocab_sizes_disagree``.
 
 Every probe is independent and swallows its own failure, and inside the generation probe
 every *prompt* is guarded separately as well. A checkpoint that generates for ifeval and
@@ -315,6 +328,34 @@ def main() -> int:
         state["device"] = scorer.device
 
         record("tokenizer defaults", scorer.tokenizer_defaults.summary())
+
+        # The cheapest thing here that can invalidate everything below it. The tokenizer
+        # is an identifier in the checkpoint config rather than files on disk, so a wrong
+        # one resolves to a working tokenizer instead of raising, and every prompt and
+        # score downstream is then built on the wrong vocabulary. Wrapped because a probe
+        # that cannot be made is not a finding, and because the generation-config record
+        # below is worth more than this one.
+        try:
+            tokenizer_size: int | None = len(scorer.tokenizer)
+        except Exception:  # noqa: BLE001
+            tokenizer_size = None
+        declared = ((scorer.checkpoint_config or {}).get("model") or {}).get("vocab_size")
+        if tokenizer_size is None or not isinstance(declared, int):
+            verdict = "not comparable"
+        elif tokenizer_size > declared:
+            verdict = (
+                "DISAGREE -- the tokenizer can emit ids the model has no embedding row "
+                "for, so the prompts and the scores are both suspect. The usual cause is "
+                "a wrong dataset.tokenizer.identifier, not a corrupt checkpoint"
+            )
+        elif tokenizer_size == declared:
+            verdict = "agree"
+        else:
+            verdict = "checkpoint is larger, which is ordinary embedding padding"
+        record(
+            "vocabulary sizes",
+            f"tokenizer {tokenizer_size} vs checkpoint {declared}: {verdict}",
+        )
 
         generation_config = getattr(scorer.model, "_generation_config", None)
         if generation_config is None:

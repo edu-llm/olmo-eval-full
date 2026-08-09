@@ -157,9 +157,21 @@ def native_checkpoint(
     model: dict[str, Any] | None = None,
     name: str = "step305176",
 ) -> Path:
-    """A raw checkpoint declaring its trained sequence length the way this family does."""
+    """A raw checkpoint declaring its trained sequence length the way this family does.
+
+    It also declares a vocabulary the size of :class:`GeneratingTokenizer`'s, overriding
+    the scoring helper's default. That default is ``VOCAB``, the width of the fake's
+    logits, and pairing a 24-token checkpoint with a tokenizer that reports 49,152 would
+    trip the vocabulary comparison in every test in this file over an artefact of the
+    fake rather than anything under test. Callers can still override it, and the class
+    below does.
+    """
     dataset = {} if sequence_length is None else {"sequence_length": sequence_length}
-    return write_checkpoint(tmp_path / name, model=model, dataset=dataset)
+    return write_checkpoint(
+        tmp_path / name,
+        model={"vocab_size": GeneratingTokenizer.vocab_size, **(model or {})},
+        dataset=dataset,
+    )
 
 
 class Loaded:
@@ -962,3 +974,105 @@ class TestThePrecisionReachesTheGenerativeLoader:
         recorded = _generative_convention(spec, math_config(dtype="float16"))
 
         assert "dtype" not in recorded
+
+
+# ---------------------------------------------------------------------------
+# Whether the tokenizer and the checkpoint agree on how many tokens exist
+# ---------------------------------------------------------------------------
+
+
+class DolmaTokenizer(GeneratingTokenizer):
+    """What a wrong ``dataset.tokenizer.identifier`` resolves to, at its real size.
+
+    100,278 is ``allenai/dolma2-tokenizer``'s vocabulary against this family's 49,152, so
+    the pair below is the mistake the comparison exists to catch rather than a mismatch
+    invented to have something to assert on.
+    """
+
+    name_or_path = "allenai/dolma2-tokenizer"
+    vocab_size = 100_278
+
+
+class TestTheVocabularySizeComparison:
+    """The native path asks the question the HF path already asked.
+
+    It recorded ``tokenizer_vocab_size`` in :meth:`checkpoint_facts` and compared it
+    against nothing, so a tokenizer resolved off a wrong identifier wrote a plausible
+    number into every report and drew no complaint. The tokenizer here is an identifier
+    in a config rather than files on disk, which is exactly why a wrong one yields a
+    working tokenizer instead of an error.
+    """
+
+    def load_watching(
+        self,
+        monkeypatch,
+        caplog,
+        checkpoint: Path,
+        tokenizer: FakeTokenizer | None = None,
+    ) -> tuple[Loaded, list[str]]:
+        """Load, and collect what this module said about it at ``WARNING``."""
+        caplog.clear()
+        with caplog.at_level("WARNING", logger="mcq_cat.generative"):
+            loaded = load(monkeypatch, checkpoint, tokenizer=tokenizer)
+        return loaded, [
+            record.getMessage()
+            for record in caplog.records
+            if record.name == "mcq_cat.generative"
+        ]
+
+    def test_a_tokenizer_larger_than_the_checkpoint_is_reported_with_both_numbers(
+        self, monkeypatch, caplog, checkpoint
+    ) -> None:
+        """Both numbers and the likely cause, because a bare mismatch does not say which
+        of the two is the wrong one, and the wrong one is almost always the tokenizer."""
+        _, messages = self.load_watching(monkeypatch, caplog, checkpoint, DolmaTokenizer())
+
+        assert len(messages) == 1
+        assert "100278" in messages[0]
+        assert "49152" in messages[0]
+        assert "dataset.tokenizer.identifier" in messages[0]
+
+    def test_the_agreeing_default_is_silent(self, monkeypatch, caplog, checkpoint) -> None:
+        """Otherwise the warning fires on every correct run and stops being read."""
+        _, messages = self.load_watching(monkeypatch, caplog, checkpoint)
+
+        assert messages == []
+
+    def test_a_checkpoint_larger_than_its_tokenizer_is_silent_because_that_is_padding(
+        self, monkeypatch, caplog, tmp_path: Path
+    ) -> None:
+        """Only one direction is a fault. A tokenizer that can emit ids the model has no
+        embedding row for is broken; a model with spare rows is an embedding padded out
+        to a multiple of 128, which is the ordinary case and not worth a word.
+        """
+        padded = native_checkpoint(
+            tmp_path, model={"vocab_size": GeneratingTokenizer.vocab_size + 128}
+        )
+        _, messages = self.load_watching(monkeypatch, caplog, padded)
+
+        assert messages == []
+
+    def test_a_checkpoint_declaring_no_usable_vocabulary_is_silent_rather_than_failing(
+        self, monkeypatch, caplog, tmp_path: Path
+    ) -> None:
+        """A comparison that cannot be made is not a finding, and must not be an error:
+        this runs during ``__init__``, so raising here would fail the load over a fact
+        the run does not otherwise need."""
+        undeclared = native_checkpoint(tmp_path, model={"vocab_size": None})
+        loaded, messages = self.load_watching(monkeypatch, caplog, undeclared)
+
+        assert messages == []
+        assert loaded.scorer is not None
+
+    def test_the_disagreement_warns_rather_than_refusing_the_load(
+        self, monkeypatch, caplog, checkpoint
+    ) -> None:
+        """The load-time refusals this class carries are for facts it can establish. This
+        one is inferred from two numbers that have innocent reasons to differ, so it must
+        not stop a run that would otherwise score correctly -- and the fact it is inferred
+        from stays in the report, next to the warning, for whoever reads it later.
+        """
+        loaded, messages = self.load_watching(monkeypatch, caplog, checkpoint, DolmaTokenizer())
+
+        assert messages != []
+        assert loaded.scorer.runtime_facts()["tokenizer_vocab_size"] == DolmaTokenizer.vocab_size

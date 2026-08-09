@@ -3210,6 +3210,7 @@ class _OlmoCoreCompleter:
         self.device: Any = self._loaded.device
 
         require_chat_template(self.tokenizer, checkpoint_dir, config)
+        self._warn_if_vocab_sizes_disagree()
         self.eos_token, self.eos_token_id = resolve_eos_token(self.tokenizer)
         core_utils = inference._olmo_core_utils()
         self.context_length, self.context_length_source = olmo_core_context_length(
@@ -3363,6 +3364,59 @@ class _OlmoCoreCompleter:
             return len(self.tokenizer)
         except Exception:  # noqa: BLE001 - a probe that cannot be made is not a finding
             return None
+
+    def _model_vocab_size(self) -> int | None:
+        """The embedding row count the checkpoint declares, or ``None`` if it does not.
+
+        Read from the checkpoint's own config rather than off the built model, because
+        the config is the artifact the tokenizer identifier was also read out of, so the
+        two claims being compared come from the same place.
+        """
+        model = (self._loaded.checkpoint_config or {}).get("model")
+        if not isinstance(model, dict):
+            return None
+        try:
+            return int(model["vocab_size"])
+        except (KeyError, TypeError, ValueError):
+            return None
+
+    def _warn_if_vocab_sizes_disagree(self) -> None:
+        """Say so if the tokenizer and the checkpoint disagree about how many tokens exist.
+
+        The native counterpart of :meth:`_HFCompleter._warn_if_tokenizer_outgrows_model`.
+        It exists because this path had no such check at all: the completer recorded
+        ``tokenizer_vocab_size`` in :meth:`checkpoint_facts` and compared it against
+        nothing, so the one mistake this area invites was written into every report and
+        caught by no one.
+
+        That mistake is not hypothetical. The tokenizer is an identifier in the
+        checkpoint config rather than files on disk, so a wrong resolution produces a
+        plausible tokenizer instead of an error. Reading ``convert._resolve_tokenizer_id``'s
+        fallback branch as its behaviour, this checkpoint was taken for an
+        ``allenai/dolma2`` model -- 100,278 tokens against its actual 49,152 -- and this
+        one comparison contradicts that immediately.
+
+        Only the tokenizer-larger direction warns, for the reason the HF side gives: a
+        tokenizer that can emit ids the model has no row for is broken, whereas a model
+        larger than its tokenizer is the ordinary result of padding an embedding out to a
+        multiple of 128. A warning rather than a refusal, because the refusals this class
+        carries are for facts it can establish, and a heuristic should not stop a run that
+        would otherwise score correctly.
+        """
+        tokenizer_size = self._tokenizer_size()
+        model_size = self._model_vocab_size()
+        if tokenizer_size is None or model_size is None:
+            return
+        if tokenizer_size > model_size:
+            log.warning(
+                "This checkpoint's tokenizer has %d tokens but its config declares "
+                "vocab_size %d, so the tokenizer can produce ids the model has no "
+                "embedding row for. The usual cause is a wrong "
+                "dataset.tokenizer.identifier rather than a corrupt checkpoint, and both "
+                "the prompts and the scores from this run are suspect.",
+                tokenizer_size,
+                model_size,
+            )
 
 
 def _load_olmo_core(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
