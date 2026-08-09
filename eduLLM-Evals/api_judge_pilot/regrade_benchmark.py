@@ -211,7 +211,17 @@ async def _amain() -> int:
     verdicts_path = args.out_dir / "verdicts.jsonl"
     done = _load_done(verdicts_path)
     todo = [c for c in cases if (c["model"], c["criterion_id"]) not in done]
-    print(f"cases={len(cases)} already_done={len(done)} todo={len(todo)} auto_fail_counts={counts}")
+
+    # Safety: gemini-3 is verbose (long internal reasoning) and truncates at low caps,
+    # which fail-closes cells on truncation rather than judgment. Never grade it below 4096.
+    effective_max_tokens = args.max_tokens
+    if "gemini-3" in args.model and effective_max_tokens < 6144:
+        print(f"NOTE: bumping --max-tokens {args.max_tokens} -> 6144 for {args.model} "
+              "(verbose; 4096 still truncated ~2.4% of full-biggen cells -> fake fails; see FINDINGS)")
+        effective_max_tokens = 6144
+
+    print(f"cases={len(cases)} already_done={len(done)} todo={len(todo)} "
+          f"max_tokens={effective_max_tokens} auto_fail_counts={counts}")
 
     sem = asyncio.Semaphore(args.concurrency)
     out_lock = asyncio.Lock()
@@ -221,7 +231,7 @@ async def _amain() -> int:
         async with httpx.AsyncClient(timeout=args.timeout, limits=limits) as client:
             tasks = [
                 _grade_one(client, base_url, api_key, args.model, case, sem,
-                           args.adapter, args.max_tokens, args.max_retries, out_lock, out_handle)
+                           args.adapter, effective_max_tokens, args.max_retries, out_lock, out_handle)
                 for case in todo
             ]
             results = await asyncio.gather(*tasks)

@@ -458,6 +458,25 @@ regex parser; max_tokens 4096 for gemini):
 - tutoreval: gemini-3-flash-preview + v1 (leading).
 - tutorbench: haiku-4-5 + v1 (FINALIZED; sonnet-4-6 + v1 is the quality alternative); gemini-3 truncates there.
 
+## Pre-launch checks for the production grading runs
+
+1. gemini-3 max_tokens (the biggest risk). Gold was scored at 4096 and was truncation-clean
+   on the 100-cell gold (0 unscorable), so the FP=0% budget is real. But on the FULL biggen
+   matrix (2,337 cells/model), gemini-3 at 4096 still truncated ~2.4% (55/2337) -> fake
+   fails; at **6144 it drops to ~0.09% (2/2337)**. `regrade_benchmark.py` now auto-bumps any
+   gemini-3 model to 6144 (verified on the production harness path). Glance at the unscorable
+   count on a slice before each full gemini-3 run.
+2. haiku (tutorbench) IS validated: scored on the 261-cell tutorbench human gold at the exact
+   production config (v1 / JSON / temp 0 / 4096) -> macro-F1 74.6, false-pass 22.4%, MCC 0.497,
+   0 unscorable. Not untested.
+3. Config parity holds: gold-scoring and the frozen checkpoints share adapter
+   (generic-binary-strict / v1), JSON mode, temp 0, and token settings per benchmark. Gold
+   gemini-3 at 4096 was truncation-clean, so its FP budget transfers to the 6144 production run
+   (more tokens only removes fake fails; it cannot create false passes).
+4. Smoke each benchmark's 1-model slice via regrade_benchmark (resumable; incremental
+   verdicts.jsonl) and confirm unscorable near-zero before the full launch. gemini-3 biggen
+   slice throughput ~19-21 calls/s at c=128 (verbose; budget a bit more time than sonnet).
+
 ## Caveats
 
 - Gemini numbers are not a fair read (format non-compliance under `max_tokens 512`).
