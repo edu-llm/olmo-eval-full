@@ -1,0 +1,90 @@
+# The three locally fitted banks, on the checkpoint they were never calibrated against.
+#
+# run-native-cat.yaml's header applies here unchanged -- why the submission goes against
+# repository=OLMo-core, why the code arrives by clone rather than by wheel, why
+# --checkpoint-prep none is the native path, and why --dtype bfloat16 sets the precision
+# the native scorer builds at even though it converts nothing. Read it first. This file
+# records only what is different, which is three things.
+#
+# HOW TO SUBMIT. From the OLMo-core clone, as with the other specs:
+#
+#   cd ../OLMo-core
+#   edullm submit --experiment new-banks-cat --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 \
+#     --spec ../olmo-eval-full/.edullm/run-new-banks-cat.yaml
+#
+# ---------------------------------------------------------------------------------------
+# 1. THIS IS THE FIRST GPU RUN OF THESE THREE BANKS. THAT IS THE POINT OF IT.
+#
+# pedagogy, piqa and socialiqa were fit from the 2026-08-01 sweep and vendored at
+# fbfb11e9. Everything establishing them is offline: the joins were measured item by item
+# against the sweep's frozen cache, the parameters reproduce the published 318 / 831 / 969
+# kept-item counts, and the suite passes. No GPU has scored a single item from any of
+# them. This run is what turns that into evidence, and a failure here is a result rather
+# than a setback.
+#
+# What would make it a wrong answer rather than a failure, and so is worth checking in the
+# reports rather than assuming: `metadata.overlap` should be total on all three, because
+# vendoring already matched every bank item to a task instance and anything less means the
+# container enumerated a different split than this laptop did.
+#
+# pedagogy's report carries a `bank_caveat` the other two do not. Its predicted accuracy
+# has a mean absolute error of 0.101 against a 0.087 span of real accuracies, so that
+# figure is not readable and its theta is; the caveat says so in every report and is not a
+# reason to distrust the run.
+#
+# ---------------------------------------------------------------------------------------
+# 2. THIS CHECKPOINT IS BELOW THE CALIBRATED BAND, ON PURPOSE.
+#
+# The banks were calibrated on 0.5B-7B models and the evaluation targets are 1B-7B.
+# Preston's is a 135M-parameter checkpoint, so it sits below the population every one of
+# these difficulties was estimated against. It is here because it is the checkpoint whose
+# native path is proven, not because its theta means anything.
+#
+# Read this run for whether the pipeline works, not for how good the model is. Expect
+# piqa in particular to produce a predicted accuracy below its own 0.50 chance floor: a
+# 2PL has no guessing parameter, and the one sub-1B model in the held-out diagnostics was
+# handed 0.371. That is the documented behaviour outside the supported range rather than a
+# defect, and it is exactly why the range is worth stating.
+#
+# ---------------------------------------------------------------------------------------
+# 3. A FAN-OUT OF THREE, WHICH COSTS A LEAD'S APPROVAL AND IS STILL THE RIGHT SHAPE.
+#
+# `classify_request` routes any fan-out away from `automatic` whatever it costs, while a
+# single cell auto-approves; the sweep before this one waited about 16 minutes. Three
+# single-cell submissions would cost the same $2.41 ceiling and wait for nobody.
+#
+# It is a fan-out anyway because these three cells are one experiment -- the first
+# evidence that a set of banks vendored together runs at all -- and the reports are meant
+# to be read against each other. That is the criterion run-native-cat-sweep.yaml's header
+# sets out, and this is the case it describes rather than the one it warns about.
+#
+# `olmo-core-check` fixes 1h per cell and refuses more. None of these is close: MCQ items
+# are one forward pass per answer choice and the session stops at min_items (8) once SE
+# reaches 0.3, so most of the wall clock is the pip install and the 1.74 GB pull.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+fanout:
+  size: 3
+  index_parameter: benchmark
+command: >-
+  bash -lc 'BENCHMARKS=(pedagogy piqa socialiqa)
+  ; CELL="${AWS_BATCH_JOB_ARRAY_INDEX:-0}"
+  ; BENCH="${BENCHMARKS[$CELL]:-}"
+  ; if [ -z "$BENCH" ]; then echo "cell $CELL has no benchmark; fanout.size must equal ${#BENCHMARKS[@]}" >&2; exit 2; fi
+  ; echo "cell $CELL -> $BENCH"
+  ; if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout fbfb11e9a053d2161df374d2a00edf499b51dff1
+  && python -m pip install --no-cache-dir ".[hf,s3]"
+  && python -m diagnostics.mcq_cat.runner
+  --cat-style uni_mcq
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --benchmark "$BENCH"
+  --ability-estimator batch_eap+mwle
+  --checkpoint-prep none
+  --checkpoint-kind olmo_core
+  --dtype bfloat16
+  --s3-out "$EDULLM_OUTPUT_PREFIX"'
