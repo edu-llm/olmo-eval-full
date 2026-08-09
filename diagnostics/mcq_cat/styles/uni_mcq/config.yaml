@@ -363,7 +363,7 @@ generative:
       #
       # A third stop is added at run time and is deliberately absent here: the end-of-text token
       # of whichever checkpoint is being scored, resolved from its own tokenizer by
-      # common/generative.py resolve_eos_token and appended by effective_stop_sequences. It is not
+      # common/generative.py resolve_eos_token and appended by eos_stop_sequences. It is not
       # written here because it is not a property of this benchmark. "<|endoftext|>" is SmolLM2's
       # spelling and id 0; the next submitter's model may spell it "</s>", "<|im_end|>" or
       # "<|eot_id|>", and a literal frozen into this file would be ordinary text to all of them --
@@ -406,41 +406,107 @@ generative:
       # the harvest is real; it is recorded in the bank's calibration note and in
       # calibrated_datasets/DEVIATIONS.md rather than absorbed silently into theta.
       chat_format: false
-      # 1536 = the largest output this bank explicitly asks for, plus a third. Derived 2026-08-08
-      # rather than inherited from lm-eval. IFEval carries no reference answer anywhere -- 0 of 511
-      # items have a gold_answer, and IFEvalPromptStrict grades from instruction_id_list and kwargs
-      # -- so there is no answer length to measure and the budget comes from what the items demand.
+      # 1280, and for this one bank it is a CEILING rather than the budget. Changed 2026-08-08
+      # from a flat 1536.
       #
-      # 30 of the 511 name an explicit word count. The largest is
-      # length_constraints:number_words, num_words 900, relation "at least", on item
-      # 9baf1cb36bafc2bb. At 1.29 tokens per word that is 1,161 tokens, and 1536 is 1,161 x 1.32.
-      # The ratio is measured with HuggingFaceTB/SmolLM2-135M over two English-prose corpora that
-      # agree -- these 511 prompts give 1.285, the musr narratives 1.281 -- not assumed. It is an
-      # English number: 31 items demand a non-English response, where this tokenizer runs 5 to 25
-      # tokens per word, and none of those 31 states a word count so none of them sets this value.
+      # Two separate changes landed on this key at once, and they pull in opposite directions:
+      # the number went DOWN to match the calibration harness, and the budget an item actually
+      # gets went down further still, because a per-item cascade now lowers most items below it.
+      # Nothing raises an item above it.
       #
-      # 1536 covers 510 of the 511. The exception is ab5ca590f2d20f37, which asks for at least 4
-      # sections and at least 100 sentences -- roughly 2,000 words, 2,580 tokens on the same ratio.
-      # Covering it needs 2688, which is 56 minutes of decode for a 40-item session against a 1h
-      # bound, so this bank cannot have both full coverage and the bound at max_items 40. If
-      # max_items ever drops, revisit: at the 8-item floor 2688 costs 11 minutes.
+      # Why 1280. It is the value the population that produced these difficulties generated
+      # under: src/olmo_eval/evals/tasks/ifeval.py line 66 sets max_tokens=1280, lm-eval's
+      # leaderboard_ifeval sends max_gen_toks 1280, and Open LLM Leaderboard v2 runs lm-eval.
+      # Theta is only interpretable on the scale the difficulties came from, which is the same
+      # argument that settles leaderboard_math at its upstream 1024.
       #
-      # This is the only generative bank that pays its full budget on every item, because
-      # stop_sequences below is [] and this checkpoint never emits eos (measured, probe
-      # run_019fe316-0e47; see TORCH_TODOS.md). So 48 s per item and 32 minutes for 40 items are
-      # realised figures, not worst cases.
+      # It is a HARNESS CONVENTION AND NOT A PAPER VALUE, and should not be described as one.
+      # The IFEval paper (arXiv 2311.07911) specifies no generation cap at all, and the
+      # google-research reference implementation consumes a JSONL of prompt/response pairs, so
+      # generation is the caller's business and upstream never had to pick a number. 1280 is
+      # what the harnesses picked; matching it is a calibration-parity decision, not fidelity
+      # to a specification.
       #
-      # Not a percentile, and not a multiple of any measured length. 378 of the 511 items state no
-      # size constraint at all and need about 52 tokens, so the demand is bimodal -- median 52, max
-      # 2,580 -- and any single number here is wrong for most of the bank in one direction or the
-      # other. The fix is a per-item budget read off each item's own kwargs, which is code rather
-      # than config.
-      max_new_tokens: 1536
-      # Deliberately empty. Every other generative bank here stops at a blank line
-      # because its few-shot block teaches that as the boundary between questions.
-      # IFEval has no few-shot block and asks for multi-paragraph answers, so that stop
-      # would cut most responses after one paragraph and fail their length and section
-      # constraints -- scoring the harness's truncation as the model's mistake.
+      # What being a ceiling costs, recorded because it is a real loss rather than a rounding
+      # one. 7 items declare constraints that convert to more than 1280 -- ab5ca590f2d20f37
+      # (2,500 words) wants 3,367 tokens, 15f8a656391c0cd5 2,120, and five more between 1,310
+      # and 1,442. They are truncated, deliberately, at exactly the point the calibration
+      # population was truncated. The alternative -- letting the cascade raise them above the
+      # harness value -- would score them on a scale no fitted model was measured on.
+      #
+      # Where the budget actually comes from now: generative.ifeval_token_budget, which holds the
+      # whole derivation. In brief, and only ever downward from 1280:
+      #   * an item's declared length signals are converted to tokens and the largest wins, plus
+      #     a 50-token headroom so an over-run is visible rather than prevented;
+      #   * 84 items that declare no size AND carry only constraints that survive being cut short
+      #     drop to a 208-token floor (4x the ~52-token median demand measured for such items,
+      #     which independently equals 3x their own p90 prompt length);
+      #   * every item whose grade depends on the response FINISHING keeps the full 1280 --
+      #     generative.TRUNCATION_FRAGILE_IDS, 263 items, ending-dependent ones like
+      #     startend:end_checker and count-dependent ones like keywords:frequency. Cutting those
+      #     fails a constraint the model was in the middle of satisfying, which is the same
+      #     failure class as the MATH blank-line stop that deleted 40.9% of answers;
+      #   * the 31 language:response_language items keep the full 1280 too, because every
+      #     conversion constant is an English measurement and a non-English response costs 2x to
+      #     22x more tokens per word (Thai 158x, being unspaced).
+      #
+      # Words are converted to tokens by the EVALUATED CHECKPOINT'S OWN tokenizer, measured at
+      # run time, so no ratio is written here: that would be a model property in a benchmark
+      # file. With no tokenizer the cascade does not run at all and every item takes this flat
+      # 1280, because a words-to-tokens ratio guessed for an unknown tokenizer is exactly the
+      # quiet approximation the budget exists to remove. A third stage then clamps the result to
+      # the checkpoint's context window; it is inert for this bank above a 1,636-token window
+      # (the longest prompt is 356 tokens) and exists for future small-context submitters.
+      #
+      # What the change costs and buys, over the whole 511-item bank at 31.25 ms/token (the
+      # cacheless rate TORCH_TODOS.md measured), budgets measured on SmolLM2's tokenizer:
+      #   flat 1536:   784,896 tokens   40-item session 32.0 min
+      #   flat 1280:   654,080 tokens   40-item session 26.7 min   (the ceiling change alone)
+      #   per item:    427,802 tokens   40-item session 17.4 min   (1.83x cheaper than 1536)
+      #   distribution: min 76, p25 242, median 1280, mean 837, max 1280
+      #   257 items sit at the ceiling, 84 at the floor, 254 (49.7%) strictly below 1280
+      # The median is AT the ceiling, which is the honest headline: half the bank is a
+      # correctness case that must not be shortened, and the saving comes from the other half.
+      #
+      # This bank does pay its full budget on every item, because stop_sequences below is [] and
+      # this checkpoint never emits eos (measured, probe run_019fe316-0e47; see TORCH_TODOS.md), so
+      # these are realised figures rather than worst cases. That is also why the saving is real
+      # rather than notional: a bank that stopped on its own would not have been overspending.
+      max_new_tokens: 1280
+      # Deliberately empty, and it stays empty here even though a run appends to it.
+      #
+      # Empty for the original reason first. Every other generative bank here stops at a
+      # blank line because its few-shot block teaches that as the boundary between
+      # questions. IFEval has no few-shot block and asks for multi-paragraph answers, so
+      # that stop would cut most responses after one paragraph and fail their length and
+      # section constraints -- scoring the harness's truncation as the model's mistake.
+      # Both upstream harnesses agree: olmo-eval's ifeval task sets SamplingParams with no
+      # stop strings at all, and lm-eval's leaderboard_ifeval sends `until: []`.
+      #
+      # What a run adds, and why it is not written here. generative.eos_stop_sequences
+      # appends the *running checkpoint's own end-token text*, resolved from its live
+      # tokenizer, to the list the scorer uses. That string is a property of the
+      # checkpoint and this file is a property of the benchmark, so writing it down would
+      # make the bank's recorded convention checkpoint-specific and refuse every model
+      # that spells its end token differently. The manifest records [] for the same
+      # reason, and the guard over it stays honest because [] is genuinely what the
+      # benchmark declares.
+      #
+      # It buys no compute. truncate_at_stop runs over an already-finished completion, so
+      # max_new_tokens above is the whole of the compute bound; this only keeps text out
+      # of the graded span. The case it catches is a model emitting the literal characters
+      # of its end marker as ordinary vocabulary tokens rather than as the special token,
+      # which skip_special_tokens does not remove, leaving `<|endoftext|>` inside the
+      # response the verifiers read. 93 of the 511 items are decided by how the response
+      # ends -- startend:quotation (40), startend:end_checker (26),
+      # detectable_format:json_format (17), detectable_format:constrained_response (10) --
+      # and a trailing marker fails all four on a response that satisfied them.
+      #
+      # It is suppressed for the 24 combination:two_responses items, where cutting at the
+      # first occurrence would delete the second response and fail the very constraint
+      # being checked. That costs nothing: 0 of those 24 carry any of the four
+      # end-anchored constraints. The full argument, the rejected alternatives and the
+      # residual risk are on generative.eos_stop_sequences.
       stop_sequences: []
 
     # NOTE: gpqa had an entry here and no longer does. It is now an `mcq` bank; see the

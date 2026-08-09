@@ -94,9 +94,30 @@
       "chat_format": false,
       "system_prompt_source": null,
       "stop_sequences": [],
-      "max_new_tokens": 1536,
+      "max_new_tokens": 1280,
       "max_length": null,
-      "grader": "ifeval_prompt_strict"
+      "grader": "ifeval_prompt_strict",
+      "per_item_token_budget": {
+        "policy": "ifeval_length_signal_cascade",
+        "tokens_per_word": "resolved at runtime from the checkpoint tokenizer",
+        "detection_headroom_tokens": 50,
+        "words_per_sentence": 25,
+        "words_per_paragraph": 150,
+        "words_per_bullet": 50,
+        "unconstrained_floor_tokens": 208,
+        "truncation_fragile_ids": [
+          "change_case:capital_word_frequency",
+          "detectable_content:number_placeholders",
+          "detectable_content:postscript",
+          "detectable_format:json_format",
+          "detectable_format:number_highlighted_sections",
+          "keywords:existence",
+          "keywords:frequency",
+          "keywords:letter_frequency",
+          "startend:end_checker",
+          "startend:quotation"
+        ]
+      }
     },
     "calibration": {
       "prompt_style": "the bare prompt; chat framing mixed across the harvest",

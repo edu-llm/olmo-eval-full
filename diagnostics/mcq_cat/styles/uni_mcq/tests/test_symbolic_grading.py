@@ -1036,6 +1036,15 @@ class SpellingTokenizer:
         ids = self._encode(text)
         return {"input_ids": FakeTensor(ids) if return_tensors else ids}
 
+    def count_tokens(self, text: str) -> int:
+        """``text -> token count``, the shape ``_HFCompleter.count_tokens`` publishes.
+
+        Offered by the fake rather than reimplemented in each test so a prompt measured
+        against the context window here is measured exactly as the real completer measures
+        it -- content only, no special tokens.
+        """
+        return len(self(text, add_special_tokens=False)["input_ids"])
+
     def decode(self, ids: list[int], skip_special_tokens: bool = False) -> str:
         """Model ``skip_special_tokens`` faithfully, because the design turns on it."""
         kept = [i for i in ids if not (skip_special_tokens and i == self.eos_token_id)]
@@ -1403,12 +1412,12 @@ class TestTheMathExemplarsCloseWithTheCheckpointsEndOfText:
     def test_the_runtime_list_carries_it_and_the_committed_one_does_not(self) -> None:
         config = self.config()
 
-        assert generative.effective_stop_sequences(config, SMOL_EOS) == (
+        assert generative.eos_stop_sequences(math_item(), config, SMOL_EOS) == (
             "Problem:",
             "problem:",
             SMOL_EOS,
         )
-        assert generative.effective_stop_sequences(config, None) == config.stop_sequences
+        assert generative.eos_stop_sequences(math_item(), config, None) == config.stop_sequences
 
     def test_a_genuine_special_token_never_reaches_the_stop_list(self, fake_stack) -> None:
         """Why the entry above is a leak-catcher and not the stopping mechanism.
@@ -1424,7 +1433,7 @@ class TestTheMathExemplarsCloseWithTheCheckpointsEndOfText:
     def test_a_typed_out_end_of_text_is_cut_with_what_follows_it(self, real_math_extract) -> None:
         """The failure closing the exemplars invites; see :data:`LEAKED_EOS_RUN_ON`."""
         response = generative.grade_completion(
-            math_item("5"), LEAKED_EOS_RUN_ON, self.config(), eos_token=SMOL_EOS
+            math_item("5"), LEAKED_EOS_RUN_ON, self.config(), eos_text=SMOL_EOS
         )
 
         assert response.correct
@@ -1442,7 +1451,7 @@ class TestTheMathExemplarsCloseWithTheCheckpointsEndOfText:
         """
         assert generative.grade_completion(math_item("7"), LEAKED_EOS_RUN_ON, self.config()).correct
         assert not generative.grade_completion(
-            math_item("7"), LEAKED_EOS_RUN_ON, self.config(), eos_token=SMOL_EOS
+            math_item("7"), LEAKED_EOS_RUN_ON, self.config(), eos_text=SMOL_EOS
         ).correct
 
     def test_the_committed_stops_alone_do_not_cover_it(self) -> None:
@@ -1458,7 +1467,7 @@ class TestTheMathExemplarsCloseWithTheCheckpointsEndOfText:
         """
         config = self.config()
         graded = generative.grade_completion(
-            math_item("5"), boxed("5") + SMOL_EOS + " and more", config, eos_token=SMOL_EOS
+            math_item("5"), boxed("5") + SMOL_EOS + " and more", config, eos_text=SMOL_EOS
         )
 
         assert config.max_new_tokens == 1024
@@ -1478,7 +1487,7 @@ class TestTheMathExemplarsCloseWithTheCheckpointsEndOfText:
 
         assert generative.exemplar_eos_token(config, None) is None
         assert generative.exemplar_eos_token(config, "") is None
-        assert generative.effective_stop_sequences(config, None) == config.stop_sequences
+        assert generative.eos_stop_sequences(math_item(), config, None) == config.stop_sequences
 
     def test_a_zero_shot_run_appends_nothing(self) -> None:
         """No exemplar to close, and so no spelling demonstrated for a leak to copy."""
@@ -1552,7 +1561,7 @@ class TestTheExemplarBlockIsNeverCutIntoToFitTheContextWindow:
 
     def fitter(self, context: int | None) -> generative.PromptFitter:
         return generative.PromptFitter(
-            tokenizer=SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID),
+            count_tokens=SpellingTokenizer(SMOL_EOS, SMOL_EOS_ID).count_tokens,
             context_length=context,
             eos_token=SMOL_EOS,
         )
@@ -1614,20 +1623,36 @@ class TestTheExemplarBlockIsNeverCutIntoToFitTheContextWindow:
         fit = self.fit(600)
 
         assert fit.gen_budget is not None
-        assert fit.gen_budget >= generative.MIN_GEN_TOKENS
+        assert fit.gen_budget >= generative.MIN_GENERATION_TOKENS
         assert fit.gen_budget != 1
         assert fit.clamped is True
 
     def test_the_floor_and_the_window_bound_the_budget_independently(self) -> None:
-        """Both guards on ``_budget``, exercised directly because the ladder hides them.
+        """Both guards, exercised directly on the clamp because the ladder hides them.
 
-        The ladder only accepts a prompt once ``tokens + MIN_GEN_TOKENS`` fits, so by then
-        the room already exceeds the floor and neither guard can fire through
-        :meth:`PromptFitter.fit`. They are on ``_budget`` for its own sake, and pinning
-        them here is what keeps them from being untested claims.
+        The ladder only offers a prompt the clamp accepts, so by then the room already
+        exceeds the reserve and neither guard can fire through :meth:`PromptFitter.fit`.
+        They are on :func:`fit_budget_to_context` for its own sake, and pinning them here
+        is what keeps them from being untested claims.
+
+        The window bound is a REFUSAL, which is where this class's own earlier arithmetic
+        was wrong rather than merely different. ``min(cap, max(reserve, room))`` bounded by
+        ``context - 1`` handed a 4000-token prompt in a 4096-token window a 256-token
+        budget the window physically could not hold, and a 10-token prompt in a 100-token
+        window 99. Both states were unreachable from :meth:`fit`, which refused them first,
+        so the two halves of the clamp disagreed about cases only one of them could see.
+        There is one clamp now and it gives :meth:`fit`'s answer everywhere.
+
+        The floor bound is unchanged: a prompt that fits always gets a usable budget rather
+        than the 1 token ``context - nominal_budget`` collapses to, and the reserve is
+        capped by the demand so a small item is not refused for room it never wanted.
         """
-        assert self.fitter(4096)._budget(4000, self.config()) == generative.MIN_GEN_TOKENS
-        assert self.fitter(100)._budget(10, self.config()) == 99
+        cap = self.config().max_new_tokens
+
+        assert generative.fit_budget_to_context(cap, 4000, 4096) is None
+        assert generative.fit_budget_to_context(cap, 10, 100) is None
+        assert generative.fit_budget_to_context(cap, 10, 300) == 290
+        assert generative.fit_budget_to_context(64, 10, 100) == 64
 
     # --- the ladder drops whole exemplars, never part of one ---
 
@@ -1800,4 +1825,4 @@ class TestTheExemplarBlockIsNeverCutIntoToFitTheContextWindow:
         assert scorer.fitter is not None
         assert scorer.fitter.context_length == 700
         assert model.calls[0]["max_new_tokens"] < 1024
-        assert model.calls[0]["max_new_tokens"] >= generative.MIN_GEN_TOKENS
+        assert model.calls[0]["max_new_tokens"] >= generative.MIN_GENERATION_TOKENS

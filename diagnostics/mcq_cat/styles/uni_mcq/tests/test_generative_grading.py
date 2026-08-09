@@ -362,13 +362,29 @@ class FakeIds:
 
 
 class FakeTokenizer:
-    """Whitespace tokenizer standing in for a checkpoint's tokenizer."""
+    """Whitespace tokenizer standing in for a checkpoint's tokenizer.
+
+    Faithful in two details a real tokenizer has and an earlier version of this fake did
+    not, both of which ``_HFCompleter.count_tokens`` relies on: it accepts
+    ``add_special_tokens``, and it returns a plain list of ids unless tensors are actually
+    asked for. Getting either wrong makes the load-time probe in
+    ``generative.require_live_tokenizer`` refuse the completer -- correctly, since a token
+    counter that raises is exactly what that guard is looking for -- so the fake is fixed
+    here rather than the guard loosened.
+    """
 
     pad_token_id = None
     eos_token_id = 7
+    name_or_path = "fake-tokenizer"
 
-    def __call__(self, text: str, return_tensors: str = "pt") -> dict[str, FakeIds]:
-        return {"input_ids": FakeIds(text.split(" "))}
+    def __call__(
+        self,
+        text: str,
+        return_tensors: str | None = None,
+        add_special_tokens: bool = True,
+    ) -> dict[str, FakeIds | list[str]]:
+        ids = FakeIds(text.split(" "))
+        return {"input_ids": ids if return_tensors else ids.tokens}
 
     def decode(self, tokens: list[str], skip_special_tokens: bool = False) -> str:
         return " ".join(tokens)

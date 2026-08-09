@@ -33,7 +33,9 @@ Four small named pieces, smallest first:
   chat-format benchmark's prompt is wrapped in the checkpoint's own chat template, and
   where a :data:`SYSTEM_PROMPTS` entry becomes a system turn, since that wrapping is a
   property of the checkpoint rather than of the benchmark.
-- :class:`GenerativeScorer` composes them into a ``ScoringModel``.
+- :class:`GenerativeScorer` composes them into a ``ScoringModel``. It is also where a
+  per-item generation budget is decided, because the item is in scope there and in no
+  smaller piece; see :func:`item_token_budget` and :data:`BUDGET_AWARE_ATTR`.
 
 Every one of those mirrors the corresponding olmo-eval task, except where the style's
 ``config.yaml`` argues its way off it in writing. GSM8K: comma separators stripped, the
@@ -42,11 +44,13 @@ last number in the completion taken, ``Question:`` and a blank line as stop sequ
 ``\\boxed{}`` extraction and sympy equivalence, and -- the two departures --
 ``Problem:`` as the only stop sequence, matching lm-eval's ``leaderboard_math`` rather
 than the task's added blank line, inside lm-eval's own 1024 new tokens. IFEval: the
-prompt verbatim as a completion, no few-shot block, no stop sequences, 1536 new tokens,
-and every named instruction verified. GPQA: the expert-scientist system prompt asking
-for step-by-step reasoning ending in ``ANSWER: X``, the question and its lettered
-choices as the user turn, no stop sequences, 1024 new tokens, and the extracted letter
-compared to the item's gold letter. That fidelity is the whole point. All four banks
+prompt verbatim as a completion, no few-shot block, no stop sequences, and every named
+instruction verified -- inside a budget derived per item from the length constraints that
+item declares, which is the third departure and the only place a bank's token budget is
+not a single number; see :func:`ifeval_token_budget`. GPQA: the expert-scientist system
+prompt asking for step-by-step reasoning ending in ``ANSWER: X``, the question and its
+lettered choices as the user turn, no stop sequences, 1024 new tokens, and the extracted
+letter compared to the item's gold letter. That fidelity is the whole point. All four banks
 were calibrated against Open LLM Leaderboard scoring, and an item's difficulty only
 means anything under the grader it was estimated with. A looser grader makes every item
 look easier than its calibrated ``b``, and because EAP treats ``b`` as fixed truth the
@@ -60,6 +64,7 @@ Heavy dependencies (``torch``, ``transformers``) are imported lazily, exactly as
 from __future__ import annotations
 
 import logging
+import math
 import re
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -616,6 +621,631 @@ GRADER_NOTES: dict[str, str] = {
 
 #: Used when an item does not declare an ``answer_type``.
 DEFAULT_ANSWER_TYPE = "numeric"
+
+#: The ``answer_type`` whose items carry their own generation budget; see
+#: :func:`ifeval_token_budget`. Named rather than spelled inline because it is the
+#: discriminator for the per-item budget as well as for the grader, and the two must
+#: pick out the same bank.
+IFEVAL_ANSWER_TYPE = "ifeval_strict"
+
+#: There is deliberately no ``TOKENS_PER_WORD`` constant.
+#:
+#: Words are converted to tokens by the evaluated checkpoint's *own* tokenizer, measured
+#: at run time by :meth:`GenerativeScorer._tokens_per_word`, and there is no code path
+#: that converts without one: a scorer whose completer publishes no
+#: :data:`TOKEN_COUNTER_ATTR` does not run the cascade at all and every item takes the
+#: flat benchmark default. So a fixed multiplier has no job, and one was removed rather
+#: than left unused.
+#:
+#: What the removed survey established, kept because it bounds how wrong the fallback
+#: path can be: over the 480 English-response prompts, thirteen tokenizers spanning
+#: WordPiece, SentencePiece-unigram, SentencePiece-BPE and byte-level BPE and vocabularies
+#: from 30k to 250k gave aggregate ratios in a narrow band, 1.236 (OLMo-2-7B) to 1.376
+#: (Llama-2-7b), with per-prompt p95s from 1.423 to 1.714. Vocabulary size did not predict
+#: the ratio -- xlm-roberta at 250k tokenizes English no better than Llama-2 at 32k,
+#: because its vocabulary is spent elsewhere. English prose therefore costs roughly 1.25
+#: to 1.4 tokens per word on anything plausible, which is why the flat 1280 default is a
+#: reasonable thing to fall back to and a poor thing to derive from.
+#:
+#: The measurement has to be a measurement because IFEval ships no reference answer
+#: anywhere -- all 511 items have ``gold_index: -1``, empty ``choices``, and metadata
+#: holding only ``answer_type``, ``modality``, ``instruction_id_list`` and ``kwargs``.
+#: That is inherent to the benchmark rather than a vendoring gap: upstream
+#: ``google/IFEval`` ships prompts and constraints and no gold response, because
+#: correctness is the verifiers' verdict. There is no answer text to fit anything to, so
+#: every constant below says what it was fit to instead.
+#:
+#: Two consequences worth stating rather than burying. The budget is now
+#: **checkpoint-dependent**, so like the run-time EOS in :func:`eos_stop_sequences` it is
+#: invisible to ``convention.check_runtime_convention``, which runs before the checkpoint
+#: is fetched and can only check what the benchmark declares. And no model-specific value
+#: may be written into ``config.yaml``; what that file pins is the ceiling and the
+#: unit conversions, all of which are properties of the benchmark.
+
+#: Tokens added on top of the converted word count, so that exceeding a limit is
+#: *observable* rather than prevented.
+#:
+#: This is the reason the budget is not simply the converted count. A "less than 20
+#: words" item graded at exactly 20 words of budget cannot distinguish a model that
+#: obeyed the limit from one that would have run past it and was cut at the boundary by
+#: the harness: both produce 20 words, and the verifier passes both. The extra tokens let
+#: an over-running model visibly over-run and be graded as violating the constraint,
+#: which is the measurement this bank exists to make.
+#:
+#: It does a second job for the other relation. For "at least N words", truncation at N
+#: still satisfies *that* constraint -- the text really does reach N words -- but 6 of
+#: the 30 "at least" items also carry a constraint on how the response *ends*
+#: (``startend:end_checker``, ``startend:quotation``, ``detectable_content:postscript``,
+#: ``combination:two_responses``), and a cut at exactly N destroys the ending and fails
+#: that instruction instead. The headroom is what leaves room for it.
+#:
+#: 50 is the user-specified value and is not measured. It is comfortably above the
+#: longest such ending in the bank (a postscript or a closing quotation is a handful of
+#: tokens) and is small enough not to distort a short budget.
+DETECTION_HEADROOM_TOKENS = 50
+
+#: Words per sentence, for ``length_constraints:number_sentences`` (39 items).
+#:
+#: Measured over the 511 prompt texts split on sentence-final punctuation: mean 13.79,
+#: median 12.67, p90 20.00, p95 24.00, max 62.00. 25 is p95 rounded up. Prompt text is
+#: the proxy again, and here it is a conservative one in the direction that matters: an
+#: IFEval prompt is imperative and clipped, while a model writing to a sentence quota
+#: writes expository prose, so the true figure for a response is likelier to sit above
+#: the prompt mean than below it -- which is why the quantile rather than the mean is
+#: taken.
+WORDS_PER_SENTENCE = 25
+
+#: Sentences per paragraph, for the two ``num_paragraphs`` signals (39 items between
+#: them). **Not measured** -- a paragraph boundary is not something the prompts exhibit
+#: in the register the responses would, and there is no reference response to count.
+#: 6 is picked at the conservative end: it makes a paragraph 150 words, which is a long
+#: paragraph rather than a typical one, and the largest ``num_paragraphs`` in the bank
+#: is 10, so the error this constant can cause is bounded and one-sided.
+SENTENCES_PER_PARAGRAPH = 6
+
+#: Words per paragraph. Derived rather than free, so the two constants above cannot
+#: drift apart and a reader has one number to check instead of two.
+WORDS_PER_PARAGRAPH = WORDS_PER_SENTENCE * SENTENCES_PER_PARAGRAPH
+
+#: Words per bullet, for ``detectable_format:number_bullet_lists`` (31 items).
+#: **Not measured**, for the reason above. Two sentences' worth is the conservative end:
+#: a markdown bullet is usually a phrase or a single sentence, so this over-budgets
+#: rather than under-budgets, and the largest ``num_bullets`` here is 10.
+WORDS_PER_BULLET = 2 * WORDS_PER_SENTENCE
+
+#: The budget for an item that declares no length signal *and* whose constraints survive
+#: being cut short -- 84 of the 511. The only branch of the cascade that economises, and
+#: therefore the only one that could produce a wrong grade if it is set too low.
+#:
+#: Two independent anchors, measured 2026-08-08, which is why it is not a round number:
+#:
+#: * A prior measurement of this repo put the typical demand of an item that declares no
+#:   size near 52 tokens. 52 is a *median* and emphatically not a budget -- half of such
+#:   answers run longer, and prose lengths are right-skewed -- so this is 4x it, 208, which
+#:   for a right-skewed distribution lands around its p90 rather than its middle.
+#: * The 84 items this branch actually governs have prompts of 12/37/69/215 tokens
+#:   min/median/p90/max on SmolLM2. Three times the p90 prompt is 207.
+#:
+#: The two anchors agree to within one token, from different directions, and 208 is taken
+#: as the larger. About 162 words at the 1.285 tokens per word measured here: a couple of
+#: solid paragraphs, which is the right scale for "answer this, no length stated, in
+#: lowercase" or "reply with one of three fixed phrases".
+#:
+#: Both failure modes were weighed and they are not symmetric: too small truncates a
+#: compliant answer and fabricates a constraint violation, too large only spends decode
+#: time. What makes 208 safe is not the multiple but the company it keeps -- every item
+#: whose grade depends on the response *finishing* is routed away from this branch by
+#: :data:`TRUNCATION_FRAGILE_IDS` and takes the ceiling instead.
+UNCONSTRAINED_FLOOR_TOKENS = 208
+
+#: There is deliberately no ``NON_ENGLISH_FLOOR_TOKENS``. An item demanding a non-English
+#: response takes the ceiling, which under a 1280 cap is the whole benchmark default --
+#: see the ``language:response_language`` branch of :func:`ifeval_token_budget`.
+
+#: Instructions whose grade depends on the response not being cut short, so an item
+#: carrying one is never economised: it takes the ceiling.
+#:
+#: Why this set exists. An item that declares no length signal has no *stated* size, but
+#: that is not the same as having no size demand, and 188 of the 272 such items carry a
+#: constraint that truncation breaks. Handing those the floor would cut the response and
+#: fail a constraint the model was in the middle of satisfying -- the same failure class as
+#: the MATH blank-line stop that deleted 40.9% of answers, which was treated as a
+#: correctness bug rather than a tuning question. Detected from ``instruction_id_list``,
+#: never by inspecting response text.
+#:
+#: **Ending-dependent** (83 no-signal items). The grader reads the *end* of the response,
+#: so a cut tail is an automatic fail at any budget:
+ENDING_DEPENDENT_IDS = {
+    # Must end with a given phrase; the grader compares the final characters.
+    "startend:end_checker",
+    # The whole response must be wrapped in quotes, so the closing quote is last.
+    "startend:quotation",
+    # The postscript the grader looks for is by definition the last thing written.
+    "detectable_content:postscript",
+    # A cut anywhere leaves unbalanced braces, and the grader parses the whole response.
+    "detectable_format:json_format",
+}
+
+#: **Count-dependent** (the remaining 105). Truncation lowers a count the grader is
+#: checking. Less absolute than the ending cases -- the floor might well hold enough of
+#: them -- but the direction is the same and the tie is broken toward correctness.
+COUNT_DEPENDENT_IDS = {
+    # N *highlighted* spans; a cut drops the last of them.
+    "detectable_format:number_highlighted_sections",
+    # N [placeholders]; likewise.
+    "detectable_content:number_placeholders",
+    # Every listed keyword must appear somewhere, and a cut can remove the last.
+    "keywords:existence",
+    # A keyword at least N times.
+    "keywords:frequency",
+    # A letter at least N times.
+    "keywords:letter_frequency",
+    # N all-caps words.
+    "change_case:capital_word_frequency",
+}
+
+#: The union, which is what :func:`ifeval_token_budget` tests.
+#:
+#: **Anything absent from this set is being asserted truncation-tolerant, and that is a
+#: claim rather than an absence of one.** The 84 items the floor governs carry only these
+#: six instructions, and the assertion is made one by one:
+#:
+#: * ``keywords:forbidden_words`` (19) and ``punctuation:no_comma`` (18) are *negative*
+#:   constraints. Truncation can only help satisfy them.
+#: * ``change_case:english_lowercase`` (14) and ``change_case:english_capital`` (14) are
+#:   global properties of the text that hold on any prefix of a compliant response.
+#: * ``detectable_format:constrained_response`` (10) demands the response be exactly one of
+#:   three fixed phrases, about 6 tokens. It is the shortest demand in the bank.
+#: * ``detectable_format:title`` (14) is the weakest of the six claims and worth a reader's
+#:   attention: a ``<<title>>`` may appear anywhere, and the assertion is that a model
+#:   writes it at the top. If a model were found to append titles, this id belongs above.
+#:
+#: Two ids differ from the set the user proposed, both verified against the bank:
+#:
+#: * ``detectable_format:constrained_response`` was proposed and is excluded, per above.
+#:   Including it would spend 1280 tokens on a 6-token answer for 10 items.
+#: * ``detectable_format:multiple_sections`` was proposed and cannot apply: all 14 items
+#:   carrying it declare a usable ``num_sections``, so it is a *length signal* handled by
+#:   :func:`_declared_word_demand` and no item carrying it ever reaches this split.
+TRUNCATION_FRAGILE_IDS = ENDING_DEPENDENT_IDS | COUNT_DEPENDENT_IDS
+
+#: Named because two unrelated decisions turn on it: it doubles the budget in
+#: :func:`ifeval_token_budget`, and it is the one instruction that suppresses the
+#: leaked-EOS stop in :func:`eos_stop_sequences`.
+TWO_RESPONSES_ID = "combination:two_responses"
+
+#: Attribute a completer sets to publish the *text* of its checkpoint's end token.
+#:
+#: Read by :class:`GenerativeScorer` and handed to :func:`eos_stop_sequences`. It is
+#: resolved from the live tokenizer and deliberately never written into ``config.yaml``
+#: or a bank manifest: which string ends a generation is a property of the checkpoint,
+#: while those two artifacts describe the benchmark. Recording it would make the bank's
+#: convention checkpoint-specific and fail every run against a model that spells its end
+#: token differently.
+EOS_TEXT_ATTR = "eos_text"
+
+#: Generation tokens the context window must be able to leave for an item to be worth
+#: sending at all, used by :func:`fit_budget_to_context`.
+#:
+#: Taken from ``MIN_GEN`` in Research's ``tutor_cat/respgen/runner.py``, which is the
+#: pipeline this clamp is modelled on, rather than invented here. It is only ever applied
+#: as ``min(budget, MIN_GENERATION_TOKENS)``, so it cannot reject an item whose own budget
+#: is smaller -- IFEval's shortest is 76 tokens, and that item is refused only if 76 will
+#: not fit.
+#:
+#: The value it replaced there computed ``max(1, max_model_len - max_new_tokens)``, which
+#: collapses to 1 whenever the context is no larger than the nominal budget -- true of
+#: every model that branch ran at ``max_model_len <= 4096`` -- and then left-truncated the
+#: prompt to its final token. The reserve has to key off the ACTUAL prompt length, which
+#: is why :func:`fit_budget_to_context` takes one.
+#:
+#: 256 is also enough for a MATH solution at the median, which is the other bank the
+#: clamp governs: the reference solutions run 255 tokens at the median and 329 at the
+#: mean. It is not enough for a long one, which is the honest cost of running that bank
+#: on a small-context model and is recorded per item.
+MIN_GENERATION_TOKENS = 256
+
+#: Attribute a completer sets to publish which tokenizer it resolved, for the report.
+#:
+#: Identity only -- nothing branches on it. It is recorded so a reader can tell from
+#: ``cat_report.json`` alone which tokenizer produced that run's budgets, which matters
+#: because the words-to-tokens ratio is a property of the tokenizer and two checkpoints
+#: will not give an item the same budget.
+TOKENIZER_ID_ATTR = "tokenizer_id"
+
+#: Report key carrying how each item's generation budget was arrived at.
+#:
+#: Written onto every generative response so the style can aggregate a run-level block off
+#: the responses rather than from a tally kept in parallel -- the same reason
+#: ``_ungradable_block`` counts off them. A budget that was defaulted rather than computed
+#: has to be visible in the report, because a run in the degraded mode looks entirely
+#: normal otherwise: plausible theta, healthy standard error, nothing amiss.
+BUDGET_KEY = "generation_budget"
+
+#: ``BUDGET_KEY['source']`` values, named so the report and the tests agree on the spelling.
+#:
+#: ``BUDGET_FROM_CASCADE`` -- derived from the item's own declared length signals.
+#: ``BUDGET_FROM_CEILING`` -- the bank's flat ``max_new_tokens``, either because the bank has
+#: no per-item policy or because the item's cascade branch returns the ceiling.
+#: ``BUDGET_FROM_CONTEXT`` -- lowered further by :func:`fit_budget_to_context`.
+BUDGET_FROM_CASCADE = "cascade"
+BUDGET_FROM_CEILING = "flat_ceiling"
+BUDGET_FROM_CONTEXT = "context_clamped"
+
+#: Attribute a completer sets to publish its checkpoint's context window in tokens.
+#:
+#: ``None`` when it cannot be determined, and then the clamp is skipped rather than
+#: applied against a guessed window: a wrong context length would either refuse items that
+#: would have generated fine or cap budgets for no reason, and both are worse than the
+#: status quo of not checking.
+CONTEXT_WINDOW_ATTR = "max_context_tokens"
+
+#: Attribute a completer sets to publish ``text -> token count`` for its own tokenizer.
+#:
+#: The other half of :data:`EOS_TEXT_ATTR`, and what makes the per-item budget honest
+#: rather than estimated: with it, a declared word count is converted by the tokenizer
+#: that will actually do the generating. Without it there is no conversion at all and
+#: :func:`item_token_budget` returns the flat benchmark default, because a words-to-tokens
+#: ratio guessed for an unknown tokenizer is exactly the kind of quiet approximation this
+#: whole budget exists to remove.
+#:
+#: Published by the completer rather than reached for by the scorer for the reason the
+#: module docstring gives: the tokenizer is the backend's, and a scorer that imported one
+#: would make a second backend a change to the scorer.
+TOKEN_COUNTER_ATTR = "count_tokens"
+
+_WORD_RE = re.compile(r"\S+")
+
+
+def count_words(text: str) -> int:
+    """Whitespace-delimited words, which is the unit IFEval's own verifiers count in.
+
+    ``ifbench``'s ``NumberOfWords`` instruction tokenizes with a word-boundary regex, so
+    this is deliberately the crude split rather than anything cleverer: the budget has to
+    be denominated in the same unit as the constraint it is protecting. It is also why the
+    ``language:response_language`` items cannot be converted at all -- for an unspaced
+    script this returns 1 for a whole sentence.
+    """
+    return len(_WORD_RE.findall(text))
+
+
+def _declared_word_demand(
+    instruction_id: str, kwargs: Mapping[str, Any]
+) -> int | None:
+    """Words a single declared instruction obliges the response to produce, if any.
+
+    ``None`` for an instruction that carries no length signal, which is most of them.
+    Each branch converts to *words* rather than straight to tokens so that one measured
+    words-to-tokens ratio applies to all of them, and so an item declaring several
+    signals can be compared across them in one unit.
+    """
+    if instruction_id == "length_constraints:number_words":
+        # The bank's own unit, so no conversion. ``relation`` is deliberately not read:
+        # both relations need a budget that reaches the stated count, "at least" so a
+        # compliant answer fits and "less than" so an over-running one can be seen to
+        # over-run. See DETECTION_HEADROOM_TOKENS. Not reading it is also what makes the
+        # duplicate case below come out right without a special branch.
+        return _positive_int(kwargs.get("num_words"))
+    if instruction_id == "length_constraints:number_sentences":
+        sentences = _positive_int(kwargs.get("num_sentences"))
+        return None if sentences is None else sentences * WORDS_PER_SENTENCE
+    if instruction_id in (
+        "length_constraints:number_paragraphs",
+        # Carries num_paragraphs too, alongside the first word it pins. 12 items.
+        "length_constraints:nth_paragraph_first_word",
+    ):
+        paragraphs = _positive_int(kwargs.get("num_paragraphs"))
+        return None if paragraphs is None else paragraphs * WORDS_PER_PARAGRAPH
+    if instruction_id == "detectable_format:number_bullet_lists":
+        bullets = _positive_int(kwargs.get("num_bullets"))
+        return None if bullets is None else bullets * WORDS_PER_BULLET
+    if instruction_id == "detectable_format:multiple_sections":
+        sections = _positive_int(kwargs.get("num_sections"))
+        return None if sections is None else sections * WORDS_PER_PARAGRAPH
+    return None
+
+
+def _positive_int(value: Any) -> int | None:
+    """``value`` as a positive int, or ``None`` if it is not one.
+
+    A malformed ``kwargs`` entry must not be able to produce a budget of 0 -- that would
+    generate nothing and grade the item on an empty response -- so anything that is not
+    a usable count is dropped and the item falls through to the floor.
+    """
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    return value if value > 0 else None
+
+
+def ifeval_token_budget(
+    item: BenchmarkItem,
+    *,
+    ceiling: int,
+    tokens_per_word: float,
+    count_tokens: Callable[[str], int],
+    unconstrained: int = UNCONSTRAINED_FLOOR_TOKENS,
+) -> int:
+    """Tokens to allow ``item``, derived from the length signals it declares.
+
+    A signal *cascade*, not a lookup: ``instruction_id_list`` is a list and items
+    routinely declare several constraints at once, so every declared signal is converted
+    and the largest demand wins. An item that is both "at least 300 words" and
+    ``combination:two_responses`` needs about twice the 300-word budget, not the
+    300-word budget.
+
+    The cascade runs over all 511 items uniformly. An explicit
+    ``length_constraints:number_words`` is one branch like any other and does not
+    short-circuit the rest, because the bank does not let it: of the 44 items declaring a
+    word count, 5 declare a second length signal as well -- 3 with
+    ``detectable_format:number_bullet_lists`` and 2 with ``combination:two_responses`` --
+    and for those last 2 a word-count-wins rule would hand an item asking for N words in
+    each of two responses a single N-word budget and truncate the second. Across the bank
+    308 items declare none of these signals, 194 declare one and 9 declare two.
+
+    The three stages are different in kind and compose in this order:
+
+    1. **The answer.** The largest per-signal word demand, converted at the item's
+       words-to-tokens ratio, plus :data:`DETECTION_HEADROOM_TOKENS`. An item declaring no
+       signal is split rather than given one number: if it carries a constraint truncation
+       would break it takes ``ceiling``, and only if its constraints survive being cut
+       short does it take ``unconstrained``. See :data:`TRUNCATION_FRAGILE_IDS` -- 188 of
+       the 272 no-signal items are fragile, so the economising branch governs 84.
+    2. **The echo**, added on top. ``combination:repeat_prompt`` (35 items) obliges the
+       response to reproduce the request verbatim *and then answer it*, so its cost is
+       additive rather than a maximum -- and an item whose only signal is the echo still
+       needs a whole answer's worth of budget after it, which is why stage 1 falls back
+       to ``unconstrained`` rather than to zero. Getting this wrong is not a rounding
+       error: treating the echo as the item's total demand gives these 35 items 64 to 108
+       tokens, enough for the echo and nothing else, and truncates every one of them.
+    3. **The multiplier.** ``combination:two_responses`` (24 items) asks for two
+       separated responses, so the whole of stages 1 and 2 doubles.
+
+    Everything is then clamped to ``ceiling``, and the cascade therefore only ever
+    *lowers* a budget. See :func:`item_token_budget` for what that costs.
+
+    Args:
+        item: The IFEval item, read for ``metadata['instruction_id_list']`` and the
+            parallel ``metadata['kwargs']``.
+        ceiling: Hard upper bound, the bank's configured ``max_new_tokens``. No derived
+            budget may exceed it.
+        tokens_per_word: Words-to-tokens ratio measured on the evaluated checkpoint's own
+            tokenizer. There is no default: a caller without a tokenizer has no business
+            running the cascade and :func:`item_token_budget` does not let it.
+        count_tokens: That tokenizer's ``text -> token count``, used for the two things
+            that can be counted exactly rather than converted -- the echoed prompt, and
+            the uppercase ratio for an ALL-CAPS item.
+        unconstrained: Budget for an item declaring no length signal.
+
+    Returns:
+        A positive token count, at most ``ceiling``.
+    """
+    instruction_ids = list(item.metadata.get("instruction_id_list") or ())
+    raw_kwargs = list(item.metadata.get("kwargs") or ())
+    # A list of pairs, never a dict keyed by instruction id. An id can repeat within one
+    # item -- the bank holds 46 number_words constraints across 44 items -- and a dict
+    # would keep the last and drop the rest without anything to show it had happened.
+    #
+    # Both duplicates are a bracketing pair, verified against the bank rather than
+    # assumed: af6a27b556603a01 declares "at least 600" together with "less than 701",
+    # and 1e657beb0dd15c56 declares "at least 100" together with "less than 121". Taking
+    # the maximum over the pair follows the *upper* bound, which is the safe reading: the
+    # model has to be able to reach the upper limit for the verifier's judgement of it to
+    # mean anything, and a budget set at the lower bound would cut the response at 600
+    # words and record a pass on "less than 701" that the harness produced rather than
+    # the model. The lower bound needs nothing of its own, being already covered.
+    #
+    # Zipped rather than indexed for a second reason: a kwargs list shorter than the
+    # instruction list is a malformed bank, which IFEvalPromptStrict already scores 0 and
+    # marks ungradable. Budgeting must not be the thing that raises first, so a short
+    # list simply contributes no demand.
+    declared = list(
+        zip(instruction_ids, [dict(kw or {}) for kw in raw_kwargs], strict=False)
+    )
+    signals = set(instruction_ids)
+
+    # The non-English exemption, taken before anything is converted.
+    #
+    # Every conversion below is an English measurement, and a run-time tokenizer does not
+    # rescue it: the ratio has to be measured on text in the item's *target* language and
+    # no sample of that exists anywhere in the bank -- the prompt is English asking for a
+    # Marathi response, so tokenizing the prompt measures the wrong language. Measured
+    # 2026-08-08 across seven tokenizers on target-language samples, a non-English response
+    # costs 2.0x (Portuguese) to 22.3x (Tamil) what an English one does per word, with Thai
+    # at 158x because it is unspaced and ``count_words`` calls a whole sentence one word.
+    # A budget converted at an English ratio would land 2 to 22 times too small.
+    #
+    # So these items bypass conversion and take the ceiling. Under a 1280 cap that is the
+    # whole benchmark default, which is the clean answer: it is the most the cascade is
+    # allowed to hand out, it is what these items would have got with no cascade at all,
+    # and it needs no constant of its own. 31 items; 26 declare no length signal and would
+    # otherwise drop to ``unconstrained``, and 5 declare one -- 914b4ebdd73c5cc1 (Marathi,
+    # 3 paragraphs) is the concrete hazard, since it is the only one of the five whose
+    # signal converts to a word count and it would otherwise be handed 450 English words'
+    # worth of tokens for a Marathi answer.
+    #
+    # Detected from ``instruction_id_list`` rather than by sniffing the prompt text, which
+    # would be a language guess on top of a ratio guess.
+    if "language:response_language" in signals:
+        return ceiling
+
+    # Ending-dependent constraints take the ceiling whatever else the item declares, and
+    # this is deliberately checked *before* any word count is read.
+    #
+    # A declared word count does not rescue these items, because a declared count is not an
+    # upper bound on a compliant answer. 23 items carry both an ending-dependent constraint
+    # and a length signal, and 6 of them state a *minimum* -- f0da3bf76abece71 is "at least
+    # 400 words" wrapped in quotes, adc7b04618c125b6 "at least 800", 9baf1cb36bafc2bb "at
+    # least 900" ending in a fixed phrase. Converting the minimum gives f0da3bf76abece71
+    # 564 tokens; a compliant 600-word quoted answer is then cut and loses its closing
+    # quote, and the grader records a failure the harness produced. Deriving from a lower
+    # bound would be a regression against the flat cap these items had before, which is the
+    # one thing this change must not do.
+    #
+    # "less than N" plus an ending constraint is the tolerable case -- there the count is a
+    # genuine upper bound -- but it is not separated out, because IFEval's strict prompt
+    # accuracy needs every constraint satisfied, so the only thing separating it would buy
+    # is a different name for the same failure.
+    if signals & ENDING_DEPENDENT_IDS:
+        return ceiling
+
+    # Uppercase is a different tokenization regime, not a rounding difference on the same
+    # one, so an ALL-CAPS item is measured under ``str.upper`` rather than converted at the
+    # as-written ratio. Measured on the checkpoint's own tokenizer because the penalty does
+    # not transfer between them: in the earlier survey it ran from nothing at all (the
+    # uncased WordPiece tokenizers lowercase their input) to 84% (Llama-2, 1.376 -> 2.531).
+    # ``change_case:english_capital``, 25 items, 5 of which also declare a length signal.
+    #
+    # The other case and punctuation constraints in the bank were checked because they
+    # looked like the same hazard and are not: ``change_case:english_lowercase`` and
+    # ``punctuation:no_comma`` both leave the ratio within 1% of as-written, so neither
+    # gets a branch.
+    ratio = tokens_per_word
+    if "change_case:english_capital" in signals:
+        prompt_words = count_words(item.question)
+        if prompt_words:
+            ratio = max(ratio, count_tokens(item.question.upper()) / prompt_words)
+
+    demands = [
+        words
+        for instruction_id, kwargs in declared
+        if (words := _declared_word_demand(instruction_id, kwargs)) is not None
+    ]
+    if demands:
+        budget = math.ceil(max(demands) * ratio) + DETECTION_HEADROOM_TOKENS
+    elif signals & COUNT_DEPENDENT_IDS:
+        # No stated size, but a count the grader checks that truncation would lower. The
+        # floor is plausibly enough for most of these; the ceiling is taken because the
+        # cost of being wrong is a wrong grade and the cost of being generous is decode
+        # time. See TRUNCATION_FRAGILE_IDS.
+        budget = ceiling
+    else:
+        budget = unconstrained
+
+    # The echoed request, counted exactly rather than converted: the text is right here
+    # and the tokenizer that will generate it is in hand, so there is nothing to estimate.
+    # ``prompt_to_repeat`` is preferred over ``item.question`` because the kwarg is what
+    # the verifier compares against, and the two can differ once a prompt template has
+    # wrapped the question.
+    for instruction_id, kwargs in declared:
+        if instruction_id == "combination:repeat_prompt":
+            echoed = str(kwargs.get("prompt_to_repeat") or item.question)
+            budget += count_tokens(echoed)
+
+    if TWO_RESPONSES_ID in signals:
+        budget *= 2
+
+    return min(budget, ceiling)
+
+
+def item_token_budget(
+    item: BenchmarkItem,
+    config: GenerationConfig,
+    *,
+    tokens_per_word: float | None = None,
+    count_tokens: Callable[[str], int] | None = None,
+) -> int:
+    """Tokens to allow ``item``, per item where the bank and the backend both support it.
+
+    ``config.max_new_tokens`` is a **ceiling**, not a target. Every other generative bank
+    gets it flat, and for ifeval the cascade may only lower an item below it.
+
+    Two gates, and both are deliberate:
+
+    * **The bank.** Dispatches on ``answer_type`` and not on anything looser, so the
+      cascade reaches exactly the bank whose items carry the metadata it reads. A GSM8K or
+      MATH item declares no ``instruction_id_list``, and a cascade over an absent field
+      would hand it the unconstrained floor -- 512 tokens against MATH's derived 2048, cut
+      mid-derivation on the longest 26 of its 1,183 items.
+    * **The tokenizer.** No tokenizer, no cascade: every item takes the flat ceiling. A
+      words-to-tokens ratio is the load-bearing step in every branch, and the only honest
+      way to get one is to ask the tokenizer that will do the generating. Falling back to
+      a fixed multiplier would put a guess underneath a budget whose entire purpose is to
+      stop the harness from truncating a compliant answer and grading it as a violation.
+      In a real run the tokenizer is always loaded, so this path is for tests and for a
+      future backend that has not published one yet.
+
+    The consequence of the ceiling, recorded because it is a real loss and not a rounding
+    one: a handful of items declare constraints that convert to more than the ceiling and
+    are truncated. On SmolLM2 those are 7 items wanting 1310 to 3367 tokens, led by
+    ab5ca590f2d20f37 at 2500 declared words. They are cut at exactly the point the
+    calibration population was cut -- upstream ``olmo_eval`` and lm-eval both generate
+    IFEval at 1280 -- so the truncation is inherited from the harness that produced these
+    difficulties rather than introduced here. That is the whole argument for a ceiling
+    rather than a floor: theta is only interpretable on the scale the difficulties came
+    from.
+    """
+    answer_type = str(item.metadata.get("answer_type", DEFAULT_ANSWER_TYPE))
+    if answer_type != IFEVAL_ANSWER_TYPE:
+        return config.max_new_tokens
+    if tokens_per_word is None or count_tokens is None:
+        return config.max_new_tokens
+    return ifeval_token_budget(
+        item,
+        ceiling=config.max_new_tokens,
+        tokens_per_word=tokens_per_word,
+        count_tokens=count_tokens,
+    )
+
+
+def fit_budget_to_context(
+    budget: int, prompt_tokens: int, context_window: int
+) -> int | None:
+    """``budget`` reduced to what the context window actually leaves, or ``None`` to refuse.
+
+    The last of three stages, and the ordering is the thing to be clear about because a
+    reader will ask which of them wins: :func:`ifeval_token_budget` derives a demand, the
+    bank's ``max_new_tokens`` caps it, and this caps whatever survived that. Each stage can
+    only lower, so the answer is simply whichever is smallest, and this one is last because
+    it is the only hard constraint of the three -- the other two are conventions, while a
+    prompt and its continuation physically have to fit in the window.
+
+    **This is insurance rather than a fix for a live bug, and the distinction is worth
+    keeping straight.** Measured over the bank, IFEval prompts run 51/81/387 tokens
+    median/p90/max, the 35 ``combination:repeat_prompt`` items topping out near 112. Against
+    a 2048-token window the longest prompt still leaves 1936, well clear of the 1280
+    ceiling, so this is inert for this bank on any model with a context of 2048 or more and
+    only begins to bind below roughly 1667. Nothing in the tree today trips it. It is here
+    because the point of this work is a correct pipeline for future submitters rather than a
+    score for the current checkpoint, and a small-context model is exactly the submitter
+    that would otherwise be mangled quietly.
+
+    The formula is Research's ``_fit_prompt_and_budget``, and its docstring records the bug
+    worth not repeating: an earlier version computed ``max(1, max_model_len -
+    max_new_tokens)``, which collapsed to 1 whenever the window was smaller than the
+    nominal budget -- every model they ran at 4096 or below -- and then left-truncated the
+    prompt to its final token. So the clamp is a function of the *measured* prompt length
+    and never of the nominal budget, and it cannot collapse: what it returns is either at
+    least ``min(budget, MIN_GENERATION_TOKENS)`` or nothing at all.
+
+    **Where this deliberately departs from Research: it refuses instead of left-truncating.**
+    Research keeps the tail of an over-long prompt, which is right for a chat transcript,
+    where the tail is the student's latest turn and the front is stale history. For IFEval
+    it would be silently destructive. The instruction being graded *is* the prompt, and the
+    verifiers do not read the prompt -- they read ``metadata['kwargs']`` from the bank -- so
+    dropping the front of it does not soften what is checked. It produces a model that was
+    never shown the constraint it is about to be graded on, and a failure recorded against
+    it is the harness's, not the model's. That is fabricated evidence, which is what
+    :data:`UNGRADABLE_KEY` exists to keep out of a response pattern unannounced; the item is
+    scored 0, marked, and surfaced in ``cat_report.json``'s ``ungradable`` block with its id
+    and reason, where it reads as a configuration problem rather than as a wrong answer.
+
+    Args:
+        budget: Tokens the earlier stages settled on.
+        prompt_tokens: The *rendered* prompt's real length, chat template and any fewshot
+            block included, because that is what occupies the window.
+        context_window: The checkpoint's context length in tokens.
+
+    Returns:
+        The budget to generate with, or ``None`` if the window cannot hold the prompt plus
+        a usable generation, meaning the item must not be sent.
+    """
+    # Never more than min(budget, MIN_GENERATION_TOKENS), so an item whose own demand is
+    # tiny is not refused for failing to leave room it never wanted.
+    reserve = min(budget, MIN_GENERATION_TOKENS)
+    remaining = context_window - prompt_tokens
+    if remaining < reserve or remaining < 1:
+        return None
+    return max(1, min(budget, remaining))
 
 
 def get_answer_grader(answer_type: str) -> Grader:
@@ -1218,69 +1848,27 @@ def format_generative_prompt(
     )
 
 
-def effective_stop_sequences(
-    config: GenerationConfig, eos_token: str | None = None
-) -> tuple[str, ...]:
-    """``config.stop_sequences`` plus the checkpoint's end-of-text text, if there is one.
-
-    Appended here rather than written into ``config.yaml`` for the reason
-    :func:`resolve_eos_token` gives: the string belongs to the model. ``config.yaml``
-    holds ``["Problem:", "problem:"]``, which is what the manifest records and what the
-    convention guard checks; this is the run-time list, and it is checkpoint-specific.
-
-    **This saves no compute and is not what stops generation.**
-    :func:`truncate_at_stop` runs on a completion that has already been generated in
-    full, so every token it removes has been paid for. What halts a completion is
-    ``generate(eos_token_id=...)``, in :meth:`_HFCompleter._eos_kwargs`. Nothing in this
-    function can shorten a run.
-
-    Nor can this entry ever fire on an end-of-text token the model genuinely emits:
-    :meth:`_HFCompleter.__call__` decodes with ``skip_special_tokens=True``, which
-    deletes the token before this list is matched against anything.
-
-    What it does catch is the failure mode that closing the exemplars with the token
-    invites. A model shown the token four times can learn to write its *characters* out of
-    ordinary vocabulary rather than to emit its id. Those tokens are not special, they
-    survive the decode, and they arrive followed by whatever the model hallucinates next.
-
-    That text inflates rather than corrupts, which is worth being precise about.
-    :class:`MathLatexEquivalence` scores ``any(is_equiv(candidate, gold))`` over every
-    candidate the extractor finds, so a run-on can only *add* candidates: it turns wrong
-    answers right and never right answers wrong. An uncut leak therefore reads as ability
-    the checkpoint does not have, on a scale where theta is meant to be comparable. So
-    this is a correctness measure with a narrow and specific target: keep post-end-of-text
-    text out of the graded span. That is all it is.
-    """
-    if not eos_token or eos_token in config.stop_sequences:
-        return config.stop_sequences
-    return (*config.stop_sequences, eos_token)
-
-
-#: Tokens always left for the model to answer in, whatever the context window costs.
+#: Where the context length is read from on a model config, most likely spelling first.
 #:
-#: Copied from Research's ``respgen/runner.py`` MIN_GEN, and the value matters less than
-#: the shape it enforces. The version it replaced there computed
-#: ``budget = max(1, max_model_len - max_new_tokens)``, which collapses to 1 whenever the
-#: context is no larger than the nominal budget -- true of every model that branch ran at
-#: ``max_model_len <= 4096`` -- and then left-truncated the prompt to its final token. The
-#: budget has to key off the ACTUAL prompt length with a floor, not off the nominal one.
-#:
-#: 256 is enough for a MATH solution at the median: the reference solutions run 255 tokens
-#: at the median and 329 at the mean. It is not enough for a long one, which is the honest
-#: cost of running this bank on a small-context model and is recorded per item.
-MIN_GEN_TOKENS = 256
+#: ``max_position_embeddings`` is what ``hf_config_patch._llama_config`` emits for this
+#: checkpoint family; ``n_positions`` is the GPT-2-era name, tried second so a
+#: differently-shaped config still resolves instead of silently disabling the clamp.
+#: Named because the absence of both is a real state -- skip the clamp and say so --
+#: rather than a bug.
+CONTEXT_LENGTH_ATTRS = ("max_position_embeddings", "n_positions")
 
-#: Where the context length is read from on a Llama-shaped config, which is what
-#: ``hf_config_patch._llama_config`` emits for this checkpoint family. Named because the
-#: attribute's absence is a real state -- skip the clamp and say so -- rather than a bug.
-CONTEXT_LENGTH_ATTR = "max_position_embeddings"
-
-#: ``ungradable_reason`` for an item whose prompt cannot be made to fit at one exemplar.
+#: ``ungradable_reason`` for an item the context window cannot hold a usable prompt for.
 #:
 #: Scored 0 like any other ungradable item, and it has to be distinguishable from a
 #: grading failure, because the fix is different: this one is the checkpoint's context
 #: window being too small for the bank, not a malformed row or a missing verifier.
-CONTEXT_OVERFLOW_REASON = "prompt_exceeds_context_window"
+#:
+#: One stable string rather than a sentence carrying this item's figures, because
+#: ``style._ungradable_block`` publishes ``reasons`` as a set: a per-item message would
+#: make every refused item its own reason and turn that field into a transcript. The
+#: figures are on each response's ``context_fit`` block and in the warning logged beside
+#: it, so nothing is lost by keeping the reason itself groupable.
+CONTEXT_OVERFLOW_REASON = "the prompt does not fit the checkpoint's context window"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1291,12 +1879,13 @@ class PromptFit:
         prompt: The rendered prompt, always whole exemplars and a whole question.
         num_fewshot: Exemplars actually used, which may be fewer than configured.
         prompt_tokens: Measured length, or ``None`` when nothing measured it.
-        gen_budget: Tokens to generate, or ``None`` to use ``config.max_new_tokens``.
+        gen_budget: Tokens to generate, or ``None`` when nothing measured the window and
+            the item's own ceiling is therefore the only bound.
         context_length: The window this was fitted to, or ``None`` if undeterminable.
-        clamped: Whether ``gen_budget`` came out below ``config.max_new_tokens``.
+        clamped: Whether ``gen_budget`` came out below the ceiling ``fit`` was given.
         configured_fewshot: What ``config.num_fewshot`` asked for, so a reader can see
             that a reduced ``num_fewshot`` is the ladder's doing and not the config's.
-        ungradable_reason: Set when even one exemplar will not fit; see
+        ungradable_reason: Set when not even the floor prompt fits; see
             :data:`CONTEXT_OVERFLOW_REASON`.
     """
 
@@ -1331,12 +1920,21 @@ class PromptFitter:
     failure this whole change exists to remove.
 
     So the unit of reduction is a whole exemplar. The ladder tries the configured count,
-    measures, and drops one exemplar at a time until the prompt plus
-    :data:`MIN_GEN_TOKENS` fits -- and stops at ONE, never zero. A 0-shot MATH prompt
-    teaches neither answer form, so an item that cannot fit even one exemplar is recorded
-    :data:`CONTEXT_OVERFLOW_REASON` instead of being sent bare. Scoring 0 for a prompt the
-    model was never taught to answer would be a fabricated zero attributed to its
-    mathematics.
+    measures, and drops one exemplar at a time until :func:`fit_budget_to_context`
+    accepts the prompt -- and stops at ONE, never zero, on a bank that asked for any. A
+    0-shot MATH prompt teaches neither answer form, so an item that cannot fit even one
+    exemplar is recorded :data:`CONTEXT_OVERFLOW_REASON` instead of being sent bare.
+    Scoring 0 for a prompt the model was never taught to answer would be a fabricated
+    zero attributed to its mathematics.
+
+    **The ladder is layered on the clamp rather than duplicating it.** Deciding whether a
+    prompt fits, and what it leaves to generate with, is one question and
+    :func:`fit_budget_to_context` is the one place that answers it -- including the
+    reserve that keeps a small demand from being refused for room it never wanted, and
+    the refusal that replaces Research's left-truncation. What this class adds on top is
+    the *reduction rule*: which prompt to offer the clamp next when it says no. A bank
+    with no few-shot block has exactly one prompt to offer, so for ifeval this collapses
+    to a single call and the clamp is all there is.
 
     Exemplars are dropped from the FRONT, keeping those nearest the live question.
     Recency dominates in-context learning, and the adjacent exemplar is doing the most
@@ -1350,18 +1948,39 @@ class PromptFitter:
     would. That is accepted: the step order is chosen for what it preserves.
 
     Attributes:
-        tokenizer: The loaded checkpoint's tokenizer, used only to measure.
+        count_tokens: The loaded checkpoint's ``text -> token count``, used only to
+            measure. The same callable :data:`TOKEN_COUNTER_ATTR` publishes, so the
+            prompt is measured by the tokenizer that will generate from it.
         context_length: Its window, or ``None`` to skip clamping entirely.
         eos_token: Passed through to prompt rendering so the measured string is the
             string that will be sent.
     """
 
-    tokenizer: Any
+    count_tokens: Callable[[str], int]
     context_length: int | None
     eos_token: str | None = None
 
-    def fit(self, item: BenchmarkItem, config: GenerationConfig) -> PromptFit:
-        """Size one item's prompt and generation budget."""
+    def fit(
+        self,
+        item: BenchmarkItem,
+        config: GenerationConfig,
+        *,
+        ceiling: int | None = None,
+    ) -> PromptFit:
+        """Size one item's prompt and generation budget.
+
+        ``ceiling`` is the most this item may generate before the window is consulted:
+        the bank's ``max_new_tokens`` for every bank but ifeval, and that item's own
+        cascade budget for ifeval. It defaults to ``config.max_new_tokens`` so a caller
+        with no per-item policy needs to know nothing about one.
+
+        The order the ceiling and the window are applied in is the question a reader will
+        ask, and it is fixed here: the ceiling is chosen first and the window can only
+        lower it. That way the clamp never *grants* headroom the calibration did not
+        have -- a 16k-context model still stops at the bank's cap -- and only a
+        small-context one goes below it.
+        """
+        cap = config.max_new_tokens if ceiling is None else ceiling
         configured = config.num_fewshot
         render = lambda shots: format_generative_prompt(  # noqa: E731
             item, config, eos_token=self.eos_token, num_fewshot=shots
@@ -1375,8 +1994,8 @@ class PromptFitter:
             tokens = self._measure(prompt)
             if tokens is None:
                 return PromptFit(prompt, shots, configured)
-            if tokens + MIN_GEN_TOKENS <= self.context_length:
-                budget = self._budget(tokens, config)
+            budget = fit_budget_to_context(cap, tokens, self.context_length)
+            if budget is not None:
                 return PromptFit(
                     prompt,
                     shots,
@@ -1384,49 +2003,23 @@ class PromptFitter:
                     prompt_tokens=tokens,
                     gen_budget=budget,
                     context_length=self.context_length,
-                    clamped=budget < config.max_new_tokens,
+                    clamped=budget < cap,
                 )
+        # Nothing was sent, so the shot count used is 0 rather than the floor that was
+        # tried and refused, and every configured exemplar counts as dropped.
         return PromptFit(
             "",
-            floor,
+            0,
             configured,
             prompt_tokens=self._measure(render(floor)),
             context_length=self.context_length,
             ungradable_reason=CONTEXT_OVERFLOW_REASON,
         )
 
-    def _budget(self, prompt_tokens: int, config: GenerationConfig) -> int:
-        """Tokens to generate, given a prompt that already fits.
-
-        Two bounds, and the ORDER a reader will ask about. ``config.max_new_tokens`` is
-        applied first and is the benchmark's own cap -- 1024 for MATH, which is what
-        lm-eval's ``leaderboard_math`` ran and therefore the ceiling the calibration
-        population generated behind. The context clamp is applied second and can only
-        lower it. Whichever is smaller wins, so the clamp never *grants* headroom the
-        calibration did not have: a large-context model still stops at 1024, and only a
-        small-context one goes below. Reversing the order would let a 16k model generate
-        15k tokens on a bank calibrated at 1024.
-
-        The floor keeps this off Research's bug. ``max(MIN_GEN_TOKENS, ...)`` means a
-        prompt that fits always gets a usable budget rather than the 1 token that
-        ``context - nominal_budget`` collapses to whenever the window is the smaller of
-        the two. The final ``min(..., context - 1)`` bounds the pathological case where
-        the floor itself exceeds the window.
-
-        Both of those are unreachable from :meth:`fit`, which only accepts a prompt once
-        ``tokens + MIN_GEN_TOKENS`` fits and therefore never arrives here with less room
-        than the floor. They are kept because this method's contract should hold for any
-        caller, not only for the ladder's arithmetic, and the tests exercise them here
-        rather than through ``fit`` for that reason.
-        """
-        room = self.context_length - prompt_tokens  # type: ignore[operator]
-        budget = min(config.max_new_tokens, max(MIN_GEN_TOKENS, room))
-        return max(1, min(budget, self.context_length - 1))  # type: ignore[operator]
-
     def _measure(self, prompt: str) -> int | None:
         """Prompt length in tokens, or ``None`` if this tokenizer cannot say."""
         try:
-            return len(self.tokenizer(prompt, add_special_tokens=False)["input_ids"])
+            return self.count_tokens(prompt)
         except Exception:  # noqa: BLE001 - a window we cannot measure is one we cannot use
             log.warning(
                 "Could not tokenize a prompt to measure it against the %s-token context "
@@ -1438,21 +2031,29 @@ class PromptFitter:
 
 
 def context_length_of(model: Any) -> int | None:
-    """The model's context window, or ``None`` with a warning saying the clamp is off."""
-    length = getattr(getattr(model, "config", None), CONTEXT_LENGTH_ATTR, None)
-    try:
-        length = int(length)  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        log.warning(
-            "This checkpoint's config declares no %s, so the context clamp is disabled "
-            "for this run: the generation budget stays at the benchmark's cap and a "
-            "prompt longer than the window will be truncated by the model rather than "
-            "fitted by dropping whole exemplars. Every item is still bounded by "
-            "max_new_tokens.",
-            CONTEXT_LENGTH_ATTR,
-        )
-        return None
-    return length if length > 0 else None
+    """The model's context window, or ``None`` with a warning saying the clamp is off.
+
+    Read from the loaded model's own config rather than configured, because it is a fact
+    about the weights: a benchmark cannot know it and a hardcoded value would be wrong
+    for the next checkpoint. ``None`` rather than a fallback guess, for the reason
+    :func:`fit_budget_to_context` gives -- a wrong window is worse than no window,
+    because it would either refuse items that would have generated fine or cap budgets
+    for no reason.
+    """
+    config = getattr(model, "config", None)
+    for attr in CONTEXT_LENGTH_ATTRS:
+        length = getattr(config, attr, None)
+        if isinstance(length, int) and not isinstance(length, bool) and length > 0:
+            return length
+    log.warning(
+        "This checkpoint's config declares none of %s, so the context clamp is disabled "
+        "for this run: the generation budget stays at the benchmark's cap and a "
+        "prompt longer than the window will be truncated by the model rather than "
+        "fitted by dropping whole exemplars. Every item is still bounded by "
+        "max_new_tokens.",
+        ", ".join(CONTEXT_LENGTH_ATTRS),
+    )
+    return None
 
 
 def truncate_at_stop(text: str, stop_sequences: Sequence[str]) -> str:
@@ -1476,6 +2077,80 @@ def truncate_at_stop(text: str, stop_sequences: Sequence[str]) -> str:
         if found != -1:
             cut = min(cut, found)
     return text[:cut]
+
+
+def eos_stop_sequences(
+    item: BenchmarkItem, config: GenerationConfig, eos_text: str | None
+) -> tuple[str, ...]:
+    """``config.stop_sequences`` plus the checkpoint's own end token, where that is safe.
+
+    The one runtime stop list, for every generative bank. A configured list -- ifeval's
+    empty one, MATH's ``["Problem:", "problem:"]`` -- is what the benchmark names, is what
+    the manifest records and is what ``convention.check_runtime_convention`` compares
+    against. The end token appended here is the *checkpoint's*, resolved from the live
+    tokenizer, so it belongs to the list the running scorer uses and is written down
+    nowhere: a literal in ``config.yaml`` would be one model's answer recorded as the
+    benchmark's, and ordinary text to every other model. With no tokenizer or no EOS
+    defined the list is returned unchanged.
+
+    **What this buys, and what it does not.** The two mechanisms are not symmetric and it
+    matters which is which. :func:`ifeval_token_budget` and ``generate(eos_token_id=...)``
+    are the compute bounds: they decide how many tokens are actually generated. This buys
+    no compute at all -- :func:`truncate_at_stop` runs over an already-finished completion,
+    so every token it removes has been paid for -- and exists for one narrow correctness
+    reason. A model can emit the literal characters of its end marker as *ordinary
+    vocabulary tokens* rather than as the special token; those are not special, so
+    ``skip_special_tokens=True`` in :meth:`_HFCompleter.__call__` does not remove them, and
+    they land inside the graded span. Nor can this entry ever fire on an end token the
+    model genuinely emits, for the same reason: the decode deletes it first.
+
+    The leak is invited by two independent things, and the entry is added for both. On
+    MATH the exemplars are closed with the token, so a model shown it four times can learn
+    to write its characters; there the damage is *inflation* rather than corruption, since
+    :class:`MathLatexEquivalence` scores ``any(is_equiv(candidate, gold))`` over every
+    candidate the extractor finds and a run-on can only add candidates -- turning wrong
+    answers right and never right answers wrong, which reads as ability the checkpoint
+    does not have on a scale where theta is meant to be comparable.
+
+    On ifeval nothing demonstrates the token and the damage runs the other way, because 93
+    of the 511 items carry a constraint anchored at the *end* of the response and every one
+    of them is decided by what the last characters are. ``startend:end_checker`` (26 items)
+    does ``value.strip().strip('"').lower().endswith(phrase)``; ``startend:quotation`` (40)
+    requires ``value.strip()`` to begin and end with ``"``; ``detectable_format:json_format``
+    (17) and ``detectable_format:constrained_response`` (10) both parse the whole span. A
+    trailing ``<|endoftext|>`` fails all four on a response that satisfied them, and
+    cutting there restores the ending -- ``end_checker`` and ``quotation`` strip
+    whitespace, so the cut leaves nothing behind that they object to.
+
+    **Why it is conditional.** It is suppressed for the 24 items declaring
+    :data:`TWO_RESPONSES_ID`, and those are the reason this is not a blanket stop.
+    ``TwoResponsesChecker`` splits the response on ``******`` and requires exactly two
+    non-empty parts. A model that leaks its end marker *between* the two responses -- the
+    natural thing for a chat-tuned checkpoint treating each as a turn -- would have the
+    second deleted by a cut at the first occurrence, leaving one part and failing the
+    constraint. Suppressing costs nothing measurable: the untruncated text passes
+    ``TwoResponsesChecker`` with the leaked literal sitting harmlessly inside one of the
+    two parts, and **0 of those 24 items carry any of the four end-anchored constraints**
+    above, so nothing is given up by not cutting them.
+
+    Cutting at the last occurrence instead of the first was considered and rejected: it
+    fixes the two-responses case only when the model leaks twice, and it weakens the
+    end-anchored case, which is the one this exists for.
+
+    The residual, stated plainly: for an item that is *not* two-responses, a leak strictly
+    before content that would have satisfied a constraint loses that content. That is
+    accepted because the ordering it needs -- end marker, then more prose, then a correct
+    ending -- is the rarer pattern, while a marker emitted after the answer and followed
+    by a hallucinated next turn is the common one, and is exactly what a first-occurrence
+    cut is right for.
+    """
+    if not eos_text:
+        return tuple(config.stop_sequences)
+    if TWO_RESPONSES_ID in set(item.metadata.get("instruction_id_list") or ()):
+        return tuple(config.stop_sequences)
+    if eos_text in config.stop_sequences:
+        return tuple(config.stop_sequences)
+    return (*config.stop_sequences, eos_text)
 
 
 def apply_grader(grader: Grader, item: BenchmarkItem, completion: str) -> Verdict:
@@ -1523,25 +2198,34 @@ def grade_completion(
     item: BenchmarkItem,
     completion: str,
     config: GenerationConfig,
+    eos_text: str | None = None,
     *,
-    eos_token: str | None = None,
+    ungradable_reason: str | None = None,
+    budget: Mapping[str, Any] | None = None,
     fit: PromptFit | None = None,
 ) -> ItemResponse:
     """Turn one raw completion into a graded :class:`ItemResponse`.
 
-    ``fit`` is the :class:`PromptFitter` outcome for this item, when one ran. It is what
-    makes ``num_fewshot`` in the response the count actually used rather than the count
-    configured, and it adds a ``context_fit`` block whenever the two differ or the budget
-    was clamped. Those two facts have to be per item, not per session: a window that
-    forces 2 exemplars on a long stem and allows 4 on a short one mixes prompts inside one
-    ability estimate, and a single session-level field would average that away.
-
-    ``eos_token`` extends the stop list by the checkpoint's own end-of-text string; see
-    :func:`effective_stop_sequences` for what that does and, more importantly, what it
-    does not. ``None`` grades against ``config.stop_sequences`` alone.
-
     Pure text in, response out, with no model involved, which is what makes the
     grading half of this module testable without a GPU.
+
+    ``eos_text`` is the running checkpoint's end-token text, when the completer published
+    one, and reaches the graded span only through :func:`eos_stop_sequences` -- see there
+    for what that does and, more importantly, what it does not. It is optional so that
+    every existing caller -- and the whole of the offline grading path -- keeps working
+    with no end token at all, which is also the state a run is in when the tokenizer
+    defines none. It is the raw string rather than the exemplar suffix
+    :func:`exemplar_eos_token` derives from it: whether a bank closes its exemplars with
+    the token decides what the *prompt* says, and a leaked literal has to be cut out of
+    the graded span either way.
+
+    ``fit`` is the :class:`PromptFitter` outcome for this item, when one ran. It is what
+    makes ``num_fewshot`` in the response the count actually used rather than the count
+    configured, and it adds a ``context_fit`` block whenever the two differ, the budget
+    was clamped, or the item was refused. Those facts have to be per item, not per
+    session: a window that forces 2 exemplars on a long stem and allows 4 on a short one
+    mixes prompts inside one ability estimate, and a single session-level field would
+    average that away.
 
     ``chosen_index`` is :data:`NO_CHOICE_INDEX` and ``choice_logprobs`` is empty
     because a generative item has no choice set; a fabricated index would make a
@@ -1556,10 +2240,23 @@ def grade_completion(
     absence and its being False have to mean different things: a reader auditing a
     suspicious theta needs to distinguish a run where nothing was ungradable from one
     produced before the harness could tell.
+
+    ``ungradable_reason`` is for an item that was never sent to the model, which today means
+    one the context clamp refused -- see :data:`CONTEXT_OVERFLOW_REASON`. The grader is then
+    skipped rather than run over an empty string: several of the IFEval verifiers *pass* on
+    empty input -- ``forbidden_words`` and ``no_comma`` are satisfied by having no text at
+    all -- so grading a non-attempt would invent a partial score for it. It routes through
+    this function anyway so the response carries the same metadata shape as every other,
+    which is what lets the report's ``ungradable`` block list it beside the other kind.
     """
     grader = get_answer_grader(str(item.metadata.get("answer_type", DEFAULT_ANSWER_TYPE)))
-    text = truncate_at_stop(completion, effective_stop_sequences(config, eos_token))
-    verdict = apply_grader(grader, item, text)
+    text = truncate_at_stop(completion, eos_stop_sequences(item, config, eos_text))
+    if ungradable_reason is not None:
+        verdict = Verdict(
+            correct=False, extracted=None, gold=None, ungradable_reason=ungradable_reason
+        )
+    else:
+        verdict = apply_grader(grader, item, text)
     metadata: dict[str, Any] = {
         "modality": "generative",
         "grader": grader.name,
@@ -1571,7 +2268,11 @@ def grade_completion(
     }
     if verdict.ungradable_reason is not None:
         metadata[UNGRADABLE_REASON_KEY] = verdict.ungradable_reason
-    if fit is not None and (fit.dropped_exemplars or fit.clamped):
+    # Omitted when the clamp did nothing, so nine banks' reports keep their shape, and
+    # written whenever it did something -- dropped an exemplar, lowered the budget, or
+    # refused the item outright, which is the case whose figures the stable
+    # CONTEXT_OVERFLOW_REASON deliberately does not carry.
+    if fit is not None and (fit.dropped_exemplars or fit.clamped or fit.ungradable_reason):
         metadata["context_fit"] = {
             "context_length": fit.context_length,
             "prompt_tokens": fit.prompt_tokens,
@@ -1582,6 +2283,11 @@ def grade_completion(
         }
     if verdict.detail:
         metadata["grader_detail"] = dict(verdict.detail)
+    # Omitted rather than written null for a caller that has no budget to report -- the
+    # offline grading path, and every MCQ-shaped test lambda -- so a response's having the
+    # key means a real budget decision was made for it.
+    if budget is not None:
+        metadata[BUDGET_KEY] = dict(budget)
     return ItemResponse(
         item_id=item.item_id,
         chosen_index=NO_CHOICE_INDEX,
@@ -1591,6 +2297,26 @@ def grade_completion(
     )
 
 
+#: Attribute a completer sets to declare that it honours a per-item token budget.
+#:
+#: The completer protocol is ``Callable[[str], str]`` and stays that way. A per-item
+#: budget needs a second argument, and the naive extension -- give
+#: :meth:`_HFCompleter.__call__` an optional second parameter and always pass it -- does
+#: not work, because the incompatibility is on the *caller's* side: a one-argument
+#: callable is the norm here, not a legacy case. ``GENERATIVE_BACKENDS`` registers one
+#: completer, and every other completer in the tree is a one-argument function
+#: (``lambda _: ""`` in test_generative_grading, test_grading_dispatch,
+#: test_symbolic_grading and test_runtime_guards), which a two-argument call breaks with
+#: a ``TypeError`` raised from inside the scorer.
+#:
+#: So the extension is opt-in and explicit. A completer that can take a budget says so
+#: with this attribute; :class:`GenerativeScorer` reads it once at construction and
+#: calls the one-argument form otherwise. Signature introspection and a ``TypeError``
+#: retry were both rejected: the first is implicit, and the second would swallow a
+#: genuine ``TypeError`` from inside a model backend and silently re-run generation.
+BUDGET_AWARE_ATTR = "accepts_token_budget"
+
+
 class GenerativeScorer:
     """A :class:`ScoringModel` that samples one completion per item and grades it.
 
@@ -1598,21 +2324,37 @@ class GenerativeScorer:
     what lets the grading path be exercised offline, and it makes a different backend
     (vLLM, a hosted endpoint) a new completer rather than a new scorer.
 
-    ``eos_token`` is the one checkpoint-specific value that reaches this far up. It is a
-    constructor argument rather than a :class:`GenerationConfig` field on purpose: that
-    config is the benchmark's description of itself, it is what
-    ``convention.runtime_convention`` reads and what the manifest guard compares against,
-    and a checkpoint's end-of-text string has no business in either. The backend resolves
-    it from the tokenizer it just loaded and passes it here; ``None`` -- no tokenizer, no
-    end-of-text token, or a bank that does not close its exemplars -- scores exactly as
-    this class scored before the argument existed.
+    A completer that declares :data:`BUDGET_AWARE_ATTR` is instead called
+    ``(prompt, max_new_tokens)`` with the budget derived for that item. The item is in
+    scope here and nowhere below, which is why the budget is computed at this level and
+    passed down rather than looked up by the completer: the completer's job stays "turn
+    this prompt into that much text", with no benchmark metadata in it.
 
-    ``fitter`` is the other one, and it is optional for the same reason. With it, each
-    prompt is measured against the checkpoint's context window and the generation budget
-    sized to what is left; without it, every prompt is rendered at the configured shot
-    count and every completion gets ``config.max_new_tokens``. The backend supplies one
-    because that is where the tokenizer is; the offline tests do not, and exercise the
-    unfitted path on purpose.
+    Everything checkpoint-specific flows the other way and is published by the completer
+    rather than reached for here, because the tokenizer is the backend's and a scorer that
+    imported one would make a second backend a change to the scorer. None of it belongs in
+    :class:`GenerationConfig`, which is the benchmark's description of itself and is what
+    ``convention.runtime_convention`` reads and the manifest guard compares against.
+
+    - :data:`EOS_TEXT_ATTR` is the text of the checkpoint's end token, kept as
+      ``eos_text`` and handed to grading, where :func:`eos_stop_sequences` decides per
+      item whether to cut on it. ``eos_token`` is the same string once
+      :func:`exemplar_eos_token` has decided whether *this bank* closes its exemplars
+      with it, which is a different question with a different answer per bank, and is
+      what reaches prompt rendering.
+    - :data:`TOKEN_COUNTER_ATTR` is its tokenizer's token count, which does two jobs: it
+      converts declared word counts for :func:`item_token_budget`, and it measures
+      rendered prompts for the :class:`PromptFitter` this builds when the completer also
+      publishes :data:`CONTEXT_WINDOW_ATTR`. Without it neither runs.
+
+    The three constructor arguments are for what a completer cannot publish about itself.
+    ``eos_token`` overrides the published text with one the backend has verified round
+    trips (see :func:`resolve_eos_token`), because teaching a spelling the tokenizer reads
+    as ordinary characters is worse than teaching nothing. ``fitter`` replaces the one
+    built here, for a caller that wants a window the completer does not publish.
+    ``checkpoint_facts`` is what :meth:`runtime_facts` reports and nothing branches on.
+    All three default to the degraded state, so the offline tests -- which pass a bare
+    lambda -- score exactly as this class scored before any of it existed.
     """
 
     def __init__(
@@ -1626,13 +2368,108 @@ class GenerativeScorer:
     ) -> None:
         self.complete = complete
         self.config = config
-        self.eos_token = exemplar_eos_token(config, eos_token)
-        self.fitter = fitter
         self.checkpoint_facts = dict(checkpoint_facts or {})
+        self._budget_aware = bool(getattr(complete, BUDGET_AWARE_ATTR, False))
+        published_eos = getattr(complete, EOS_TEXT_ATTR, None)
+        self.eos_text = str(published_eos) if published_eos else None
+        self.eos_token = exemplar_eos_token(config, eos_token or self.eos_text)
+        counter = getattr(complete, TOKEN_COUNTER_ATTR, None)
+        self._count_tokens: Callable[[str], int] | None = (
+            counter if callable(counter) else None
+        )
+        tokenizer_id = getattr(complete, TOKENIZER_ID_ATTR, None)
+        self._tokenizer_id = str(tokenizer_id) if tokenizer_id else None
+        context = getattr(complete, CONTEXT_WINDOW_ATTR, None)
+        self._context_window = (
+            int(context) if isinstance(context, int) and context > 0 else None
+        )
+        if self._context_window is None and self._count_tokens is not None:
+            log.info(
+                "The completer publishes no usable %s, so per-item budgets will not be "
+                "clamped to a context window. Budgets are still bounded by "
+                "max_new_tokens=%d; this only means the harness cannot tell whether a "
+                "prompt plus its continuation fits the checkpoint's window.",
+                CONTEXT_WINDOW_ATTR,
+                config.max_new_tokens,
+            )
+        self.fitter = fitter if fitter is not None else self._published_fitter()
         self._fits: list[PromptFit] = []
+        # Running totals over every item text this scorer has measured, for the reason
+        # given in _tokens_per_word.
+        self._corpus_tokens = 0
+        self._corpus_words = 0
+
+    def _published_fitter(self) -> PromptFitter | None:
+        """A fitter over what the completer published, or ``None`` if it published no counter.
+
+        Built here rather than by each backend so there is one place that turns a
+        completer's published tokenizer and window into a fitted prompt. A completer that
+        publishes a counter but no window still gets one: the ladder is then inert and the
+        fitter only renders, which keeps a single code path through :meth:`_fit` instead of
+        a second unfitted one.
+        """
+        if self._count_tokens is None:
+            return None
+        return PromptFitter(
+            count_tokens=self._count_tokens,
+            context_length=self._context_window,
+            eos_token=self.eos_token,
+        )
+
+    def _tokens_per_word(self, text: str) -> float | None:
+        """Words-to-tokens for the live tokenizer, or ``None`` if there is not one.
+
+        Measured on item text and accumulated across the session, then used as
+        ``max(this item's ratio, the running aggregate)``. Both halves of that are load
+        bearing and the naive version is a truncation bug:
+
+        * **Not the single item's ratio alone.** A prompt is a small sample and a short one
+          is a bad estimator. Measured over this bank, per-item prompt ratios run 1.08 to
+          2.10 against a corpus aggregate of 1.285 on SmolLM2, and taking each item's own
+          ratio under-budgets 77 of them relative to the aggregate, by up to 185 tokens.
+          The worst, ef9aa240cb4c0265, declares 750 words and would get 860 tokens where
+          the corpus rate asks 1014 -- a compliant answer cut at about 670 words and graded
+          as failing a length constraint it met. The same check across seven tokenizers put
+          the count between 64 and 97 items, so it is not a quirk of one.
+        * **Not the aggregate alone.** ``run_cat`` administers one item per call, so the
+          corpus is a single prompt on the first item and grows from there. Taking the
+          maximum means an item whose own text is unusually dense is budgeted at its own
+          rate rather than at a session average that has not seen it yet, and the estimate
+          only improves as the session runs.
+
+        The maximum is the conservative direction on both counts, which is the whole
+        criterion here: too small is a wrong grade, too large is decode time, and the
+        1280 ceiling bounds how much decode time being wrong can cost.
+
+        The residual, which cannot be measured away: this is fitted to prompt text, and
+        IFEval ships no reference answer to fit to -- so it assumes a response tokenizes at
+        about the rate a request does. :data:`DETECTION_HEADROOM_TOKENS` absorbs a little of
+        that, and the ceiling bounds the rest.
+        """
+        if self._count_tokens is None:
+            return None
+        words = count_words(text)
+        if not words:
+            return None
+        tokens = self._count_tokens(text)
+        self._corpus_tokens += tokens
+        self._corpus_words += words
+        return max(tokens / words, self._corpus_tokens / self._corpus_words)
 
     def score_items(self, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
-        """Grade each item by sampling a greedy completion and extracting its answer."""
+        """Grade each item by sampling a greedy completion and extracting its answer.
+
+        Three stages per item, each of which can only lower what the one before settled
+        on, so which of them wins is simply whichever is smallest:
+
+        1. :func:`item_token_budget` derives the item's own ceiling from what it declares,
+           for the one bank that declares anything, and hands every other item the bank's
+           flat ``max_new_tokens``.
+        2. :meth:`PromptFitter.fit` renders the prompt against that ceiling, dropping whole
+           exemplars while the context window will not hold it, and lowers the budget to
+           what the window leaves.
+        3. If nothing fits, the item is refused rather than sent.
+        """
         responses: list[ItemResponse] = []
         for item in items:
             if item.choices:
@@ -1642,19 +2479,42 @@ class GenerativeScorer:
                     f"text for it would ignore the choice set and grade against a gold "
                     f"answer it does not have. Grade it with common.inference instead."
                 )
-            fit = self._fit(item)
+            # Measured on item.question rather than on the rendered prompt: the ratio
+            # wanted is the one for prose, and a rendered prompt carries fewshot
+            # exemplars and chat scaffolding that tokenize at their own rate.
+            ceiling = item_token_budget(
+                item,
+                self.config,
+                tokens_per_word=self._tokens_per_word(item.question),
+                count_tokens=self._count_tokens,
+            )
+            fit = self._fit(item, ceiling)
             self._fits.append(fit)
             if fit.ungradable_reason is not None:
-                responses.append(self._overflowed(item, fit))
+                responses.append(self._refuse_for_context(item, fit, ceiling))
                 continue
+            budget = ceiling if fit.gen_budget is None else fit.gen_budget
+            # Provenance, not value. An item the cascade deliberately left at the ceiling --
+            # a fragile or non-English one -- is still a computed budget, and labelling it
+            # "flat" would make it indistinguishable from the degraded mode, which is the
+            # one distinction this record exists to draw. How many items ended up at the
+            # ceiling is recoverable from the recorded ceiling and the token counts.
+            source = BUDGET_FROM_CASCADE if self.cascade_active else BUDGET_FROM_CEILING
+            if fit.clamped:
+                source = BUDGET_FROM_CONTEXT
             responses.append(
                 grade_completion(
-                    item, self._complete(fit), self.config, eos_token=self.eos_token, fit=fit
+                    item,
+                    self._complete(fit.prompt, budget),
+                    self.config,
+                    self.eos_text,
+                    fit=fit,
+                    budget=self._budget_record(budget, source),
                 )
             )
         return responses
 
-    def _fit(self, item: BenchmarkItem) -> PromptFit:
+    def _fit(self, item: BenchmarkItem, ceiling: int) -> PromptFit:
         """This item's prompt and budget, fitted to the context window if one is known."""
         if self.fitter is None:
             return PromptFit(
@@ -1662,62 +2522,66 @@ class GenerativeScorer:
                 self.config.num_fewshot,
                 self.config.num_fewshot,
             )
-        return self.fitter.fit(item, self.config)
+        return self.fitter.fit(item, self.config, ceiling=ceiling)
 
-    def _complete(self, fit: PromptFit) -> str:
-        """Sample, passing the fitted budget only when there is one.
+    def _complete(self, prompt: str, budget: int) -> str:
+        """Sample, passing the budget only to a completer that declared it takes one.
 
-        The one-argument call is kept for the many injected completers that are a plain
-        ``lambda prompt: ...``; widening their signature to carry a budget they would
-        ignore would be a change to every test that builds one.
+        Gated on :data:`BUDGET_AWARE_ATTR` rather than on whether a budget was derived,
+        because a budget is always derived now and the many injected completers that are a
+        plain ``lambda prompt: ...`` would break on a second argument.
         """
-        if fit.gen_budget is None:
-            return self.complete(fit.prompt)
-        return self.complete(fit.prompt, fit.gen_budget)
+        if not self._budget_aware:
+            return self.complete(prompt)
+        return self.complete(prompt, budget)
 
-    def _overflowed(self, item: BenchmarkItem, fit: PromptFit) -> ItemResponse:
-        """Record an item whose prompt will not fit at one exemplar, without sampling it.
+    def _refuse_for_context(
+        self, item: BenchmarkItem, fit: PromptFit, ceiling: int
+    ) -> ItemResponse:
+        """Record an item the window cannot hold, without sampling it.
 
-        Nothing is generated, because there is no prompt to generate from that would still
-        teach the answer format. The item is scored 0 and marked ungradable, which is what
+        Nothing is generated. Left-truncating the prompt to make it fit is what Research's
+        pipeline does and is silently destructive for both banks here: on ifeval the
+        instruction being graded *is* the prompt, and the verifiers read
+        ``metadata['kwargs']`` rather than the prompt, so cutting its front does not soften
+        what is checked -- it grades a model on a constraint it was never shown. On MATH
+        the front of the prompt is the exemplar block that teaches the two answer forms the
+        grader reads, so cutting into it leaves a correctly-sized prompt the grader can
+        find nothing in.
+
+        Either way the item is scored 0 and marked ungradable, which is what
         ``style._ungradable_block`` counts and reports with its ids and reasons -- so the
-        cost lands in the report as a fabricated zero rather than in theta as mathematics
-        the checkpoint failed.
+        cost lands in the report as a fabricated zero rather than in theta as the
+        checkpoint having failed. It routes through :func:`grade_completion` so the
+        response carries the same metadata shape as every other one, and the grader is
+        skipped rather than run over the empty string.
         """
         log.warning(
-            "Item %s needs more than the %s-token context window for even one few-shot "
-            "exemplar plus %d tokens to answer in (%s-token prompt), so it was scored 0 "
-            "and marked %s rather than sent 0-shot. A 0-shot prompt teaches neither the "
-            "boxed form nor the 'Final Answer:' line the grader reads, so that zero would "
-            "have read as weak mathematics.",
+            "Item %s was not sent: its prompt is %s tokens against a %s-token context "
+            "window, which leaves too little room to generate an answer worth grading at "
+            "the %d tokens this item was budgeted%s. Truncating the prompt to fit would "
+            "have deleted part of what the grader depends on, so the item was scored 0 and "
+            "marked ungradable instead. Score a checkpoint with a larger context window.",
             item.item_id,
-            fit.context_length,
-            MIN_GEN_TOKENS,
             fit.prompt_tokens,
-            CONTEXT_OVERFLOW_REASON,
+            fit.context_length,
+            ceiling,
+            (
+                " -- and that is with the exemplar ladder already down to its one-shot "
+                "floor, below which the prompt would teach the grader's answer format to "
+                "nobody"
+                if fit.configured_fewshot
+                else ""
+            ),
         )
-        return ItemResponse(
-            item_id=item.item_id,
-            chosen_index=NO_CHOICE_INDEX,
-            correct=False,
-            choice_logprobs=(),
-            metadata={
-                "modality": "generative",
-                "completion": "",
-                "extracted_answer": None,
-                "gold_answer": str(item.metadata.get("gold_answer", "")),
-                "num_fewshot": 0,
-                UNGRADABLE_KEY: True,
-                UNGRADABLE_REASON_KEY: CONTEXT_OVERFLOW_REASON,
-                "context_fit": {
-                    "context_length": fit.context_length,
-                    "prompt_tokens": fit.prompt_tokens,
-                    "gen_budget": None,
-                    "max_new_tokens_configured": self.config.max_new_tokens,
-                    "num_fewshot_configured": fit.configured_fewshot,
-                    "exemplars_dropped": fit.configured_fewshot,
-                },
-            },
+        return grade_completion(
+            item,
+            "",
+            self.config,
+            self.eos_text,
+            ungradable_reason=fit.ungradable_reason,
+            fit=fit,
+            budget=self._budget_record(0, BUDGET_FROM_CONTEXT),
         )
 
     def runtime_facts(self) -> dict[str, Any]:
@@ -1758,9 +2622,46 @@ class GenerativeScorer:
             )
         return facts
 
+    @property
+    def cascade_active(self) -> bool:
+        """Whether a live tokenizer was resolved, so per-item budgets are computed.
+
+        ``False`` means every item takes the flat ``max_new_tokens``. That is a legitimate
+        mode to exercise offline and an illegitimate one to reach in a real run, which is
+        why :func:`load_generative_model` refuses it at the point a checkpoint is loaded
+        rather than here. Keeping the refusal there and the capability flag here is what
+        lets the tests drive the degraded path deliberately without an ``is_testing`` flag.
+        """
+        return self._count_tokens is not None
+
+    def _probe_token_counter(self) -> int:
+        """Call the published token counter once, so a broken one fails at load time.
+
+        Used by :func:`require_live_tokenizer`. The probe text is ordinary prose because
+        that is what the counter is asked for in earnest; a counter that cannot handle it is
+        not one this can budget with.
+        """
+        assert self._count_tokens is not None
+        return self._count_tokens("a probe of ordinary English prose")
+
+    def _budget_record(self, budget: int, source: str) -> dict[str, Any]:
+        """The per-item budget provenance recorded under :data:`BUDGET_KEY`."""
+        return {
+            "tokens": budget,
+            "source": source,
+            "cascade_active": self.cascade_active,
+            "ceiling": self.config.max_new_tokens,
+            "context_window": self._context_window,
+            "tokenizer": self._tokenizer_id,
+        }
+
 
 class _HFCompleter:
     """Greedy ``transformers`` generation, one prompt at a time."""
+
+    #: See :data:`BUDGET_AWARE_ATTR`. Declared on the class so the scorer can read it off
+    #: the instance without constructing anything.
+    accepts_token_budget = True
 
     def __init__(self, checkpoint_dir: Path, config: GenerationConfig) -> None:
         import torch
@@ -1807,6 +2708,16 @@ class _HFCompleter:
         shape: no end-of-text in the exemplars, no ``eos_token_id`` on ``generate``, no
         context clamp, every item burning its whole budget, and a report that looks
         entirely normal.
+
+        One of three refusals about the tokenizer, and they are layers rather than copies
+        of each other -- each catches a fault the other two cannot see. This one is *the
+        tokenizer would not load*, and only this backend can raise it. Beside it,
+        :meth:`_require_end_of_text` is *it loaded and declares no end-of-text id*, which
+        is a different checkpoint defect and produces a usable tokenizer.
+        :func:`require_live_tokenizer` is *the scorer did not end up with a working token
+        counter*, which on this path is unreachable through either of the first two and
+        exists to catch the plumbing between a backend and the scorer -- a fault no
+        completer can detect about itself.
         """
         try:
             return auto_tokenizer.from_pretrained(str(checkpoint_dir))
@@ -1907,9 +2818,10 @@ class _HFCompleter:
     def __call__(self, prompt: str, max_new_tokens: int | None = None) -> str:
         """Return the continuation of ``prompt``, with the prompt echo removed.
 
-        ``max_new_tokens`` overrides the config's cap for this one call and is what
-        :class:`PromptFitter` uses to hand back the room the prompt left. ``None`` means
-        the benchmark's cap, which is the only bound when no context length is known.
+        ``max_new_tokens`` is the per-item budget :class:`GenerativeScorer` derives -- the
+        item's own cascade ceiling, lowered to whatever room :class:`PromptFitter` found
+        the prompt left in the window. It defaults to the configured flat value so this
+        completer is still usable as a bare ``prompt -> completion`` callable.
 
         ``do_sample=False`` is how ``transformers`` spells temperature 0; passing
         ``temperature=0`` to ``generate`` is rejected by the library.
@@ -1973,6 +2885,49 @@ class _HFCompleter:
         pad = getattr(self.tokenizer, "pad_token_id", None)
         return pad if pad is not None else getattr(self.tokenizer, "eos_token_id", None)
 
+    @property
+    def eos_text(self) -> str | None:
+        """The literal text of this checkpoint's end token, or ``None`` if it has none.
+
+        See :data:`EOS_TEXT_ATTR` for what reads this and :func:`eos_stop_sequences` for
+        what it is used for. Deliberately the tokenizer's label as written, and NOT the
+        round-tripped :attr:`eos_token` that :func:`resolve_eos_token` verifies: the two
+        answer different questions. Closing an exemplar with a string the tokenizer reads
+        as ordinary characters would teach the model to type them, so that side demands the
+        verified spelling. Cutting a leaked literal out of the graded span wants the label
+        exactly because the model typed it as ordinary characters, so an unverified
+        spelling is the case that most needs cutting.
+        """
+        token = getattr(self.tokenizer, "eos_token", None)
+        return str(token) if token else None
+
+    def count_tokens(self, text: str) -> int:
+        """Tokens ``text`` costs in this checkpoint's tokenizer.
+
+        See :data:`TOKEN_COUNTER_ATTR`. ``add_special_tokens=False`` because every caller
+        is measuring the cost of *content* -- a words-to-tokens rate, the length of a
+        prompt an item obliges the model to echo, and the length of a rendered prompt
+        against the window. A BOS token counted into any of them would inflate the rate on
+        short text and is not part of what the model has to produce.
+        """
+        return len(self.tokenizer(text, add_special_tokens=False)["input_ids"])
+
+    @property
+    def tokenizer_id(self) -> str | None:
+        """Which tokenizer this resolved, for the report. See :data:`TOKENIZER_ID_ATTR`."""
+        name = getattr(self.tokenizer, "name_or_path", None)
+        return str(name) if name else None
+
+    @property
+    def max_context_tokens(self) -> int | None:
+        """This checkpoint's context window, or ``None`` if its config does not say.
+
+        See :data:`CONTEXT_WINDOW_ATTR`. Resolved once at load by :func:`context_length_of`
+        and republished here under the name the scorer reads, so there is one reader of the
+        model config and one warning when it says nothing.
+        """
+        return self.context_length
+
     def checkpoint_facts(self) -> dict[str, Any]:
         """What was resolved off this checkpoint, for the report's ``generation_runtime``.
 
@@ -2003,24 +2958,22 @@ class _HFCompleter:
 def _load_hf(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
     """Grade a converted HF checkpoint by generating from it with ``transformers``.
 
-    A function rather than the lambda this was, because there are now three things to hand
-    from the completer to the scorer, all read off the checkpoint the completer just
-    loaded: the end-of-text token, the tokenizer that measures a prompt, and the context
-    window to measure it against. This is the only place both objects exist, and it is
-    upstream of every prompt, so it is where run-time-resolved values get resolved once.
-    The completer keeps the end-of-text *id*, which is what stops generation; the scorer
-    takes the *text*, which closes the exemplars and guards the graded span.
+    A function rather than the lambda this was, because two things now have to be handed
+    across explicitly. The rest -- the end-token text, the tokenizer that measures a
+    prompt, the context window to measure it against -- the completer publishes as
+    attributes and :class:`GenerativeScorer` reads for itself, so a second backend
+    supplies them the same way rather than needing a second loader that knows the order.
+
+    What cannot be published is the *verified* end-of-text spelling, which is
+    :func:`resolve_eos_token`'s answer rather than the tokenizer's label, and the
+    checkpoint facts the report carries. The completer keeps the end-of-text *id*, which
+    is what stops generation; the scorer takes the text, which closes the exemplars.
     """
     completer = _HFCompleter(checkpoint_dir, config)
     return GenerativeScorer(
         completer,
         config,
         eos_token=completer.eos_token,
-        fitter=PromptFitter(
-            tokenizer=completer.tokenizer,
-            context_length=completer.context_length,
-            eos_token=completer.eos_token,
-        ),
         checkpoint_facts=completer.checkpoint_facts(),
     )
 
@@ -2042,6 +2995,9 @@ def load_generative_model(checkpoint_dir: Path, config: GenerationConfig) -> Sco
 
     The generative counterpart of ``inference.load_scoring_model``; :mod:`.grading`
     chooses between the two by dataset modality.
+
+    This is also where a run without a usable tokenizer is refused, and the location is
+    the design rather than convenience. See :func:`require_live_tokenizer`.
     """
     try:
         backend = GENERATIVE_BACKENDS[config.checkpoint_kind]
@@ -2050,7 +3006,73 @@ def load_generative_model(checkpoint_dir: Path, config: GenerationConfig) -> Sco
             f"Unknown checkpoint_kind: {config.checkpoint_kind!r}. Registered generative "
             f"backends: {', '.join(sorted(GENERATIVE_BACKENDS))}."
         ) from None
-    return backend(checkpoint_dir, config)
+    model = backend(checkpoint_dir, config)
+    if isinstance(model, GenerativeScorer):
+        require_live_tokenizer(model, checkpoint_dir)
+    return model
+
+
+def require_live_tokenizer(scorer: GenerativeScorer, checkpoint_dir: Path) -> None:
+    """Refuse a loaded scorer that cannot count tokens.
+
+    **Why this is a refusal and not a fallback.** A real evaluation always has a tokenizer,
+    because inference is impossible without one, so a missing one is never a deployment
+    shape to accommodate. It is one of two faults: the tokenizer genuinely could not be
+    resolved -- the Hub unreachable for a checkpoint that names its tokenizer by identifier
+    and ships no files -- or it was resolved and not threaded to the code that needs it.
+    Continuing either way would hand every item the flat ``max_new_tokens`` while the report
+    looked entirely normal: a plausible theta with a healthy standard error and nothing
+    recording that the budgets were defaulted rather than computed. That is the
+    silent-wrong-answer shape this whole budget exists to remove, so it fails here instead.
+
+    **Why here and not in :meth:`GenerativeScorer.score_items`.** The guard belongs at the
+    point a checkpoint is loaded, which is exactly the boundary between a real run and an
+    offline one. Everything that grades text without a checkpoint -- the whole of the
+    prompt-building and grading test surface, which passes one-argument lambdas -- never
+    reaches here, so the degraded path stays reachable on purpose for the tests that
+    exercise it and unreachable by accident in production. No ``is_testing`` flag, which
+    would be a second thing to keep true.
+
+    Checked by *probing* rather than by testing the attribute, because a completer that
+    publishes a counter which raises is the same fault as one that publishes none, and the
+    plumbing defect this is aimed at is more likely to look like the former.
+
+    **Why this is not the same guard as** :meth:`_HFCompleter._load_tokenizer`, which also
+    refuses a missing tokenizer. That one is a backend's statement about its own
+    checkpoint: it fires when ``AutoTokenizer.from_pretrained`` raises, so on this backend
+    it fires first and this function never sees that case. This one is the loader's
+    statement about the *scorer it just built*, and the fault it exists for is the one no
+    completer can detect about itself -- a tokenizer that loaded fine and did not reach
+    the code that budgets with it, on this backend or on the next one, which may publish
+    nothing at all. Deleting either would leave a real failure silent.
+    """
+    if scorer.cascade_active:
+        try:
+            scorer._probe_token_counter()
+        except Exception as error:  # noqa: BLE001 - any failure is the same fault
+            raise RuntimeError(
+                f"The completer loaded for {checkpoint_dir} publishes a "
+                f"{TOKEN_COUNTER_ATTR!r} that raised {error!r} when called. A generative "
+                f"run needs a working tokenizer: the per-item generation budget converts "
+                f"each item's declared word counts into tokens with it, and without one "
+                f"every item would silently take the flat max_new_tokens="
+                f"{scorer.config.max_new_tokens} instead, producing a normal-looking "
+                f"report whose budgets were defaulted rather than computed. Fix the "
+                f"tokenizer plumbing rather than running degraded."
+            ) from error
+        return
+    raise RuntimeError(
+        f"The completer loaded for {checkpoint_dir} publishes no {TOKEN_COUNTER_ATTR!r}, "
+        f"so no tokenizer could be resolved for it. A generative run needs one: the "
+        f"per-item generation budget converts each item's declared word counts into tokens "
+        f"with the evaluated checkpoint's own tokenizer, and without it every item would "
+        f"silently take the flat max_new_tokens={scorer.config.max_new_tokens} -- for "
+        f"ifeval that means the whole bank at the ceiling, with nothing in the report to "
+        f"say the budgets were defaulted rather than computed. Either the tokenizer could "
+        f"not be resolved (a checkpoint naming it by Hub identifier while shipping no "
+        f"tokenizer files, with the Hub unreachable) or it was resolved and not threaded "
+        f"through to the completer. Both are faults to fix rather than to run past."
+    )
 
 
 def _load_olmo_core(checkpoint_dir: Path, config: GenerationConfig) -> ScoringModel:
