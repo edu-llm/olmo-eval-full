@@ -1,0 +1,24 @@
+{
+  "dataset": "tutoreval gold set, 100 cells (80 fail / 20 pass), stratified by primary_skill",
+  "model": "gemini-group/gemini-3-flash-preview",
+  "adapter": "generic-binary-strict",
+  "max_tokens": 4096,
+  "false_pass_rate": 0.0,
+  "false_pass_rate_weighted": 0.0,
+  "macro_f1": 0.828,
+  "mcc": 0.703,
+  "accuracy": 0.91,
+  "false_fail_rate": 0.45,
+  "test_retest_flip": 0.02,
+  "prompt_flip_worst": 0.03,
+  "unscorable": 0,
+  "qwen_baseline": null,
+  "regression_thresholds": {
+    "false_pass_rate_max": 0.05,
+    "macro_f1_min": 0.78,
+    "mcc_min": 0.65,
+    "test_retest_flip_max": 0.06,
+    "unscorable_max": 2
+  },
+  "note": "80/20 skew -> false-pass well-powered (80 gold-fails); false-fail noisy (20 gold-pass). AI-assisted gold. No local Qwen matrix, so no Qwen baseline."
+}

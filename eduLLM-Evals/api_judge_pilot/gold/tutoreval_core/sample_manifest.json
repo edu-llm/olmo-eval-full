@@ -1,0 +1,30 @@
+{
+  "benchmark": "tutoreval",
+  "seed": 20260809,
+  "population_gradable_cells": 92438,
+  "distinct_models": 52,
+  "sample_size": 100,
+  "stratify_by": "primary_skill",
+  "stratum_population": {
+    "unknown": 5068,
+    "conceptual_understanding": 76002,
+    "quantitative_procedural": 11368
+  },
+  "stratum_allocation": {
+    "unknown": 6,
+    "conceptual_understanding": 82,
+    "quantitative_procedural": 12
+  },
+  "stratum_sampled": {
+    "conceptual_understanding": 82,
+    "quantitative_procedural": 12,
+    "unknown": 6
+  },
+  "sampling": "stratified proportional (largest-remainder), simple random within stratum",
+  "inputs": {
+    "responses_dir": "Full200Run\\full200_results\\Outputs\\open\\tutoreval",
+    "rubrics": "api_judge_pilot\\gold\\tutoreval_src\\rubrics.jsonl",
+    "scenarios": "api_judge_pilot\\gold\\tutoreval_src\\scenarios.jsonl",
+    "qwen_matrix": null
+  }
+}

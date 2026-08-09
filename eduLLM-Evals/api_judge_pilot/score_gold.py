@@ -158,7 +158,7 @@ async def _amain() -> int:
     gold = {g["gold_case_id"]: g for g in _load_jsonl(args.gold) if g.get("gold_label")}
     sample = {s["gold_case_id"]: s for s in _load_jsonl(args.sample)}
     manifest = json.loads(args.sample_manifest.read_text(encoding="utf-8"))
-    pop = manifest.get("capability_population", {})
+    pop = manifest.get("capability_population") or manifest.get("stratum_population") or {}
     total_pop = sum(pop.values()) or 1
     pop_share = {k: v / total_pop for k, v in pop.items()}
     cases = [sample[cid] for cid in gold if cid in sample]
@@ -166,12 +166,21 @@ async def _amain() -> int:
     print(f"gold={len(gold)} cases={len(cases)} adapter={args.adapter} "
           f"replicates={args.replicates} variants={args.variants}")
 
+    def _stratum(g):
+        return g.get("capability") or g.get("stratum") or "?"
+
     def _pairs(vmap):
-        return [(vmap[cid][0], gold[cid]["gold_label"], gold[cid].get("capability", "?"))
+        return [(vmap[cid][0], gold[cid]["gold_label"], _stratum(gold[cid]))
                 for cid in gold if cid in vmap]
 
-    qwen = {cid: ("pass" if int(gold[cid]["_qwen_verdict"]) == 1 else "fail", False) for cid in gold}
-    summaries = {"_qwen_baseline": _metrics(_pairs(qwen), pop_share)}
+    summaries = {}
+    qwen_cells = {cid for cid in gold if gold[cid].get("_qwen_verdict") is not None}
+    if qwen_cells:
+        qwen = {cid: ("pass" if int(gold[cid]["_qwen_verdict"]) == 1 else "fail", False)
+                for cid in qwen_cells}
+        summaries["_qwen_baseline"] = _metrics(_pairs(qwen), pop_share)
+    else:
+        print("(no _qwen_verdict in gold -> skipping Qwen baseline)")
 
     async with httpx.AsyncClient(timeout=180.0,
                                  limits=httpx.Limits(max_connections=args.concurrency + 8)) as client:
