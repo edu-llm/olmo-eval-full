@@ -34,6 +34,14 @@ bridgegrade/
 _scratch_infobench_verify/
 api_judge_pilot/
 .edullm_gen/
+graderValidationStuff/
+TutorEvalGrade/
+TutorModelRun8-9F/
+
+# macOS metadata / resource forks
+._*
+.DS_Store
+
 # Virtual environments
 # ---------------------------------------------------------------------------
 .venv
