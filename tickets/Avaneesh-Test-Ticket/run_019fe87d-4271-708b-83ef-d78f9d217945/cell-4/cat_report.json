@@ -1,0 +1,271 @@
+{
+  "cat_style": "uni_mcq",
+  "benchmark": "gpqa",
+  "ability": {
+    "theta": -0.24969101921458542,
+    "standard_error": 0.2533837945980973,
+    "metadata": {}
+  },
+  "num_items_administered": 12,
+  "responses": [
+    {
+      "item_id": "extended|412",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -2.484375,
+        -3.09375,
+        -3.484375,
+        -3.765625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|272",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -1.59375,
+        -2.3125,
+        -2.15625,
+        -2.375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "extended|453",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -2.265625,
+        -3.09375,
+        -2.75,
+        -3.234375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|189",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -1.3828125,
+        -2.265625,
+        -2.046875,
+        -2.484375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|181",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -2.03125,
+        -2.78125,
+        -2.828125,
+        -2.890625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|187",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -2.609375,
+        -3.546875,
+        -3.078125,
+        -3.53125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "extended|150",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -2.1875,
+        -2.859375,
+        -2.640625,
+        -2.875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "extended|188",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -2.375,
+        -3.34375,
+        -3.1875,
+        -3.359375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|185",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -2.1875,
+        -3.09375,
+        -3.0625,
+        -3.15625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|133",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -2.25,
+        -2.875,
+        -2.828125,
+        -2.90625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|220",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -1.875,
+        -2.75,
+        -2.515625,
+        -2.9375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "main|129",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -2.140625,
+        -2.765625,
+        -3.0,
+        -3.0625
+      ],
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "fit_family": "3pl",
+    "theta": -0.24969101921458542,
+    "standard_error": 0.2533837945980973,
+    "ability_estimator": "batch_eap+mwle",
+    "ability_estimator_reported": "batch_eap+mwle",
+    "theta_online": -0.2792427391411159,
+    "se_online": 0.2759495981473515,
+    "theta_batch": -0.2792427391411159,
+    "se_batch": 0.2759495981473515,
+    "theta_mwle": -0.24969101921458542,
+    "se_mwle": 0.2533837945980973,
+    "mwle_ok": true,
+    "mwle_settings": {
+      "ridge": 1e-06,
+      "bound": 12.0
+    },
+    "se_mwle_definition": "1/sqrt(I(theta)) over the administered items -- the asymptotic standard error of a likelihood estimate, not a posterior standard deviation. se_batch is the latter. The two are not on one scale and the se_threshold stopping rule was applied to se_online, which is a posterior SD, so a run reported under MWLE stopped on EAP precision.",
+    "pirt_accuracy": 0.23404298204500143,
+    "observed_accuracy": 0.5,
+    "pirt_accuracy_denominator": "the 395-item calibrated bank, not the full evaluation split -- predicted accuracy is over the calibrated subset",
+    "n_items_administered": 12,
+    "bank_size": 395,
+    "stop_reason": "precision_reached",
+    "ungradable": {
+      "count": 0,
+      "rate": 0.0,
+      "item_ids": [],
+      "reasons": []
+    },
+    "generation_budget": null,
+    "selected_item_ids": [
+      "extended|412",
+      "main|272",
+      "extended|453",
+      "main|189",
+      "main|181",
+      "main|187",
+      "extended|150",
+      "extended|188",
+      "main|185",
+      "main|133",
+      "main|220",
+      "main|129"
+    ],
+    "cat_settings": {
+      "se_threshold": 0.3,
+      "min_items": 8,
+      "max_items": 40,
+      "max_items_pinned_by_style": 40,
+      "max_items_is_pinned_value": true
+    },
+    "bank_provenance": {
+      "dataset": "gpqa",
+      "task": "gpqa_diamond, gpqa_extended, gpqa_main",
+      "route": "B",
+      "modality": "mcq",
+      "answer_type": null,
+      "scoring_convention": {
+        "recorded_by": "vendor_bank",
+        "runtime": {
+          "modality": "mcq",
+          "prompt_style": "gpqa",
+          "num_fewshot": 0,
+          "score_normalization": "continuation_logprob_per_character",
+          "max_length": null
+        },
+        "calibration": {
+          "prompt_style": "gpqa",
+          "num_fewshot": 0,
+          "metric": "acc_norm",
+          "note": "One of four banks here whose calibration convention is known in full and matched in full, and the only one of them not fit locally: it is known because the harvest was identified rather than because anything upstream wrote it down -- the local fit records no prompt, shot count or metric. Each cell of the fit's own response matrix is the Open LLM Leaderboard v2 acc_norm outcome of lm-evaluation-harness's leaderboard_gpqa for that document, verified cell by cell against the leaderboard's per-example records for two of the fitted models over all 1,192 columns each with no disagreement. That task is output_type: multiple_choice, ranking '(A)'..'(D)' by log-likelihood at 0-shot under acc_norm with no system prompt for any submission, and the prompt recorded here is the arg_0 those records carry. This bank was vendored as generative until 2026-08-08 on the registered olmo-eval task's chat chain-of-thought default; that was never the convention the parameters were fit against."
+        }
+      },
+      "fit_family": "3pl",
+      "source_ref": "origin/Research",
+      "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+      "bank_dir": "AdaptiveTesting/Experiments/openlm_gpqa_atlas_3pl/calibration",
+      "upstream_bank_rows": 1192,
+      "bridge_rows": 1192,
+      "items": 395,
+      "dropped": {
+        "non_positive_discrimination": 613,
+        "non_finite_discrimination": 0,
+        "not_in_bridge": 0,
+        "not_in_task": 0,
+        "ambiguous_item_id": 0,
+        "duplicate_question": 184
+      },
+      "ungradable_instances": 0,
+      "positional_ids": true,
+      "generated_at": "2026-08-08T20:59:32.452542+00:00"
+    },
+    "modality": "mcq",
+    "scoring_note": "Items are scored here by 0-shot continuation log-likelihood, summed over the continuation's tokens and divided by its length in characters, which is acc_norm -- olmo-eval's LogprobPerCharMCAccuracyMetric, whose divisor includes the continuation's leading space and is therefore one character longer than lm-evaluation-harness's, and presented behind the benchmark's own prompt format -- recorded as prompt_style beside this note, because the MCQ tasks here disagree about presentation as well as about ranking. Where the bank was calibrated under different scoring, theta's absolute scale shifts; relative comparison across checkpoints is unaffected.",
+    "prompt_style": "gpqa",
+    "score_normalization": "continuation_logprob_per_character"
+  },
+  "run": {
+    "cat_style": "uni_mcq",
+    "checkpoint": "s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/",
+    "checkpoint_kind": "olmo_core",
+    "checkpoint_prep": "none",
+    "dtype": "bfloat16",
+    "ability_estimator": "batch_eap+mwle",
+    "modality": "mcq",
+    "grader": "continuation log-likelihood over the item's answer choices, argmax",
+    "timestamp": "2026-08-09T22:00:37.000721+00:00",
+    "tokenization": {
+      "adds_special_tokens": false,
+      "leading_token_ids": [],
+      "trailing_token_ids": [],
+      "summary": "tokenizer defaults add no special tokens, so this scorer encodes exactly as OlmoCoreProvider's add_special_tokens=False does"
+    }
+  }
+}

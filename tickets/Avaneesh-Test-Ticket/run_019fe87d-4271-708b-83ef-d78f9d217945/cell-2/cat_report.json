@@ -1,0 +1,204 @@
+{
+  "cat_style": "uni_mcq",
+  "benchmark": "musr",
+  "ability": {
+    "theta": -0.6620823974645751,
+    "standard_error": 0.05996873318030559,
+    "metadata": {}
+  },
+  "num_items_administered": 8,
+  "responses": [
+    {
+      "item_id": "85a61705bf6593a3",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.234375,
+        -0.64453125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "daed19f00b60edcb",
+      "chosen_index": 1,
+      "correct": true,
+      "choice_logprobs": [
+        -0.4799107142857143,
+        -0.434375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "5eabd9cb5cc56a57",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.375,
+        -0.80078125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "2fb73c47f0510ef3",
+      "chosen_index": 1,
+      "correct": true,
+      "choice_logprobs": [
+        -1.03125,
+        -0.89375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "845f215d351d5ac4",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.3236607142857143,
+        -0.8883928571428571
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "599112bba7e750c9",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.2265625,
+        -0.41294642857142855
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "ca78c6fd26296185",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.4583333333333333,
+        -0.59765625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "3f3a3a788a1c08d0",
+      "chosen_index": 1,
+      "correct": false,
+      "choice_logprobs": [
+        -1.1022727272727273,
+        -0.9519230769230769,
+        -1.0227272727272727,
+        -1.8571428571428572
+      ],
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "fit_family": "3pl",
+    "theta": -0.6620823974645751,
+    "standard_error": 0.05996873318030559,
+    "ability_estimator": "batch_eap+mwle",
+    "ability_estimator_reported": "batch_eap+mwle",
+    "theta_online": -0.8375694232509991,
+    "se_online": 0.171490218970889,
+    "theta_batch": -0.8375694232509991,
+    "se_batch": 0.171490218970889,
+    "theta_mwle": -0.6620823974645751,
+    "se_mwle": 0.05996873318030559,
+    "mwle_ok": true,
+    "mwle_settings": {
+      "ridge": 1e-06,
+      "bound": 12.0
+    },
+    "se_mwle_definition": "1/sqrt(I(theta)) over the administered items -- the asymptotic standard error of a likelihood estimate, not a posterior standard deviation. se_batch is the latter. The two are not on one scale and the se_threshold stopping rule was applied to se_online, which is a posterior SD, so a run reported under MWLE stopped on EAP precision.",
+    "pirt_accuracy": 0.29887054453819584,
+    "observed_accuracy": 0.25,
+    "pirt_accuracy_denominator": "the 432-item calibrated bank, not the full evaluation split -- predicted accuracy is over the calibrated subset",
+    "n_items_administered": 8,
+    "bank_size": 432,
+    "stop_reason": "precision_reached",
+    "ungradable": {
+      "count": 0,
+      "rate": 0.0,
+      "item_ids": [],
+      "reasons": []
+    },
+    "generation_budget": null,
+    "selected_item_ids": [
+      "85a61705bf6593a3",
+      "daed19f00b60edcb",
+      "5eabd9cb5cc56a57",
+      "2fb73c47f0510ef3",
+      "845f215d351d5ac4",
+      "599112bba7e750c9",
+      "ca78c6fd26296185",
+      "3f3a3a788a1c08d0"
+    ],
+    "cat_settings": {
+      "se_threshold": 0.3,
+      "min_items": 8,
+      "max_items": 40,
+      "max_items_pinned_by_style": 40,
+      "max_items_is_pinned_value": true
+    },
+    "bank_provenance": {
+      "dataset": "musr",
+      "task": "musr_murder_mysteries, musr_object_placements, musr_team_allocation",
+      "route": "B",
+      "modality": "mcq",
+      "answer_type": null,
+      "scoring_convention": {
+        "recorded_by": "vendor_bank",
+        "runtime": {
+          "modality": "mcq",
+          "prompt_style": "musr",
+          "num_fewshot": 0,
+          "score_normalization": "continuation_logprob_per_character",
+          "max_length": null
+        },
+        "calibration": {
+          "prompt_style": "unrecorded",
+          "num_fewshot": "unrecorded",
+          "metric": "acc_norm",
+          "note": "The metric is recorded and this harness matches it: Open LLM Leaderboard v2 scored MuSR by acc_norm, the length-normalized log-likelihood ranking, and the bank was fit on that binary. Nothing upstream records the prompt or shot count, but there is little room for either to differ -- the harvest is leaderboard v2, whose MuSR configuration is lm-evaluation-harness's 0-shot leaderboard_musr, and that is the layout musr.py reproduces."
+        }
+      },
+      "fit_family": "3pl",
+      "source_ref": "origin/Research",
+      "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+      "bank_dir": "AdaptiveTesting/Experiments/openlm_atlas_3pl/musr/calibration",
+      "upstream_bank_rows": 754,
+      "bridge_rows": 754,
+      "items": 432,
+      "dropped": {
+        "non_positive_discrimination": 322,
+        "non_finite_discrimination": 0,
+        "not_in_bridge": 0,
+        "not_in_task": 0,
+        "ambiguous_item_id": 0
+      },
+      "ungradable_instances": 0,
+      "positional_ids": false,
+      "generated_at": "2026-08-07T21:20:03.443711+00:00"
+    },
+    "modality": "mcq",
+    "scoring_note": "Items are scored here by 0-shot continuation log-likelihood, summed over the continuation's tokens and divided by its length in characters, which is acc_norm -- olmo-eval's LogprobPerCharMCAccuracyMetric, whose divisor includes the continuation's leading space and is therefore one character longer than lm-evaluation-harness's, and presented behind the benchmark's own prompt format -- recorded as prompt_style beside this note, because the MCQ tasks here disagree about presentation as well as about ranking. Where the bank was calibrated under different scoring, theta's absolute scale shifts; relative comparison across checkpoints is unaffected.",
+    "prompt_style": "musr",
+    "score_normalization": "continuation_logprob_per_character"
+  },
+  "run": {
+    "cat_style": "uni_mcq",
+    "checkpoint": "s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/",
+    "checkpoint_kind": "olmo_core",
+    "checkpoint_prep": "none",
+    "dtype": "bfloat16",
+    "ability_estimator": "batch_eap+mwle",
+    "modality": "mcq",
+    "grader": "continuation log-likelihood over the item's answer choices, argmax",
+    "timestamp": "2026-08-09T22:00:30.765826+00:00",
+    "tokenization": {
+      "adds_special_tokens": false,
+      "leading_token_ids": [],
+      "trailing_token_ids": [],
+      "summary": "tokenizer defaults add no special tokens, so this scorer encodes exactly as OlmoCoreProvider's add_special_tokens=False does"
+    }
+  }
+}

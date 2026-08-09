@@ -1,0 +1,471 @@
+{
+  "cat_style": "uni_mcq",
+  "benchmark": "bbh",
+  "ability": {
+    "theta": -3.8556595059733896,
+    "standard_error": 0.2752408304922163,
+    "metadata": {}
+  },
+  "num_items_administered": 24,
+  "responses": [
+    {
+      "item_id": "date_understanding|165",
+      "chosen_index": 1,
+      "correct": false,
+      "choice_logprobs": [
+        -0.32421875,
+        -0.26171875,
+        -0.76171875,
+        -0.35546875,
+        -1.1328125,
+        -1.2265625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "object_counting|168",
+      "chosen_index": 1,
+      "correct": false,
+      "choice_logprobs": [
+        -2.453125,
+        -0.578125,
+        -1.078125,
+        -0.953125,
+        -1.078125,
+        -0.953125,
+        -1.453125,
+        -1.828125,
+        -1.703125,
+        -2.328125,
+        -0.8020833333333334,
+        -1.3020833333333333,
+        -1.0520833333333333,
+        -1.6354166666666667,
+        -1.34375,
+        -1.1770833333333333,
+        -1.4270833333333333,
+        -1.71875,
+        -1.5520833333333333
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "penguins_in_a_table|60",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.2080078125,
+        -0.36328125,
+        -0.58203125,
+        -0.42578125,
+        -0.95703125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "sports_understanding|52",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.091796875,
+        -0.4557291666666667
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "hyperbaton|121",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.08642578125,
+        -0.365234375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "geometric_shapes|10",
+      "chosen_index": 5,
+      "correct": false,
+      "choice_logprobs": [
+        -0.48828125,
+        -1.0234375,
+        -0.98828125,
+        -0.61328125,
+        -0.61328125,
+        -0.361328125,
+        -0.455078125,
+        -0.486328125,
+        -1.109375,
+        -1.2421875,
+        -1.5
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_five_objects|8",
+      "chosen_index": 4,
+      "correct": false,
+      "choice_logprobs": [
+        -0.28125,
+        -0.90625,
+        -0.65625,
+        -0.6875,
+        -0.1875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "hyperbaton|120",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.107421875,
+        -0.32421875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "hyperbaton|128",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.08447265625,
+        -0.36328125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|83",
+      "chosen_index": 6,
+      "correct": false,
+      "choice_logprobs": [
+        -0.306640625,
+        -0.9921875,
+        -0.8671875,
+        -0.9453125,
+        -1.1171875,
+        -0.9921875,
+        -0.150390625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|79",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.150390625,
+        -0.7734375,
+        -1.0078125,
+        -0.9609375,
+        -1.0859375,
+        -0.9921875,
+        -0.306640625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|9",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.166015625,
+        -0.8203125,
+        -0.7578125,
+        -0.7890625,
+        -1.0234375,
+        -1.0234375,
+        -0.322265625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|48",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.2216796875,
+        -0.96875,
+        -0.96875,
+        -0.9375,
+        -1.0625,
+        -0.875,
+        -0.2216796875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|58",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.1181640625,
+        -0.8359375,
+        -1.0234375,
+        -0.9921875,
+        -1.0703125,
+        -1.0703125,
+        -0.369140625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_three_objects|112",
+      "chosen_index": 2,
+      "correct": false,
+      "choice_logprobs": [
+        -0.240234375,
+        -0.7734375,
+        -0.208984375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|49",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.158203125,
+        -0.84765625,
+        -0.97265625,
+        -0.97265625,
+        -0.97265625,
+        -0.87890625,
+        -0.3125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "hyperbaton|12",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.126953125,
+        -0.28125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|60",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.1328125,
+        -0.8515625,
+        -0.9765625,
+        -0.9140625,
+        -0.9765625,
+        -0.7890625,
+        -0.384765625
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|94",
+      "chosen_index": 6,
+      "correct": false,
+      "choice_logprobs": [
+        -0.302734375,
+        -1.03125,
+        -1.0078125,
+        -1.046875,
+        -1.1796875,
+        -1.0703125,
+        -0.1484375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|88",
+      "chosen_index": 6,
+      "correct": false,
+      "choice_logprobs": [
+        -0.2451171875,
+        -0.8671875,
+        -0.7734375,
+        -0.8359375,
+        -1.0234375,
+        -1.0234375,
+        -0.2138671875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "hyperbaton|112",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.07421875,
+        -0.38671875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|8",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.10986328125,
+        -0.859375,
+        -1.0625,
+        -1.015625,
+        -1.109375,
+        -0.953125,
+        -0.392578125
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "causal_judgement|40",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.08740234375,
+        -0.4713541666666667
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "tracking_shuffled_objects_seven_objects|78",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -0.162109375,
+        -0.84765625,
+        -0.8203125,
+        -0.84765625,
+        -1.0625,
+        -0.91015625,
+        -0.31640625
+      ],
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "fit_family": "3pl",
+    "theta": -3.8556595059733896,
+    "standard_error": 0.2752408304922163,
+    "ability_estimator": "batch_eap+mwle",
+    "ability_estimator_reported": "batch_eap+mwle",
+    "theta_online": -3.8751753886561433,
+    "se_online": 0.10798495718367594,
+    "theta_batch": -3.8751753886561433,
+    "se_batch": 0.10798495718367594,
+    "theta_mwle": -3.8556595059733896,
+    "se_mwle": 0.2752408304922163,
+    "mwle_ok": true,
+    "mwle_settings": {
+      "ridge": 1e-06,
+      "bound": 12.0
+    },
+    "se_mwle_definition": "1/sqrt(I(theta)) over the administered items -- the asymptotic standard error of a likelihood estimate, not a posterior standard deviation. se_batch is the latter. The two are not on one scale and the se_threshold stopping rule was applied to se_online, which is a posterior SD, so a run reported under MWLE stopped on EAP precision.",
+    "pirt_accuracy": 0.09094613797490166,
+    "observed_accuracy": 0.0,
+    "pirt_accuracy_denominator": "the 3965-item calibrated bank, not the full evaluation split -- predicted accuracy is over the calibrated subset",
+    "n_items_administered": 24,
+    "bank_size": 3965,
+    "stop_reason": "precision_reached",
+    "ungradable": {
+      "count": 0,
+      "rate": 0.0,
+      "item_ids": [],
+      "reasons": []
+    },
+    "generation_budget": null,
+    "selected_item_ids": [
+      "date_understanding|165",
+      "object_counting|168",
+      "penguins_in_a_table|60",
+      "sports_understanding|52",
+      "hyperbaton|121",
+      "geometric_shapes|10",
+      "tracking_shuffled_objects_five_objects|8",
+      "hyperbaton|120",
+      "hyperbaton|128",
+      "tracking_shuffled_objects_seven_objects|83",
+      "tracking_shuffled_objects_seven_objects|79",
+      "tracking_shuffled_objects_seven_objects|9",
+      "tracking_shuffled_objects_seven_objects|48",
+      "tracking_shuffled_objects_seven_objects|58",
+      "tracking_shuffled_objects_three_objects|112",
+      "tracking_shuffled_objects_seven_objects|49",
+      "hyperbaton|12",
+      "tracking_shuffled_objects_seven_objects|60",
+      "tracking_shuffled_objects_seven_objects|94",
+      "tracking_shuffled_objects_seven_objects|88",
+      "hyperbaton|112",
+      "tracking_shuffled_objects_seven_objects|8",
+      "causal_judgement|40",
+      "tracking_shuffled_objects_seven_objects|78"
+    ],
+    "cat_settings": {
+      "se_threshold": 0.3,
+      "min_items": 24,
+      "max_items": 40,
+      "max_items_pinned_by_style": 40,
+      "max_items_is_pinned_value": true
+    },
+    "bank_provenance": {
+      "dataset": "bbh",
+      "task": "bbh_boolean_expressions, bbh_causal_judgement, bbh_date_understanding, bbh_disambiguation_qa, bbh_formal_fallacies, bbh_geometric_shapes, bbh_hyperbaton, bbh_logical_deduction_five_objects, bbh_logical_deduction_seven_objects, bbh_logical_deduction_three_objects, bbh_movie_recommendation, bbh_navigate, bbh_object_counting, bbh_penguins_in_a_table, bbh_reasoning_about_colored_objects, bbh_ruin_names, bbh_salient_translation_error_detection, bbh_snarks, bbh_sports_understanding, bbh_temporal_sequences, bbh_tracking_shuffled_objects_five_objects, bbh_tracking_shuffled_objects_seven_objects, bbh_tracking_shuffled_objects_three_objects, bbh_web_of_lies",
+      "route": "B",
+      "modality": "mcq",
+      "answer_type": null,
+      "scoring_convention": {
+        "recorded_by": "vendor_bank",
+        "runtime": {
+          "modality": "mcq",
+          "prompt_style": "bbh",
+          "num_fewshot": 3,
+          "score_normalization": "continuation_logprob_per_character",
+          "max_length": null
+        },
+        "calibration": {
+          "prompt_style": "unrecorded",
+          "num_fewshot": "unrecorded",
+          "metric": "acc_norm",
+          "note": "The metric is recorded on the same footing as MuSR's: Open LLM Leaderboard v2 scored BBH by acc_norm, the length-normalized log-likelihood ranking, and this bank was fit on that binary. The 3-shot block and per-subtask description frozen into these stems are lm-evaluation-harness's leaderboard_bbh configuration, which is where the harvest came from, so the two are very likely the same prompt -- but that is an inference about the harvest and the local calibration directory records nothing, so both fields stay unrecorded."
+        }
+      },
+      "fit_family": "3pl",
+      "source_ref": "origin/Research",
+      "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+      "bank_dir": "AdaptiveTesting/Experiments/openlm_atlas_3pl/bbh/calibration",
+      "upstream_bank_rows": 5761,
+      "bridge_rows": 5761,
+      "items": 3965,
+      "dropped": {
+        "non_positive_discrimination": 1796,
+        "non_finite_discrimination": 0,
+        "not_in_bridge": 0,
+        "not_in_task": 0,
+        "ambiguous_item_id": 0
+      },
+      "ungradable_instances": 0,
+      "positional_ids": true,
+      "generated_at": "2026-08-07T21:41:48.340104+00:00"
+    },
+    "modality": "mcq",
+    "scoring_note": "Items are scored here by 3-shot continuation log-likelihood, summed over the continuation's tokens and divided by its length in characters, which is acc_norm -- olmo-eval's LogprobPerCharMCAccuracyMetric, whose divisor includes the continuation's leading space and is therefore one character longer than lm-evaluation-harness's, and presented behind the benchmark's own prompt format -- recorded as prompt_style beside this note, because the MCQ tasks here disagree about presentation as well as about ranking. Where the bank was calibrated under different scoring, theta's absolute scale shifts; relative comparison across checkpoints is unaffected. Those three exemplars and the subtask's one-line description were not assembled at run time -- nothing here can -- but rendered by the task and frozen into each item's stem at vendoring, so the prompt is the one the difficulties were estimated behind rather than a reconstruction of it.",
+    "prompt_style": "bbh",
+    "score_normalization": "continuation_logprob_per_character",
+    "bank_caveat": "Read this bank's predicted accuracy and treat its theta with heavy scepticism. Both are worth having and only one of them holds up. The full 3,965-item bank recovers full-benchmark accuracy at r = 0.86, and an adaptive session's p-IRT predicted accuracy correlates at r = 0.674 with an MAE of 0.114 -- the weakest of the nine banks here and still a usable prediction. Theta is not: theta_mae is 0.684 at SE <= 0.3 and does not fall with precision (0.719 at SE <= 0.2, 0.711 at SE <= 0.1), which is what a unidimensional model applied to 24 unrelated subtasks looks like rather than a stopping rule that quits too early. No cross-validation was ever run for this bank; that r = 0.674 is from one 90/10 split over 110 held-out models, where every other Route B bank here has a ten-fold figure over about 1,100. min_items is 24 here against 8 everywhere else, so a session cannot stop before it has administered as many items as the bank has subtasks -- which makes coverage possible and does not make it happen."
+  },
+  "run": {
+    "cat_style": "uni_mcq",
+    "checkpoint": "s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/",
+    "checkpoint_kind": "olmo_core",
+    "checkpoint_prep": "none",
+    "dtype": "bfloat16",
+    "ability_estimator": "batch_eap+mwle",
+    "modality": "mcq",
+    "grader": "continuation log-likelihood over the item's answer choices, argmax",
+    "timestamp": "2026-08-09T22:00:34.317541+00:00",
+    "tokenization": {
+      "adds_special_tokens": false,
+      "leading_token_ids": [],
+      "trailing_token_ids": [],
+      "summary": "tokenizer defaults add no special tokens, so this scorer encodes exactly as OlmoCoreProvider's add_special_tokens=False does"
+    }
+  }
+}

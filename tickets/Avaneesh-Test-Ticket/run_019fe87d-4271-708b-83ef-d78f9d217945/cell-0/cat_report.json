@@ -1,0 +1,215 @@
+{
+  "cat_style": "uni_mcq",
+  "benchmark": "arc_challenge",
+  "ability": {
+    "theta": -2.11890220456919,
+    "standard_error": 0.27273900609780577,
+    "metadata": {}
+  },
+  "num_items_administered": 8,
+  "responses": [
+    {
+      "item_id": "Mercury_7082320",
+      "chosen_index": 1,
+      "correct": false,
+      "choice_logprobs": [
+        -28.375,
+        -22.125,
+        -35.25,
+        -32.0
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "Mercury_402547",
+      "chosen_index": 3,
+      "correct": false,
+      "choice_logprobs": [
+        -6.3125,
+        -44.0,
+        -44.25,
+        -3.46875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "Mercury_7263375",
+      "chosen_index": 0,
+      "correct": false,
+      "choice_logprobs": [
+        -21.75,
+        -25.5,
+        -27.75,
+        -30.375
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "Mercury_417127",
+      "chosen_index": 0,
+      "correct": true,
+      "choice_logprobs": [
+        -23.5,
+        -25.125,
+        -30.125,
+        -44.25
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "MCAS_2004_8_23",
+      "chosen_index": 2,
+      "correct": false,
+      "choice_logprobs": [
+        -21.75,
+        -22.875,
+        -17.5,
+        -23.875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "Mercury_SC_408631",
+      "chosen_index": 1,
+      "correct": false,
+      "choice_logprobs": [
+        -32.5,
+        -24.0,
+        -31.5,
+        -34.75
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "Mercury_7109463",
+      "chosen_index": 2,
+      "correct": false,
+      "choice_logprobs": [
+        -22.125,
+        -17.625,
+        -15.8125,
+        -15.875
+      ],
+      "metadata": {}
+    },
+    {
+      "item_id": "Mercury_7214340",
+      "chosen_index": 2,
+      "correct": false,
+      "choice_logprobs": [
+        -13.75,
+        -12.25,
+        -10.875,
+        -15.0625
+      ],
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "fit_family": "3pl",
+    "theta": -2.11890220456919,
+    "standard_error": 0.27273900609780577,
+    "ability_estimator": "batch_eap+mwle",
+    "ability_estimator_reported": "batch_eap+mwle",
+    "theta_online": -2.111243532312096,
+    "se_online": 0.2621224720430233,
+    "theta_batch": -2.111243532312096,
+    "se_batch": 0.2621224720430233,
+    "theta_mwle": -2.11890220456919,
+    "se_mwle": 0.27273900609780577,
+    "mwle_ok": true,
+    "mwle_settings": {
+      "ridge": 1e-06,
+      "bound": 12.0
+    },
+    "se_mwle_definition": "1/sqrt(I(theta)) over the administered items -- the asymptotic standard error of a likelihood estimate, not a posterior standard deviation. se_batch is the latter. The two are not on one scale and the se_threshold stopping rule was applied to se_online, which is a posterior SD, so a run reported under MWLE stopped on EAP precision.",
+    "pirt_accuracy": 0.5062603417473814,
+    "observed_accuracy": 0.125,
+    "pirt_accuracy_denominator": "the 650-item calibrated bank, not the full evaluation split -- predicted accuracy is over the calibrated subset",
+    "n_items_administered": 8,
+    "bank_size": 650,
+    "stop_reason": "precision_reached",
+    "ungradable": {
+      "count": 0,
+      "rate": 0.0,
+      "item_ids": [],
+      "reasons": []
+    },
+    "generation_budget": null,
+    "selected_item_ids": [
+      "Mercury_7082320",
+      "Mercury_402547",
+      "Mercury_7263375",
+      "Mercury_417127",
+      "MCAS_2004_8_23",
+      "Mercury_SC_408631",
+      "Mercury_7109463",
+      "Mercury_7214340"
+    ],
+    "cat_settings": {
+      "se_threshold": 0.3,
+      "min_items": 8,
+      "max_items": 40,
+      "max_items_pinned_by_style": 40,
+      "max_items_is_pinned_value": true
+    },
+    "bank_provenance": {
+      "dataset": "arc_challenge",
+      "task": "arc_challenge",
+      "route": "C",
+      "scoring_convention": {
+        "recorded_by": "migrate_manifests",
+        "runtime": {
+          "modality": "mcq",
+          "prompt_style": "question_answer",
+          "num_fewshot": 0,
+          "score_normalization": "unnormalized_sum_of_continuation_logprobs",
+          "max_length": null
+        },
+        "calibration": {
+          "prompt_style": "unrecorded",
+          "num_fewshot": 25,
+          "metric": "unrecorded",
+          "note": "The one shot count recorded anywhere for these banks: the ATLAS release states its ARC-Challenge labels are 25-shot leaderboard scoring. It does not state the prompt those responses were produced behind, nor the metric they were scored by, so neither is claimed here. This harness scores 0-shot, matching Research's own CAT."
+        }
+      },
+      "fit_family": "3pl",
+      "source_ref": "origin/Research",
+      "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+      "bank_dir": "AdaptiveTesting/Inputs/ATLAS/arc",
+      "upstream_bank_rows": 839,
+      "bridge_rows": 1172,
+      "items": 650,
+      "dropped": {
+        "non_positive_discrimination": 189,
+        "non_finite_discrimination": 0,
+        "not_in_bridge": 0,
+        "not_in_task": 0,
+        "ambiguous_item_id": 0
+      },
+      "positional_ids": false,
+      "generated_at": "2026-08-06T20:38:00.187657+00:00"
+    },
+    "modality": "mcq",
+    "scoring_note": "Items are scored here by 0-shot continuation log-likelihood, summed over the continuation's tokens and not length-normalized, matching olmo-eval's LogprobMCAccuracyMetric, and presented behind the benchmark's own prompt format -- recorded as prompt_style beside this note, because the MCQ tasks here disagree about presentation as well as about ranking. Where the bank was calibrated under different scoring, theta's absolute scale shifts; relative comparison across checkpoints is unaffected.",
+    "prompt_style": "question_answer",
+    "score_normalization": "unnormalized_sum_of_continuation_logprobs"
+  },
+  "run": {
+    "cat_style": "uni_mcq",
+    "checkpoint": "s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/",
+    "checkpoint_kind": "olmo_core",
+    "checkpoint_prep": "none",
+    "dtype": "bfloat16",
+    "ability_estimator": "batch_eap+mwle",
+    "modality": "mcq",
+    "grader": "continuation log-likelihood over the item's answer choices, argmax",
+    "timestamp": "2026-08-09T22:00:31.072094+00:00",
+    "tokenization": {
+      "adds_special_tokens": false,
+      "leading_token_ids": [],
+      "trailing_token_ids": [],
+      "summary": "tokenizer defaults add no special tokens, so this scorer encodes exactly as OlmoCoreProvider's add_special_tokens=False does"
+    }
+  }
+}

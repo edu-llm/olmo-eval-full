@@ -1,0 +1,1126 @@
+{
+  "cat_style": "uni_mcq",
+  "benchmark": "leaderboard_math",
+  "ability": {
+    "theta": -1.7023856282899832,
+    "standard_error": 0.767223838681341,
+    "metadata": {}
+  },
+  "num_items_administered": 40,
+  "responses": [
+    {
+      "item_id": "d3ab807ba4fc3991",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The following is a simplified solution to the ",
+        "extracted_answer": "Thefollowingissimplifiedsolutiontothe",
+        "gold_answer": "m+2",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "908fff0d2a4c9f12",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and the area of the base is $y$.\nThe area of the trapezoid is $x$ and",
+        "extracted_answer": "x",
+        "gold_answer": "\\frac{3x^2}{2}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "5e7be339fef7d10c",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the triangle is 12 inches.\nThe area of the",
+        "extracted_answer": "Theareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohetriangleis12.\nTheareohe",
+        "gold_answer": "36\\sqrt{3}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "713b3635688499b5",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The expression $f(2x) = x^2 - 3x + 4$ is a simplified expression of the function $f(x).\nThe function $f(x) is defined as $f(2x) = x^2 - 3x + 4$ and $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x) is a function that is defined as $f(x) = x^2 - 3x + 4$\nThe function $f(x) is defined as $f(x) = x^2 - 3x + 4$ where $f(x",
+        "extracted_answer": "where",
+        "gold_answer": "4x^2-6x+4",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "1b1b9e3dd1084730",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The store's sales manager decides to charge $120-3p$ per book. The store's sales manager estimates that the book price will be $120-3p$ per month. The store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month. The store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.\nThe store's sales manager estimates that the book price will be $120-3p$ per month.",
+        "extracted_answer": "120-3p",
+        "gold_answer": "20",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "8cd6ac168bee2372",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the time it reaches the maximum height.\nThe ball is at the maximum height at which it will hit the ground at the",
+        "extracted_answer": "Theballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthetimeitreachesthemaximumheight.\nTheballisatthemaximumheightatwhichitwillhitthegroundatthe",
+        "gold_answer": "\\frac{3}{2}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "b99188d59d0e3be5",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The area of the rectangle is twice its width.\nThe length of the diagonal is $5\\sqrt-(5) = $5\\sin(5) = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $5/2 = $",
+        "extracted_answer": null,
+        "gold_answer": "50",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "536aebf512a42fa3",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " We can express $k$ in the form of a square root.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe square root of a square root is the square root of the number.\nThe",
+        "extracted_answer": "k",
+        "gold_answer": "7",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "2c3edadadf791b33",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " $f(x) = \\sqrt(x^2)\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function that takes a function and returns a variable.\nThe function $f(x) is a function",
+        "extracted_answer": "f(x)isfunctionthattakesfunctionandreturnsvariable.\nThefunction",
+        "gold_answer": "[0,\\iny)",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "c988313549114e04",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The following expression is simplified:\n(1) (2) (3) (4) (5) (6)\n(2) (3) (4) (5) (6) (7) (8)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2) (3) (4) (5) (6) (7) (8) (9)\nSolution: The following expression is simplified:\n(1) (2",
+        "extracted_answer": "Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)\n(2)(3)(4)(5)(6)(7)(8)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2)(3)(4)(5)(6)(7)(8)(9)\nSolution:Thefollowingexpressionissimplified:\n(1)(2",
+        "gold_answer": "54",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "a4c179da28c59b99",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " $f(2)=$f(x)$\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x) = $f(2)\n$f(x",
+        "extracted_answer": "f(2)\n",
+        "gold_answer": "2",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "fb9b4ca9c19e6349",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " $36-4x^2$ is a factor of $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first two terms is $36.\nThe sum of the first",
+        "extracted_answer": "36.\nThesumohefirsttwotermsis",
+        "gold_answer": "4(3-x)(3+x)",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "2dc69fddb8e74dc9",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite. It is a series of numbers that is not finite.\nThe infinite geometric series is a series of numbers that is not finite. It is a series of numbers that is not finite. It",
+        "extracted_answer": "Theinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.\nTheinfinitegeometricseriesisseriesofnumbersthatisnotfinite.Itisseriesofnumbersthatisnotfinite.It",
+        "gold_answer": "\\frac{7}{9}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "5a9b17903a125d70",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $f(x)$.\nThe graph of $",
+        "extracted_answer": ".\nThegraphof",
+        "gold_answer": "5",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "18a5cded282af853",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The following is a simplified solution to the ",
+        "extracted_answer": "Thefollowingissimplifiedsolutiontothe",
+        "gold_answer": "12",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "02f8aca312ee4c69",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The answer is $14.40. The price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is marked with a $14.40 mark.\nThe price of the shirt is",
+        "extracted_answer": "14.40mark.\nThepriceoheshirtismarkedwith",
+        "gold_answer": "36",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "8b8ff5b58700695d",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " $x$ is a solution to $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 + 1 = 7x$.\nThe sum of $x$ and its reciprocal is $x^2 +",
+        "extracted_answer": "anditsreciprocalis",
+        "gold_answer": "7",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "5fa116abb5324f8a",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then decreased by $13.7$. The result is greater than $125.28$. What is the smallest integer that satisfies this condition?\nThe answer is $13.7$\nThe number is doubled, then",
+        "extracted_answer": "13.7",
+        "gold_answer": "70",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "37c6ce9283de4161",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " Anna will pay $10 for the fudge.\n- The cash register rounds to the nearest cent.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n- Anna will pay $10 for the fudge.\n",
+        "extracted_answer": "10forthefudge.\n-Annwillpay",
+        "gold_answer": "7.78",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "803e3ce9ec885a7c",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 6-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\nThe probability of rolling 4-sided dice is 1/2.\n",
+        "extracted_answer": "Theprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling6-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\nTheprobabilityofrolling4-sideddiceis1/2.\n",
+        "gold_answer": "\\dfrac{1}{12}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "b520783b6b0a7192",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)$.\nThe point is 5 units away from the point $(-1, 1)",
+        "extracted_answer": ".\nThepointis5awayfromthepoint",
+        "gold_answer": "-15",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "69cd95f8838a5258",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " $x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x < 5$\n$x",
+        "extracted_answer": null,
+        "gold_answer": "6x-5",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "f23312057ae576c8",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The following problem is a good example of a problem that can be solved using interval notation.\nSuppose that $m$ is a real number and $2x^2+mx+8$ has two distinct real roots. The first root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe first root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the first root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root is $2x^2+mx+8$ .\nThe second root is $2x^2+mx+8$ and the second root",
+        "extracted_answer": "2x^2+mx+8",
+        "gold_answer": "(-\\iny,-8)\\cup(8,\\iny)",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "c22d54e862a4b927",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The simplified value of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of the exponent of",
+        "extracted_answer": "Thesimplifiedvalueoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentoheexponentof",
+        "gold_answer": "3",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "08808cae05f26c14",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The first solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe second solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe third solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe fourth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe fifth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe sixth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe seventh solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe eighth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe ninth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the modulo 16$ of the first $8$ positive odd integers.\nThe tenth solution is to use the first term of the modulo $16$ to represent the sum of the mod",
+        "extracted_answer": "16",
+        "gold_answer": "0",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "6a086b2a8e359007",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The answer is 10.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at 24 miles per hour.\nThe elephant runs directly away from the lion at 19 miles per hour, while the lion runs directly toward the elephant at ",
+        "extracted_answer": "Theansweris10.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat24milesperhour.\nTheelephantrunsdirectlyawayfromthelionat19milesperhour,whilethelionrunsdirectlytowardtheelephantat",
+        "gold_answer": "12",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "12929ed08fd99b5a",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\nThe answer is $y$.\n",
+        "extracted_answer": "y",
+        "gold_answer": "\\frac{1}{5}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "7eccf94219cd5544",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y_2 = 6x + b$ intersect at only one point.\nThe parabola $y_1 = x^2 + 2x + 7$ and the line $y",
+        "extracted_answer": "andtheline",
+        "gold_answer": "3",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "29b7706b3873a28d",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The answer is 10.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-11 system.\nThe base 11 system is a base-1",
+        "extracted_answer": "Theansweris10.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-11system.\nThebase11systemisbase-1",
+        "gold_answer": "0",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "fb8d6222f6c50746",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^2=17$ on the plane.\nThe lattice point is a point of the hyperbola $x^2-y^2=17$ and is a point of the hyperbola $y^2-y^",
+        "extracted_answer": "andispointohehyperbol",
+        "gold_answer": "4",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "ff7490cc43c10876",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103 positive divisors.\nThe number of positive integers less than 103 has 103",
+        "extracted_answer": "Thenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103positivedivisors.\nThenumberofpositivelessth103has103",
+        "gold_answer": "10",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "502991b8608f9a26",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " $f(g(f(g(f(g(f(g(f(g(g(f(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g",
+        "extracted_answer": "f(g(f(g(f(g(f(g(f(g(g(f(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g(g",
+        "gold_answer": "2\\sqrt{2}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "584a48f553aa198c",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The shortest distance from the point (6, 0) to the line (2, 2) is 6.\nThe equation of the line is:\n(6, 0) = 6\n(6, 0) = 2\n(6, 0) = 1\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n(6, 0) = 0\n",
+        "extracted_answer": "0\n",
+        "gold_answer": "2\\sqrt{5}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "e048ae5a087a7c96",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The domain of the equation is 21. The domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain of the equation is 21.\nThe domain",
+        "extracted_answer": "Thedomainoheequationis21.Thedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomainoheequationis21.\nThedomain",
+        "gold_answer": "(-\\iny,-7)\\cup(-7,3)\\cup(3,\\iny)",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "946a5393dffcbc8e",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The region of $y \\ge |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $y \\ele |x|$ is a square unit.\nThe region of $",
+        "extracted_answer": "isunit.\nTheregionof",
+        "gold_answer": "4.5",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "6d02695f0e00d220",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " You have a linear function $p(x) = 3$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x) = 4$ for all $x$ and $q(x",
+        "extracted_answer": "and",
+        "gold_answer": "2",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "7472f23e83939f99",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The following is a solution to the ",
+        "extracted_answer": "Thefollowingissolutiontothe",
+        "gold_answer": "\\frac{6\\sqrt{10}}{7}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "23fa47350de57c3c",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the triangle is $4$ and the height is $2$\nThe area of the",
+        "extracted_answer": "2",
+        "gold_answer": "32",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "5963c3ed8502cf7e",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The length of $DF is 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.8284, 2.82",
+        "extracted_answer": "ThelengthofDFis2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.8284,2.82",
+        "gold_answer": "4\\sqrt{2}",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "context_fit": {
+          "context_length": 2048,
+          "prompt_tokens": 1645,
+          "gen_budget": 403,
+          "max_new_tokens_configured": 1024,
+          "num_fewshot_configured": 4,
+          "exemplars_dropped": 0
+        },
+        "generation_budget": {
+          "tokens": 403,
+          "source": "context_clamped",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    },
+    {
+      "item_id": "085dbd05bb1c53ea",
+      "chosen_index": -1,
+      "correct": false,
+      "choice_logprobs": [],
+      "metadata": {
+        "modality": "generative",
+        "grader": "math_latex_equivalence",
+        "completion": " The following problem is a good example of the \"distance\" problem.\nThe point $x = $y is at the origin.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$ is at the point $xy = 24$.\nThe point $y = $xy = 24$",
+        "extracted_answer": "24",
+        "gold_answer": "11",
+        "num_fewshot": 4,
+        "ungradable": false,
+        "generation_budget": {
+          "tokens": 1024,
+          "source": "cascade",
+          "cascade_active": true,
+          "ceiling": 1024,
+          "context_window": 2048,
+          "tokenizer": "HuggingFaceTB/SmolLM2-135M"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "fit_family": "3pl",
+    "theta": -1.7023856282899832,
+    "standard_error": 0.767223838681341,
+    "ability_estimator": "batch_eap+mwle",
+    "ability_estimator_reported": "batch_eap+mwle",
+    "theta_online": -1.652281747213772,
+    "se_online": 0.5474581061231785,
+    "theta_batch": -1.652281747213772,
+    "se_batch": 0.5474581061231785,
+    "theta_mwle": -1.7023856282899832,
+    "se_mwle": 0.767223838681341,
+    "mwle_ok": true,
+    "mwle_settings": {
+      "ridge": 1e-06,
+      "bound": 12.0
+    },
+    "se_mwle_definition": "1/sqrt(I(theta)) over the administered items -- the asymptotic standard error of a likelihood estimate, not a posterior standard deviation. se_batch is the latter. The two are not on one scale and the se_threshold stopping rule was applied to se_online, which is a posterior SD, so a run reported under MWLE stopped on EAP precision.",
+    "pirt_accuracy": 0.004589093078172048,
+    "observed_accuracy": 0.0,
+    "pirt_accuracy_denominator": "the 1183-item calibrated bank, not the full evaluation split -- predicted accuracy is over the calibrated subset",
+    "n_items_administered": 40,
+    "bank_size": 1183,
+    "stop_reason": "max_items_reached",
+    "ungradable": {
+      "count": 0,
+      "rate": 0.0,
+      "item_ids": [],
+      "reasons": []
+    },
+    "generation_budget": {
+      "tokenizer": "HuggingFaceTB/SmolLM2-135M",
+      "cascade_active": true,
+      "ceiling": 1024,
+      "context_window": 2048,
+      "context_clamp_fired": true,
+      "sources": {
+        "cascade": 39,
+        "context_clamped": 1
+      },
+      "tokens": {
+        "min": 403,
+        "median": 1024,
+        "max": 1024,
+        "total": 40339,
+        "at_ceiling": 39
+      }
+    },
+    "selected_item_ids": [
+      "d3ab807ba4fc3991",
+      "908fff0d2a4c9f12",
+      "5e7be339fef7d10c",
+      "713b3635688499b5",
+      "1b1b9e3dd1084730",
+      "8cd6ac168bee2372",
+      "b99188d59d0e3be5",
+      "536aebf512a42fa3",
+      "2c3edadadf791b33",
+      "c988313549114e04",
+      "a4c179da28c59b99",
+      "fb9b4ca9c19e6349",
+      "2dc69fddb8e74dc9",
+      "5a9b17903a125d70",
+      "18a5cded282af853",
+      "02f8aca312ee4c69",
+      "8b8ff5b58700695d",
+      "5fa116abb5324f8a",
+      "37c6ce9283de4161",
+      "803e3ce9ec885a7c",
+      "b520783b6b0a7192",
+      "69cd95f8838a5258",
+      "f23312057ae576c8",
+      "c22d54e862a4b927",
+      "08808cae05f26c14",
+      "6a086b2a8e359007",
+      "12929ed08fd99b5a",
+      "7eccf94219cd5544",
+      "29b7706b3873a28d",
+      "fb8d6222f6c50746",
+      "ff7490cc43c10876",
+      "502991b8608f9a26",
+      "584a48f553aa198c",
+      "e048ae5a087a7c96",
+      "946a5393dffcbc8e",
+      "6d02695f0e00d220",
+      "7472f23e83939f99",
+      "23fa47350de57c3c",
+      "5963c3ed8502cf7e",
+      "085dbd05bb1c53ea"
+    ],
+    "cat_settings": {
+      "se_threshold": 0.3,
+      "min_items": 8,
+      "max_items": 40,
+      "max_items_pinned_by_style": 40,
+      "max_items_is_pinned_value": true
+    },
+    "bank_provenance": {
+      "dataset": "leaderboard_math",
+      "task": "leaderboard_math",
+      "route": "B",
+      "modality": "generative",
+      "answer_type": "math_latex",
+      "scoring_convention": {
+        "recorded_by": "vendor_bank",
+        "runtime": {
+          "modality": "generative",
+          "prompt_style": "leaderboard_math",
+          "num_fewshot": 4,
+          "fewshot_source": "leaderboard_math",
+          "chat_format": false,
+          "system_prompt_source": null,
+          "stop_sequences": [
+            "Problem:",
+            "problem:"
+          ],
+          "max_new_tokens": 1024,
+          "max_length": null,
+          "grader": "math_latex_equivalence"
+        },
+        "calibration": {
+          "prompt_style": "unrecorded",
+          "num_fewshot": "unrecorded",
+          "metric": "lm-eval math_verify exact match",
+          "note": "The metric is the one recorded fact and it is a deviation: the bank was fit on lm-eval's math_verify exact match while this harness grades with olmo-eval's Minerva equivalence, which Research's own benchmarks.py calls close but not identical and able to shift item difficulty. The calibration directory holds parameter CSVs, response matrices and figures and no record of prompting, so the 4-shot Minerva block used here is the olmo-eval task's value -- it coincides with the count Open LLM Leaderboard v2 publishes for MATH-Hard, which is where this bank's responses were harvested, but that is an inference about the harvest."
+        }
+      },
+      "fit_family": "3pl",
+      "source_ref": "origin/Research",
+      "source_commit": "6998270f51af47ffc5623ced960461ef28557118",
+      "bank_dir": "AdaptiveTesting/Experiments/openlm_atlas_3pl/math/calibration",
+      "upstream_bank_rows": 1206,
+      "bridge_rows": 1206,
+      "items": 1183,
+      "dropped": {
+        "non_positive_discrimination": 23,
+        "non_finite_discrimination": 0,
+        "not_in_bridge": 0,
+        "not_in_task": 0,
+        "ambiguous_item_id": 0
+      },
+      "ungradable_instances": 0,
+      "positional_ids": false,
+      "generated_at": "2026-08-07T21:35:24.082847+00:00"
+    },
+    "modality": "generative",
+    "scoring_note": "Items are scored here by greedy sampled completion behind the benchmark's own fixed prompt, then compared against the gold answer by olmo-eval's symbolic equivalence over the \\boxed{} or Final Answer: expression, mirroring MinervaMathScorer rather than the lm-eval math_verify extraction the bank was calibrated under; the two are close but not identical and can shift an item's difficulty. The shot count the bank was calibrated under is not recorded upstream, so agreement with a published ATLAS theta is unverified. Where the bank was calibrated under different scoring, theta's absolute scale shifts; relative comparison across checkpoints is unaffected.",
+    "generation_runtime": {
+      "tokenizer_identifier": "HuggingFaceTB/SmolLM2-135M",
+      "tokenizer_class": "GPT2Tokenizer",
+      "tokenizer_vocab_size": 49152,
+      "eos_token": "<|endoftext|>",
+      "eos_token_id": 0,
+      "eos_token_id_passed_to_generate": true,
+      "context_length_declared": 2048,
+      "context_length_source": "dataset.sequence_length",
+      "dtype_requested": "bfloat16",
+      "kv_cache": false,
+      "tokenization": {
+        "adds_special_tokens": false,
+        "leading_token_ids": [],
+        "trailing_token_ids": [],
+        "summary": "tokenizer defaults add no special tokens, so this scorer encodes exactly as OlmoCoreProvider's add_special_tokens=False does"
+      },
+      "exemplars_end_with_eos": true,
+      "context_clamp_active": true,
+      "context_length": 2048,
+      "num_fewshot_configured": 4,
+      "num_fewshot_used": [
+        4
+      ],
+      "context_clamp_fired": true,
+      "items_over_context": 0
+    }
+  },
+  "run": {
+    "cat_style": "uni_mcq",
+    "checkpoint": "s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/",
+    "checkpoint_kind": "olmo_core",
+    "checkpoint_prep": "none",
+    "dtype": "bfloat16",
+    "ability_estimator": "batch_eap+mwle",
+    "modality": "generative",
+    "grader": "greedy sampled completion, decided by the grader the item's metadata['answer_type'] names: answer extraction and a strict match against metadata['gold_answer'] for a bank that has one, constraint verification against the item for a bank that does not",
+    "timestamp": "2026-08-09T22:17:41.113576+00:00"
+  }
+}

@@ -78,6 +78,11 @@ One line per run:
 | run id | harness sha | OLMo-core sha | benchmark | outcome |
 | --- | --- | --- | --- | --- |
 
+**A fan-out gets one line per cell**, sharing a run id and a harness sha, because the
+benchmark column is the only thing distinguishing them and a single line would have to drop
+five of the six thetas. The reports keep S3's layout, `<run_id>/cell-<n>/cat_report.json`,
+so the cell number in the line is also the path to the report behind it.
+
 The first three are there because **`cat_report.json` carries none of them**. Its `run`
 block holds `cat_style`, `checkpoint`, `checkpoint_kind`, `checkpoint_prep`, `dtype`,
 `ability_estimator`, `modality`, `grader`, `timestamp` and `tokenization` — nothing that
