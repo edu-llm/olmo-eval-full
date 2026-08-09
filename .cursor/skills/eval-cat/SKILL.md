@@ -137,6 +137,30 @@ and a shared branch cannot supply that because by then it has moved.
 git switch -c <submitter>-<model>-ticket
 ```
 
+### The name is checked, and `<submitter>-<model>-ticket` is a literal, not a sketch
+
+Step 6 matches it against `[a-z0-9][a-z0-9._-]*-ticket` and **refuses to submit** if it does
+not fit. Four rules, of which only the first has ever caught anyone:
+
+- **Lowercase throughout.** `Avaneesh-Test-Ticket` is refused and `avaneesh-test-ticket` is
+  the same name spelled acceptably. Capitals are the natural way to write a person's name and
+  a branch is not the place for it; the first ticket ever cut was named with them.
+- **Ends in `-ticket`**, hyphen included, nothing after. `alice-smollm2-ticket-2` is refused,
+  because a second attempt at one checkpoint belongs on that checkpoint's existing branch —
+  Step 1's loop resubmits from the same ticket rather than numbering a new one.
+- **Starts with a letter or digit.** The rest may hold `a-z`, `0-9`, `.`, `_` and `-`.
+- **No slash, so no prefix at all.** `edullm/alice-ticket` fails twice: once on the slash and
+  again on the explicit `edullm/` refusal below.
+
+`alice-smollm2-ticket`, `avaneesh-olmoe-1b-ticket` and `bob.smith-olmo2-ticket` all pass.
+`alice_smollm2_ticket` does not — underscores are legal inside the name, but the ending is
+`-ticket` and not `_ticket`.
+
+**Give the refusal to the user rather than working around it.** `--any-branch` exists and
+will submit from a non-conforming branch, but it is for submitting from somewhere else
+*deliberately*, and reaching for it to get past a name you could simply lowercase costs the
+run its record: the ticket directory, the spec and the report are all keyed to the branch.
+
 **Cut it now rather than after Step 1, because Step 1 is a loop and every turn of it commits
 and pushes.** The sha the spec pins is the one that has to carry the probe, so an amendment is
 a commit before it is a resubmission; the one loop anyone has run took two passes, and that
@@ -148,10 +172,8 @@ means rewriting a history other people have.
 **Not `edullm/<anything>`.** That is the only prefix in this repository that fires
 [`edullm-platform-build.yml`](../../../.github/workflows/edullm-platform-build.yml), and a CAT
 run takes its image from OLMo-core, so a ticket named that way would spend several gigabytes
-publishing an immutable ECR tag nothing ever pulls. Step 6's check refuses the prefix outright
-rather than warning about it, and it matches the rest of the name against
-`[a-z0-9][a-z0-9._-]*-ticket` — lowercase, ending in `-ticket`, `alice-smollm2-ticket` being
-the shape.
+publishing an immutable ECR tag nothing ever pulls. Step 6's check refuses the prefix
+outright rather than warning about it, separately from the name rules above.
 
 [`tickets/README.md`](../../../tickets/README.md) is the convention: what a ticket may and may
 not change, why nothing on one is ever amended or force-pushed, and the layout of the record

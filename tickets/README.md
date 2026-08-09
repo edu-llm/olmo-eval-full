@@ -5,6 +5,13 @@ that checkpoint needed, the spec that was submitted, and what came back. Branch 
 directory share a name, `<submitter>-<model>-ticket`, and the directory is the record the
 branch leaves behind.
 
+That name is a literal rather than a sketch. It must match `[a-z0-9][a-z0-9._-]*-ticket`:
+lowercase throughout, starting with a letter or digit, ending in `-ticket` with nothing
+after it, and holding only `a-z`, `0-9`, `.`, `_` and `-` in between — so no slash and no
+prefix. `alice-smollm2-ticket` and `bob.smith-olmo2-ticket` pass; `Alice-Smollm2-Ticket`,
+`alice-smollm2-ticket-2` and `edullm/alice-ticket` do not. Because branch and directory
+share the name, a branch that does not conform has nowhere to put its record.
+
 ```
 tickets/<submitter>-<model>-ticket/
   RUNS.md                       one appended line per run, newest last
