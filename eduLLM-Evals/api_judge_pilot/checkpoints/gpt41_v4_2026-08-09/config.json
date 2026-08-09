@@ -1,0 +1,16 @@
+{
+  "name": "gpt41_v4",
+  "date": "2026-08-09",
+  "status": "best tutorbench judge config so far; regression baseline",
+  "provider_gateway": "TrueFoundry OpenAI-compatible (env MODEL_API_BASE / MODEL_API_KEY)",
+  "model": "openai-group/gpt-4.1",
+  "adapter": "generic-binary-strict-v4",
+  "temperature": 0.0,
+  "max_tokens": 2048,
+  "response_format": {"type": "json_object"},
+  "json_field_order": ["analysis", "verdict", "evidence"],
+  "parser": "regex verdict extraction (\"verdict\":\"pass|fail\") with json.loads fallback; fail-closed",
+  "auto_fail_policy": "finish_reason error / empty output / missing response -> fail WITHOUT a judge call; length-truncated -> graded",
+  "optimal_concurrency": 256,
+  "notes": "Prompt text frozen in prompt.txt so a later code refactor of run_api_judge_pilot.py cannot silently change it. gpt-4.1 responds strongly to analysis-first structure (critSens 0.686 v1 -> 0.784 v4)."
+}

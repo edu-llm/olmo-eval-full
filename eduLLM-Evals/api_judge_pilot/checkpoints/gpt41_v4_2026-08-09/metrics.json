@@ -1,0 +1,22 @@
+{
+  "dataset": "tutorbench 261 human-labeled cases (judge_cases.blinded.jsonl + human_labels.csv)",
+  "model": "openai-group/gpt-4.1",
+  "adapter": "generic-binary-strict-v4",
+  "accuracy": 0.751,
+  "balanced_accuracy": 0.751,
+  "f1_pass": 0.770,
+  "mcc": 0.499,
+  "false_pass_rate": 0.250,
+  "critical_failure_sensitivity": 0.784,
+  "critical_false_pass_rate": 0.216,
+  "content_false_pass_rate": 0.250,
+  "unscorable": 0,
+  "throughput_cases_per_s": 32.6,
+  "regression_thresholds": {
+    "critical_failure_sensitivity_min": 0.76,
+    "false_pass_rate_max": 0.28,
+    "content_false_pass_rate_max": 0.28,
+    "unscorable_max": 3
+  },
+  "note": "261 cases with known human-label noise; treat as directional. Regression = any metric crossing a threshold above."
+}
