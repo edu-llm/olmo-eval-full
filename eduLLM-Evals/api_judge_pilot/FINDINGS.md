@@ -434,6 +434,30 @@ Finalists full metrics (v1, 4096, 2 replicates, 2 perturbations):
 Affordable tutorbench pick: haiku-4-5 + v1 (~94% of sonnet MCC, lower false-pass, ~1/3 cost)
 for value, or sonnet-4-6 + v1 for max quality. Both stable, 0 unscorable.
 
+## TUTOREVAL gold set (100 cells, 80 fail / 20 pass, stratified by primary_skill)
+
+No local Qwen matrix -> no Qwen baseline. Screen (v1, 4096) then finalists full metrics:
+
+| model | FP% | macroF1 | MCC | acc | falseFail% | testRetest | promptFlip | unsc |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| gemini-3-flash-preview | 0.0 | 82.8 | 0.703 | 91.0 | 45.0 | 2.0 | 3.0 | 0 |
+| claude-haiku-4-5 | 0.0 | 80.4 | 0.667 | 90.0 | 50.0 | 3.0 | 3.0 | 0 |
+| gpt-4.1 | 8.8 | 80.1 | 0.602 | 87.0 | 30.0 | 4.0 | 5.0 | 0 |
+| sonnet-4-6 (screen) | 0.0 | 80.4 | 0.667 | 90.0 | 50.0 | - | - | 0 |
+| gemini-2.5-flash (screen) | 11.2 | 79.6 | 0.597 | 86.0 | 25.0 | - | - | 0 |
+
+- Best: gemini-3-flash-preview + v1 (MCC 0.703, 0% false-pass, 0 unscorable, most stable,
+  cheapest) -- the SAME config that won biggen. Both scaling targets converge on it.
+- All judges over-strict here (false-fail 45-50%), but on only 20 gold-pass cells (noisy).
+  gpt-4.1 less over-strict (FF 30%) but lower MCC + 8.8% false-pass.
+- 80/20 skew -> false-pass stats are well-powered (80 gold-fails); false-fail is noisy.
+
+Cross-benchmark summary of finalized/leading judge configs (all v1 evidence-first + robust
+regex parser; max_tokens 4096 for gemini):
+- biggen: gemini-3-flash-preview + v1 (FINALIZED).
+- tutoreval: gemini-3-flash-preview + v1 (leading).
+- tutorbench: haiku-4-5 + v1 (value) or sonnet-4-6 + v1 (quality); gemini-3 truncates there.
+
 ## Caveats
 
 - Gemini numbers are not a fair read (format non-compliance under `max_tokens 512`).
