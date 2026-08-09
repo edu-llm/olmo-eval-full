@@ -341,6 +341,43 @@ v4 puts a brief analysis first (reason before deciding -> quality), the verdict 
   may differ per benchmark; confirm on the biggen/tutoreval gold sets. Keep the robust
   regex parser in all cases.
 
+## v5 tried and rejected (checkpoint held)
+
+v5 = v4 + an explicit "work out the correct answer, then verify the response states it"
+correctness step, aimed at content false-pass. It regressed: gpt-4.1 v4->v5 critSens
+0.784->0.745, FP 25.0->27.6, content-FP unchanged at 25.0; sonnet flat/worse. Not adopted;
+`gpt-4.1 + v4` (checkpoint `checkpoints/gpt41_v4_2026-08-09`) remains best.
+
+Content false-pass is stuck at ~25% for gpt-4.1 across v4 and v5 -> we are at the noise
+floor of the 261-case set (known label noise). Further prompt tuning risks overfitting;
+defer additional selection to the biggen/tutoreval gold sets. `generic-binary-strict-v5`
+remains available in code as an explored (non-default) option.
+
+## BIGGEN gold set (100 stratified cells, full metrics)
+
+Scored against the human gold set (`gold/biggen_core/`), adapter v1 (evidence-first, beats
+v4 here), 2 replicates (test-retest), 2 benign perturbations (prompt-flip). biggen criteria
+are mostly atomic presence/correctness -> all candidates grade far better than on tutorbench,
+and ALL beat the frozen Qwen judge.
+
+| model | FP% | FP-wt% | macroF1 | MCC | acc | falseFail% | testRetest | promptFlip | unsc |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Qwen baseline | 12.7 | 14.8 | 88.9 | 0.780 | 89.0 | 8.9 | 0.0 | 0.0 | 0 |
+| sonnet-4-6 | 1.8 | 1.1 | 90.7 | 0.824 | 91.0 | 17.8 | 0.0 | 2.0 | 0 |
+| opus-4-6 | 5.5 | 4.4 | 91.9 | 0.838 | 92.0 | 11.1 | 2.0 | 3.0 | 0 |
+| gemini-2.5-flash | 10.9 | 9.9 | 88.9 | 0.778 | 89.0 | 11.1 | 5.0 | 9.0 | 3 |
+| gemini-3-flash-preview | 0.0 | 0.0 | 92.8 | 0.866 | 93.0 | 15.6 | 4.0 | 6.0 | 0 |
+| gpt-4.1 | 5.5 | 4.7 | 92.9 | 0.859 | 93.0 | 8.9 | 5.0 | 6.0 | 0 |
+
+Multi-metric tradeoff (no dominant winner):
+- Lowest false-pass + highest MCC + cheapest: gemini-3-flash-preview (over-fails, FF 15.6%).
+- Best macro-F1 + best balanced errors: gpt-4.1 (FF 8.9%, FP 5.5%).
+- Most stable/robust: sonnet (0% test-retest, 2% prompt-flip) and opus, but sonnet over-fails.
+- gemini-2.5-flash eliminated (worst FP + stability + unscorable).
+- v1 (evidence-first) is the biggen adapter (beats v4). Note this is the opposite of
+  tutorbench, where v4/analysis-first helped gpt-4.1 -> config is benchmark-specific.
+- 100 cells -> per-capability rates directional; test-retest/prompt-flip on temp 0.
+
 ## Caveats
 
 - Gemini numbers are not a fair read (format non-compliance under `max_tokens 512`).

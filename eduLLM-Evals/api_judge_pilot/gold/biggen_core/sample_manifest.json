@@ -1,0 +1,45 @@
+{
+  "benchmark": "biggen",
+  "seed": 20260809,
+  "population_gradable_cells": 121028,
+  "distinct_models": 52,
+  "sample_size": 100,
+  "stratify_by": "capability",
+  "capability_population": {
+    "theory_of_mind": 19012,
+    "grounding": 15365,
+    "tool_usage": 12654,
+    "instruction_following": 16861,
+    "planning": 18324,
+    "refinement": 14011,
+    "reasoning": 13889,
+    "safety": 10912
+  },
+  "capability_allocation": {
+    "theory_of_mind": 16,
+    "grounding": 13,
+    "tool_usage": 10,
+    "instruction_following": 14,
+    "planning": 15,
+    "refinement": 12,
+    "reasoning": 11,
+    "safety": 9
+  },
+  "capability_sampled": {
+    "grounding": 13,
+    "planning": 15,
+    "theory_of_mind": 16,
+    "instruction_following": 14,
+    "reasoning": 11,
+    "refinement": 12,
+    "tool_usage": 10,
+    "safety": 9
+  },
+  "sampling": "stratified proportional (largest-remainder), simple random within stratum",
+  "inputs": {
+    "responses_dir": "Full200Run\\full200_results\\Outputs\\open\\biggen",
+    "rubrics": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\.edullm_gen\\biggen\\bank\\rubrics.jsonl",
+    "scenarios": "C:\\Users\\Samee\\Documents\\GitHub\\olmo-eval-full\\.edullm_gen\\biggen\\bank\\scenarios.jsonl",
+    "qwen_matrix": "staging\\biggen_response_matrix.csv"
+  }
+}
