@@ -1,0 +1,79 @@
+{
+  "dataset": "piqa",
+  "task": "piqa",
+  "route": "B",
+  "modality": "mcq",
+  "answer_type": null,
+  "fit_family": "2pl",
+  "source_ref": "HEAD",
+  "source_commit": "a1d9e4d4fbdd1c7750ad9e277824f887bb41a15f",
+  "bank_dir": "diagnostics/mcq_cat/styles/uni_mcq/banks/piqa",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/piqa.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "piqa",
+    "bridge_kind": "content_hash",
+    "rows": 1838,
+    "ordering": {
+      "source": "AdaptiveTesting inference sweep, full200",
+      "responses": "s3://edullm-adaptive-inference-056956104102/full200/results/Outputs/mcq/piqa/",
+      "item_cache": "s3://edullm-adaptive-inference-056956104102/full200/mcq_cache/piqa.n2000.s1234.jsonl",
+      "cache_written": "2026-08-01T15:23:51+00:00",
+      "loader": "AdaptiveTesting/Test/Inference/datasets_registry.py::load_piqa on ref Research@6998270f",
+      "task_spec": "piqa"
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "task": "piqa"
+    },
+    "matching": {
+      "recipe": "bank index k names the k-th row the calibration loader enumerated, resolved here to the content hash of the k-th task instance",
+      "verified": "every bank item matched the frozen 2026-08-01 item cache exactly on stem, choices and gold; the task enumeration was then compared against that same cache position by position",
+      "contested_ids": 0,
+      "rows_claiming_a_contested_id": 0
+    },
+    "generated_at": "2026-08-09T19:38:17.196669+00:00"
+  },
+  "upstream_bank_rows": 1838,
+  "bridge_rows": 1838,
+  "items": 896,
+  "subtask_items": null,
+  "dropped": {
+    "non_positive_discrimination": 942,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0,
+    "duplicate_question": 0
+  },
+  "duplicate_question_precedence": null,
+  "ungradable_instances": 0,
+  "positional_ids": true,
+  "frozen_prompt": false,
+  "choice_order_checked": null,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "score_normalization": "continuation_logprob_per_token",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "metric": "continuation_logprob_per_token",
+      "note": "Read off the calibrating code rather than inferred: AdaptiveTesting/Test/Inference/datasets_registry.py renders the prompt and engine.py ranks by a per-token mean, on ref Research@6998270f. The run-time convention in config.yaml is set to match it exactly."
+    }
+  },
+  "bank_caveat": null,
+  "notes": "The strongest of the three locally fitted banks and the only one whose measured fit family is 2PL. Its parameters were fit here, from the 2026-08-01 inference sweep, because no prior study persisted any: each fit in memory, ran a diagnostic and kept only the correlation. The recipe is transcribed verbatim from the calibration source rather than reimplemented, and banks/reproduce_check.py gates it by recovering the published 318 / 831 / 969 kept-item counts on the study's own rng(7) 40/12 split. The shipped fit then uses every available model rather than that 40-model slice, since the split existed to validate the approach. The bank's ids are positions in the sweep's enumeration, and a position is only a usable key if the enumeration can be reproduced -- which, on the eight banks that were measured rather than assumed, was false on two. So it was measured here on both boundaries it has to cross. Every item of all three banks was compared against the sweep's own frozen item cache and matched exactly on stem, choices and gold; the olmo-eval tasks were then enumerated and compared against that same cache position by position, agreeing everywhere with nothing filtered. Only then was the position resolved to a content hash, which is what ships, so a re-rendered split misses rather than naming its neighbour's question. Every position in the raw enumeration carries a parameter row, including the ones the point-biserial filter dropped, which carry a1 = 0 and are discarded by load_bank as non-positive discrimination. That is what keeps the index space complete for the alignment guard, which compares the bank's maximum index against the bridge's row count and would otherwise abort on a bank whose last item was filtered. pl_1_2_3_comparison reads r = 0.937 for 2PL against 0.916 for 1PL and 0.790 for 3PL, and 896 of its 1,838 items survive the filter. The margin over 1PL is thin and the per-model view actually inverts it -- Spearman between predicted and actual accuracy is +0.718 under 1PL against +0.609 under 2PL across the eleven held-out models in the 1B-7B band, with no impossible predictions under either. Pearson is the study's headline and a Spearman over eleven points is noisy, so the published comparison is followed; the disagreement is recorded because it is the first thing to revisit if this bank ever looks miscalibrated at the low end. Two choices, so chance is 0.50 and a 2PL has no guessing parameter to absorb it. That shows: the one sub-1B model in the held-out set is handed a predicted accuracy of 0.371, which is not a value any model can score. Every model in the 1B-7B band the calibration covers gets a possible one, so the failure is outside the supported range rather than inside it, but a theta below that range should be refused rather than reported. 3PL is not the fix: at this pool size it collapses to 0.790. 76 of the 896 fitted items sit on girth's discrimination bounds, 52 at 0.2 and 24 at 5.0. A pinned discrimination is not an estimate, and since Fisher information scales with a squared, the 24 at the ceiling are preferentially selected. Its content hashes are injective -- 1,838 rows, 1,838 distinct ids -- so nothing is lost to the ambiguous-id drop.",
+  "sha256": {
+    "params.json": "354fdefb8ddf26733c58059fcd256acd5cf6ff5dd64fc90a6a15e16a9adb51bf",
+    "items.jsonl": "279f390581644c23d98da42bfda6a37f26a6633be37c4ff324b602c1ad2bbc16"
+  },
+  "generated_at": "2026-08-09T19:46:24.836219+00:00"
+}

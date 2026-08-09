@@ -113,9 +113,7 @@ class ChatTokenizer(GeneratingTokenizer):
 
     chat_template = "{{ messages }}"
 
-    def apply_chat_template(
-        self, messages: list[dict[str, str]], **kwargs: object
-    ) -> str:
+    def apply_chat_template(self, messages: list[dict[str, str]], **kwargs: object) -> str:
         return " ".join(f"<{turn['role']}> {turn['content']}" for turn in messages)
 
 
@@ -233,9 +231,7 @@ class TestTheRegistryReachesTheNativeCompleter:
         )
         grading.check_checkpoint_kind(request, settings)
 
-    def test_the_loader_is_reused_rather_than_reimplemented(
-        self, monkeypatch, checkpoint
-    ) -> None:
+    def test_the_loader_is_reused_rather_than_reimplemented(self, monkeypatch, checkpoint) -> None:
         """The tokenizer comes through ``dataset.tokenizer.identifier``, as on the MCQ side.
 
         A raw checkpoint ships no tokenizer files, so a loader that read the directory --
@@ -311,9 +307,7 @@ class TestTheCompleterContract:
         """:data:`generative.BUDGET_AWARE_ATTR`, readable without constructing anything."""
         assert getattr(generative._OlmoCoreCompleter, generative.BUDGET_AWARE_ATTR) is True
 
-    def test_the_per_item_budget_reaches_generate_batch(
-        self, monkeypatch, tmp_path: Path
-    ) -> None:
+    def test_the_per_item_budget_reaches_generate_batch(self, monkeypatch, tmp_path: Path) -> None:
         """A clamped item must be decoded at its clamped budget, not at the bank's cap."""
         item = math_item(words=1400)
         window = self.window_for(monkeypatch, tmp_path, item, shots=2)
@@ -550,9 +544,7 @@ class TestTheContextWindowSource:
         to be read for. Unset, this must fall through to the config -- so a checkpoint
         declaring 4096 gets 4096 rather than the converted path's 2048.
         """
-        monkeypatch.delenv(
-            generative.hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV, raising=False
-        )
+        monkeypatch.delenv(generative.hf_config_patch.MAX_POSITION_EMBEDDINGS_ENV, raising=False)
         assert generative.hf_config_patch.DEFAULT_MAX_POSITION_EMBEDDINGS == 2048
         assert self.read(tmp_path, sequence_length=4096) == (4096, "dataset.sequence_length")
 
@@ -834,9 +826,7 @@ class TestTheReportedFacts:
     def facts(self, monkeypatch, checkpoint: Path) -> dict[str, Any]:
         return load(monkeypatch, checkpoint).scorer.runtime_facts()
 
-    def test_the_window_and_its_provenance_are_both_recorded(
-        self, monkeypatch, checkpoint
-    ) -> None:
+    def test_the_window_and_its_provenance_are_both_recorded(self, monkeypatch, checkpoint) -> None:
         """2048 read out of a training config and 2048 supplied by an operator are the
         same clamp and different claims, so the number alone is not enough."""
         facts = self.facts(monkeypatch, checkpoint)
@@ -1015,9 +1005,7 @@ class TestTheVocabularySizeComparison:
         with caplog.at_level("WARNING", logger="mcq_cat.generative"):
             loaded = load(monkeypatch, checkpoint, tokenizer=tokenizer)
         return loaded, [
-            record.getMessage()
-            for record in caplog.records
-            if record.name == "mcq_cat.generative"
+            record.getMessage() for record in caplog.records if record.name == "mcq_cat.generative"
         ]
 
     def test_a_tokenizer_larger_than_the_checkpoint_is_reported_with_both_numbers(

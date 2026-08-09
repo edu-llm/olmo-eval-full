@@ -553,12 +553,10 @@ class TestDetectionHeadroom:
         makes over-running observable, which is the measurement this bank is for.
         """
         assert budget(words(20, "less than")) > 20 * RATIO
-        assert budget(words(20, "less than")) == 20 * RATIO + (
-            generative.DETECTION_HEADROOM_TOKENS
-        )
+        assert budget(words(20, "less than")) == 20 * RATIO + (generative.DETECTION_HEADROOM_TOKENS)
 
     def test_it_is_added_for_both_relations(self) -> None:
-        """"at least N" needs it too, for the ending constraints a cut at N destroys.
+        """ "at least N" needs it too, for the ending constraints a cut at N destroys.
 
         Six of the 30 "at least" items also constrain how the response ends
         (``startend:end_checker``, ``startend:quotation``,
@@ -617,20 +615,15 @@ class TestTheSignalCascade:
         """Each has its own words-per-unit figure, and each must exceed the floor."""
         assert budget(
             ("length_constraints:number_sentences", {"relation": "at least", "num_sentences": 40})
-        ) == 40 * generative.WORDS_PER_SENTENCE * RATIO + (
-            generative.DETECTION_HEADROOM_TOKENS
-        )
+        ) == 40 * generative.WORDS_PER_SENTENCE * RATIO + (generative.DETECTION_HEADROOM_TOKENS)
         assert budget(("length_constraints:number_paragraphs", {"num_paragraphs": 8})) == (
-            8 * generative.WORDS_PER_PARAGRAPH * RATIO
-            + generative.DETECTION_HEADROOM_TOKENS
+            8 * generative.WORDS_PER_PARAGRAPH * RATIO + generative.DETECTION_HEADROOM_TOKENS
         )
         assert budget(("detectable_format:multiple_sections", {"num_sections": 6})) == (
-            6 * generative.WORDS_PER_PARAGRAPH * RATIO
-            + generative.DETECTION_HEADROOM_TOKENS
+            6 * generative.WORDS_PER_PARAGRAPH * RATIO + generative.DETECTION_HEADROOM_TOKENS
         )
         assert budget(("detectable_format:number_bullet_lists", {"num_bullets": 9})) == (
-            9 * generative.WORDS_PER_BULLET * RATIO
-            + generative.DETECTION_HEADROOM_TOKENS
+            9 * generative.WORDS_PER_BULLET * RATIO + generative.DETECTION_HEADROOM_TOKENS
         )
 
     def test_the_nth_paragraph_signal_reads_its_paragraph_count(self) -> None:
@@ -680,9 +673,10 @@ class TestTheSignalCascade:
         assert echoed in seen, "the echoed text was tokenized, not converted"
 
     def test_the_echo_falls_back_to_the_question_when_the_kwarg_is_absent(self) -> None:
-        assert budget(
-            ("combination:repeat_prompt", {}), question="alpha beta gamma"
-        ) == FLOOR + 3 * RATIO
+        assert (
+            budget(("combination:repeat_prompt", {}), question="alpha beta gamma")
+            == FLOOR + 3 * RATIO
+        )
 
     def test_two_responses_doubles_the_whole_of_the_rest(self) -> None:
         """Including the echo, since both responses have to carry it."""
@@ -709,11 +703,14 @@ class TestTheSignalCascade:
 
         assert budget(other, ceiling=CEILING) == CEILING
         assert budget(words(100), other, ceiling=CEILING) == CEILING
-        assert budget(
-            ("length_constraints:number_paragraphs", {"num_paragraphs": 3}),
-            other,
-            ceiling=CEILING,
-        ) == CEILING
+        assert (
+            budget(
+                ("length_constraints:number_paragraphs", {"num_paragraphs": 3}),
+                other,
+                ceiling=CEILING,
+            )
+            == CEILING
+        )
 
     def test_the_ratio_is_never_consulted_for_a_non_english_item(self) -> None:
         """Stronger than the budget being right: the English ratio must not be used at all.
@@ -730,9 +727,12 @@ class TestTheSignalCascade:
         def forbidden(text: str) -> int:
             pytest.fail("a non-English item must not be tokenized at an English rate")
 
-        assert generative.ifeval_token_budget(
-            marathi, ceiling=CEILING, tokens_per_word=RATIO, count_tokens=forbidden
-        ) == CEILING
+        assert (
+            generative.ifeval_token_budget(
+                marathi, ceiling=CEILING, tokens_per_word=RATIO, count_tokens=forbidden
+            )
+            == CEILING
+        )
 
     def test_a_malformed_count_falls_through_instead_of_budgeting_nothing(self) -> None:
         """A zero budget would generate nothing and grade the item on an empty response."""
@@ -944,12 +944,15 @@ class TestTheRealBankBudgets:
         item = self._item("ab5ca590f2d20f37")
 
         assert _real_budget(item) == CEILING
-        assert generative.ifeval_token_budget(
-            item,
-            ceiling=NO_CEILING,
-            tokens_per_word=RATIO,
-            count_tokens=counting_tokenizer(),
-        ) > CEILING, "the demand really does exceed the ceiling"
+        assert (
+            generative.ifeval_token_budget(
+                item,
+                ceiling=NO_CEILING,
+                tokens_per_word=RATIO,
+                count_tokens=counting_tokenizer(),
+            )
+            > CEILING
+        ), "the demand really does exceed the ceiling"
 
     def test_every_item_gets_a_usable_budget(self) -> None:
         """No item may be budgeted at zero, and none above the ceiling."""
@@ -1155,16 +1158,17 @@ class TestTheBudgetReachesTheModel:
 
         assert generative.item_token_budget(item, config) == CEILING
         assert generative.item_token_budget(item, config, tokens_per_word=RATIO) == CEILING
-        assert generative.item_token_budget(
-            item, config, count_tokens=counting_tokenizer()
-        ) == CEILING
-        assert generative.item_token_budget(
-            item, config, tokens_per_word=RATIO, count_tokens=counting_tokenizer()
-        ) == 300 * RATIO + generative.DETECTION_HEADROOM_TOKENS
+        assert (
+            generative.item_token_budget(item, config, count_tokens=counting_tokenizer()) == CEILING
+        )
+        assert (
+            generative.item_token_budget(
+                item, config, tokens_per_word=RATIO, count_tokens=counting_tokenizer()
+            )
+            == 300 * RATIO + generative.DETECTION_HEADROOM_TOKENS
+        )
 
-    def test_a_one_argument_completer_is_still_called_with_one_argument(
-        self, stub_ifbench
-    ) -> None:
+    def test_a_one_argument_completer_is_still_called_with_one_argument(self, stub_ifbench) -> None:
         """The extension is opt-in because one-argument completers are the norm here.
 
         Every completer in this tree other than ``_HFCompleter`` is a one-argument
@@ -1205,9 +1209,12 @@ class TestTheBudgetReachesTheModel:
         )
 
         assert generative.item_token_budget(math_item, config) == 2048
-        assert generative.item_token_budget(
-            math_item, config, tokens_per_word=RATIO, count_tokens=counting_tokenizer()
-        ) == 2048, "even with a tokenizer available, a non-ifeval bank is untouched"
+        assert (
+            generative.item_token_budget(
+                math_item, config, tokens_per_word=RATIO, count_tokens=counting_tokenizer()
+            )
+            == 2048
+        ), "even with a tokenizer available, a non-ifeval bank is untouched"
 
 
 class TestTheContextClamp:
@@ -1274,16 +1281,12 @@ class TestTheContextClamp:
         assert completer.seen == [600 - prompt_tokens]
         assert completer.seen[0] < CEILING
 
-    def test_a_refused_item_is_recorded_ungradable_and_never_sent(
-        self, stub_ifbench
-    ) -> None:
+    def test_a_refused_item_is_recorded_ungradable_and_never_sent(self, stub_ifbench) -> None:
         """Scored 0 and marked, so the fabricated zero is visible in the report."""
         completer = _BudgetedCompleter(context=8)
         item = ifeval_item(("punctuation:no_comma",), ({},))
 
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items([item])
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items([item])
 
         assert completer.seen == [], "the item was not sent to the model"
         assert responses[0].correct is False
@@ -1299,9 +1302,7 @@ class TestTheContextClamp:
         completer = _BudgetedCompleter(context=8)
         item = ifeval_item(("keywords:forbidden_words",), ({"forbidden_words": ["x"]},))
 
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items([item])
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items([item])
 
         assert responses[0].correct is False
 
@@ -1325,9 +1326,7 @@ class TestTheLoadTimeTokenizerGuard:
         normal -- a plausible theta with a healthy standard error and nothing recording that
         the budgets were defaulted rather than computed.
         """
-        scorer = generative.GenerativeScorer(
-            _BudgetedCompleter(count=False), _ifeval_config()
-        )
+        scorer = generative.GenerativeScorer(_BudgetedCompleter(count=False), _ifeval_config())
 
         with pytest.raises(RuntimeError, match="no tokenizer could be resolved"):
             generative.require_live_tokenizer(scorer, Path("/ckpt"))
@@ -1338,9 +1337,7 @@ class TestTheLoadTimeTokenizerGuard:
         def broken(text: str) -> int:
             raise OSError("tokenizer.json could not be fetched")
 
-        scorer = generative.GenerativeScorer(
-            _BudgetedCompleter(count=broken), _ifeval_config()
-        )
+        scorer = generative.GenerativeScorer(_BudgetedCompleter(count=broken), _ifeval_config())
 
         with pytest.raises(RuntimeError, match="tokenizer.json could not be fetched"):
             generative.require_live_tokenizer(scorer, Path("/ckpt"))
@@ -1390,9 +1387,7 @@ class TestTheBudgetIsRecordedInTheReport:
             ifeval_item(("punctuation:no_comma",), ({},)),
         ]
 
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items(items)
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items(items)
 
         derived = responses[0].metadata[generative.BUDGET_KEY]
         assert derived["tokens"] == 300 * RATIO + generative.DETECTION_HEADROOM_TOKENS
@@ -1405,9 +1400,9 @@ class TestTheBudgetIsRecordedInTheReport:
         """The whole point: a degraded run must not look like a computed one."""
         completer = _BudgetedCompleter(count=False)
 
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items([ifeval_item(("length_constraints:number_words",), ({"num_words": 300},))])
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items(
+            [ifeval_item(("length_constraints:number_words",), ({"num_words": 300},))]
+        )
 
         record = responses[0].metadata[generative.BUDGET_KEY]
         assert record["source"] == generative.BUDGET_FROM_CEILING
@@ -1417,9 +1412,9 @@ class TestTheBudgetIsRecordedInTheReport:
     def test_a_clamped_budget_says_so(self, stub_ifbench) -> None:
         completer = _BudgetedCompleter(context=600)
 
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items([ifeval_item(("startend:end_checker",), ({"end_phrase": "done"},))])
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items(
+            [ifeval_item(("startend:end_checker",), ({"end_phrase": "done"},))]
+        )
 
         assert responses[0].metadata[generative.BUDGET_KEY]["source"] == (
             generative.BUDGET_FROM_CONTEXT
@@ -1427,9 +1422,7 @@ class TestTheBudgetIsRecordedInTheReport:
 
     def test_an_offline_grade_carries_no_budget_at_all(self) -> None:
         """Omitted rather than null, so the key's presence means a decision was made."""
-        response = generative.grade_completion(
-            ifeval_item(), FOLLOWED, _ifeval_config()
-        )
+        response = generative.grade_completion(ifeval_item(), FOLLOWED, _ifeval_config())
 
         assert generative.BUDGET_KEY not in response.metadata
 
@@ -1440,9 +1433,7 @@ class TestTheBudgetIsRecordedInTheReport:
             ifeval_item(("length_constraints:number_words",), ({"num_words": 300},)),
             ifeval_item(("punctuation:no_comma",), ({},)),
         ]
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items(items)
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items(items)
 
         state = CATState(benchmark=DATASET)
         state.administered.extend(responses)
@@ -1466,9 +1457,9 @@ class TestTheBudgetIsRecordedInTheReport:
         reported separately.
         """
         completer = _BudgetedCompleter()
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items([ifeval_item(("startend:quotation",), ({},))])
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items(
+            [ifeval_item(("startend:quotation",), ({},))]
+        )
 
         state = CATState(benchmark=DATASET)
         state.administered.extend(responses)
@@ -1481,9 +1472,9 @@ class TestTheBudgetIsRecordedInTheReport:
     def test_the_report_block_flags_a_clamp_that_actually_fired(self, stub_ifbench) -> None:
         """A window being *available* says nothing; one having bound is worth knowing."""
         completer = _BudgetedCompleter(context=600)
-        responses = generative.GenerativeScorer(
-            completer, _ifeval_config()
-        ).score_items([ifeval_item(("startend:end_checker",), ({"end_phrase": "done"},))])
+        responses = generative.GenerativeScorer(completer, _ifeval_config()).score_items(
+            [ifeval_item(("startend:end_checker",), ({"end_phrase": "done"},))]
+        )
 
         state = CATState(benchmark=DATASET)
         state.administered.extend(responses)
@@ -1536,9 +1527,9 @@ class TestTheLeakedEndTokenStop:
         """It survives ``skip_special_tokens`` because it is not the special token."""
         completion = f"A tidy response.{EOS}\nUser: another question entirely"
 
-        assert generative.truncate_at_stop(
-            completion, self._stop(ifeval_item())
-        ) == "A tidy response."
+        assert (
+            generative.truncate_at_stop(completion, self._stop(ifeval_item())) == "A tidy response."
+        )
 
     def test_it_rescues_an_end_anchored_constraint(self, stub_ifbench) -> None:
         """26 end_checker plus 40 quotation plus 27 parsed-span items turn on this.
@@ -1554,12 +1545,18 @@ class TestTheLeakedEndTokenStop:
         )
         leaked = f"Body of the answer. {FOLLOWED}{EOS} Assistant: hello again"
 
-        assert generative.grade_completion(item, leaked, config, EOS).metadata[
-            "completion"
-        ].strip().endswith(FOLLOWED)
-        assert not generative.grade_completion(item, leaked, config, None).metadata[
-            "completion"
-        ].strip().endswith(FOLLOWED)
+        assert (
+            generative.grade_completion(item, leaked, config, EOS)
+            .metadata["completion"]
+            .strip()
+            .endswith(FOLLOWED)
+        )
+        assert (
+            not generative.grade_completion(item, leaked, config, None)
+            .metadata["completion"]
+            .strip()
+            .endswith(FOLLOWED)
+        )
 
     def test_it_is_suppressed_for_two_responses(self) -> None:
         """Cutting at the first leak would delete the second response.
@@ -1574,9 +1571,7 @@ class TestTheLeakedEndTokenStop:
 
     def test_the_second_response_survives_because_of_that(self, stub_ifbench) -> None:
         """The interaction end to end, on the real verifier's own splitting rule."""
-        item = ifeval_item(
-            (generative.TWO_RESPONSES_ID,), ({},), question="Give two responses."
-        )
+        item = ifeval_item((generative.TWO_RESPONSES_ID,), ({},), question="Give two responses.")
         config = generative.GenerationConfig(
             num_fewshot=0, prompt_style="ifeval", stop_sequences=()
         )
@@ -1646,9 +1641,7 @@ class TestTheLeakedEndTokenStop:
         scorer = generative.GenerativeScorer(lambda _: f"{FOLLOWED}{EOS}", config)
 
         assert scorer.eos_text is None
-        assert scorer.score_items([ifeval_item()])[0].metadata["completion"] == (
-            f"{FOLLOWED}{EOS}"
-        )
+        assert scorer.score_items([ifeval_item()])[0].metadata["completion"] == (f"{FOLLOWED}{EOS}")
 
     def test_the_hf_completer_publishes_its_tokenizers_end_token(self) -> None:
         """And reports ``None`` for a checkpoint that defines none, which is today's case.
@@ -1716,13 +1709,9 @@ class TestTheBudgetPolicyIsRecorded:
         """Which is the whole point of recording them rather than only the ceiling."""
         from .. import convention
 
-        before = convention.configured_convention(
-            SUPPORTED[DATASET], convention.load_config()
-        )
+        before = convention.configured_convention(SUPPORTED[DATASET], convention.load_config())
         monkeypatch.setattr(generative, "UNCONSTRAINED_FLOOR_TOKENS", 1)
-        after = convention.configured_convention(
-            SUPPORTED[DATASET], convention.load_config()
-        )
+        after = convention.configured_convention(SUPPORTED[DATASET], convention.load_config())
 
         assert before != after
         assert convention._differences(before, after)
@@ -1731,17 +1720,13 @@ class TestTheBudgetPolicyIsRecorded:
         """The set is a budget policy, so quietly shrinking it must not go unnoticed."""
         from .. import convention
 
-        before = convention.configured_convention(
-            SUPPORTED[DATASET], convention.load_config()
-        )
+        before = convention.configured_convention(SUPPORTED[DATASET], convention.load_config())
         monkeypatch.setattr(
             generative,
             "TRUNCATION_FRAGILE_IDS",
             generative.TRUNCATION_FRAGILE_IDS - {"startend:end_checker"},
         )
-        after = convention.configured_convention(
-            SUPPORTED[DATASET], convention.load_config()
-        )
+        after = convention.configured_convention(SUPPORTED[DATASET], convention.load_config())
 
         assert convention._differences(before, after)
 

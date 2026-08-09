@@ -21,7 +21,6 @@ import csv
 from pathlib import Path
 
 import pandas as pd
-
 from reproduce_check import EXPECTED_RAW
 
 HERE = Path(__file__).resolve().parent

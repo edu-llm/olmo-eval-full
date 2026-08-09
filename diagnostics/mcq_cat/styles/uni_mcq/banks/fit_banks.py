@@ -30,7 +30,6 @@ for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXP
 
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
-
 from reproduce_check import (  # noqa: E402
     EXPECTED_RAW,
     filter_items,
@@ -110,17 +109,21 @@ def main():
         secs = time.time() - t0
 
         ok = usable(a, b, c)
-        df = pd.DataFrame(
-            {
-                "item_id": items,
-                "position": [position_of(i) for i in items],
-                "a": a,
-                "b": b,
-                "c": c,
-                "p_value": stats.loc[items, "p_value"].to_numpy(),
-                "point_biserial": stats.loc[items, "point_biserial"].to_numpy(),
-            }
-        )[ok].sort_values("position").reset_index(drop=True)
+        df = (
+            pd.DataFrame(
+                {
+                    "item_id": items,
+                    "position": [position_of(i) for i in items],
+                    "a": a,
+                    "b": b,
+                    "c": c,
+                    "p_value": stats.loc[items, "p_value"].to_numpy(),
+                    "point_biserial": stats.loc[items, "point_biserial"].to_numpy(),
+                }
+            )[ok]
+            .sort_values("position")
+            .reset_index(drop=True)
+        )
         df.to_csv(args.out / f"{bank}_item_params.csv", index=False)
 
         # Under Rasch, difficulty is a strictly monotone function of pass rate, so a Spearman

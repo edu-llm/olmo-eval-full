@@ -1,0 +1,8066 @@
+[
+  {
+    "item_id": "68dffa89bb939011",
+    "difficulty": -2.890164195627595,
+    "discrimination": 1.9012752747489636,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1
+    }
+  },
+  {
+    "item_id": "02371c61efb6f713",
+    "difficulty": 5.963593702876577,
+    "discrimination": 0.3856733487434678,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 3
+    }
+  },
+  {
+    "item_id": "3021877490526acc",
+    "difficulty": -2.5179568643801686,
+    "discrimination": 1.428027967514382,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 6
+    }
+  },
+  {
+    "item_id": "6dd72475fa418d73",
+    "difficulty": -4.115946896150752,
+    "discrimination": 0.4293931153689134,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 10
+    }
+  },
+  {
+    "item_id": "a61617d9ccb1d59c",
+    "difficulty": -0.9007310041307428,
+    "discrimination": 0.3548335973858658,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 11
+    }
+  },
+  {
+    "item_id": "af30cbde5aa64766",
+    "difficulty": -3.214769210040497,
+    "discrimination": 0.9983182605524694,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 13
+    }
+  },
+  {
+    "item_id": "479c4a86cf999810",
+    "difficulty": -4.135631833171503,
+    "discrimination": 0.3900112127998846,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 14
+    }
+  },
+  {
+    "item_id": "d7ef33e510ee9adb",
+    "difficulty": -1.5037130202500395,
+    "discrimination": 0.5085727971312064,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 15
+    }
+  },
+  {
+    "item_id": "a2e2f8bb21b4b912",
+    "difficulty": -1.8817716267001423,
+    "discrimination": 4.999996511820598,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 16
+    }
+  },
+  {
+    "item_id": "1dfede041c3b1219",
+    "difficulty": 2.7107453209502004,
+    "discrimination": 0.4648579075983489,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 20
+    }
+  },
+  {
+    "item_id": "f517a7a8e55615fa",
+    "difficulty": -0.4847859967978998,
+    "discrimination": 2.45647389719716,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 22
+    }
+  },
+  {
+    "item_id": "ab7b5bf80ec87dde",
+    "difficulty": -1.183208951971394,
+    "discrimination": 0.8869609552846962,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 23
+    }
+  },
+  {
+    "item_id": "878d7182193131a8",
+    "difficulty": 4.216566307445589,
+    "discrimination": 0.3189136623718595,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 24
+    }
+  },
+  {
+    "item_id": "5ad2628e22bf6db8",
+    "difficulty": -2.302142195512373,
+    "discrimination": 1.0513390270579508,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 25
+    }
+  },
+  {
+    "item_id": "447109eea4085f2e",
+    "difficulty": -0.2565728772175313,
+    "discrimination": 1.140819362309304,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 26
+    }
+  },
+  {
+    "item_id": "49dc5a4743fa972c",
+    "difficulty": -1.6742756651682862,
+    "discrimination": 4.999995340010297,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 27
+    }
+  },
+  {
+    "item_id": "0e668271924fe936",
+    "difficulty": 1.966661063698041,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 29
+    }
+  },
+  {
+    "item_id": "285d97b8c7c69058",
+    "difficulty": -1.9748620789362152,
+    "discrimination": 2.3694160279885152,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 30
+    }
+  },
+  {
+    "item_id": "841ce901b9e326b3",
+    "difficulty": -1.674275665168434,
+    "discrimination": 4.999995340006505,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 31
+    }
+  },
+  {
+    "item_id": "38fba0a6674e6d34",
+    "difficulty": -5.957485300021858,
+    "discrimination": 0.3856661368569175,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 33
+    }
+  },
+  {
+    "item_id": "3dbc5e4dc56088eb",
+    "difficulty": 1.4966669542999902,
+    "discrimination": 0.2647212313302974,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 37
+    }
+  },
+  {
+    "item_id": "71cb687f4a6f89e9",
+    "difficulty": -3.043735313603767,
+    "discrimination": 0.7337686641133023,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 39
+    }
+  },
+  {
+    "item_id": "5633935325db9f27",
+    "difficulty": -5.897054041632176,
+    "discrimination": 0.4347745144268177,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 41
+    }
+  },
+  {
+    "item_id": "878c515004ba9e0c",
+    "difficulty": 1.2375673846242534,
+    "discrimination": 0.7307380973913968,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 42
+    }
+  },
+  {
+    "item_id": "da9aa5852477878d",
+    "difficulty": -3.614296134002348,
+    "discrimination": 0.859488508605805,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 46
+    }
+  },
+  {
+    "item_id": "09272f43524c4992",
+    "difficulty": 5.950576608027806,
+    "discrimination": 0.699905930470214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 47
+    }
+  },
+  {
+    "item_id": "1dc03adb9ca2416b",
+    "difficulty": -2.8901666965063795,
+    "discrimination": 1.901271940171722,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 49
+    }
+  },
+  {
+    "item_id": "506aea2b94fa6e75",
+    "difficulty": -2.8336747639018567,
+    "discrimination": 0.3629084474432891,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 50
+    }
+  },
+  {
+    "item_id": "607c279be9b65359",
+    "difficulty": -2.2036865514733703,
+    "discrimination": 4.999994267499139,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 51
+    }
+  },
+  {
+    "item_id": "f071dd5c3453174c",
+    "difficulty": -2.2036865514733703,
+    "discrimination": 4.99999426749914,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 57
+    }
+  },
+  {
+    "item_id": "6b7d3cf8ea78c3b4",
+    "difficulty": -3.9766662964430792,
+    "discrimination": 0.5396074416917185,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 60
+    }
+  },
+  {
+    "item_id": "d877c4187d9b1ade",
+    "difficulty": -4.230184852207032,
+    "discrimination": 1.0520201788933947,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 62
+    }
+  },
+  {
+    "item_id": "de6b149d29023fea",
+    "difficulty": -3.0123436585081245,
+    "discrimination": 1.3137307230176811,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 64
+    }
+  },
+  {
+    "item_id": "ad79360649d7efc4",
+    "difficulty": 5.963602291174114,
+    "discrimination": 0.3856727482701872,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 65
+    }
+  },
+  {
+    "item_id": "6edcaf4580a98c2c",
+    "difficulty": -1.386138817575409,
+    "discrimination": 1.8927000500148592,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 69
+    }
+  },
+  {
+    "item_id": "1804d573a5aaa81b",
+    "difficulty": -3.423543473258251,
+    "discrimination": 0.8016887227472046,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 71
+    }
+  },
+  {
+    "item_id": "85b169f2e8e521b0",
+    "difficulty": -2.4749545887829734,
+    "discrimination": 0.9522856007743732,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 73
+    }
+  },
+  {
+    "item_id": "8ba4ee0378f72163",
+    "difficulty": -0.6545285833847982,
+    "discrimination": 1.2739181368176502,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 76
+    }
+  },
+  {
+    "item_id": "878357459028cb3c",
+    "difficulty": -1.33726139365979,
+    "discrimination": 1.111171937782875,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 77
+    }
+  },
+  {
+    "item_id": "31b8f46e3a80c74e",
+    "difficulty": -0.7905992284096853,
+    "discrimination": 1.3906201769191149,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 81
+    }
+  },
+  {
+    "item_id": "cedc7e7f9533f884",
+    "difficulty": -1.8567265583779184,
+    "discrimination": 1.1233047533879514,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 82
+    }
+  },
+  {
+    "item_id": "84bf3657cd7026c3",
+    "difficulty": -2.304587545723808,
+    "discrimination": 1.6704330254898627,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 85
+    }
+  },
+  {
+    "item_id": "5f519ae425be644c",
+    "difficulty": -1.6742756651679096,
+    "discrimination": 4.99999534001994,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 89
+    }
+  },
+  {
+    "item_id": "deeda5e064a42bbc",
+    "difficulty": -2.8993824952802107,
+    "discrimination": 1.1502874571826565,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 90
+    }
+  },
+  {
+    "item_id": "300d7eb15d8cd04e",
+    "difficulty": -2.203686551473167,
+    "discrimination": 4.999994267502951,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 94
+    }
+  },
+  {
+    "item_id": "a31073ea9a8099f8",
+    "difficulty": -5.960028907831695,
+    "discrimination": 0.3856682245926702,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 95
+    }
+  },
+  {
+    "item_id": "d1930801411b341d",
+    "difficulty": -1.900870568177832,
+    "discrimination": 2.0150989880040973,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 97
+    }
+  },
+  {
+    "item_id": "47f78b0e062c5b61",
+    "difficulty": -0.5793153469264244,
+    "discrimination": 0.9712740170656008,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 99
+    }
+  },
+  {
+    "item_id": "b8b1d468e35875a2",
+    "difficulty": -1.4527359991220352,
+    "discrimination": 0.873066854700204,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 101
+    }
+  },
+  {
+    "item_id": "b21e51e3788faff7",
+    "difficulty": -1.8817716266995175,
+    "discrimination": 4.999996511834992,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 102
+    }
+  },
+  {
+    "item_id": "2c51be08b5321a1b",
+    "difficulty": -4.197116709321728,
+    "discrimination": 0.7183425988422717,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 104
+    }
+  },
+  {
+    "item_id": "86ae1ba2c91606bf",
+    "difficulty": -2.2036865514729547,
+    "discrimination": 4.999994267506934,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 105
+    }
+  },
+  {
+    "item_id": "0b8dca049c0c16e3",
+    "difficulty": -1.881771626699522,
+    "discrimination": 4.999996511834887,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 111
+    }
+  },
+  {
+    "item_id": "e99b657ef03abd3d",
+    "difficulty": -0.3874847405020497,
+    "discrimination": 0.6571460236383426,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 117
+    }
+  },
+  {
+    "item_id": "339dc9fcd89667c4",
+    "difficulty": -1.33471845235089,
+    "discrimination": 0.9793109421642656,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 118
+    }
+  },
+  {
+    "item_id": "267dc4eb6da74eb0",
+    "difficulty": -2.692724126355291,
+    "discrimination": 1.2832152849468474,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 119
+    }
+  },
+  {
+    "item_id": "4e3c8774860d3e09",
+    "difficulty": -2.8901717623938845,
+    "discrimination": 1.901265185508807,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 121
+    }
+  },
+  {
+    "item_id": "98da20212707a1bd",
+    "difficulty": 1.9756666111222965,
+    "discrimination": 0.3302665863189869,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 125
+    }
+  },
+  {
+    "item_id": "76c61ae47e08d8a0",
+    "difficulty": 0.9794318807709717,
+    "discrimination": 0.8500363221300301,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 128
+    }
+  },
+  {
+    "item_id": "705c9cb8e8627d1d",
+    "difficulty": -1.624128982721618,
+    "discrimination": 2.387744098940426,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 130
+    }
+  },
+  {
+    "item_id": "f665639ec7e5619b",
+    "difficulty": 1.714412202747453,
+    "discrimination": 0.9931454343001886,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 132
+    }
+  },
+  {
+    "item_id": "e694be1b241df33f",
+    "difficulty": -2.5612418135816446,
+    "discrimination": 2.528775322047079,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 133
+    }
+  },
+  {
+    "item_id": "4fcb793d7cf1475a",
+    "difficulty": -2.561241808941796,
+    "discrimination": 2.5287753351648505,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 134
+    }
+  },
+  {
+    "item_id": "9aaf500354bf9062",
+    "difficulty": -2.2665243462179445,
+    "discrimination": 1.2258021984419214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 136
+    }
+  },
+  {
+    "item_id": "8d410fd853458279",
+    "difficulty": -2.8901718511169974,
+    "discrimination": 1.901265067208762,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 137
+    }
+  },
+  {
+    "item_id": "34bdf2ca4accd09c",
+    "difficulty": -1.3881978894705649,
+    "discrimination": 1.8863744508613045,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 138
+    }
+  },
+  {
+    "item_id": "18955d723a3308db",
+    "difficulty": -1.5358136194157477,
+    "discrimination": 0.9137111808913816,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 142
+    }
+  },
+  {
+    "item_id": "1f470317231db408",
+    "difficulty": 0.1555699202788657,
+    "discrimination": 0.5269484215599584,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 145
+    }
+  },
+  {
+    "item_id": "a79bb432ea03bda7",
+    "difficulty": 0.1392706051391463,
+    "discrimination": 1.630881776581789,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 146
+    }
+  },
+  {
+    "item_id": "e14a4fa28c7147cc",
+    "difficulty": -2.172119052654608,
+    "discrimination": 0.811122004658937,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 148
+    }
+  },
+  {
+    "item_id": "0ade8159c563e010",
+    "difficulty": -5.979379400454773,
+    "discrimination": 0.4838638316996724,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 150
+    }
+  },
+  {
+    "item_id": "40f3428cdda3c602",
+    "difficulty": 0.9987050406288704,
+    "discrimination": 0.8286575740275879,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 151
+    }
+  },
+  {
+    "item_id": "154623fc2788e3ad",
+    "difficulty": -2.561241832379115,
+    "discrimination": 2.52877526890291,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 152
+    }
+  },
+  {
+    "item_id": "87fa28c1954429e1",
+    "difficulty": -2.338127732063522,
+    "discrimination": 0.7402911066249442,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 153
+    }
+  },
+  {
+    "item_id": "3add4a8dc1f2fecb",
+    "difficulty": -0.9570927905662836,
+    "discrimination": 0.8764001052832959,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 154
+    }
+  },
+  {
+    "item_id": "e692b11be6a64c7a",
+    "difficulty": -1.3775672615238377,
+    "discrimination": 0.730093582893526,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 155
+    }
+  },
+  {
+    "item_id": "1ba85ea0c898b400",
+    "difficulty": -2.471371240336096,
+    "discrimination": 1.4735507113779462,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 156
+    }
+  },
+  {
+    "item_id": "2d8aa9c4b0a9198c",
+    "difficulty": -3.8133080837162425,
+    "discrimination": 0.4252743313686725,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 159
+    }
+  },
+  {
+    "item_id": "bad2c3eea442d395",
+    "difficulty": 1.352949426753324,
+    "discrimination": 0.6559306730112453,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 161
+    }
+  },
+  {
+    "item_id": "5bdb5d29236762d2",
+    "difficulty": -5.979804298129751,
+    "discrimination": 0.5624337318231187,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 162
+    }
+  },
+  {
+    "item_id": "5878a9369d70d815",
+    "difficulty": -3.387273113250526,
+    "discrimination": 1.4385008290100074,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 164
+    }
+  },
+  {
+    "item_id": "a0a9c8a6694fa1ae",
+    "difficulty": -2.3965648066847374,
+    "discrimination": 1.3034003784456971,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 168
+    }
+  },
+  {
+    "item_id": "7a237467e4aecad0",
+    "difficulty": -1.890039272367268,
+    "discrimination": 1.2405997807364462,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 171
+    }
+  },
+  {
+    "item_id": "ed90f0548153c1ee",
+    "difficulty": 0.9197419024994272,
+    "discrimination": 0.7833286105049997,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 175
+    }
+  },
+  {
+    "item_id": "a8263e7b0db983db",
+    "difficulty": -1.4944857791009158,
+    "discrimination": 1.616401350988984,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 176
+    }
+  },
+  {
+    "item_id": "f1b12026a50fbe91",
+    "difficulty": -1.101995295468679,
+    "discrimination": 1.3101984429194469,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 178
+    }
+  },
+  {
+    "item_id": "07399c8bd5c482aa",
+    "difficulty": -1.0911530602552617,
+    "discrimination": 0.8578285938122625,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 181
+    }
+  },
+  {
+    "item_id": "a2ec9fc128957957",
+    "difficulty": -5.891004862941705,
+    "discrimination": 0.4347644950808207,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 183
+    }
+  },
+  {
+    "item_id": "eee4851035c50db4",
+    "difficulty": -2.771011228824784,
+    "discrimination": 1.0532226868863472,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 184
+    }
+  },
+  {
+    "item_id": "99a162a7734b9f7b",
+    "difficulty": -2.2915506109531223,
+    "discrimination": 0.6853298382136668,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 186
+    }
+  },
+  {
+    "item_id": "cab29131158b4d1c",
+    "difficulty": -2.6735805674812108,
+    "discrimination": 0.9692433891855764,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 188
+    }
+  },
+  {
+    "item_id": "dd1f91f50e3802ec",
+    "difficulty": -2.9448850112299065,
+    "discrimination": 0.6875578680962248,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 191
+    }
+  },
+  {
+    "item_id": "0e6a4782a20bb28b",
+    "difficulty": -2.8901718780690047,
+    "discrimination": 1.9012650312719743,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 192
+    }
+  },
+  {
+    "item_id": "fbfd1a0f814e8fc3",
+    "difficulty": -2.203686551472704,
+    "discrimination": 4.999994267511622,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 197
+    }
+  },
+  {
+    "item_id": "0bb88e7eb86b8842",
+    "difficulty": 4.456514714740567,
+    "discrimination": 0.3294444214511254,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 198
+    }
+  },
+  {
+    "item_id": "6dc7c1bc605291ae",
+    "difficulty": -1.3031413908348426,
+    "discrimination": 0.5181138306474576,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 199
+    }
+  },
+  {
+    "item_id": "a07b510ba69bbf9f",
+    "difficulty": -1.2736886573158794e-05,
+    "discrimination": 1.5180945139894804,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 201
+    }
+  },
+  {
+    "item_id": "c52c3b92fc39b679",
+    "difficulty": -2.89017196286231,
+    "discrimination": 1.9012649182117864,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 202
+    }
+  },
+  {
+    "item_id": "b9a3e3796330e599",
+    "difficulty": 0.6230569560055368,
+    "discrimination": 2.368421909014361,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 204
+    }
+  },
+  {
+    "item_id": "5136a1fd49f9146e",
+    "difficulty": -1.6861111879519823,
+    "discrimination": 2.835759029858755,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 205
+    }
+  },
+  {
+    "item_id": "20f42fa3298b0a6a",
+    "difficulty": -0.9184142395231011,
+    "discrimination": 1.536015557367445,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 208
+    }
+  },
+  {
+    "item_id": "2e9558351e271194",
+    "difficulty": -1.689261680165044,
+    "discrimination": 2.146822809609594,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 209
+    }
+  },
+  {
+    "item_id": "f983256a4a6d21d3",
+    "difficulty": -1.8356006004974785,
+    "discrimination": 2.1953643766427176,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 217
+    }
+  },
+  {
+    "item_id": "9f8fba80dbf025bf",
+    "difficulty": -5.814940466049279,
+    "discrimination": 0.2285512885944494,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 219
+    }
+  },
+  {
+    "item_id": "c6409048865fe541",
+    "difficulty": -2.6556083982338734,
+    "discrimination": 1.3110051407918373,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 220
+    }
+  },
+  {
+    "item_id": "4f3fddf50c955311",
+    "difficulty": -1.560956781699332,
+    "discrimination": 4.043626035944346,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 221
+    }
+  },
+  {
+    "item_id": "c74aa477e90cef25",
+    "difficulty": -1.995962346195715,
+    "discrimination": 0.9047350773391176,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 222
+    }
+  },
+  {
+    "item_id": "0fbd90178f5d1f47",
+    "difficulty": -0.5222469011686617,
+    "discrimination": 1.130877764112355,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 223
+    }
+  },
+  {
+    "item_id": "84a534abf9bcb20c",
+    "difficulty": -1.83897763209451,
+    "discrimination": 2.184901439196947,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 226
+    }
+  },
+  {
+    "item_id": "e3ee065ee548cabc",
+    "difficulty": -1.624982539595644,
+    "discrimination": 1.6104734235040663,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 229
+    }
+  },
+  {
+    "item_id": "86e6e49788936bc0",
+    "difficulty": -3.0233519528745028,
+    "discrimination": 1.3064467465033958,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 230
+    }
+  },
+  {
+    "item_id": "3d4b403a0f1f6f4e",
+    "difficulty": -3.5916796779831297,
+    "discrimination": 0.2285530304052033,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 231
+    }
+  },
+  {
+    "item_id": "f9a440506dd06805",
+    "difficulty": -4.557221267226142,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 233
+    }
+  },
+  {
+    "item_id": "8469bc3793e7e100",
+    "difficulty": -1.8817716266990627,
+    "discrimination": 4.999996511845469,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 234
+    }
+  },
+  {
+    "item_id": "84d5b624fd31d1bf",
+    "difficulty": -3.332999981137655,
+    "discrimination": 0.8284815492444008,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 236
+    }
+  },
+  {
+    "item_id": "9e21385a9515ebf5",
+    "difficulty": -1.812630306047526,
+    "discrimination": 1.5352790349892382,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 238
+    }
+  },
+  {
+    "item_id": "31099f20c0097e9f",
+    "difficulty": 3.2109514183633063,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 240
+    }
+  },
+  {
+    "item_id": "c3e7af78acfd01b2",
+    "difficulty": -2.5612429664240643,
+    "discrimination": 2.528772062733346,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 243
+    }
+  },
+  {
+    "item_id": "111a9337ff095d58",
+    "difficulty": -5.813544194532295,
+    "discrimination": 0.2285501288130265,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 246
+    }
+  },
+  {
+    "item_id": "f2e6c40021d70ac6",
+    "difficulty": -4.879042450644397,
+    "discrimination": 0.5335087206880857,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 247
+    }
+  },
+  {
+    "item_id": "098aef6cf2bf38b5",
+    "difficulty": -2.618750858002798,
+    "discrimination": 0.8843555975941467,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 248
+    }
+  },
+  {
+    "item_id": "e4c20f3baef5815f",
+    "difficulty": -3.307311552466008,
+    "discrimination": 0.8364464040191277,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 249
+    }
+  },
+  {
+    "item_id": "547378653921f3ed",
+    "difficulty": -1.8131333761597763,
+    "discrimination": 1.5344905348049644,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 251
+    }
+  },
+  {
+    "item_id": "c983f0150d57b1c3",
+    "difficulty": -1.104745649489332,
+    "discrimination": 1.1248802190806029,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 256
+    }
+  },
+  {
+    "item_id": "3cee9523abcf789b",
+    "difficulty": -2.3191161512955905,
+    "discrimination": 1.6506837658865334,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 259
+    }
+  },
+  {
+    "item_id": "91fb42194e676791",
+    "difficulty": -4.027606276562683,
+    "discrimination": 0.4011537325302931,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 261
+    }
+  },
+  {
+    "item_id": "8ddbe3ad1350ed65",
+    "difficulty": -2.2036865514725643,
+    "discrimination": 4.999994267514247,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 262
+    }
+  },
+  {
+    "item_id": "b24289797e135b8b",
+    "difficulty": -1.6742756651673685,
+    "discrimination": 4.999995340033807,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 263
+    }
+  },
+  {
+    "item_id": "cb2c798e2aa02c8e",
+    "difficulty": -2.0366432388681845,
+    "discrimination": 1.108282119051455,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 266
+    }
+  },
+  {
+    "item_id": "560395c6a23c5188",
+    "difficulty": 0.1275308085993862,
+    "discrimination": 1.986911372751173,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 267
+    }
+  },
+  {
+    "item_id": "ebd905064848f43c",
+    "difficulty": 0.0755497122580863,
+    "discrimination": 1.3927229527324507,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 268
+    }
+  },
+  {
+    "item_id": "ddbecc8614105569",
+    "difficulty": -1.78851054358546,
+    "discrimination": 0.2673542042122138,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 269
+    }
+  },
+  {
+    "item_id": "f9b321ba2385b857",
+    "difficulty": -1.9747872508880977,
+    "discrimination": 0.9176358111162322,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 270
+    }
+  },
+  {
+    "item_id": "fc6f8fef37f025e2",
+    "difficulty": -0.0930765892521256,
+    "discrimination": 1.0008737857003058,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 271
+    }
+  },
+  {
+    "item_id": "dae6fcebc08828c4",
+    "difficulty": -1.701098693854465,
+    "discrimination": 0.5687073921871095,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 274
+    }
+  },
+  {
+    "item_id": "dd7980e07ac765ba",
+    "difficulty": -2.890164675699263,
+    "discrimination": 1.901274634639547,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 278
+    }
+  },
+  {
+    "item_id": "ae24da4f5317f71e",
+    "difficulty": 0.1204617555109944,
+    "discrimination": 2.3180344675924545,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 279
+    }
+  },
+  {
+    "item_id": "a546ef000c987005",
+    "difficulty": -1.0708232372187991,
+    "discrimination": 1.952008514050885,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 280
+    }
+  },
+  {
+    "item_id": "c85301f76bd7a419",
+    "difficulty": -0.7002840683789029,
+    "discrimination": 1.1434421759126356,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 281
+    }
+  },
+  {
+    "item_id": "113ed641977cd942",
+    "difficulty": 0.294074886540325,
+    "discrimination": 1.4813055579357428,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 282
+    }
+  },
+  {
+    "item_id": "f5e4ab66d46945a4",
+    "difficulty": -1.0534445016367917,
+    "discrimination": 2.5656307819467346,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 285
+    }
+  },
+  {
+    "item_id": "19b9599084f28602",
+    "difficulty": 4.047739677946125,
+    "discrimination": 0.8809154865658546,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 286
+    }
+  },
+  {
+    "item_id": "1623203589b51dba",
+    "difficulty": 1.4710474171989008,
+    "discrimination": 2.4850289513513357,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 288
+    }
+  },
+  {
+    "item_id": "0af008d1284dadbd",
+    "difficulty": -5.002679222258198,
+    "discrimination": 0.5884206025451416,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 292
+    }
+  },
+  {
+    "item_id": "3ed83f73b7c06a47",
+    "difficulty": 0.5403885845275458,
+    "discrimination": 1.073866939813138,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 293
+    }
+  },
+  {
+    "item_id": "00e5b342b8164c17",
+    "difficulty": -1.9844375908700205,
+    "discrimination": 2.3377580705216645,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 295
+    }
+  },
+  {
+    "item_id": "9a41a635e32d2bfd",
+    "difficulty": -2.5615256310639345,
+    "discrimination": 0.4947556760635479,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 297
+    }
+  },
+  {
+    "item_id": "72114912f35a653c",
+    "difficulty": 0.4602889443436611,
+    "discrimination": 1.0322976537947284,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 299
+    }
+  },
+  {
+    "item_id": "178b0ac83f4cba12",
+    "difficulty": -2.7876025300491185,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 300
+    }
+  },
+  {
+    "item_id": "6c84a581dd14e4d9",
+    "difficulty": -2.933130890225926,
+    "discrimination": 0.8594693543033236,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 302
+    }
+  },
+  {
+    "item_id": "1ad9a29e616b3ea7",
+    "difficulty": -2.8901666903509606,
+    "discrimination": 1.901271948379125,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 303
+    }
+  },
+  {
+    "item_id": "3da967cdc9ef0f11",
+    "difficulty": -0.8882093885243073,
+    "discrimination": 0.6868926564957948,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 304
+    }
+  },
+  {
+    "item_id": "bf0941c4b9263d0d",
+    "difficulty": -2.8901715943290758,
+    "discrimination": 1.901265409600071,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 306
+    }
+  },
+  {
+    "item_id": "0132637dcb2002bd",
+    "difficulty": -2.8901717516470127,
+    "discrimination": 1.9012651998382797,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 307
+    }
+  },
+  {
+    "item_id": "4aa009cf1bb4910e",
+    "difficulty": -4.017099573654575,
+    "discrimination": 0.8892588193035242,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 308
+    }
+  },
+  {
+    "item_id": "2499531a20f45e28",
+    "difficulty": -1.3504849733055715,
+    "discrimination": 0.9634560071218332,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 310
+    }
+  },
+  {
+    "item_id": "66b5294c719a90f5",
+    "difficulty": -1.2982349018584038,
+    "discrimination": 2.2262322565843378,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 311
+    }
+  },
+  {
+    "item_id": "a6e4ea086b46e2d2",
+    "difficulty": -1.037430664031294,
+    "discrimination": 1.4557298115653603,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 312
+    }
+  },
+  {
+    "item_id": "c5e238c6fe853fdb",
+    "difficulty": -5.9637610868122986,
+    "discrimination": 0.3856760110233818,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 313
+    }
+  },
+  {
+    "item_id": "7a5292b366841bc3",
+    "difficulty": 1.0876335528243208,
+    "discrimination": 0.7435827118545935,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 314
+    }
+  },
+  {
+    "item_id": "57b57c9ba1787d56",
+    "difficulty": -1.0460411202158142,
+    "discrimination": 3.688155358287844,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 315
+    }
+  },
+  {
+    "item_id": "25e106922e6d4e7d",
+    "difficulty": -0.8273001404814508,
+    "discrimination": 0.8998060078921954,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 316
+    }
+  },
+  {
+    "item_id": "0e188a6892a78076",
+    "difficulty": 3.8696808171916808,
+    "discrimination": 0.5562125430106672,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 318
+    }
+  },
+  {
+    "item_id": "173054c03dcbc1ae",
+    "difficulty": -2.4397677266137885,
+    "discrimination": 1.2675662083355934,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 321
+    }
+  },
+  {
+    "item_id": "51bac28b9ee6c8ea",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 323
+    }
+  },
+  {
+    "item_id": "0ea816ddc8e4d82b",
+    "difficulty": -2.150656310035657,
+    "discrimination": 0.7398963416363501,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 324
+    }
+  },
+  {
+    "item_id": "d60c7294d8b748a1",
+    "difficulty": 0.53929907485917,
+    "discrimination": 1.3959845389821683,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 325
+    }
+  },
+  {
+    "item_id": "131753e581888170",
+    "difficulty": 1.0655902788129643,
+    "discrimination": 0.6536888238615322,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 326
+    }
+  },
+  {
+    "item_id": "2a8eeb411a32534f",
+    "difficulty": -1.092080204941717,
+    "discrimination": 1.8648577525970265,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 327
+    }
+  },
+  {
+    "item_id": "1454021de2b703c4",
+    "difficulty": -3.052765807895394,
+    "discrimination": 1.287500198698835,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 328
+    }
+  },
+  {
+    "item_id": "70eae0e6109320af",
+    "difficulty": -4.115732978231405,
+    "discrimination": 0.7350092218232523,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 332
+    }
+  },
+  {
+    "item_id": "6d4883dc21ad3efc",
+    "difficulty": -3.2352267399121883,
+    "discrimination": 0.8597545920286714,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 334
+    }
+  },
+  {
+    "item_id": "1856d4f6dd9e84aa",
+    "difficulty": -5.815029279967585,
+    "discrimination": 0.2285513623657261,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 335
+    }
+  },
+  {
+    "item_id": "74f21421d6950350",
+    "difficulty": 5.83588561294827,
+    "discrimination": 0.2972963675969158,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 337
+    }
+  },
+  {
+    "item_id": "21b0da5bf06966f7",
+    "difficulty": -1.881771626697648,
+    "discrimination": 4.999996511878058,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 338
+    }
+  },
+  {
+    "item_id": "d6bc78b9bbb7127d",
+    "difficulty": -2.742277324413449,
+    "discrimination": 1.5283804157088696,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 341
+    }
+  },
+  {
+    "item_id": "90cce0d6278e868d",
+    "difficulty": 0.8221967218707225,
+    "discrimination": 1.0848477196561817,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 342
+    }
+  },
+  {
+    "item_id": "ec8a10d6d908244b",
+    "difficulty": -2.3906416746336427,
+    "discrimination": 0.7205844716999363,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 349
+    }
+  },
+  {
+    "item_id": "3923b8f616eb9e51",
+    "difficulty": -2.2036865514713364,
+    "discrimination": 4.999994267537264,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 351
+    }
+  },
+  {
+    "item_id": "095a731f268c34bd",
+    "difficulty": -1.8817716266976867,
+    "discrimination": 4.999996511877167,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 352
+    }
+  },
+  {
+    "item_id": "f8b36f93f775a631",
+    "difficulty": -1.297799019170648,
+    "discrimination": 0.7865900271538827,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 353
+    }
+  },
+  {
+    "item_id": "bbd35a0c69517ebb",
+    "difficulty": -2.377665277373381,
+    "discrimination": 1.141251781446189,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 355
+    }
+  },
+  {
+    "item_id": "b4415a2492ab0c55",
+    "difficulty": -1.466416465364398,
+    "discrimination": 3.477216048562731,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 357
+    }
+  },
+  {
+    "item_id": "8e7197dec1cc6581",
+    "difficulty": -1.377468344012044,
+    "discrimination": 0.7301589949542984,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 358
+    }
+  },
+  {
+    "item_id": "1283480f0b1c460f",
+    "difficulty": -1.9267458814823581,
+    "discrimination": 1.3795187430031142,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 360
+    }
+  },
+  {
+    "item_id": "1570625d8907d85a",
+    "difficulty": -2.369515785689669,
+    "discrimination": 2.03185503421288,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 363
+    }
+  },
+  {
+    "item_id": "7db2b00f355970ef",
+    "difficulty": -1.923339475867104,
+    "discrimination": 4.249935131282516,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 368
+    }
+  },
+  {
+    "item_id": "777df81ec1af71c5",
+    "difficulty": -1.6242761534447565,
+    "discrimination": 0.9524252274826082,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 372
+    }
+  },
+  {
+    "item_id": "2d9159e44dc7730f",
+    "difficulty": -1.826068859608788,
+    "discrimination": 0.816214173223315,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 377
+    }
+  },
+  {
+    "item_id": "29d26bfbdf7c8d73",
+    "difficulty": -1.627994990534855,
+    "discrimination": 1.3833019819955032,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 380
+    }
+  },
+  {
+    "item_id": "978d849771af6255",
+    "difficulty": -0.9994880078985253,
+    "discrimination": 1.126890166185062,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 382
+    }
+  },
+  {
+    "item_id": "c46fe7fb7ad165f0",
+    "difficulty": -2.580971471574146,
+    "discrimination": 1.1648793015008128,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 385
+    }
+  },
+  {
+    "item_id": "0fa25702a40f0933",
+    "difficulty": -1.6358274129719206,
+    "discrimination": 2.339609189060267,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 386
+    }
+  },
+  {
+    "item_id": "ff158682076b940a",
+    "difficulty": -4.771677738844192,
+    "discrimination": 0.5467582411454965,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 387
+    }
+  },
+  {
+    "item_id": "99cf6be985fe6636",
+    "difficulty": 2.800909574427417,
+    "discrimination": 0.2954567070680369,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 389
+    }
+  },
+  {
+    "item_id": "09591ecf1d98025e",
+    "difficulty": -2.655779590103389,
+    "discrimination": 0.868552306306753,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 391
+    }
+  },
+  {
+    "item_id": "88fa6cd2a0876b95",
+    "difficulty": -1.4290805038953784,
+    "discrimination": 1.1447699515733138,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 393
+    }
+  },
+  {
+    "item_id": "e3bec2584e0dc64f",
+    "difficulty": -0.1463582632955085,
+    "discrimination": 0.5651485492846495,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 395
+    }
+  },
+  {
+    "item_id": "c2ea3c070bfbe0fa",
+    "difficulty": -2.0063228131108533,
+    "discrimination": 0.4726236071373753,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 396
+    }
+  },
+  {
+    "item_id": "2dff423539d1dbcc",
+    "difficulty": -2.8901715588527868,
+    "discrimination": 1.9012654569028136,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 400
+    }
+  },
+  {
+    "item_id": "562c127328b4ea27",
+    "difficulty": -1.737061463831952,
+    "discrimination": 1.6646525332633837,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 402
+    }
+  },
+  {
+    "item_id": "686ccec142f0455e",
+    "difficulty": -1.665942713449977,
+    "discrimination": 0.6545599586103192,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 406
+    }
+  },
+  {
+    "item_id": "749328f3e5ad565e",
+    "difficulty": -2.927167876340508e-05,
+    "discrimination": 0.4908372006911685,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 407
+    }
+  },
+  {
+    "item_id": "02bd2501d9e1c23a",
+    "difficulty": -2.2036865514708657,
+    "discrimination": 4.999994267546078,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 408
+    }
+  },
+  {
+    "item_id": "d90995c0b4b8e364",
+    "difficulty": -1.0044779097253602,
+    "discrimination": 1.858454066696945,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 412
+    }
+  },
+  {
+    "item_id": "d4307fc87e97ea8b",
+    "difficulty": -3.581723626865858,
+    "discrimination": 0.869204994548758,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 413
+    }
+  },
+  {
+    "item_id": "e660363818cb68a6",
+    "difficulty": -1.8817716266971791,
+    "discrimination": 4.999996511888859,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 416
+    }
+  },
+  {
+    "item_id": "0a6c158c59ea0f20",
+    "difficulty": -4.230189471673703,
+    "discrimination": 1.052018707857196,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 417
+    }
+  },
+  {
+    "item_id": "052902e7f2bedd04",
+    "difficulty": -2.89017136617914,
+    "discrimination": 1.9012657138065707,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 418
+    }
+  },
+  {
+    "item_id": "7cdf4bb8c16b5949",
+    "difficulty": -1.7347333871321728,
+    "discrimination": 1.24628227805875,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 421
+    }
+  },
+  {
+    "item_id": "24050470945386fe",
+    "difficulty": -1.6343065662340275,
+    "discrimination": 0.6696574516747295,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 422
+    }
+  },
+  {
+    "item_id": "a9295bff3cf5da41",
+    "difficulty": 0.291050556907134,
+    "discrimination": 0.9483466692268642,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 424
+    }
+  },
+  {
+    "item_id": "aba284c140cc31ce",
+    "difficulty": -1.6742756651657404,
+    "discrimination": 4.999995340075501,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 425
+    }
+  },
+  {
+    "item_id": "f92caadf510c41bc",
+    "difficulty": -2.890166598255448,
+    "discrimination": 1.9012720711758,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 427
+    }
+  },
+  {
+    "item_id": "db6e8fbe764e9d91",
+    "difficulty": -4.230210717014151,
+    "discrimination": 1.0520119424301309,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 431
+    }
+  },
+  {
+    "item_id": "14b48f48fa4adcff",
+    "difficulty": -1.9271745256769124,
+    "discrimination": 1.9524349658009836,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 433
+    }
+  },
+  {
+    "item_id": "2405483bd8a99664",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 440
+    }
+  },
+  {
+    "item_id": "a0ced568b2d06e53",
+    "difficulty": -1.2765424817488804,
+    "discrimination": 2.3335800138580214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 441
+    }
+  },
+  {
+    "item_id": "c5b83d817fd652e2",
+    "difficulty": -2.89017154163799,
+    "discrimination": 1.9012654798563728,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 443
+    }
+  },
+  {
+    "item_id": "013ca7ff4926f7e6",
+    "difficulty": -2.0952955641508235,
+    "discrimination": 0.3105437769253164,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 447
+    }
+  },
+  {
+    "item_id": "2ed01acef555ff3e",
+    "difficulty": -2.670572406910538,
+    "discrimination": 1.2996411452814138,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 448
+    }
+  },
+  {
+    "item_id": "2645f33adfff416b",
+    "difficulty": -0.6657246996048276,
+    "discrimination": 0.2348135525788541,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 451
+    }
+  },
+  {
+    "item_id": "8cb67699d2ee7b39",
+    "difficulty": -2.8047278051874214,
+    "discrimination": 0.5973125456970791,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 452
+    }
+  },
+  {
+    "item_id": "fcbe16cc6ce031be",
+    "difficulty": 5.543613485810356,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 453
+    }
+  },
+  {
+    "item_id": "eab4ebbe31919085",
+    "difficulty": -1.674275665165624,
+    "discrimination": 4.999995340078468,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 455
+    }
+  },
+  {
+    "item_id": "2b2a471db5069d1d",
+    "difficulty": -2.3733868662479,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 457
+    }
+  },
+  {
+    "item_id": "f7c4a9a90831396d",
+    "difficulty": -1.547478835678588,
+    "discrimination": 1.777383451866305,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 458
+    }
+  },
+  {
+    "item_id": "5a266100dd8c0e26",
+    "difficulty": -2.3288535125100305,
+    "discrimination": 2.115034580528336,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 459
+    }
+  },
+  {
+    "item_id": "752d88878d19021a",
+    "difficulty": -1.923339203837088,
+    "discrimination": 4.249939033251183,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 461
+    }
+  },
+  {
+    "item_id": "a78c2be597af3973",
+    "difficulty": 0.058648716325618695,
+    "discrimination": 2.507082929606077,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 462
+    }
+  },
+  {
+    "item_id": "6fc2860fa9cf9917",
+    "difficulty": -1.7740023219854657,
+    "discrimination": 0.9476148496664296,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 463
+    }
+  },
+  {
+    "item_id": "bd237412c8653cb5",
+    "difficulty": -2.8901643966083395,
+    "discrimination": 1.9012750067688355,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 464
+    }
+  },
+  {
+    "item_id": "8924652cdb4d7dbf",
+    "difficulty": -1.5433231939395553,
+    "discrimination": 1.7876061923935245,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 466
+    }
+  },
+  {
+    "item_id": "84cf5701d38b8ad8",
+    "difficulty": -4.093621080066304,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 471
+    }
+  },
+  {
+    "item_id": "a01215deb84808f9",
+    "difficulty": -4.230190382334142,
+    "discrimination": 1.0520184178638776,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 475
+    }
+  },
+  {
+    "item_id": "57a318f578a0b701",
+    "difficulty": -1.2927781601645278,
+    "discrimination": 0.6928044425998722,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 483
+    }
+  },
+  {
+    "item_id": "c8173e7c61bf6232",
+    "difficulty": -4.046203401305872,
+    "discrimination": 0.881384962650126,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 485
+    }
+  },
+  {
+    "item_id": "7c0a22daa8f65512",
+    "difficulty": -5.979872841254253,
+    "discrimination": 0.5624265601149856,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 489
+    }
+  },
+  {
+    "item_id": "4d211f05e3ab8df6",
+    "difficulty": 5.983805239525173,
+    "discrimination": 0.4838744895879535,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 493
+    }
+  },
+  {
+    "item_id": "5b1830811c1720a2",
+    "difficulty": 1.469930945412768,
+    "discrimination": 0.3890327419583418,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 497
+    }
+  },
+  {
+    "item_id": "f7101e2115305a9e",
+    "difficulty": -0.7785811632248695,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 499
+    }
+  },
+  {
+    "item_id": "67843d501d640719",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 506
+    }
+  },
+  {
+    "item_id": "af5661ca33c28efb",
+    "difficulty": -1.876165813958496,
+    "discrimination": 2.7743290002852343,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 508
+    }
+  },
+  {
+    "item_id": "dee2b737c8ad3cdd",
+    "difficulty": 2.0866858414341984,
+    "discrimination": 0.4031557472258807,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 509
+    }
+  },
+  {
+    "item_id": "9842fabcc96f7bcb",
+    "difficulty": -0.8359730519853388,
+    "discrimination": 0.6098755920228233,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 513
+    }
+  },
+  {
+    "item_id": "ab4b1f17b5faa6ee",
+    "difficulty": -2.156206344843421,
+    "discrimination": 1.3256536280340263,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 515
+    }
+  },
+  {
+    "item_id": "a3b61cf7afc8617d",
+    "difficulty": -1.4628404346702466,
+    "discrimination": 3.519125006295763,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 517
+    }
+  },
+  {
+    "item_id": "ec335e59f3d46c64",
+    "difficulty": 1.7106153830399022,
+    "discrimination": 0.2800054207532562,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 518
+    }
+  },
+  {
+    "item_id": "388588155ba9cbe5",
+    "difficulty": 2.3732419495879484,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 519
+    }
+  },
+  {
+    "item_id": "84f06dfea416ce97",
+    "difficulty": -4.186966163754942,
+    "discrimination": 0.845312724016539,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 521
+    }
+  },
+  {
+    "item_id": "a69a824a40c6f12f",
+    "difficulty": -2.660099426795961,
+    "discrimination": 1.307553350199813,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 523
+    }
+  },
+  {
+    "item_id": "9d635883e164fad5",
+    "difficulty": -2.203686551471166,
+    "discrimination": 4.999994267540453,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 528
+    }
+  },
+  {
+    "item_id": "5832d139c128a84b",
+    "difficulty": -2.203686551471166,
+    "discrimination": 4.999994267540453,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 531
+    }
+  },
+  {
+    "item_id": "ff6f36055f276476",
+    "difficulty": -2.0510166644197225,
+    "discrimination": 1.0970141238741726,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 532
+    }
+  },
+  {
+    "item_id": "484ef0feb004c747",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 534
+    }
+  },
+  {
+    "item_id": "856251a2ab030ac2",
+    "difficulty": -1.6742756651654322,
+    "discrimination": 4.999995340083398,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 538
+    }
+  },
+  {
+    "item_id": "b7d2b26bb64bf4b5",
+    "difficulty": -2.2036865514711628,
+    "discrimination": 4.999994267540518,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 539
+    }
+  },
+  {
+    "item_id": "a6bc273051431b79",
+    "difficulty": -2.4706136239705017,
+    "discrimination": 0.766830356779635,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 540
+    }
+  },
+  {
+    "item_id": "c97968077cb57986",
+    "difficulty": -4.230211557099774,
+    "discrimination": 1.0520116749108586,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 541
+    }
+  },
+  {
+    "item_id": "18b9308997d9d742",
+    "difficulty": -2.4475593029342586,
+    "discrimination": 1.0945835404666409,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 544
+    }
+  },
+  {
+    "item_id": "86b264e722b307c5",
+    "difficulty": -1.194212594148336,
+    "discrimination": 1.151976792754316,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 545
+    }
+  },
+  {
+    "item_id": "a1524d75fe2018c4",
+    "difficulty": -1.9233400984128337,
+    "discrimination": 4.2499262015549455,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 546
+    }
+  },
+  {
+    "item_id": "ad10029f6273a886",
+    "difficulty": 1.029176133090666,
+    "discrimination": 0.2281175872457338,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 550
+    }
+  },
+  {
+    "item_id": "00ee486c8679d025",
+    "difficulty": -1.923339142961273,
+    "discrimination": 4.24993990644719,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 552
+    }
+  },
+  {
+    "item_id": "ddc43389376b2917",
+    "difficulty": -5.90179853187585,
+    "discrimination": 0.2690102449669164,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 553
+    }
+  },
+  {
+    "item_id": "37ccd76a0d3ffa77",
+    "difficulty": -2.463536704773766,
+    "discrimination": 1.4815563081506071,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 557
+    }
+  },
+  {
+    "item_id": "7340444ffff86852",
+    "difficulty": -1.2143383762478344,
+    "discrimination": 2.146289558157806,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 560
+    }
+  },
+  {
+    "item_id": "1c62287b9d0b3081",
+    "difficulty": -3.2757875740131626,
+    "discrimination": 0.5513700823255261,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 561
+    }
+  },
+  {
+    "item_id": "9c04574d5d37c851",
+    "difficulty": -0.8576217431519959,
+    "discrimination": 1.019933336780497,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 562
+    }
+  },
+  {
+    "item_id": "6655b721eb2f9f3e",
+    "difficulty": -2.2775405705347382,
+    "discrimination": 0.8492728810557899,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 564
+    }
+  },
+  {
+    "item_id": "a2a5116cec8294b4",
+    "difficulty": -1.4875378653916622,
+    "discrimination": 1.6311946857970208,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 572
+    }
+  },
+  {
+    "item_id": "5c3801ba2a247281",
+    "difficulty": -4.039727938863933,
+    "discrimination": 0.5882952960747333,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 576
+    }
+  },
+  {
+    "item_id": "38bf2c52a397daa6",
+    "difficulty": -2.729339051489766,
+    "discrimination": 1.540830670894324,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 579
+    }
+  },
+  {
+    "item_id": "5ff4b68724a9e7c7",
+    "difficulty": 0.3886158635762201,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 582
+    }
+  },
+  {
+    "item_id": "811e1605bed12b90",
+    "difficulty": -4.843263192381998,
+    "discrimination": 0.7119975336150973,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 584
+    }
+  },
+  {
+    "item_id": "f987db26c0c73d6f",
+    "difficulty": -0.2876662593430019,
+    "discrimination": 0.9641248555606842,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 585
+    }
+  },
+  {
+    "item_id": "ecb859729f99c320",
+    "difficulty": -0.3887533363481026,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 589
+    }
+  },
+  {
+    "item_id": "8583218045a12fc1",
+    "difficulty": -2.369515634747618,
+    "discrimination": 2.0318553244984705,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 592
+    }
+  },
+  {
+    "item_id": "afce41256fc35af6",
+    "difficulty": -2.276258295499682,
+    "discrimination": 0.5647904336967164,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 595
+    }
+  },
+  {
+    "item_id": "d9dfad5830c28fbe",
+    "difficulty": 0.1472495474558125,
+    "discrimination": 1.4633394046782826,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 596
+    }
+  },
+  {
+    "item_id": "ca755149af1634d4",
+    "difficulty": -3.401739897916969,
+    "discrimination": 1.4289529923464437,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 600
+    }
+  },
+  {
+    "item_id": "4ae977903bcb0f70",
+    "difficulty": -0.0912683086512797,
+    "discrimination": 1.0296427602424103,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 601
+    }
+  },
+  {
+    "item_id": "d3e5b4dcc65b85a9",
+    "difficulty": -1.1887786366354274,
+    "discrimination": 2.9584209907417405,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 603
+    }
+  },
+  {
+    "item_id": "86116d49b947518d",
+    "difficulty": -5.541433534595581,
+    "discrimination": 0.2870592971303485,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 606
+    }
+  },
+  {
+    "item_id": "1b731d4c5bac7355",
+    "difficulty": 5.560992690353614,
+    "discrimination": 0.6092075923062565,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 607
+    }
+  },
+  {
+    "item_id": "1b25e0076566a2bc",
+    "difficulty": -4.230211551902176,
+    "discrimination": 1.0520116765659964,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 608
+    }
+  },
+  {
+    "item_id": "025d7fa5a927dd45",
+    "difficulty": -2.1701920438728104,
+    "discrimination": 2.549403995597764,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 609
+    }
+  },
+  {
+    "item_id": "52f1f9e25813b931",
+    "difficulty": -1.2165323352481558,
+    "discrimination": 1.2888841436059932,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 610
+    }
+  },
+  {
+    "item_id": "b54bc4e4c4065175",
+    "difficulty": 5.039273789745734,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 614
+    }
+  },
+  {
+    "item_id": "4aade7f2aed28464",
+    "difficulty": -2.203686551470981,
+    "discrimination": 4.999994267543922,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 616
+    }
+  },
+  {
+    "item_id": "474fb194a9d8cdd2",
+    "difficulty": 0.8147002722839056,
+    "discrimination": 0.2904313212288724,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 617
+    }
+  },
+  {
+    "item_id": "75d9989d097bc797",
+    "difficulty": -0.9727299789023564,
+    "discrimination": 1.174993894748824,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 620
+    }
+  },
+  {
+    "item_id": "5eb3fba7bac7e1f5",
+    "difficulty": -2.8901742089561626,
+    "discrimination": 1.9012619233551424,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 623
+    }
+  },
+  {
+    "item_id": "efb5b3a71f063b9a",
+    "difficulty": -2.2036865514710158,
+    "discrimination": 4.999994267543276,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 625
+    }
+  },
+  {
+    "item_id": "5971737cf7e9565d",
+    "difficulty": -2.890166665161779,
+    "discrimination": 1.901271981965428,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 626
+    }
+  },
+  {
+    "item_id": "48da9b675f255061",
+    "difficulty": 2.537150467937372,
+    "discrimination": 0.7422888634155546,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 627
+    }
+  },
+  {
+    "item_id": "b93810fc603f678d",
+    "difficulty": -2.8724952865963123,
+    "discrimination": 0.5812285462052375,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 629
+    }
+  },
+  {
+    "item_id": "421f4d2cfed331b4",
+    "difficulty": 5.814580300621632,
+    "discrimination": 0.2089144316641756,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 633
+    }
+  },
+  {
+    "item_id": "96fead831056ac07",
+    "difficulty": -5.6230780621227625,
+    "discrimination": 0.3383013716231968,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 638
+    }
+  },
+  {
+    "item_id": "980b7abd3fab9564",
+    "difficulty": -2.890166483829611,
+    "discrimination": 1.9012722237468869,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 641
+    }
+  },
+  {
+    "item_id": "20c486410ada9afe",
+    "difficulty": -2.581553922759467,
+    "discrimination": 1.1644927434936905,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 643
+    }
+  },
+  {
+    "item_id": "389f7ff0cc3d8fbe",
+    "difficulty": -4.056784134678852,
+    "discrimination": 0.6561011648417941,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 650
+    }
+  },
+  {
+    "item_id": "df21181768f31630",
+    "difficulty": -2.5287942359173674,
+    "discrimination": 1.0454821928952065,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 651
+    }
+  },
+  {
+    "item_id": "a8086decf5dc8837",
+    "difficulty": -3.057954959276938,
+    "discrimination": 0.7296477207495342,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 652
+    }
+  },
+  {
+    "item_id": "ca51150f15627116",
+    "difficulty": -2.325183268913189,
+    "discrimination": 2.122907797296116,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 654
+    }
+  },
+  {
+    "item_id": "bdedd846ff6e8096",
+    "difficulty": -5.979379400454773,
+    "discrimination": 0.4838638316996724,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 656
+    }
+  },
+  {
+    "item_id": "56f381f8e123eb20",
+    "difficulty": -1.2292364671619818,
+    "discrimination": 1.726417854905506,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 659
+    }
+  },
+  {
+    "item_id": "d3db3fcaf6c0ab4b",
+    "difficulty": -1.9841723084256542,
+    "discrimination": 1.314285680227081,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 662
+    }
+  },
+  {
+    "item_id": "dc5ec4af462d5f94",
+    "difficulty": 0.9780801393294174,
+    "discrimination": 0.9958457901152832,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 663
+    }
+  },
+  {
+    "item_id": "e7d6b57b23c754ec",
+    "difficulty": -3.3645928666604927,
+    "discrimination": 0.940731186774121,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 664
+    }
+  },
+  {
+    "item_id": "2306faf1fecce607",
+    "difficulty": 1.966661063698041,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 665
+    }
+  },
+  {
+    "item_id": "0662835905d2380c",
+    "difficulty": -1.493249440248731,
+    "discrimination": 1.072391122302072,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 666
+    }
+  },
+  {
+    "item_id": "07e5ad3fbc4270ef",
+    "difficulty": -0.2327586538536073,
+    "discrimination": 0.7444468144091924,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 669
+    }
+  },
+  {
+    "item_id": "04664692c6e5aed5",
+    "difficulty": -4.868290981991102,
+    "discrimination": 0.5348208141233081,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 670
+    }
+  },
+  {
+    "item_id": "198cb6dbca7a967d",
+    "difficulty": -0.5728022968855531,
+    "discrimination": 0.7685384336661191,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 673
+    }
+  },
+  {
+    "item_id": "7fd0e2f5d8576581",
+    "difficulty": -1.516119457435517,
+    "discrimination": 4.999996187265968,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 674
+    }
+  },
+  {
+    "item_id": "abcd67e7a6f94f61",
+    "difficulty": -2.258811149845023,
+    "discrimination": 1.0799902890811652,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 675
+    }
+  },
+  {
+    "item_id": "f50e3aa451a86e84",
+    "difficulty": -3.056849411976043,
+    "discrimination": 1.2849181299957668,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 676
+    }
+  },
+  {
+    "item_id": "08963b844b700753",
+    "difficulty": -2.0107823837254317,
+    "discrimination": 0.8044190024093405,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 678
+    }
+  },
+  {
+    "item_id": "3c3530158c7bf5cf",
+    "difficulty": -2.890166437733735,
+    "discrimination": 1.901272285209385,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 679
+    }
+  },
+  {
+    "item_id": "090cf6961fb13a73",
+    "difficulty": -1.2081607111737094,
+    "discrimination": 2.175547403624918,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 680
+    }
+  },
+  {
+    "item_id": "7e2d6f747418818d",
+    "difficulty": -1.8981550413065327,
+    "discrimination": 1.0875979713231787,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 683
+    }
+  },
+  {
+    "item_id": "0952c57e7b6764c2",
+    "difficulty": -1.7398253301937319,
+    "discrimination": 1.2404913233035382,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 684
+    }
+  },
+  {
+    "item_id": "f660b3fc8ded337c",
+    "difficulty": -1.9235930738831857,
+    "discrimination": 1.9606903620554816,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 686
+    }
+  },
+  {
+    "item_id": "8b8a51c5a5252204",
+    "difficulty": 1.1705791968990624,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 687
+    }
+  },
+  {
+    "item_id": "b8e054dbba7e3219",
+    "difficulty": -2.742420953531667,
+    "discrimination": 1.528243186299899,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 695
+    }
+  },
+  {
+    "item_id": "7ae198725778b6b5",
+    "difficulty": -1.707105454889523,
+    "discrimination": 0.7119716397732655,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 696
+    }
+  },
+  {
+    "item_id": "97bc5def0cfa856c",
+    "difficulty": -1.786622285623436,
+    "discrimination": 0.477409652126543,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 698
+    }
+  },
+  {
+    "item_id": "d486dd3e9161bde8",
+    "difficulty": -3.645734031596597,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 700
+    }
+  },
+  {
+    "item_id": "b90651816b53c43c",
+    "difficulty": -2.6765980093851023,
+    "discrimination": 0.9677798235594952,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 701
+    }
+  },
+  {
+    "item_id": "72c723d3f039c217",
+    "difficulty": -1.621560407196398,
+    "discrimination": 2.398756621659037,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 704
+    }
+  },
+  {
+    "item_id": "e85c26d515968df8",
+    "difficulty": -1.312928460225432,
+    "discrimination": 4.002162362303292,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 706
+    }
+  },
+  {
+    "item_id": "5d5f4fd67670ec0f",
+    "difficulty": -1.0724812138685258,
+    "discrimination": 1.3722537954964298,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 711
+    }
+  },
+  {
+    "item_id": "89e62b03d44483df",
+    "difficulty": -0.3887533363481026,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 712
+    }
+  },
+  {
+    "item_id": "f5d3061ed02ac2fc",
+    "difficulty": 5.950576608027806,
+    "discrimination": 0.699905930470214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 715
+    }
+  },
+  {
+    "item_id": "a3bf9edf08f81452",
+    "difficulty": -5.009591102659987,
+    "discrimination": 0.3819696478171327,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 716
+    }
+  },
+  {
+    "item_id": "244eb896854d7608",
+    "difficulty": -3.1285446193878115,
+    "discrimination": 0.7100520952930942,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 717
+    }
+  },
+  {
+    "item_id": "572789992035f77d",
+    "difficulty": -1.5463729981989107,
+    "discrimination": 1.1536102372745791,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 718
+    }
+  },
+  {
+    "item_id": "c674beeda38a8e59",
+    "difficulty": -2.427583444790934,
+    "discrimination": 0.783670164886945,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 722
+    }
+  },
+  {
+    "item_id": "289dabb60b1dc2c4",
+    "difficulty": -2.2500462256071736,
+    "discrimination": 1.239559909617124,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 726
+    }
+  },
+  {
+    "item_id": "a6307631ede950c1",
+    "difficulty": -1.516119457435339,
+    "discrimination": 4.999996187271117,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 727
+    }
+  },
+  {
+    "item_id": "6bf4ef14e90fbddd",
+    "difficulty": -3.7220354805664266,
+    "discrimination": 0.7252216789513964,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 728
+    }
+  },
+  {
+    "item_id": "6d04ce56c76926e3",
+    "difficulty": 5.25107521855819,
+    "discrimination": 0.4414966978567254,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 732
+    }
+  },
+  {
+    "item_id": "0c3c32dff6792637",
+    "difficulty": 1.3105064839008356,
+    "discrimination": 0.7769179249009859,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 733
+    }
+  },
+  {
+    "item_id": "e2b899146f274456",
+    "difficulty": -1.844389093103844,
+    "discrimination": 1.7578328391177442,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 735
+    }
+  },
+  {
+    "item_id": "ee0de81ef3ea6f70",
+    "difficulty": -0.9248397408948986,
+    "discrimination": 1.8340365352364352,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 736
+    }
+  },
+  {
+    "item_id": "d75ac2dc27c28494",
+    "difficulty": -1.5161194574353092,
+    "discrimination": 4.99999618727198,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 737
+    }
+  },
+  {
+    "item_id": "6b68baa03922069b",
+    "difficulty": -1.1707183195624289,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 738
+    }
+  },
+  {
+    "item_id": "5c9b93ce6595ab6c",
+    "difficulty": -1.8817716266964823,
+    "discrimination": 4.999996511904903,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 739
+    }
+  },
+  {
+    "item_id": "f0afdf2d97c8e0db",
+    "difficulty": -1.767581501665959,
+    "discrimination": 0.6826401653848563,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 740
+    }
+  },
+  {
+    "item_id": "afd4c04dca2c658a",
+    "difficulty": -3.023353606641194,
+    "discrimination": 1.306445670134894,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 742
+    }
+  },
+  {
+    "item_id": "4f60ba4942709e45",
+    "difficulty": -1.8683487300317625,
+    "discrimination": 0.8842226598034607,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 743
+    }
+  },
+  {
+    "item_id": "5179a9b96e5f3ded",
+    "difficulty": -5.984084798308633,
+    "discrimination": 0.4838729590362347,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 747
+    }
+  },
+  {
+    "item_id": "eb83017b57258b6e",
+    "difficulty": 1.9679193531006312,
+    "discrimination": 0.921879108111875,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 748
+    }
+  },
+  {
+    "item_id": "802b7ae2e5d647e7",
+    "difficulty": -2.203686551470979,
+    "discrimination": 4.99999426754396,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 749
+    }
+  },
+  {
+    "item_id": "46dafe7d4eb45dc9",
+    "difficulty": -3.553685596479877,
+    "discrimination": 0.55414344881559,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 751
+    }
+  },
+  {
+    "item_id": "22a618d343a07b5e",
+    "difficulty": -1.8826218200019975,
+    "discrimination": 2.741970704694161,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 755
+    }
+  },
+  {
+    "item_id": "4978994e2952c709",
+    "difficulty": -1.7686200068499098,
+    "discrimination": 1.2090479995603831,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 756
+    }
+  },
+  {
+    "item_id": "cd4ce675ae480d55",
+    "difficulty": -2.369515586065108,
+    "discrimination": 2.0318554181226864,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 761
+    }
+  },
+  {
+    "item_id": "18eb4b6800118168",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 762
+    }
+  },
+  {
+    "item_id": "a62c4f163e8697ad",
+    "difficulty": 0.5585261648797262,
+    "discrimination": 0.2814015680384557,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 763
+    }
+  },
+  {
+    "item_id": "d9945b1ad5175288",
+    "difficulty": -3.222131679127361,
+    "discrimination": 0.8641361718209416,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 764
+    }
+  },
+  {
+    "item_id": "58a692d039cef977",
+    "difficulty": -0.35864386120462644,
+    "discrimination": 0.7220005217532794,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 765
+    }
+  },
+  {
+    "item_id": "da7783bdb7c1f692",
+    "difficulty": -0.7404546355569019,
+    "discrimination": 0.5647770451142594,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 766
+    }
+  },
+  {
+    "item_id": "89c7eb73796bdcd9",
+    "difficulty": 1.9185215836590768,
+    "discrimination": 0.340634817349948,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 767
+    }
+  },
+  {
+    "item_id": "d47187ea2e9cfb78",
+    "difficulty": -2.2036865514708643,
+    "discrimination": 4.999994267546106,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 769
+    }
+  },
+  {
+    "item_id": "5b3601f1ed9d7b30",
+    "difficulty": -2.170193877456803,
+    "discrimination": 2.549397499878509,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 772
+    }
+  },
+  {
+    "item_id": "352c6dc885c12200",
+    "difficulty": -1.978675319603103,
+    "discrimination": 1.5351801033905697,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 774
+    }
+  },
+  {
+    "item_id": "279cadc1bfd5b557",
+    "difficulty": -2.255310783416152,
+    "discrimination": 1.235150204116177,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 778
+    }
+  },
+  {
+    "item_id": "763aa4392f021fe8",
+    "difficulty": 5.853275964624234,
+    "discrimination": 0.3562194369324254,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 779
+    }
+  },
+  {
+    "item_id": "cae8b93878570e2f",
+    "difficulty": -5.2085574595995805,
+    "discrimination": 0.6554924985482483,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 783
+    }
+  },
+  {
+    "item_id": "8558a7cbeb412fe4",
+    "difficulty": -1.923339204009075,
+    "discrimination": 4.249939030784223,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 784
+    }
+  },
+  {
+    "item_id": "97489683e6ac50f6",
+    "difficulty": -2.4350875396350475,
+    "discrimination": 0.7806672317102799,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 785
+    }
+  },
+  {
+    "item_id": "2cdafd4ebed631ab",
+    "difficulty": 5.816065296543106,
+    "discrimination": 0.2089156654845036,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 790
+    }
+  },
+  {
+    "item_id": "ac4bc6bce6ac139b",
+    "difficulty": -1.397241881462959,
+    "discrimination": 1.3574249323615322,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 791
+    }
+  },
+  {
+    "item_id": "3593ceb9a414d150",
+    "difficulty": -2.57338592220086,
+    "discrimination": 1.1699136372916277,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 794
+    }
+  },
+  {
+    "item_id": "5d3241075c67324c",
+    "difficulty": 0.3138624577954173,
+    "discrimination": 0.8560365925824099,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 797
+    }
+  },
+  {
+    "item_id": "0a77bc7ea8bc423b",
+    "difficulty": -0.8303228057866758,
+    "discrimination": 0.4961399929244007,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 799
+    }
+  },
+  {
+    "item_id": "01e2957cce866ae3",
+    "difficulty": -0.48963321977884205,
+    "discrimination": 2.381788125630821,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 800
+    }
+  },
+  {
+    "item_id": "7ca9321ee41e1720",
+    "difficulty": 1.350061424320172,
+    "discrimination": 0.4979786854407912,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 802
+    }
+  },
+  {
+    "item_id": "a9aa4935399d80c5",
+    "difficulty": -2.5929383787826854,
+    "discrimination": 1.010093993269927,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 803
+    }
+  },
+  {
+    "item_id": "461701973aa9c1a3",
+    "difficulty": -3.020799638601428,
+    "discrimination": 1.3081079425502549,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 805
+    }
+  },
+  {
+    "item_id": "4e97ddbe109c7481",
+    "difficulty": -1.2428809323877807,
+    "discrimination": 2.023690918515469,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 806
+    }
+  },
+  {
+    "item_id": "f484c29423796329",
+    "difficulty": -5.897105172457247,
+    "discrimination": 0.434770407599762,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 808
+    }
+  },
+  {
+    "item_id": "c51bf9ee6dd2de30",
+    "difficulty": -2.203686551470196,
+    "discrimination": 4.999994267558635,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 809
+    }
+  },
+  {
+    "item_id": "fbe32f9d0a12f751",
+    "difficulty": -5.738452393344971,
+    "discrimination": 0.4476495418257328,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 812
+    }
+  },
+  {
+    "item_id": "732d89d5d50c9a01",
+    "difficulty": -1.8477437658472928,
+    "discrimination": 0.8972530501988322,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 813
+    }
+  },
+  {
+    "item_id": "28d7a0a15b4732b2",
+    "difficulty": -1.946693682557012,
+    "discrimination": 0.7532987948636899,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 816
+    }
+  },
+  {
+    "item_id": "7f8457340b975b57",
+    "difficulty": 1.2136400578681783,
+    "discrimination": 2.149382767314341,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 818
+    }
+  },
+  {
+    "item_id": "a0965e97bcce95e6",
+    "difficulty": 3.373332907239821,
+    "discrimination": 0.5335550447770111,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 821
+    }
+  },
+  {
+    "item_id": "954499548ada76df",
+    "difficulty": -1.5715691231717648,
+    "discrimination": 0.9968793143449116,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 822
+    }
+  },
+  {
+    "item_id": "d101d89d20c78476",
+    "difficulty": 1.5742759553268462,
+    "discrimination": 1.1228805778569242,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 823
+    }
+  },
+  {
+    "item_id": "9df9b89d6b3802ee",
+    "difficulty": -1.37401334293112,
+    "discrimination": 1.6253222725783922,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 825
+    }
+  },
+  {
+    "item_id": "77c4b88ae4460956",
+    "difficulty": -5.92534749594292,
+    "discrimination": 0.26783502855986,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 827
+    }
+  },
+  {
+    "item_id": "1a4e9c57d2f4fce0",
+    "difficulty": -2.3661525066379294,
+    "discrimination": 1.1493923422643757,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 831
+    }
+  },
+  {
+    "item_id": "f0aa9d86674d76fd",
+    "difficulty": -1.6571458677308892,
+    "discrimination": 1.0419235824213886,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 832
+    }
+  },
+  {
+    "item_id": "2202b15bd75cfa41",
+    "difficulty": 0.6139317374085855,
+    "discrimination": 0.7049702588041263,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 833
+    }
+  },
+  {
+    "item_id": "ee105c639e05cb46",
+    "difficulty": 0.4963372906219606,
+    "discrimination": 0.4938692169067459,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 834
+    }
+  },
+  {
+    "item_id": "9d2dd55df9ebe473",
+    "difficulty": -2.4296262348398616,
+    "discrimination": 0.8710993289495672,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 835
+    }
+  },
+  {
+    "item_id": "01af0a5aaa6fa370",
+    "difficulty": -1.4859261409935267,
+    "discrimination": 0.8475826448012753,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 836
+    }
+  },
+  {
+    "item_id": "d324e3f3eb89ad7d",
+    "difficulty": -4.8673188857821525,
+    "discrimination": 0.7079537871457539,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 837
+    }
+  },
+  {
+    "item_id": "84805bd469713371",
+    "difficulty": -1.881771626695909,
+    "discrimination": 4.99999651191811,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 839
+    }
+  },
+  {
+    "item_id": "d7dd43c85491c80b",
+    "difficulty": -2.12097911101745,
+    "discrimination": 0.4446893607770151,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 840
+    }
+  },
+  {
+    "item_id": "0b8fe05947a38170",
+    "difficulty": -2.42724928656706,
+    "discrimination": 0.7838038858536404,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 842
+    }
+  },
+  {
+    "item_id": "a480010548d1b3d5",
+    "difficulty": -1.3485651164522177,
+    "discrimination": 0.3593234699126962,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 844
+    }
+  },
+  {
+    "item_id": "e72ae54d814915c3",
+    "difficulty": -4.106229649052,
+    "discrimination": 0.5776164770601403,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 846
+    }
+  },
+  {
+    "item_id": "dfc36926a1dc5dff",
+    "difficulty": -1.5954505352122388,
+    "discrimination": 1.999149929366291,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 847
+    }
+  },
+  {
+    "item_id": "8c76c6c2814d52fd",
+    "difficulty": -0.4576248941440551,
+    "discrimination": 1.0411954360163294,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 848
+    }
+  },
+  {
+    "item_id": "d12bd9167f4ee702",
+    "difficulty": -2.0877225658055893,
+    "discrimination": 2.0561608606653627,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 853
+    }
+  },
+  {
+    "item_id": "40f32359705fdb77",
+    "difficulty": -2.369551112187108,
+    "discrimination": 2.0317870957352877,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 855
+    }
+  },
+  {
+    "item_id": "e9c7a7bfa930dce8",
+    "difficulty": -1.9844375852224485,
+    "discrimination": 2.337758088458178,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 857
+    }
+  },
+  {
+    "item_id": "9e1cc625a93ef731",
+    "difficulty": -2.203686551470151,
+    "discrimination": 4.999994267559474,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 859
+    }
+  },
+  {
+    "item_id": "812608058ae0e983",
+    "difficulty": -2.3402074971846902,
+    "discrimination": 1.1682243109063974,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 860
+    }
+  },
+  {
+    "item_id": "2446e33f4e70264b",
+    "difficulty": -1.540980906839326,
+    "discrimination": 0.8087646843357887,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 861
+    }
+  },
+  {
+    "item_id": "2827a022cb1a5d28",
+    "difficulty": -0.3318729105143969,
+    "discrimination": 1.8439619602670492,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 863
+    }
+  },
+  {
+    "item_id": "8c34edf691c10d44",
+    "difficulty": -1.516119457434173,
+    "discrimination": 4.99999618730481,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 864
+    }
+  },
+  {
+    "item_id": "c7ee2075de01579c",
+    "difficulty": -3.343865117704139,
+    "discrimination": 0.8251751379509973,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 866
+    }
+  },
+  {
+    "item_id": "7fee2dd1077ab7d4",
+    "difficulty": -2.310137342074273,
+    "discrimination": 1.662844236172232,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 867
+    }
+  },
+  {
+    "item_id": "d3f1dc45f2ae8150",
+    "difficulty": -5.985601457963896,
+    "discrimination": 0.3169414146118722,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 869
+    }
+  },
+  {
+    "item_id": "c7ac5cdcdacf76f4",
+    "difficulty": -1.924527516849201,
+    "discrimination": 1.2062933501391648,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 871
+    }
+  },
+  {
+    "item_id": "9384b4357b62f019",
+    "difficulty": -1.8256649122502528,
+    "discrimination": 1.311269859129834,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 872
+    }
+  },
+  {
+    "item_id": "eb305249e62ce146",
+    "difficulty": -1.6742756651639017,
+    "discrimination": 4.999995340122598,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 873
+    }
+  },
+  {
+    "item_id": "abaa94ccf64b9551",
+    "difficulty": -0.093726653847632,
+    "discrimination": 0.9909677549886204,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 874
+    }
+  },
+  {
+    "item_id": "5eab6a25e4bcfb10",
+    "difficulty": -2.6753359298527637,
+    "discrimination": 1.2960740372396762,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 880
+    }
+  },
+  {
+    "item_id": "6dbcefa256304280",
+    "difficulty": -2.2036865514703217,
+    "discrimination": 4.999994267556281,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 881
+    }
+  },
+  {
+    "item_id": "10c249e1a5a433bf",
+    "difficulty": -3.65571955665682,
+    "discrimination": 0.4061288983251854,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 882
+    }
+  },
+  {
+    "item_id": "b92a66d1ff95b39e",
+    "difficulty": -3.401737778740295,
+    "discrimination": 1.4289543880352291,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 886
+    }
+  },
+  {
+    "item_id": "ea5e3d0f7047319e",
+    "difficulty": -5.979832722035083,
+    "discrimination": 0.5624307578128948,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 890
+    }
+  },
+  {
+    "item_id": "e23ab881062e141a",
+    "difficulty": -0.8371851298681241,
+    "discrimination": 1.862803271083454,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 893
+    }
+  },
+  {
+    "item_id": "00fcf94f5ddc1d88",
+    "difficulty": 2.2746791269522317,
+    "discrimination": 0.625136627996131,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 895
+    }
+  },
+  {
+    "item_id": "88d4a544bbb7527c",
+    "difficulty": -2.20368655147033,
+    "discrimination": 4.999994267556116,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 897
+    }
+  },
+  {
+    "item_id": "952b40020e810714",
+    "difficulty": 5.039273789745734,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 900
+    }
+  },
+  {
+    "item_id": "6260a1e0c3ba8212",
+    "difficulty": -1.4588179255496094,
+    "discrimination": 0.7694757265541358,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 901
+    }
+  },
+  {
+    "item_id": "ce69e67c44fe91ba",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 902
+    }
+  },
+  {
+    "item_id": "9dbf9fcbed407e7e",
+    "difficulty": -1.881771626695786,
+    "discrimination": 4.99999651192095,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 904
+    }
+  },
+  {
+    "item_id": "6a77b3ccf934e98b",
+    "difficulty": -2.970124019809674,
+    "discrimination": 0.9593837522800844,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 905
+    }
+  },
+  {
+    "item_id": "869ffd0cdc6df158",
+    "difficulty": -2.435289174241787,
+    "discrimination": 0.9731392384984184,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 907
+    }
+  },
+  {
+    "item_id": "f26e59cf911ef453",
+    "difficulty": -1.8817716266957918,
+    "discrimination": 4.999996511920808,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 912
+    }
+  },
+  {
+    "item_id": "96bb0bb64b80ccd8",
+    "difficulty": -2.120766111005765e-05,
+    "discrimination": 0.7147004996055082,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 914
+    }
+  },
+  {
+    "item_id": "5b23d236e95c78ca",
+    "difficulty": -0.5440837060966381,
+    "discrimination": 0.2891906301933936,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 915
+    }
+  },
+  {
+    "item_id": "93ce5187f95ceb5e",
+    "difficulty": -2.20368655147038,
+    "discrimination": 4.999994267555189,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 916
+    }
+  },
+  {
+    "item_id": "c08f6cee32dda2af",
+    "difficulty": -1.6240883741444463,
+    "discrimination": 2.3879140389456164,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 918
+    }
+  },
+  {
+    "item_id": "2162e184cd89b898",
+    "difficulty": -2.203686551470386,
+    "discrimination": 4.999994267555068,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 924
+    }
+  },
+  {
+    "item_id": "a58bc2f62b3a6c97",
+    "difficulty": -1.3080461353868444,
+    "discrimination": 2.7939891672637582,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 925
+    }
+  },
+  {
+    "item_id": "2de2c85a2ce531ae",
+    "difficulty": -1.6742756651636996,
+    "discrimination": 4.999995340127769,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 926
+    }
+  },
+  {
+    "item_id": "2e76330f5057953d",
+    "difficulty": -1.3303229402249142,
+    "discrimination": 1.4799092794311512,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 930
+    }
+  },
+  {
+    "item_id": "a33cc848fc84f6af",
+    "difficulty": -2.143772646363633,
+    "discrimination": 1.573959705648728,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 932
+    }
+  },
+  {
+    "item_id": "56a1a6412f3312f2",
+    "difficulty": -1.8817716266953637,
+    "discrimination": 4.999996511930679,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 935
+    }
+  },
+  {
+    "item_id": "d489e6923e00877a",
+    "difficulty": 0.1451485749653468,
+    "discrimination": 0.5703337838337568,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 937
+    }
+  },
+  {
+    "item_id": "bdfc3bbf281f92f5",
+    "difficulty": -2.9974193349460747,
+    "discrimination": 0.8363419424521519,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 942
+    }
+  },
+  {
+    "item_id": "edaf579826a1fa8d",
+    "difficulty": -1.957713570475636,
+    "discrimination": 0.4855941274530421,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 943
+    }
+  },
+  {
+    "item_id": "d9ba12ffca1dc953",
+    "difficulty": -1.4350801287059956,
+    "discrimination": 2.691875808435068,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 945
+    }
+  },
+  {
+    "item_id": "2d64d52de78b4fc9",
+    "difficulty": -2.890171303241216,
+    "discrimination": 1.9012657977256204,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 946
+    }
+  },
+  {
+    "item_id": "b448894ea73fa9c8",
+    "difficulty": -1.9750236131936767,
+    "discrimination": 2.368875411773842,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 954
+    }
+  },
+  {
+    "item_id": "78bb611fba9ee426",
+    "difficulty": -1.6240118267820385,
+    "discrimination": 3.2917273590612006,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 955
+    }
+  },
+  {
+    "item_id": "74c20d7caf016dea",
+    "difficulty": -1.0746889682589318,
+    "discrimination": 1.3673737490943187,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 956
+    }
+  },
+  {
+    "item_id": "5a974c8ab5ba1d4e",
+    "difficulty": -1.8817716266952973,
+    "discrimination": 4.999996511932197,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 959
+    }
+  },
+  {
+    "item_id": "60b8f9cc215a5f81",
+    "difficulty": -1.8817716266952973,
+    "discrimination": 4.999996511932197,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 961
+    }
+  },
+  {
+    "item_id": "d1b46576b5a92100",
+    "difficulty": -1.4155510168328984,
+    "discrimination": 0.4724994029750953,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 966
+    }
+  },
+  {
+    "item_id": "85a3ead1f34c8d85",
+    "difficulty": -2.5741524026360345,
+    "discrimination": 1.7126266144106868,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 967
+    }
+  },
+  {
+    "item_id": "61427e7f49fea188",
+    "difficulty": -1.6214550767965918,
+    "discrimination": 1.075127668929271,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 968
+    }
+  },
+  {
+    "item_id": "967d38ea9cd3c07a",
+    "difficulty": 0.5942298487936963,
+    "discrimination": 0.2639109482133712,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 972
+    }
+  },
+  {
+    "item_id": "4b59771b71f2e6f6",
+    "difficulty": -1.4487492200343266,
+    "discrimination": 1.121422280406901,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 973
+    }
+  },
+  {
+    "item_id": "c896f0127f0f455a",
+    "difficulty": -4.187005776654212,
+    "discrimination": 0.8453030953404671,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 978
+    }
+  },
+  {
+    "item_id": "1a60a77bb38b42e9",
+    "difficulty": 0.8063831518778053,
+    "discrimination": 1.1169972442625835,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 979
+    }
+  },
+  {
+    "item_id": "b2d9a2a63dab7167",
+    "difficulty": 0.3847177045997363,
+    "discrimination": 0.6627183379797931,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 982
+    }
+  },
+  {
+    "item_id": "2fa527c7fa448979",
+    "difficulty": -4.230214836946443,
+    "discrimination": 1.0520106304670906,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 983
+    }
+  },
+  {
+    "item_id": "64b6fe9af7306a48",
+    "difficulty": -3.3872726850332207,
+    "discrimination": 1.4385011137119237,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 990
+    }
+  },
+  {
+    "item_id": "a7d6c11a775feb39",
+    "difficulty": -3.0112897785477437,
+    "discrimination": 0.9422499013188532,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 991
+    }
+  },
+  {
+    "item_id": "273a4b512dfe71cb",
+    "difficulty": 1.2392583574480014,
+    "discrimination": 0.7294911733134928,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 993
+    }
+  },
+  {
+    "item_id": "6eaf92a5da055798",
+    "difficulty": 0.7784430538936359,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 994
+    }
+  },
+  {
+    "item_id": "56f7c4c73da56ff2",
+    "difficulty": -2.8901718663290867,
+    "discrimination": 1.9012650469255368,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 996
+    }
+  },
+  {
+    "item_id": "d96cc9c92527784c",
+    "difficulty": -1.1878774332304012,
+    "discrimination": 1.0112826773981485,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1000
+    }
+  },
+  {
+    "item_id": "be5daa7c008a1ef7",
+    "difficulty": -2.2036865514699904,
+    "discrimination": 4.999994267562485,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1001
+    }
+  },
+  {
+    "item_id": "af995946cf018abb",
+    "difficulty": -5.897043649798224,
+    "discrimination": 0.4347753490987551,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1002
+    }
+  },
+  {
+    "item_id": "60228a8d14fa4678",
+    "difficulty": -1.6053900837073327,
+    "discrimination": 1.4170640744312055,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1003
+    }
+  },
+  {
+    "item_id": "de28fdb8587d5d9c",
+    "difficulty": -5.908144099580058,
+    "discrimination": 0.2687038969123734,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1004
+    }
+  },
+  {
+    "item_id": "94a64da6f7541c86",
+    "difficulty": -1.8552208821948,
+    "discrimination": 1.7369684767798754,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1005
+    }
+  },
+  {
+    "item_id": "d7e35ceae863493f",
+    "difficulty": 0.9454060874744076,
+    "discrimination": 0.6373604874577719,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1009
+    }
+  },
+  {
+    "item_id": "b7a7d17415403e00",
+    "difficulty": -1.6761717467204624,
+    "discrimination": 1.5193679697928602,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1010
+    }
+  },
+  {
+    "item_id": "ea8ac1f48ad32e60",
+    "difficulty": -2.244079870376143,
+    "discrimination": 0.9673287350891112,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1011
+    }
+  },
+  {
+    "item_id": "b96a60c727266990",
+    "difficulty": -2.065798385804019,
+    "discrimination": 3.005419218853486,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1015
+    }
+  },
+  {
+    "item_id": "6f07889f8dfd75a0",
+    "difficulty": -2.1885874854500007,
+    "discrimination": 1.0009645694556797,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1017
+    }
+  },
+  {
+    "item_id": "53bad6172dff7e29",
+    "difficulty": -2.3697556964519677,
+    "discrimination": 1.326820139352616,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1021
+    }
+  },
+  {
+    "item_id": "077c2228acf09188",
+    "difficulty": -1.8442112947919207,
+    "discrimination": 1.0073257099955188,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1022
+    }
+  },
+  {
+    "item_id": "bddfec4a0410793b",
+    "difficulty": -4.557221267226142,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1023
+    }
+  },
+  {
+    "item_id": "de7a6481deed374f",
+    "difficulty": -4.132559817620292,
+    "discrimination": 0.7314891296201835,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1024
+    }
+  },
+  {
+    "item_id": "1536ec57660960c7",
+    "difficulty": -4.093621080066304,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1026
+    }
+  },
+  {
+    "item_id": "3dd20545f47bd335",
+    "difficulty": 0.7846626349645474,
+    "discrimination": 0.9676189631133972,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1028
+    }
+  },
+  {
+    "item_id": "df466fa70f92cdb0",
+    "difficulty": -2.8901669082166674,
+    "discrimination": 1.901271657885227,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1029
+    }
+  },
+  {
+    "item_id": "7c01777964d5aeb7",
+    "difficulty": -1.5161194628538657,
+    "discrimination": 4.999996030679291,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1030
+    }
+  },
+  {
+    "item_id": "d5cd9edb9ff276cf",
+    "difficulty": -2.890171802179838,
+    "discrimination": 1.9012651324597205,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1031
+    }
+  },
+  {
+    "item_id": "e98fa2aba4d04679",
+    "difficulty": -2.203686551470075,
+    "discrimination": 4.9999942675609015,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1032
+    }
+  },
+  {
+    "item_id": "2b83d80565294a40",
+    "difficulty": -4.431214200718626,
+    "discrimination": 0.5307620125372815,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1033
+    }
+  },
+  {
+    "item_id": "9e8e1a107022b307",
+    "difficulty": -2.7876025300491185,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1035
+    }
+  },
+  {
+    "item_id": "2567e5e8c0092da0",
+    "difficulty": -2.142663999293784,
+    "discrimination": 0.4909162169146434,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1037
+    }
+  },
+  {
+    "item_id": "cb83a0d6d8183565",
+    "difficulty": -2.3335287598358527,
+    "discrimination": 1.1731798466495469,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1038
+    }
+  },
+  {
+    "item_id": "5326e4ff98e47aac",
+    "difficulty": -1.5663671424469627,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1040
+    }
+  },
+  {
+    "item_id": "908674bf0d79b7de",
+    "difficulty": 0.4908799143013396,
+    "discrimination": 0.5000486678009224,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1042
+    }
+  },
+  {
+    "item_id": "815e69b32c0cb0c4",
+    "difficulty": 0.4539735290257424,
+    "discrimination": 1.0533760291603,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1044
+    }
+  },
+  {
+    "item_id": "d1b816478d111525",
+    "difficulty": -1.9233399382157357,
+    "discrimination": 4.249928499404519,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1045
+    }
+  },
+  {
+    "item_id": "ccd2a3c22288faba",
+    "difficulty": 5.963614239522348,
+    "discrimination": 0.3856719128701758,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1046
+    }
+  },
+  {
+    "item_id": "35924403da4a49fc",
+    "difficulty": 3.2109514183633063,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1050
+    }
+  },
+  {
+    "item_id": "3a7337002d802325",
+    "difficulty": -3.993965168638544,
+    "discrimination": 0.5958923259907776,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1053
+    }
+  },
+  {
+    "item_id": "82318228d1ba5f9a",
+    "difficulty": -3.5891164062433814,
+    "discrimination": 0.8669575935633305,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1054
+    }
+  },
+  {
+    "item_id": "d0625ce2c3f04cf2",
+    "difficulty": 1.2452307602473676,
+    "discrimination": 0.8293334550317805,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1055
+    }
+  },
+  {
+    "item_id": "a8299f62c5fc3af8",
+    "difficulty": 1.2968729753908368,
+    "discrimination": 0.3745316553265437,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1061
+    }
+  },
+  {
+    "item_id": "a371766a044e4b79",
+    "difficulty": -2.890171944533985,
+    "discrimination": 1.9012649426500812,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1069
+    }
+  },
+  {
+    "item_id": "6e371bd7e9714994",
+    "difficulty": -2.2608482148027007,
+    "discrimination": 0.4627122605125998,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1071
+    }
+  },
+  {
+    "item_id": "578b638e6b40c600",
+    "difficulty": -2.3733868662479,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1076
+    }
+  },
+  {
+    "item_id": "ebe935a4706d2b5c",
+    "difficulty": -1.6895451988307828,
+    "discrimination": 1.1434394543214537,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1077
+    }
+  },
+  {
+    "item_id": "77ac370ca8874aad",
+    "difficulty": -1.9884459708624185,
+    "discrimination": 1.823650414166767,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1078
+    }
+  },
+  {
+    "item_id": "7cb6455ad40e339c",
+    "difficulty": -0.5387440929819862,
+    "discrimination": 1.398689412724214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1079
+    }
+  },
+  {
+    "item_id": "cdac57649088cbcc",
+    "difficulty": -2.5612413216429166,
+    "discrimination": 2.528776712855245,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1080
+    }
+  },
+  {
+    "item_id": "7db3ba1bdf14984d",
+    "difficulty": -1.6968952639514494,
+    "discrimination": 0.8979159996334032,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1083
+    }
+  },
+  {
+    "item_id": "98a7f52b9cf814e5",
+    "difficulty": 2.427312316926044,
+    "discrimination": 0.3432554922289085,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1084
+    }
+  },
+  {
+    "item_id": "e1c1a446e38186b6",
+    "difficulty": -2.0617272036525485,
+    "discrimination": 0.9684458234585588,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1085
+    }
+  },
+  {
+    "item_id": "6ffb063fef1f5dd9",
+    "difficulty": -1.7997137607798848,
+    "discrimination": 0.92935864738742,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1086
+    }
+  },
+  {
+    "item_id": "3c23fbbadd18466f",
+    "difficulty": -4.093621080066304,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1087
+    }
+  },
+  {
+    "item_id": "809d3a51ced4a1a1",
+    "difficulty": 2.948090497908539,
+    "discrimination": 0.4669270871685659,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1090
+    }
+  },
+  {
+    "item_id": "d892a9b11e6e02d5",
+    "difficulty": -1.786431222694531,
+    "discrimination": 3.3614284396638574,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1091
+    }
+  },
+  {
+    "item_id": "fba0d2e17ce03163",
+    "difficulty": -4.230216488391365,
+    "discrimination": 1.0520101045762396,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1092
+    }
+  },
+  {
+    "item_id": "a0c42e1fe9de3408",
+    "difficulty": -5.071336916668868,
+    "discrimination": 0.5114507805847957,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1094
+    }
+  },
+  {
+    "item_id": "8ed688d8fe6a1c4c",
+    "difficulty": 0.3221062347542262,
+    "discrimination": 0.8273302815562266,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1096
+    }
+  },
+  {
+    "item_id": "3d5d2397320da35d",
+    "difficulty": -1.4368930543186624,
+    "discrimination": 0.6109948098337757,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1097
+    }
+  },
+  {
+    "item_id": "32fddc7c91dd4c8d",
+    "difficulty": -2.890171932075,
+    "discrimination": 1.9012649592624211,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1099
+    }
+  },
+  {
+    "item_id": "cb65ff43b7b2e8cd",
+    "difficulty": 3.1673616634599187,
+    "discrimination": 0.7813149337194913,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1101
+    }
+  },
+  {
+    "item_id": "e23e49ca59600627",
+    "difficulty": 2.4115014017269605,
+    "discrimination": 0.4313140774162532,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1102
+    }
+  },
+  {
+    "item_id": "e015e5a194bcd7f7",
+    "difficulty": -1.7703332695874212,
+    "discrimination": 0.8493829673252921,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1103
+    }
+  },
+  {
+    "item_id": "8b6717e965ef2e6b",
+    "difficulty": -2.3507942960911,
+    "discrimination": 1.344046521508467,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1104
+    }
+  },
+  {
+    "item_id": "70059532e6c6c54a",
+    "difficulty": -4.2142945131107,
+    "discrimination": 0.4594621874394951,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1107
+    }
+  },
+  {
+    "item_id": "ede2f13c262d9d51",
+    "difficulty": -4.818523653471733,
+    "discrimination": 0.6135560457719028,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1108
+    }
+  },
+  {
+    "item_id": "7323b3cfac03e526",
+    "difficulty": -1.9547651443309078,
+    "discrimination": 0.6062592138096146,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1109
+    }
+  },
+  {
+    "item_id": "309bbdffc506f44b",
+    "difficulty": -0.2246691242372765,
+    "discrimination": 0.7783904780461028,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1110
+    }
+  },
+  {
+    "item_id": "2e39d27b12dd7a66",
+    "difficulty": 0.3886158635762201,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1112
+    }
+  },
+  {
+    "item_id": "c6ab764cdf9ec4ac",
+    "difficulty": -4.844263424771787,
+    "discrimination": 0.2521254568557952,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1113
+    }
+  },
+  {
+    "item_id": "4aea177f085d5fab",
+    "difficulty": -2.5376281692452736,
+    "discrimination": 0.3667390514674625,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1114
+    }
+  },
+  {
+    "item_id": "da3e5ab17db0df3e",
+    "difficulty": 1.0176755777973814,
+    "discrimination": 1.280616443112418,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1117
+    }
+  },
+  {
+    "item_id": "a41a5f838375df32",
+    "difficulty": -4.557221267226142,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1120
+    }
+  },
+  {
+    "item_id": "e305d4611f011cbc",
+    "difficulty": 2.2035285669436075,
+    "discrimination": 4.999993245591694,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1122
+    }
+  },
+  {
+    "item_id": "05f922a8d39a51f2",
+    "difficulty": -2.5612411190948863,
+    "discrimination": 2.5287772854986224,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1124
+    }
+  },
+  {
+    "item_id": "2e073b802f0e1578",
+    "difficulty": 5.963614239522348,
+    "discrimination": 0.3856719128701758,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1125
+    }
+  },
+  {
+    "item_id": "5ace350fd754f130",
+    "difficulty": 5.817671213762314,
+    "discrimination": 0.2089169997732256,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1127
+    }
+  },
+  {
+    "item_id": "3f10b9ea0af00f4e",
+    "difficulty": -1.6742756651627877,
+    "discrimination": 4.999995340151122,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1130
+    }
+  },
+  {
+    "item_id": "bc0821512a1cde91",
+    "difficulty": -3.0854588094063744,
+    "discrimination": 0.4041042341301441,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1131
+    }
+  },
+  {
+    "item_id": "a5ef94606904a07c",
+    "difficulty": 5.985464637642053,
+    "discrimination": 0.3169386039265959,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1133
+    }
+  },
+  {
+    "item_id": "0d1cc28a0a6e15c5",
+    "difficulty": -2.670954744682291,
+    "discrimination": 1.299352293897657,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1138
+    }
+  },
+  {
+    "item_id": "e4659bbebfc9ed33",
+    "difficulty": -1.8817716266950848,
+    "discrimination": 4.999996511937108,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1140
+    }
+  },
+  {
+    "item_id": "877ba3d90af867c4",
+    "difficulty": -2.1869806227307955,
+    "discrimination": 1.8545988318030608,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1144
+    }
+  },
+  {
+    "item_id": "3146d14c24ed0997",
+    "difficulty": -2.0437154255906065,
+    "discrimination": 1.253843555035884,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1148
+    }
+  },
+  {
+    "item_id": "34e28df345f6c40a",
+    "difficulty": -0.6294128179992542,
+    "discrimination": 1.7337352227169576,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1149
+    }
+  },
+  {
+    "item_id": "d5773bbe1c72a19c",
+    "difficulty": -1.8817716266950804,
+    "discrimination": 4.999996511937206,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1152
+    }
+  },
+  {
+    "item_id": "90a9b0432b0b43ee",
+    "difficulty": -0.8739355313238848,
+    "discrimination": 2.746030363605954,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1154
+    }
+  },
+  {
+    "item_id": "c0a3c9504c6bd829",
+    "difficulty": -5.951075789597069,
+    "discrimination": 0.699908314977457,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1157
+    }
+  },
+  {
+    "item_id": "654dc78f9dd114bd",
+    "difficulty": -4.843962069492391,
+    "discrimination": 0.7118785759943465,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1159
+    }
+  },
+  {
+    "item_id": "e861ad85ac757a8d",
+    "difficulty": -2.268531015968931,
+    "discrimination": 1.2241384388149756,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1162
+    }
+  },
+  {
+    "item_id": "481a96bc4f9a9045",
+    "difficulty": -0.3903207940000402,
+    "discrimination": 0.9449512496845728,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1164
+    }
+  },
+  {
+    "item_id": "29c7089b598c089f",
+    "difficulty": -5.543796283959588,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1165
+    }
+  },
+  {
+    "item_id": "1065bfc18e04687e",
+    "difficulty": -1.2950394517421755,
+    "discrimination": 2.2412207289097106,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1166
+    }
+  },
+  {
+    "item_id": "d7b38192b1ad7f03",
+    "difficulty": -4.871111120086223,
+    "discrimination": 0.6061609417250449,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1167
+    }
+  },
+  {
+    "item_id": "193adfe6db4e2329",
+    "difficulty": -1.2800581661003103,
+    "discrimination": 1.887616934716965,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1169
+    }
+  },
+  {
+    "item_id": "c48e750d4114a11c",
+    "difficulty": -2.651682598237832,
+    "discrimination": 0.7802475469067942,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1171
+    }
+  },
+  {
+    "item_id": "0f0a1cd2c0f0c391",
+    "difficulty": -1.6742756651628832,
+    "discrimination": 4.999995340148687,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1174
+    }
+  },
+  {
+    "item_id": "8943b6fd35dcdba7",
+    "difficulty": -3.2091363024390254,
+    "discrimination": 0.6890249913299883,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1176
+    }
+  },
+  {
+    "item_id": "b15dfa85fd787b09",
+    "difficulty": -2.1757445412043706,
+    "discrimination": 0.3854753065998087,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1179
+    }
+  },
+  {
+    "item_id": "541010f372dd8710",
+    "difficulty": -2.561241136189975,
+    "discrimination": 2.528777237167423,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1181
+    }
+  },
+  {
+    "item_id": "e37dcae5eb86002c",
+    "difficulty": 1.3224994606296625,
+    "discrimination": 0.4360426927716973,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1183
+    }
+  },
+  {
+    "item_id": "d81cc6c211cbe777",
+    "difficulty": 5.039273789745734,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1185
+    }
+  },
+  {
+    "item_id": "f1f5ea95d0748a95",
+    "difficulty": -1.2736084354952115,
+    "discrimination": 4.999993245591694,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1187
+    }
+  },
+  {
+    "item_id": "cdaa6de2a9915edd",
+    "difficulty": -2.317877954806013,
+    "discrimination": 2.1388925332207376,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1190
+    }
+  },
+  {
+    "item_id": "3cac078be3bc08af",
+    "difficulty": -1.3593077467333146,
+    "discrimination": 1.4237335966514126,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1191
+    }
+  },
+  {
+    "item_id": "f5648f7a0069c7d5",
+    "difficulty": -1.8826026594107583,
+    "discrimination": 2.742065335242297,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1192
+    }
+  },
+  {
+    "item_id": "8b5bf5a2ee24fb9b",
+    "difficulty": -4.230195807004654,
+    "discrimination": 1.0520166904162616,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1194
+    }
+  },
+  {
+    "item_id": "f37eff8c7ce14065",
+    "difficulty": -2.8901721841174117,
+    "discrimination": 1.9012646231985968,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1197
+    }
+  },
+  {
+    "item_id": "fb3b79c206d64951",
+    "difficulty": 1.8486867998074015,
+    "discrimination": 0.405501585967254,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1199
+    }
+  },
+  {
+    "item_id": "abae52fe676bb784",
+    "difficulty": 2.003919794184037,
+    "discrimination": 0.3720298967641812,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1201
+    }
+  },
+  {
+    "item_id": "62fee86da19a4be2",
+    "difficulty": -2.4778720754560255,
+    "discrimination": 0.9507939868778924,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1202
+    }
+  },
+  {
+    "item_id": "5828c97025abf446",
+    "difficulty": -3.2016973052578943,
+    "discrimination": 1.0037007188944074,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1204
+    }
+  },
+  {
+    "item_id": "4e1678426eb3d2ae",
+    "difficulty": -1.7288192055953806,
+    "discrimination": 1.2530496362485437,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1205
+    }
+  },
+  {
+    "item_id": "05a5c968387ded56",
+    "difficulty": -3.971384767713505,
+    "discrimination": 0.9019653517239906,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1209
+    }
+  },
+  {
+    "item_id": "ffddf9247cacc1fc",
+    "difficulty": 1.2047067902595223,
+    "discrimination": 0.7555956343327063,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1211
+    }
+  },
+  {
+    "item_id": "0d6d9f127371a868",
+    "difficulty": 5.925906007008369,
+    "discrimination": 0.2678377652554901,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1212
+    }
+  },
+  {
+    "item_id": "ca841bc413e2a9a7",
+    "difficulty": -1.4325503535926696,
+    "discrimination": 1.0055396172388251,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1213
+    }
+  },
+  {
+    "item_id": "ec9206e8d99e348f",
+    "difficulty": -2.499557475364026,
+    "discrimination": 1.8136732279483692,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1214
+    }
+  },
+  {
+    "item_id": "eb514a839b84f52e",
+    "difficulty": -1.563709307236448,
+    "discrimination": 0.7938662588872963,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1218
+    }
+  },
+  {
+    "item_id": "5f1027001cc2796a",
+    "difficulty": -1.9233398332610434,
+    "discrimination": 4.24993000486311,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1224
+    }
+  },
+  {
+    "item_id": "b32aac2251832305",
+    "difficulty": -1.8817716266950797,
+    "discrimination": 4.9999965119372245,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1225
+    }
+  },
+  {
+    "item_id": "c5bd4d02ee660b16",
+    "difficulty": -3.8260827802364314,
+    "discrimination": 0.7021003510353075,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1228
+    }
+  },
+  {
+    "item_id": "df051aa4dc5c08ed",
+    "difficulty": -0.8100071490535955,
+    "discrimination": 0.7698207143463436,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1229
+    }
+  },
+  {
+    "item_id": "0aa9f59804590e54",
+    "difficulty": -2.8967834620924826,
+    "discrimination": 0.87317497441586,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1231
+    }
+  },
+  {
+    "item_id": "33ef98fd3b55b5f5",
+    "difficulty": -2.3733868662479,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1233
+    }
+  },
+  {
+    "item_id": "bba3f93b2afbae9e",
+    "difficulty": -5.849538140246989,
+    "discrimination": 0.2481895180529942,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1234
+    }
+  },
+  {
+    "item_id": "f570b5480cca1e30",
+    "difficulty": -1.1429852806166456,
+    "discrimination": 2.036644924009454,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1235
+    }
+  },
+  {
+    "item_id": "291520bfb5813fec",
+    "difficulty": -1.8817716266949596,
+    "discrimination": 4.999996511939994,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1236
+    }
+  },
+  {
+    "item_id": "e781062946920f76",
+    "difficulty": -0.2034865859008351,
+    "discrimination": 0.8860218923878856,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1240
+    }
+  },
+  {
+    "item_id": "7bf2f7eeb1a59cf7",
+    "difficulty": -2.8901723598760234,
+    "discrimination": 1.9012643888487075,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1241
+    }
+  },
+  {
+    "item_id": "8e7b8b52b9e75c05",
+    "difficulty": -2.0626364764782563,
+    "discrimination": 3.022741164282664,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1242
+    }
+  },
+  {
+    "item_id": "118b00b18913f28c",
+    "difficulty": -1.821937615608023,
+    "discrimination": 1.5210301283674634,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1246
+    }
+  },
+  {
+    "item_id": "788c2d9cfcde977a",
+    "difficulty": -0.6909371786769671,
+    "discrimination": 1.4424781391291668,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1248
+    }
+  },
+  {
+    "item_id": "94ee780328ddb56c",
+    "difficulty": -1.134182404477789,
+    "discrimination": 1.0814552310855,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1249
+    }
+  },
+  {
+    "item_id": "02723ef87f43adc1",
+    "difficulty": 5.985479309036894,
+    "discrimination": 0.316937771079708,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1252
+    }
+  },
+  {
+    "item_id": "b0db43e8b35be348",
+    "difficulty": 5.857572629379342,
+    "discrimination": 0.2482004162226387,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1254
+    }
+  },
+  {
+    "item_id": "b9283ef8f92d825d",
+    "difficulty": -3.401738774825228,
+    "discrimination": 1.428953732014149,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1255
+    }
+  },
+  {
+    "item_id": "e5a1b56fc5354f41",
+    "difficulty": -2.414815467278729,
+    "discrimination": 1.1158962465652953,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1256
+    }
+  },
+  {
+    "item_id": "a66590f5be1e0308",
+    "difficulty": 2.8899627713788543,
+    "discrimination": 1.1556058288924316,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1258
+    }
+  },
+  {
+    "item_id": "f0dfad09e5cb9f50",
+    "difficulty": -1.819674198211672,
+    "discrimination": 1.0264373575641494,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1260
+    }
+  },
+  {
+    "item_id": "7351e5ec266a2286",
+    "difficulty": -4.230196786960397,
+    "discrimination": 1.0520163783563483,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1261
+    }
+  },
+  {
+    "item_id": "0af8830f384584af",
+    "difficulty": 5.039273789745734,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1265
+    }
+  },
+  {
+    "item_id": "daecba36b72db4ac",
+    "difficulty": -2.679631832000996,
+    "discrimination": 0.7702519236186047,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1267
+    }
+  },
+  {
+    "item_id": "2672957c2f170e5e",
+    "difficulty": -2.171285172929485,
+    "discrimination": 0.5377042671533853,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1268
+    }
+  },
+  {
+    "item_id": "3f571d34e0d5f5d5",
+    "difficulty": 0.1941991634456608,
+    "discrimination": 0.9442622072989708,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1269
+    }
+  },
+  {
+    "item_id": "0915d3387b1c4334",
+    "difficulty": -1.1707183195624289,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1270
+    }
+  },
+  {
+    "item_id": "aedacabad996f69d",
+    "difficulty": 2.0516824796626176,
+    "discrimination": 0.7064636963998244,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1271
+    }
+  },
+  {
+    "item_id": "1aa2cca01772e34c",
+    "difficulty": -1.2050732884047926,
+    "discrimination": 0.7553461135760385,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1272
+    }
+  },
+  {
+    "item_id": "49cf09bc0cd65fe8",
+    "difficulty": -1.6162410893840478,
+    "discrimination": 1.2241048157955132,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1273
+    }
+  },
+  {
+    "item_id": "c9b5e1d4f02cdcef",
+    "difficulty": -1.2686646008789977,
+    "discrimination": 1.2046475256408529,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1276
+    }
+  },
+  {
+    "item_id": "59122736c55d5b1c",
+    "difficulty": -1.8070360856541483,
+    "discrimination": 0.8272052305352817,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1280
+    }
+  },
+  {
+    "item_id": "77e7bc06ac651d67",
+    "difficulty": 1.7658760938040772,
+    "discrimination": 0.8521410332687859,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1281
+    }
+  },
+  {
+    "item_id": "b7f156ab945efa9b",
+    "difficulty": -1.6116181504119893,
+    "discrimination": 0.8572438822958872,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1282
+    }
+  },
+  {
+    "item_id": "09c41f239436af67",
+    "difficulty": -1.7931404610707993,
+    "discrimination": 0.3658537636907338,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1284
+    }
+  },
+  {
+    "item_id": "b3df72bda4b11d8e",
+    "difficulty": -1.1924716088132572,
+    "discrimination": 0.7653550093666478,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1285
+    }
+  },
+  {
+    "item_id": "0ce4121feb05d661",
+    "difficulty": -0.4979406515314138,
+    "discrimination": 1.6241528593382824,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1286
+    }
+  },
+  {
+    "item_id": "fba1bedb9351f538",
+    "difficulty": -0.6066981816081805,
+    "discrimination": 0.5468566263998431,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1289
+    }
+  },
+  {
+    "item_id": "42942450118e3796",
+    "difficulty": -3.313122771685345,
+    "discrimination": 0.5444226351716879,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1290
+    }
+  },
+  {
+    "item_id": "f0d506409816d1c3",
+    "difficulty": -1.5864143494556775,
+    "discrimination": 0.6164955186088144,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1291
+    }
+  },
+  {
+    "item_id": "c3d44a8fa6d2e338",
+    "difficulty": -1.2705502798895238,
+    "discrimination": 1.2018314899984,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1292
+    }
+  },
+  {
+    "item_id": "2d44961d011f0911",
+    "difficulty": -1.3940945830624347,
+    "discrimination": 2.2858653463841154,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1294
+    }
+  },
+  {
+    "item_id": "3b3bc4c18c0f7384",
+    "difficulty": -1.8817716266948072,
+    "discrimination": 4.9999965119435,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1295
+    }
+  },
+  {
+    "item_id": "a5951d6e279cdebc",
+    "difficulty": -5.985665644223242,
+    "discrimination": 0.316937771079708,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1297
+    }
+  },
+  {
+    "item_id": "0b726fb95032c49a",
+    "difficulty": 1.0019072686201715,
+    "discrimination": 0.4960227510525917,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1298
+    }
+  },
+  {
+    "item_id": "f9a7afd226130b19",
+    "difficulty": -3.401739500791819,
+    "discrimination": 1.428953253892885,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1301
+    }
+  },
+  {
+    "item_id": "0cdf43633c114b0a",
+    "difficulty": -2.0736546705534926,
+    "discrimination": 1.225807254302672,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1303
+    }
+  },
+  {
+    "item_id": "bf6024103165068c",
+    "difficulty": -1.8817716266947984,
+    "discrimination": 4.9999965119437,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1304
+    }
+  },
+  {
+    "item_id": "4d00591a3dfea519",
+    "difficulty": -3.211102897728297,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1306
+    }
+  },
+  {
+    "item_id": "0fa2e7a6caca6301",
+    "difficulty": -1.8817716266947984,
+    "discrimination": 4.9999965119437,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1308
+    }
+  },
+  {
+    "item_id": "049a2c3f0c93cfca",
+    "difficulty": -1.127716779138253,
+    "discrimination": 1.0906677672475995,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1312
+    }
+  },
+  {
+    "item_id": "69f49b4b4842500a",
+    "difficulty": -2.0519681616936705,
+    "discrimination": 1.710438953096137,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1315
+    }
+  },
+  {
+    "item_id": "51673776325c8374",
+    "difficulty": -5.8950165867246165,
+    "discrimination": 0.4347678062766165,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1318
+    }
+  },
+  {
+    "item_id": "268fb9bd180339a8",
+    "difficulty": 3.9346503372033776,
+    "discrimination": 0.9124046605771712,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1320
+    }
+  },
+  {
+    "item_id": "4574081e882e52ec",
+    "difficulty": -2.5733408498617845,
+    "discrimination": 1.7136533820530513,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1321
+    }
+  },
+  {
+    "item_id": "b26c34af26d03697",
+    "difficulty": -0.6554155846011644,
+    "discrimination": 0.651407114354431,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1322
+    }
+  },
+  {
+    "item_id": "3bb64ab587d60e3b",
+    "difficulty": 2.0796387241030785,
+    "discrimination": 0.3576311734997123,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1323
+    }
+  },
+  {
+    "item_id": "ef09e58a2eabd9c7",
+    "difficulty": -3.4597530211495924,
+    "discrimination": 0.7914861529455125,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1326
+    }
+  },
+  {
+    "item_id": "2da9ef3005b791d4",
+    "difficulty": -1.1656848133533897,
+    "discrimination": 2.4066129320435112,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1331
+    }
+  },
+  {
+    "item_id": "1db05e493536bd95",
+    "difficulty": -1.6742756651623103,
+    "discrimination": 4.999995340163348,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1332
+    }
+  },
+  {
+    "item_id": "0f71e04eb6e143b8",
+    "difficulty": -3.34826318076489,
+    "discrimination": 0.7307566531097816,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1335
+    }
+  },
+  {
+    "item_id": "5945624fc1b5d16f",
+    "difficulty": -2.7876025300491185,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1337
+    }
+  },
+  {
+    "item_id": "6869bd7738eee97c",
+    "difficulty": -0.179883906662035,
+    "discrimination": 0.4485150117704068,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1338
+    }
+  },
+  {
+    "item_id": "90fef35a19a549be",
+    "difficulty": -1.232777611671636,
+    "discrimination": 1.097993668730601,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1339
+    }
+  },
+  {
+    "item_id": "b23cc623ea672c8b",
+    "difficulty": -1.0495613739843528,
+    "discrimination": 1.4254875649479146,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1343
+    }
+  },
+  {
+    "item_id": "f506f6d5d66baef2",
+    "difficulty": -0.9416519407123608,
+    "discrimination": 2.1797527265110976,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1345
+    }
+  },
+  {
+    "item_id": "42943089ba40ab6d",
+    "difficulty": -0.9525582655550302,
+    "discrimination": 0.8819872232927481,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1346
+    }
+  },
+  {
+    "item_id": "76a6636308a73d0b",
+    "difficulty": -2.8901725994410503,
+    "discrimination": 1.9012640694217555,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1350
+    }
+  },
+  {
+    "item_id": "63206d09e7af4829",
+    "difficulty": -1.9783970520781984,
+    "discrimination": 0.7384483810307862,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1352
+    }
+  },
+  {
+    "item_id": "93a79367c0e62487",
+    "difficulty": -2.2036865514697213,
+    "discrimination": 4.999994267567531,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1356
+    }
+  },
+  {
+    "item_id": "4c43520c4fa05e21",
+    "difficulty": -2.184961529936113,
+    "discrimination": 1.0032432652602898,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1357
+    }
+  },
+  {
+    "item_id": "47d3941972b39ec1",
+    "difficulty": -2.2452777509695427,
+    "discrimination": 1.0893109818578235,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1358
+    }
+  },
+  {
+    "item_id": "9ffa0868e96e96de",
+    "difficulty": -2.2036865514697124,
+    "discrimination": 4.9999942675677005,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1359
+    }
+  },
+  {
+    "item_id": "ee7da00a2c2b1784",
+    "difficulty": -2.11708838997981,
+    "discrimination": 1.1876375716296994,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1360
+    }
+  },
+  {
+    "item_id": "07b004dc9da2ea79",
+    "difficulty": -1.0851963262381632,
+    "discrimination": 1.3447184776865635,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1361
+    }
+  },
+  {
+    "item_id": "01c75d4a3d7fd3b0",
+    "difficulty": -1.22076875178641,
+    "discrimination": 1.4871085472768693,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1363
+    }
+  },
+  {
+    "item_id": "db60a6c4099cbace",
+    "difficulty": -1.9233398557802053,
+    "discrimination": 4.249929681850716,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1368
+    }
+  },
+  {
+    "item_id": "426321e5042cf764",
+    "difficulty": -1.9538786302051918,
+    "discrimination": 1.1787391770896396,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1369
+    }
+  },
+  {
+    "item_id": "845814898dbfc22e",
+    "difficulty": 0.5745279633456444,
+    "discrimination": 0.7655810885592593,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1372
+    }
+  },
+  {
+    "item_id": "511a7f656ea13f31",
+    "difficulty": 0.4480051270082606,
+    "discrimination": 0.3545711542588078,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1375
+    }
+  },
+  {
+    "item_id": "98a3e24829bb1dca",
+    "difficulty": 2.17271370790949,
+    "discrimination": 0.2581593516691766,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1376
+    }
+  },
+  {
+    "item_id": "0cad676626cb1a87",
+    "difficulty": 1.93911714083716,
+    "discrimination": 0.436408355054083,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1378
+    }
+  },
+  {
+    "item_id": "06acfa0b7339407f",
+    "difficulty": -3.0235570327597188,
+    "discrimination": 1.3063132684681065,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1379
+    }
+  },
+  {
+    "item_id": "44850b3daeb5ad49",
+    "difficulty": -1.5635051543582792,
+    "discrimination": 1.7395143417247878,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1380
+    }
+  },
+  {
+    "item_id": "d4d073f4d4f4a582",
+    "difficulty": -1.220125931806219,
+    "discrimination": 0.5582249856123574,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1385
+    }
+  },
+  {
+    "item_id": "0f9638e09ddc76ef",
+    "difficulty": -3.2141347551177857,
+    "discrimination": 0.6209216774811513,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1388
+    }
+  },
+  {
+    "item_id": "74c50cc3277b541f",
+    "difficulty": -2.9595795222670347,
+    "discrimination": 0.8497922583127255,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1389
+    }
+  },
+  {
+    "item_id": "572074bfc3861f24",
+    "difficulty": -2.903462377152693,
+    "discrimination": 1.1479973833909043,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1390
+    }
+  },
+  {
+    "item_id": "3ec4d12aebad1a3c",
+    "difficulty": -2.561238045094305,
+    "discrimination": 2.5287859763067844,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1391
+    }
+  },
+  {
+    "item_id": "39c6672897cc1923",
+    "difficulty": -2.573340978078638,
+    "discrimination": 1.7136532198344985,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1392
+    }
+  },
+  {
+    "item_id": "9ba3f9ca7d490523",
+    "difficulty": -2.562595436786179,
+    "discrimination": 1.7273102073499622,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1393
+    }
+  },
+  {
+    "item_id": "450251fa28771e99",
+    "difficulty": -6.863881775897141e-05,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1395
+    }
+  },
+  {
+    "item_id": "397d2c83694c6b4b",
+    "difficulty": -1.1654007326118234,
+    "discrimination": 3.212899367017595,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1396
+    }
+  },
+  {
+    "item_id": "ad59c9ff4dc5529b",
+    "difficulty": 0.6988068126507001,
+    "discrimination": 0.6038829138999904,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1397
+    }
+  },
+  {
+    "item_id": "b03fa00d5b63aec9",
+    "difficulty": -1.5370556546849552,
+    "discrimination": 2.194305842218464,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1398
+    }
+  },
+  {
+    "item_id": "9876307500f6eb5a",
+    "difficulty": -1.6297826642697582,
+    "discrimination": 2.364247115672744,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1399
+    }
+  },
+  {
+    "item_id": "3c80c114a452d127",
+    "difficulty": -0.2302049569171323,
+    "discrimination": 2.7329994889305547,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1400
+    }
+  },
+  {
+    "item_id": "b6d8548a65ffc1f3",
+    "difficulty": -0.9234800048386194,
+    "discrimination": 1.8401434675181405,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1401
+    }
+  },
+  {
+    "item_id": "fa2a996333a743b9",
+    "difficulty": -1.6233284268576988,
+    "discrimination": 2.391154820856168,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1404
+    }
+  },
+  {
+    "item_id": "86caff702327135b",
+    "difficulty": -2.890167622578021,
+    "discrimination": 1.9012707053827995,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1405
+    }
+  },
+  {
+    "item_id": "5ce0dcc6971d58f3",
+    "difficulty": -2.7543685528646304,
+    "discrimination": 0.7448588519496573,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1406
+    }
+  },
+  {
+    "item_id": "b6766aef9f16ffc6",
+    "difficulty": -5.984036479126929,
+    "discrimination": 0.4838772466892065,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1409
+    }
+  },
+  {
+    "item_id": "25c06f3489a11bef",
+    "difficulty": -1.1574931399542456,
+    "discrimination": 0.9135582347173906,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1410
+    }
+  },
+  {
+    "item_id": "e4d21ac379d0153e",
+    "difficulty": 1.966661063698041,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1411
+    }
+  },
+  {
+    "item_id": "499c8b72ed3c8301",
+    "difficulty": -0.1793973210897725,
+    "discrimination": 0.4498512248060313,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1412
+    }
+  },
+  {
+    "item_id": "8aa8ac595194cbac",
+    "difficulty": 5.985521997341811,
+    "discrimination": 0.3169353478048736,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1413
+    }
+  },
+  {
+    "item_id": "28c99ab6610317c3",
+    "difficulty": 3.4886056191934585,
+    "discrimination": 0.6961137032272355,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1416
+    }
+  },
+  {
+    "item_id": "a8ae99a7141b2a36",
+    "difficulty": -2.458540796433919,
+    "discrimination": 0.5178650422645708,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1419
+    }
+  },
+  {
+    "item_id": "abc1ae8899785550",
+    "difficulty": -1.9668035433120221,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1420
+    }
+  },
+  {
+    "item_id": "35a0fdda4b8230a2",
+    "difficulty": -2.937598525670486,
+    "discrimination": 1.1291147801279768,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1421
+    }
+  },
+  {
+    "item_id": "7bc6e2e619e3b0f1",
+    "difficulty": -2.300844303967335,
+    "discrimination": 0.4539006894071177,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1423
+    }
+  },
+  {
+    "item_id": "6f7c472f3a51692e",
+    "difficulty": -0.3182413424432417,
+    "discrimination": 1.2879981400515437,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1424
+    }
+  },
+  {
+    "item_id": "68cdb5fb32bf6bca",
+    "difficulty": -3.2217909968813854,
+    "discrimination": 0.8642501633837975,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1426
+    }
+  },
+  {
+    "item_id": "f1d5bb924d089f01",
+    "difficulty": -1.7010943947827992,
+    "discrimination": 0.5687090288021719,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1430
+    }
+  },
+  {
+    "item_id": "5e7d03f7b152533a",
+    "difficulty": -3.8229489647478863,
+    "discrimination": 0.511005483143844,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1431
+    }
+  },
+  {
+    "item_id": "c4022b4091ffbe0b",
+    "difficulty": 0.8108000716575049,
+    "discrimination": 0.632163696268201,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1432
+    }
+  },
+  {
+    "item_id": "a752414194b670ef",
+    "difficulty": -1.723705911229625,
+    "discrimination": 1.6903234857002989,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1433
+    }
+  },
+  {
+    "item_id": "a3f901e7c5a7d442",
+    "difficulty": -0.7853449134114364,
+    "discrimination": 2.9494405016317824,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1435
+    }
+  },
+  {
+    "item_id": "7ec4eba5ae63d302",
+    "difficulty": 0.7072789540929466,
+    "discrimination": 0.9195955829047596,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1439
+    }
+  },
+  {
+    "item_id": "85e96bba9b5c1d6c",
+    "difficulty": 1.990422529243576,
+    "discrimination": 0.282751636989077,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1440
+    }
+  },
+  {
+    "item_id": "9479a9c71a281aad",
+    "difficulty": -2.018412234810334,
+    "discrimination": 0.2786446054486755,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1443
+    }
+  },
+  {
+    "item_id": "e489cdf4b32e13da",
+    "difficulty": -3.211102897728297,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1449
+    }
+  },
+  {
+    "item_id": "22a07ee656aa70ce",
+    "difficulty": -3.0353590499359973,
+    "discrimination": 0.4969848120897942,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1450
+    }
+  },
+  {
+    "item_id": "e604456a39f7b6f2",
+    "difficulty": -3.971791188125448,
+    "discrimination": 0.9018510352101292,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1451
+    }
+  },
+  {
+    "item_id": "8a9bc8636ed21f4c",
+    "difficulty": -1.2926469396724205,
+    "discrimination": 1.1699685626165754,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1453
+    }
+  },
+  {
+    "item_id": "3aa2be0dd38bc7c0",
+    "difficulty": 2.699892885723449,
+    "discrimination": 0.8505021963169841,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1459
+    }
+  },
+  {
+    "item_id": "8e1f2320293ef15a",
+    "difficulty": -3.2188626280836012,
+    "discrimination": 0.4659731512073545,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1461
+    }
+  },
+  {
+    "item_id": "8bb3870d799971a5",
+    "difficulty": -4.9796188612337495,
+    "discrimination": 0.6897058979969606,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1462
+    }
+  },
+  {
+    "item_id": "08b5960d6824ed8f",
+    "difficulty": -3.590657189978236,
+    "discrimination": 0.498004000792294,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1464
+    }
+  },
+  {
+    "item_id": "a91b43a4d9d15158",
+    "difficulty": 1.894934513720336,
+    "discrimination": 1.0902263895874718,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1466
+    }
+  },
+  {
+    "item_id": "7ca974e65e0fee2b",
+    "difficulty": -1.9056203776887197,
+    "discrimination": 0.7735110748712716,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1467
+    }
+  },
+  {
+    "item_id": "c4ff81cbae40ece4",
+    "difficulty": -2.5905933639629755,
+    "discrimination": 0.2841379168152828,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1468
+    }
+  },
+  {
+    "item_id": "9821f4164708e45a",
+    "difficulty": -3.023357809427919,
+    "discrimination": 1.3064429347144302,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1469
+    }
+  },
+  {
+    "item_id": "f1298b7e54c5c763",
+    "difficulty": 2.2035285669436075,
+    "discrimination": 4.999993245591694,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1470
+    }
+  },
+  {
+    "item_id": "2b69cb1c7fd98971",
+    "difficulty": -2.2919794936539275,
+    "discrimination": 1.4009260335530391,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1473
+    }
+  },
+  {
+    "item_id": "83ab418e4f59dab9",
+    "difficulty": 1.3940345190781755,
+    "discrimination": 1.3627016305794786,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1474
+    }
+  },
+  {
+    "item_id": "d4a9eae3b088f7cd",
+    "difficulty": -1.820071694668976,
+    "discrimination": 0.4677531457346375,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1477
+    }
+  },
+  {
+    "item_id": "083924028da4a5c2",
+    "difficulty": -1.4508225331314075,
+    "discrimination": 2.058968081533393,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1480
+    }
+  },
+  {
+    "item_id": "ecf7385be4182ad7",
+    "difficulty": 0.7784430538936359,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1482
+    }
+  },
+  {
+    "item_id": "03d7987c867b36f7",
+    "difficulty": -1.8817716266941849,
+    "discrimination": 4.999996511957836,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1483
+    }
+  },
+  {
+    "item_id": "a4fc3e7970e2abd0",
+    "difficulty": -3.387283590307654,
+    "discrimination": 1.4384938632984208,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1485
+    }
+  },
+  {
+    "item_id": "61b25829b8f6ad21",
+    "difficulty": -2.381444998708208,
+    "discrimination": 0.8026334666165837,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1487
+    }
+  },
+  {
+    "item_id": "f82faf1ce03acf9b",
+    "difficulty": -2.170192086558365,
+    "discrimination": 2.5494038443784137,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1491
+    }
+  },
+  {
+    "item_id": "a10ebea4dd0ebabb",
+    "difficulty": -5.141929897418361,
+    "discrimination": 0.4515606569339049,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1492
+    }
+  },
+  {
+    "item_id": "ca6ef10a458e6dc1",
+    "difficulty": -0.3749102838822936,
+    "discrimination": 0.6838135181641518,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1493
+    }
+  },
+  {
+    "item_id": "c3dab29875ecfd7c",
+    "difficulty": -3.5824675944182247,
+    "discrimination": 0.868978828809875,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1495
+    }
+  },
+  {
+    "item_id": "ebdb980ef7e19c7b",
+    "difficulty": -2.3531926623521056,
+    "discrimination": 1.6066555373579847,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1496
+    }
+  },
+  {
+    "item_id": "097ce99f9f5536ad",
+    "difficulty": -1.6220562118124562,
+    "discrimination": 3.309537136946511,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1498
+    }
+  },
+  {
+    "item_id": "6be42a1166af689a",
+    "difficulty": -3.3872735979269315,
+    "discrimination": 1.4385005067710408,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1501
+    }
+  },
+  {
+    "item_id": "41f46f5826b76c80",
+    "difficulty": -2.1570298526556755,
+    "discrimination": 1.324843444788195,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1503
+    }
+  },
+  {
+    "item_id": "d27767cfcbfce41f",
+    "difficulty": 5.963602291174114,
+    "discrimination": 0.3856727482701872,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1505
+    }
+  },
+  {
+    "item_id": "e086b7b24bdb425c",
+    "difficulty": -2.0844172714479106,
+    "discrimination": 1.4017530201996913,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1506
+    }
+  },
+  {
+    "item_id": "78b2b556bdb2ce3a",
+    "difficulty": -5.97681625479174,
+    "discrimination": 0.5624223308864569,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1508
+    }
+  },
+  {
+    "item_id": "4e3147cede0795bd",
+    "difficulty": 2.1431567423765863,
+    "discrimination": 0.3032954638791548,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1509
+    }
+  },
+  {
+    "item_id": "29d68dfc45422361",
+    "difficulty": -1.0688438360030588,
+    "discrimination": 1.6284859770836624,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1510
+    }
+  },
+  {
+    "item_id": "0a5d1796621187d6",
+    "difficulty": -2.0288647273700104,
+    "discrimination": 1.7495512827691522,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1511
+    }
+  },
+  {
+    "item_id": "3293cd260056429d",
+    "difficulty": -2.8901674339786774,
+    "discrimination": 1.901270956854036,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1513
+    }
+  },
+  {
+    "item_id": "4836dbb2d8ffc094",
+    "difficulty": -1.4806276234974665,
+    "discrimination": 0.668878217873582,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1514
+    }
+  },
+  {
+    "item_id": "af95623b0e21015a",
+    "difficulty": 0.6779051014730741,
+    "discrimination": 0.6258125871522192,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1518
+    }
+  },
+  {
+    "item_id": "dc7486645d9e6743",
+    "difficulty": 5.983812410482878,
+    "discrimination": 0.4838738532304519,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1522
+    }
+  },
+  {
+    "item_id": "bb3ec8b07628c9cb",
+    "difficulty": -5.976024748779797,
+    "discrimination": 0.5624216821072068,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1527
+    }
+  },
+  {
+    "item_id": "3fd598c010027be3",
+    "difficulty": -0.2462110425508313,
+    "discrimination": 0.3205400346376818,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1530
+    }
+  },
+  {
+    "item_id": "c6cf8f9117a66751",
+    "difficulty": 0.1709923364000543,
+    "discrimination": 1.137359418910613,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1534
+    }
+  },
+  {
+    "item_id": "b7f87e98a180c525",
+    "difficulty": -3.023358089465797,
+    "discrimination": 1.30644275244933,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1535
+    }
+  },
+  {
+    "item_id": "6eaa8ced7c47d7a4",
+    "difficulty": -1.7729601910223218,
+    "discrimination": 0.6084053287851076,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1537
+    }
+  },
+  {
+    "item_id": "cf3cbcc6be40ac6f",
+    "difficulty": 0.4699436612927131,
+    "discrimination": 1.0018138265824943,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1538
+    }
+  },
+  {
+    "item_id": "970f49c69a8fccde",
+    "difficulty": 1.1767361638761988,
+    "discrimination": 1.1784926095446384,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1539
+    }
+  },
+  {
+    "item_id": "8d387debfd6546a0",
+    "difficulty": -0.6509297626884692,
+    "discrimination": 2.0957821927980373,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1541
+    }
+  },
+  {
+    "item_id": "7259adf771b8c155",
+    "difficulty": -1.6887112635696568,
+    "discrimination": 2.148615071073279,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1542
+    }
+  },
+  {
+    "item_id": "be3b17eadd4ce4f6",
+    "difficulty": -3.052743168333281,
+    "discrimination": 1.0702784363173463,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1543
+    }
+  },
+  {
+    "item_id": "f1c3613ea691acf5",
+    "difficulty": 5.543613485810356,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1546
+    }
+  },
+  {
+    "item_id": "61eeffc54ec8d5ca",
+    "difficulty": -1.7646281592615538,
+    "discrimination": 1.3875920454915085,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1547
+    }
+  },
+  {
+    "item_id": "ff1add9906f25860",
+    "difficulty": 3.6640904032860955,
+    "discrimination": 0.3061445325300074,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1548
+    }
+  },
+  {
+    "item_id": "b1a42a0370ff4bf5",
+    "difficulty": -2.317878376893335,
+    "discrimination": 2.138891586944466,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1549
+    }
+  },
+  {
+    "item_id": "3a0248a54da3de43",
+    "difficulty": 1.507653136745557,
+    "discrimination": 0.2079385371778422,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1550
+    }
+  },
+  {
+    "item_id": "e71b5ac2facbcb6c",
+    "difficulty": -2.28029794772267,
+    "discrimination": 1.214542143825616,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1553
+    }
+  },
+  {
+    "item_id": "b7877ccc8f6babee",
+    "difficulty": -1.850859028150548,
+    "discrimination": 0.8023674780986346,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1557
+    }
+  },
+  {
+    "item_id": "05a9be70d128dc17",
+    "difficulty": -2.249206828952461,
+    "discrimination": 1.4460101243326238,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1558
+    }
+  },
+  {
+    "item_id": "f7c5c59b90a9126f",
+    "difficulty": -1.6742756651615804,
+    "discrimination": 4.999995340182051,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1559
+    }
+  },
+  {
+    "item_id": "8503c5c12cb8e5ce",
+    "difficulty": -0.3054242522413454,
+    "discrimination": 1.3827110801731597,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1560
+    }
+  },
+  {
+    "item_id": "33ba34468348eee5",
+    "difficulty": -2.089393416883719,
+    "discrimination": 1.651446293589987,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1561
+    }
+  },
+  {
+    "item_id": "2fd7b6359e96e453",
+    "difficulty": 3.5654886192710955,
+    "discrimination": 0.4171582552808981,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1562
+    }
+  },
+  {
+    "item_id": "67d4695558609194",
+    "difficulty": -0.7785811632248695,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1567
+    }
+  },
+  {
+    "item_id": "4e5a68347832a158",
+    "difficulty": -1.2259277420379886,
+    "discrimination": 1.475668231841632,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1568
+    }
+  },
+  {
+    "item_id": "531ee165d5a8d1f2",
+    "difficulty": -1.9192618954764253,
+    "discrimination": 1.2113798409896763,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1569
+    }
+  },
+  {
+    "item_id": "d12b039cefe82953",
+    "difficulty": -1.3713234885874528,
+    "discrimination": 0.2291132437350215,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1570
+    }
+  },
+  {
+    "item_id": "97d8e1222cc59467",
+    "difficulty": -0.1264918523114579,
+    "discrimination": 2.0290903082026284,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1572
+    }
+  },
+  {
+    "item_id": "c8f9140ee6095bba",
+    "difficulty": -2.89017262431104,
+    "discrimination": 1.9012640362610516,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1575
+    }
+  },
+  {
+    "item_id": "8947ffe9a4cccf45",
+    "difficulty": -2.2036865514696253,
+    "discrimination": 4.999994267569333,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1576
+    }
+  },
+  {
+    "item_id": "4186daba8437f356",
+    "difficulty": -3.4496727287360938,
+    "discrimination": 0.5729253330194477,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1577
+    }
+  },
+  {
+    "item_id": "4fac45b33bf3d6bb",
+    "difficulty": -2.542917876415569,
+    "discrimination": 1.190611483533082,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1579
+    }
+  },
+  {
+    "item_id": "e6adca73cee220ec",
+    "difficulty": -3.582108315100879,
+    "discrimination": 0.86908804953061,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1580
+    }
+  },
+  {
+    "item_id": "e27c4895bca49d60",
+    "difficulty": 0.3886158635762201,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1583
+    }
+  },
+  {
+    "item_id": "786f48faf021cdf1",
+    "difficulty": 0.9431136687910099,
+    "discrimination": 0.5308729174984168,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1586
+    }
+  },
+  {
+    "item_id": "4165980b8ea6f1e6",
+    "difficulty": -1.8847639871930997,
+    "discrimination": 1.6828640572166274,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1587
+    }
+  },
+  {
+    "item_id": "44b8e9b82979ad59",
+    "difficulty": 1.8052173195581536,
+    "discrimination": 1.5468634951889515,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1588
+    }
+  },
+  {
+    "item_id": "2a0138422e24cb79",
+    "difficulty": -1.7077632179896494,
+    "discrimination": 2.7127727718172685,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1596
+    }
+  },
+  {
+    "item_id": "8703951c579d9dc0",
+    "difficulty": -2.203562055448097,
+    "discrimination": 1.8255128085890628,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1598
+    }
+  },
+  {
+    "item_id": "80910a3b3674e6e2",
+    "difficulty": -0.4112336245544513,
+    "discrimination": 0.8800397788666348,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1600
+    }
+  },
+  {
+    "item_id": "7f670fee6dd3bc77",
+    "difficulty": -2.624223816705366,
+    "discrimination": 0.6450748437041717,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1603
+    }
+  },
+  {
+    "item_id": "c662b9377af80e00",
+    "difficulty": -2.317881432565211,
+    "discrimination": 2.1388847364430754,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1609
+    }
+  },
+  {
+    "item_id": "5d9565e52ff8a325",
+    "difficulty": -0.3794025904485361,
+    "discrimination": 0.4238420506841466,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1610
+    }
+  },
+  {
+    "item_id": "b5e4057a5c8f2f58",
+    "difficulty": -1.4925151150851934,
+    "discrimination": 1.6205709778012392,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1611
+    }
+  },
+  {
+    "item_id": "febb948b850220f4",
+    "difficulty": 5.950576608027806,
+    "discrimination": 0.699905930470214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1614
+    }
+  },
+  {
+    "item_id": "57ce08fa0f26c04e",
+    "difficulty": -3.315302020991066,
+    "discrimination": 0.958847369649074,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1617
+    }
+  },
+  {
+    "item_id": "2b3bc6c5a3338d64",
+    "difficulty": -1.9750893871540713,
+    "discrimination": 2.368655794889422,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1619
+    }
+  },
+  {
+    "item_id": "326f0ea179bb4f93",
+    "difficulty": -5.979886763490042,
+    "discrimination": 0.5624251034231238,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1621
+    }
+  },
+  {
+    "item_id": "8fa2395ad163bd77",
+    "difficulty": -2.2036865514694584,
+    "discrimination": 4.99999426757246,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1622
+    }
+  },
+  {
+    "item_id": "5efa1999e35c4803",
+    "difficulty": -1.6551614824042478,
+    "discrimination": 0.5868792037003108,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1624
+    }
+  },
+  {
+    "item_id": "545cd39754ae0f8c",
+    "difficulty": -3.219557789883815,
+    "discrimination": 0.9963465256024108,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1625
+    }
+  },
+  {
+    "item_id": "d0e9fb86a47d2bbb",
+    "difficulty": -2.096541846332029,
+    "discrimination": 1.6407253756298052,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1629
+    }
+  },
+  {
+    "item_id": "ed2d2c08526b15e1",
+    "difficulty": -2.8901725253612067,
+    "discrimination": 1.901264168197019,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1630
+    }
+  },
+  {
+    "item_id": "1e3eb5a3125a1b88",
+    "difficulty": -0.7274096315275534,
+    "discrimination": 1.6269702506941646,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1631
+    }
+  },
+  {
+    "item_id": "d17bf32941aab289",
+    "difficulty": -0.749188522073604,
+    "discrimination": 2.5103271094281103,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1633
+    }
+  },
+  {
+    "item_id": "a4a7ed4d94d536e9",
+    "difficulty": -1.5860170884787637,
+    "discrimination": 1.110619061394741,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1638
+    }
+  },
+  {
+    "item_id": "1cc270ed859907b1",
+    "difficulty": -2.67688315137248,
+    "discrimination": 1.294918096839348,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1640
+    }
+  },
+  {
+    "item_id": "9315c84b611d6f4f",
+    "difficulty": 1.9604936067235654,
+    "discrimination": 1.0384057868388663,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1643
+    }
+  },
+  {
+    "item_id": "9883a72ca3ba617e",
+    "difficulty": -3.028786666507432,
+    "discrimination": 1.0819361575206867,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1644
+    }
+  },
+  {
+    "item_id": "aadb83b3db93b44b",
+    "difficulty": -2.8945882189198056,
+    "discrimination": 1.1530127763678713,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1645
+    }
+  },
+  {
+    "item_id": "40b94e54a8795cd6",
+    "difficulty": -0.8261029393305539,
+    "discrimination": 1.2895639883703125,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1646
+    }
+  },
+  {
+    "item_id": "0a390e93f4d18231",
+    "difficulty": -1.7852812749590403,
+    "discrimination": 0.2678368868397094,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1651
+    }
+  },
+  {
+    "item_id": "1a782f7ac2a04560",
+    "difficulty": -4.13323629795878,
+    "discrimination": 0.7313476132539781,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1652
+    }
+  },
+  {
+    "item_id": "cd8712467df14c76",
+    "difficulty": 1.778720440969744,
+    "discrimination": 0.6774940581660556,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1653
+    }
+  },
+  {
+    "item_id": "d16039bf0d5a1e57",
+    "difficulty": -3.143027681509016e-05,
+    "discrimination": 0.4536595922836295,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1654
+    }
+  },
+  {
+    "item_id": "60deb2e21df3621f",
+    "difficulty": -1.8778507677330718,
+    "discrimination": 1.1047712189704098,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1656
+    }
+  },
+  {
+    "item_id": "4b759f0cd2228eb3",
+    "difficulty": 5.982640125281155,
+    "discrimination": 0.3169314852853913,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1657
+    }
+  },
+  {
+    "item_id": "8207566153dd3d5a",
+    "difficulty": 5.821728155589492,
+    "discrimination": 0.2285590450344652,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1661
+    }
+  },
+  {
+    "item_id": "e9969e344b577ea3",
+    "difficulty": -5.885728103125229,
+    "discrimination": 0.4356842136273569,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1665
+    }
+  },
+  {
+    "item_id": "0a2b06f764269167",
+    "difficulty": -2.9224969907645466,
+    "discrimination": 1.137391148806576,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1668
+    }
+  },
+  {
+    "item_id": "b7015fd0203c01fe",
+    "difficulty": -2.690881554155699,
+    "discrimination": 0.6916177080672316,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1670
+    }
+  },
+  {
+    "item_id": "5b6cc9cb0e108663",
+    "difficulty": -2.89017274351294,
+    "discrimination": 1.901263877321744,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1672
+    }
+  },
+  {
+    "item_id": "9f2eea2a14e0ab41",
+    "difficulty": -3.579029415194988,
+    "discrimination": 1.030238727614267,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1673
+    }
+  },
+  {
+    "item_id": "e950ea02d6274342",
+    "difficulty": -3.0912480532013458,
+    "discrimination": 0.5887000133741828,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1676
+    }
+  },
+  {
+    "item_id": "6064945214124ab8",
+    "difficulty": -1.8817716266937656,
+    "discrimination": 4.999996511967486,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1677
+    }
+  },
+  {
+    "item_id": "e698c14669a7b6dd",
+    "difficulty": -2.476368371700328,
+    "discrimination": 0.7646523049953443,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1678
+    }
+  },
+  {
+    "item_id": "8522b327383c4a68",
+    "difficulty": -0.8838428079821915,
+    "discrimination": 1.3761843902167732,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1679
+    }
+  },
+  {
+    "item_id": "dac4c15548ac957f",
+    "difficulty": -2.2403256142049104,
+    "discrimination": 1.2479098114578115,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1682
+    }
+  },
+  {
+    "item_id": "74167d214c441b73",
+    "difficulty": -1.6742756651610136,
+    "discrimination": 4.999995340196566,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1686
+    }
+  },
+  {
+    "item_id": "ea8cb7bcefb7fcff",
+    "difficulty": -4.58195961279266,
+    "discrimination": 0.4621342391860146,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1688
+    }
+  },
+  {
+    "item_id": "dd26253fdb8f47a3",
+    "difficulty": -3.38728338668366,
+    "discrimination": 1.4384939986786134,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1689
+    }
+  },
+  {
+    "item_id": "56dae021a5334080",
+    "difficulty": -4.230220319219968,
+    "discrimination": 1.0520088846762068,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1691
+    }
+  },
+  {
+    "item_id": "84887a959b5e9d3b",
+    "difficulty": 1.5054191256569194,
+    "discrimination": 1.0597689588942671,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1696
+    }
+  },
+  {
+    "item_id": "2219e382f675ef69",
+    "difficulty": -2.890167136801591,
+    "discrimination": 1.90127135309873,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1697
+    }
+  },
+  {
+    "item_id": "46e3163c2f024765",
+    "difficulty": -1.5106988246993702,
+    "discrimination": 1.8727703586659827,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1698
+    }
+  },
+  {
+    "item_id": "cd7e3b6d036768b2",
+    "difficulty": -4.928497106446447,
+    "discrimination": 0.4273276218866138,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1699
+    }
+  },
+  {
+    "item_id": "c4328ad4aeabd8c8",
+    "difficulty": -0.8137263312765257,
+    "discrimination": 1.3228252144001502,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1702
+    }
+  },
+  {
+    "item_id": "3c31165fcf5ad76e",
+    "difficulty": 5.334185643493829,
+    "discrimination": 0.3574881908319657,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1703
+    }
+  },
+  {
+    "item_id": "f41e88393ef095ca",
+    "difficulty": -5.978275688804351,
+    "discrimination": 0.3169277569771151,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1706
+    }
+  },
+  {
+    "item_id": "8a6b8ba99740aa2f",
+    "difficulty": 2.3086999213051067,
+    "discrimination": 1.384122175417758,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1707
+    }
+  },
+  {
+    "item_id": "ce6bc36c3fe43ad4",
+    "difficulty": -1.6638866745048864,
+    "discrimination": 0.2373313220149111,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1710
+    }
+  },
+  {
+    "item_id": "13accac300fd6591",
+    "difficulty": -2.0168092305212237,
+    "discrimination": 1.7709114314909344,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1711
+    }
+  },
+  {
+    "item_id": "8dbf0b594816a023",
+    "difficulty": -3.546931609032717,
+    "discrimination": 0.7680203003368891,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1712
+    }
+  },
+  {
+    "item_id": "f64d0d42a7c1c954",
+    "difficulty": -0.8654930426041788,
+    "discrimination": 1.1956061547498242,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1713
+    }
+  },
+  {
+    "item_id": "4714813b36bc5d8e",
+    "difficulty": 2.5115799726147925,
+    "discrimination": 0.8349493522143894,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1715
+    }
+  },
+  {
+    "item_id": "923e0a380b814052",
+    "difficulty": -3.1592733025127364,
+    "discrimination": 0.7837917425550588,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1720
+    }
+  },
+  {
+    "item_id": "efafb261923a8245",
+    "difficulty": -4.870876850197687,
+    "discrimination": 0.7073651247648363,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1721
+    }
+  },
+  {
+    "item_id": "0e2af8b04225390c",
+    "difficulty": -4.060691619120235,
+    "discrimination": 0.3025531893181324,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1723
+    }
+  },
+  {
+    "item_id": "603c1f7f32fd4e13",
+    "difficulty": 5.821728155589492,
+    "discrimination": 0.2285590450344652,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1729
+    }
+  },
+  {
+    "item_id": "d73823e83f5ea730",
+    "difficulty": 0.2479333183319854,
+    "discrimination": 0.6884845160766745,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1731
+    }
+  },
+  {
+    "item_id": "084e9df1343ad173",
+    "difficulty": -1.5039164807699268,
+    "discrimination": 1.2041497391334524,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1738
+    }
+  },
+  {
+    "item_id": "386cf9342374956f",
+    "difficulty": -3.0546947995517995,
+    "discrimination": 0.3018493112240035,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1739
+    }
+  },
+  {
+    "item_id": "cdce2a0da1e8b533",
+    "difficulty": -5.984062924886222,
+    "discrimination": 0.4838748999971801,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1743
+    }
+  },
+  {
+    "item_id": "c91ba4f26fda6a91",
+    "difficulty": -2.294413437401848,
+    "discrimination": 1.3984341250224297,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1744
+    }
+  },
+  {
+    "item_id": "aa7342b595da3612",
+    "difficulty": -3.1468101648251867,
+    "discrimination": 0.3591974253951214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1746
+    }
+  },
+  {
+    "item_id": "ae5074fcce26055f",
+    "difficulty": -1.8853179761551155,
+    "discrimination": 1.681877477927552,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1747
+    }
+  },
+  {
+    "item_id": "8cbd76bae9e3f008",
+    "difficulty": -1.844388453925288,
+    "discrimination": 1.757834079653257,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1750
+    }
+  },
+  {
+    "item_id": "e894293efc80e5e1",
+    "difficulty": -2.1701919309137088,
+    "discrimination": 2.549404395770656,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1753
+    }
+  },
+  {
+    "item_id": "0cbb7bf3f2a3f928",
+    "difficulty": -1.8817716266936078,
+    "discrimination": 4.999996511971127,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1754
+    }
+  },
+  {
+    "item_id": "438dfecbfd99ad74",
+    "difficulty": 2.787454696924719,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1755
+    }
+  },
+  {
+    "item_id": "8bb1a67b576e3edc",
+    "difficulty": -0.9735340252991966,
+    "discrimination": 1.0025052991702403,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1757
+    }
+  },
+  {
+    "item_id": "7dbf025b01af1700",
+    "difficulty": -2.311566987736174,
+    "discrimination": 0.7507152287866654,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1758
+    }
+  },
+  {
+    "item_id": "551bc86208b4aa51",
+    "difficulty": -0.1632760283105958,
+    "discrimination": 0.4992713858246502,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1759
+    }
+  },
+  {
+    "item_id": "a2e47adbb41a19af",
+    "difficulty": -5.806453557356712,
+    "discrimination": 0.2089075262237559,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1760
+    }
+  },
+  {
+    "item_id": "e59220e7cd664a07",
+    "difficulty": -1.3112659886459863,
+    "discrimination": 1.5197917494299027,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1762
+    }
+  },
+  {
+    "item_id": "1ad36202e0926957",
+    "difficulty": -0.6691483073985333,
+    "discrimination": 2.6389365217508427,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1763
+    }
+  },
+  {
+    "item_id": "89d32ad38850b6d5",
+    "difficulty": -2.0324073363066364,
+    "discrimination": 1.1116249748033264,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1765
+    }
+  },
+  {
+    "item_id": "c8b1590a587373c4",
+    "difficulty": 2.7586502955241423,
+    "discrimination": 0.4132903438300214,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1766
+    }
+  },
+  {
+    "item_id": "11bb08e388903f2b",
+    "difficulty": -2.827635402410912,
+    "discrimination": 0.3271608336057829,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1767
+    }
+  },
+  {
+    "item_id": "7030e60778b1f2d5",
+    "difficulty": -1.5153942499458983,
+    "discrimination": 3.012076379137723,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1768
+    }
+  },
+  {
+    "item_id": "430cd7c26841806e",
+    "difficulty": -2.203686551469257,
+    "discrimination": 4.99999426757623,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1772
+    }
+  },
+  {
+    "item_id": "c521ada9b46d8564",
+    "difficulty": 0.8302483917256357,
+    "discrimination": 0.6147766465386922,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1776
+    }
+  },
+  {
+    "item_id": "e1b1ff508a44fdbb",
+    "difficulty": -3.401739995548129,
+    "discrimination": 1.428952928046606,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1780
+    }
+  },
+  {
+    "item_id": "b93c656a9f2f71c2",
+    "difficulty": -1.6955726240416487e-05,
+    "discrimination": 0.9575665637076184,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1782
+    }
+  },
+  {
+    "item_id": "4b6b6d9975ad410b",
+    "difficulty": -2.310438924570989,
+    "discrimination": 0.2804940883601546,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1785
+    }
+  },
+  {
+    "item_id": "8eb191c9521f0baf",
+    "difficulty": -0.98610754660973,
+    "discrimination": 0.2383628544827161,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1786
+    }
+  },
+  {
+    "item_id": "b397aa86af611c44",
+    "difficulty": -2.2036865514692434,
+    "discrimination": 4.999994267576484,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1789
+    }
+  },
+  {
+    "item_id": "6a07faddf8e59b7c",
+    "difficulty": 0.9579037666883288,
+    "discrimination": 0.5216205861193112,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1790
+    }
+  },
+  {
+    "item_id": "8097c76a7e87e1a0",
+    "difficulty": 0.2094282049683161,
+    "discrimination": 0.3803203207116123,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1791
+    }
+  },
+  {
+    "item_id": "92cb6354710cd239",
+    "difficulty": -2.8901723447291783,
+    "discrimination": 1.901264409044938,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1792
+    }
+  },
+  {
+    "item_id": "0c301d6e42632ac8",
+    "difficulty": 4.095157974509969,
+    "discrimination": 0.522328890712823,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1795
+    }
+  },
+  {
+    "item_id": "a6174bf16eb4365c",
+    "difficulty": -2.0355402423465825,
+    "discrimination": 0.3658455017776328,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1798
+    }
+  },
+  {
+    "item_id": "a71a872f8d260af1",
+    "difficulty": -1.9148970517048087,
+    "discrimination": 1.6318028626184786,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1799
+    }
+  },
+  {
+    "item_id": "0766320e2831ce30",
+    "difficulty": 5.985512339064179,
+    "discrimination": 0.3169358960735662,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1800
+    }
+  },
+  {
+    "item_id": "7b79b85d3e9f846f",
+    "difficulty": -0.8330500940364034,
+    "discrimination": 0.8914554324995896,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1803
+    }
+  },
+  {
+    "item_id": "d6892b5f368394d4",
+    "difficulty": 3.2109514183633063,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1805
+    }
+  },
+  {
+    "item_id": "982ba497eb8f47b7",
+    "difficulty": -1.6742756651608106,
+    "discrimination": 4.999995340201762,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1806
+    }
+  },
+  {
+    "item_id": "a9eaeabb77fb7be6",
+    "difficulty": -1.65806035090929,
+    "discrimination": 0.6582511395414958,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1808
+    }
+  },
+  {
+    "item_id": "97f1b4391ad6e08d",
+    "difficulty": -5.926105784207856,
+    "discrimination": 0.2678367519383481,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1814
+    }
+  },
+  {
+    "item_id": "36cef205b3b7ecb5",
+    "difficulty": -0.7596068054457037,
+    "discrimination": 0.3125046073576286,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1815
+    }
+  },
+  {
+    "item_id": "7bf3844cdb41b337",
+    "difficulty": -2.94667557239536,
+    "discrimination": 0.7630691672064964,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1819
+    }
+  },
+  {
+    "item_id": "de43e8137919ee4e",
+    "difficulty": -5.036548750770095,
+    "discrimination": 0.5840171991775663,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1820
+    }
+  },
+  {
+    "item_id": "150c58cec3f0535c",
+    "difficulty": -1.2405795538517643,
+    "discrimination": 2.032876423997254,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1821
+    }
+  },
+  {
+    "item_id": "5d7a3a98a3e7b6d0",
+    "difficulty": 2.538033643694189,
+    "discrimination": 0.2201057477063623,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1822
+    }
+  },
+  {
+    "item_id": "bf73048baeb4213d",
+    "difficulty": -3.882820639995176,
+    "discrimination": 0.6152315493283574,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1825
+    }
+  },
+  {
+    "item_id": "3d56cf10555900a3",
+    "difficulty": -0.9498134602670836,
+    "discrimination": 0.885372827271231,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1826
+    }
+  },
+  {
+    "item_id": "e79c08a43f420d95",
+    "difficulty": -2.3559919725923537,
+    "discrimination": 1.0180633643802826,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1827
+    }
+  },
+  {
+    "item_id": "a8cd28020030d100",
+    "difficulty": 5.819186849810396,
+    "discrimination": 0.2285549650385087,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1829
+    }
+  },
+  {
+    "item_id": "a25b026bb92f81c0",
+    "difficulty": -1.7025599577682373,
+    "discrimination": 0.6379411759010424,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1833
+    }
+  },
+  {
+    "item_id": "813145529a02ae81",
+    "difficulty": -0.3370319132696918,
+    "discrimination": 1.1732770018092955,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1835
+    }
+  },
+  {
+    "item_id": "c87e668443d68a57",
+    "difficulty": -1.7023704348658848,
+    "discrimination": 1.2843848935411433,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1836
+    }
+  },
+  {
+    "item_id": "9cd01eeeef14d4aa",
+    "difficulty": 4.557054426156742,
+    "discrimination": 0.2000034181083939,
+    "guessing": 0.0,
+    "metadata": {
+      "atlas_idx": 1837
+    }
+  }
+]

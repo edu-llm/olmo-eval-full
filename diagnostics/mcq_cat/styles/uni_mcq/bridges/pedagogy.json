@@ -1,0 +1,25 @@
+{
+  "dataset": "pedagogy",
+  "bridge_kind": "content_hash",
+  "rows": 920,
+  "ordering": {
+    "source": "AdaptiveTesting inference sweep, full200",
+    "responses": "s3://edullm-adaptive-inference-056956104102/full200/results/Outputs/mcq/pedagogy/",
+    "item_cache": "s3://edullm-adaptive-inference-056956104102/full200/mcq_cache/pedagogy.n2000.s1234.jsonl",
+    "cache_written": "2026-08-01T15:23:51+00:00",
+    "loader": "AdaptiveTesting/Test/Inference/datasets_registry.py::load_pedagogy on ref Research@6998270f",
+    "task_spec": "pedagogy"
+  },
+  "item_id": {
+    "scheme": "content_hash",
+    "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+    "task": "pedagogy"
+  },
+  "matching": {
+    "recipe": "bank index k names the k-th row the calibration loader enumerated, resolved here to the content hash of the k-th task instance",
+    "verified": "every bank item matched the frozen 2026-08-01 item cache exactly on stem, choices and gold; the task enumeration was then compared against that same cache position by position",
+    "contested_ids": 0,
+    "rows_claiming_a_contested_id": 0
+  },
+  "generated_at": "2026-08-09T19:38:15.858667+00:00"
+}

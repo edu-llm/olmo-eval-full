@@ -18,7 +18,11 @@ from olmo_eval.evals.tasks.constants.piqa import PIQA_FIXED_FEWSHOT
 
 @register("piqa")
 class PiQA(Task):
-    data_source = DataSource(path="piqa", split="validation", revision="refs/convert/parquet")
+    # Namespaced rather than the bare "piqa" the Hub still redirects: huggingface_hub's
+    # filesystem path parses a repo id strictly, so a bare name raises HfUriError before
+    # any download is attempted. HfApi resolves it, which is why the break shows up only
+    # when a task actually loads its data.
+    data_source = DataSource(path="ybisk/piqa", split="validation", revision="refs/convert/parquet")
     split = Split.VALIDATION
     metrics = (LogprobPerTokenMCAccuracyMetric(),)
     num_fewshot = 0

@@ -822,9 +822,7 @@ class TestTheMathBankStopsAtTheHeaderNotTheBlankLine:
         assert response.correct
         assert response.metadata["completion"] == PROSE_PROBLEM_SOLUTION
 
-    def test_a_bare_problem_stop_would_have_graded_that_one_wrong(
-        self, real_math_extract
-    ) -> None:
+    def test_a_bare_problem_stop_would_have_graded_that_one_wrong(self, real_math_extract) -> None:
         """The counterfactual, so the cost of adding the bare word stays visible."""
         response = generative.grade_completion(
             math_item("3"),

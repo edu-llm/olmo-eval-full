@@ -61,9 +61,16 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from typing import Any
 
-#: Fit families this style can consume. 2PL is the ``c = 0`` case of 3PL, so one
-#: implementation serves both; see ``irt.py`` for the reduction.
-FIT_FAMILIES = ("2pl", "3pl")
+#: Fit families this style can consume. Each is a constrained case of the next -- 2PL is
+#: 3PL with ``c = 0``, and 1PL is 2PL with ``a = 1`` -- so one implementation serves all
+#: three; see ``irt.py`` for the reduction.
+#:
+#: The arithmetic being shared is not a reason to share the name. A manifest's family is
+#: the record of how the parameters were *estimated*, and a Rasch bank stamped ``2pl``
+#: reads as one whose discriminations were fitted and happened to land on 1 -- which
+#: would misdescribe how much of the calibration sample went into difficulty. Two of the
+#: three locally fitted banks are Rasch, so the distinction earns its place here.
+FIT_FAMILIES = ("1pl", "2pl", "3pl")
 
 #: The bridge conventions vendoring knows how to read, mapped to the column holding
 #: the joinable key.
@@ -435,6 +442,68 @@ _EXPERIMENTS = "AdaptiveTesting/Experiments"
 
 #: Where the bridges rebuilt from leaderboard example order live, in this checkout.
 _BRIDGES = "diagnostics/mcq_cat/styles/uni_mcq/bridges"
+
+#: Where the locally fitted parameters live, in this checkout rather than on a source ref.
+#:
+#: The other banks read their parameters off ``origin/Research``, where the calibration
+#: that produced them is versioned. These three have no such home: every prior study of
+#: them fit in memory, ran a CAT diagnostic, recorded a correlation and discarded the
+#: parameters, so the fit had to be re-run and there was nothing upstream to point at.
+#: ``vendor_bank`` reads through ``git_show``, so committing them here is what makes them
+#: reachable at all; ``banks/README.md`` carries the provenance and the scripts that
+#: reproduce them.
+_LOCAL_BANKS = "diagnostics/mcq_cat/styles/uni_mcq/banks"
+
+#: Shared by the three banks fit locally from the 2026-08-01 inference sweep.
+#:
+#: One sweep produced all three, so the convention is one convention and is written once.
+#: ``AdaptiveTesting/Test/Inference`` on ref ``Research@6998270f`` renders
+#: ``"Question: {stem}\nAnswer:"`` with each option scored as ``" {choice}"``, zero-shot,
+#: and ranks by the mean log-probability per continuation token -- both backends average
+#: rather than sum, and ``mcq_scoring.py`` then takes a plain argmax with nothing on top.
+#:
+#: Unlike every other entry on this page, none of this is inferred. It is read off the
+#: code that produced the responses the difficulties were fit from, which is why the note
+#: says what it was rather than what it probably was.
+_LOCAL_SWEEP_CONVENTION = CalibrationConvention(
+    prompt_style="question_answer",
+    num_fewshot=0,
+    metric="continuation_logprob_per_token",
+    note=(
+        "Read off the calibrating code rather than inferred: "
+        "AdaptiveTesting/Test/Inference/datasets_registry.py renders the prompt and "
+        "engine.py ranks by a per-token mean, on ref Research@6998270f. The run-time "
+        "convention in config.yaml is set to match it exactly."
+    ),
+)
+
+#: Shared by the three locally fitted banks: how the join was established.
+#:
+#: The same two boundaries have to hold for each of them, and the evidence is the same
+#: evidence, so it is written once rather than three times.
+_LOCAL_FIT = (
+    "Its parameters were fit here, from the 2026-08-01 inference sweep, because no prior "
+    "study persisted any: each fit in memory, ran a diagnostic and kept only the "
+    "correlation. The recipe is transcribed verbatim from the calibration source rather "
+    "than reimplemented, and banks/reproduce_check.py gates it by recovering the "
+    "published 318 / 831 / 969 kept-item counts on the study's own rng(7) 40/12 split. "
+    "The shipped fit then uses every available model rather than that 40-model slice, "
+    "since the split existed to validate the approach. "
+    "The bank's ids are positions in the sweep's enumeration, and a position is only a "
+    "usable key if the enumeration can be reproduced -- which, on the eight banks that "
+    "were measured rather than assumed, was false on two. So it was measured here on both "
+    "boundaries it has to cross. Every item of all three banks was compared against the "
+    "sweep's own frozen item cache and matched exactly on stem, choices and gold; the "
+    "olmo-eval tasks were then enumerated and compared against that same cache position "
+    "by position, agreeing everywhere with nothing filtered. Only then was the position "
+    "resolved to a content hash, which is what ships, so a re-rendered split misses rather "
+    "than naming its neighbour's question. "
+    "Every position in the raw enumeration carries a parameter row, including the ones the "
+    "point-biserial filter dropped, which carry a1 = 0 and are discarded by load_bank as "
+    "non-positive discrimination. That is what keeps the index space complete for the "
+    "alignment guard, which compares the bank's maximum index against the bridge's row "
+    "count and would otherwise abort on a bank whose last item was filtered. "
+)
 
 #: Shared by the three banks whose bridge was rebuilt from leaderboard example order.
 #: Written once because the history is one history, and quoting it three times invites
@@ -1128,8 +1197,9 @@ SUPPORTED: dict[str, DatasetSpec] = {
             num_fewshot=0,
             metric="acc_norm",
             note=(
-                "The only bank here whose calibration convention is known in full and "
-                "matched in full, and it is known because the harvest was identified "
+                "One of four banks here whose calibration convention is known in full and "
+                "matched in full, and the only one of them not fit locally: it is known "
+                "because the harvest was identified "
                 "rather than because anything upstream wrote it down -- the local fit "
                 "records no prompt, shot count or metric. Each cell of the fit's own "
                 "response matrix is the Open LLM Leaderboard v2 acc_norm outcome of "
@@ -1651,6 +1721,153 @@ SUPPORTED: dict[str, DatasetSpec] = {
             "in the bank and an early-stopped session does not reach it."
         ),
     ),
+    "pedagogy": DatasetSpec(
+        name="pedagogy",
+        task="pedagogy",
+        route="B",
+        bank_dir=f"{_LOCAL_BANKS}/pedagogy",
+        bridge_path=f"{_BRIDGES}/pedagogy.csv",
+        bridge_in_repo=True,
+        bridge_kind=CONTENT_HASH,
+        fit_family="1pl",
+        expected_bank_rows=920,
+        positional_ids=True,
+        calibration=_LOCAL_SWEEP_CONVENTION,
+        report_caveat=(
+            "pedagogy's predicted accuracy is not a readable figure and its theta is. "
+            "The bank's calibration population spans 0.225 to 0.312 against a "
+            "four-choice chance floor of 0.250, and predicted accuracy over the same "
+            "models spans 0.187 to 0.470 -- 3.3 times wider than the thing it predicts, "
+            "with a mean absolute error of 0.101 that is larger than the whole 0.087 "
+            "span. Predicting the population mean for every checkpoint would be more "
+            "accurate. What the bank does recover is order: Spearman between predicted "
+            "and actual accuracy is +0.900 over the held-out models in the 1B-7B band. "
+            "Read the theta, and read it as a rank against that population rather than "
+            "as an accuracy."
+        ),
+        notes=(
+            "Fit here rather than anywhere else, and the first bank on this page whose "
+            "join was measured on both boundaries before it was built. " + _LOCAL_FIT + ""
+            "Rasch by measurement. pl_1_2_3_comparison ran calibrate-CAT-predict on all "
+            "three of these banks off one 40/12 split and read r = 0.890 for 1PL against "
+            "0.716 for 2PL and 0.793 for 3PL, and the per-model rows show the same thing "
+            "more sharply: Spearman between predicted and actual accuracy is +0.900 under "
+            "1PL against +0.600 under 2PL over the eleven held-out models in the 1B-7B "
+            "band. A later pedagogy-only sweep of the calibration pool "
+            "(kfold_calib_sweep) finds 2PL overtaking 1PL near N = 56 and reaching 0.837 "
+            "at N = 70, which is the one result that argues the other way and is "
+            "deliberately not followed: the best pedagogy number anyone has measured is "
+            "still the 1PL 0.890, and the two reasons below make a fitted discrimination "
+            "the wrong thing to spend this sample on. "
+            "The population sits at chance. Accuracy across the 78 calibration models runs "
+            "0.225 to 0.312 against a four-choice floor of 0.250, with 10 of them scoring "
+            "below it, so the whole bank is spread over about six accuracy points and a "
+            "per-item discrimination estimated from that separation is mostly noise. "
+            "Fitting and filtering on the same responses then biases whatever survives "
+            "upward -- at N = 78 a null point-biserial has SD around 0.114 against a 0.05 "
+            "threshold -- which shrinks CAT standard errors below their true value. A "
+            "Rasch bank has no per-item discrimination to inflate and cannot fail that "
+            "way. "
+            "191 of the 920 items are all-fail: no model of the 78 answers them, which "
+            "guessing alone should make close to impossible on four choices, so they are "
+            "either mis-keyed or adversarial to a per-token ranking. They are dropped by "
+            "the point-biserial filter along with 338 low-discrimination items and 12 "
+            "all-pass, leaving 379 usable. That is 41% of the bank and the largest single "
+            "reservation about it. "
+            "Alone of the three it has a content-anchored id upstream -- the loader keys "
+            "on the dataset's own question_id rather than on enumeration order -- but the "
+            "anchor buys less than it sounds like, because those values are exactly the "
+            "row indices, so a renumbering during a reorder would carry the id along with "
+            "it. The pinned revision makes that moot by construction. "
+            "The dataset is gated (an unauthenticated fetch returns 401) and MIT licensed. "
+            "Vendoring needs a token because it enumerates the task; a run does not, "
+            "because the items are vendored."
+        ),
+    ),
+    "piqa": DatasetSpec(
+        name="piqa",
+        task="piqa",
+        route="B",
+        bank_dir=f"{_LOCAL_BANKS}/piqa",
+        bridge_path=f"{_BRIDGES}/piqa.csv",
+        bridge_in_repo=True,
+        bridge_kind=CONTENT_HASH,
+        fit_family="2pl",
+        expected_bank_rows=1838,
+        positional_ids=True,
+        calibration=_LOCAL_SWEEP_CONVENTION,
+        notes=(
+            "The strongest of the three locally fitted banks and the only one whose "
+            "measured fit family is 2PL. " + _LOCAL_FIT + ""
+            "pl_1_2_3_comparison reads r = 0.937 for 2PL against 0.916 for 1PL and 0.790 "
+            "for 3PL, and 896 of its 1,838 items survive the filter. The margin over 1PL "
+            "is thin and the per-model view actually inverts it -- Spearman between "
+            "predicted and actual accuracy is +0.718 under 1PL against +0.609 under 2PL "
+            "across the eleven held-out models in the 1B-7B band, with no impossible "
+            "predictions under either. Pearson is the study's headline and a Spearman over "
+            "eleven points is noisy, so the published comparison is followed; the "
+            "disagreement is recorded because it is the first thing to revisit if this "
+            "bank ever looks miscalibrated at the low end. "
+            "Two choices, so chance is 0.50 and a 2PL has no guessing parameter to absorb "
+            "it. That shows: the one sub-1B model in the held-out set is handed a "
+            "predicted accuracy of 0.371, which is not a value any model can score. Every "
+            "model in the 1B-7B band the calibration covers gets a possible one, so the "
+            "failure is outside the supported range rather than inside it, but a theta "
+            "below that range should be refused rather than reported. 3PL is not the fix: "
+            "at this pool size it collapses to 0.790. "
+            "76 of the 896 fitted items sit on girth's discrimination bounds, 52 at 0.2 "
+            "and 24 at 5.0. A pinned discrimination is not an estimate, and since Fisher "
+            "information scales with a squared, the 24 at the ceiling are preferentially "
+            "selected. "
+            "Its content hashes are injective -- 1,838 rows, 1,838 distinct ids -- so "
+            "nothing is lost to the ambiguous-id drop."
+        ),
+    ),
+    "socialiqa": DatasetSpec(
+        name="socialiqa",
+        task="socialiqa",
+        route="B",
+        bank_dir=f"{_LOCAL_BANKS}/socialiqa",
+        bridge_path=f"{_BRIDGES}/socialiqa.csv",
+        bridge_in_repo=True,
+        bridge_kind=CONTENT_HASH,
+        fit_family="1pl",
+        expected_bank_rows=1954,
+        positional_ids=True,
+        calibration=_LOCAL_SWEEP_CONVENTION,
+        notes=(
+            "The weakest bank of the three, and the reason is the bank rather than the "
+            "model fitted to it. " + _LOCAL_FIT + ""
+            "Rasch by measurement and by a wide margin: r = 0.760 for 1PL against 0.271 "
+            "for 2PL and 0.292 for 3PL. Read the 2PL number as a warning rather than as a "
+            "fit -- under it the weakest of the twelve held-out models ranks third best "
+            "and four of them are handed sub-chance predicted accuracies, which is a "
+            "precise, confident, inverted answer. 1PL repairs most of that (Spearman "
+            "+0.636 over the 1B-7B band, sub-chance predictions down to two of eleven) and "
+            "it is what is vendored, so the inversion is not a property of this bank as "
+            "shipped. It is a property of the diagnostic files on origin/Research, which "
+            "are all 2PL, and anyone reading diag_socialiqa_se0.3.csv against this bank is "
+            "reading the wrong fit. "
+            "What survives the repair is that 0.760 is the lowest of the three by a clear "
+            "margin, and pl_1_2_3_comparison says why in its own words: the bank 'barely "
+            "separates these 52 models, so no amount of model order rescues it'. piqa "
+            "reaches 0.937 off the same 52 models, so this is not a sample-size result. "
+            "Ship it for coverage and read a socialiqa theta as the least resolved number "
+            "on the page. "
+            "Its task spec matters more here than elsewhere. socialiqa:xlarge and "
+            "socialiqa:mc_olmo3base set limit=10000, which switches the loader to "
+            "validation+train and then samples it under a fixed seed -- 10,000 instances "
+            "in an order unrelated to the calibrated one, which would build, join, and be "
+            "wrong. This spec names the bare task on purpose. "
+            "24 of its content hashes are claimed by two bridge rows each, the only bank "
+            "here where that happens at all. Most of those collisions land on rows the "
+            "point-biserial filter had already dropped, so the cost is smaller than the "
+            "bridge count suggests: 10 contested ids reach scorable rows and 20 items go "
+            "to the ambiguous-id drop, leaving 992. Its task also declares "
+            "LogprobPerCharMCAccuracyMetric, which the calibration did not use; see the "
+            "config entry for why the calibration wins."
+        ),
+    ),
 }
 
 #: Datasets deliberately not supported, with the reason. Surfaced in error messages
@@ -1666,10 +1883,6 @@ EXCLUDED: dict[str, str] = {
     ),
     "mmlu": "task exists but no calibrated bank was ever produced",
     "csqa": (
-        "registered upstream with a bank_subdir that does not exist on disk; it passes "
-        "name validation and then fails at run time"
-    ),
-    "piqa": (
         "registered upstream with a bank_subdir that does not exist on disk; it passes "
         "name validation and then fails at run time"
     ),
@@ -1705,14 +1918,6 @@ EXCLUDED: dict[str, str] = {
     ),
     "boolq": "Route A pilot grids only (4 models), no serialized bank",
     "educationq": "Route A pilot grids only (3 models), no serialized bank",
-    "pedagogy": (
-        "fit in memory via girth during the feasibility study but never serialized, so "
-        "no bank file exists anywhere"
-    ),
-    "socialiqa": (
-        "fit in memory via girth during the feasibility study but never serialized, so "
-        "no bank file exists anywhere"
-    ),
 }
 
 

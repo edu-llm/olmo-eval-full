@@ -137,6 +137,7 @@ def _single(records: Sequence[Mapping[str, Any]], key: str) -> Any:
         return values.pop()
     return sorted(values, key=repr)
 
+
 #: Share of administered items that may come back ungradable before the report stops
 #: describing the checkpoint and starts describing the harness.
 #:

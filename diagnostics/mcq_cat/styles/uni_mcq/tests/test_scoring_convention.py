@@ -206,15 +206,16 @@ class TestTheCalibrationHalfIsSeparate:
     def test_every_dataset_says_where_its_facts_come_from(self, name: str) -> None:
         assert datasets.SUPPORTED[name].calibration.note
 
-    def test_two_banks_record_a_shot_count_and_they_know_it_differently(self) -> None:
-        """One was stated upstream and one was read off the harvest, which is not the
-        same standing.
+    def test_the_banks_recording_a_shot_count_know_it_three_different_ways(self) -> None:
+        """Three standings, and the difference between them is the point.
 
         ARC's 25 comes from the ATLAS release describing its own calibration. GPQA's 0
         comes from having identified the harvest itself -- its response matrix is the
         Open LLM Leaderboard v2 ``acc_norm`` outcome of ``leaderboard_gpqa``, and that
         task is 0-shot -- so the fit records nothing and the number is nonetheless a
-        fact about it rather than an assumption. Everything else is honestly unknown,
+        fact about it rather than an assumption. The three locally fitted banks are the
+        strongest case: their 0 is read off the code that produced the responses, on a
+        pinned ref, because we ran the calibration. Everything else is honestly unknown,
         and pinning the set is what stops a plausible guess being written into one.
         """
         with_counts = {
@@ -222,9 +223,40 @@ class TestTheCalibrationHalfIsSeparate:
             for name, spec in datasets.SUPPORTED.items()
             if spec.calibration.num_fewshot != UNRECORDED
         }
-        assert with_counts == {"arc_challenge", "gpqa"}
+        assert with_counts == {
+            "arc_challenge",
+            "gpqa",
+            "pedagogy",
+            "piqa",
+            "socialiqa",
+        }
         assert datasets.SUPPORTED["arc_challenge"].calibration.num_fewshot == 25
         assert datasets.SUPPORTED["gpqa"].calibration.num_fewshot == 0
+        for name in ("pedagogy", "piqa", "socialiqa"):
+            assert datasets.SUPPORTED[name].calibration.num_fewshot == 0
+
+    def test_four_banks_know_their_whole_convention_and_the_rest_do_not(self) -> None:
+        """Knowing all three fields is what makes a theta comparable rather than plausible.
+
+        Everywhere else at least one of prompt, shots and metric is unrecorded, so the
+        run-time convention is a choice about self-consistency and not evidence about the
+        bank. These four are the exceptions, and they are exceptions for different reasons:
+        gpqa's is known because the harvest was identified as Open LLM Leaderboard v2's,
+        while the three locally fitted banks' is read off the code that produced their
+        responses on a pinned ref, because we ran it. Pinning the set is what stops a
+        fourth bank acquiring a full convention by someone filling in a plausible blank.
+        """
+        fully_known = {
+            name
+            for name, spec in datasets.SUPPORTED.items()
+            if UNRECORDED
+            not in (
+                spec.calibration.prompt_style,
+                spec.calibration.num_fewshot,
+                spec.calibration.metric,
+            )
+        }
+        assert fully_known == {"gpqa", "pedagogy", "piqa", "socialiqa"}
 
     def test_arcs_prompt_and_metric_stay_unknown_beside_its_shot_count(self) -> None:
         """A recorded shot count is not licence to reconstruct the rest."""

@@ -172,6 +172,31 @@ mcq:
       # decides items.
       score_normalization: continuation_logprob_per_character
 
+    # The three locally fitted banks share one convention, because one sweep produced
+    # all three: AdaptiveTesting/Test/Inference on ref Research@6998270f, whose
+    # `_qa_prompt` is "Question: {stem}\nAnswer:" with each option scored as " {choice}".
+    # That is `question_answer`, the same pair ARC takes.
+    #
+    # Their score_normalization is the one case here that is neither the default sum nor
+    # acc_norm, and it is named on the calibration's own authority rather than a task's.
+    # Both backends of the calibrating engine average over the continuation's tokens --
+    # the HF path ends `cont_lp.mean()`, the vLLM path `total / max(1, n)` -- and
+    # `mcq_scoring.py` then takes a plain argmax with nothing applied on top. Where a task
+    # disagrees, the calibration wins: socialiqa.py declares LogprobPerCharMCAccuracyMetric,
+    # which would rank a different option on any item whose choices differ in length per
+    # character but not per token, against difficulties fit on the per-token ranking.
+    pedagogy:
+      prompt_style: question_answer
+      score_normalization: continuation_logprob_per_token
+
+    piqa:
+      prompt_style: question_answer
+      score_normalization: continuation_logprob_per_token
+
+    socialiqa:
+      prompt_style: question_answer
+      score_normalization: continuation_logprob_per_token
+
 # Settings for the generative grader, used only when the resolved bank's modality is
 # `generative`. MCQ banks ignore this block entirely.
 #

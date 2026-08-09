@@ -53,6 +53,9 @@ class TestAllowlist:
             "gpqa",
             "musr",
             "bbh",
+            "pedagogy",
+            "piqa",
+            "socialiqa",
         }
 
     def test_only_winogrande_gsm8k_and_ifeval_are_blocked_today(self) -> None:
@@ -96,12 +99,25 @@ class TestAllowlist:
         assert not set(datasets.SUPPORTED) & set(datasets.EXCLUDED)
 
     def test_known_exclusion_explains_itself(self) -> None:
-        """A user asking for piqa should learn *why*, not just that it is unknown."""
+        """A user asking for csqa should learn *why*, not just that it is unknown."""
         with pytest.raises(KeyError) as exc:
-            datasets.get_spec("piqa")
+            datasets.get_spec("csqa")
         message = exc.value.args[0]
         assert "bank_subdir" in message
         assert "arc_challenge" in message
+
+    def test_the_three_locally_fitted_banks_left_excluded_together(self) -> None:
+        """Their exclusions named the gap that fitting them closed, so both must go.
+
+        All three were excluded for the same reason and it was a true one: the feasibility
+        study fit them with girth in memory and kept only the correlations, so no bank file
+        existed anywhere to vendor. Serializing that fit is exactly what removed the
+        obstacle, and a reason left behind would keep telling a user the bank does not
+        exist while it sits in ``calibrated_datasets/``.
+        """
+        for name in ("pedagogy", "piqa", "socialiqa"):
+            assert name not in datasets.EXCLUDED
+        assert not any("never serialized" in reason for reason in datasets.EXCLUDED.values())
 
     def test_unknown_name_lists_what_is_ready(self) -> None:
         with pytest.raises(KeyError) as exc:

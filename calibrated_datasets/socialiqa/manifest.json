@@ -1,0 +1,79 @@
+{
+  "dataset": "socialiqa",
+  "task": "socialiqa",
+  "route": "B",
+  "modality": "mcq",
+  "answer_type": null,
+  "fit_family": "1pl",
+  "source_ref": "HEAD",
+  "source_commit": "a1d9e4d4fbdd1c7750ad9e277824f887bb41a15f",
+  "bank_dir": "diagnostics/mcq_cat/styles/uni_mcq/banks/socialiqa",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/socialiqa.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "socialiqa",
+    "bridge_kind": "content_hash",
+    "rows": 1954,
+    "ordering": {
+      "source": "AdaptiveTesting inference sweep, full200",
+      "responses": "s3://edullm-adaptive-inference-056956104102/full200/results/Outputs/mcq/socialiqa/",
+      "item_cache": "s3://edullm-adaptive-inference-056956104102/full200/mcq_cache/socialiqa.n2000.s1234.jsonl",
+      "cache_written": "2026-08-01T15:23:51+00:00",
+      "loader": "AdaptiveTesting/Test/Inference/datasets_registry.py::load_socialiqa on ref Research@6998270f",
+      "task_spec": "socialiqa"
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "task": "socialiqa"
+    },
+    "matching": {
+      "recipe": "bank index k names the k-th row the calibration loader enumerated, resolved here to the content hash of the k-th task instance",
+      "verified": "every bank item matched the frozen 2026-08-01 item cache exactly on stem, choices and gold; the task enumeration was then compared against that same cache position by position",
+      "contested_ids": 24,
+      "rows_claiming_a_contested_id": 48
+    },
+    "generated_at": "2026-08-09T19:38:18.553096+00:00"
+  },
+  "upstream_bank_rows": 1954,
+  "bridge_rows": 1954,
+  "items": 992,
+  "subtask_items": null,
+  "dropped": {
+    "non_positive_discrimination": 942,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 20,
+    "duplicate_question": 0
+  },
+  "duplicate_question_precedence": null,
+  "ungradable_instances": 0,
+  "positional_ids": true,
+  "frozen_prompt": false,
+  "choice_order_checked": null,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "score_normalization": "continuation_logprob_per_token",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "metric": "continuation_logprob_per_token",
+      "note": "Read off the calibrating code rather than inferred: AdaptiveTesting/Test/Inference/datasets_registry.py renders the prompt and engine.py ranks by a per-token mean, on ref Research@6998270f. The run-time convention in config.yaml is set to match it exactly."
+    }
+  },
+  "bank_caveat": null,
+  "notes": "The weakest bank of the three, and the reason is the bank rather than the model fitted to it. Its parameters were fit here, from the 2026-08-01 inference sweep, because no prior study persisted any: each fit in memory, ran a diagnostic and kept only the correlation. The recipe is transcribed verbatim from the calibration source rather than reimplemented, and banks/reproduce_check.py gates it by recovering the published 318 / 831 / 969 kept-item counts on the study's own rng(7) 40/12 split. The shipped fit then uses every available model rather than that 40-model slice, since the split existed to validate the approach. The bank's ids are positions in the sweep's enumeration, and a position is only a usable key if the enumeration can be reproduced -- which, on the eight banks that were measured rather than assumed, was false on two. So it was measured here on both boundaries it has to cross. Every item of all three banks was compared against the sweep's own frozen item cache and matched exactly on stem, choices and gold; the olmo-eval tasks were then enumerated and compared against that same cache position by position, agreeing everywhere with nothing filtered. Only then was the position resolved to a content hash, which is what ships, so a re-rendered split misses rather than naming its neighbour's question. Every position in the raw enumeration carries a parameter row, including the ones the point-biserial filter dropped, which carry a1 = 0 and are discarded by load_bank as non-positive discrimination. That is what keeps the index space complete for the alignment guard, which compares the bank's maximum index against the bridge's row count and would otherwise abort on a bank whose last item was filtered. Rasch by measurement and by a wide margin: r = 0.760 for 1PL against 0.271 for 2PL and 0.292 for 3PL. Read the 2PL number as a warning rather than as a fit -- under it the weakest of the twelve held-out models ranks third best and four of them are handed sub-chance predicted accuracies, which is a precise, confident, inverted answer. 1PL repairs most of that (Spearman +0.636 over the 1B-7B band, sub-chance predictions down to two of eleven) and it is what is vendored, so the inversion is not a property of this bank as shipped. It is a property of the diagnostic files on origin/Research, which are all 2PL, and anyone reading diag_socialiqa_se0.3.csv against this bank is reading the wrong fit. What survives the repair is that 0.760 is the lowest of the three by a clear margin, and pl_1_2_3_comparison says why in its own words: the bank 'barely separates these 52 models, so no amount of model order rescues it'. piqa reaches 0.937 off the same 52 models, so this is not a sample-size result. Ship it for coverage and read a socialiqa theta as the least resolved number on the page. Its task spec matters more here than elsewhere. socialiqa:xlarge and socialiqa:mc_olmo3base set limit=10000, which switches the loader to validation+train and then samples it under a fixed seed -- 10,000 instances in an order unrelated to the calibrated one, which would build, join, and be wrong. This spec names the bare task on purpose. 24 of its content hashes are claimed by two rows each, so 48 of the 1,954 go to the ambiguous-id drop; the other two banks lose none. Its task also declares LogprobPerCharMCAccuracyMetric, which the calibration did not use; see the config entry for why the calibration wins.",
+  "sha256": {
+    "params.json": "a10ffcf102a2bf7148324621435ea8d8f30a5ba2322aa2a49acfa48af64d0d69",
+    "items.jsonl": "98a9894f081748788212ce05acc6a5797b57ffc7f35a1dda00da6408342db793"
+  },
+  "generated_at": "2026-08-09T19:46:31.827681+00:00"
+}

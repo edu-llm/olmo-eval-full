@@ -614,11 +614,21 @@ class TestItSaysHowFarToTrustIt:
     def test_the_manifest_records_it_too(self) -> None:
         assert manifest()["bank_caveat"] == SUPPORTED[DATASET].report_caveat
 
-    def test_no_other_bank_carries_the_key(self) -> None:
-        """A caveat on every report would be read as boilerplate and stop being read."""
+    def test_only_two_banks_carry_the_key_and_for_opposite_reasons(self) -> None:
+        """A caveat on every report would be read as boilerplate and stop being read.
+
+        The bar is that one of the two headline figures must not be read at all, and the
+        two banks that clear it fail in opposite directions. bbh's predicted accuracy is
+        worth reading and its theta is not, because a unidimensional model over 24
+        unrelated subtasks has nothing to converge to. pedagogy is the mirror image: its
+        theta recovers order well, while its predicted accuracy carries a mean absolute
+        error larger than the entire span of the accuracies it predicts, so the population
+        mean would beat it. A bank that is merely weak -- socialiqa, the least resolved
+        here -- does not qualify, because both of its figures mean what they say.
+        """
         with_caveat = {name for name, spec in SUPPORTED.items() if spec.report_caveat}
 
-        assert with_caveat == {DATASET}
+        assert with_caveat == {DATASET, "pedagogy"}
 
     @staticmethod
     def report_caveat() -> str:

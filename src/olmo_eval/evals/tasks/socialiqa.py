@@ -20,8 +20,12 @@ from olmo_eval.evals.tasks.constants.socialiqa import SOCIALIQA_FIXED_FEWSHOT
 
 @register("socialiqa")
 class SocialIQA(Task):
+    # Namespaced rather than the bare "social_i_qa" the Hub still redirects:
+    # huggingface_hub's filesystem path parses a repo id strictly, so a bare name raises
+    # HfUriError before any download is attempted. HfApi resolves it, which is why the
+    # break shows up only when a task actually loads its data.
     data_source = DataSource(
-        path="social_i_qa", split="validation", revision="refs/convert/parquet"
+        path="allenai/social_i_qa", split="validation", revision="refs/convert/parquet"
     )
     split = Split.VALIDATION
     metrics = (LogprobPerCharMCAccuracyMetric(),)
@@ -158,7 +162,7 @@ register_variant(
     "mc_olmo3base",
     formatter=MultipleChoiceFormatter(),
     data_source=DataSource(
-        path="social_i_qa", split="train+validation", revision="refs/convert/parquet"
+        path="allenai/social_i_qa", split="train+validation", revision="refs/convert/parquet"
     ),
     num_fewshot=5,
     limit=10000,
@@ -168,7 +172,7 @@ register_variant(
     "socialiqa",
     "xlarge",
     data_source=DataSource(
-        path="social_i_qa", split="train+validation", revision="refs/convert/parquet"
+        path="allenai/social_i_qa", split="train+validation", revision="refs/convert/parquet"
     ),
     num_fewshot=5,
     limit=10000,

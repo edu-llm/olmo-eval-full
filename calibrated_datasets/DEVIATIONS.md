@@ -358,3 +358,41 @@ choice list would leave it unchanged. The two checks above are what cover the or
 
 - Composite key verified on 5,761; duplicate items block content hashing.
 - Theta unusable: `theta_mae` 0.684 flat; 3-shot prefix frozen.
+
+## `pedagogy`
+
+- No deviation: calibration and run time both `question_answer`, 0-shot, per-token mean.
+  The only banks here where the two are known rather than assumed to agree.
+- 1PL, against the N=70 kfold result that prefers 2PL. The best pedagogy number measured
+  is still 1PL's r = 0.890, and a chance-level population makes a fitted discrimination
+  mostly noise.
+- Predicted accuracy is not readable: MAE 0.101 over a 0.087 actual span. Carried as a
+  `report_caveat` so it reaches every report. Theta recovers order at Spearman +0.900.
+- 191 of 920 items are all-fail — impossible by guessing on four choices, so mis-keyed or
+  adversarial to a per-token ranking. Dropped by the point-biserial filter; 379 survive.
+- Gated upstream: vendoring needs a token, a run does not.
+
+## `piqa`
+
+- No deviation: `question_answer`, 0-shot, per-token mean, matching calibration.
+- 2PL on the published Pearson (0.937 vs 0.916), though per-model Spearman prefers 1PL
+  (+0.718 vs +0.609). Revisit if it looks miscalibrated at the low end.
+- Two choices and no guessing parameter, so predictions below the 0.50 floor are possible
+  outside the calibrated band — the one sub-1B model tested gets 0.371. Inside 1B–7B none
+  occur. 3PL is not the fix; it collapses to 0.790 at this pool size.
+- 76 of 896 discriminations sit on girth's bounds (52 at 0.2, 24 at 5.0). Pinned is not
+  estimated, and Fisher information scales with `a` squared, so the ceiling cases are
+  preferentially selected.
+
+## `socialiqa`
+
+- No deviation from calibration: `question_answer`, 0-shot, per-token mean. Its task
+  declares `LogprobPerCharMCAccuracyMetric`; the calibration wins.
+- 1PL by a wide margin (0.760 against 2PL's 0.271). The weakest bank here — the bank
+  barely separates its calibration population, and piqa reaches 0.937 off the same 52
+  models, so this is not a sample-size result.
+- **The `diag_socialiqa_*.csv` files on `origin/Research` are the 2PL fit.** Under 2PL the
+  weakest held-out model ranks third best and four of twelve get sub-chance predictions.
+  That is not this bank; do not read those files against it.
+- 24 contested content hashes, 10 of which reach scorable rows: 20 items dropped, 992
+  survive. The only bank here that loses any.

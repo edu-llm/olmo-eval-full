@@ -65,9 +65,15 @@ def spec(fit_family: str = "3pl", bank_dir: str = GPQA_3PL) -> DatasetSpec:
 
 
 def rows(*guessing: float) -> list[dict[str, str]]:
-    """Upstream parameter rows, in the ``(X, a1, d, g, u)`` shape mirt writes."""
+    """Upstream parameter rows, in the ``(X, a1, d, g, u)`` shape mirt writes.
+
+    Discriminations vary across the rows and none of them is 1. These fixtures exercise
+    the guessing column, but ``a1`` stopped being a don't-care value once 1PL joined the
+    families the guard can read: a bank whose every scorable row has ``a = 1`` is Rasch,
+    so leaving the filler at 1.0 would have made every fixture here read as 1PL.
+    """
     return [
-        {"X": f"X{i}", "a1": "1.0", "d": "0.0", "g": repr(g), "u": "1"}
+        {"X": f"X{i}", "a1": repr(0.7 + 0.3 * i), "d": "0.0", "g": repr(g), "u": "1"}
         for i, g in enumerate(guessing, start=1)
     ]
 
@@ -184,8 +190,66 @@ class TestParametersDecideTheFamily:
             check_parameter_family(spec(), "3pl", rows(0.0, 0.0, 0.0))
 
         message = str(exc.value)
-        assert "every one of its 3 rows has g = 0" in message
+        assert "3 scorable rows have g = 0" in message
         assert "--fit-family 2pl" in message
+
+
+class TestRaschIsItsOwnFamily:
+    """1PL is the ``a = 1`` case of 2PL, and the discrimination column identifies it.
+
+    Two of the three locally fitted banks are Rasch. Stamping them ``2pl`` would run and
+    would score identically -- the arithmetic is the same -- but the manifest would claim
+    a discrimination had been estimated per item when the whole calibration sample went
+    into difficulty, which is the provenance error this guard exists to prevent.
+    """
+
+    def unit(self, *, scorable: int, zeroed: int = 0) -> list[dict[str, str]]:
+        """A Rasch bank, optionally carrying the zeroed rows the local fits emit."""
+        rasch = [
+            {"X": f"X{i}", "a1": "1.0", "d": repr(-0.4 * i), "g": "0.0", "u": "1"}
+            for i in range(1, scorable + 1)
+        ]
+        dropped = [
+            {"X": f"X{scorable + i}", "a1": "0", "d": "0", "g": "0", "u": "1"}
+            for i in range(1, zeroed + 1)
+        ]
+        return rasch + dropped
+
+    def test_a_rasch_bank_stamped_1pl_passes(self) -> None:
+        check_parameter_family(spec(fit_family="1pl"), "1pl", self.unit(scorable=3))
+
+    def test_zeroed_rows_do_not_hide_the_family(self) -> None:
+        """The local fits pad every filtered position with ``a1 = 0`` for the alignment
+        guard, and those rows must not be mistaken for estimated discriminations."""
+        check_parameter_family(spec(fit_family="1pl"), "1pl", self.unit(scorable=3, zeroed=5))
+
+    def test_a_rasch_bank_stamped_2pl_aborts(self) -> None:
+        with pytest.raises(SystemExit) as exc:
+            check_parameter_family(spec(fit_family="2pl"), "2pl", self.unit(scorable=3))
+
+        message = str(exc.value)
+        assert "3 scorable rows has a = 1" in message
+        assert "--fit-family 1pl" in message
+
+    def test_a_bank_with_estimated_discriminations_stamped_1pl_aborts(self) -> None:
+        with pytest.raises(SystemExit) as exc:
+            check_parameter_family(spec(fit_family="1pl"), "1pl", rows(0.0, 0.0))
+
+        assert "--fit-family 2pl" in str(exc.value)
+
+    def test_guessing_still_outranks_discrimination(self) -> None:
+        """A 3PL fit whose discriminations happen to be 1 is still a 3PL fit.
+
+        Ordering matters here: ``g`` is checked before ``a``, because zeroing an
+        estimated guessing parameter shifts every ability the bank produces, while
+        mislabelling Rasch as 2PL only misdescribes it.
+        """
+        three_pl_with_unit_a = [
+            {"X": "X1", "a1": "1.0", "d": "0.0", "g": "0.21", "u": "1"},
+            {"X": "X2", "a1": "1.0", "d": "0.0", "g": "0.18", "u": "1"},
+        ]
+        with pytest.raises(SystemExit, match="non-zero guessing"):
+            check_parameter_family(spec(fit_family="1pl"), "1pl", three_pl_with_unit_a)
 
     def test_a_real_3pl_bank_stamped_3pl_passes(self) -> None:
         check_parameter_family(spec(), "3pl", rows(0.21, 0.03, 0.34))
@@ -195,14 +259,14 @@ class TestParametersDecideTheFamily:
 
     def test_an_absent_guessing_column_reads_as_2pl(self) -> None:
         """``load_bank`` already treats a missing ``g`` as zero, and so must this."""
-        without_g = [{"X": "X1", "a1": "1.0", "d": "0.0"}]
+        without_g = [{"X": "X1", "a1": "1.4", "d": "0.0"}]
 
         check_parameter_family(spec(fit_family="2pl"), "2pl", without_g)
-        with pytest.raises(SystemExit, match="has g = 0"):
+        with pytest.raises(SystemExit, match="g = 0"):
             check_parameter_family(spec(), "3pl", without_g)
 
     def test_an_empty_guessing_cell_reads_as_2pl(self) -> None:
-        blank = [{"X": "X1", "a1": "1.0", "d": "0.0", "g": ""}]
+        blank = [{"X": "X1", "a1": "1.4", "d": "0.0", "g": ""}]
 
         check_parameter_family(spec(fit_family="2pl"), "2pl", blank)
 

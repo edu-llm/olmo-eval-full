@@ -1,0 +1,921 @@
+atlas_idx,item_id,split_index,question
+1,a7b3a85d05e79df5,0,"At a preschool level, the educational team needs to evaluate in everyday contexts the following "
+2,e508479cdb1e77e6,1,A first-grade teacher is designing a group activity to work on the skill of exploring along with
+3,8d45c5e28ef678e2,2,"Through an investigative activity, a teacher wants to address the different techniques for separ"
+4,9f0dd80a98665fb0,3,A first-grade teacher will begin the unit about the effect of daily cycles on living beings and 
+5,7f72f622634f1824,4,"In the subject of Natural Sciences, a teacher sets the following objective for Grade 1: ""Describ"
+6,ff28ae598316dda4,5,A teacher is working on the human body unit in a 2nd grade class and is addressing the objective
+7,20a60d5e2bd70664,6,A group of early years children observe that there are many flowers of different shapes and colo
+8,fac5fa0afb9cd346,7,Read the following situation: An educator invites the early years children to do an experiment. 
+9,355d80555bcf8207,8,An educator is explaining to the children the state changes that water undergoes. Which of the f
+10,2656a4f20c4daf15,9,An educator shows an image to the children in which the change of state of matter from solid to 
+11,235fddc174c0d86d,10,"As part of the unit ""My Planet"", an educator must explain to the children what elements make up "
+12,b0796c1d54e3ad32,11,Consider the following situation: An educator is covering the content about the ocean in the uni
+13,bcb0e626a7b65811,12,A preschool teacher shows the children an animated video depicting a phenomenon caused by the ti
+14,0b7d209ac8228e4f,13,"Read the following situation: In an early years group, Ignacio is presenting about the clownfish"
+15,8bc4e95689b8ddac,14,A teacher needs their students to understand the meaning of the direction of the arrows in food 
+16,1c9bc2c6056467bc,15,"In the circulatory system unit, a teacher is working on some technological advances, such as pac"
+17,e018d5764fd03602,16,A teacher aims for her students to understand the inflammatory process as a component of innate 
+18,134da784ab9e6209,17,A teacher aims for students to conclude about the relationship between the function of the diges
+19,fd74635577ae7933,18,A professor is working on the digestive system unit and would like to explain the role of the mi
+20,e141d71d78105e72,19,A teacher aims for her students to propose well-founded opinions on some applications of cell bi
+21,6f4a834f04232f79,20,A teacher has as a goal for their class that their students understand the process of plasmolysi
+22,23b0fa9c5b1034ee,21,A teacher wants to evaluate the following learning objective: To explain that living beings are 
+23,07ec7311b338fa9b,22,"In the context of the unit about plate tectonics and its relationship with continental drift, th"
+24,68c1d455002866b1,23,A teacher has designed the following activities for the learning unit related to atomic structur
+25,7a92f8ba13bd7a8c,24,"In the context of a ""Heat"" class, a teacher wants her students to understand the concept of temp"
+26,6136eec9355a90b5,25,Marcial reads the following situation to his students: A man is cooking noodles for his family. 
+27,74f173afbcf77968,26,A teacher aims for his students to design an experimental investigation related to the force of 
+28,ae64a534cc882a04,27,"A teacher wants to carry out a guided inquiry activity with their students, so that they underst"
+29,123c000210abd328,28,Read the following learning objective: Analyze and interpret data to provide evidence supporting
+30,6a4ed8115e6f81be,29,"If a teacher wishes to explain to their students the concept of proto-cooperation, which of the "
+31,e646f30c0605bab0,30,A teacher asks his students to analyze the following experimental situation in order to assess w
+32,61860548d9d5c91f,31,A teacher presents her students with the following experimental procedure related to the antigen
+33,a6c6e9364a4e066b,32,"In the context of planning a class on the endocrine system, which of the following contents is n"
+34,76d6af233ba41cbf,33,"In a summative evaluation, the Biology teacher includes the following question: 'What physiologi"
+35,54649a8da203ade7,34,"During the unit related to drugs, a teacher aims for her students to develop the ability to dete"
+36,cadc9b0fd37039a3,35,A teacher wants her students to appreciate science as a dynamic process of knowledge constructio
+37,493264505344bf0e,36,A teacher wants his students to identify genetic alterations that regulate cell proliferation an
+38,2687a13d0811cc80,37,"In a senior high school electricity class, a teacher asked her students the following question: "
+39,54e2c6f5bb9f6e05,38,"As part of the unit “Light and Geometric Optics,” a teacher needs to design an activity accordin"
+40,72705003bb968464,39,A teacher is working with her students on the geocentric model proposed by Ptolemy and wants to 
+41,b8f5cee3a0dd30ce,40,Which of the following activities allows students to critically analyze the principle of conserv
+42,966a9393d0e780b6,41,"After studying with her high school sophomores the concept of elastic constant, a teacher propos"
+43,b851a19ec1e34581,42,"For the unit ""Electric Force and Electric Charges"" in Twelfth Grade, a teacher wants her student"
+44,53e232059d0b0175,43,"As part of an activity in the unit ""Heat and Temperature"", a teacher proposes the following read"
+45,c72662cf78ef1b53,44,"In the teaching of Physics, common erroneous preconceptions are recognized, which students have "
+46,dd89fd125d7edf87,45,"In the context of the unit ""Sound"" in high school, students are expected to be able to explain w"
+47,dc551dee2b420576,46,A teacher wants to evaluate the achievement of the following learning objective by their student
+48,42167e2de370423b,47,A teacher seeks to design an evaluative activity for their high school sophomores that allows ve
+49,a7b001234b068eb8,48,"A physics teacher, to conclude the unit ""Light"", proposes the following evaluative activity to h"
+50,500bfbb10f831b92,49,"A teacher is working with their 3rd-year high school students on the concept of specific heat, i"
+51,29cb56a9da69108d,50,"In the context of teaching polymer chemistry in Middle School, which of the following options wo"
+52,d412d537c1354c7e,51,What prior learning is necessary for students to develop in order to understand the concept of r
+53,b865ccee91b716fe,52,"During a class on radioactivity, students conduct research to explain the presence of iron in th"
+54,e165b85be7505fda,53,What prior knowledge is necessary for students to work on the VSEPR theory in various molecules?
+55,c54ed7ba414f5efe,54,A teacher sets the following learning objective for their class: Characterize the behavior of pH
+56,71af30ef1ad02f59,55,"In a chemistry class, the teacher has proposed that students describe and represent the formatio"
+57,b4c107664adf0ee0,56,"A teacher is working with her 2nd-year Middle School students. As part of her planning, she has "
+58,d536b679f6ebaa3a,57,"During a class on the main applications of electrochemical cells in the industry, the professor "
+59,5653aa842e6e3d93,58,"In the context of studying polyfunctional organic molecules, a teacher is addressing both natura"
+60,459a91ab4930419c,59,A group of students needs to experimentally identify the presence of functional groups in organi
+61,2ce8e0df773f1508,60,Read the following situation: In an elementary grade 1 class a teacher will begin to work on the
+62,b7a6d81f97855a12,61,A teacher is working on the content of Earth's structure with her 4th grade students and wants t
+63,13ca18879e47f061,62,"Read the following situation: The preschool educator observes Mariana, who is kneeling in the ya"
+64,8160f712c2ccfee5,63,A teacher wants to know if her students can plan an experimental activity based on a given quest
+65,07c3bc101a09950e,64,Which of the following activities would allow a teacher to know the prior ideas of the students 
+66,07e018685980c5c6,65,Which of the following activities will allow students to investigate the main cause of global wa
+67,c944a4311fe3601b,66,A teacher presents the following newspaper headline to his 6th-grade students: 'Environmental po
+68,2d21bc8c72d74eb6,67,A teacher has decided to evaluate whether his students apply the knowledge about nutrition they 
+69,d5abdb1e49b059e1,68,A teacher sets the following learning objective for their class: Explain the relationship betwee
+70,03801c74268fa0a5,69,A teacher asks her students to perform the following group work: 1. They must choose three volun
+71,6b505d647a2ee4e5,70,Which of the following options shows a common misconception about changes in matter that student
+72,d62ccfb00e09cc89,71,A teacher presents the following situation to her students: Suppose we have water at 60°C in one
+73,9d967dff0dac8f7d,72,"While working with students on the topic of electrical circuits, a teacher notices that one of t"
+74,95f27cdc0ede9c3f,73,"A student is presented with the following problem: DDT was a widely used insecticide; however, a"
+75,98adef24f1ea46fe,74,"To develop the unit Mechanisms of genetic information conservation, a teacher sets the following"
+76,b364ec9a1deacf15,75,"In an introductory class of the unit 'The Cell', a teacher wants to apply a strategy that allows"
+77,78dcf8255fa8d33f,76,"In the implementation of an instructional unit on the electric nature of matter, a teacher organ"
+78,dfa91927368f05fd,77,A teacher includes the following exercise in a kinematics test: “A body moves according to the f
+79,4b3c13b6e331b251,78,"To address the learning objective ""Relate the temperature difference to the transfer of thermal "
+80,96910db05b8525af,79,"A teacher asks the students ""what is force?"", and almost all of them agree that it is ""the actio"
+81,3068115b802d237e,80,The professor aims to promote in her students the ability to select information from the interne
+82,355195e29f833f0e,81,"In the context of the unit ""The atom and its nucleus,"" a teacher proposes the following activity"
+83,23614879b48ef5a3,82,"Read the following learning objective: ""Explain light phenomena through experimentation and the "
+84,dfa787d1f7a79fdd,83,"A teacher proposes to her students the following activity: ""Build a model to represent the Earth"
+85,09db672cb865c590,84,A teacher wants to evaluate the ability of their students to formulate the problem of a scientif
+86,6a9fb5296099e242,85,A teacher is starting the unit on chemical bonding and wants to show students that knowledge in 
+87,0198c887500d8931,86,A teacher in Grade II Secondary presents to their students the equations of the aqueous dissocia
+88,e53e17f180f7607d,87,Which of the following statements is a common misconception students have regarding spontaneity 
+89,a891c4d4de6f356a,88,A teacher aims for her class to recognize Hund's rule of maximum multiplicity. Which of the foll
+90,6286abf3335591b8,89,A first-year high school teacher designs the following activity for her students: Take five cups
+91,8326048fa53f082b,90,"In a class on chemical bonds, the teacher aims for students to identify different types of inter"
+92,77010fa7e2cf4d24,91,One of the learning objectives of the Life Sciences curriculum for 2nd Grade aims for students t
+93,c23bafb7b39b9d21,92,"A teacher of a 3rd grade has been working with her students on the objective ""Observe and descri"
+94,bbb3b8ee2bb9cb5b,93,"In a preschool, the educator tells the boys and girls that they will conduct an experiment, whic"
+95,9b98d306eee46613,94,"A 6th grade teacher assessed the indicator ""Recognize that heat flows from an object with a high"
+96,d594f178cc8db531,95,"During a class in 8th grade about cellular transport mechanisms, while the teacher is explaining"
+97,4a3720f165f50461,96,"In the unit on Microorganisms and Defensive Barriers of the Human Body for 7th grade, a teacher "
+98,eeea8188e3339660,97,"In 8th grade, in the unit on Structure of Matter, a teacher is covering the content of atomic st"
+99,a5adc1030fa1fc8f,98,A 7th grade teacher has set the following objective for their class: “Explain the behavior of ga
+100,084699d9e2e08dca,99,"At the end of the topic of Boyle's Law in a 7th grade class, a teacher needs to evaluate the fol"
+101,32ca35319e7725bd,100,A third year high school teacher explains to the students the structural properties of neurons i
+102,e8f1c26fac91f57f,101,A teacher needs to work with the following learning objective with 2nd year high school students
+103,f7f65739bd5bcd2a,102,A teacher of a 12th grade class has asked the students to relate environmental pollution with ac
+104,003ae31718cb5bd3,103,"A teacher asked the students to carry out the following experimental design, with the objective "
+105,28f591cb5df21be2,104,"A teacher of a 1st year high school class, during a session on environmental issues, must evalua"
+106,fd9ba5f708085467,105,"A teacher develops various teaching-learning activities with second-year high school students, r"
+107,284865037528d8e0,106,"A high school teacher is planning a class with the objective ""To analyze and interpret data on c"
+108,365e206ba5a93e29,107,A teacher is starting the unit on electric force and electric charges in a Senior Year class. Du
+109,d066fdc35deb8daa,108,"In the preparation of a class for 2nd grade secondary students, a teacher seeks an appropriate e"
+110,e17efc8dbfaf545f,109,"A teacher plans the next class with 1st grade high school students with the objective ""Recognize"
+111,f5193a6ce21a5fec,110,"To work on the concept of hydrostatic pressure, a third-year high school teacher plans a class w"
+112,d88e6ea61636311d,111,"A high school teacher is planning a class with the objective of ""Describing the kinematics of un"
+113,921c5b03e5328d46,112,"The teacher is planning a class for a third year high school group, whose objective is ""Identify"
+114,63644d28a0656758,113,Which of the following preconceptions of students directly hinders the learning of Archimedes' p
+115,26e9b1adba638a25,114,"In the fluid mechanics unit of 3rd year, a teacher poses the following learning objective: ""Expl"
+116,009ec866b9d86178,115,A third-year high school teacher is designing a written test to evaluate the rotational kinemati
+117,794d1998b0002b73,116,"A high school teacher, in his lesson planning, has set the objective that students relate the ch"
+118,1692d98e7dbc1771,117,"A teacher is working with a 3rd grade class on the unit of Chemical Equilibrium, with the object"
+119,6c32adcb624869e7,118,A teacher has planned to work on the objective of graphically representing the variation of pH i
+120,9a749c975653cdd7,119,"In a class corresponding to the topic of chemical equilibrium, a high school teacher is working "
+121,fb75288aa10db0c1,120,A teacher is working with a 3rd-year high school class on the topic of Thermochemistry. To have 
+122,f14ef27832150cfa,121,"A group of third-year high school students is preparing a lab report on the experiment titled ""F"
+123,e53c2751ece117db,122,"A teacher, during the unit on Chemical Bonding, asks their students to step-by-step develop the "
+124,98de2202369459af,123,A senior high school teacher aims for her students to establish the variables involved in determ
+125,7ec12776de65edb8,124,"A teacher for 1st year high school, in the subject of Stoichiometry, needs to assess the student"
+126,e86a79ca88bb8749,125,Which of the following activities could a 4th grade teacher propose to develop the planning skil
+127,40f8ea06de842648,126,"In a preschool, the educator needs to assess the level of achievement of the following indicator"
+128,4f8eff61f8e18036,127,"For pre-kindergarten children, an educator invites them to the patio to conduct a learning exper"
+129,c3288a8c065881f3,128,A teacher of a preschool class is developing the unit Thinking like a scientist. The children ha
+130,91a8e2b32c1cb18a,129,"A preschool teacher has worked on the learning objective ""Collaborate in everyday situations, in"
+131,6b15554babe1ade4,130,"A third-grade teacher evaluated, in the unit on Natural Resources Care, the objective ""Recognize"
+132,86732ed0cb6e4949,131,What activity is suitable for 3rd grade students to model the phenomenon of a solar eclipse and 
+133,1917efb877e2d8b1,132,A lower nursery educator plans to gather evidence for the following evaluation indicator of the 
+134,7758256133caeb16,133,A kindergarten educator plans within a science project the following specific learning objective
+135,2232a97cf83785f4,134,A preschool teacher is working with children on the following learning objective from the Explor
+136,89352479fc8da7c4,135,"In an 8th grade class, after finishing explaining the function of organelles in eukaryotic cells"
+137,2f3f3148b755db91,136,An 8th-grade teacher has detected that her students have difficulties understanding the concept 
+138,05e1f40fd220e9c6,137,An 8th grade teacher is planning a lesson on the structural characteristics of secretory cells a
+139,4180ac5ba1852b9a,138,"A teacher of 8th grade is beginning the unit on Cells. To do this, he explains the key differenc"
+140,b254e17e23b9105d,139,"In a summative assessment, an 8th-grade teacher has planned the following evaluation objective: "
+141,789b83b8589863a1,140,"A 6th-grade teacher, at the end of the class on food chains, intends to verify if the students h"
+142,47cd6df0bf498b3b,141,"A 1st year secondary teacher, in a class about the factors that influence photosynthesis, will a"
+143,93d6e959a008fcdc,142,A 1st year secondary teacher is working on Darwin's theory of evolution. One of the objectives i
+144,f75a67eedaa67a9d,143,A 4th-year secondary teacher is planning a class aimed at helping students understand the role o
+145,5c5cea7add3f9b1e,144,"In a 2nd grade secondary class, whose objective is for students to understand the ovarian and ut"
+146,1f1fe6288adf0596,145,"A 1st Year secondary teacher, in the unit of Matter and energy in the ecosystem, will formativel"
+147,ff4333f8b69e1a02,146,A 4th year secondary teacher set as a goal for her students to understand the action of the enzy
+148,bea0b2da0016f817,147,"A 1st-year secondary teacher designs a class to work towards the following learning objective: """
+149,d273317cb3c6d0a9,148,"A 2nd year secondary teacher is planning the classes for the Kinematics unit. In one of them, he"
+150,8aaa940864b43c79,149,"In most school texts, in the study of electricity and direct current electric circuits, the ""hyd"
+151,02a5c6b41fa10b38,150,"In a 1st Year secondary class, students engage in activities related to the process of image for"
+152,f66f832969458270,151,What knowledge is necessary for first-year high school students to have developed previously in 
+153,1ab6979c897a0f08,152,"A 2nd-year teacher, in their upcoming Physics classes, will work with their students on the foll"
+154,4234a5c49e18fdda,153,A 2nd grade secondary teacher is designing an instrument to evaluate the following learning obje
+155,bc05d333abda7678,154,"A second-year secondary teacher, in the unit of Kinematics, will conduct a diagnostic assessment"
+156,06faa2ff9202ded1,155,"At the end of a class on the Doppler effect for a first-year secondary class, a teacher conducts"
+157,8568912d91021dfd,156,"A 2nd year secondary teacher, in the unit of Stereochemistry and Isomerism, is planning a class "
+158,bf87d065ca340381,157,"A 2nd year secondary teacher, in the unit of Solutions, is explaining colloids. She points out t"
+159,5353ed776b8d163d,158,"A 1st year high school teacher, in the unit of Inorganic Nomenclature, is conducting a class wit"
+160,d9d9ef9e2f9f0c3d,159,A secondary teacher of 2nd grade will work with her students on the factors that affect solubili
+161,be7db1ca6168f298,160,"A secondary teacher in 4th grade, while planning the unit on acid-base reactions, sets the follo"
+162,bbc7635891b2cb07,161,"A secondary teacher in 4th Grade, in the unit of Nuclear Energy, sets as the objective for the c"
+163,c6ec16da9ca5a623,162,A group of 2nd year secondary students must carry out an activity aimed at the learning objectiv
+164,541bd7cfcd4580b0,163,A teacher is working on the unit Heat and Energy with an 8th-grade class. For one of the classes
+165,4f4d5f319fcab1c3,164,"A teacher plans a class to work with her 8th grade students on the following objective: ""Identif"
+166,15928b641a56e7fc,165,A teacher is planning the unit on Ideal Gases that she will teach to a 7th-grade class. The obje
+167,475f7b836adb384f,166,"In an 8th grade class, a teacher has conducted an evaluation on the atom and the formation of io"
+168,0030071a49e23c45,167,"A teacher is addressing the Immune System unit with a 7th grade class. In one of the classes, sh"
+169,30be460ab37d8d49,168,"A 7th grade teacher is planning a class for the Forces unit, aimed at conceptually explaining th"
+170,5151b67eac3a2376,169,A teacher is designing a written summative assessment for 7th grade in order to collect evidence
+171,0fa1bfa290fc948f,170,A teacher who has covered the Electricity unit with a 5th-grade class will conduct an assessment
+172,e62afc468c1ac82c,171,"A teacher will evaluate the following indicator in a 7th grade class: ""Distinguishing the parame"
+173,dc20c66c586d5152,172,"A teacher, in a 1st year of Secondary Education, in the unit Evolution and biodiversity, is cond"
+174,82a7eae24208518a,173,"Second-year secondary students, guided by questions from the teacher, are examining classic expe"
+175,6bf69c7181db153a,174,"A secondary teacher is explaining the mechanism of action of humoral immunity, specifically the "
+176,0aa1dacfafde04f7,175,"A secondary teacher, in a 2nd Year class, during the unit on DNA and cellular reproduction, is p"
+177,25267a84a3e5f5e2,176,A teacher in a secondary class at the end of the Nervous System unit will summatively evaluate t
+178,b80979c1131d480f,177,A secondary teacher is preparing a lesson for 2nd grade where she will develop the following obj
+179,84ddfe4b9105b86e,178,"A first year secondary teacher is planning a lesson with the following learning objective: ""To u"
+180,77a0e2a860ba8bfb,179,"In a 2nd year Middle school class, a teacher explains to the students the law of universal gravi"
+181,3eb935240ae2686e,180,A secondary teacher in 1st grade has planned to work on the following concepts during the Waves 
+182,7d022a63cc9b1135,181,A teacher of 1st year high school class is planning a formative assessment to apply at the end o
+183,1b94631e63d26756,182,"A secondary teacher, in the unit Chemical Phenomena in the Environment and Their Effects, is pla"
+184,7df83a6edcb0e28b,183,"One of the objectives worked on by the 2nd year secondary students is to ""Organize and interpret"
+185,4a95a82b88e89725,184,A teacher of 1st year secondary school conducted an assessment to verify if the students can rec
+186,8dcf01efe117756e,185,What prior knowledge must students necessarily have to understand the fundamentals of Bernoulli'
+187,455272cd4da6abd9,186,A preschool educator is working on the following learning objective from the Verbal Language cor
+188,4c421d6977912094,187,What prior knowledge should the student have to identify hendecasyllabic verses?
+189,450408e7a51edfe3,188,A teacher is working on the inferential level of reading comprehension based on the reading of t
+190,1a4561f9363274f9,189,"This model is based on learning to read and write progressively, step by step, with explicit tea"
+191,e965f81181fe2124,190,"In a 3rd grade elementary class, a teacher instructs her students to repeatedly read a short sto"
+192,4000a957e259d69c,191,Which of the following activities allows evaluating the development of phonological awareness in
+193,08d77ffd7db37921,192,Which of the following activities allows assessing whether students in the initial reading stage
+194,ca271c16a4753767,193,"A teacher sets the following learning objective: ""Understand oral texts to obtain information an"
+195,ba7a73fd9967e1ad,194,Which of the following questions is appropriate to promote the development of metacognition amon
+196,0aab62440f3f7559,195,A teacher wants to encourage her students to read poems by focusing on the use of language. She 
+197,0ebc90cc2c833370,196,"During the reading of expository texts, 4th grade elementary students present some difficulties "
+198,3baa60eab40da26a,197,A teacher is going to evaluate the fluent reading of her 1st grade elementary school students. T
+199,714589a7f6f11cec,198,"For the objective ""Express oneself coherently and articulately on topics of interest,"" 3rd grade"
+200,fe0f69db531c86b6,199,Read the following situation: An educator gives some instructions to the parents to promote read
+201,3ce995cccb8d6ddc,200,In which of the following situations is pragmatic awareness developed?
+202,df5b938699791669,201,"Regarding reading skills, which of the following achievements is expected in a four-year-old boy"
+203,340d6977564958d2,202,In which of the following activities do you work on recognizing the initial sound of words?
+204,f15db3563f6148bb,203,Read the following situation: An educator invites children to play with changing letters in some
+205,03cdf8fa2391a78e,204,"Valentina is in preK and has advanced in her writing skills, managing to connect dots to draw di"
+206,bf6f26113c4b768d,205,"A teacher wants students to learn the features of expository text. To do this, in one of his act"
+207,04cc6d50b0bb68ef,206,"A 6th grade teacher will assess the following learning objective: ""Write short texts of various "
+208,4fa9ad924b2f4f81,207,"Some 6th grade students, during an activity, write a story that includes descriptions of the cha"
+209,17ee4b2220524bbe,208,A teacher will work with her students on reading comprehension skills using a dramatic text. Whi
+210,4e6f2d7b2ce49c10,209,"To achieve the objective 'Analyze the poems read to enhance their understanding', a teacher perf"
+211,f39207a76826105c,210,"A teacher will begin the unit on comprehensive reading of comedy. Beforehand, she will conduct a"
+212,1ba29093e894b07b,211,"A teacher is working on the following objective: ""Recognize the point of view of the sender of a"
+213,24cc5f05cb98eb68,212,Read the following classroom situation: Mr. López is a new English teacher in a public school. H
+214,89bfde68bf0c8e4a,213,Read the following classroom situation: In one of his/her next lessons an English teacher has to
+215,85c8dda41856edf8,214,Read the following classroom situation: An English teacher has asked his students to read a text
+216,ea92d22bbdc2666f,215,"Read the following classroom situation: Mrs. Parada, an English teacher, has been working with h"
+217,e50aedc528532c7d,216,"Read the following classroom situation: In a reading comprehension lesson, Mrs. Fernández, the E"
+218,c39286c29ad8555c,217,Read the following classroom situation: One of the learning objectives in English for 11th grade
+219,54487b5c3f8e829f,218,Read the following classroom situation: The students of 12th Grade B have just finished presenti
+220,42032a22f3d35dac,219,"Read the following classroom situation: In an EFL reading comprehension class of 11th Grade, the"
+221,38fe1b53b42dac63,220,Read the following classroom situation: Mr. Valenzuela is teaching English in a 9th Grade class 
+222,cb077dda01ca4dbb,221,"A teacher asks students to write a story, respecting punctuation. One of the students presents t"
+223,9c885ffad6089b75,222,"In a writing unit, whose objective is the creation of various types of letters, the teacher prop"
+224,cde0653f28f4fdf2,223,"In the unit of Textual Production, a teacher asks the students to write texts, focusing on thema"
+225,01398a4cfac85900,224,A teacher in a unit related to language management presents her students with the following head
+226,23dff550b8e59d27,225,"A teacher, at the beginning of the class, proposes reading an article about how the Internet inf"
+227,3a861b360a0f23d9,226,"In the lyrical genre unit, a teacher presents to his students the following poem: In those days "
+228,e15b8483c75c36d8,227,Read the following situation: A teacher of 2nd grade presents the following text to her students
+229,ec4cb858464f26c0,228,Read the following situation: A 2nd grade teacher reads the following poem excerpt to his studen
+230,0056091a4c320612,229,Read the following situation: A 4th grade teacher asks students to bring examples of proverbs fr
+231,5c5cfd6e508e54bf,230,"Consider the following situation: A teacher is working on the fable ""The Fox and the Grapes"" wit"
+232,10b09e7fdbc1cdbc,231,Read the following situation: A 3/EW Basic teacher has been working on reading comprehension thr
+233,64225aa3664d1f85,232,Read the following situation: The students of a 3rd grade Basic class wrote stories to create an
+234,bdcdb67e95638d6a,233,Consider the following situation: A teacher is starting with her preschool group the daily story
+235,fbec6d91337af6d8,234,"An educator observes that a girl in preschool, when transcribing her name, writes it in reverse,"
+236,95f1f0b5a2577c59,235,"The 8th-grade students are working on an anthology of comic strips, selected by themselves, whic"
+237,4bbb956d9ae788b3,236,"Once the students have read a micro-story, the teacher asks them to do an activity focused on th"
+238,1e82491223faaf88,237,"In 7th grade, a teacher is working with students on the concept of polysemy. For this, he hands "
+239,1d006114a2659b40,238,"A Language teacher, aiming for the students to identify the orthographic error, shows a PowerPoi"
+240,0ed43deb54030f2d,239,"In a 6th grade, a Language and Communication teacher will start the following unit: ""Correct wri"
+241,8257f4ed36e3f6c2,240,"During a class dedicated to punctuation marks, a teacher gives the class a text in which quotati"
+242,7d2ec2765387f360,241,"Read the following situation: In a 7th grade class, in the Writing section, a teacher is working"
+243,e052cf7a0ad458f7,242,A 5th-grade teacher whose class goal is to work with students on applying the concept of a seman
+244,8b12e5f6b532851a,243,"In a Language class, to apply the concept of ""propaganda"", the teacher asks the students to crea"
+245,9dc9110f1f53be0c,244,"In a 7th grade class, a teacher designs an instrument to evaluate the expansion of her students'"
+246,4ef73e5589ee5414,245,"Seventh grade students are working on the formal structure of a news article, and for this, the "
+247,c6bc0418236c665c,246,"In an 8th grade class, during the unit on epic poetry, a teacher designs an instrument to evalua"
+248,6893225e3240975c,247,A teacher aims for his students to identify the purpose of using dialogical sequences in differe
+249,d05ae898421b3900,248,A teacher is working in the Writing section with the aim of expanding the vocabulary of unfamili
+250,0e66df53f3819186,249,"Read the following situation: A teacher, whose objective of the class is to understand argumenta"
+251,6719627bfe8072cd,250,Read the following situation: A teacher is working with a senior class on the following learning
+252,70ea5e0194c8bb74,251,A professor who is working on the characteristics of contemporary narrative wants to check the l
+253,a1e5a0b81640f0c1,252,"Read the following situation: A teacher, in a senior high school class, asks her students to wri"
+254,45ad99e24f177185,253,A teacher proposes that the class write an expository text with the objective of making students
+255,e85f9f658137671c,254,"Read the following situation: To address the learning objective: ""Write an argumentative text"", "
+256,6a57fffef40706b1,255,Read the following situation: In a class on the analysis of argumentative texts of a third year 
+257,bd1cbdcf03eb484e,256,Read the following situation: A high school teacher will assess the narrative genre unit with a 
+258,59a60a0fb055a54b,257,"In reading a story, which of the following options corresponds to a reading strategy inherent in"
+259,1a5a7ed10ce3bbe9,258,A 4th-grade teacher divides the class into groups and asks them to write an instructional text t
+260,f2f522b8d5dc12b2,259,A teacher is working with his third-grade students on reading comprehension based on the legend 
+261,99b92f378e036709,260,A teacher from a 4th grade class has divided the class into groups to write a news article on di
+262,7f5f565142ba95c6,261,A 4th grade basic education teacher is working with her students on understanding the grammatica
+263,6384496479753d4b,262,A teacher of a 4th Grade class will start working on the function of the adverb with his student
+264,36dc87c1953e05c6,263,An educator intends to carry out a diagnostic evaluation of oral language for a group of prescho
+265,9e0e5f2170d2ea79,264,"A kindergarten teacher is conducting a presentation activity by the children, on a region of Chi"
+266,436c9d570db4b513,265,"In relation to the initiation to writing, which of the following educational situations is most "
+267,2d07e26efce19e0e,266,Which of the following performances corresponds to that of a boy or girl who is in the syllabic-
+268,51f02e678a0cca05,267,"A preschool teacher plans to work with her group on the following learning objective: ""To discov"
+269,b473dfd2a387562b,268,The Learning Resource Center of a school has various didactic materials to promote language deve
+270,eccb08b1376457b4,269,"A preschool educator, after completing the first semester, observes that, in artistic languages,"
+271,ba75abb0797d2627,270,"A teacher in a Grade 8 class addresses the production of texts with an informative purpose, cons"
+272,34235bbb628edc56,271,A teacher in a 6th grade class asks the students to write short narrative texts to sequence even
+273,5d5f8254894a2ad8,272,A teacher in 8th grade conducts a summative assessment of a reading of a dramatic genre. Despite
+274,71cf23f263ffb9a6,273,"A non-teaching staff member, in an 8th-grade class during the unit on the lyric genre, proposes "
+275,944490361c37406f,274,A teacher in a 7th Grade class asks the students to write a news article about the school's anni
+276,dbe7aa9fbd7143a4,275,A teacher designs an instrument to evaluate the production of an informative article about the h
+277,c385fdf807fcefb6,276,"A teacher, in the unit of the lyric genre in an 8th Grade class, will conduct a summative evalua"
+278,0c022f0357b5c4e8,277,"During the narrative unit in a 6th grade class, a teacher asks the students to write a short exp"
+279,84381c847d34eae3,278,"In a 6th Grade class, in the unit on the lyric genre, a teacher will give the students a written"
+280,e556f4c4fb7f6c82,279,"A teacher in a 7th grade class, in the unit on argumentation, will evaluate the following learni"
+281,f6ac6f40d8cd835f,280,"For a 12th grade class, during the unit ""Reality and Freedom"", a teacher, in order to develop an"
+282,7c149f054ad5b9b8,281,"In a first year high school class, a teacher proposes the following activity to students to work"
+283,0200ae19b471d2b6,282,A teacher wants to work on the writing of a dramatic play in 1st Grade of secondary school. For 
+284,0a501ad6b8527d5b,283,A high school teacher proposes to work with the students on the identification of pronouns refer
+285,c913c9059fa6a94f,284,"A high school teacher works with students on reading, analyzing, and interpreting lyrical texts "
+286,a87d98cd375cc38c,285,A teacher of 2nd grade of secondary school tackles the writing of expository texts. During the a
+287,b1efc65b39b425ea,286,Read the following excerpt from an essay submitted by a second-year high school student: In the 
+288,97afdb1a56a4b1b0,287,"A teacher, who is working on argumentation with a year 3 high school class, reviews the followin"
+289,8955d0e066d055d9,288,A kindergarten teacher requires conducting a diagnostic assessment to explore the lexical skills
+290,9ab270fb04c17533,289,A fourth grade teacher is reading with his students the following excerpt from the story *The Di
+291,ad5a8705f52559f4,290,A second-grade teacher worked on the story of Cinderella with their class and then conducted a b
+292,fcc86ff6ea661bf5,291,A teacher of a 4th grade class is designing a test to assess the reading comprehension of her st
+293,0abb8707b101ea79,292,Which of the following strategies is appropriate for 4th grade students to practice recognizing 
+294,86ba16dbd412e805,293,"A third grade teacher reads the following text written by one of her students: ""I had a great ti"
+295,8ce6a8cf859c7f18,294,Which of the following activities specifically allows working on grammatical agreement in writin
+296,300aee224bb294b1,295,A teacher of middle-level children has observed that her group of boys and girls enjoys creative
+297,50f0ec1f802eb8b9,296,"In a higher nursery level, the educational team decides to plan strategies to promote the follow"
+298,5fafbfec81e86486,297,A preschool teacher plans to evaluate the following learning objective from the Verbal Language 
+299,b5398285c321283a,298,"A 3rd grade teacher is going to work on writing a story with her students, focusing on the adapt"
+300,fd19c7d61ec23210,299,"Based on an experimental activity, a third-grade student wrote the following text, in which he e"
+301,6668473f5232305a,300,"A 4th grade teacher is reviewing the written text productions by his students, based on an assig"
+302,fa8e27f5f4c80d82,301,A teacher in a 6th grade class is exercising reading comprehension with the students. As part of
+303,0b926f890e0c94cb,302,"A teacher of an 8th-grade class will work with students on the following objective: ""Develop inv"
+304,bbdbe788967330f6,303,"In a 7th grade classroom, during the unit on Myths and creation stories, a teacher is working on"
+305,c5adbd3d9d592e96,304,"After an activity in which the 8th grade students had to write an informative text, the teacher "
+306,53c69cffbda65ba3,305,"During the poetry unit in 8th grade, a teacher has students read the following fragment of a poe"
+307,b4fc56152c02893b,306,"A teacher, in an 8th grade, at the end of the unit on Dramatic Genre, asks the students to creat"
+308,ab871b59be316613,307,"A teacher is working on punctuation with his 7th grade students. To do this, he hands out a guid"
+309,c0e747d21aa12d60,308,"During the Poetry unit in a 6th-grade class, in an evaluation context, a teacher asks the studen"
+310,5fe235dc80cfe602,309,"A teacher, in an 8th grade class, during the unit on lyrical genre, will formatively evaluate th"
+311,19f70718ca9c485b,310,A 7th-grade teacher will conduct a formative assessment whose objective is: to understand the co
+312,a6561fa02e2d8f9b,311,"A teacher, in a 2nd year secondary class, will conduct research with the students about the lite"
+313,db7dfbab5a90c70b,312,"A teacher, in a 4th year secondary class, in the unit of literary avant-gardes, reads and analyz"
+314,13f4e4118a31fb10,313,"A teacher, in a 2nd year secondary class, in the unit about lyrical texts from the Golden Age, i"
+315,c289933695212995,314,"A teacher, in a 1st grade secondary class, conducts a group oral reading of the story El padre, "
+316,9d7e8e8a05c9f332,315,"In a 3rd Year secondary class, a teacher is reinforcing the interpretive level of reading compre"
+317,ffbf0d80e00802c4,316,"A secondary teacher, in the 4th grade, in the unit of Contemporary Narrative, is reviewing narra"
+318,241ec8ad644efd47,317,"A secondary teacher, in 1st grade, is working on the following objective: ""Determine the truthfu"
+319,d647a886171561d2,318,"In the 1st Year, a secondary teacher is working on grammatical correction in written production "
+320,1a36e3caabc32a6c,319,"A secondary teacher, in a 4th year class, is working with his students on intertextuality, throu"
+321,26f285948618117b,320,"A teacher, in a 2nd year Middle School class, is working with her students on the following obje"
+322,58f55cd208be64f5,321,"A 2nd year secondary teacher, after conducting a written production in which students had to com"
+323,38958997ec88fd12,322,"A 3rd year teacher, during the Oral Argumentation unit, develops a discussion activity about ene"
+324,e0693d916d30292a,323,"In a 6th-grade class, a teacher is working with the students on understanding the moods conveyed"
+325,5078cf64b4abd1d1,324,A teacher in a 5th grade works on highlighting as a tool to help students identify the main idea
+326,336f809eb59ba921,325,"In an 8th grade class, a teacher asks the students to read the following microstory 'Parable' by"
+327,88894fac38c47df1,326,"A teacher is working on the production of informational articles with the 5th-grade students, fo"
+328,7d53f90b928dc36a,327,A teacher will be working with sixth-grade students on argumentative texts. To exemplify their c
+329,99510630fd5f33ed,328,"In a 5th grade classroom, a teacher will evaluate how much her students have learned about the s"
+330,70a0fc3e4a5501eb,329,"A fifth-grade teacher is evaluating, through various tasks that include open questions, the foll"
+331,f90a09aa9c2a4ba7,330,A teacher is working with 7th grade students on writing a text with an argumentative purpose abo
+332,093cb7db28009797,331,"A teacher, in a 2nd year Middle School class, is working on the following objective: ""Consistent"
+333,af6e9626b3361740,332,A teacher in the 2nd year of high school is working with his students on the interpretation of f
+334,d739f5a2786c9deb,333,"A teacher, in 1st Year, is working with her students on the inferential level of reading. To do "
+335,58d6593ec663f27a,334,"A teacher, in a 3rd year of high school, is working with her students on the following objective"
+336,16e8d7258af0e613,335,"A teacher, in a 4th Year secondary class, will evaluate the following objective: ""Understand the"
+337,afd0db6e099499bc,336,"A teacher, in a 3rd Year Middle School class, will evaluate, through a written test, the followi"
+338,fcce861c0e86d8f3,337,A teacher in the 1st year of secondary school asks his students to create a written production o
+339,b76486fe2540be0e,338,Which of the following learning experiences develops semantic awareness and why?
+340,e158dba69cc07bef,339,Which of the following learning experiences promotes the development of pragmatic awareness?
+341,5314df1bacd36d57,340,"At the start of the school term, a nursery school teacher wants to evaluate the following learni"
+342,d42093b5cc9dc77a,341,"A 5th grade teacher aims for his students to identify, based on a compilation, music that is pre"
+343,8b2572f98906d549,342,"Which of the following evaluation activities, conducted before building the group installation, "
+344,7533d8cd57ea8b53,343,The children in early years are enthusiastically participating in an activity proposed by the ed
+345,528097eb5ea61a0c,344,Read the following activity: A Music teacher conducts a listening session in class of a concert 
+346,a8c0e23958359eef,345,Read the following situation: A teacher wants to organize several hours of classes on the topic 
+347,0828a53fbfdb5a8a,346,Which of the following musical concepts is the most complex to tackle in initial auditory musica
+348,481286dd7bb692df,347,Which of these actions allows the use of a score editor as help for melodic transcription?
+349,a0a294f50ab2267c,348,What activity is most suitable to use during a concert piece listening session as a stimulus for
+350,97e3331fab2f6fc7,349,"Consider the following situation: In the unit of ""Music and sound environment"", a music teacher "
+351,3f2b482f9b9c3b36,350,Which of the following activities is suitable for evaluating the integration of musical learning
+352,ce991217c797b787,351,While working with the students on the objective: 'Apply color using the impressionist painting 
+353,c11a6f24b291d907,352,"A teacher is working with his students on the concept of symbolic color. During the class, one o"
+354,9e156f260f5919e0,353,"A teacher is standing in front of a class delivering a printmaking unit, and one of her students"
+355,710792b38a1948fe,354,"In an elementary class, a teacher proposes the objective: 'Develop observation, discrimination, "
+356,de0ed6e7c7d338d9,355,"What strategy is the most appropriate for creating a work, facilitating students' understanding "
+357,58800129eb0a26dc,356,What is the most suitable activity to introduce perspective by stimulating the creative thinking
+358,b5c9435d7c270665,357,A teacher is working on the portrait unit with the students in a 7th grade class. To complete th
+359,80d629e852540ff3,358,A teacher is working on the Cubism Unit with his 6th-grade students and explains the treatment o
+360,7940bff7d48092da,359,A teacher takes their students to a museum to a contemporary landscape exhibition with the goal 
+361,c84a5f30ee9995c7,360,A teacher is working on the unit: “Social Icons” by creating two-dimensional images; at the end 
+362,8bb5730099ef1838,361,"A 5th-grade teacher shows her students Chilean paintings from different periods, explaining the "
+363,39c0b923943f7ecd,362,Read the following situation: A teacher shows 8th grade students the evaluation guideline that w
+364,98bf883dece34049,363,If a teacher wants their students to be able to characterize the Baroque period from a stylistic
+365,7c267e06ed66c54a,364,Which of the following activities contributes most directly to assembling a four-voice instrumen
+366,43bbf599c7f3309c,365,"Read the following activity: A teacher presents a video to their students, showing them features"
+367,b3645445900c45fc,366,"Read the following activity: To address the learning of the social function of music, the studen"
+368,899630e0d8b05e1a,367,Read the following situation: A Music Arts teacher invites his students to perform a group percu
+369,1cb94ffa0dcb1d6e,368,Read the following situation: During a class where a teacher explains the different time signatu
+370,1a68f2e7ab518a42,369,"In a class, students must audibly identify melodic sequences. Which option best indicates the sk"
+371,aed7a70892fc7408,370,What evaluation activity allows connecting a musical activity with other areas of artistic expre
+372,6408cb288b0ba31b,371,"Read the following evaluation indicators: - Willingness to develop curiosity, interest, and enjo"
+373,1703f3cebb95d73c,372,A teacher plans to work with their 2nd year high school students on a project applying Land Art 
+374,c4a1ec7a4f0a5e22,373,A teacher is working with a middle school class on the unit: “The body as a reference for design
+375,b0e08943f51a067a,374,A teacher is working with his students on the concept of tangible movable heritage. To facilitat
+376,300acad64d03378f,375,Read the following situation: A 1st year Middle School teacher plans an activity where his stude
+377,95b7c2345789f027,376,"For the first time, a 1st year Secondary Education course is challenged to use woodcutting as a "
+378,d79f3820e7759212,377,A teacher designs an evaluation instrument to assess the creation of a Stop Motion. Which of the
+379,e5fa38043017400b,378,"Read the following situation: In music, a kindergarten teacher plans an experience to work on di"
+380,61e26e6c940caaea,379,What action represents a greater technical difficulty for a student learning to play an electric
+381,4dc9c18e39fbcbdc,380,"Read the following situation: In a 5th/6th elementary class, the Music teacher invites the stude"
+382,54f7ad4454b1cebc,381,Read the following situation: A teacher in a 5th/6th grade class designs a strategy of three pro
+383,8f45f9e4e5fd2276,382,"Read the following situation: A teacher in a 6th grade, within the unit on Latin American rhythm"
+384,485f79c459c9561a,383,"Read the following situation: A Music teacher in a 6th grade, in the unit ""Symphonic music"", wan"
+385,97bc65578792c39c,384,Consider the following situation: A teacher in a 7th-grade class wants to develop learning relat
+386,5867fa990248afb4,385,Read the following situation: A teacher in an 8th-grade music class plans a unit on 'Musical Dev
+387,dfa5fb138f88db64,386,"Read the following situation: A teacher in grade 8, in the unit ""Great composers"", wants his stu"
+388,a7fe6dbb28a7a6a3,387,A teacher worked with students in a 5th grade class on the ability to sing by reading a simple s
+389,31c9cc358ff666d9,388,"Read the following situation: On an educational field trip to an open-air museum, a group of 6th"
+390,b16b2e1b3829d171,389,"Read the following situation: In a 6th Grade class, within the framework of the unit 'The artist"
+391,8da9756fdc2b6d02,390,"Read the following situation: In an 6th grade class, in the unit 'Visual creation, person and na"
+392,208a658ec17ce7bc,391,Read the following situation: A teacher who teaches 6th grade classes classes is teaching the te
+393,f01f799e46c94bfe,392,"In a 6th grade class, at the beginning of the ""Engraving"" unit, the teacher proposes in the firs"
+394,4430e479330e3e03,393,"Read the following situation: Students from a 6th grade class begin a unit aimed at ""Developing "
+395,ff1dc5fe423577aa,394,"Read the following situation: A teacher of 8th Grade starts the unit ""Visual creation, man and e"
+396,5e962d9a8de78400,395,"Read the following situation: In a 6th grade elementary school class, in the unit of ""Printmakin"
+397,461044edebd7737f,396,"Read the following situation: In 8th grade, within the framework of the unit ""Visual creation, p"
+398,9c213776cfac6f4f,397,"In an 8th grade class, within the framework of the unit ""Design and Nature,"" the teacher present"
+399,436876545f159d74,398,"Read the following situation: In a 5th grade class, characterized by achieving good results in g"
+400,e11f7a52d3fd7e05,399,Read the following situation: In a second-year secondary music class in the symphonic music unit
+401,5cb91929355c328a,400,Read the following situation: To learn about and experiment with digital sound transformation to
+402,2f8dd340a95d1d72,401,Read the following situation: Students in the third year of secondary school are preparing a mus
+403,6a28cbb77670104b,402,"Read the following situation: In a Middle School Music class, a teacher wants to evaluate studen"
+404,052932371a20bf3b,403,"A professor from Middle School, in the unit 'The Meters', selects different auditory examples fo"
+405,731161e23b9c829f,404,"Read the following situation: In a sophomore class, the teacher aims to teach the molding proces"
+406,68099428ac318bd0,405,"Read the following situation: In a middle school, a teacher wants to work with the students on u"
+407,ee9c5f8b656ac461,406,"Read the following situation: In a 12th grade class, in the unit 'Exploring artistic languages o"
+408,d696311965e1ca30,407,"Read the following situation: A teacher with their first year high school students, at the end o"
+409,64e3b3aab1f61dff,408,"In a 7th grade music class, the teacher is working on a three-part quodlibet. Once the three mel"
+410,250636eb6750a7a4,409,"In an 8th Grade class, in the unit “Expressing and improving”, students are asked to create musi"
+411,ac8474d11444dc46,410,"A teacher, in a 5th grade class, addressing the axis Listen and Appreciate, conducts a series of"
+412,d42189a3e9dd27a5,411,"A teacher of 8th grade is teaching a student his first exercises on the keyboard. For some time,"
+413,b2e68d269be8ab93,412,"In a 7th grade class, during a group performance assessment corresponding to a percussion sessio"
+414,c7007d66b14c8d37,413,"In an 8th Grade class, a teacher will introduce students to the application of different dynamic"
+415,ff8512ef72b3bf29,414,"In a summative assessment in 8th grade, during a collective instrumental execution session, the "
+416,666087ae8fa9eaf9,415,"A 6th grade teacher, during a class on musical meter, will begin to develop the content of the t"
+417,abde0ce6e4ef8ae6,416,"In the unit ""Interpreting urban music"", a teacher asks the bassist of the course to transcribe f"
+418,537984884c7e3732,417,"In a 7th grade class, a teacher is beginning the unit “Creation in Volume”, aiming at the object"
+419,7318659302eff658,418,"In the context of the unit “Sculpture and gender representations”, in a 7th grade class, a teach"
+420,20816267b3e50bdc,419,"In the unit ""Visual creation, person and nature"", in an 8th grade, a teacher sets the objective "
+421,084a5fdd2aae5919,420,"In a 7th grade class, during the development of the unit ""Creating in the plane the cultural ide"
+422,c11faeb1e58bb2d6,421,"A teacher of an 8th grade class is in an intermediate class of the unit ""Installation and Contem"
+423,ab6cc51e0085dab0,422,"A teacher plans a class for 6th grade, with the objective of ""Creating a work based on the chara"
+424,47e88647df80a897,423,"A teacher in the 4th year of secondary education is working on the unit ""Technological resources"
+425,199d85265c3b5154,424,"In a 3rd year secondary class, within the unit ""Instrumental Ensemble"", a teacher plans classes "
+426,e67966b2e76f92a3,425,A teacher in a 2nd-year high school class plans to work with students on the auditory discrimina
+427,8f8d487b0f782961,426,"In a 3rd-year secondary class, a teacher is planning a lesson on the African influence in Americ"
+428,bb561398eb4fffdb,427,"In a musical activity, a teacher wants to address the topic ""Replacement chords for the main fun"
+429,616a00928e37cd6e,428,The teacher is carrying out a group project activity. The teacher wants to apply two assessment 
+430,71e86b4df2450500,429,"In a 2nd Year class, a teacher is monitoring the collective performance of an instrumental piece"
+431,c3920847ef77214b,430,"In a 3rd year high school, a teacher is developing a unit on current music. One of her learning "
+432,609bc7b1a47ee155,431,"In a second-year high school class, a teacher will begin working on the sculpture unit focusing "
+433,dbc36548468481a0,432,"In a second year high school class, in the ""Graphic Design"" unit, students will begin a project "
+434,79fe451053da794d,433,"In a 2nd grade high school photography unit, a teacher presents to the students the various lens"
+435,03d9e9183b67a279,434,"In a 3rd year of high school, a teacher begins to work with her students on a painting project f"
+436,0bc8aa1b3a76efdc,435,"In a fourth-year high school class, within the unit ""Exploring Mechanical and Electronic Languag"
+437,d58c7ff3a0d37186,436,"In the context of the unit ""Youth Issues and Contemporary Media"", conducted in a 2nd year class,"
+438,1e62dad27ad97fd1,437,"After aesthetically appreciating some works of painting from the geometric abstraction movement,"
+439,eba970df3301b956,438,"In a 1st Grade (high school) class, to develop content related to photography, a teacher present"
+440,f6ef837accd0f667,439,"In a 4th year high school class, a teacher is working on the pictorial style of Edvard Munch. To"
+441,b8f430fb62455137,440,"At a nursery level, an educator will address the learning objective: “Show interest in textures,"
+442,6ddb2be215f6b60e,441,"A preschool educator will work on the learning objective: “Interpret songs, by integrating vario"
+443,afe651e6e2217d82,442,"A preschool teacher aims to address the following learning objective with young children: ""Commu"
+444,38d541079ef81d7d,443,A preschool teacher working with older toddlers will implement different experiences during larg
+445,7c1356b8acdfc37a,444,A kindergarten teacher has planned the following learning objective from the Artistic Languages 
+446,2e000a68ddb90f3b,445,"A preschool teacher is working on the project ""The emotions that live in me"". This project inclu"
+447,c49cbdbbd851e758,446,"In a 5th grade class, a teacher will address the following objective: ""To improvise and create m"
+448,414394d60a93ea19,447,What prior knowledge must students necessarily have to begin the study of Harmony?
+449,03c8e782431d9403,448,"In a 7th grade, in the instrumental ensemble workshop, the teacher has been working on the inter"
+450,81314ae4e1bfa07f,449,"A teacher is working with an 8th grade class on the unit Listening, Singing, and Playing. Then, "
+451,ad1de831630ca5aa,450,A teacher of a 6th grade will evaluate his students concerning the following learning objective:
+452,e4847c428f4a0e7e,451,"During a 7th grade class, in the unit on Photography, a teacher is working with her students on "
+453,9876c89aaa2c5f2c,452,"In a 6th grade class, in the unit of Engraving and other printing methods, the students will cre"
+454,efbc546e3ae6ebd7,453,"A 7th grade teacher, in the unit Visual Creation, person and nature, is working with her student"
+455,5594acee591c7ffe,454,"A teacher in the first year of high school is working on a vocal piece, specifically a canon in "
+456,63b407af9d4aa445,455,"In a 3rd Grade secondary class, students are working on creations, as the subject teacher has as"
+457,38acc0f22ced15c9,456,A teacher of a 3rd year secondary class is in the process of staging a choral work with his clas
+458,aea1e813a037900d,457,A teacher of a 2nd grade secondary class is addressing the reading of a score for an instrumenta
+459,4a4cd6187023bcd4,458,A 2nd year secondary teacher intends to evaluate the following learning objective: “Interpret a 
+460,86d1d895e4fe6fad,459,A teacher of a 3rd year high school class sets the goal for students to interpret music with sty
+461,6be6c425138f45c5,460,"To start the unit Design and Dissemination, in a 2nd Year secondary class, a teacher conducts a "
+462,fc0dc8f3a5599330,461,A teacher in the 2nd year secondary class will work with her students on the unit Social Problem
+463,d7409a90a9b7abed,462,"In a 4th year secondary class, during the development of the unit 'Exploring the Artistic Langua"
+464,9455948f0c333524,463,"During the development of the Multimedia Installation unit, in a 2nd year of secondary education"
+465,5db9b566121aab25,464,"In a 4th year secondary class, during the development of the muralism unit, a teacher along with"
+466,a920f28aea9954a1,465,"In the unit 'Understanding Contemporary Artists and Recreating Their Works', in a 4th grade seco"
+467,dccce274c5dea85f,466,"A 6th grade teacher, in the Rhythm and Music unit, will exercise with his students some rhythmic"
+468,fda812b66fb7e45c,467,"A sixth-grade teacher is directing the general rehearsal of a musical piece for flutes, guitars,"
+469,b324f836aafaa173,468,"A teacher is working on active listening skills with her 5th grade students. To do this, she wil"
+470,d319c53ee259399b,469,A teacher will work with her 5th grade students on the skill of playing instruments and singing 
+471,d1306f681bf737c0,470,"A teacher of 7th grade has finished a unit that contemplates the following objective: ""To sing a"
+472,a73b893c15cdc508,471,"A teacher of a 5th grade will evaluate the following learning objective: ""Distinguish through li"
+473,e4164ab74d0ae853,472,"At the start of the unit Painting in Contemporary Art, which addresses the symbolic value of wor"
+474,bd31849057f06920,473,"A teacher in 6th grade has formulated the following objective for a diagnostic assessment: ""To r"
+475,cf1e9b006c14d25e,474,A teacher is starting the unit Digital Images in visual arts with 7th-grade students. The teache
+476,3a2b0b00a0d045c0,475,"A teacher is developing the unit People and Land in an 8th grade class, considering the objectiv"
+477,4114568f30c01232,476,"A teacher will work with 6th grade students on the following objective: ""To develop printmaking "
+478,2fb7f0eb8028e69e,477,"In an 8th grade class, during the contemporary art unit, a teacher is addressing the topic of in"
+479,c93b657f18b5778a,478,"At the end of the unit on Installation and Contemporary Art, a teacher will evaluate her 8th gra"
+480,10969166c8dea704,479,"A teacher, in a 3rd Year secondary class, in the unit What Music Shows Us, begins to address the"
+481,6072672fdde0aec9,480,"In a 1st year secondary class, a teacher will work with the students on the following objective:"
+482,690412a843c67ff8,481,"A secondary teacher, in 2nd grade, in the context of the unit 'What Music Tells Us', will assess"
+483,c8f5c47f01ff2560,482,"A teacher, in a 2nd year high school class, will evaluate the students' learning regarding the f"
+484,de807a76721ae1c7,483,"A teacher is planning the unit ""Printmaking and Artist's Book"" for a 1st Year class, based on th"
+485,d85e554debe9d23b,484,"In the second class of the unit Mechanical and Electronic Languages, a teacher was working with "
+486,7f66dc8de62521d1,485,"To work on the unit Knowing Contemporary Visual Artists and Recreating Their Works, a secondary "
+487,44108aae6605327a,486,"A secondary teacher, in a 4th year class, is planning an evaluation to conclude the unit on Cont"
+488,e5c866b502d411ae,487,"A secondary teacher, in a 1st Year class, in the digital art unit, is planning an evaluation con"
+489,39f5c1afd5e3c453,488,"In a 4th year class, at the end of the first semester, a secondary teacher will evaluate the art"
+490,a51c96f8a8c78632,489,Read the following situation: A teacher in a second-year high school class prepares an evaluatio
+491,554f0e733cf22f16,490,"In the core of logical-mathematical relationships and quantification, a preschool educator condu"
+492,3b4a1aef556baa61,491,A 6th-grade teacher is tackling the unit on triangles and designs an activity where students are
+493,ea26442b83ed4ac6,492,A second-year high school teacher has completed the unit on real numbers with his students and w
+494,a2e1411c0d05b849,493,"A teacher proposes to his students to represent amounts with bills and coins, and then record th"
+495,6462dd445b60df2d,494,Why does using multibase blocks allow students to better apply addition with carrying?
+496,e3b429e00e0f5311,495,A teacher will introduce the topic of patterns with her class and wants to propose a starting ac
+497,b91e69dcb88946ac,496,The 3rd grade teacher works on addition and subtraction of numbers from 0 to 1000. To solve a su
+498,547b8214c86748fb,497,A teacher observed that their students make various errors when calculating the area of rectangl
+499,bce8dd15a988401f,498,"Read the following 3rd Grade Learning Objective: ""Demonstrate understanding of the concept of an"
+500,bcce7ff0f649b04c,499,"A teacher dictates decimal numbers and upon saying: 'Five and two thousandths,' observes that se"
+501,5b6e37a96524f020,500,A student developed the equation ☐ + 5 = 20 + 10 and concluded that the value of ☐ was 35. What 
+502,91567c8e0d8e6b54,501,What are the fundamental cognitive skills that underlie the concept of number?
+503,8d89af1bea07e08b,502,"An educator asks the children to tell their classmates who makes up their family group, mentioni"
+504,a66ef9091933a733,503,In which of the following situations is the principle of cardinality being enhanced in young chi
+505,fe3d7d2d40fd6b8a,504,Which of the following mathematical learnings is achieved through serialization?
+506,7981c0b2c07d293b,505,Read the following situation: Josefa forms two rows with five plastic soldiers each. The educato
+507,c2af3a54cb0f7a36,506,Which of the following learning experiences allows children to develop an estimation problem?
+508,0e673535b8993d9a,507,Read the following situation: An educator groups some blocks in the middle of the table and asks
+509,9d5ad1d2690782e9,508,Which of the following problems promotes the development of the concept of division in boys and 
+510,50f1125845261bb9,509,"An educator makes different figures with popsicle sticks on a cardboard, which he sticks on the "
+511,0e093428d7cdd3eb,510,"In a 6th grade class, within the goal of forming relationships between variables using mathemati"
+512,05723bbb4db6aa60,511,One of the learning objectives of 5th grade is to determine the decimal that corresponds to frac
+513,7b08a6b5564abeb5,512,A teacher is working on the addition of integers and begins to inquire about strategies that all
+514,9195652f87f9ab68,513,"In an 8th Grade, the teacher presents the following learning objective for the clas: compose rot"
+515,dbdfaacd3c660ff3,514,Consider the following activity: The class is divided into groups of three students. Each group 
+516,860928ad7cf02423,515,Which of the following activities encourages students to make conjectures?
+517,60e1709c9127215d,516,"In an 8th grade, the teacher applied an evaluation regarding the application of the Pythagorean "
+518,c9e130a2b6d9800e,517,"An 8th grade student, when calculating the hypotenuse c of a right triangle with legs 5 and 7, w"
+519,0cb8b96d3194f787,518,"In the context of problem-solving with affine functions, what is the most common misconception s"
+520,74cbff2e5bc7ec0f,519,Which of the following contents is a prerequisite for understanding the linear function?
+521,a9282df3165b863c,520,Which of the following contents is NOT relevant as prior knowledge for the learning objective: S
+522,4d2cc7dd768f820c,521,A middle school teacher has already taught their students about direct proportionality and now n
+523,42e35800f1f9f6a1,522,The learning objective of a Mathematics class in 7th grade is to solve first-degree equations wi
+524,9b5a6498aa3afeb3,523,"In a middle school class, the teacher intends to carry out an activity aimed at having their stu"
+525,ed03ad546a100ebc,524,"In a geomertry class in middle school grade 6, the teacher intends for students to distinguish b"
+526,332105ff9658f8f8,525,"In a high school class class, the teacher expects his students to learn how to solve quadratic e"
+527,c2c61bc381de36fe,526,A teacher of 2nd year of high school administered an evaluation regarding the properties of loga
+528,0e6bf8b2b2eccde3,527,"A teacher intends to address, with a middle school class, the graphical representation of a syst"
+529,f95a4829347456d6,528,"A teacher will evaluate the following learning objective: ""Mathematically justify that repeating"
+530,cb878a9b65724198,529,A teacher has worked with a middle school class for the last three weeks on the following learni
+531,661f09644e32ed80,530,Which of the following assessment indicators is the most appropriate for evaluating the learning
+532,7b5eb50b3dcb2279,531,A teacher in middle school seeks to have his students learn 'to solve additions and subtractions
+533,1a02275e49d2b1c9,532,"In high school, the teacher wants to apply the properties of logarithmic operations by making co"
+534,b1cb5aa9c4246df3,533,"A 4th year high school teacher plans her upcoming classes, in which she expects the students to "
+535,6507365729f618dc,534,"In a 1st year of secondary school, a teacher will teach his students how to determine the cardin"
+536,c12fec31fd24fcf8,535,"Read the following situation: In a 4th Grade class, the teacher conducts the following activity "
+537,4ed10c2376ab7ed5,536,Read the following situation: The teacher of a 4th grade elementary class will work with her stu
+538,28b43d94bdf71988,537,Read the following situation: A Mathematics teacher in a 3rd grade elementary class begins to wo
+539,c2d25542f1b9d3cd,538,For the Learning Objective of Grade 2 'Determine the length of objects using non-standardized me
+540,850493251b95416c,539,"In the Mathematics class, the teacher has planned to start the unit that includes the analysis o"
+541,bf070215aa2e5291,540,Read the following situation: A teacher is teaching the characteristics of some geometric figure
+542,3b962ac6bba73e58,541,Read the following activity: A teacher proposes to the children to mark different paths on the f
+543,e07e36e5631cb570,542,Read the following activity: In the 'Logical-Mathematical Relationships and Quantification' unit
+544,1bf46545de9a7840,543,"Read the following situation: During corner time in the preschool classroom, Francisca, aged 6, "
+545,d383d76bcd5ea8f4,544,A preschool educator has worked with her group on several activities aimed at identifying the ch
+546,4074920bd0070f5f,545,"After developing the formula for the surface area of a cone with the students, a teacher notices"
+547,ccb5c91229d431c9,546,"A high school teacher is planning the unit on homotheties, their definitions and properties. Whi"
+548,67c796820943fa52,547,A high school teacher designs the following sequence of activities for students to develop the s
+549,8bccb00b39c6112e,548,Read the following situation: Sergio is having a birthday and his mom is planning the celebratio
+550,8fe6a4665305d082,549,"As an evaluation activity, a teacher presents the following problem to his students: A machine l"
+551,f115a1cea5e0c603,550,A teacher has worked with their students on the quadratic function and wants to assess if they a
+552,179bd828dc11b5bc,551,"A high school teacher needs to design an activity to assess the learning objective: ""Determine t"
+553,aa3dd879cf6d9ed5,552,A teacher presents the following problem to their students: Determine the measure of OD knowing 
+554,1b7e807536c19123,553,A teacher of a 3rd Grade class is working with their students on the abbreviated vertical algori
+555,0a2d9c5d13768492,554,"During a Math class in 4th grade, where they are working on comparing and ordering decimal numbe"
+556,786096086214240a,555,A teacher of a 3rd grade set as a goal in a class that their students answer statistical questio
+557,090a61a4939d9fdd,556,A teacher of a 3rd-grade class will assess if her students have learned to create simple bar cha
+558,47169d9e3b1232ad,557,"In a 4th grade course, a teacher is working on the class objective ""Identify the equation of a s"
+559,5fffcb8de9d011d9,558,A teacher from a 2nd grade class wants to propose a problem to the students that allows them to 
+560,85f09ec0b7ce890f,559,A teacher of a 2nd Grade class is preparing an assessment for the geometry unit and will include
+561,e13106e978e29384,560,"In a Grade 3 class, a teacher is conducting a lesson with the goal of having students recognize "
+562,065af944332f4ba3,561,"An educator places her preschool group in a circle to play a mathematical game. To do this, she "
+563,e21fcde1b6634005,562,What prior skill do preschool children need to have achieved in order to begin developing serial
+564,a8b46ebf99125691,563,What performance by a child shows that they have developed the conservation of quantity?
+565,c030626ab5a96fe4,564,"A second-year high school teacher is planning a class where the objective is to ""Solve problems "
+566,1adad2f2a640ad83,565,A 10th grade teacher finished the unit on real numbers and has decided to assess whether the stu
+567,ba34d0c382258800,566,"A 12th-grade teacher is planning a class with the objective of ""Determining the graphical repres"
+568,b106c709682f1cc4,567,A first-year high school teacher is planning a class whose objective is 'Developing the square o
+569,fb7b890145592a8e,568,A second grade teacher sets the following class objective: “Predict what happens to a certain vo
+570,de06d2ee7b6784c7,569,Which of the following didactic resources is most appropriate to begin working on the representa
+571,f0081d9dfddcecd9,570,A first-grade teacher designs activities for students to determine units and tens in numbers fro
+572,882890bd87e7fcef,571,A 2nd-grade teacher set the class objective for her students to compare numbers from 0 to 100. W
+573,35357f0633a50303,572,A teacher of a 3rd grade worked with their students on expressing multiplication as repeated add
+574,dd4885ba2bbc2907,573,"A 4th-grade teacher, who has been working on the multiplication of whole numbers with their stud"
+575,4b32adcb5df8a44d,574,A fourth-grade teacher is planning a class in which she will work on comparing decimal numbers. 
+576,d61b821d7290873b,575,A preschool educator is working on the following learning objective: “Communicate the process de
+577,be2fd7b0a241f643,576,"Amparo, from preschool, plays with spoons of different sizes during zone play. During the game, "
+578,4ef58895c0568a3c,577,An educator in a preschool setting observes that Ana decides to work with a set of farm animal f
+579,47c5b74ab7a35552,578,"An preschool teacher is working on the numbers from one to ten, asking the children to complete "
+580,4cc21abb07f35176,579,A 8th grade teacher is working with their students on the multiplication and division of rationa
+581,89c8635eb3d8af96,580,A teacher of a 7th Grade class is working on the concept of absolute value in integers. During t
+582,090e8b09be15bc23,581,"A teacher of an 8th grade class will address the objective ""Understand the concept of function r"
+583,9945d280363b15a9,582,"A teacher is working on the following objective with 8th-grade students: ""Understand the multipl"
+584,4ac28a6d4f249c45,583,A 5th grade teacher is working with his students on exercises involving the addition of fraction
+585,93a40c7aeb0095c2,584,"A 7th-grade teacher is planning a class that will address the objective ""Reduce like terms in al"
+586,048a06049d9f7e32,585,A teacher will work with their 7th grade students on the learning objective related to understan
+587,99f918ee297137bb,586,A teacher of 8th Basic has worked with their students on different representations and applicati
+588,a3aac04a9f3fa163,587,"A teacher of 8th grade is working with their students on factoring algebraic expressions, throug"
+589,e38ddc82f4f23c5c,588,A child at an advanced preschool level is playing at a work station with seven cards. All have a
+590,ee9493147cb84ee9,589,A 4th-grade teacher who worked with their students on the relationship between mass and volume o
+591,5a5659630dc730ff,590,"For the 1st Grade Learning Objective: ""Compare and order numbers from 0 to 20 from smallest to l"
+592,7049a0b4de2015c0,591,"A third grade teacher is working on the characteristics of 3D figures with his students, and has"
+593,e389419569969cfd,592,A nursery teacher in the Younger Nursery Class level is planning learning experiences to jointly
+594,f8de1306af081291,593,"At the beginning of the first academic trimester, the educational team of the Senior Kindergarte"
+595,6d23c8a715e60d7a,594,A nursery level teacher will carry out a diagnostic evaluation for the infants regarding the fol
+596,2e4ae1394eb743ed,595,A 3rd Grade teacher evaluated her students to see if they had learned to identify and describe p
+597,d1a733869d48bcf2,596,"A teacher is planning classes in which the following objective will be addressed: ""Understand an"
+598,8250d90b36c78828,597,A 6th grade teacher is planning a class in which they will work on the following learning object
+599,bb6eaa155fc75e0b,598,A 6th grade teacher is working with students on a set of exercises about ratios. In previous cla
+600,f4cb6d34a7d3cf59,599,A teacher is working with students on the multiplication of positive rational numbers. To do thi
+601,23cbd04d12026787,600,"A teacher is planning the classes for the Geometry unit; particularly, the class whose objective"
+602,2557140968d16eb5,601,"A teacher has worked with students in class on the objective: ""Understand the concept of percent"
+603,dabf37e4e0a2cc91,602,A 6th grade teacher is planning a class on the thematic axis of MEASUREMENT. In the previous cla
+604,7ac7aae1bd9ea012,603,"A teacher is working with a 5th grade class whose learning objective is the following: ""Measure "
+605,7ea46cd7622c6f52,604,"An 8th grade teacher is working with her students on the Algebra unit, and in her upcoming class"
+606,f3f9f34b72a341d7,605,"In 5th grade, the teacher is developing the following learning objective: ""Discover a rule that "
+607,8287b3c8c671355a,606,A 6th grade teacher is working with her students on solving first-degree equations with one unkn
+608,948e492da86af7d9,607,A teacher in 2nd year of high school is planning the classes in which she will address the objec
+609,715c431a1dbb583e,608,"One of the learning objectives of the 1st year secondary curriculum is the following: ""To develo"
+610,f5aa93dc70fb5731,609,A secondary teacher in 2nd year is planning a class in which he will begin to address the goal: 
+611,02b0c0e48575f08c,610,A teacher in a Third-Year class was working with the students on the exponential function and in
+612,8d28ea0f28dc61cb,611,"A teacher in a 2nd year class will work on the following objective: ""Analyze the behavior of the"
+613,fccf927775ac5468,612,"A teacher in 2nd year of high school will start working with the students on the content ""invers"
+614,7fd32490ed3eb4bc,613,"In a 2nd year secondary class, a teacher identifies that, when applying the properties of logari"
+615,ffeb4e8f4e8cf7d6,614,A secondary teacher in a 3rd year is planning the classes in which she will address the followin
+616,9e317a4933386836,615,"In a 3rd year class, a secondary teacher is working on the following objective: ""Recognize compl"
+617,190a60c124c7bc62,616,One of the learning objectives of the 2nd Year secondary curriculum is aimed at enabling student
+618,4b6750bc7bbacbf2,617,A teacher in a 2nd year of secondary education has been working with the students on the followi
+619,7598b9dacd26d8cb,618,Which of the following topics is a prerequisite for advancing in understanding trigonometric rat
+620,4f0ea6ad5686e622,619,The educational team of a preschool class plans to strengthen the appreciation of diversity base
+621,5b54e460052ed264,620,"According to the following objective: ""Read simple plans of your environment, using reference po"
+622,e8f29795811b7310,621,"A teacher of 8th grade, at the end of a unit, will evaluate her students' ability to select info"
+623,15572292208109f9,622,"Read the following situation: In the 4th grade Basic History axis, a teacher asks her students t"
+624,57417f12f528fe8c,623,Read the following situation: After explaining to the students the importance of memory in peopl
+625,7220fd0bea0b5d52,624,"Read the following situation: At the start of a thematic unit, a teacher explains the concept of"
+626,1ef87d0009c238e7,625,Read the following situation: Professor Estefanía is working on Pavlov and Skinner's theories. A
+627,6bec74a52398cde2,626,"A teacher introduces the concept of emotion and points out that emotions are intense, but they h"
+628,50a4fe3a954d8a59,627,Read the following situation: A teacher explains to her students the difference between primary 
+629,9a1215066b9588d9,628,Read the following case: A teacher is working on syllogisms with his elective students and prese
+630,37d36f2fc3028d63,629,Read the following syllogism prepared by a high school senior: The goal of high school is perfec
+631,c729f5a3feb2641b,630,"In a class of the ""Fundamentals of Morality"" unit, the teacher is working on the concept of huma"
+632,08379cf463ed4b64,631,Read the following case: A teacher asks her students to relate the conception of reality in Plat
+633,c25f5db72f1c13e1,632,"During the reading of the text Essay Concerning Human Understanding by John Locke, the teacher p"
+634,68a19da53d2671cd,633,Read the following case: A teacher presents some ideas of Jean Paul Sartre about human freedom. 
+635,fc0d08bc3a909a90,634,"Consider the following situation: In a 'Fundamentals of Morality' class, the teacher explains th"
+636,d79306ceaceffd1a,635,"Read the following case: A teacher explains Nietzsche's theory on the origin of morality, descri"
+637,e8ddead2159c23b8,636,"Read the following situation: In the context of the unit ""Great pre-Columbian civilizations"", th"
+638,e882de3ce19444cc,637,"During the unit ""The impact of the conquest process,"" a 5th-grade teacher wants to assess whethe"
+639,3c9f8c6a800ee811,638,Read the following text: [...]A group of children is reading a text with information about an in
+640,d2784f0ae5ae54dd,639,"During the unit ""The Process of National Emancipation,"" the teacher has emphasized to his 8th gr"
+641,9a67a73fa6942b92,640,"Eighth-grade students ask the following question on the topic ""Industrial Revolution"": Why is th"
+642,11721dcfba5f8621,641,A teacher works with his 6th-grade students on the following learning objective: to geographical
+643,25ff2e6754f14f48,642,To work on the objective of explaining the main tenets of liberalism and its application in an e
+644,9c4c7842ff8af318,643,With the intention of characterizing the main economic transformations in Chile after the Great 
+645,25f13af5340d3b68,644,What prior political concept must high school second-year students understand to discuss the top
+646,ea08b0bf38a9c814,645,A teacher is designing the assessment of the unit 'The emergence of different political and econ
+647,dd2b30e70d406376,646,A teacher plans to conduct a formative assessment with first-year secondary students to measure 
+648,9cfb4746ae818dcb,647,"At the beginning of the unit 'Global Challenges for the Regions', a teacher decides to present t"
+649,645cf667a4cf96ae,648,In the context of the unit 'The exercise of citizenship and systems of political representation'
+650,dfd8eda7a02b4f60,649,"Read the following classroom situation: Miss Pérez, the English teacher, begins a new unit. She "
+651,3f1ab4f93cdf133a,650,Why is the globe useful as a teaching resource?
+652,78ae5fb1a8ade3cb,651,Read the following situation: A 2nd grade elementary teacher showed his/her students a map of th
+653,4454397ce65c7b14,652,Read the following situation: A teacher is developing activities aimed at enabling students to e
+654,fb9ad817d31cfbf0,653,"Read the following situation: At the end of the unit ""The Legacy of Athens,"" one of the objectiv"
+655,59ebe98776f1e11d,654,A Philosophy teacher is planning a class on the concept of the state of nature from the views of
+656,24b8fe92719abaf8,655,"A teacher is working with high school seniors on J. J. Rousseau's political theory, with a speci"
+657,b15d02d696e391da,656,"Read the following case: In a class on Plato's theory of ideas, the professor explains the main "
+658,f9fd431be6aad12c,657,"In a senior High School class on the History of Philosophy, a teacher and her students are worki"
+659,ae9e0dc7a8298144,658,A teacher is explaining to his third-year high school students the process of sensory knowledge.
+660,e8bd4d4c74a815e1,659,"In the Middle School unit: Political Ethics, the teacher is going to work on the statement popul"
+661,e54b560f2f8ec84e,660,A high school teacher is preparing a class on Kantian theory about the possibility of knowledge;
+662,1bdea95ef4ee4dcd,661,"Within the framework of an evaluation regarding Plato's main ideas, a Philosophy teacher aims to"
+663,a8d2cdd7ab40e079,662,A teacher reads in class with their students the first two metaphysical meditations of R. Descar
+664,e3109be0089d1034,663,"A 12th-grade teacher, at the end of the unit on Metaphysical and Epistemological Problems, sets "
+665,58a96ba8c4ac8611,664,"Read the following situation: At the end of the unit ""The Rise of the Bourgeoisie"", one of the o"
+666,5322f92422e3e839,665,A teacher wants to evaluate through a written exercise if her students understand the consequenc
+667,08421ec8fc4988cc,666,"A teacher will begin working on the unit 'Economic models and their impact on the territory', wi"
+668,44a496eb476e36a1,667,In the context of a class in the unit 'The construction of national States in Europe and America
+669,9dbddfc0ce93c141,668,Which of the following activities would allow 2nd grade basic students to demonstrate an underst
+670,845074560b6d8098,669,"A teacher of an elementary class, in a class aimed at ""Characterizing the geographical environme"
+671,0e733e042a4e6bcc,670,An educator intends to address the following learning objective of the Sociocultural Environment
+672,5c47885581a92b6c,671,"A teacher, while in the teachers' lounge planning the unit ""The Clash of Two Worlds"", receives a"
+673,2e72072ebe4e0885,672,"A teacher, for the unit ""The Independence of Chile"", is developing the following plan: Learning "
+674,f29223fba6d35161,673,"At the start of the unit ""The breakdown of democracy and the period of the dictatorship"", a teac"
+675,31c8c6a6ff1b6da5,674,"A teacher in 7th grade, in the unit ""The civilizations that contributed to the formation of West"
+676,9fa017b3fd0ab290,675,"A teacher is designing a class for the unit ""Geographic Diversity of Chile: main physical featur"
+677,19b0b3a1aeaae4a1,676,"A teacher, in the unit “The political organization of Chile”, is planning a class in which she w"
+678,1331606f8badc526,677,"A teacher, when introducing the concepts of morals and ethics, alludes to the fact that what is "
+679,1998efa26daa3918,678,A teacher is working in an ethics class on the notion of Aristotelian virtue. She asks her stude
+680,48485cad009e862b,679,A high school teacher aims for her students to be able to distinguish between autonomous and het
+681,77aba4a9fc6bdd03,680,A teacher has designed an activity in the 4th year of high school for the following learning obj
+682,5d5a44d20039cfd3,681,"In the context of an assessment, a teacher asks their students to analyze the order of the rules"
+683,ddd68b2c95b146f9,682,"A senior high school teacher, during the development of the unit ""Chile in the mid-20th century"""
+684,17e7884fab2e5843,683,"A teacher tells his 3rd year high school students that during the unit ""The Democratic Breakdown"
+685,538b94ba9b4bf835,684,Students in a 3rd year class must represent the historical trajectory of the Contemporary Era ac
+686,365ed9a63bb4ee39,685,"At the end of a class about ""The Functioning of the Market,"" a teacher conducts a formative asse"
+687,6d3c97a06cf7a861,686,"In the context of the unit ""Components and dynamics of the economic and financial system"", a tea"
+688,c821b56fb0d00b4c,687,"A teacher, after working on the unit ""The configuration of a rule of law"", is defining which per"
+689,75d8454d9dfea79b,688,"A second-grade teacher is working on the Greek and Roman civilizations with her students and, as"
+690,0fbe20cfcb3a6eb7,689,A teacher of a 3rd grade class is working with the students on different aspects of the daily li
+691,9b243ec9778b8fac,690,A fourth-grade teacher gathers students in groups and asks them to search for information on the
+692,fc45e6992ec3a405,691,A 3rd grade teacher wants to start the unit on Greece by introducing his students to the geograp
+693,a4db26e162760e0d,692,A kindergarten teacher will evaluate the following learning objective of the Sociocultural Envir
+694,11878b9d41ce4e1f,693,"In a kindergarten, a teacher will use observation records as an instrument to evaluate the learn"
+695,4106a6984838aac3,694,A teacher of third grade in a formative assessment notices that although her students have conso
+696,05d90921895a2309,695,A teacher in a 4th year high school class is working on the unit of Social Ethics. The aim of th
+697,6ba0591f860c413b,696,A teacher is developing an Ethics unit in a 4th-year high school class and in the next session w
+698,2638415c3bfc24a1,697,"A teacher is analyzing various excerpts from philosophical texts with 12th-grade students, among"
+699,12c5a3bc9a6cc564,698,A 4th-year high school teacher has explained Kantian critique of the faculties of knowledge and 
+700,bc3ec90d07a442f1,699,A 4th year Secondary teacher plans as an objective for their students to analyze and interpret N
+701,7135dec12d052b99,700,"A teacher evaluated the unit on epistemology in the 3rd year of high school, specifically focusi"
+702,84bd4b6cd11bdd90,701,"A fourth-year high school teacher plans to explain Plato's political theory, and for this he nee"
+703,81195df9e9c3da53,702,"A teacher is working on the Epistemology unit in 3rd year high school with their students, and a"
+704,d9513425dbe92b20,703,"A 12th-grade teacher, in the Ethics unit, will work with his students on the concept of Spinoza'"
+705,74f6bf32db871796,704,"A teacher is evaluating the progress of comparative charts, group-developed by 4th year high sch"
+706,13cbe538c8619350,705,"A high school teacher, in the unit on Ontological Problems, will evaluate the following objectiv"
+707,1c686c5b4b093fcc,706,Read the following situation: A teacher has been working with the 2nd year high school students 
+708,c70715b35c4c01fa,707,"A teacher of 2nd grade secondary school, in the unit From a Bipolar World to a Globalized World:"
+709,acc013258bfbcaad,708,Which of the following activities would help 4th grade students understand the difference betwee
+710,95a89338a57e8337,709,"In a 5th grade class, a teacher is working with her students on the following learning objective"
+711,04bfb6ac02931bcd,710,A teacher is working on the origins of the 1973 coup d'état with her 6th-grade students. One of 
+712,cf0034e42f09779f,711,"A 7th grade teacher will evaluate if their students ""Explain the changes derived from the Neolit"
+713,c377cea563dcd220,712,A 7th-grade teacher is developing the unit on the emergence of the first civilizations. In one o
+714,050c75cb569d9058,713,"An 8th-grade teacher is working on the unit 'The Rise of National Monarchies,' aiming to promote"
+715,1a57cc9bb3b9774d,714,A teacher will start working with her 6th grade students based on the following plan: 6th Grade 
+716,a484f2d57260c83e,715,"In a third-year high school class, a teacher is working on the unit of Knowledge, Science, and T"
+717,29cdfe49e18ee955,716,"A philosophy teacher for 4th level, at the end of the unit on Aristotle's Ethics, aims to assess"
+718,3f4eaa93059d69a9,717,"A teacher, working in the 1st Year of high school on the unit Progress, industrialization and cr"
+719,2e04f30c4c40f89d,718,"A teacher in 2nd Grade, in the unit The Bipolar World, will address the following class objectiv"
+720,d0980cb66171472c,719,"A teacher is planning to conduct a sequence of three activities, using sources, so that their se"
+721,d00c61f5896dc472,720,"During the unit The Democratic Break, a teacher in a second-level high school class plans to wor"
+722,d975b2eb0fe24e00,721,A teacher in a second-year high school is about to finish developing the unit From a bipolar wor
+723,04ee19f132a5f7d3,722,"A teacher, in the unit The End of the Cold War, organized an activity for her 10th-grade student"
+724,5d01d7c997285eab,723,"A teacher, during the State of Law and Citizenship unit, wants to determine if her 4th-year high"
+725,1380fa7576f04ccf,724,"A teacher in a 3rd High School class, in the unit Territory, organization, and local participati"
+726,75ebe480010ba8bc,725,A kindergarten level educator plans to evaluate the achievement of the following learning object
+727,c8c5619d11aed3c1,726,"A teacher is planning a class for 5th grade with the following learning objective: ""Characterize"
+728,585a2594721ca924,727,"A teacher in a 6th grade class, after having discussed with her students the causes that led to "
+729,a10f7a25d22b8492,728,"A teacher is addressing the objective: ""Explain the importance of the incorporation of women int"
+730,d841ef5084b9c106,729,A teacher will address with their 7th grade students the unit on The great civilizations of huma
+731,063fc47b74eac9b0,730,"In a 7th grade class, in the unit on the Middle Ages, a teacher sets as an objective: ""Develop h"
+732,e896ca199a2c36fe,731,Which of the following activities promotes the skill of source analysis by students?
+733,691f8e0985bac20b,732,A preschool educator is working with their group of children on the following learning objective
+734,fcb8a77088a55dac,733,"A fifth-grade teacher, in the unit Characteristics of today's technological objects, proposes to"
+735,865f4f42a8b204ee,734,"In a first-year high school class, the Technology teacher asks the students to develop a project"
+736,c8b6f2984e557a20,735,A group of students is planning the design of a technological object that requires a mixed elect
+737,f37dedb618ae3b33,736,Read the following situation: A group of students is tasked with solving the problem of organizi
+738,5ea69ceba2da5d34,737,Read the following situation: A teacher wants their 7th grade students to develop interactive st
+739,c873a3c3ac4872f4,738,A group of students conducts surveys and interviews for the first time with a certain number of 
+740,6f76311d14730a4d,739,Read the following situation: An interdisciplinary project is designed between Technological Edu
+741,8569460d6ef840ae,740,"In relation to the evolution of the telephone as a technological solution, which of these questi"
+742,4ce4bc169ad23101,741,Read the following situation: The students of Middle School class are organizing an end-of-year 
+743,65d4dc9ed00e166d,742,What is the first step a teacher should propose to their students in a class framed in project-b
+744,4b70d9799958caf9,743,Read the following situation: Members of an educational community do not read the boards or bull
+745,2f5be6b4e84593d3,744,"A group of students complete their weekly work journal. Upon finishing, they submit a Gantt char"
+746,3c503e6a1cf74983,745,"When students generate a project, they normally jump from the idea to the action, leaving aside "
+747,82709d8049eedf70,746,Read the following situation: 12th-grade students have identified a problem at their school: the
+748,e395e2ee3f42c0ca,747,A Science colleague consults the Technology Education teacher about the possibility of carrying 
+749,46d4faae166f42ff,748,A Technology Education teacher decides to analyze with their students a documentary video called
+750,04a6e69774b426aa,749,Consider the following situation: A teacher presents the following text to their 1st year high s
+751,9722e2d943f8166a,750,Which of the following activities is most appropriate if you want to promote the exercise of cre
+752,bf7e087f298cde8f,751,A group of students expresses to their Technology Education teacher their interest in programmin
+753,3a026b71cc9c7640,752,"Consider the following situation: In Technological Education, students work with project methodo"
+754,3c4c30792da150f5,753,Consider the following situation: A teacher needs to create a virtual space to interact with the
+755,986a202322f2531d,754,A professional technical teacher needs to assess the performance of their students in carrying o
+756,6e35fdf31e44230d,755,"In vocational technical education, which of the following methodological strategies allows proce"
+757,7a4e34f7b2d5bf10,756,"Eighth grade students, after learning about the functionality of software for building apps, dec"
+758,5acd6c810bc08dda,757,"Responding to the needs of their environment, the 8th-grade students have built benches for the "
+759,89c8c02a22247cbc,758,"In the Technology class, 5th-grade students are building a scale model of a car designed by them"
+760,a2c56295de238578,759,A group of 7th-grade students is investigating the evolution over time of different technologica
+761,93b55ed7b590d26d,760,"A group of 8th-grade students must conduct research related to the history of music, with a requ"
+762,c67657be80db3cd4,761,Eighth-grade students must identify needs present in the establishment in order to propose solut
+763,f6828f91ff8ac2c5,762,A group of students identified the need to improve the irrigation system for green areas at thei
+764,48819a8cc3c95f1e,763,"After analyzing several solution alternatives, María and Francisca have decided to create contai"
+765,a452af8716e8795b,764,"In an 8th grade, the Technology teacher asks his students to investigate the impact that a recyc"
+766,b3441f2bd8ea1d9b,765,"In the subject of Technology, students must propose solutions to meet the needs established with"
+767,6d332e15b7cf637d,766,A group of 8th-grade students is preparing the setup of an interactive timeline on the evolution
+768,4953f8d5829af385,767,"During Technology class, the topic of household organic waste utilization is discussed. The stud"
+769,eb5bcf88f64ba6d3,768,"In the High School Technology class, the teacher asks a group of students to propose a project t"
+770,4316580e291ae58c,769,"During the development of a service project, the high school work groups present a series of dif"
+771,f1c69f37e352d63e,770,A teacher asks the students of Year 9 to make a presentation about the evolution of a technologi
+772,40be6c4a1f0da7ee,771,"In the context of the First Year High School Technology Learning Objective: “Infer, from the evo"
+773,3d2e90b89e20813c,772,"In a high school class, the teacher presents the problem of the excess waste generated at the sc"
+774,d01d6a0e102f5fd0,773,"In order to detect an opportunity or need that can be addressed through a service, the First Yea"
+775,2a298931f440df4e,774,"In a Middle School Technology class, the stage of service design is being worked on. The teacher"
+776,372f5ba9d15f7e5c,775,"In the process of developing a service, the teacher decides to introduce the use of the Gantt ch"
+777,4a400dc94d75758a,776,The administrator of a school has observed a significant increase in water consumption and commu
+778,ad55b1cbda3637be,777,Which of the following activities is the most appropriate to evaluate the development of attitud
+779,bab072f57a49be05,778,"The management team of a professional technical high school, along with the teachers, is working"
+780,69c481f8804000e8,779,"A teacher needs to select a strategy to teach the application of a complex procedure, related to"
+781,6257597bdca66270,780,Which of the following technological solutions would allow a 5th-grade teacher to directly exemp
+782,3ef9504c979150e6,781,"A teacher of a 7th grade class, in the context of a unit with the following objective: ""Propose "
+783,b4fed8996f415115,782,"For the development of projects to create technological objects, a teacher of a 8th grade class "
+784,019468f0bb05b15e,783,A group of students defines a criterion to evaluate if the object made by the group was construc
+785,b79539fd408e6d89,784,"A 7th-grade teacher is working on the following objective: ""Plan the stages or phases to impleme"
+786,d4b101b5bfff68c3,785,"A 7th-grade teacher is addressing the following objective in one of their classes: ""Describe the"
+787,c91612dd8ce0c6f2,786,"A technology teacher explains to their 7th-grade students the concept of innovation, so that the"
+788,3d295ebe7926ced6,787,The technology and science teachers of a 5th grade have agreed to work in parallel on the follow
+789,436a1da85d485704,788,The students in a 5th Grade class have been working on the unit addressing the Learning Objectiv
+790,84544227734e9ccf,789,"In the context of the unit “Creating Innovative Designs of Objects or Technological Systems”, a "
+791,1f7bf6d76fdf8308,790,"In a 7th-grade class, a group of students plans to create an original bench, as a meeting place "
+792,a6f1b3d90d1381dc,791,"In the context of the unit ""Evaluation and functioning of the solution"", the teacher of an 8th g"
+793,eea60284917961d2,792,"A teacher in an 8th grade class is working on the following objective: ""Reflect and evaluate the"
+794,6b4f9897e3d40f09,793,Which of the following activities best aligns with the curriculum emphasis on critical thinking 
+795,9cb0791647c0d152,794,"A teacher in a Grade 6 class aims to teach their students the views of elevation, profile, and p"
+796,43b75af67425b34a,795,"In a conversation with students from an 8th grade class, regarding the impact of technological s"
+797,74dad69997dda4a9,796,"In the unit “Opportunities and challenges of technology today”, the Technology teacher assigns t"
+798,4d174579ff975fce,797,"A Technology teacher for 2nd year high school, about to start a project work, decides to apply a"
+799,77edb806dd66a731,798,The high school students are in the planning stage of their project. To help them develop their 
+800,fdb752889d39d57a,799,"At the end of a unit, a 10th-grade teacher will evaluate her students regarding the following le"
+801,033a380a924f82d1,800,A 10th grade teacher requests their students to conduct research about efficiency in the use of 
+802,d36a42f3e840edfe,801,A group of 1st year high school students has defined the recipients (their own classmates) to wh
+803,16d4d6eb5de0f9c0,802,"A teacher for 2nd year high school is planning a learning unit with the objective ""To project sc"
+804,335f387f7313d424,803,"When starting the unit ""Improving the use of our resources"" with a 2nd-grade high school class, "
+805,4929c193dbfe47f7,804,A technology teacher designs the instructions for a research project guide that will be carried 
+806,f44ac07912e95d14,805,"A 2nd grade teacher is addressing a unit on analysis of technological solutions, which aims to """
+807,e02678e89c6e10dc,806,"A high school teacher is working with their students on the unit ""Opportunities and Challenges o"
+808,2756e577c3c64260,807,"A 5th-grade teacher, to address the objective: ""Create designs of objects to solve problems"", wi"
+809,5c35f7d2ec07ddfa,808,A teacher of 8th grade is starting a project with their students with the objective of providing
+810,e0299528e5d7aa5c,809,"In an 8th grade class, in the first lesson of the unit on Efficient and Sustainable Technologica"
+811,83b6612e4e2806d9,810,"A team of students is developing a technological product to automate pet feeding, a need that wa"
+812,df671fa8f3347ce8,811,"A teacher of 8th grade, given the importance of addressing topics related to climate change in t"
+813,18c491af5d455f95,812,A teacher of 8th grade is working with her students on a project that involves building a model 
+814,ed1f74e601cec6d5,813,"In a 7th-grade class, at the end of the first lesson of the unit Creating objects to solve probl"
+815,5477c45d4477014e,814,"A fifth-grade teacher asks her students to carry out a project in groups. For this, she asks the"
+816,9d9c87c2e5d09950,815,"A 6th-grade teacher will evaluate their students with the following objective: ""Contrast existin"
+817,448df807c30e7b5f,816,"In the framework of achieving better utilization of energy resources, a teacher of a 6th-grade c"
+818,7eeec5b6cb498aeb,817,A teacher of a 7th Grade will evaluate her students with the following unit objective: “Propose 
+819,e62eabf498c52ff0,818,A 6th-grade teacher presents the following group activity to her students: make significant chan
+820,b82b1e9274c7137b,819,"A teacher presents to her 8th-grade students, as the class topic, the consequences of excessive "
+821,c2554713c94c65d6,820,"A 8th grade teacher, in a class to introduce the topic, shows the video “Chile, the best adventu"
+822,26b289de320ddaf0,821,"A high school teacher addresses the students with the following learning objective: ""Identify po"
+823,ccfe10e562a4b9ab,822,"In a first-year high school class, a teacher introduces the unit on the Evolution of Technologic"
+824,048cb775018963dd,823,"In Grade 11's unit on Contributions to the Community, a teacher asks students to apply the conce"
+825,4b635d3d0ece78d3,824,A middle school teacher has asked their students to evaluate the performance of their service re
+826,c6c39a625744b1ca,825,"In the unit Contributing with an Entrepreneurship, 1st Year Secondary students work on formulati"
+827,a03346d2d4af3b8d,826,"In a first-year high school class, once the process of creating technological objects by the stu"
+828,409dde5904ee1757,827,"In the unit Efficient Use of Resources, from the 2nd year of high school, a group of students pr"
+829,ff7961f53a0bb223,828,"A teacher of 1st year high school is working on the unit ""Evolution and impact of a solution"". A"
+830,0c3a771e456d1260,829,"In a 10th grade classroom, a teacher is working with students on the following objective: “Under"
+831,1afbad25542aba04,830,A preschool educator will evaluate the following indicator from the Core Understanding of the So
+832,2cd50ad32ddf9764,831,A secondary teacher in the 2nd year suggests to his students the creation of a project that make
+833,15a6ed87cd110aaf,832,A teacher in 1st year of secondary education asks his students to prepare a Gantt chart to plan 
+834,3cb66dc6045ad409,833,"In a 1st Year secondary class, to address the following objective: ""Determine needs or opportuni"
+835,26079741f2f25660,834,"In the unit Development and implementation of a service in a 1st grade secondary class, a teache"
+836,189660a85b030649,835,"A 1st grade secondary teacher is working on the unit ""Service Projects in our high school"". Duri"
+837,8bf7b74038fb2ca6,836,"A secondary teacher in the 1st Year, in the unit ""Development and Implementation of a Digital Se"
+838,56213d96ec711c21,837,A teacher in 2nd year of secondary education works with her students on the concepts of incremen
+839,b64879218337688f,838,A group of 1st year students creates a lost items return service in their course. The peculiarit
+840,835b4defd7c4deaa,839,"A secondary teacher in 2nd Grade, in the unit ""Anthropic Environmental Impacts"", has asked their"
+841,5c4cbd7f25f6f110,840,The first-year secondary students have made their graphic design proposals for apps for various 
+842,bf594146ec52cc82,841,Which of the following artistic expression activities offers greater opportunities for the devel
+843,55f230cec92ff84b,842,"Read the following classroom situation: At the beginning of the year, students in a school are a"
+844,2b2c87d02732a762,843,"According to Bowlby's theory, which of the following statements corresponds to a characteristic "
+845,663163cf6037f681,844,Read the following situation: An educator is starting to work on identifying numbers to develop 
+846,72e0650a7a4e9baf,845,Which of the options presents an expected manifestation of cognitive development in boys and gir
+847,7ec9cccf03b3a00e,846,Consider the following situation: An early years teacher has two rows of blocks that contain the
+848,559fccbe6c83636d,847,"A child, walking with his father in the rain, looks up at the sky and points to the clouds sayin"
+849,9d0e089e3810590f,848,Read the following definition: It is the first form of play for human beings. They are usually i
+850,aad4d2c764057a86,849,What skills are mainly developed in children through structured play?
+851,b9ecf049128cbc9b,850,"Read the following situation: Patricia, an early years educator, invites five children from her "
+852,43e634e42fd9b652,851,"In an early years group, boys and girls are chalk painting a mural in the schoolyard. Fabián tel"
+853,e56c6dd4b3ee039b,852,Consider the following situation: An early years educator sets up a conversation activity with t
+854,14ec33ef7d91815a,853,Which of the following situations shows the ability of a child in kindergarten to regulate his o
+855,1cf6fc597d98d4ac,854,"According to Kohlberg's theory of moral development, which of the following options corresponds "
+856,47ccecbf180891e9,855,"Language is not innate, it is learned and depends on the relationships that the individual estab"
+857,827dc285d25ccbfc,856,"According to J. Piaget, one of the characteristics of early speech is that children overgenerali"
+858,7a3b07ef3aa56581,857,"In a handball class, two students fiercely contest the ball; one pushes the other to keep the ba"
+859,23bc37bcd284d7fc,858,"Read the following situation: Two children are playing and both are speaking at the same time, e"
+860,f661e0290ed08659,859,The teacher wants to assign a reinforcement task to the 50% of the class that got the lowest sco
+861,fee124ec2f9a889a,860,"Read the following situation: An educator organizes an activity called 'protagonist of the day',"
+862,313048ac2de7dee9,861,Read the following situation: An educator plays with playdough alongside a child in her group in
+863,18c8ca0c7984defd,862,Read the following text: Language is yet another manifestation of the human capacity for symboli
+864,293e7de6c39d0a35,863,"Read the following situation: A preschool educator proposes a role-playing game: ""Lost in the Ju"
+865,3ebf58c88b7dd4da,864,"An upper preschool educator has observed that Francisco, one of the children in the class group,"
+866,e791360cb51baa74,865,"Read the following situation: During recess for a group of preschoolers, José approaches his cla"
+867,5ef598f152394de0,866,"Read the following situation: During activity time, two children are in a dispute over using a p"
+868,3e60e427c836fe09,867,Read the following situation: A preschool educator is working in the verbal language area with t
+869,830dfe48a6f11465,868,In which of the following options is the schematic stage of children's drawing characterized?
+870,531e3242d7dcb1a5,869,Read the following situation: An educator aims to enhance artistic expression through the develo
+871,1507e729d3190cf5,870,A teacher of a 4th grade class who is working with her students on children's rights presents th
+872,bf370929e3bc4875,871,An educator plans an activity in which the boys and girls of her group will receive a visit from
+873,cbf5bd144fa80ab5,872,"The educator, in a constant period of group meeting, invites the boys and girls to remember an a"
+874,19524ad7c1ed83be,873,"Andrea and Jacinta are playing in the construction corner, competing to make the tallest tower w"
+875,b2456b26998adae0,874,"In relation to play as an organized physical activity, at what age does one of the essential cha"
+876,ac1cd8375bf04053,875,"Which of the following authors proposes in their theory of motor development evolution, 4 phases"
+877,81857c7803a6c7b8,876,Which of the following options corresponds to a common element in the learning theories of Piage
+878,d64defe941961258,877,"Considering the potential for cognitive development, what differences can be observed between Pi"
+879,c764e5ef6d8d5ccc,878,"In relation to thinking styles as problem-solving processes, which of the following actions corr"
+880,e20aecd8903aa22d,879,Which of the following definitions of intelligence is most consistent with Gardner's notion of m
+881,2275c05b328b9d9a,880,Which of the following statements presents a valid relationship between the development of attac
+882,13421b7e9d35462b,881,What reference is fundamental to determine mental health from a psychosocial perspective?
+883,c9e1b0e9783cadf0,882,Read the following situation: A three-year-old boy cries when his mother does not come to pick h
+884,2048b8ba0cee8e1c,883,"According to Kohlberg's moral development, what is a capability of people who are completing the"
+885,220ee2eab9ecfda4,884,Read the following text: This methodology contributed to early childhood education the pedagogic
+886,f21f4243efbb7cb7,885,"According to Piaget, what is the significance of symbolic play in the cognitive development of a"
+887,316309d499e21168,886,"Considering Piaget's theory, which of the following behaviors is a sign that a child is ending t"
+888,3e4b487909b56a06,887,A preschool educator reads the story 'The Very Hungry Caterpillar' to her group of boys and girl
+889,35be8660c946c5a1,888,An educator decides to assign to the children tasks related to the care of the plants in the roo
+890,a0f49f9ef2a907b9,889,"A preschool educator, in order to promote the cross-curricular learning goal: ""Act with increasi"
+891,19bd370c8f5166ba,890,An educator will address the following learning objective in Social Interaction and Citizenship:
+892,01a646b539d10f16,891,A group in the senior nursery level consists of ten children. They all move around confidently a
+893,a0fac1c9849cfef6,892,A kindergarten teacher for a younger middle level plans to work on the area of verbal language a
+894,a69829f191c6b16e,893,A teacher needs to select a technological tool that facilitates communication among the members 
+895,e6e6336085d6046c,894,The teacher of an EMTP specialty decides to work on a learning module focused on Entrepreneurshi
+896,b5ba603ae8adf3dd,895,Read the following description: One of his most relevant propositions in education is the theory
+897,126ee0b40a13456b,896,"A preschool educator plans to work transversally, during different moments of the daily schedule"
+898,2ce2eabd4c4e098f,897,"A preschool teacher, during zone play, notices that there is a conflict between Simón and Javier"
+899,0cd22a88cb110414,898,"A preschool teacher, in the area of Community and Citizenship, is developing the following learn"
+900,ac87e6ab074aae68,899,"A preschool educator in the Minor Transition level, within the Citizenship and Coexistence modul"
+901,88cf75f1869578e9,900,A kindergarten teacher will share with her group a motor story to address the following learning
+902,fb4e5f3bb8d614e2,901,"A Kindergarten educator, in the Natural Environment Exploration core, is conducting a gardening "
+903,184dfb28d9e84853,902,"Considering the development of verbal language in children, what characterizes the prelinguistic"
+904,66fe3e4b7f7f53e6,903,"In a higher middle level, a group of children is playing in the sandbox. Sara piles up sand, add"
+905,1bdb4ad1f7cd3edc,904,An educational team at the Nursery level aims to collect evidence monthly regarding the followin
+906,b4c6ba1f6c536813,905,"A third-grade teacher, in the unit about children's rights, selected the following excerpt from "
+907,82a190179a61f08f,906,A teacher in a 4th-year high school class conducts an evaluation to verify if his students can a
+908,3fcaa1f461eb24db,907,A kindergarten teacher invites the children in his group to engage in an experience to start the
+909,3968d6affb5630dc,908,A preschool educational team aims in the short term to strengthen effective communication betwee
+910,0b80e21279c0a430,909,The substage of Primary Circular Reactions corresponds to the Sensorimotor Stage defined by Jean
+911,c38580b8349324f9,910,"A preschool teacher, after a diagnostic evaluation, plans educational strategies to enable his g"
+912,0c0e2ee8ee79149e,911,"In a heterogeneous Nursery level, the educator in charge will evaluate the children's learning r"
+913,4ff12e0893e977fd,912,An educational team from a Nursery Class is planning interactions that will take place during th
+914,215361a826d58c67,913,"A preschool teacher within the Convivencia and Citizenship core, plans for the end of March the "
+915,b517b1e60e4e2b85,914,A teacher of a kindergarten class has organized the classroom into play zones and has incorporat
+916,17845e8f31a2b0b0,915,A senior kindergarten teacher has addressed the following learning objective from the Core of Co
+917,d01face48a553e14,916,A teacher in a kindergarten class has decided to work with the children around the following obj
+918,eac0a8fed3ba33b4,917,What skills are primarily developed in boys and girls through rule-based play?
+919,79980bd8720b760f,918,In which of the following situations is the pedagogical principle of empowerment favored?
+920,ebe7aafdbe6e9625,919,Which of the following activities promotes the development of empathy in preschool children?

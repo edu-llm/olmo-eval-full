@@ -293,18 +293,37 @@ def check_parameter_family(spec: DatasetSpec, fit_family: str, rows: list[dict[s
     """Abort unless the calibrated rows were estimated under ``fit_family``.
 
     The directory a caller names is not evidence of what it holds, so the family being
-    stamped is settled against the parameters. 2PL is the ``c = 0`` case of 3PL, which
-    makes the guessing column the discriminating one: every row of all five 3PL banks
-    here carries a non-zero ``g``, while GPQA's 2PL refit keeps the column and leaves it
-    identically zero across all 1,192 rows. A fit that estimated ``g`` is a 3PL fit
-    whatever it is called, and one that did not is a 2PL fit whatever it is called.
+    stamped is settled against the parameters. Each family is a constrained case of the
+    next, and the constraint is what identifies it. 2PL is the ``c = 0`` case of 3PL,
+    which makes the guessing column discriminating: every row of all five 3PL banks here
+    carries a non-zero ``g``, while GPQA's 2PL refit keeps the column and leaves it
+    identically zero across all 1,192 rows. 1PL is in turn the ``a = 1`` case of 2PL, so
+    a bank whose discriminations are all exactly 1 was not fitted for discrimination at
+    all. A fit that estimated ``g`` is a 3PL fit whatever it is called; one that estimated
+    ``a`` is a 2PL fit; one that estimated neither is Rasch.
+
+    Only rows the bank will actually use are read, meaning those with a positive ``a``.
+    The locally fitted banks carry a zeroed row for every position ``filter_items``
+    dropped, so that the index space stays complete for :func:`check_alignment`; those
+    rows are discarded by :func:`load_bank` as non-positive discrimination and would
+    otherwise make every Rasch bank look like a 2PL one on an ``a == 1`` test.
 
     This is what the override in :func:`resolve_fit_family` rests on. Without it,
     redirecting ``--bank-dir`` anywhere at all would be enough to stamp any family onto
     anything, and the redirect requirement would be paperwork rather than a guard.
     """
     with_guessing = [row for row in rows if float(row.get("g") or 0.0) != 0.0]
-    observed = "3pl" if with_guessing else "2pl"
+    scored = [row for row in rows if float(row.get("a1") or 0.0) > 0.0]
+    unit_discrimination = scored and all(
+        math.isclose(float(row["a1"]), 1.0, rel_tol=0.0, abs_tol=1e-9) for row in scored
+    )
+
+    if with_guessing:
+        observed = "3pl"
+    elif unit_discrimination:
+        observed = "1pl"
+    else:
+        observed = "2pl"
     if observed == fit_family:
         return
 
@@ -317,11 +336,20 @@ def check_parameter_family(spec: DatasetSpec, fit_family: str, rows: list[dict[s
             f"every ability estimate the bank produces. Vendor from a directory whose g "
             f"column is identically zero. Nothing was written."
         )
+    if observed == "1pl":
+        raise SystemExit(
+            f"{spec.name}: {spec.bank_dir} is being vendored as {fit_family}, but every one "
+            f"of its {len(scored)} scorable rows has a = 1, which is a Rasch fit. Calling it "
+            f"{fit_family} would claim a discrimination was estimated per item when the "
+            f"calibration sample went entirely into difficulty. Pass --fit-family 1pl, or "
+            f"point --bank-dir at the {fit_family} calibration. Nothing was written."
+        )
     raise SystemExit(
-        f"{spec.name}: {spec.bank_dir} is being vendored as {fit_family}, but every one of "
-        f"its {len(rows)} rows has g = 0, which is a 2PL fit. Pass --fit-family 2pl so the "
-        f"manifest records the family these parameters were actually estimated under, or "
-        f"point --bank-dir at the {fit_family} calibration. Nothing was written."
+        f"{spec.name}: {spec.bank_dir} is being vendored as {fit_family}, but its "
+        f"{len(scored)} scorable rows have g = 0 and a varying a, which is a 2PL fit. Pass "
+        f"--fit-family 2pl so the manifest records the family these parameters were actually "
+        f"estimated under, or point --bank-dir at the {fit_family} calibration. Nothing was "
+        f"written."
     )
 
 

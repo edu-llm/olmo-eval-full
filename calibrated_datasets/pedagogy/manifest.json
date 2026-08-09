@@ -1,0 +1,79 @@
+{
+  "dataset": "pedagogy",
+  "task": "pedagogy",
+  "route": "B",
+  "modality": "mcq",
+  "answer_type": null,
+  "fit_family": "1pl",
+  "source_ref": "HEAD",
+  "source_commit": "a1d9e4d4fbdd1c7750ad9e277824f887bb41a15f",
+  "bank_dir": "diagnostics/mcq_cat/styles/uni_mcq/banks/pedagogy",
+  "bridge_path": "diagnostics/mcq_cat/styles/uni_mcq/bridges/pedagogy.csv",
+  "bridge_kind": "content_hash",
+  "bridge_in_repo": true,
+  "bridge_provenance": {
+    "dataset": "pedagogy",
+    "bridge_kind": "content_hash",
+    "rows": 920,
+    "ordering": {
+      "source": "AdaptiveTesting inference sweep, full200",
+      "responses": "s3://edullm-adaptive-inference-056956104102/full200/results/Outputs/mcq/pedagogy/",
+      "item_cache": "s3://edullm-adaptive-inference-056956104102/full200/mcq_cache/pedagogy.n2000.s1234.jsonl",
+      "cache_written": "2026-08-01T15:23:51+00:00",
+      "loader": "AdaptiveTesting/Test/Inference/datasets_registry.py::load_pedagogy on ref Research@6998270f",
+      "task_spec": "pedagogy"
+    },
+    "item_id": {
+      "scheme": "content_hash",
+      "derivation": "sha256 of the olmo_eval instance's question and choices, each NUL-terminated, truncated to the first 16 hex digits; see datasets.content_item_id",
+      "task": "pedagogy"
+    },
+    "matching": {
+      "recipe": "bank index k names the k-th row the calibration loader enumerated, resolved here to the content hash of the k-th task instance",
+      "verified": "every bank item matched the frozen 2026-08-01 item cache exactly on stem, choices and gold; the task enumeration was then compared against that same cache position by position",
+      "contested_ids": 0,
+      "rows_claiming_a_contested_id": 0
+    },
+    "generated_at": "2026-08-09T19:38:15.858667+00:00"
+  },
+  "upstream_bank_rows": 920,
+  "bridge_rows": 920,
+  "items": 379,
+  "subtask_items": null,
+  "dropped": {
+    "non_positive_discrimination": 541,
+    "non_finite_discrimination": 0,
+    "not_in_bridge": 0,
+    "not_in_task": 0,
+    "ambiguous_item_id": 0,
+    "duplicate_question": 0
+  },
+  "duplicate_question_precedence": null,
+  "ungradable_instances": 0,
+  "positional_ids": true,
+  "frozen_prompt": false,
+  "choice_order_checked": null,
+  "scoring_convention": {
+    "recorded_by": "vendor_bank",
+    "runtime": {
+      "modality": "mcq",
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "score_normalization": "continuation_logprob_per_token",
+      "max_length": null
+    },
+    "calibration": {
+      "prompt_style": "question_answer",
+      "num_fewshot": 0,
+      "metric": "continuation_logprob_per_token",
+      "note": "Read off the calibrating code rather than inferred: AdaptiveTesting/Test/Inference/datasets_registry.py renders the prompt and engine.py ranks by a per-token mean, on ref Research@6998270f. The run-time convention in config.yaml is set to match it exactly."
+    }
+  },
+  "bank_caveat": "pedagogy's predicted accuracy is not a readable figure and its theta is. The bank's calibration population spans 0.225 to 0.312 against a four-choice chance floor of 0.250, and predicted accuracy over the same models spans 0.187 to 0.470 -- 3.3 times wider than the thing it predicts, with a mean absolute error of 0.101 that is larger than the whole 0.087 span. Predicting the population mean for every checkpoint would be more accurate. What the bank does recover is order: Spearman between predicted and actual accuracy is +0.900 over the held-out models in the 1B-7B band. Read the theta, and read it as a rank against that population rather than as an accuracy.",
+  "notes": "Fit here rather than anywhere else, and the first bank on this page whose join was measured on both boundaries before it was built. Its parameters were fit here, from the 2026-08-01 inference sweep, because no prior study persisted any: each fit in memory, ran a diagnostic and kept only the correlation. The recipe is transcribed verbatim from the calibration source rather than reimplemented, and banks/reproduce_check.py gates it by recovering the published 318 / 831 / 969 kept-item counts on the study's own rng(7) 40/12 split. The shipped fit then uses every available model rather than that 40-model slice, since the split existed to validate the approach. The bank's ids are positions in the sweep's enumeration, and a position is only a usable key if the enumeration can be reproduced -- which, on the eight banks that were measured rather than assumed, was false on two. So it was measured here on both boundaries it has to cross. Every item of all three banks was compared against the sweep's own frozen item cache and matched exactly on stem, choices and gold; the olmo-eval tasks were then enumerated and compared against that same cache position by position, agreeing everywhere with nothing filtered. Only then was the position resolved to a content hash, which is what ships, so a re-rendered split misses rather than naming its neighbour's question. Every position in the raw enumeration carries a parameter row, including the ones the point-biserial filter dropped, which carry a1 = 0 and are discarded by load_bank as non-positive discrimination. That is what keeps the index space complete for the alignment guard, which compares the bank's maximum index against the bridge's row count and would otherwise abort on a bank whose last item was filtered. Rasch by measurement. pl_1_2_3_comparison ran calibrate-CAT-predict on all three of these banks off one 40/12 split and read r = 0.890 for 1PL against 0.716 for 2PL and 0.793 for 3PL, and the per-model rows show the same thing more sharply: Spearman between predicted and actual accuracy is +0.900 under 1PL against +0.600 under 2PL over the eleven held-out models in the 1B-7B band. A later pedagogy-only sweep of the calibration pool (kfold_calib_sweep) finds 2PL overtaking 1PL near N = 56 and reaching 0.837 at N = 70, which is the one result that argues the other way and is deliberately not followed: the best pedagogy number anyone has measured is still the 1PL 0.890, and the two reasons below make a fitted discrimination the wrong thing to spend this sample on. The population sits at chance. Accuracy across the 78 calibration models runs 0.225 to 0.312 against a four-choice floor of 0.250, with 10 of them scoring below it, so the whole bank is spread over about six accuracy points and a per-item discrimination estimated from that separation is mostly noise. Fitting and filtering on the same responses then biases whatever survives upward -- at N = 78 a null point-biserial has SD around 0.114 against a 0.05 threshold -- which shrinks CAT standard errors below their true value. A Rasch bank has no per-item discrimination to inflate and cannot fail that way. 191 of the 920 items are all-fail: no model of the 78 answers them, which guessing alone should make close to impossible on four choices, so they are either mis-keyed or adversarial to a per-token ranking. They are dropped by the point-biserial filter along with 338 low-discrimination items and 12 all-pass, leaving 379 usable. That is 41% of the bank and the largest single reservation about it. Alone of the three it has a content-anchored id upstream -- the loader keys on the dataset's own question_id rather than on enumeration order -- but the anchor buys less than it sounds like, because those values are exactly the row indices, so a renumbering during a reorder would carry the id along with it. The pinned revision makes that moot by construction. The dataset is gated (an unauthenticated fetch returns 401) and MIT licensed. Vendoring needs a token because it enumerates the task; a run does not, because the items are vendored.",
+  "sha256": {
+    "params.json": "64ef46fba27b8fe3f3505e503b1f3336b30ced6566db3fac7027a6d67012ee68",
+    "items.jsonl": "71ec6834e67c950f59ecdce9c2e593699a1d6d3af59e66d730045c34ef08dba6"
+  },
+  "generated_at": "2026-08-09T20:02:18.084310+00:00"
+}
