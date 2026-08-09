@@ -1,0 +1,10 @@
+# uni_frq CAT style: unidimensional (2PL) free-response adaptive testing.
+# The item bank is config-independent (item params do not depend on the stopping
+# rule); these knobs only set the CAT operating point and the judge selection.
+style: uni_frq
+fit_family: 2pl
+benchmark: tutoreval
+judge_config: judge_frozen.yaml
+se_threshold: 0.3   # stop once posterior SE(theta) < this (after min_items)
+max_items: 40       # cap on administered criteria (the engine also enforces this)
+min_items: 8        # floor before the SE stop can trigger

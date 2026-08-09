@@ -1,0 +1,36 @@
+# Frontier judge selection for uni_frq. Copy/edit this file and pass it with
+# --judge-config to grade criteria with a hosted frontier model instead of the
+# frozen self-hosted Qwen in judge_frozen.yaml.
+#
+# WHICH FRONTIER MODEL: set `model_id` below. That field is what the judge client
+# sends as the request's "model", so it is the live switch.
+#
+# WHAT IS HONORED, and by whom:
+#   `run_uni_frq` + ResilientJudge (the pipeline this style ships) reads model_id,
+#   temperature, top_p, max_tokens, and — from `metadata` — `endpoint` and
+#   `api_key_env`. It sends `Authorization: Bearer $<api_key_env>`, so a hosted
+#   frontier model works. `--judge-endpoint` / `--judge-api-key-env` override the file.
+#   The SHARED `frq_cat.runner` + ServedJudge still send no auth header and ignore
+#   `metadata` entirely, so a frontier judge only works through `run_uni_frq`.
+#   `provider` is recorded for provenance but nothing routes on it yet.
+#   `revision`, `adapter`, `enable_thinking`, `language_model_only` are parsed into the
+#   JudgeSpec and reported, but are not part of the HTTP request.
+#
+# CALIBRATION WARNING: the TutorEval bank was fitted with the frozen Qwen judge.
+# Swapping the judge changes the instrument, so theta produced with a frontier
+# judge is NOT comparable to calibrated theta. Label such runs uncalibrated.
+name: frontier-judge
+model_id: gpt-4o                # <-- WRITE THE FRONTIER MODEL HERE
+revision: ""                    # pin an immutable snapshot/date when the provider offers one
+adapter: generic-binary
+enable_thinking: false
+language_model_only: true
+temperature: 0.0
+top_p: 1.0
+max_tokens: 1024
+metadata:
+  provider: openai                      # openai | anthropic | google | litellm | vllm
+  endpoint: https://api.openai.com/v1   # also pass the live URL as --judge-endpoint
+  api_key_env: OPENAI_API_KEY           # env var NAME only; never put a secret in this file
+  calibration: uncalibrated-frontier
+  prompt_version: generic-binary/v1

@@ -1,0 +1,78 @@
+# FRQ CAT on a checkpoint: the tutor answers TutorEval scenarios, a judge grades each
+# rubric criterion, and an adaptive 2PL loop reports ability with a standard error.
+#
+# HOW TO SUBMIT.
+#
+#   edullm submit --experiment frq-cat-uni --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 --hours 3 \
+#     --spec .edullm/run-frq-cat.yaml
+#
+# WHY THIS SPEC RUNS A SHELL SCRIPT AND THE MCQ SPECS RUN THE RUNNER DIRECTLY. This is the
+# one structural difference between the two flows and everything else here follows from it.
+# MCQ scores choice log-likelihoods in-process: the checkpoint is loaded inside the eval
+# process and `python -m diagnostics.mcq_cat.runner` is the whole command. FRQ cannot do
+# that. It needs free-response text, so the checkpoint has to be *served* over an
+# OpenAI-compatible endpoint before any scoring happens, and something has to start that
+# server, wait for it to answer, and tear it down. That is
+# diagnostics/frq_cat/styles/uni_frq/aws/serve_and_run.sh, which then invokes the pipeline.
+#
+# WHY ".[hf,s3,vllm]" AND NOT ".[hf,s3]". Same reason. The MCQ specs deliberately leave
+# torch and vLLM out because they do not serve anything. Omitting the vllm extra here would
+# install cleanly and then die at the first `vllm serve`, minutes into a paid run. The extra
+# pins vllm[runai]==0.19.1, which is the version this repository is locked to.
+#
+# A CLONE RATHER THAN A WHEEL, INHERITED FROM THE MCQ SPECS AND TRUE FOR THE SAME REASON.
+# diagnostics/ sits at the repository root and is not shipped in the wheel, and this style
+# carries an 8.7 MB bank as package data that resolve-by-__file__ has to find on disk.
+# Cloning brings both and touches no packaging.
+#
+# THE SHA BELOW IS A PLACEHOLDER AND MUST BE REPINNED BEFORE THE FIRST SUBMIT. A spec cannot
+# pin the commit that contains it, so the pin necessarily names an earlier commit; what
+# matters is that the sha carries the code the run executes. Push before submitting: an
+# unpushed sha fails at `git checkout` inside the container, minutes into a paid run rather
+# than here.
+#
+# THE JUDGE. Three configurations, and only one of them runs on a single 24 GB card:
+#
+#   JUDGE_MODE=api with JUDGE_ENDPOINT  (this spec)  Only the tutor occupies the GPU. The
+#     judge is reached over HTTP at an endpoint you already have running. Nothing secret is
+#     needed, which matters because no spec in this repository injects a secret and there is
+#     no key-injection mechanism to rely on yet.
+#   JUDGE_MODE=api against a hosted frontier model  Needs JUDGE_API_KEY_ENV plus a way to get
+#     that key into the container. That mechanism does not exist today. Also note the theta
+#     it produces is not comparable with a calibrated one: the bank was fitted against the
+#     frozen Qwen judge, so a different grader is a different instrument.
+#   JUDGE_MODE=local  Serves the calibrated Qwen3.5-9B judge on a second port. This is the
+#     faithful instrument, and it does NOT fit here: the 9B judge alone is roughly 18 GB in
+#     bf16 before any KV cache, so a 7B tutor cannot share a 24 GB card with it. Raise
+#     --compute to a two-GPU or >=48 GB profile before selecting it.
+#
+# TUTOR_MAX_MODEL_LEN=16384 IS A PREREQUISITE, NOT A TUNING KNOB. 135 of the 828 TutorEval
+# scenarios (16.3%) have a prompt that alone exceeds ~90% of a 4096-token window. At 4096
+# the run does not crash -- the session skips those scenarios and records them in
+# skipped.jsonl -- but a sixth of the bank silently stops being available, and the report's
+# `ungradable.alert` will fire. Serve the full window instead.
+#
+# WHAT LANDS IN $EDULLM_OUTPUT_PREFIX. The pipeline namespaces per checkpoint and run id, so
+# a sweep cannot overwrite itself, and writes manifest.json, responses.jsonl,
+# judgments.jsonl, trajectory.jsonl, skipped.jsonl, abstentions.jsonl, cat_report.json, and
+# _SUCCESS last. A prefix without _SUCCESS is an incomplete run, not a bad model.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout REPLACE_WITH_A_PUSHED_SHA_ON_flow_uni-frq
+  && python -m pip install --no-cache-dir ".[hf,s3,vllm]"
+  && CHECKPOINT=allenai/OLMo-2-1124-7B-Instruct
+  OUT="$EDULLM_OUTPUT_PREFIX"
+  JUDGE_MODE=api
+  JUDGE_ENDPOINT=REPLACE_WITH_A_REACHABLE_JUDGE_V1_URL
+  JUDGE_CONFIG=diagnostics/frq_cat/styles/uni_frq/judge_frozen.yaml
+  TUTOR_MAX_MODEL_LEN=16384
+  MAX_ITEMS=40
+  SE_THRESHOLD=0.3
+  PIPELINE_TIMEOUT=9000
+  bash diagnostics/frq_cat/styles/uni_frq/aws/serve_and_run.sh'

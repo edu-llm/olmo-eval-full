@@ -1,0 +1,22 @@
+# Frozen, calibrated judge SELECTION for uni_frq (identity only). The judge code is
+# shared in diagnostics/frq_cat/common/judge.py and is never forked here; this file
+# is parsed by judge.spec_from_config (top-level keys, not nested under `judge:`).
+#
+# The TutorEval unidim bank was calibrated with THIS judge, so keeping it fixed keeps
+# ability estimates comparable across checkpoints. To grade with a different model,
+# change `model_id` and point --judge-endpoint at a server that serves it. To grade
+# with a hosted frontier model instead, use the sibling `judge_frontier.yaml`, which
+# documents the frontier slot and the auth work still required on CheckpointFlows.
+name: frozen-judge
+model_id: Qwen/Qwen3.5-9B                              # FILL IN: model served at --judge-endpoint
+revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+adapter: generic-binary
+enable_thinking: false
+language_model_only: true
+temperature: 0.0
+top_p: 1.0
+max_tokens: 1024
+metadata:
+  prompt_version: judge-validation-v3
+  normalization_version: judge-normalization-v3
+  evidence_policy_version: criterion-evidence-gate-v1

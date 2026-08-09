@@ -1,0 +1,105 @@
+# uni_frq graduation package (TutorEval, unidimensional 2PL)
+
+The `uni_frq` style ports TutorEval's canonical unidimensional calibration into the FRQ
+CAT flow. The bank is config-independent: item parameters do not depend on the stopping
+rule, so the CAT operating point lives in `config.yaml`, not here.
+
+## Snapshot
+
+- Source branch: `origin/frq/tutoreval`.
+- Snapshot tag: `tutoreval-unidim-52models`.
+- Instrument (per owner): unidimensional, single latent axis `ability`. Only the unidim
+  bank graduates; the 2-skill variant does not, because at this sample size its loadings
+  and the ~0.98 latent correlation are unstable.
+- Status: PROVISIONAL, `n_persons = 52` (`low_n`), below the ~150 identifiability floor.
+  Treat abilities as coarse.
+
+## Payload (ported into this directory)
+
+- `bank/params.jsonl` (1,186 criteria) from
+  `eduLLM-Evals/data/TutorEval/rubrics_qmatrix_final_unidim_fitted.jsonl`. Each record is
+  the IRT item: `criterion_id`, `scenario_id`, `criterion` text, `primary_skill`,
+  `q_modeled = {"ability": 1}`, scalar `difficulty` (b), and `discrimination = {"ability": a}`.
+  Read as-is by both `common/bank_loader.py` (criterion text) and `common/irt_params.py` (a/b).
+- `bank/scenarios.jsonl` (828 scenarios) from `.../scenarios_final.jsonl`. All scenarios are
+  single-turn (`conversation_context: []`), so the tutor prompt is the `prompt` field and no
+  message history is needed. Extra provenance fields are ignored by the loader.
+- `judge_frozen.yaml` selects the shared frozen judge (identity only). Reshaped to the
+  `judge.spec_from_config` schema (top-level `model_id`/`revision`). `model_id` is a fill-in
+  defaulting to `Qwen/Qwen3.5-9B`.
+- `evidence/` dimensionality + recovery figures and metrics.
+
+## Fit provenance
+
+- Method: `unidimensional-2pl-mml-em` (re-run of `calibrate_tutoreval`'s EM; item params
+  recomputed by `staging/tutoreval_calibration/export_tutoreval_fitted_bank.py`).
+- `n_persons = 52`, ridge `0.01`, fit grid 7 nodes/dim, EAP grid 61 nodes.
+- Response-matrix sha256: `f7830280a40f6bb774116bb6e7a44f9840073c88d7ce8fbd538b357cdcbd4781`
+  (`runs/judge/TutorEval/response_matrix.csv`; a calibration input that lands in S3, not here).
+- Negative loadings are preserved (not floored to 0) in this export.
+
+## Held-out recovery (scenario-level 5-fold, from `evidence/metrics.json`)
+
+- 52 models, mean 15.4 criteria / 9.96 scenarios administered, `max_se = 0.3`.
+- OOS ability recovery (Pearson r): batch 0.935, MWLE 0.931, online 0.905.
+- The estimator matches what this style ships (2PL EAP, grid 61, `max_se` 0.3). The
+  administration policy does not (see below), so treat these as indicative of bank quality
+  rather than a guarantee for a runtime CAT session.
+
+## Operating point differs from the recovery study
+
+The recovery study stopped on `min_evals_per_skill = 15` with `max_scenarios = 50`, a
+scenario-oriented policy with an effective floor of 15 criterion evaluations. This style
+ships `min_items: 8`, and the shared engine administers one criterion per step, capped by
+the runner's `--max-items`. Two consequences:
+
+- A floor of 8 is below the study's effective floor of 15. Raise `min_items` (and pass
+  `--max-items 40`) to sit closer to the validated operating point.
+- Criteria that share a scenario share one tutor response and are locally dependent.
+  Administering them as independent items can understate SE. Testlet-style (whole-scenario)
+  administration would be a change to the shared `common/cat_loop.py` on `CheckpointFlows`,
+  not to this style.
+
+## Deployment requirement: tutor context window
+
+TutorEval prompts embed book passages and are long. Measured over the 828 shipped
+scenarios (chars/4 estimate): median ~1.2k tokens, p90 ~4.5k, p99 ~8.4k, max ~9.7k.
+
+- Serve the tutor with `--max-model-len 16384` or more. At 4096, 135 of 828 scenarios
+  (16.3%) have a prompt that alone exceeds ~90% of the window (118 exceed 4096 outright),
+  so they are at risk of HTTP 400 depending on the completion budget and tokenizer.
+- Behaviour differs by entry point. The shared `frq_cat.runner` + `common/cat_loop.py` have
+  no per-scenario error handling, so one over-long prompt aborts the session with no report.
+  The style-local `run_uni_frq` + `session.py` skip that scenario (and its criteria),
+  record it in `skipped.jsonl`, and carry on. Either way a small window silently shrinks
+  the effective bank, so treat the context size as a prerequisite, not a tuning knob.
+
+## Dimensionality (why unidimensional)
+
+Evidence in `evidence/` (recovery figure + metrics). Unidimensional was chosen deliberately:
+at N=52 the multi-dimensional loadings and latent correlation are not identifiable, so a
+single `ability` axis is the shipped instrument.
+
+## Runtime data flow (scoring a checkpoint)
+
+1. Generate one tutor response per scenario in `bank/scenarios.jsonl` (respgen; the tutor is
+   the checkpoint under test served at `--tutor-endpoint`).
+2. Grade each administered criterion with `judge_frozen.yaml` (the shared frozen judge served
+   at `--judge-endpoint`).
+3. Feed graded outcomes + the fitted bank (a/b) into the unidimensional 2PL CAT loop to
+   estimate `ability` (theta) with SE; the runner writes `cat_report.json` to `--s3-out`.
+
+## Caveats
+
+- `low_n` (N=52): abilities are coarse; do not over-interpret small theta differences.
+- Calibration faithfulness: the shipped `common/judge.py` prompt must match the calibrated
+  `judge-validation-v3` (+ evidence gate) for theta to be calibration-faithful. That is a
+  shared-scaffolding concern on `CheckpointFlows`, not this style.
+
+## Rerun / swap protocol (larger cohort)
+
+To replace this bank with a larger-N fit: rerun the TutorEval calibration to produce a new
+`rubrics_qmatrix_final_unidim_fitted.jsonl` + response matrix, re-export the fitted bank,
+copy it to `bank/params.jsonl`, refresh `evidence/`, and update the tag, `n_persons`, matrix
+sha256, and recovery numbers above. Keep the judge identity fixed unless the whole bank is
+recalibrated against a new judge.
