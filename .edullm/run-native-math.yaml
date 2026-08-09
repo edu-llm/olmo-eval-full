@@ -1,0 +1,125 @@
+# leaderboard_math on a native OLMo-core checkpoint: the first generative CAT with no
+# conversion step anywhere in it.
+#
+# Everything in run-native-cat.yaml's header applies unchanged and is not repeated: why the
+# submission goes against repository=OLMo-core, why the code arrives by clone rather than by
+# wheel, why `--extra olmo_core` would be a silent downgrade to the one release that cannot
+# read this config, and why `--dtype bfloat16` has to appear in the command text for the
+# hardware guard to see it. Read that file first. This one records what is different.
+#
+# HOW TO SUBMIT THIS. From the OLMo-core clone, as with the other specs:
+#
+#   cd ../OLMo-core
+#   edullm submit --experiment native-olmo-core-math --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 \
+#     --spec ../olmo-eval-full/.edullm/run-native-math.yaml
+#
+# ---------------------------------------------------------------------------------------
+# 1. ONE CELL AND NOT A FAN-OUT, WHICH IS AN APPROVAL DECISION RATHER THAN A COST ONE.
+#
+# Approval class comes from `classify_request`, not from a threshold: a fan-out never
+# auto-approves whatever it costs, while a single cell routes to `automatic`. The five-cell
+# MCQ sweep classified `routine` and waited about sixteen minutes for a lead. There is only
+# one generative bank to run, so there is no reason to pay that wait.
+#
+# Cost is one cell, one hour, $0.8048/h -- a $0.80 ceiling. Batch bills what runs.
+#
+# ---------------------------------------------------------------------------------------
+# 2. WHY THIS CAN RUN AT ALL, WHICH IT COULD NOT BEFORE 2026-08-08.
+#
+# `generative.GENERATIVE_BACKENDS` registered only `hf` until the native completer landed,
+# so `load_generative_model` refused `olmo_core` before reaching any checkpoint. Both
+# registries now accept it:
+#
+#   grading.LOADABLE_CHECKPOINT_KINDS = {mcq: ("hf","olmo_core"), generative: ("hf","olmo_core")}
+#
+# The alternative was `--checkpoint-prep auto --checkpoint-kind hf`, converting the DCP to
+# HF first. That route is not taken and is not merely more expensive: `save_hf_model` has to
+# understand each submitter's architecture, and this checkpoint already needed the
+# `get_hf_config` patch because a plain pre-norm block raises upstream. The native reader
+# takes whatever `TransformerConfig.from_dict` parses, which is the wider door and the one
+# worth proving.
+#
+# ---------------------------------------------------------------------------------------
+# 3. THE CONTEXT WINDOW IS 2048 AND IT IS READ, NOT ASSUMED. VERIFIED AGAINST THE CHECKPOINT.
+#
+# The completer refuses to run unclamped, so where the window comes from decides whether
+# this run starts. It searches OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS, then the model-level
+# spellings, then `dataset.sequence_length`. Only the last one is populated here, and this
+# was the single unverified assumption in the native path until the checkpoint's own
+# config.json was read on 2026-08-09:
+#
+#   dataset.sequence_length        2048
+#   dataset.tokenizer.identifier   HuggingFaceTB/SmolLM2-135M
+#   dataset.tokenizer eos/pad/bos  0 / 0 / 0
+#   model.vocab_size               49152   (= the tokenizer's, so the vocab check agrees)
+#   model.*                        carries NO max_sequence_length / max_position_embeddings
+#
+# So the fallback is not a fallback here, it is the only source. Note the window is the
+# length the weights were TRAINED at; raising it would push RoPE past that rather than buy
+# room.
+#
+# CONSEQUENCE, AND IT IS THE THING TO READ IN THE REPORT. A 2048 window cannot always hold
+# the four Minerva exemplars plus a long stem plus 1024 new tokens, so the fitter drops
+# whole exemplars until the prompt fits and floors at one shot. Items in one session can
+# therefore be administered at different shot counts, and the difficulties were all
+# estimated at four. `num_fewshot` is recorded per response and a `context_fit` block
+# appears whenever the ladder moved: read those before comparing this theta to anything.
+#
+# ---------------------------------------------------------------------------------------
+# 4. batch_eap AND NOT batch_eap+mwle, WHICH IS DELIBERATE AND DIFFERS FROM THE SWEEP.
+#
+# Both thetas land in the report either way, so this only decides which number
+# `ability.theta` carries -- and, less obviously, which standard error sits beside it. Under
+# MWLE the reported SE is `se_mwle`, an asymptotic 1/sqrt(I(theta)) over the administered
+# items, while the stopping rule uses `se_online`, a posterior SD. The two are not on one
+# scale, and on run_019fe33f that inverted the apparent precision ordering across five
+# cells. This is a first run of a new path, so the report should be self-consistent:
+# `batch_eap` makes the published theta and SE the same pair the stopping rule acted on.
+# `theta_mwle` is still there for anyone who wants it.
+#
+# ---------------------------------------------------------------------------------------
+# 5. RUNTIME, AND THIS IS THE TIGHT ONE.
+#
+# KV caching is off -- OLMo-core's default torch backend refuses it and flash-attn is not in
+# this image -- so the decode is quadratic in sequence length. TORCH_TODOS.md measures 64
+# tokens in ~2.0s on an L4 and extrapolates ~32s per 1024-token item, which is a floor
+# because the extrapolation is linear on a quadratic path.
+#
+# Whether that fits depends on how many items are administered, and MATH is unlikely to stop
+# early: at theta -2 the 40 most informative items in the bank carry Fisher information
+# 0.97, an SE floor of 1.01, so the session will probably run to max_items rather than reach
+# SE 0.3. Budget for the full 40 -- roughly 21 minutes of decode, plus the clone, the pip
+# install and the 1.74 GB pull, against a 1h per-cell bound. It fits, without much margin.
+# An attempt that hits the bound carries no container exit code and `maximum_attempts: 1`
+# means Batch cannot re-drive it, so the exposure is $0.80 and a lost result.
+#
+# ---------------------------------------------------------------------------------------
+# 6. WHAT THIS RUN IS FOR, STATED SO THE NUMBER IS NOT OVER-READ.
+#
+# It proves the pipeline, not the checkpoint. The theta will be near the floor and should
+# not be quoted: probe run_019fe316-0e47 found this model never emits its end-of-text token
+# and that its MATH decode loops a clause. RESULT_CAVEATS.md records that this bank cannot
+# resolve a weak checkpoint at all. What the run establishes is that a raw training
+# checkpoint can be graded generatively end to end -- which is what every future submitter
+# needs and what no test can show, since torch and olmo_core are absent offline.
+#
+# The pin below is ff816927, pushed, and is the first commit carrying the native completer.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout ff816927ff22b11ef73bd5797deda3a7a2de8a83
+  && python -m pip install --no-cache-dir ".[hf,s3]"
+  && python -m diagnostics.mcq_cat.runner
+  --cat-style uni_mcq
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --benchmark leaderboard_math
+  --ability-estimator batch_eap
+  --checkpoint-prep none
+  --checkpoint-kind olmo_core
+  --dtype bfloat16
+  --s3-out "$EDULLM_OUTPUT_PREFIX"'
