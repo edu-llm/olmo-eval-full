@@ -1,0 +1,40 @@
+# eduLLM job: evaluate one OLMo-core checkpoint on the olmo-core image.
+#
+# This branch exists to run an eval ON THE OLMO-CORE IMAGE rather than the default
+# olmo-eval image. "The olmo-core image" is .edullm/Dockerfile's third position:
+# ARG MODEL_BACKEND=olmo-core (set on this branch), which bakes torch + ai2-olmo-core
+# into the image so the `olmo_core` provider can load a sharded DCP checkpoint OLMo-core
+# wrote. That position is already a built, registered image
+# (sha256:60f95e9b6ff4b0a0e657059e346a706a615188238135dabe817cb62a9e557262).
+#
+# workload_profile: olmo-eval-check builds and runs THIS repository's .edullm/Dockerfile,
+# so the image the job runs on is the one this branch defines. (The other olmo-core route
+# -- the eval-platform skill's submit_eval_run.sh with WORKLOAD_PROFILE=olmo-core-check --
+# does NOT build this Dockerfile; it rides on OLMo-core's own published research image and
+# pip-installs olmo-eval on top at start-up. Same provider, different image; this file is
+# the first route.)
+#
+# The image bakes olmo-eval (`uv pip install --no-deps .`) plus the olmo_core extra, so the
+# command needs no install step and no `uv sync`: it calls the eval entrypoint directly.
+#
+# --dataset none at submit time: this run reads a checkpoint, not a corpus (AGENTS.md).
+# dtype is named in the command (provider.dtype=bfloat16) so the platform's
+# bfloat16_not_in_the_hardware guard, which scans the command text, is satisfied.
+#
+# The checkpoint reads from the outputs bucket (teams/<team>/runs/*), the only prefix the
+# GPU workload role may read; results write to $EDULLM_OUTPUT_PREFIX, the only prefix it may
+# write (run_eval.py defaults --output-prefix to it). The checkpoint below is the Base final
+# (step19074) from the p3-evals runs -- a plain OLMo-core checkpoint whose config the pinned
+# ai2-olmo-core==2.4.0 in this image can build. A newer-schema variant (Engram/Lngram) would
+# need the edu-llm/OLMo-core fork instead, which is a different image, not this one.
+#
+# arc_challenge is the one benchmark whose question->IRT-param bridge the p3 runs verified as
+# correct, which is why it is the eval that travels on this branch.
+schema_version: 1
+workload_profile: olmo-eval-check
+suggested_compute: gpu-1xl4
+command: >-
+  bash -lc 'python -m olmo_eval.platform.run_eval
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fde61-6447-70ee-9c6f-dc44897d0f2f/checkpoints/step19074/
+  --benchmarks "arc_challenge"
+  --override provider.dtype=bfloat16'
