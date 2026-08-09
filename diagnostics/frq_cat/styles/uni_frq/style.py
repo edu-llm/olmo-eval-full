@@ -38,6 +38,12 @@ from ...base import (
     IRTItemParams,
 )
 from ...common import bank_loader, irt_params, s3_io
+from ...common.judge import PROMPT_VERSION as _RUNTIME_PROMPT_VERSION
+
+#: The prompt the bank was actually fitted under, per FLOW_PACKAGE.md. If the shared
+#: client's prompt differs, theta is not on the calibrated scale and the report must say
+#: so rather than let the judge YAML's provenance imply otherwise.
+_CALIBRATION_PROMPT_VERSION = "judge-validation-v3"
 
 log = logging.getLogger("uni_frq.style")
 
@@ -322,10 +328,22 @@ class UniFrqStyle(FrqCatStyle):
                 "grid": {"min": _GRID_MIN, "max": _GRID_MAX, "n": _GRID_N},
             },
             "bank_provenance": provenance,
+            "judge_prompt": {
+                "runtime": _RUNTIME_PROMPT_VERSION,
+                "calibration": _CALIBRATION_PROMPT_VERSION,
+                "matches_calibration": _RUNTIME_PROMPT_VERSION == _CALIBRATION_PROMPT_VERSION,
+            },
             "scoring_note": (
-                "Criteria are graded pass/fail by an LLM judge. Theta is comparable only "
-                "across runs that used the judge the bank was calibrated with; see "
-                "bank_provenance and the run block's judge identity."
+                "Criteria are graded pass/fail by an LLM judge, so theta is comparable only "
+                "across runs sharing the same judge and prompt."
+                if _RUNTIME_PROMPT_VERSION == _CALIBRATION_PROMPT_VERSION
+                else (
+                    f"UNCALIBRATED: the bank was fitted under prompt "
+                    f"{_CALIBRATION_PROMPT_VERSION} but this run graded with "
+                    f"{_RUNTIME_PROMPT_VERSION}, which has no evidence gate. Theta is an "
+                    f"ordinal score comparable only to other runs using this same prompt; "
+                    f"it is not on the TutorEval calibrated scale."
+                )
             ),
         }
         if "bank_size" in state.metadata:

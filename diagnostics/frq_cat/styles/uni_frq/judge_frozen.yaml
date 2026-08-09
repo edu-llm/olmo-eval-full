@@ -17,6 +17,13 @@ temperature: 0.0
 top_p: 1.0
 max_tokens: 1024
 metadata:
-  prompt_version: judge-validation-v3
-  normalization_version: judge-normalization-v3
-  evidence_policy_version: criterion-evidence-gate-v1
+  # What the BANK was fitted under, in the calibration lab.
+  calibration_prompt_version: judge-validation-v3
+  calibration_normalization_version: judge-normalization-v3
+  calibration_evidence_policy: criterion-evidence-gate-v1
+  # What the shared client actually sends today (common/judge.py PROMPT_VERSION). These
+  # differ: the runtime prompt has no evidence gate and no JSON contract. Until the shared
+  # prompt is brought up to v3 on CheckpointFlows, theta from this judge is NOT on the
+  # calibrated scale, and every report says so via metadata.judge_prompt.
+  runtime_prompt_version: generic-binary/v1
+  calibration: prompt-mismatch-uncalibrated

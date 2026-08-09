@@ -100,10 +100,23 @@ class _Judge:
         return JudgeVerdict(criterion_id=criterion.criterion_id, passed=True, rationale="ok")
 
 
-def _sink(tmp_path, run_id="run-1"):
+def _sink(tmp_path, run_id="run-1", namespace=False):
     return ResultSink(
-        str(tmp_path / "out"), run_id=run_id, checkpoint_slug="ckpt", local_dir=tmp_path
+        str(tmp_path / "out"),
+        run_id=run_id,
+        checkpoint_slug="ckpt",
+        local_dir=tmp_path,
+        namespace=namespace,
     )
+
+
+def test_results_land_flat_at_the_destination_by_default(tmp_path) -> None:
+    # The platform hands each job its own per-run prefix and the MCQ flow writes
+    # cat_report.json at its root; nesting there would hide the report from collection.
+    sink = _sink(tmp_path)
+    assert sink.local_dir == tmp_path / "out"
+    sink.write_json("cat_report.json", {"a": 1})
+    assert (tmp_path / "out" / "cat_report.json").exists()
 
 
 def test_session_skips_an_unservable_scenario_and_keeps_going(tmp_path) -> None:
@@ -168,7 +181,7 @@ def test_session_persists_incrementally(tmp_path) -> None:
 
 
 def test_sink_namespaces_by_checkpoint_and_run_and_writes_success_last(tmp_path) -> None:
-    sink = _sink(tmp_path, run_id="r42")
+    sink = _sink(tmp_path, run_id="r42", namespace=True)
     assert sink.local_dir.name.startswith("r42-")
     assert sink.local_dir.parent.name.startswith("ckpt-")
     sink.write_json("manifest.json", {"a": 1})
@@ -207,8 +220,16 @@ def test_sink_rejects_artifact_names_that_escape_the_run_directory(tmp_path) -> 
 
 def test_two_checkpoints_do_not_share_a_run_directory(tmp_path) -> None:
     out = str(tmp_path / "out")
-    a = ResultSink(out, run_id="r", checkpoint_slug="s3://b/ckpt/step_1000", local_dir=tmp_path)
-    b = ResultSink(out, run_id="r", checkpoint_slug="s3://other/ckpt/step_1000", local_dir=tmp_path)
+    a = ResultSink(
+        out, run_id="r", checkpoint_slug="s3://b/ckpt/step_1000", local_dir=tmp_path, namespace=True
+    )
+    b = ResultSink(
+        out,
+        run_id="r",
+        checkpoint_slug="s3://other/ckpt/step_1000",
+        local_dir=tmp_path,
+        namespace=True,
+    )
     assert a.local_dir != b.local_dir
 
 

@@ -65,9 +65,14 @@ the runner's `--max-items`. Two consequences:
 TutorEval prompts embed book passages and are long. Measured over the 828 shipped
 scenarios (chars/4 estimate): median ~1.2k tokens, p90 ~4.5k, p99 ~8.4k, max ~9.7k.
 
-- Serve the tutor with `--max-model-len 16384` or more. At 4096, 135 of 828 scenarios
-  (16.3%) have a prompt that alone exceeds ~90% of the window (118 exceed 4096 outright),
-  so they are at risk of HTTP 400 depending on the completion budget and tokenizer.
+- The tutor's own context window decides how much of the bank is scorable, and for some
+  checkpoints it cannot be raised. OLMo-2-7B was trained at `max_position_embeddings=4096`,
+  so vLLM will not serve it wider: with that tutor, 135 of 828 scenarios (16.3%) exceed
+  ~90% of the window (118 exceed 4096 outright) and are simply unscorable. Scoring the full
+  bank requires a long-context tutor, not a larger `--max-model-len`.
+- Skipping is not neutral. The long-prompt scenarios are harder than average (mean
+  difficulty 3.8 against 2.0), so a tutor limited to 4096 is measured on an easier subset.
+  Expect `ungradable.alert` to fire, and read theta as covering that subset.
 - Behaviour differs by entry point. The shared `frq_cat.runner` + `common/cat_loop.py` have
   no per-scenario error handling, so one over-long prompt aborts the session with no report.
   The style-local `run_uni_frq` + `session.py` skip that scenario (and its criteria),

@@ -393,9 +393,7 @@ def test_an_unexpected_crash_still_flushes_and_marks_the_run_incomplete(
                 "crashy",
             ]
         )
-    runs = [p for p in out.glob("*/*") if p.is_dir()]
-    assert len(runs) == 1
-    run_dir = runs[0]
+    run_dir = out
     assert not (run_dir / "_SUCCESS").exists(), "an aborted run must not look complete"
     manifest = json.loads((run_dir / "manifest.json").read_text())
     assert "something went wrong" in manifest["error"]

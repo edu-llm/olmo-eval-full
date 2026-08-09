@@ -73,18 +73,26 @@ class ResultSink:
         local_dir: Path,
         region: str = "us-east-1",
         endpoint_url: str | None = None,
+        namespace: bool = False,
     ) -> None:
         self.run_id = slugify(run_id, fallback="run")
         self.region = region
         self.endpoint_url = endpoint_url
         self._remote_base: str | None = None
-        relative = f"{slugify(checkpoint_slug)}/{self.run_id}"
+        self._verify = True
+        # Flat by default, because the platform already hands each job its own
+        # per-run prefix and the MCQ flow writes cat_report.json at its root; nesting
+        # there would hide the report from whatever collects it. Namespacing is for
+        # self-managed destinations where several runs share one prefix.
+        relative = f"{slugify(checkpoint_slug)}/{self.run_id}" if namespace else ""
 
         if is_s3_uri(out_uri):
-            self._remote_base = f"{_normalize_uri(out_uri)}/{relative}"
-            self.local_dir = local_dir / relative
+            base = _normalize_uri(out_uri)
+            self._remote_base = f"{base}/{relative}" if relative else base
+            self.local_dir = local_dir / relative if relative else local_dir
         else:
-            self.local_dir = Path(out_uri).expanduser() / relative
+            root = Path(out_uri).expanduser()
+            self.local_dir = root / relative if relative else root
         self.local_dir.mkdir(parents=True, exist_ok=True)
         self._pending: set[str] = set()
 
@@ -124,7 +132,17 @@ class ResultSink:
         key = f"{prefix}/{name}" if prefix else name
         content_type = "application/json" if name.endswith(".json") else "text/plain"
         client.put_object(Bucket=bucket, Key=key, Body=body, ContentType=content_type)
-        stored = client.head_object(Bucket=bucket, Key=key)["ContentLength"]
+        if not self._verify:
+            return
+        try:
+            stored = client.head_object(Bucket=bucket, Key=key)["ContentLength"]
+        except Exception as exc:  # noqa: BLE001
+            # A write-only role (PutObject without GetObject) would otherwise abort the
+            # whole run on the first artifact. Losing the check is far better than
+            # losing the run, so warn once and stop verifying.
+            self._verify = False
+            log.warning("cannot verify uploads (%s); continuing without the size check", exc)
+            return
         if stored != len(body):
             raise RuntimeError(f"s3 verify failed for {key}: sent {len(body)}, stored {stored}")
 

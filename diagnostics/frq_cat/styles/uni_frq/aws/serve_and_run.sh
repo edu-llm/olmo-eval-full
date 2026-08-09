@@ -35,9 +35,11 @@ OUT="${OUT:?set OUT (s3://bucket/prefix or a local directory)}"
 PYBIN="${PYBIN:-python3}"
 TUTOR_PORT="${TUTOR_PORT:-8000}"
 TUTOR_SERVED_NAME="${TUTOR_SERVED_NAME:-tutor}"
-# 16384 is a prerequisite, not a preference: 16.3% of TutorEval scenarios have a prompt
-# that alone exceeds ~90% of a 4096-token window (see FLOW_PACKAGE.md).
-TUTOR_MAX_MODEL_LEN="${TUTOR_MAX_MODEL_LEN:-16384}"
+# 4096, because that is what OLMo-2-7B was trained at (max_position_embeddings=4096) and
+# vLLM refuses a larger window for it. The bank wants more -- TutorEval prompts reach
+# ~9.7k tokens -- so with that tutor roughly 16% of scenarios are skipped and no flag can
+# change it. Raise this only for a tutor whose own config supports the larger window.
+TUTOR_MAX_MODEL_LEN="${TUTOR_MAX_MODEL_LEN:-4096}"
 GPU_UTIL="${GPU_UTIL:-0.90}"
 
 # ---- judge ------------------------------------------------------------------------
@@ -143,9 +145,12 @@ command -v "$1" >/dev/null 2>&1 || die "VLLM_CMD not executable: $1"
 [ -f "${JUDGE_CONFIG}" ] || die "judge config not found: ${JUDGE_CONFIG}"
 [ -d "${REPO_DIR}/diagnostics/frq_cat" ] || die "REPO_DIR does not contain diagnostics/frq_cat: ${REPO_DIR}"
 
-if [ "${TUTOR_MAX_MODEL_LEN}" -lt 16384 ]; then
-  echo "!! warning: TUTOR_MAX_MODEL_LEN=${TUTOR_MAX_MODEL_LEN} < 16384;" \
-       "long scenarios will be skipped rather than scored" >&2
+if [ "${TUTOR_MAX_MODEL_LEN}" -lt 9728 ]; then
+  echo "!! note: TUTOR_MAX_MODEL_LEN=${TUTOR_MAX_MODEL_LEN} is below the bank's longest" \
+       "prompt (~9.7k tokens). Scenarios that do not fit are skipped and counted in the" \
+       "report's ungradable block. At 4096 that is ~16% of the bank, and those scenarios" \
+       "are harder than average (mean difficulty 3.8 vs 2.0), so the tutor is measured on" \
+       "an easier subset than TutorEval as a whole." >&2
 fi
 
 log "repo=${REPO_DIR} checkpoint=${CHECKPOINT} judge_mode=${JUDGE_MODE} out=${OUT}"

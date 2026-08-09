@@ -106,9 +106,7 @@ def test_serves_polls_health_and_runs_the_pipeline(tmp_path: Path) -> None:
     assert result.returncode == 0, f"stdout:\n{result.stdout}\nstderr:\n{result.stderr}"
     assert "ready after" in result.stdout  # the /v1/models poll actually succeeded
 
-    runs = [p for p in (tmp_path / "out").glob("*/*") if p.is_dir()]
-    assert len(runs) == 1, runs
-    run_dir = runs[0]
+    run_dir = tmp_path / "out"
     assert (run_dir / "_SUCCESS").exists()
     report = json.loads((run_dir / "cat_report.json").read_text())
     assert report["cat_style"] == "uni_frq"
@@ -131,11 +129,16 @@ def test_submission_spec_matches_what_the_flow_actually_needs() -> None:
     assert _SCRIPT.exists()
     # Results go to the platform-provided prefix, like every other spec in .edullm.
     assert "$EDULLM_OUTPUT_PREFIX" in command
-    # The context window is a prerequisite for this bank, not a default worth losing.
-    assert "TUTOR_MAX_MODEL_LEN=16384" in command
+    # curl is required by the readiness probe and is not on the base image.
+    assert "curl" in command
+    # olmo-eval-full registers olmo-eval-check/olmo-eval-sweep; olmo-core-check is
+    # for OLMo-core submissions and would be the wrong workload here.
+    assert spec["workload_profile"] == "olmo-eval-sweep"
+    # 4096 is the tutor's hard limit, not a preference.
+    assert "TUTOR_MAX_MODEL_LEN=4096" in command
 
 
 def test_warns_when_the_context_window_is_too_small(tmp_path: Path) -> None:
     result = _run(tmp_path, DRY_RUN="true", TUTOR_MAX_MODEL_LEN="4096")
     assert result.returncode == 0
-    assert "long scenarios will be skipped" in result.stderr
+    assert "below the bank's longest prompt" in result.stderr

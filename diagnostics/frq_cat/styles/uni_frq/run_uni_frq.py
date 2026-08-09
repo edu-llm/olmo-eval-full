@@ -102,6 +102,12 @@ def build_parser(defaults: dict) -> argparse.ArgumentParser:
     p.add_argument("--aws-region", default=os.environ.get("AWS_REGION", "us-east-1"))
     p.add_argument("--s3-endpoint-url", default=None)
     p.add_argument("--local-mirror", default="", help="Local staging dir for S3 destinations.")
+    p.add_argument(
+        "--namespace-run",
+        action="store_true",
+        help="Nest results under <checkpoint>/<run_id>/. Off by default so results land at "
+        "--out itself, which is what the platform's per-run prefix expects.",
+    )
     p.add_argument("--dry-run", action="store_true", help="Resolve and print the plan; no calls.")
     return p
 
@@ -170,10 +176,11 @@ def main(argv: list[str] | None = None) -> int:
     sink = ResultSink(
         args.out,
         run_id=run_id,
-        checkpoint_slug=slugify(args.checkpoint),
+        checkpoint_slug=args.checkpoint,  # ResultSink slugifies; do not pre-slug it
         local_dir=local_mirror,
         region=args.aws_region,
         endpoint_url=args.s3_endpoint_url,
+        namespace=args.namespace_run,
     )
     # Always say where the durable local copy is, so a failed upload is recoverable.
     log.info("results: %s | local copy: %s", sink.base_uri, sink.local_dir)
