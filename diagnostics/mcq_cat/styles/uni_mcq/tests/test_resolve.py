@@ -55,20 +55,32 @@ class TestAllowlist:
             "bbh",
         }
 
-    def test_only_winogrande_and_gsm8k_are_blocked_today(self) -> None:
+    def test_only_winogrande_gsm8k_and_ifeval_are_blocked_today(self) -> None:
         """Pinned in both directions, because both directions are deliberate acts.
 
-        A third dataset acquiring a blocker changes what this branch will run, and one
-        of these two losing its blocker ships a bank whose join nobody re-examined;
-        either should have a test to update rather than pass unremarked. Both are
-        withheld over how well their rebuilt bridge can be checked and not over anything
-        known to be wrong with it: winogrande's harvest carries no question text, so the
-        join can only be read through a gold letter on a two-choice benchmark, and no
-        per-item gsm8k harvest exists on this checkout at all.
+        A fourth dataset acquiring a blocker changes what this branch will run, and one
+        of these three losing its blocker ships a bank nobody re-examined; either should
+        have a test to update rather than pass unremarked. This test earned that framing
+        on 2026-08-08, when it was the thing that made blocking ``ifeval`` a visible
+        decision instead of a silent one.
+
+        The three are withheld for two different kinds of reason. ``winogrande`` and
+        ``gsm8k`` are withheld over how well their rebuilt bridge can be *checked*, not
+        over anything known to be wrong: winogrande's harvest carries no question text,
+        so the join can only be read through a gold letter on a two-choice benchmark,
+        and no per-item gsm8k harvest exists on this checkout at all.
+
+        ``ifeval`` is different and worse. Something *is* known to be wrong with what a
+        run of it would report: a model that recites its prompt passes 129 of the 511
+        items, because an IFEval instruction is verifiable precisely by naming its own
+        success token, so stating the constraint puts that token in the prompt. The
+        resulting theta is high, tight, stops on precision, and carries no field saying
+        anything is amiss. See its ``blocked`` reason and ``RESULT_CAVEATS.md``. It comes
+        back when the echo-baseline guard exists, not when someone re-checks a join.
         """
         withheld = set(datasets.supported_names()) - set(datasets.ready_names())
 
-        assert withheld == {"winogrande", "gsm8k"}
+        assert withheld == {"winogrande", "gsm8k", "ifeval"}
 
     def test_bbh_is_no_longer_excluded_and_its_stale_reason_is_gone(self) -> None:
         """The entry claimed no bbh task existed on any ref, which stopped being true.

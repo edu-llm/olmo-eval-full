@@ -930,6 +930,36 @@ SUPPORTED: dict[str, DatasetSpec] = {
         name="ifeval",
         task="ifeval",
         route="B",
+        blocked=(
+            "withheld 2026-08-08 because a model that recites its prompt scores well on it "
+            "and the report cannot tell. An IFEval instruction is verifiable precisely "
+            "because it names its own success token, so stating the constraint puts that "
+            "token in the prompt, and a response quoting the prompt satisfies the checker. "
+            "Measured through this harness's own grading path over the 511 vendored items: "
+            "a verbatim echo of the prompt passes 129 of them, 25.2%, and a content-free "
+            "loop passes 45. detectable_format:constrained_response passes 10 of 10, "
+            "because the prompt lists the three exact allowed phrases; "
+            "detectable_content:postscript 16 of 26, because the prompt names the P.S. "
+            "marker; detectable_format:title 20 of 34, because the prompt demonstrates "
+            "<<title>>; keywords:existence 15 of 38, because the prompt quotes the "
+            "keywords. This is not a floor with a caveat attached. Simulated against this "
+            "style's own Fisher selection and EAP, an echo reports theta +0.19 to +1.11 at "
+            "se 0.11-0.23 and stops on precision after 8 or 9 items, which would be the "
+            "highest and tightest number in a sweep whose MCQ cells run -0.25 to -3.9, "
+            "with ungradable.rate 0.0 and no field indicating anything is wrong. "
+            "TORCH_TODOS.md records that the checkpoint this was to be run on echoed its "
+            "own instruction on a 64-token probe, so the failure is not hypothetical. "
+            "Nothing upstream guards it -- the benchmark was designed for instruction-"
+            "following models, where quoting an instruction and obeying it are hard to "
+            "confuse, and the Research branch reproduces Google's checkers verbatim with "
+            "no echo handling because its pipeline only ever fed them instruct-tuned "
+            "models through a chat template. The exploit is a property of this bank and "
+            "its verifiers rather than of any checkpoint, so it is live for every future "
+            "submitter sending a base model. Delete this reason once the echo-baseline "
+            "guard exists: stamp each item offline with whether an echo passes it, then "
+            "report the share of a session's passes an echo would also have produced. "
+            "Full evidence in RESULT_CAVEATS.md"
+        ),
         bank_dir=f"{_EXPERIMENTS}/openlm_atlas_3pl/ifeval/calibration",
         bridge_path=f"{_BRIDGES}/ifeval.csv",
         bridge_in_repo=True,

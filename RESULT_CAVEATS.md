@@ -75,6 +75,75 @@ What to do: quote `se_online` when discussing precision or stopping, and label `
 as the MWLE asymptotic SE wherever it appears beside a theta. A trajectory plot that draws
 the reported SE against the 0.3 line will show a threshold the curve never had to cross.
 
+## An `ifeval` theta can be high, tight, and produced by a model that said nothing
+
+**Found before the first generative run, by simulation rather than by being burned.** Read
+this before quoting any IFEval number.
+
+An IFEval prompt states its own constraint, and for a large family of verifiers the
+statement contains the token that satisfies it. The verifier is a substring or format check
+over the response; the prompt quotes the required substring. So a model that echoes its
+prompt back passes.
+
+Measured through this repo's own grading path over the vendored 511-item bank: **a verbatim
+echo passes 129 items, 25.2%.** A content-free loop passes 45, 8.8%. The worst offenders:
+
+| instruction id | echo passes | why |
+|---|---|---|
+| `detectable_format:constrained_response` | 10/10 | the prompt lists the exact allowed phrases |
+| `detectable_content:postscript` | 16/26 | the prompt says "starts with P.S." |
+| `detectable_format:title` | 20/34 | the prompt shows `<<title>>` as its example |
+| `combination:repeat_prompt` | 20/35 | the constraint *is* to echo |
+| `combination:two_responses` | 12/24 | the prompt names the `******` separator |
+| `keywords:existence` | 15/38 | the prompt names the keywords in quotes |
+
+This is not a floor with a caveat. Simulated against this repo's own Fisher selection and
+EAP, an echo reports **theta +0.190 (se_online 0.227) stopping on precision after 9 items**,
+and a lowercase echo **+1.106 (se_mwle 0.110) after 8**. The MCQ sweep's five cells ran
+-0.250 to -3.9, so the cell that measured nothing would be the highest and by far the most
+precisely estimated number in the report, with `ungradable.rate` 0.0,
+`stop_reason: precision_reached`, and no alert of any kind.
+
+The discriminations make it bimodal rather than gradual: median `a` is 2.79 and the maximum
+19.4, so 2 accidental passes leaves theta at -2.93 while **3 passes puts it at +0.994 with
+se 0.129**, stopped at the 8-item floor. There is no recognisable middle.
+
+`TORCH_TODOS.md` records that this checkpoint's IFEval decode *echoed its own instruction*
+on a 64-token probe. The exploit is a property of the bank and its verifiers rather than of
+any checkpoint, so it is live for every future submitter whose base model recites.
+
+What to do, in order of cost:
+
+1. **Cheapest and unaided:** `stop_reason: precision_reached` at 8 or 9 items is itself the
+   alarm. Over the best 40 items at floor ability the bank's information gives an SE floor
+   of 0.572, so it *cannot* reach se <= 0.3 on a floor-level checkpoint. Early precision on
+   a model you expect at the floor is proof something scored above it.
+2. **The guard worth building:** stamp each item offline with whether an echo passes it --
+   129 of 511, computed in seconds with no checkpoint -- then report the share of a
+   session's passes that an echo would also have produced. Above roughly half, the theta is
+   a constraint-checking artifact. This is the direct analogue of the modal-choice-share
+   guard that would have caught gpqa, with a computable baseline instead of a raw share.
+3. **Already recorded and never read:** `grader_detail.strict` carries the per-instruction
+   pass list. Concentration in the table above with zero passes elsewhere is the signature.
+
+## A `leaderboard_math` theta cannot resolve a weak checkpoint at all
+
+Separate from the scale question below, and more fundamental. MATH's difficulties run
+median 2.78 and 30% of the bank has |b| > 4, outside the EAP quadrature grid entirely. At
+theta = -2 the 40 most informative items in all 1,183 carry total Fisher information 0.97 --
+**an SE floor of 1.01**. At theta = -3 it is 0.23, an SE floor of 2.07.
+
+An all-wrong session reports roughly -1.65 +/- 0.55 after all 40 items, and that is very
+nearly the prior conditioned on "everything was wrong": a statement about where this bank's
+difficulties sit, not about the checkpoint. Debating whether a prompt deviation moved the
+scale by tenths of a logit is not meaningful when the instrument's resolution at that
+ability is +/- 1.0.
+
+MATH is, unlike IFEval, robust to degeneracy. The grader extracts only from `\boxed{}` or
+the taught `Final Answer:` line, so a looping model produces neither and matches nothing,
+and the exemplar answers match 0, 2, 7 and 1 of the 1,183 golds, so copying them buys
+almost nothing.
+
 ## A `leaderboard_math` theta can average several prompt regimes
 
 Applies to any generative MATH run on a checkpoint whose context window is small, which

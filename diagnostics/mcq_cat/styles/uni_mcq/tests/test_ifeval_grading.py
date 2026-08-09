@@ -26,6 +26,7 @@ import json
 import re
 import sys
 import types
+from dataclasses import replace
 from itertools import pairwise
 from pathlib import Path
 
@@ -45,6 +46,30 @@ DATASET = "ifeval"
 #: "every instruction passed", so a completion carrying it is correct under strict
 #: scoring and one without it is not.
 FOLLOWED = "[followed]"
+
+
+@pytest.fixture(autouse=True)
+def _bank_reachable_despite_the_block(monkeypatch):
+    """Let this module resolve the ifeval bank while the dataset is blocked.
+
+    ``ifeval`` was blocked on 2026-08-08 because a model reciting its prompt passes 129
+    of its 511 items, so ``resolve_bank`` now refuses it and every test here that reaches
+    the committed bank through ``download_benchmark`` would error before grading anything.
+
+    Skipping them instead would be the wrong trade. Nothing in this module asserts that
+    the dataset is *available* -- that claim is tested once, deliberately, in
+    ``test_resolve.TestAllowlist`` -- and what these tests actually exercise is the
+    generative grading path against real vendored items and the real verifier registry.
+    That path is still live for ``leaderboard_math`` and the block is meant to be
+    temporary, lifted when the echo-baseline guard lands. Letting the coverage lapse for
+    the duration is how the code would rot in the interval.
+
+    Scoped to this module and applied to the registry entry rather than to
+    ``resolve_bank``, so production refusal is untouched and no test-only argument leaks
+    into the resolver. ``DatasetSpec`` is frozen, so this swaps in a replaced copy rather
+    than assigning to the field.
+    """
+    monkeypatch.setitem(SUPPORTED, DATASET, replace(SUPPORTED[DATASET], blocked=None))
 
 
 def ifeval_item(
