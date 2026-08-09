@@ -62,12 +62,15 @@ else, and **never construct a checkpoint path** — it cannot be derived.
 The eval job's role reads only under `s3://sbsandbox-intern-edullm-outputs/teams/<team>/runs/…`.
 A checkpoint anywhere else is admitted, placed, and then fails its first read.
 
+Inputs 1 and 2 are what [`RUNNER_REQUEST.md`](../../../RUNNER_REQUEST.md) asks a submitter
+for, in terms that mean something to them. Hand them that file rather than paraphrasing it.
+
 ---
 
 ## Step 1 — read the inference example
 
 Input 2 is not paperwork. Ask for the output more insistently than for the script: the
-output is what shows where the model stops and what the call returns. Three facts come out
+output is what shows where the model stops and what the call returns. Four facts come out
 of it and each one changes the command.
 
 **Does `pad_token_id == eos_token_id`?** On this checkpoint family it does — SmolLM2-135M
@@ -82,8 +85,34 @@ applies and you should say so rather than carrying the workaround forward.
 
 **Does the model emit EOS at all?** Read it out of the pasted output, not out of the
 script. This decides whether a generative item terminates or runs to `max_new_tokens`
-(1,024 for `leaderboard_math`, 1,280 for `ifeval`) — the difference between a generative
-CAT that is cheap and one that is not worth submitting.
+(1,024 for `leaderboard_math`, the only generative bank in the ready set, and a nominal cap
+the context clamp can lower but never raise) — the difference between a generative CAT that
+is cheap and one that is not worth submitting.
+
+Two consequences of that token now land at checkpoint load rather than in the report. The
+end-of-text token is resolved from the checkpoint's *own* tokenizer at run time, closes
+MATH's few-shot exemplars and is appended to that bank's effective stop list, so a
+checkpoint shipping no tokenizer files and naming one the Hub cannot serve is **refused**
+at load rather than degraded into scoring every item at the flat cap. And MATH drops whole
+exemplars, never part of one, until the prompt fits the window — flooring at 1 shot and
+marking the item ungradable below that — so `num_fewshot` can differ item to item inside a
+single session.
+
+**Does the model recite its prompt, loop a clause, or otherwise decode degenerately?** Of
+the four, look for this one first. It costs nothing and it decides whether a generative
+bank may be selected at all. An IFEval instruction is verifiable precisely because it names
+its own success token, so stating the constraint puts that token in the prompt, and a
+response quoting the prompt satisfies the checker. Measured through this repo's own grading
+path over the 511 vendored items, a verbatim echo passes 129 of them, 25.2%; simulated
+against this style's own Fisher selection and EAP it reports theta +0.19 to +1.11 at
+se 0.11–0.23 and stops on precision after 8 or 9 items — the highest and tightest number
+in a sweep whose MCQ cells run -0.25 to -3.9, at `ungradable.rate` 0.0 with no field
+indicating anything is wrong. That is why `ifeval` is blocked (Step 2); the evidence is in
+[`RESULT_CAVEATS.md`](../../../RESULT_CAVEATS.md) and is not worth restating here. The
+point for you is that a submitter's 200 tokens predict it for free, before anything is
+spent: a model that repeats its prompt back will report inflated ability on a generative
+bank rather than the floor it deserves. MCQ scoring is unaffected — it is forward-only and
+decodes nothing.
 
 **What dtype do the weights load at?** Take it from the output, not from `config.json`.
 The measured case here was 546.2 MB of weights for a 135M model — four bytes a parameter,
@@ -104,10 +133,10 @@ carries — can.
 resolution first, though: it is the only thing that will tell you a benchmark is not
 runnable, and it is cheaper still.
 
-**Query the ready set. Never recall it.** It changes as banks are vendored, and a
-benchmark's *modality* moves too — `gpqa` is mid-reclassification from generative to MCQ
-right now. Write this to a temp file and run it from the repo root; the quoting does not
-survive most shells.
+**Query the ready set. Never recall it.** It changes as banks are vendored and as banks are
+withdrawn, and a benchmark's *modality* moves too — `gpqa` finished moving from generative
+to MCQ in `49d93da4`, which changed how many cells a native sweep can hold. Write this to a
+temp file and run it from the repo root; the quoting does not survive most shells.
 
 ```python
 from diagnostics.mcq_cat.styles.uni_mcq import resolve
@@ -135,18 +164,36 @@ cd <repo-root> && PYTHONPATH=.:src .venv/bin/python /tmp/preflight.py        # U
 cd <repo-root>; $env:PYTHONPATH=".;src"; & .venv\Scripts\python.exe "$env:TEMP\preflight.py"
 ```
 
-Two of the nine supported banks are blocked today. When one is, the exception says
-specifically why — no bank, a blocked bank, or an unknown name — and you relay that reason
-verbatim rather than paraphrasing it as "not supported".
+Three of the nine supported banks are blocked today — `winogrande`, `gsm8k` and, since
+2026-08-08, `ifeval` — so `ready_names()` returns six. When a bank is blocked the exception
+says specifically why, and it distinguishes no bank from a blocked bank from an unknown
+name; relay that reason verbatim rather than paraphrasing it as "not supported".
 
-**Only `modality == "mcq"` banks can run on the native path.**
-`GENERATIVE_BACKENDS` registers `hf` alone, because decoding needs a distinct EOS to stop
-on and this checkpoint family has none, so the exemption that lets the MCQ scorer read the
-raw format cannot be extended to a completer. `runner.run` calls `check_checkpoint_kind`
-before it fetches anything, so a generative cell fails in seconds having spent nothing —
-which makes it noise in a sweep, not insurance. Converting first
-(`--checkpoint-prep auto --checkpoint-kind hf`) is the route to those banks and is a
-separate, unverified experiment; do not fold it into an MCQ submission.
+**`ifeval` cannot be selected today, whatever the user asks for.** Its block is unlike the
+other two, which are join-evidence questions: this bank's join is fine and its grading is
+faithful, and that is exactly the problem — see Step 1's fourth fact, and read the reason
+out of `datasets.py` for the wording to relay. What lifts it is the echo-baseline guard:
+stamp each item offline with whether an echo passes it, then report the share of a
+session's passes an echo would also have produced. Re-checking a join does not lift it, and
+neither does converting the checkpoint; the exploit belongs to the bank's verifiers rather
+than to any model.
+
+**Only `modality == "mcq"` banks can run on the native path** — five of the six ready
+names, `leaderboard_math` being the generative sixth. `LOADABLE_CHECKPOINT_KINDS` gives MCQ
+`("hf", "olmo_core")` and generative `("hf",)`, because `GENERATIVE_BACKENDS` registers
+`hf` alone. **The reason is no longer the EOS collision, and this page said it was until
+today.** `_load_olmo_core` exists, is deliberately unregistered, and its docstring records
+the withdrawal: `GenerationConfig.validate` rejects only `pad == eos`, fabricating the
+*pad* leaves the real EOS at 0 exactly as the MCQ scorer already does, and probe
+`run_019fe316-0e47` decoded 64 tokens on each of three prompts that way. What is missing is
+a completer publishing the token counter, context window, budget-awareness and EOS text
+that the budget machinery reads off one. A native completer is being written now, so read
+the registry rather than this sentence. `runner.run` calls `check_checkpoint_kind` before
+it fetches anything, so a generative cell fails in seconds having spent nothing — which
+makes it noise in a sweep, not insurance. Converting first
+(`--checkpoint-prep auto --checkpoint-kind hf`) also reaches those banks and has never once
+been executed; it is the recorded fallback, not the plan, and does not belong in an MCQ
+submission.
 
 ---
 
@@ -219,7 +266,8 @@ the reason to fan out rather than loop inside one container: four cells get the 
 where four benchmarks in one container would share it.
 
 The array must be the MCQ set **at the sha you pinned**, not the one your working tree
-reports. Those differ whenever a modality is mid-move, which it is today.
+reports. Those differ whenever a modality moves or a bank is withdrawn, and both happened
+this week: `gpqa` became MCQ and gained a cell, `ifeval` was blocked and lost one.
 
 Several checkpoints are the same mechanism with the array holding S3 prefixes and
 `index_parameter: checkpoint`. Several checkpoints *and* several benchmarks is a product,
@@ -342,6 +390,14 @@ stream to make a working job look dead.
   convention than we administer, which shifts theta's absolute value while leaving
   checkpoint-to-checkpoint comparison intact; a user told only the number will over-read it.
 
+Then read [`RESULT_CAVEATS.md`](../../../RESULT_CAVEATS.md), which is the companion to this
+list and is not summarised here on purpose. Six entries, four of which change how a report
+should be read today: `gpqa`'s theta measures a constant-"A" responder rather than
+knowledge, `ability.standard_error` is not the quantity the stopping rule compared against
+0.3, a `leaderboard_math` theta cannot resolve a weak checkpoint at all — the bank's own
+information gives an SE floor of 1.01 at theta -2 — and the `ifeval` echo. Each entry names
+the run it was found in, so cite the entry rather than restating it.
+
 ---
 
 ## Worked example
@@ -349,33 +405,36 @@ stream to make a working job look dead.
 **The five inputs, as given.** (1) `s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/`.
 (2) An inference example loaded with `ai2-olmo-core` 2.5.0, whose tokenizer
 `HuggingFaceTB/SmolLM2-135M` reports `pad == eos == bos == 0`, and whose weights measured
-546.2 MB for 135M parameters — fp32, against a command line that said bfloat16. Whether
-this checkpoint ever emits EOS is the one thing the example did not settle, which is why a
-separate 64-token probe exists.
+546.2 MB for 135M parameters — fp32, against a command line that said bfloat16. The example
+did not settle whether this checkpoint emits EOS, which is why a separate 64-token probe
+exists; `run_019fe316-0e47` has since settled it, and settled the fourth fact with it —
+token 0 appeared in none of the 192 tokens it decoded, and all three decodes were
+degenerate, ifeval echoing its own instruction back.
 (3) All MCQ banks. (4) Defaults, with Warm's estimate reported instead of EAP.
 (5) `gpu-1xl4`.
 
 Input 2 settles two things before anything is written: the pad/eos collision is why
-`--checkpoint-kind olmo_core` needs the fabricated pad id and why the same exemption cannot
-be extended to a completer, and the fp32 measurement is why `--dtype bfloat16` is a real
-change here rather than a restatement — a rerun is not expected to reproduce the fp32
-theta. The unanswered EOS question costs nothing on this submission, because MCQ scoring is
-forward-only and never stops on a token; it is what would have to be answered first to cost
-a generative bank. Input 3 plus Step 2's preflight gives four MCQ banks at the pinned sha,
-so it becomes a four-cell fan-out rather than four submissions.
+`--checkpoint-kind olmo_core` needs the fabricated pad id, and the fp32 measurement is why
+`--dtype bfloat16` is a real change here rather than a restatement — a rerun is not
+expected to reproduce the fp32 theta. Neither the EOS answer nor the echo costs anything on
+this submission, because MCQ scoring is forward-only and never decodes; both are what price
+a generative bank, and the echo is what withdrew `ifeval` outright. Input 3 plus Step 2's
+preflight gives five MCQ banks at the pinned sha, so it becomes a five-cell fan-out rather
+than five submissions.
 
 The spec is [`.edullm/run-native-cat-sweep.yaml`](../../../.edullm/run-native-cat-sweep.yaml),
-already committed, pinning `6c1d8415…`:
+already committed, pinning `49d93da4…` — which is now several commits behind, so Step 4
+applies before this is submitted again rather than after:
 
 ```yaml
 schema_version: 1
 workload_profile: olmo-core-check
 suggested_compute: gpu-1xl4
 fanout:
-  size: 4
+  size: 5
   index_parameter: benchmark
 command: >-
-  bash -lc 'BENCHMARKS=(arc_challenge hellaswag musr bbh)
+  bash -lc 'BENCHMARKS=(arc_challenge hellaswag musr bbh gpqa)
   ; CELL="${AWS_BATCH_JOB_ARRAY_INDEX:-0}"
   ; BENCH="${BENCHMARKS[$CELL]:-}"
   ; if [ -z "$BENCH" ]; then echo "cell $CELL has no benchmark; fanout.size must equal ${#BENCHMARKS[@]}" >&2; exit 2; fi
@@ -383,7 +442,7 @@ command: >-
   ; if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout 6c1d8415c306e6756de50dc6682ec1369c990b23
+  && git checkout 49d93da4534169b57d4ff6252fdd954323ab6e9d
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python -m diagnostics.mcq_cat.runner
   --cat-style uni_mcq
@@ -405,7 +464,9 @@ edullm check --experiment native-olmo-core-cat-sweep --dataset none \
 ```
 
 Exit 0, `"refused": false`, `"refusals": []`. **Re-run it rather than reading these numbers
-off this page** — they were true on 2026-08-08 and live in configuration that moves:
+off this page** — they were recorded on 2026-08-08 against the four-cell version of this
+spec, before `gpqa` was reclassified and the array grew, and they live in configuration
+that moves. `cells` alone dates them:
 
 ```json
 "approval_class": "routine",
@@ -446,5 +507,8 @@ money. Show the user the resolved plan, the cost block and the class first.
   quantity.
 - Do not present a theta from a report carrying an `ungradable` alert as a measurement of
   the model.
+- Do not submit a generative bank without having read the submitter's sample output for an
+  echo, and do not report the theta if you skipped it. That failure carries no alert, an
+  `ungradable.rate` of 0.0 and the tightest SE in the sweep.
 - Do not quote a price, a runtime bound, a cost ceiling or an approver from memory or from
   a document — including this one.
