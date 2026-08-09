@@ -80,7 +80,7 @@ command: >-
   bash -lc 'if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
   && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
   && cd /opt/olmo-eval-full
-  && git checkout 8f45ca3fccddf14b53a2aed73a9316dd7857fed7
+  && git checkout ff1188ec354f53374dc310db982013c8465bee55
   && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
   && python -m pip install --no-cache-dir ".[hf,s3]"
   && python .edullm/generation_probe.py

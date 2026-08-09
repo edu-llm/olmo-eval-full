@@ -1,0 +1,148 @@
+# Six banks in one fan-out: five MCQ cells and the one generative cell, natively.
+#
+# The siblings are run-native-cat-sweep.yaml (the MCQ fan-out) and run-native-math.yaml
+# (the generative single cell). Everything those two argue applies here unchanged -- why
+# the image comes from OLMo-core rather than olmo-eval-full, why the code arrives by clone
+# at a pinned sha rather than by wheel, why --extra olmo_core would be a silent downgrade
+# to the one ai2-olmo-core release that cannot read this checkpoint, and why
+# --dtype bfloat16 is named in the text of the command even at its default. Read those
+# first. This file records only what is different, which is three things.
+#
+# HOW TO SUBMIT THIS. From the OLMo-core clone, because the CLI resolves --commit against
+# the clone it is invoked in and this repository holds no OLMo-core objects:
+#
+#   cd ../OLMo-core
+#   edullm submit --experiment native-olmo-core-cat-six --dataset none \
+#     --workload olmo-core-check --compute gpu-1xl4 \
+#     --commit 08df5aa0142465c80b4ea48e84faa46117275d61 \
+#     --spec ../olmo-eval-full/.edullm/run-native-cat-six.yaml
+#
+# SUBMITTED AS run_019fe87d-4271-708b-83ef-d78f9d217945, on 2026-08-09, from the ticket
+# branch Avaneesh-Test-Ticket. It classified `routine` / `run-approval-lead` and parked
+# waiting for a lead, which is the fan-out's doing rather than the price -- see section 2.
+#
+# THE PROBE THAT LICENSED IT IS run_019fe873-f44d-705a-8b97-93d047c5949b, one pass, 56
+# findings and 0 failed, on this exact checkpoint. What it settled, because each of these
+# is a thing that would otherwise be guessed:
+#
+#   * --dtype bfloat16 now reaches the weights. 269.1 MB on device against the 546.2 MB
+#     run_019fe2e6 measured asking for the same flag, a ratio of 2.03. Any native theta
+#     recorded before 2026-08-08 was produced in fp32 and is not a baseline for these six.
+#   * The tokenizer resolves and fits: 49,152 against the checkpoint's own 49,152. The
+#     venue can reach the Hub, which a raw checkpoint shipping no tokenizer files needs.
+#   * pad/eos: the checkpoint writes both as 0 and the loader fabricates pad=1, leaving the
+#     real end-of-text at 0. It loads and decodes. Not a blocker, as measured.
+#   * flash_2 is NOT in this image. from_checkpoint refused it with "'FlashAttention2Backend'
+#     is missing the flash-attn package or is not supported on this platform", so the
+#     use_cache=False fallback is the only decode path, exactly as the probe spec planned.
+#   * The model never emits its end-of-text token. Token 0 appeared in none of the 192
+#     tokens decoded across three prompts, and all three ran their full 64. So every
+#     generative item pays max_new_tokens in full; nothing stops early.
+#
+# AND THE ONE FINDING THAT LIMITS WHAT CELL 5 CAN BE CLAIMED TO MEASURE. All three decodes
+# were degenerate, and the leaderboard_math one looped a clause: " The region of the
+# equation $y \ge |x|$ is the region of the region of the equation $y \ge |x|$ and ...".
+# MathLatexEquivalence reads exactly two forms, a \boxed{} expression or a Minerva
+# "Final Answer:" line, and a loop reaches neither, so items score 0 for a formatting
+# reason rather than a mathematical one. Expect this cell to return theta at roughly the
+# bank's all-wrong prior with no ungradable alert and a healthy-looking SE -- which is the
+# failure RESULT_CAVEATS.md records against run_019fe78d. Grep the completion fields for
+# \boxed{ and "Final Answer" before quoting its theta, and if neither appears, report that
+# the cell established the pipeline and not the checkpoint. The five MCQ cells are
+# untouched by this: continuation log-likelihood scoring is forward-only and decodes
+# nothing.
+#
+# DECODE RATE MEASURED HERE, WHICH IS THE NUMBER TO SIZE CELL 5 AGAINST. 64 tokens in
+# 2.13s, 1.94s and 1.62s on prompts of 86, 726 and 56 tokens -- 30 to 40 tokens/sec,
+# slowest on the longest prefix, which is what a cacheless decode re-reading the whole
+# prefix every step should do. At the middle of that range a 1,024-token item is about 31s
+# and a 40-item bank about 21 minutes, against a per-cell bound of one hour and no second
+# attempt. run_019fe78d's 39.6 tokens/sec is the optimistic end of this range rather than
+# the expectation.
+#
+# ---------------------------------------------------------------------------------------
+# 1. SIX CELLS, AND THE SIXTH IS A DIFFERENT MODALITY FROM THE OTHER FIVE.
+#
+# arc_challenge, hellaswag, musr, bbh and gpqa are MCQ, scored by continuation
+# log-likelihood. leaderboard_math is generative, graded by MathLatexEquivalence. They
+# share one command because the on-node invocation genuinely does not differ between the
+# two modalities on the native path: LOADABLE_CHECKPOINT_KINDS gives MCQ and generative
+# the same ("hf", "olmo_core"), so --checkpoint-prep none --checkpoint-kind olmo_core is
+# the pairing that converts nothing in either case, and the benchmark name is the only
+# thing that selects a modality. That is the claim run_019fe78d established end to end.
+#
+# THE ARRAY IS SIX AND NOT NINE, AND THAT IS THE SUBMITTER'S CHOICE RATHER THAN THE
+# HARNESS'S. ready_names() at the pinned sha returns nine: these six plus pedagogy, piqa
+# and socialiqa, vendored 2026-08-09. The submitter excluded those three by name. They are
+# runnable and nothing here blocks them; they are simply not in this request. Resolution
+# was checked at the pinned sha rather than in a working tree, because this tree currently
+# carries an unrelated uncommitted revert of datasets.py under which those three report as
+# excluded -- which is exactly the divergence the sweep's header warns about, seen live.
+#
+# ---------------------------------------------------------------------------------------
+# 2. RUNTIME, WHICH THE GENERATIVE CELL DOMINATES AND THE OTHER FIVE DO NOT APPROACH.
+#
+# The workload bound applies per cell, which is the reason this is a fan-out rather than a
+# loop inside one container. The five MCQ cells are forward-only and stop at min_items (8,
+# or 24 for bbh) as soon as SE reaches 0.3; run_019fe277 administered 8 on arc_challenge.
+#
+# leaderboard_math is the cell to watch. It decodes without a KV cache, because OLMo-core's
+# default torch attention backend refuses caching outright and only the flash backends
+# implement it, from a binary wheel this image does not carry. Measured on an L4 in
+# run_019fe78d: 39.6 tokens/sec, about 25.8s for a 1,024-token item, so roughly 17 minutes
+# for a 40-item bank -- inside the per-cell bound, with no second attempt if it is not.
+# Scale that rate, not the wall clock, if this spec is ever pointed at a larger checkpoint.
+#
+# A FAN-OUT NEVER AUTO-APPROVES, WHATEVER IT COSTS. The class comes out of
+# classify_request rather than a price threshold, so this waits for the approving
+# environment that edullm check names, where six separate single-cell submissions at the
+# same total price would each have been released automatically. That is the trade taken
+# here deliberately: these six cells are one evaluation of one checkpoint and belong on one
+# run id, and the submitter was told to expect an approval.
+#
+# ---------------------------------------------------------------------------------------
+# 3. THE ESTIMATOR IS batch_eap+mwle ON EVERY CELL, INCLUDING THE GENERATIVE ONE.
+#
+# The estimator that is not asked for is not computed. run_019fe78d asked for plain
+# batch_eap and its report carries theta_online and theta_batch and no theta_mwle at all,
+# so the pair has to be named to get both. EAP's standard-normal prior compresses ability
+# toward zero hardest at the tails, which is where a 135M checkpoint sits; MWLE drops the
+# prior and penalises 1/2 ln I(theta) instead, and the gap between them is how much of a
+# theta is prior rather than evidence.
+#
+# WHEN READING THE REPORTS: under batch_eap+mwle, ability.standard_error is se_mwle, an
+# asymptotic 1/sqrt(I(theta)), while the stopping rule acted on the posterior se_online.
+# Quote se_online for precision. See RESULT_CAVEATS.md.
+#
+# EVERY OTHER CAT SETTING IS THE PINNED DEFAULT AND IS PASSED BY NOT BEING PASSED:
+# --se-threshold 0.3, --max-items 40, --batch-size 16, min_items 8 (24 for bbh, which has
+# no CLI flag and is read from the style's config.yaml). Nothing here departs from them, so
+# max_items_is_pinned_value stays true and these six thetas stay comparable with every run
+# already recorded.
+schema_version: 1
+workload_profile: olmo-core-check
+suggested_compute: gpu-1xl4
+fanout:
+  size: 6
+  index_parameter: benchmark
+command: >-
+  bash -lc 'BENCHMARKS=(arc_challenge hellaswag musr bbh gpqa leaderboard_math)
+  ; CELL="${AWS_BATCH_JOB_ARRAY_INDEX:-0}"
+  ; BENCH="${BENCHMARKS[$CELL]:-}"
+  ; if [ -z "$BENCH" ]; then echo "cell $CELL has no benchmark; fanout.size must equal ${#BENCHMARKS[@]}" >&2; exit 2; fi
+  ; echo "cell $CELL -> $BENCH"
+  ; if ! command -v git >/dev/null; then apt-get update -qq && apt-get install -y -qq --no-install-recommends git; fi
+  && git clone --filter=blob:none https://github.com/edu-llm/olmo-eval-full.git /opt/olmo-eval-full
+  && cd /opt/olmo-eval-full
+  && git checkout ff1188ec354f53374dc310db982013c8465bee55
+  && if [ -n "$(git status --porcelain --untracked-files=no)" ]; then echo "incomplete checkout: git exits 0 when a --filter=blob:none clone fails to fetch a blob, so these tracked paths are missing rather than modified" >&2; git status --porcelain --untracked-files=no >&2; exit 3; fi
+  && python -m pip install --no-cache-dir ".[hf,s3]"
+  && python -m diagnostics.mcq_cat.runner
+  --cat-style uni_mcq
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/input-core/runs/run_019fce1a-f393-70e3-ba0e-e2771c70f9c0/checkpoints/step305176/
+  --benchmark "$BENCH"
+  --ability-estimator batch_eap+mwle
+  --checkpoint-prep none
+  --checkpoint-kind olmo_core
+  --dtype bfloat16
+  --s3-out "$EDULLM_OUTPUT_PREFIX"'
