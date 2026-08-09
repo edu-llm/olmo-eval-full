@@ -1094,6 +1094,32 @@ class TestTheArithmeticMatchesTheHuggingFacePath:
             self.hf_scorer(config, loaded.module)._continuation_logprob(prompt, continuation)
         )
 
+    @pytest.mark.parametrize(
+        ("prompt", "continuation"),
+        [
+            ("Question: which one?", " alpha"),
+            ("Question: which one?", " beta gamma delta"),
+            ("a", " b"),
+            ("a much longer prompt with several words in it", " and a long continuation too"),
+        ],
+    )
+    def test_the_two_backends_count_the_same_continuation_tokens(
+        self, monkeypatch, checkpoint, prompt: str, continuation: str
+    ) -> None:
+        """The second quantity a backend supplies, and the second place they can diverge.
+
+        A bank scored under the per-token mean is graded on this integer as much as on
+        the sum, so a backend counting differently would put the two on different scales
+        while both reported the same convention in the manifest -- the failure the whole
+        convention record exists to make impossible, arriving underneath it.
+        """
+        config = inference.InferenceConfig(checkpoint_kind="olmo_core")
+        loaded = load_scorer(monkeypatch, checkpoint, config=config)
+
+        assert loaded.scorer._continuation_tokens(prompt, continuation) == self.hf_scorer(
+            config, loaded.module
+        )._continuation_tokens(prompt, continuation)
+
     def test_a_continuation_that_adds_no_tokens_scores_zero_without_a_forward_pass(
         self, monkeypatch, checkpoint
     ) -> None:
@@ -1165,6 +1191,41 @@ class TestTheArithmeticMatchesTheHuggingFacePath:
             strict=True,
         ):
             assert scaled == pytest.approx(raw / len(choice.continuation))
+
+    def test_the_per_token_divisor_is_counted_by_this_backend_too(
+        self, monkeypatch, checkpoint
+    ) -> None:
+        """The one rule whose correctness is not settled by its own arithmetic.
+
+        Every other normalization can be checked against the numbers it was handed. This
+        one divides by something only a backend can produce, so a backend that produced
+        nothing would return the unnormalized sum under the per-token name, on a bank
+        whose difficulties were estimated from means. The item's two choices are one and
+        two tokens under this tokenizer, which puts the two apart by a factor rather than
+        by a rounding difference.
+        """
+        plain = inference.InferenceConfig(checkpoint_kind="olmo_core")
+        per_token = inference.InferenceConfig(
+            checkpoint_kind="olmo_core",
+            score_normalization="continuation_logprob_per_token",
+        )
+        item = mcq_item()
+        summing = load_scorer(monkeypatch, checkpoint, config=plain).scorer
+        averaging = load_scorer(monkeypatch, checkpoint, config=per_token).scorer
+
+        counts = [
+            averaging._continuation_tokens(choice.prompt, choice.continuation)
+            for choice in inference.scored_choices(item, plain)
+        ]
+        assert counts == [1, 2]
+
+        for raw, scaled, count in zip(
+            summing.score_items([item])[0].choice_logprobs,
+            averaging.score_items([item])[0].choice_logprobs,
+            counts,
+            strict=True,
+        ):
+            assert scaled == pytest.approx(raw / count)
 
     def test_the_prompt_style_reaches_this_backend_too(self, monkeypatch, checkpoint) -> None:
         """WinoGrande substitutes into the stem, so a backend appending instead would

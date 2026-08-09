@@ -40,11 +40,15 @@ branch on which one it was handed.
 ``winogrande`` declare ``LogprobMCAccuracyMetric``, the plain sum of the continuation's
 token log-probabilities; MuSR declares ``LogprobPerCharMCAccuracyMetric``, the same sum
 divided by the continuation's length, because Open LLM Leaderboard v2 reported MuSR as
-``acc_norm`` and that is the binary its bank was fit on. The choice between them is not
-a preference: they rank a choice set differently, so a bank scored under the other one
-has every item's outcome decided by a rule its difficulty was not estimated under, and
-EAP absorbs the whole difference into theta with an untouched standard error. A run
-whose normalization disagrees with the manifest is refused rather than reported.
+``acc_norm`` and that is the binary its bank was fit on. A third divides by the
+continuation's *token* count -- ``LogprobPerTokenMCAccuracyMetric``, olmo-eval's
+``acc_per_token`` -- and is here for banks whose calibration responses were produced
+outside olmo-eval by an engine that averaged where these two sum. The choice among them
+is not a preference: they rank a choice set differently, so a bank scored under a rule
+other than its own has every item's outcome decided by a rule its difficulty was not
+estimated under, and EAP absorbs the whole difference into theta with an untouched
+standard error. A run whose normalization disagrees with the manifest is refused rather
+than reported.
 
 Where a task's ``:rc``, ``:mc`` or ``:bpb`` variant declares something else again
 (``LogprobUncondMCAccuracyMetric`` on ``arc_challenge:rc``) it does not apply here: we
@@ -63,7 +67,7 @@ import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, ClassVar, Protocol, runtime_checkable
 
 from ..base import BenchmarkItem, ItemResponse, ScoringModel
 
@@ -527,6 +531,21 @@ def fewshot_note(prompt_style: str) -> str:
     return FEWSHOT_NOTES.get(prompt_style, "")
 
 
+#: ``continuation_tokens`` for a rule that declares it does not read them.
+#:
+#: Zero because nothing counted, not because the span was empty. The two are
+#: indistinguishable at this parameter on purpose, since the only rules handed it are
+#: the ones that discard it, and giving the protocol an ``int | None`` would put a
+#: branch for an impossible value in every rule that does read the count.
+#:
+#: What that costs is a rule dividing by the count without declaring
+#: :attr:`ScoreNormalization.needs_continuation_tokens`: it would divide every choice by
+#: one and quietly return the unnormalized sum. The declaration is on the rule rather
+#: than inferred from its arithmetic because nothing here can read arithmetic, so
+#: :data:`MCQ_SCORE_NORMALIZATIONS` is where that pairing is pinned.
+UNCOUNTED_CONTINUATION_TOKENS = 0
+
+
 @runtime_checkable
 class ScoreNormalization(Protocol):
     """How one benchmark turns a continuation's summed log-probability into a score.
@@ -534,18 +553,46 @@ class ScoreNormalization(Protocol):
     The second swappable part of MCQ scoring, beside :class:`McqPromptStyle`, and kept
     separate from it because the two vary independently: MuSR shares ARC's
     "one prompt, one continuation per choice" shape and disagrees with it about how the
-    resulting numbers are compared. Implementations see one continuation's total and
-    that continuation's text, never a model or a tokenizer.
+    resulting numbers are compared. Implementations see one continuation's total, that
+    continuation's text, and -- if they ask for it -- how many tokens the scored span
+    came to. Never a model, and never a tokenizer.
+
+    Rules saw the text alone until :class:`PerTokenMean` arrived, and the boundary was
+    drawn there deliberately: a divisor computed from characters means the same thing
+    under every vocabulary, so two checkpoints' thetas on one bank stay comparable. That
+    remains true of :class:`PerCharacterMean` and is worth keeping. It is also not a
+    property a bank whose calibration divided by a token count can be scored under, so
+    the line moved by exactly one step. A rule may be handed an integer some backend
+    already counted to decide which positions to sum; it still may not tokenize anything
+    itself, which is what keeps every rule checkable without a checkpoint. The
+    comparability that step gives up is the one rule's, and is documented on it.
 
     Attributes:
         name: Recorded in :data:`MCQ_SCORE_NORMALIZATIONS`, written into every bank's
             manifest, and used in error messages.
+        needs_continuation_tokens: Whether :meth:`score` reads ``continuation_tokens``.
+            Declared rather than inferred, because counting is a second encoding of the
+            pair and a scorer must not run one for a rule that discards the answer. A
+            rule leaving it false is handed :data:`UNCOUNTED_CONTINUATION_TOKENS`. It is
+            a class variable where ``name`` is not, because a rule's name distinguishes
+            two instances of one class and this distinguishes the classes: an instance
+            free to answer differently from its siblings would be a rule whose divisor
+            depends on how it was constructed.
     """
 
     name: str
+    needs_continuation_tokens: ClassVar[bool]
 
-    def score(self, total_logprob: float, continuation: str) -> float:
-        """Return the number to rank this choice by."""
+    def score(self, total_logprob: float, continuation: str, continuation_tokens: int) -> float:
+        """Return the number to rank this choice by.
+
+        Args:
+            total_logprob: The summed log-probability of the continuation's tokens.
+            continuation: The scored span's text, its leading space included.
+            continuation_tokens: How many tokens that span came to under the evaluated
+                checkpoint's own tokenizer, or :data:`UNCOUNTED_CONTINUATION_TOKENS` if
+                this rule declared it does not read them.
+        """
         ...
 
 
@@ -561,8 +608,9 @@ class UnnormalizedSum:
     """
 
     name: str
+    needs_continuation_tokens: ClassVar[bool] = False
 
-    def score(self, total_logprob: float, continuation: str) -> float:
+    def score(self, total_logprob: float, continuation: str, continuation_tokens: int) -> float:
         """Return the total unchanged."""
         return total_logprob
 
@@ -591,20 +639,58 @@ class PerCharacterMean:
     """
 
     name: str
+    needs_continuation_tokens: ClassVar[bool] = False
 
-    def score(self, total_logprob: float, continuation: str) -> float:
+    def score(self, total_logprob: float, continuation: str, continuation_tokens: int) -> float:
         """Return the per-character mean, as the olmo-eval metric computes it."""
         return total_logprob / max(len(continuation), 1)
+
+
+@dataclass(frozen=True, slots=True)
+class PerTokenMean:
+    """The sum divided by how many tokens it was summed over, which is ``acc_per_token``.
+
+    ``LogprobPerTokenMCAccuracyMetric``, and the rule the self-calibrated pedagogy, PIQA
+    and SocialIQa banks were fit behind. Their responses did not come from olmo-eval:
+    they were produced by an inference engine that averaged on both of its backends --
+    the HuggingFace path ends ``cont_lp.mean()``, the vLLM path ``total / max(1, n)`` --
+    and the argmax over those means is the outcome every one of their item difficulties
+    was estimated from. Reproducing it is not an opinion about length normalization.
+    Scoring those banks under the sum would decide a large share of their items on token
+    count, and the difficulties would then describe a task nobody ran.
+
+    The divisor is the number of tokens the continuation contributed to the scored span,
+    floored at 1: ``max(len(output.logprobs), 1)`` in the metric, ``max(1, n)`` in the
+    engine. An empty continuation therefore comes back ``0.0`` rather than dividing by
+    zero, which is also what the engine's HuggingFace path returns outright for a span
+    with nothing in it.
+
+    Unlike :class:`PerCharacterMean`, this divisor is not a property of the text. It is
+    the evaluated checkpoint's own tokenizer's opinion about the text, so two
+    checkpoints that segment a choice set differently rank it on per-choice divisors
+    that differ, and thetas from this rule are comparable across them only as far as
+    those segmentations agree. That is the cost of calibration parity, it is paid on
+    every bank taking this rule rather than on the odd item, and it is why
+    :data:`NORMALIZATION_NOTES` puts it in the report instead of leaving a reader to
+    infer it from the rule's name.
+    """
+
+    name: str
+    needs_continuation_tokens: ClassVar[bool] = True
+
+    def score(self, total_logprob: float, continuation: str, continuation_tokens: int) -> float:
+        """Return the per-token mean, as the metric and the calibrating engine agree on it."""
+        return total_logprob / max(continuation_tokens, 1)
 
 
 #: Normalization name -> rule, selected by :attr:`InferenceConfig.score_normalization`
 #: and overridden per dataset from the style's ``config.yaml``.
 #:
 #: Keyed by what the rule does rather than by a benchmark, for :data:`MCQ_PROMPT_STYLES`'
-#: reason: neither of these is any one benchmark's, and both name a metric olmo-eval
+#: reason: none of these is any one benchmark's, and each names a metric olmo-eval
 #: shares across many tasks. Which one a dataset takes is a fact about its calibration
 #: and not a run-time preference, so it is recorded in the bank's manifest and a run
-#: resolving the other one is refused before the checkpoint is fetched.
+#: resolving a different one is refused before the checkpoint is fetched.
 MCQ_SCORE_NORMALIZATIONS: dict[str, ScoreNormalization] = {
     "unnormalized_sum_of_continuation_logprobs": UnnormalizedSum(
         name="unnormalized_sum_of_continuation_logprobs"
@@ -612,6 +698,7 @@ MCQ_SCORE_NORMALIZATIONS: dict[str, ScoreNormalization] = {
     "continuation_logprob_per_character": PerCharacterMean(
         name="continuation_logprob_per_character"
     ),
+    "continuation_logprob_per_token": PerTokenMean(name="continuation_logprob_per_token"),
 }
 
 #: Used by a dataset that names no normalization of its own.
@@ -649,6 +736,14 @@ NORMALIZATION_NOTES: dict[str, str] = {
         "which is acc_norm -- olmo-eval's LogprobPerCharMCAccuracyMetric, whose divisor "
         "includes the continuation's leading space and is therefore one character longer "
         "than lm-evaluation-harness's"
+    ),
+    "continuation_logprob_per_token": (
+        "summed over the continuation's tokens and divided by how many there were, which "
+        "is acc_per_token -- olmo-eval's LogprobPerTokenMCAccuracyMetric, and "
+        "oe-eval-internal's MCAccuracy before it -- whose divisor is the count under the "
+        "evaluated checkpoint's own tokenizer, so unlike the per-character rule a score "
+        "under it is comparable across checkpoints only as far as their tokenizations of "
+        "the choices agree"
     ),
 }
 
@@ -823,6 +918,28 @@ class _HFScoringModel:
         continuation_log_probs = token_log_probs[:, -cont_len:]
         return float(continuation_log_probs.sum().item())
 
+    def _continuation_tokens(self, prompt: str, continuation: str) -> int:
+        """How many tokens ``continuation`` adds to ``prompt``, for a rule that divides by it.
+
+        The count :meth:`_continuation_logprob` slices the scored span with, re-taken
+        here from its own pair of encodings rather than returned alongside the sum.
+        :func:`continuation_token_count` already draws that line -- the length
+        arithmetic decides which tokens are scored and can be checked without a model,
+        the forward pass only reads them -- and staying on it leaves the summed
+        log-probability the one quantity anything standing in for the forward pass has
+        to produce. The second encoding is what that costs, and :meth:`score_items` pays
+        it only for a rule declaring
+        :attr:`ScoreNormalization.needs_continuation_tokens`.
+
+        The two encodings are the same strings through the same tokenizer, so the count
+        the divisor uses cannot drift from the count the slice used.
+        """
+        prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
+        full_ids = self.tokenizer(prompt + continuation, return_tensors="pt")["input_ids"]
+        return continuation_token_count(
+            prompt_ids.shape[1], full_ids.shape[1], self.config.max_length
+        )
+
     def score_items(self, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
         """Grade each item by scoring every choice's continuation log-likelihood.
 
@@ -838,8 +955,15 @@ class _HFScoringModel:
         benchmark's convention stays one lookup, in one place, alongside its prompt.
         ``choice_logprobs`` on the response therefore carries the numbers the argmax
         actually compared, which is what makes a report re-checkable.
+
+        A rule dividing by the continuation's token count is handed one from
+        :meth:`_continuation_tokens`, and only if it declared that it reads one. Every
+        other rule gets :data:`UNCOUNTED_CONTINUATION_TOKENS` and no second encoding is
+        taken on its behalf, which is what keeps the sum and the per-character mean
+        costing exactly what they did before a tokenizer-dependent rule existed.
         """
         normalization = get_mcq_score_normalization(self.config.score_normalization)
+        counts_tokens = normalization.needs_continuation_tokens
         responses: list[ItemResponse] = []
         for item in items:
             if not item.choices:
@@ -854,6 +978,9 @@ class _HFScoringModel:
                 normalization.score(
                     self._continuation_logprob(choice.prompt, choice.continuation),
                     choice.continuation,
+                    self._continuation_tokens(choice.prompt, choice.continuation)
+                    if counts_tokens
+                    else UNCOUNTED_CONTINUATION_TOKENS,
                 )
                 for choice in scored_choices(item, self.config)
             )
@@ -1212,16 +1339,33 @@ class _OlmoCoreScoringModel:
         continuation_log_probs = token_log_probs[:, -cont_len:]
         return float(continuation_log_probs.sum().item())
 
+    def _continuation_tokens(self, prompt: str, continuation: str) -> int:
+        """How many tokens ``continuation`` adds to ``prompt``, for a rule that divides by it.
+
+        :meth:`_HFScoringModel._continuation_tokens` explains why the count is taken
+        beside the sum rather than returned with it. Written out again for the reason
+        :meth:`_continuation_logprob` is, and the two must stay identical: a bank taking
+        a per-token rule is graded on this divisor, so a backend counting differently
+        would put the two on different scales while both reported the same convention.
+        """
+        prompt_ids = self.tokenizer(prompt, return_tensors="pt")["input_ids"]
+        full_ids = self.tokenizer(prompt + continuation, return_tensors="pt")["input_ids"]
+        return continuation_token_count(
+            prompt_ids.shape[1], full_ids.shape[1], self.config.max_length
+        )
+
     def score_items(self, items: Sequence[BenchmarkItem]) -> list[ItemResponse]:
         """Grade each item by scoring every choice's continuation log-likelihood.
 
-        :meth:`_HFScoringModel.score_items` explains the shape and why the
-        normalization is applied here rather than inside the forward pass; this
+        :meth:`_HFScoringModel.score_items` explains the shape, why the normalization is
+        applied here rather than inside the forward pass, and why the token count a
+        per-token rule divides by is taken only for the rules that ask for it; this
         produces the same :class:`~diagnostics.mcq_cat.base.ItemResponse`, populated
         ``choice_logprobs`` included, so nothing downstream can tell which backend
         answered.
         """
         normalization = get_mcq_score_normalization(self.config.score_normalization)
+        counts_tokens = normalization.needs_continuation_tokens
         responses: list[ItemResponse] = []
         for item in items:
             if not item.choices:
@@ -1236,6 +1380,9 @@ class _OlmoCoreScoringModel:
                 normalization.score(
                     self._continuation_logprob(choice.prompt, choice.continuation),
                     choice.continuation,
+                    self._continuation_tokens(choice.prompt, choice.continuation)
+                    if counts_tokens
+                    else UNCOUNTED_CONTINUATION_TOKENS,
                 )
                 for choice in scored_choices(item, self.config)
             )
