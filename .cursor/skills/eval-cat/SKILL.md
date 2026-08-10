@@ -25,15 +25,33 @@ restate its refusal codes, its exit codes or its prices.
 holds the harness and the banks; `edu-llm/OLMo-core` supplies the image the job runs on, and
 Step 6 submits from inside it because the CLI resolves `--commit` against the clone it is
 invoked in. If `../OLMo-core` does not exist, `cd ../OLMo-core` fails at the last step of a
-flow that looked fine until then, so clone it now:
+flow that looked fine until then, so clone it now — **do this first, before Step 0**:
 
 ```bash
-git clone https://github.com/edu-llm/OLMo-core.git ../OLMo-core
+git clone --filter=blob:none --no-checkout https://github.com/edu-llm/OLMo-core.git ../OLMo-core
 ```
 
-Nothing is built from it and no branch of it matters; it is there so the CLI has OLMo-core
-objects to resolve a sha against. Push access to *this* repository is required — Step 0 cuts
-a branch and Step 5 pushes it — and none is needed there.
+**Expect your tooling to ask permission for this, and answer it.** It is the first command on
+the page and it reaches the network, so an agent that runs it unattended will sit at an
+approval prompt looking hung. That has already happened to one submitter. It is not slow and
+it is not stuck: 2.6 MB in about two seconds.
+
+**Why a clone at all, given that nothing is uploaded from it.** `--commit` names an OLMo-core
+sha because the image is built there, and before spending money the CLI proves that sha is on
+a remote by running `git branch --remotes --contains <sha>` in whatever repository it was
+invoked in. `olmo-eval-full` holds no OLMo-core objects, so it cannot answer, and the
+submission is refused. The clone is that proof and nothing else.
+
+That is also why the obvious economy does not work. `git fetch --depth 1 origin <sha>` gets
+the commit for 1.3 MB, but a shallow fetch creates no `origin/*` refs, so the containment
+question returns empty and the submission is refused exactly as if the clone were missing.
+`--filter=blob:none` keeps every commit and every remote-tracking ref while downloading no
+file contents, which is precisely the half the check reads. `--no-checkout` is safe here for
+the same reason, and it sidesteps the partial-clone footgun the specs guard against: nothing
+in this flow ever checks a file out of this clone, so no blob is ever lazily fetched.
+
+Push access to *this* repository is required — Step 0 cuts a branch and Step 5 pushes it —
+and none is needed there.
 
 **On Windows, PowerShell prints a succeeding command's stderr as a red `NativeCommandError`
 block.** `git checkout`, `git push` and this page's Python all write ordinary progress to
@@ -827,12 +845,18 @@ which is exactly what reading a sharded DCP checkpoint needs. The CLI reads `--c
 against the clone it is run in, and this repository holds no OLMo-core objects.
 
 ```bash
-cd ../OLMo-core
+cd ../OLMo-core || { echo "clone OLMo-core first - see the prerequisites" >&2; exit 1; }
+git branch --remotes --contains <OLMo-core sha> | head -1   # non-empty, or the submit is refused
 edullm check --experiment <slug> --dataset none \
   --workload olmo-core-check --compute gpu-1xl4 \
   --commit <OLMo-core sha> \
   --spec ../olmo-eval-full/.edullm/<your-spec>.yaml --json
 ```
+
+That middle line is the exact question the CLI asks, run a moment early. Empty output means
+the submission will be refused, and the two reasons are worth telling apart: no such directory
+means the clone was never made, while a clone that exists but answers nothing means it was
+made shallow, which does not work — see the prerequisites.
 
 Swap `check` for `submit` once it comes back clean. Every completed native run so far used
 OLMo-core `08df5aa0142465c80b4ea48e84faa46117275d61`; confirm it is still what you want
