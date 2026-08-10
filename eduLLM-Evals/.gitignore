@@ -58,6 +58,8 @@ smoke_runs/
 qmatrix_logs/
 qmatrix_verify_logs/
 curation/tranche/
+# Frontier-judge production outputs can contain large raw model responses.
+api_judge_pilot/grading_*/
 
 # Allow the human judge-validation grader packet artifacts back in.
 !runs/judge_validation_v1/

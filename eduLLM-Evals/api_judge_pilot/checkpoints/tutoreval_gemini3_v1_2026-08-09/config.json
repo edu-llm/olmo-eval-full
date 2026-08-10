@@ -1,0 +1,17 @@
+{
+  "name": "tutoreval_gemini3_v1",
+  "date": "2026-08-09",
+  "benchmark": "tutoreval",
+  "status": "FINALIZED tutoreval judge config (best MCC + 0% false-pass + cheapest; matches biggen)",
+  "provider_gateway": "TrueFoundry OpenAI-compatible (env MODEL_API_BASE / MODEL_API_KEY)",
+  "model": "gemini-group/gemini-3-flash-preview",
+  "adapter": "generic-binary-strict",
+  "adapter_note": "v1 = evidence-first (JSON order: evidence, rationale, verdict). Same config as biggen; both scaling targets converge on gemini-3 + v1. (tutorbench differs: gemini-3 truncates there.)",
+  "temperature": 0.0,
+  "max_tokens": 6144,
+  "max_tokens_note": "Gold scored at 4096 (0 unscorable on the 100-cell gold, so the FP=0% budget is truncation-clean and transfers). PRODUCTION uses 6144 (regrade_benchmark.py auto-bumps gemini-3): the full matrix has longer cells; 6144 keeps unscorable near-zero. Glance at the unscorable count on a slice before the full run.",
+  "response_format": {"type": "json_object"},
+  "parser": "regex verdict extraction (\"verdict\":\"pass|fail\") with json.loads fallback; fail-closed",
+  "auto_fail_policy": "generation error / empty / missing -> fail WITHOUT a judge call; length-truncated -> graded",
+  "selection_rationale": "gemini-3 best on the 100-cell tutoreval gold: MCC 0.703, macro-F1 82.8, 0% false-pass, 0 unscorable, most stable, cheapest. No Qwen baseline (no local matrix). Caveat: over-strict (false-fail 45% on 20 gold-pass cells, noisy)."
+}
