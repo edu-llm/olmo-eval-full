@@ -1,0 +1,21 @@
+{
+  "run_name": "tracingllm-olmoe7b",
+  "checkpoints": {
+    "early": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/olmoe7b-staged/early/",
+    "chinchilla": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/olmoe7b-staged/chinchilla/",
+    "final": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/olmoe7b-staged/final/"
+  },
+  "early_step": 10000,
+  "chinchilla_step": 200000,
+  "final_step": 500000,
+  "chinchilla_multiplier": 20,
+  "chinchilla_tokens": null,
+  "max_statements": 1000,
+  "eval_limit": 0,
+  "toxigen_limit": 300,
+  "mmlu_subjects": 8,
+  "mmlu_limit_per_subject": 50,
+  "ppl_limit": 200,
+  "steering_layers": null,
+  "steering_alphas": [-4, -2, -1, 1, 2, 4]
+}

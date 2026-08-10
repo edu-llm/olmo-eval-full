@@ -1,0 +1,24 @@
+# eduLLM GPU smoke: build steering vectors on 1× L40S from a staged checkpoint.
+#
+# Run AFTER platform-run-stage-smoke.yaml completes (same staged URI below).
+#
+# Submit:
+#   edullm check  --dataset none --compute gpu-1xl40s
+#     --spec SteeringVectors/platform-run-vector-smoke.yaml
+#   edullm submit --dataset none --compute gpu-1xl40s
+#     --spec SteeringVectors/platform-run-vector-smoke.yaml
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
+  && export PYTHONPATH=SteeringVectors:.
+  && python SteeringVectors/generate_steering_vector.py
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-smoke/step1315/
+  --dataset stereoset --layers 6 --max-statements 200
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
+  --run-name steering-vector-smoke
+  --device cuda:0 --dtype bfloat16'

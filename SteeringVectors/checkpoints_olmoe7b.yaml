@@ -1,0 +1,36 @@
+# Three-checkpoint manifest for OLMoE-7B TracingLLM replication.
+# Stage OLMo-core checkpoints under teams/eval-inference/runs/ before submit.
+#
+# If `early_step` / `chinchilla_step` are omitted, they are inferred from the
+# final checkpoint's config.json (fixed_steps + Chinchilla token target).
+
+run_name: tracingllm-olmoe7b
+
+# Staged checkpoint URIs (edit after sb_aws copy from edullm-checkpoints).
+checkpoints:
+  early: s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/olmoe7b-staged/early/
+  chinchilla: s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/olmoe7b-staged/chinchilla/
+  final: s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/olmoe7b-staged/final/
+
+# Optional explicit step numbers (must match URIs). Null = infer from final config.
+# Placeholders below — replace after staging real OLMoE-7B checkpoints.
+early_step: 10000
+chinchilla_step: 200000
+final_step: 500000
+
+# Chinchilla target: tokens ≈ chinchilla_multiplier × non_embedding_params.
+# Set chinchilla_tokens explicitly to override auto from config.
+chinchilla_multiplier: 20
+chinchilla_tokens: null
+
+# Cost / runtime caps (raise for paper-faithful, lower for smoke).
+max_statements: 1000
+eval_limit: 0
+toxigen_limit: 300
+mmlu_subjects: 8
+mmlu_limit_per_subject: 50
+ppl_limit: 200
+
+# Steering grid (paper-style; narrowed by LAMBADA PPL when ppl_limit > 0).
+steering_layers: null  # null = middle third of decoder layers
+steering_alphas: [-4, -2, -1, 1, 2, 4]

@@ -1,0 +1,25 @@
+# eduLLM job: TracingLLM full protocol on OLMoE-7B (3 checkpoints only).
+#
+# Copy this file to `.edullm/run.yaml` on branch `edullm/steering-olmoe7b` and push
+# to trigger the image build. Do NOT overwrite the CAT eval run.yaml on other branches.
+#
+# Prerequisites:
+#   1. Stage three OLMoE-7B OLMo-core checkpoints to the URIs in
+#      SteeringVectors/checkpoints_olmoe7b.json (early / chinchilla / final).
+#   2. Edit step numbers or URIs if your run uses different save points.
+#
+# Phases (one submission): probing (3 ckpts) + MI + steering (early & chinchilla → final)
+# + all 5 trustworthiness benchmarks + ARC/MMLU/MathQA/RACE + figure PNGs.
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-8xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=4096
+  && export PYTHONPATH=SteeringVectors:.
+  && python SteeringVectors/run_tracingllm_olmoe7b.py
+  --manifest SteeringVectors/checkpoints_olmoe7b.json
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
+  --device cuda:0'

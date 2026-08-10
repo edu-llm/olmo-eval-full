@@ -158,6 +158,7 @@ vllm = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["SteeringVectors/vendor"]
 
 [tool.ruff.lint]
 select = [
