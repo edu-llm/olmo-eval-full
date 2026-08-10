@@ -1,81 +1,155 @@
-# BiGGen calibration (branch `frq/biggen`)
+# BiGGen calibration — CANONICAL unidimensional scale (gemini-3 judge, floor 10 / SE_post 0.12)
 
-Primary model: **UNIDIMENSIONAL** ("general" skill), MWLE estimator, trace selection, scenario-level CAT.
-Matrix: `staging/biggen_response_matrix.csv` (52 models x 2,678 atoms). Hygiene bank: `staging/biggen_rubrics_hygiene.jsonl`
-(2,389 modeled + 289 `exclude_from_fit` = 160 zero-variance + 90 |b|>6 + 40 safety/moral_belief).
-Calibrated bank candidate: `bank/biggen_unidim_calibrated.jsonl`.
+**unidim `general`, judge = `gemini-3-flash-preview`, op-point floor 10 / SE_post 0.12, N=52; headline excludes 3 weakly-identified models.**
 
-**LOCKED config:** `SE target=0.12`, `min_scenarios=8`, `ridge=0.01`, MWLE, trace, k=5, seed 20260729 (unidimensional). **Of-record CAT stop = EAP-posterior SD (adopted 2026-08-06).**
+This is the **canonical (of-record) BiGGen scale**: a single latent **general** ability fit as a
+unidimensional 2PL over the BiGGen criteria, **recalibrated on the frontier `gemini-3-flash-preview`
+judge** and carrying an explicit **SE_judge** (judge-error) uncertainty layer. A scenario is
+administered as a testlet bundle of its per-criterion items; the real production engine
+(`scripts/scenario_cat_lib.py` → `tutor_cat` / `scripts/calibrate_mirt.py`) selects a whole scenario
+per CAT step and updates ability. Nothing here reimplements CAT selection or the item-response update.
 
-> ### Of-record stop rule = **EAP-posterior SD** (adopted; replaces online normal-approx SE)
-> The deployed CAT now stops at the first scenario with `n_scenarios ≥ 8` **AND** the **EAP posterior SD ≤ 0.12** (posterior over the fine 3,201-node θ grid from the administered responses), else a forced cap (L=40). This replaces the engine's optimistic **online normal-approx SE** stop, which reached the 0.12 target for only **28.8% (15/52)** of models on the honest posterior metric vs **88.5% (46/52)** under EAP — **resolving the online-vs-posterior estimator mismatch** (the deployed online SE_ability was ~0.173, well above its 0.12 target). The **fitted bank is UNCHANGED** (stop-rule change only, no re-fit). The prior online-SE of-record is archived under **`experiments/archive_onlineSE/`** (+ its `README.txt`); regenerate the EAP of-record via `scripts/biggen_adopt_eap.py` (the Phase-A study lives in `scripts/biggen_eap_stop_{lib,prototype,grid}.py` → `experiments/11_eap_stop_prototype/` + `experiments/12_eap_stop_grid/`). WildBench is also on EAP now; Bridge / TutorBench / InfoBench are pending migration.
+The **prior Qwen-judge of-record** (unidim `general`, floor 8 / SE 0.12) is archived under
+[`qwen_superseded/`](qwen_superseded/README.md) — retained for provenance/diff only. **Do not use it
+for of-record reporting.**
 
-- **OOS-of-record (05, EAP stop @ locked config):** **r=0.9823, slope=0.921, θ-MAE 0.254**, mean 13.4 scenarios / 53.2 criteria (OOS fold; deployed frozen-bank ~19.3 scen / median 16), OOS convergence 94.2% (n=52). Estimator panel (same EAP-administered sets): online/batch EAP r 0.988/slope 0.860, **MWLE r 0.982/slope 0.921 (of-record)**, MLE r 0.970/slope 0.967 (rejected: diverges on all-pass/all-fail). _Reference EAP = fine uniform grid (3,201 nodes/[−8,8], std-normal prior). The prior online-SE recovery (r 0.9715, slope 0.813, 9.4 scen) is archived under `experiments/archive_onlineSE/05_oos_recovery/`; the legacy coarse-grid variant stays as `05_oos_recovery/*_coarse.*`. Regenerate via `scripts/biggen_adopt_eap.py` (EAP of-record) or `scripts/biggen_regen_of_record.py` (online, `--eap-mode {fine,gh}`)._
-- Experiments **01/02/03/06 are the decision-evidence sweeps** and are left AS-IS at their sweep configs (not re-run).
-- The calibrated bank (`bank/biggen_unidim_calibrated.jsonl`) is **config-independent** — item params don't depend on the stopping rule — so it is unchanged.
-- History: earlier passes floated floor-12/SE-0.30 then floor-10; the fine-SE knee (06c) motivated the final SE=0.12/floor-8 lock (r 0.970 at ~9 scenarios, 100% convergence, lower-variance than SE 0.11: max 17 vs 24).
+**Status:** STUDY / reporting only, **LOCAL**. The production engine (`tutor_cat/`,
+`scripts/scenario_cat_lib.py`, `scripts/calibrate_mirt.py`) and the banks were only read/called,
+never modified by this package. **Nothing committed by the packaging step.** Mirrors the sibling
+`tutoreval_calibration/` / `tutorbench_calibration/unidim/` numbered-experiment layout, plus the
+SE_judge additions (experiments 07 + 10).
 
-**Mean-scenario reconciliation (audit, no bug) — under the EAP stop.** Two mean test-lengths coexist at floor 8 / SE 0.12 for legitimate reasons (same mechanism as under the old online stop, just longer because EAP is the honest target) — NOT a floor or stopping bug:
-- **OOS k-fold convention (05, 06, 04, 09-10 recovery): ~13.4 scen.** Each fold refits item params on ~42 train models; small-N MML **upward-biases discriminations**, so the honest posterior SD reaches 0.12 in fewer scenarios than the deployed frozen bank.
-- **Deployed frozen bank (07): ~19.3 scen (median 16).** A genuinely new model is scored with the shipped 52-model params (`biggen_unidim_modeled.jsonl`); ~88.5% reach EAP posterior SD ≤ 0.12 and the rest cap at L=40 (the ~6 lowest-ability tiny base models). **This is the true in-deployment length.** (Under the old online stop these were ~9.4 / ~13.6 scen, but that stop was optimistic — only 28.8% actually reached the 0.12 posterior-SD target; the EAP stop closes that honesty gap at the cost of ~+6 deployed scenarios.)
-- Deployed SE decomposition (07, EAP): median SE_ability **0.118** / SE_param **0.062** / SE_total **0.133** (means 0.130 / 0.069 / 0.148); bar-inflation median ×1.13 / max ×1.25. The full-bank SE_param **floor** (median item-discrimination SE **0.4202**) is **stop-independent and unchanged**.
+---
+
+## Locked operating point + methodology
+
+- **Scale:** unidimensional 2PL, single latent `general` (`q_modeled = {"general": 1}`, `axis: "unidim"`).
+- **Judge:** `gemini-3-flash-preview` (frontier). The bank was re-graded and re-fit on this judge;
+  the SE_judge layer quantifies the residual judge error against 250 human-gold cells.
+- **Fit:** production M2PL MML-EM (`calibrate_mirt.fit_m2pl_em`), 1 dim, `fit_grid = 7` GH nodes,
+  `ridge = 0.01`, clamp; skill = `general`; `n_models = 52`.
+- **Pass-imbalance curation:** administrable pool 2337 criteria → **322 columns excluded** (train
+  `pass_count ≤ 3` **OR** `fail_count ≤ 3`, applied per-fold OOS and full-data) → **2015 fitted
+  criteria** in the shipped bank (`bank/biggen_unidim_modeled_gemini3_curated.jsonl`).
+- **CAT stop:** dense **3201-node** EAP-posterior marginal-SD grid over [−8, 8], info-plateau
+  δ = 0.005 / W = 3, cap 40/50, **MWLE θ at stop** (CAT ability). **Reach = SE_post ≤ target ONLY.**
+- **Leaderboard θ:** **full-bank fine-EAP** posterior mean (stop-independent), reported **as
+  observed** (NOT per-model de-biased). Judge strictness biases *absolute* pass-rates down; the
+  honest correction is the **cohort pass-rate de-bias factor** (see SE_judge below), not a per-model
+  θ shift.
+- **Operating point (of-record): floor(min_scenarios) = 10, SE_post target = 0.12** — chosen off the
+  floor × SE grid (experiment 06 / `DECISION_TABLE.md`).
+- **OOS:** k = 5 model-fold, seed 20260729, refit-per-fold (1-D, ridge 0.01, GH 7, clamp; per-fold
+  pass-imbalance exclusion).
+- **N = 52 models; headline N = 49 EXCLUDES 3 weakly-identified models** whose EAP posterior SD at the
+  forced-long cap still exceeds the loosest grid target (identified **from the run**, not assumed):
+  `ai-forever/mGPT`, `BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu`, `allenai/OLMo-1B-hf`.
+
+## Headline numbers @ 10 / 0.12
+
+| quantity | excl-weak (N=49) | all-52 |
+|---|---|---|
+| OOS recovery r | **0.956** | 0.9533 |
+| slope | **0.882** | 0.7791 |
+| θ-MAE | **0.257** | 0.3407 |
+| median test length (scenarios) | **13** | 13 |
+| length mean ± SD | 13.18 ± 2.8 | 13.13 ± 2.73 |
+| %reach (SE_post ≤ 0.12) | **69.4%** | 65.4% |
+| median SE_total (ability+param) | 0.144 | 0.145 |
+| p-IRT pass-rate MAE | **0.050** (r = 0.947) | 0.049 (r = 0.956) |
+| adaptive vs random to reach SE_post ≤ 0.12 | **13 vs 87 scenarios (~6.7×)** | — |
+| leaderboard top (headline, observed θ) | `LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct` θ = 2.65 (SE_total 0.253) | — |
+| leaderboard bottom (headline, observed θ) | `BEE-spoke-data/smol_llama-220M-openhermes` θ = −2.79 (SE_total 0.276) | — |
+
+Machine-readable: `summary.json`. **%reach is corrected** — reach is gated on `SE_post` (EAP
+posterior SD at stop) ≤ target **ONLY**; SE_total (incl. SE_param, SE_judge) is a reported precision
+number, **not** a gate.
+
+**Slope caveat:** OOS recovery slope ≈ **0.88** (excl-weak) — a mild uniform ~12% absolute-scale
+compression (CAT MWLE pulls extremes toward centre). **Rankings and pass-rate prediction are
+unaffected** (r = 0.956, p-IRT MAE = 0.050); only absolute-θ units are shrunk toward 0. For absolute
+θ, apply an affine rescale (÷ slope); for ranking / pass-rate, use θ as-is.
+
+---
+
+## ⚠️ SE_judge — the key story (judge-error uncertainty layer)
+
+The BiGGen labels come from a fallible judge, so the calibration carries a third uncertainty
+component, **SE_judge**, alongside SE_ability (finite test) and SE_param (finite calibration sample).
+Estimated from **250 human-gold cells** vs the `gemini-3-flash-preview` verdicts
+(`bank/biggen_gemini3_confusion.json`, `bank/gold_labels.jsonl`):
+
+- **Direction (firm): the judge is STRICT.** False-fail **α ≈ 22.5%** (judge fails a good answer) vs
+  false-pass **β ≈ 2.2%** (judge passes a bad answer). β small ⇒ **certification-safe** (a passed
+  answer is almost always genuinely good); α large ⇒ observed θ / pass-rates are biased **down**.
+- **De-bias is a COHORT pass-rate factor, not a per-model θ shift: ×1.33 [1.17, 1.57]**
+  (closed form `p_true ≈ (p_obs − β)/(1 − α − β)`). Direction is firm (α strict ⇒ absolute
+  pass-rates biased down); magnitude band is wide on 250 gold cells. **A per-model `theta_debiased`
+  is NOT of-record** — the earlier per-column-prevalence-prior resample is a *shrinkage estimator*
+  that compresses the ability scale (top models spuriously move down, low tail pulled up), so it is
+  retained only as a labeled diagnostic (`experiments/08_leaderboard/leaderboard_f10se12_diagnostic_shrinkage.csv`).
+  A proper per-model noisy-label IRT de-bias is **future work**.
+- **SE_judge is the DOMINANT, correlated floor.** It is **~88% of full-bank SE_total²** (full-bank
+  median SE_judge **0.146**, dominates in 94% of models); at the op-point it is heavier-tailed
+  (median **0.164**, dominates in ~60%). It does **NOT shrink across models** — there is one fixed
+  judge, so its error is correlated across the whole leaderboard rather than averaging out.
+- **Frozen Tier A is the conservative of-record.** Tier B (refit the bank on each resampled judge
+  replicate) gives SE_judge ≤ Tier A (B/A median 0.64) — item-parameter re-estimation **absorbs**,
+  not amplifies, judge noise — so the frozen-bank Tier A layer we ship is the conservative choice.
+- **Rankings are robust to the judge layer** (the judge error is systematic/correlated, so it does
+  not reshuffle the ordering); **absolute θ / pass-rate carry the cohort bias** (the ×1.33 factor
+  above). The of-record fig-08 leaderboard ranks by **observed θ** with **SE_total** error bars (no
+  per-model bias band). Per-stratum α/β vary: **theory_of_mind is strictest (α ≈ 0.42)**;
+  **instruction_following carries the highest β (≈ 0.11)**.
+
+See experiments **07** (3-component SE decomposition) and **10** (judge-error / de-bias), plus
+`se_judge/` inputs summarized in `summary.json` → `se_components` / `se_judge_regimes` / `judge_error`.
+
+---
+
+## Experiments (numbered set)
 
 | # | experiment | headline | figure |
 |---|---|---|---|
-| 01 | min_scenarios {0,4,6,8,10} (OOS) | OOS r rises 0.907->0.977 (slope 0.67->0.80) | experiments/01_min_scenarios/figures/recovery_r_slope_vs_min_scenarios.png |
-| 02 | SE target {0.20..0.35} | convergence 100%; mean scen 10.0; in-sample r~0.973 (SE non-binding at floor 10) | experiments/02_se_target/figures/convergence_and_length_vs_se_target.png |
-| 03 | ridge {1e-3..2e-2} (OOS) | OOS r peaks 0.977 @ ridge 0.01; a-stability 0.59->0.71; recommend ridge 0.01 | experiments/03_ridge/figures/recovery_r_and_a_stability_vs_ridge.png |
-| 04 | efficiency vs random, **OOS** @ locked (**EAP stop**) | adaptive **13.4 scen / OOS r 0.982 / slope 0.921 / conv 94.2%** vs random **112 scen / r 0.994** (random baseline is stop-independent, kept from the archive; its higher r is just ~8x more items). Adaptive ~8x more efficient. | experiments/04_efficiency_vs_random/figures/efficiency_adaptive_vs_random.png |
-| 05 | **OOS of record @ LOCKED** (SE 0.12 / floor 8; **EAP stop**, fine EAP ref) | OOS **r=0.9823, slope=0.921**, θ-MAE 0.254, mean 13.4 scen / 53.2 crit, conv 94.2% (n=52). Estimator panel on the same EAP sets (online=EAP-mean 0.988/0.860, batch 0.988/0.860, **MWLE 0.982/0.921**, MLE 0.970/0.967 rejected). Online-SE recovery (r 0.9715) archived under `archive_onlineSE/`. | experiments/05_oos_recovery/figures/oos_recovery_scatter_general.png ; oos_recovery_general.png (3-panel) |
-| 06 | floor x SE grid (5x4=20, OOS) | _online-stop decision-evidence sweep (kept as historical); superseded of-record by the EAP grid in 06b._ SE non-binding at SE>=0.15; OOS r 0.950(f6)->0.984(f15), plateau ~f12 | experiments/06_floor_se_grid/figures/oos_r_vs_floor_by_se.png |
-| 06b | tight-SE extension {0.08,0.10} x floor {0,6,8,10,12,15} (OOS) | **convergence cliff at ~0.08**: SE=0.10 -> 100% converge (mean ~13 scen); SE=0.08 -> 2 models (3.8%) hit cap=50, both lowest-ability (theta_ref -4.5). Efficiency frontier: SE=0.10 var-length reaches r=0.985 @ ~13 mean scen vs fixed floor 15's 0.984 @ 15 (marginal gain); SE=0.08 balloons to 24 scen for +0.004 r. | experiments/06_floor_se_grid/figures/efficiency_frontier_r_vs_mean_scenarios.png, convergence_vs_se_target.png |
+| 04 | efficiency vs random (OOS) | adaptive reaches median SE_post ≤ 0.12 at **13** vs random at **87** scenarios (**~6.7×** fewer) | `experiments/04_efficiency_vs_random/adaptive_vs_random_efficiency_f10se12.png` |
+| 05 | OOS recovery @ 10/0.12 | excl-weak **r = 0.956, slope = 0.882, θ-MAE = 0.257**; all-52 r = 0.953 (slope < 1 = mild compression) | `experiments/05_oos_recovery/oos_recovery_ability_f10se12.png` |
+| 06 | floor × SE operating-point grid | decision table across floor {6,8,10,12,15} × SE {0.10–0.25}; floor 10 / 0.12 = r 0.956 / %reach 69 (excl-weak); floor is length knob, SE the precision knob | `experiments/06_floor_se_grid/figures/oos_grid_heatmaps.png` + `DECISION_TABLE.md` |
+| 07 | parameter uncertainty (3-component SE: ability, param, **judge**) | full-bank + op-point mean ± SD; **SE_judge ≈ 88% of full-bank SE_total²**; op-point SE_total median 0.211 | `experiments/07_parameter_uncertainty/se_components_f10se12.png` |
+| 08 | general-ability leaderboard (52 models, full-bank **observed θ** + SE_total incl. SE_judge) | top `LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct` θ = 2.65; bottom headline `BEE-spoke-data/smol_llama-220M-openhermes` θ = −2.79; 3 weak at the extreme low tail greyed. Per-model θ_debiased/bias-band moved to `leaderboard_f10se12_diagnostic_shrinkage.csv` (NOT of-record; shrinkage estimator) | `experiments/08_leaderboard/leaderboard_f10se12.png` |
+| 09 | p-IRT predicted-vs-actual pass rate (OOS) | pass-rate MAE **0.050** (r = 0.947) excl-weak; all-52 MAE 0.049 | `experiments/09_pirt_mae/pirt_pred_vs_actual_f10se12.png` |
+| 10 | judge error profile + cohort de-bias | per-stratum α/β (ToM strictest α ≈ 0.42; IF highest β ≈ 0.11); **cohort pass-rate** de-bias **×1.33 [1.17, 1.57]** only (no per-model θ de-bias — shrinkage; future work) | `experiments/10_judge_error/judge_error_debias_f10se12.png` |
 
-06b outputs: `results_tight_se.csv` (12 cells w/ scen min/med/max + non-converged counts + per-arm mean theta).
-Verdict: tight SE does NOT beat the fixed floor enough to switch; keep floor 12 / SE 0.30 (predictable length, 100% convergence). Avoid SE <= 0.08 (non-convergence for low-ability models + length blowup).
+Experiments 01–03 (min-scenarios / SE-target / ridge decision sweeps) and 11–12 (EAP-stop adoption
+study) from the Qwen package are **not re-run** on the gemini-3 judge; they live under
+`qwen_superseded/experiments/` for methodology provenance. The gemini-3 of-record here is the
+04–10 set at the locked 10/0.12 operating point.
 
-06c — fine SE band {0.11,0.12,0.13,0.14} x floor {0,6,8} (`results_fine_se.csv`; 100% convergence everywhere).
-Smooth interpolation (floor 0): SE 0.14 r0.950 @mean6.2/max12 -> 0.13 r0.955 @7.3/16 -> 0.12 r0.963 @8.5/17 -> 0.11 r0.975 @10.4/max24 -> (0.10 r0.985 @13.3/**max46**).
-**Length/variance knee at SE ~0.11**: recovers r~0.975 (= fixed floor-10) at ~10 mean scen (max 24); tightening to 0.10 nearly DOUBLES worst-case length (max 46) for +0.01 r. SE 0.12 is the lower-variance pick (max 17, r 0.963).
-Caveat: at N=52 the r spread across SE 0.11-0.15 (~0.95-0.975) is within the ~+/-0.02-0.03 bootstrap-CI noise, so 0.11-0.15 is a length/variance-preference call, not a clear optimum. Recommendation unchanged (floor 12 / SE 0.30).
+## Layout
 
-### Locked-config deliverables (07-10, all at SE=0.12 / floor 8 / MWLE, **EAP stop**)
+```
+biggen_calibration/
+  README.md                 <- this file (canonical gemini-3 of-record)
+  FLOW_PACKAGE.md           <- flow/uni-frq graduation payload (gemini-3)
+  summary.json              <- machine-readable op-point / config / headline (both subsets) + SE_judge
+  bank/
+    biggen_unidim_modeled_gemini3_curated.jsonl   <- 2015 fitted criteria (deployment params)
+    response_matrix.csv                            <- calibration input (52 x 2337)
+    biggen_gemini3_confusion.json                  <- SE_judge alpha/beta from gold
+    gold_labels.jsonl                              <- human gold backing the confusion
+    PROVENANCE.json                                <- sha256 + source paths for the above
+  scripts/                  <- repro drivers (read-only vs the production engine)
+    run_oos_grid.py  build_of_record_f10se12.py  se_judge_lib.py  se_judge_gemini3.py  curate_and_refit_gemini3.py
+  experiments/
+    04_efficiency_vs_random/  05_oos_recovery/  06_floor_se_grid/
+    07_parameter_uncertainty/ 08_leaderboard/   09_pirt_mae/  10_judge_error/
+  qwen_superseded/          <- ⚠️ prior Qwen of-record (bank + experiments 01–12 + README/FLOW), provenance only
+```
 
-| # | experiment | headline | figure |
-|---|---|---|---|
-| 07 | parameter uncertainty (obs-info bootstrap, n_boot=150; **EAP admin sets**) | mean SE_ability **0.130** -> **SE_total 0.148** (+SE_param 0.069); inflation median x1.13, max x1.25 — calibration error is MODEST at N=52. Full-bank SE_param **floor** (median item SE **0.4202**) is stop-independent, unchanged. | experiments/07_parameter_uncertainty/figures/mean_total_se.png |
-| 07b | **SE-vs-floor sensitivity** (EAP; locked floor stays 8) | under EAP the floor barely moves SE (posterior-SD stop dominates): floor 8/10/12 = SE_total **0.134 / 0.131 / 0.131** (SE_ability ~0.117, SE_param 0.064/0.062/0.061), deployed mean scen 19.3/19.7/20.3 | experiments/07_parameter_uncertainty/figures/se_vs_floor.png |
-| 07c | **deployed precision-reached / se_post_vs_total / se_ability_vs_total** (EAP @ 8/0.12) | honest posterior metric: **88.5% (46/52)** reach SE_ability ≤ 0.12; the 6 misses are the weakly-identified tiny base models. | experiments/07_parameter_uncertainty/{precision_reached.{csv,json}, se_post_vs_total.csv, figures/se_ability_vs_total.png} |
-| 08 | general-ability leaderboard (52 models; **FULL-BANK theta**, stop-independent; EAP SE bars) | instruct 2-4B on top (EXAONE-3.5-2.4B), tiny base at bottom; θ range [−5.36, 2.64]; **ALL adjacent +/-1.96 SE_total bars overlap** -> only coarse ability bands distinguishable at N=52. **6 weakly_identified** (EAP-native deployed caps) flagged as upper bounds. Full-bank θ is stop-independent; ranking Spearman **0.984** vs the prior CAT-administered leaderboard (archived under `archive_onlineSE/08_leaderboard_catadmin/`). | experiments/08_leaderboard/figures/leaderboard_general.png |
-| 09 | p-IRT predicted-vs-actual pass rate, **OOS** (k=5; EAP stop) | pass-rate MAE **0.042** [0.033,0.052] (LOO 0.042), theta-MAE **0.254** [0.206,0.307], r **0.978** [0.970,0.985], slope **0.843** [0.790,0.900] (bootstrap CIs, B=2000). | experiments/09_pirt_mae/figures/pirt_pred_vs_actual.png |
-| 10 | order/seed dependence (8 seeds; EAP stop) | across-seed theta SD mean **0.087** (0.72x SE target, 0.65x SE_total), median 0.056, max 0.66 -> the longer EAP tests are **more order-stable** than the old online stop (mean 0.179); SE_total captures most of it | experiments/10_order_seed/figures/seed_spread_general.png |
+## Caveats
 
-**Bootstrap 95% CI bands (B=2000, seed 0, resample 52 models)** overlay the recovery figures: the 05 three-panel `oos_recovery_general.png` (OLS fit + band + r/slope CIs per panel, matching the single scatter); the sweep r-lines `01_min_scenarios/recovery_r_slope_vs_min_scenarios.png`, `03_ridge/recovery_r_and_a_stability_vs_ridge.png`, `02_se_target/recovery_r_vs_se_target.png` (bands overlap across configs ~+/-0.02-0.03, reinforcing "preference call, not a clear optimum"); and `09_pirt_mae/pirt_pred_vs_actual.png` (bootstrap CI band around the OLS fit line; per-model pairs persisted to `09_pirt_mae/oos_per_model_pirt.csv`). Skipped: `06/oos_r_vs_floor_by_se.png` r-bands (per-cell OOS θ not persisted; would require re-running the full grid).
-
-Each `experiments/NN_*/results.csv` has the full per-config rows; `runs/` holds the raw per-config engine/kfold outputs.
-Estimator = MWLE (won here: OOS slope ~0.80 vs batch/online shrink lower). N=52 is below the MIRT identifiability floor — treat as provisional.
-
-## Ported Bridge-parity analyses (A: 1-D confirmed · B: fine EAP promoted to of-record · C: operating-point grid)
-
-Three analyses that the Bridge scenario study ran but BiGGen lacked were ported here; the user decisions of 2026-08-05 are applied. Drivers live in `scripts/` (`biggen_dimensionality_diagnostic.py`, `biggen_finegrid_compare.py`, `biggen_recovery_grid.py`, `biggen_regen_of_record.py`), reusing the shared `scripts/scenario_cat_lib.py` + `scripts/{scenario_kfold_estimator_cv,scenario_param_uncertainty,calibrate_mirt}.py` engine wiring; BLAS threads pinned, ≤6 workers, `__main__` guard. **Scope of changes to committed files:** exp-05 and exp-08 of-record were regenerated on the fine EAP grid (analysis B), with the coarse originals archived alongside as `*_coarse.*`; experiments 01–04, 06, 07, 09, 10 and the locked-config narrative are untouched.
-
-### A — Dimensionality structure (feasibility gate + exploratory diagnostic). **Decision: KEEP UNIDIMENSIONAL (final).**
-**Feasibility gate:** BiGGen carries **no multi-skill Q** (`q_mapping=null`, `primary_skill="general"`, `q_modeled={"general":1}` for every criterion), so the confirmatory 1–5 skill sweep has no named Q to confirm and is **NOT run**. Instead a data-driven diagnostic runs on the 52×2,389 binary matrix — the "redo after grading" step deferred in `data/BiGGen/SKILL_AXIS_NOTES.md` — and STOPS short of a sweep. Findings: a **dominant general factor** (PC1/PC2 ≈ 6.3; capability-composite mean|r| ≈ 0.93, min pair safety–tool_usage 0.84 — reproducing the notes' ~0.92 and safety-separates result); and the notes' strongest 2-D candidate (general + normative/safety, cross-loading safety atoms) **does not beat 1-D out-of-sample** (held-out log-loss 0.4659 vs 0.4652) and loses on BIC — only AIC (which overfits at N=52) favors it, and the latent correlation is ≈0.61. Horn parallel analysis flags 4 weak components, which is expected/liberal at atoms≫models and reflects the notes' residual A/B/C structure, **not** a confirmatory axis. **Decision (final, user-confirmed): BiGGen stays UNIDIMENSIONAL; no multi-skill Q-matrix was authored.** Authoring a named multi-skill Q (e.g. general+normative, or the demand-based A/B/C axis) — the prerequisite to any confirmatory 1–5 sweep — is a **deferred, optional future step, not done**. Recorded in `03_structures/selection.json` (`decision` + `deferred_optional_future_step`).
-
-| # | analysis | headline | figure |
-|---|---|---|---|
-| A | 03_structures (exploratory) | 1-D confirmed final; multi-skill Q absent & not authored (deferred/optional); 1-D not beaten out-of-sample at N=52 | experiments/03_structures/figures/{structure_cv.png, capability_corr.png} ; selection.json, structure_comparison.csv |
-
-### B — Fine-grid (de-quantized) EAP θ reference. **PROMOTED to of-record.**
-BiGGen's **full-bank EAP reference** (the exp-05 recovery X-axis) was **coarse-grid quantized**: computed on a uniform 61-node grid over [−6,6] (spacing 0.2), and because the full-bank posterior is razor-sharp the EAP mean collapsed onto nodes → visible **0.2 banding** (59.6% of models snapped to the grid; 47/52 unique θ). The reference is now the **fine uniform grid** (3,201 nodes over [−8,8], standard-normal prior — mirroring Bridge's `scenario_recovery_final`), which removes it (9.6% snapped; 52/52 unique). This is the **new of-record**: exp-05 (`metrics.json`, `oos_per_model.csv`, `figures/oos_recovery_{general,scatter_general}.png`) and exp-08 (`results.csv`, `figures/leaderboard_general.png`) were regenerated on the fine grid by `scripts/biggen_regen_of_record.py` (**default `--eap-mode fine`; legacy coarse behind `--eap-mode gh`**). The MWLE recovery **headline is robust**: r 0.9703→**0.9715**, slope 0.812→**0.813**, θ-MAE 0.341→**0.332** (MWLE is grid-free, max |Δθ_mwle| = 0). The **exp-08 leaderboard θ is the CAT-administered-set EAP** (n_admin ~30–68), not the full-bank reference, so it was already continuous: **ranking identical (Spearman 1.0, 0 rank changes)**, SE_total median 0.151. The coarse originals are archived for provenance as `05_oos_recovery/{metrics_coarse.json, oos_per_model_coarse.csv, figures/*_coarse.png}` and `08_leaderboard/{results_coarse.csv, figures/leaderboard_general_coarse.png}` (mirrors how Bridge archived its jackknife as `*_jackknife.*`); before/after quantification is in `finegrid_comparison.json` and `of_record_provenance.json`. Rationale for the swap: coarse-grid quantization of the razor-sharp full-bank posterior (a reference-quality bug, not a headline change).
-
-| # | analysis | headline | figure |
-|---|---|---|---|
-| B | 05_oos_recovery (fine EAP ref, of-record) | 0.2 banding removed; headline robust (r 0.9703→0.9715); coarse archived `*_coarse.*` | experiments/05_oos_recovery/figures/finegrid_debanding_general.png ; finegrid_comparison.json, of_record_provenance.json |
-| B | 08_leaderboard (of-record) | θ is now **FULL-BANK** (stop-independent, mirrors WildBench); EAP-deployed SE bars + 6 weakly_identified; ranking Spearman 0.984 vs the prior CAT-admin leaderboard (archived) | experiments/08_leaderboard/{results.csv, figures/leaderboard_general.png} |
-
-### C — Recovery × (floor × SE) operating-point heatmaps (**now the EAP-stop grid, of-record**)
-`06b_operating_point/` holds the **of-record EAP-stop operating-point grid** promoted from the Phase-A study `experiments/12_eap_stop_grid/` (`biggen_eap_stop_grid.py --stop-se eap`): floors {6,8,10,12,15} × SE {0.10–0.15}, all cells derived post-hoc from one forced-long adaptive order per fold/full-data run (no per-cell engine). It replaces the prior online-SE grid (archived under `archive_onlineSE/06b_operating_point/`). Key EAP findings: **floor barely matters** (the posterior-SD stop dominates); SE target is the real knob (SE 0.10→25% cap/~26 scen, 0.12→12% cap/~19 scen, 0.15→6% cap/~14 scen); OOS recovery r is flat/high (0.977–0.984) across the whole grid. **Regime split** (labeled on the figure): `recovery_r` is the OOS k-fold measure; `scenarios_*`/`se_total_*` are the deployed frozen-bank measures — not comparable across panels.
-
-| # | analysis | headline | figure |
-|---|---|---|---|
-| C | 06b_operating_point (EAP, of-record) | floor-insensitive; SE-target is the knob; recovery-r 0.977–0.985; deployed SE_total 0.11–0.16 | experiments/06_floor_se_grid/06b_operating_point/figures/heatmaps_floor_x_se.png ; recovery_grid.csv, recommendation.json |
+- **N = 52 is provisional** (below the ideal ~150 / the MIRT identifiability floor). Treat item
+  params as provisional; a larger rerun is a drop-in bank swap.
+- Leaderboard adjacent-pair SE bands overlap once SE_judge is included — only coarse ability bands are
+  distinguishable at N = 52.
+- The 3 weakly-identified tiny base models sit at the extreme low tail and are excluded from the
+  headline (kept in the all-52 numbers and flagged as upper bounds on the leaderboard).

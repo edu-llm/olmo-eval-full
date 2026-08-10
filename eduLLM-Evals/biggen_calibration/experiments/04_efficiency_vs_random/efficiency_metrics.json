@@ -1,0 +1,10 @@
+{
+  "op_point": {
+    "floor": 10,
+    "se_target": 0.12
+  },
+  "n_held_out_traces": 52,
+  "adaptive_reach_scenarios": 13,
+  "random_reach_scenarios": 87,
+  "scenario_savings_x": 6.69
+}

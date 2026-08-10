@@ -1,0 +1,21 @@
+{
+  "op_point": {
+    "floor": 10,
+    "se_target": 0.12
+  },
+  "headline_excl_weak": {
+    "n": 49,
+    "r": 0.956,
+    "slope": 0.882,
+    "intercept": 0.062,
+    "theta_mae": 0.2571
+  },
+  "all_52": {
+    "n": 52,
+    "r": 0.9533,
+    "slope": 0.7791,
+    "intercept": 0.0925,
+    "theta_mae": 0.3407
+  },
+  "note": "slope<1 => mild scale COMPRESSION (CAT MWLE pulls extremes toward centre)."
+}

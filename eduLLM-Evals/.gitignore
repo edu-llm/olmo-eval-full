@@ -32,7 +32,6 @@ WildBenchGrade/
 reports/
 bridgegrade/
 _scratch_infobench_verify/
-api_judge_pilot/
 .edullm_gen/
 graderValidationStuff/
 TutorEvalGrade/
@@ -213,3 +212,82 @@ data/TutorEval/scenarios_reworded.jsonl
 
 # cached BiGGen released-judgments pull (scripts/biggen_*_probe/structure)
 biggen_results_cache.parquet
+
+# ---------------------------------------------------------------------------
+# api_judge_pilot/ = frontier API-judge pilot. TRACK the deliverables: the
+# harness/tooling scripts, docs, human labels, the finalized judge checkpoints
+# (frozen prompt/config/metrics + reference verdicts), the human-labeled gold
+# sets (*_core), and the biggen response-matrix. IGNORE the heavy regenerable
+# scratch: the ~22MB raw verdicts.jsonl, every prompt-sweep / diagnostic /
+# smoke results dir, and the big scenario/rubric source dumps.
+#
+# Written as `**` + a directory re-include (not a bare `api_judge_pilot/`) so
+# the negations below take effect -- git will not descend into a bare excluded
+# directory, which would silently no-op every `!` rule.
+# ---------------------------------------------------------------------------
+api_judge_pilot/**
+!api_judge_pilot/**/
+
+# Scripts, docs, and the human label set.
+!api_judge_pilot/*.py
+!api_judge_pilot/*.md
+!api_judge_pilot/gold/*.py
+!api_judge_pilot/gold/*.md
+!api_judge_pilot/human_labels.csv
+
+# Finalized judge checkpoints (frozen provenance; small).
+!api_judge_pilot/checkpoints/**
+
+# Human-labeled gold sets: labels + sampled packets + manifests.
+!api_judge_pilot/gold/biggen_core/**
+!api_judge_pilot/gold/tutoreval_core/**
+!api_judge_pilot/gold/tutorbench_core/**
+!api_judge_pilot/gold/tutoreval_src/**
+
+# The biggen response-matrix deliverable (models x criteria pass/fail + index).
+!api_judge_pilot/grading_biggen/response_matrix.csv
+!api_judge_pilot/grading_biggen/criteria_index.csv
+!api_judge_pilot/grading_biggen/summary.json
+
+# ---------------------------------------------------------------------------
+# Branch-local experimental grid reports for tutorbench / tutoreval: untracked
+# scratch (oos/stop grids, of_record builds, figures, __pycache__) that is
+# regenerable and not a deliverable on this branch. Placed AFTER the reports/
+# re-include above so these win (last match); no negations follow, so git skips
+# these directories entirely.
+# ---------------------------------------------------------------------------
+reports/*tutorbench*/
+reports/*tutoreval*/
+reports/*infobench*/
+
+# ---------------------------------------------------------------------------
+# BiGGen gemini-3 recalibration (branch frq/biggen) packaging.
+#
+# reports/biggen_gemini3_recal/ is SCRATCH: every shareable deliverable (the
+# curated gemini-3 bank, the of-record figures/metrics, the OOS floor x SE grid
+# + DECISION_TABLE, the SE_judge tables, and the repro scripts) was copied into
+# the TRACKED biggen_calibration/ package. Ignore the scratch source so
+# `git add -A` does not stage the duplicate multi-MB banks (biggen_unidim_
+# modeled_gemini3*.jsonl), the engine dump (_bank_engine.jsonl), or __pycache__.
+# Placed after the reports/ re-include above so it wins (last match).
+#
+# The large raw api_judge_pilot dumps (grading_*/verdicts.jsonl 23-91MB,
+# biggen_src/ + *_src scenario/rubric dumps) are ALREADY excluded by the
+# `api_judge_pilot/**` base rule above; the small provenance we shipped lives
+# under biggen_calibration/bank/ (a copy) and is unaffected. NOTE: the
+# api_judge_pilot/checkpoints/*.jsonl and gold/*_core files are SMALL frozen
+# human-gold / reference deliverables (all < 200KB except the ~1MB core sample
+# dumps) that the base rule intentionally re-includes -- left tracked on purpose.
+# ---------------------------------------------------------------------------
+reports/biggen_gemini3_recal/
+
+# Cross-branch leftover raw grading dumps (regenerable from S3/runs; never
+# tracked). Most are already ignored above; these harden it if they reappear.
+WildBenchGrade/
+bridgegrade/
+TutorEvalGrade/
+api_judge_pilot/grading_*/verdicts.jsonl
+
+# Guarantee the biggen_calibration/ package figures stay TRACKED (no broad *.png
+# ignore currently swallows them; make it explicit + future-proof). Keep LAST.
+!biggen_calibration/**/*.png

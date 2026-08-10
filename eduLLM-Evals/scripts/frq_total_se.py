@@ -41,6 +41,87 @@ SE_TARGET = 0.30
 COLORS = {"ability": "#4d648d", "total": "#c1666b"}
 
 
+# ---------------------------------------------------------------------------
+# BiGGen gemini-3 SE_judge quadrature (Phase 3 extension)
+# ---------------------------------------------------------------------------
+#
+# The 2-skill FRQ path above combines SE_ability with SE_param only. The BiGGen
+# gemini-3 recalibration adds a THIRD, judge-measurement-error term (SE_judge, the
+# Monte-Carlo SD of the of-record theta under the confusion-model resample). The
+# same quadrature idea extends to any number of independent SE components:
+#
+#     SE_total = sqrt(SE_ability^2 + SE_param^2 + SE_judge^2)
+#
+# ``se_quadrature`` is the generic combiner (NaN treated as 0); ``biggen_se_judge_summary``
+# refreshes SE_total on the driver's per-model CSVs and emits a compact JSON summary. The
+# heavy resampling / engine calls live in the LOCAL scratch driver
+# ``reports/biggen_gemini3_recal/scratch/se_judge_gemini3.py`` (this file only owns the
+# quadrature + reporting, never the CAT engine).
+
+BIGGEN_JUDGE = "gemini-3-flash-preview"
+
+
+def se_quadrature(*components) -> np.ndarray:
+    """SE_total = sqrt(sum of squares) over any number of SE component arrays (NaN -> 0)."""
+    stacked = np.array([np.nan_to_num(np.asarray(c, dtype=float), nan=0.0) for c in components])
+    return np.sqrt((stacked ** 2).sum(axis=0))
+
+
+def _biggen_regime_stats(df: pd.DataFrame) -> dict:
+    """Medians/maxes for one regime's per-model SE decomposition (SE_total recomputed)."""
+    df = df.copy()
+    df["se_total"] = se_quadrature(df["se_ability"], df["se_param"], df["se_judge"])
+    theta_shift = (df["theta_debiased"] - df["theta"]) if "theta_debiased" in df else None
+    out = {
+        "n_models": int(len(df)),
+        "se_ability_median": float(df["se_ability"].median()),
+        "se_param_median": float(df["se_param"].median()),
+        "se_judge_median": float(df["se_judge"].median()),
+        "se_judge_mean": float(df["se_judge"].mean()),
+        "se_judge_max": float(df["se_judge"].max()),
+        "se_total_median": float(df["se_total"].median()),
+        "se_total_mean": float(df["se_total"].mean()),
+        # Share of SE_total^2 variance carried by the judge term (median across models).
+        "se_judge_var_share_median": float(
+            (df["se_judge"] ** 2 / df["se_total"] ** 2).median()),
+        "se_judge_dominates_frac": float(
+            (df["se_judge"] > np.sqrt(df["se_ability"] ** 2 + df["se_param"] ** 2)).mean()),
+    }
+    if theta_shift is not None:
+        out["theta_debias_shift_median"] = float(theta_shift.median())
+        out["theta_debias_shift_mean"] = float(theta_shift.mean())
+    return out
+
+
+def biggen_se_judge_summary(se_dir: Path) -> dict:
+    """Recompute SE_total quadrature on the driver CSVs and return a compact summary.
+
+    Reads ``per_model_full_bank.csv`` and ``per_model_oppoint_f10se12.csv``, writes the
+    refreshed SE_total back in-place, and returns a dict comparing the two regimes plus the
+    judge-term dominance diagnostics. Stamps judge = gemini-3-flash-preview.
+    """
+    out: dict = {"judge": BIGGEN_JUDGE, "regimes": {}}
+    for tag, name in (("full_bank", "per_model_full_bank.csv"),
+                      ("oppoint_f10se12", "per_model_oppoint_f10se12.csv")):
+        path = se_dir / name
+        if not path.is_file():
+            continue
+        df = pd.read_csv(path)
+        df["se_total"] = se_quadrature(df["se_ability"], df["se_param"], df["se_judge"])
+        df.to_csv(path, index=False)
+        out["regimes"][tag] = _biggen_regime_stats(df)
+    fb = out["regimes"].get("full_bank")
+    op = out["regimes"].get("oppoint_f10se12")
+    if fb and op:
+        out["op_vs_full"] = {
+            "se_judge_median_ratio": (op["se_judge_median"] / fb["se_judge_median"]
+                                      if fb["se_judge_median"] > 0 else float("nan")),
+            "se_judge_median_full": fb["se_judge_median"],
+            "se_judge_median_op": op["se_judge_median"],
+        }
+    return out
+
+
 def build_total_se_csv(out_dir: Path) -> pd.DataFrame:
     lb = pd.read_csv(BASE / "leaderboard" / "2_skills" / "cat_per_model.csv",
                      index_col="model")
@@ -178,7 +259,15 @@ def main() -> int:
     ap.add_argument("--runs-dir", type=Path, default=ROOT / "staging" / "engine_runs_se_traj")
     ap.add_argument("--workers", type=int, default=1)
     ap.add_argument("--skip-shrinkage", action="store_true")
+    ap.add_argument("--biggen-se-judge-dir", type=Path, default=None,
+                    help="BiGGen Phase-3 mode: recompute SE_total quadrature on the "
+                         "gemini-3 SE_judge driver CSVs in this dir and print the summary.")
     args = ap.parse_args()
+
+    if args.biggen_se_judge_dir is not None:
+        summary = biggen_se_judge_summary(args.biggen_se_judge_dir)
+        print(json.dumps(summary, indent=2))
+        return 0
 
     fig_dir = args.out_dir / "figures"
     df = build_total_se_csv(args.out_dir)

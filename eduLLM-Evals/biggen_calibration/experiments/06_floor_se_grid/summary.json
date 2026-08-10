@@ -1,0 +1,153 @@
+{
+  "study": "BiGGen gemini-3 CURATED floor x SE OOS operating-point grid (unidim general)",
+  "phase": "2B",
+  "local_only": true,
+  "op_point_locked": false,
+  "engine_untouched": true,
+  "judge": "gemini-3-flash-preview",
+  "data": {
+    "matrix": "api_judge_pilot\\grading_biggen\\response_matrix.csv",
+    "matrix_sha256": "2bee8b127b18be4674201138972462862153cb282b5b31d2346040340039fba5",
+    "curated_bank": "reports\\biggen_gemini3_recal\\bank\\biggen_unidim_modeled_gemini3_curated.jsonl",
+    "n_models": 52,
+    "n_criteria_all": 2337,
+    "n_criteria_curated_pool": 2015,
+    "n_scenarios_file": 693,
+    "fill": 1.0
+  },
+  "fit_config": {
+    "family": "m2pl-mml-em (production)",
+    "fit_grid_gh_nodes": 7,
+    "ridge": 0.01,
+    "max_iter": 200,
+    "negative_policy": "clamp",
+    "per_fold_imbalance_exclusion": "train pass_count<=3 OR fail_count<=3",
+    "fold_convergence": {
+      "0": {
+        "converged": true,
+        "n_iter": 4,
+        "n_kept": 1938,
+        "max_a": 8.259606615322536,
+        "abs_b_gt6": 54
+      },
+      "1": {
+        "converged": true,
+        "n_iter": 8,
+        "n_kept": 1947,
+        "max_a": 7.443475003639117,
+        "abs_b_gt6": 44
+      },
+      "2": {
+        "converged": true,
+        "n_iter": 4,
+        "n_kept": 1906,
+        "max_a": 6.311465959117824,
+        "abs_b_gt6": 39
+      },
+      "3": {
+        "converged": true,
+        "n_iter": 4,
+        "n_kept": 1955,
+        "max_a": 6.412588450169058,
+        "abs_b_gt6": 30
+      },
+      "4": {
+        "converged": true,
+        "n_iter": 4,
+        "n_kept": 1881,
+        "max_a": 8.239094190596385,
+        "abs_b_gt6": 38
+      }
+    }
+  },
+  "eap_stop": {
+    "nodes": 3201,
+    "range": 8.0,
+    "prior": "standard-normal",
+    "plateau_delta": 0.005,
+    "plateau_w": 3,
+    "cap": 50,
+    "reach_rule": "SE_posterior (EAP posterior SD) <= target ONLY"
+  },
+  "oos_design": {
+    "k": 5,
+    "seed": 20260729,
+    "per_fold_refit": true,
+    "reference": "full fold-bank fine-EAP on fold params (held-out recovery)",
+    "final_estimator": "MWLE at stop",
+    "top_n": 5,
+    "selection": "trace"
+  },
+  "se_param_sound": {
+    "method": "observed-information parametric bootstrap (biggen_recovery_grid)",
+    "fit_grid": 7,
+    "ridge": 0.01,
+    "boot_grid_nodes": 241,
+    "boot_range": 6.0,
+    "n_boot": 150,
+    "seed": 20260801,
+    "note": "full-data curated bank, reused across folds; SE_total = sqrt(SD^2 + SE_param^2)",
+    "full_admin_floor_median": 0.02316633964142408,
+    "full_admin_floor_mean": 0.03980768245317041
+  },
+  "grid": {
+    "floors": [
+      6,
+      8,
+      10,
+      12,
+      15
+    ],
+    "targets": [
+      0.1,
+      0.12,
+      0.15,
+      0.18,
+      0.2,
+      0.25
+    ]
+  },
+  "weak_identified": {
+    "rule": "cap-SD (forced-long, floor-independent) > 0.25",
+    "models": [
+      "allenai/OLMo-1B-hf",
+      "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+      "ai-forever/mGPT"
+    ],
+    "cap_sd_tail": [
+      {
+        "model": "allenai/OLMo-1B-hf",
+        "cap_sd": 0.4123
+      },
+      {
+        "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+        "cap_sd": 0.3771
+      },
+      {
+        "model": "ai-forever/mGPT",
+        "cap_sd": 0.2714
+      },
+      {
+        "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+        "cap_sd": 0.1024
+      },
+      {
+        "model": "01-ai/Yi-6B-200K",
+        "cap_sd": 0.0985
+      },
+      {
+        "model": "openlm-research/open_llama_3b",
+        "cap_sd": 0.0973
+      },
+      {
+        "model": "ibm-granite/granite-3.0-2b-base",
+        "cap_sd": 0.0917
+      },
+      {
+        "model": "HuggingFaceTB/SmolLM2-360M",
+        "cap_sd": 0.0894
+      }
+    ]
+  },
+  "elapsed_seconds": 466.7
+}

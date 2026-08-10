@@ -1,0 +1,13 @@
+{
+  "debias_factor_point": 1.3276826434902331,
+  "debias_factor_band": [
+    1.1724703951225233,
+    1.5691197238349284
+  ],
+  "debias_scope": "cohort pass-rate only (closed form (p_obs-beta)/(1-alpha-beta))",
+  "per_model_theta_debias": "NOT of-record (shrinkage estimator); proper per-model noisy-label IRT de-bias is future work",
+  "strictest_alpha_stratum": "theory_of_mind",
+  "strictest_alpha": 0.425,
+  "highest_beta_stratum": "instruction_following",
+  "highest_beta": 0.1071
+}

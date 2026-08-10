@@ -1,0 +1,36 @@
+{
+  "package": "biggen_calibration (gemini-3 recalibration, canonical of-record)",
+  "judge": "gemini-3-flash-preview",
+  "scale": "unidimensional (general)",
+  "op_point": { "floor_min_scenarios": 10, "se_post_target": 0.12 },
+  "status": "STUDY / reporting only, LOCAL; nothing committed by the packaging step; production CAT engine untouched.",
+  "files": {
+    "biggen_unidim_modeled_gemini3_curated.jsonl": {
+      "role": "deployment params bank the engine scores a new model with (a/b per criterion)",
+      "n_criteria_fitted": 2015,
+      "curation": "pass-imbalance excluded: train pass_count<=3 OR fail_count<=3 (322 columns of 2337 administrable dropped)",
+      "fit": "production M2PL MML-EM, 7 GH nodes, ridge 0.01, clamp; skill=general; n_models=52",
+      "sha256": "544e8fab71bcf6b36c5fe62bfebd593fc52a9c15a4d2a47a5a0a701ede374b60",
+      "source": "reports/biggen_gemini3_recal/bank/biggen_unidim_modeled_gemini3_curated.jsonl"
+    },
+    "response_matrix.csv": {
+      "role": "calibration input matrix (models x criteria pass/fail); reproducibility only, not needed at flow runtime",
+      "shape": "52 models x 2337 administrable criteria x 693 scenarios, fill=1.0000",
+      "sha256": "2bee8b127b18be4674201138972462862153cb282b5b31d2346040340039fba5",
+      "source": "api_judge_pilot/grading_biggen/response_matrix.csv"
+    },
+    "biggen_gemini3_confusion.json": {
+      "role": "SE_judge confusion (alpha/beta) from 250 human-gold cells vs gemini-3-flash-preview verdicts",
+      "alpha_false_fail": 0.22522522522522523,
+      "beta_false_pass": 0.02158273381294964,
+      "sha256": "7b5ab75c74a1020a9b474c742534a7424cc04ecd14f05fce287d92d345334c11",
+      "source": "api_judge_pilot/gold/se_judge/biggen_gemini3_confusion.json"
+    },
+    "gold_labels.jsonl": {
+      "role": "human gold labels backing the SE_judge confusion (biggen_core)",
+      "sha256": "f281dc21174032e175c64f39cd0fc5a8a99f6d0aa0012af72f8b0a63c3ca9fd0",
+      "source": "api_judge_pilot/gold/biggen_core/gold_labels.jsonl"
+    }
+  },
+  "supersedes": "qwen_superseded/bank/biggen_unidim_modeled.jsonl (Qwen-judge of-record @ floor 8 / SE 0.12)"
+}

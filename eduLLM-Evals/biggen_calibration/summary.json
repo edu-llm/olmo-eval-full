@@ -1,0 +1,261 @@
+{
+  "generated_at": "2026-08-10T19:45:56.997385+00:00",
+  "status": "STUDY / reporting only - LOCAL; production/CAT engine untouched; nothing committed. De-bias RELABEL applied: leaderboard ranks OBSERVED theta with SE_total (incl SE_judge); per-model theta_debiased + bias_band are NOT of-record (shrinkage estimator; per-column-prevalence-prior resample compresses the ability scale) and were moved to experiments/08_leaderboard/leaderboard_f10se12_diagnostic_shrinkage.csv. Of-record de-bias = COHORT pass-rate factor 1.33x [1.17, 1.57] only; a per-model noisy-label IRT de-bias is future work. SE_judge story unchanged.",
+  "benchmark": "BiGGen (gemini-3-flash-preview judge)",
+  "scale": "unidimensional (general)",
+  "judge": "gemini-3-flash-preview",
+  "op_point": {
+    "floor_min_scenarios": 10,
+    "se_post_target": 0.12,
+    "reach_rule": "SE_post (EAP posterior SD at stop) <= target ONLY",
+    "stop": "dense 3201-node EAP posterior-SD over +/-8; plateau delta=0.005/W=3; cap 40/50; MWLE theta at stop (CAT ability)",
+    "leaderboard_theta": "full-bank fine-EAP posterior mean (OBSERVED; not per-model de-biased)",
+    "oos": "k=5, seed 20260729, per-fold refit (production M2PL MML-EM, 7 GH, ridge 0.01, clamp; per-fold pass-imbalance exclusion)",
+    "se_total": "sqrt(SE_ability^2 + SE_param^2 + SE_judge^2)"
+  },
+  "curated_bank": "reports/biggen_gemini3_recal/bank/biggen_unidim_modeled_gemini3_curated.jsonl",
+  "n_models": 52,
+  "n_criteria_curated": 2015,
+  "weak_models": [
+    "allenai/OLMo-1B-hf",
+    "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+    "ai-forever/mGPT"
+  ],
+  "headline_all_52": {
+    "n_models": 52,
+    "length_mean": 13.13,
+    "length_sd": 2.73,
+    "length_median": 13.0,
+    "length_max": 22.0,
+    "n_overran_floor": 42,
+    "pct_reach_se_post": 65.4,
+    "se_post_mean": 0.1429,
+    "se_post_sd": 0.0768,
+    "se_post_median": 0.1183,
+    "se_total_ability_param_mean": 0.1732,
+    "se_total_ability_param_median": 0.1446,
+    "recovery_r": 0.9533,
+    "recovery_slope": 0.7791,
+    "theta_mae": 0.3407
+  },
+  "headline_excl_weak": {
+    "n_models": 49,
+    "length_mean": 13.18,
+    "length_sd": 2.8,
+    "length_median": 13.0,
+    "length_max": 22.0,
+    "n_overran_floor": 39,
+    "pct_reach_se_post": 69.4,
+    "se_post_mean": 0.1246,
+    "se_post_sd": 0.0202,
+    "se_post_median": 0.118,
+    "se_total_ability_param_mean": 0.1527,
+    "se_total_ability_param_median": 0.1442,
+    "recovery_r": 0.956,
+    "recovery_slope": 0.882,
+    "theta_mae": 0.2571
+  },
+  "recovery": {
+    "op_point": {
+      "floor": 10,
+      "se_target": 0.12
+    },
+    "headline_excl_weak": {
+      "n": 49,
+      "r": 0.956,
+      "slope": 0.882,
+      "intercept": 0.062,
+      "theta_mae": 0.2571
+    },
+    "all_52": {
+      "n": 52,
+      "r": 0.9533,
+      "slope": 0.7791,
+      "intercept": 0.0925,
+      "theta_mae": 0.3407
+    },
+    "note": "slope<1 => mild scale COMPRESSION (CAT MWLE pulls extremes toward centre)."
+  },
+  "leaderboard": {
+    "ranking_basis": "observed theta (full-bank fine-EAP); error bars = SE_total (incl SE_judge)",
+    "of_record_csv": "experiments/08_leaderboard/leaderboard_f10se12.csv",
+    "diagnostic_shrinkage_csv": "experiments/08_leaderboard/leaderboard_f10se12_diagnostic_shrinkage.csv",
+    "diagnostic_note": "theta_debiased + bias_band_* are NOT of-record (shrinkage estimator; compresses the ability scale). Retained for provenance only.",
+    "top_headline": {
+      "model": "LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct",
+      "theta": 2.652,
+      "se_total": 0.253
+    },
+    "bottom_headline": {
+      "model": "BEE-spoke-data/smol_llama-220M-openhermes",
+      "theta": -2.79,
+      "se_total": 0.276
+    },
+    "weak_placement": [
+      {
+        "model": "ai-forever/mGPT",
+        "rank": 50,
+        "theta": -4.572,
+        "se_total": 0.4
+      },
+      {
+        "model": "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
+        "rank": 51,
+        "theta": -5.569,
+        "se_total": 0.539
+      },
+      {
+        "model": "allenai/OLMo-1B-hf",
+        "rank": 52,
+        "theta": -5.873,
+        "se_total": 0.57
+      }
+    ]
+  },
+  "se_components": {
+    "full_bank_headline": {
+      "SE_ability": {
+        "mean": 0.047733169807929965,
+        "sd": 0.009652766498769663,
+        "median": 0.0438612370355981,
+        "max": 0.08403434264396
+      },
+      "SE_param": {
+        "mean": 0.025945156380347844,
+        "sd": 0.008325996617631337,
+        "median": 0.0230475151222268,
+        "max": 0.0619399404907292
+      },
+      "SE_judge": {
+        "mean": 0.15728809111380276,
+        "sd": 0.05279123918338944,
+        "median": 0.1354907858588288,
+        "max": 0.2551213910194926
+      },
+      "SE_total": {
+        "mean": 0.1667462265206416,
+        "sd": 0.05325654177787521,
+        "median": 0.1455022761743269,
+        "max": 0.2756542238517639
+      }
+    },
+    "full_bank_judge_var_share_median": 0.8806719324635713,
+    "oppoint_headline": {
+      "SE_ability": {
+        "mean": 0.11805625982389771,
+        "sd": 0.004943666198559792,
+        "median": 0.1178817146174808,
+        "max": 0.1398477148615266
+      },
+      "SE_param": {
+        "mean": 0.06968212366552813,
+        "sd": 0.014039289627632692,
+        "median": 0.0697243626195123,
+        "max": 0.1040590789187088
+      },
+      "SE_judge": {
+        "mean": 0.1677385488299201,
+        "sd": 0.0777987938422455,
+        "median": 0.1629949710602188,
+        "max": 0.4200968496394884
+      },
+      "SE_total": {
+        "mean": 0.22112135119434226,
+        "sd": 0.06564024271543309,
+        "median": 0.2087100790201583,
+        "max": 0.4454661072393472
+      }
+    },
+    "oppoint_judge_var_share_median": 0.5882350441685035
+  },
+  "se_judge_regimes": {
+    "full_bank": {
+      "n_models": 52,
+      "se_ability_median": 0.04390362606869315,
+      "se_param_median": 0.0231660243754254,
+      "se_judge_median": 0.1455685275249796,
+      "se_judge_mean": 0.1638433820525149,
+      "se_judge_max": 0.27166859887489603,
+      "se_total_median": 0.15329736461434768,
+      "se_total_mean": 0.1861390407352011,
+      "se_judge_var_share_median": 0.8798907510925961,
+      "se_judge_dominates_frac": 0.9423076923076923,
+      "theta_debias_shift_median": 0.4401633397583539,
+      "theta_debias_shift_mean": 0.7864246122194051
+    },
+    "oppoint_f10se12": {
+      "n_models": 52,
+      "se_ability_median": 0.117994513342502,
+      "se_param_median": 0.0707123735803876,
+      "se_judge_median": 0.16448689109712067,
+      "se_judge_mean": 0.18149808339048484,
+      "se_judge_max": 0.5298203228852402,
+      "se_total_median": 0.21068835624829846,
+      "se_total_mean": 0.24258515646232842,
+      "se_judge_var_share_median": 0.5573299405192009,
+      "se_judge_dominates_frac": 0.5961538461538461,
+      "theta_debias_shift_median": 0.24572877822171799,
+      "theta_debias_shift_mean": 0.504764913805848
+    }
+  },
+  "pirt": {
+    "op_point": {
+      "floor": 10,
+      "se_target": 0.12
+    },
+    "headline_excl_weak": {
+      "n": 49,
+      "pass_rate_mae": 0.0499,
+      "r": 0.9465,
+      "ols_slope": 0.8392,
+      "ols_intercept": 0.0731
+    },
+    "all_52": {
+      "n": 52,
+      "pass_rate_mae": 0.049,
+      "r": 0.9562
+    }
+  },
+  "judge_error": {
+    "debias_scope": "COHORT pass-rate only (closed form (p_obs-beta)/(1-alpha-beta)); NOT a per-model theta shift",
+    "debias_factor_point": 1.3276826434902331,
+    "debias_factor_band": [
+      1.1724703951225233,
+      1.5691197238349284
+    ],
+    "per_model_theta_debias": "NOT of-record (shrinkage estimator; per-column-prevalence-prior resample compresses the ability scale). Proper per-model noisy-label IRT de-bias is future work. The superseded per-model theta_debiased/theta_debias_shift figures (e.g. median +0.44) are diagnostic only, not an of-record claim.",
+    "strictest_alpha_stratum": "theory_of_mind",
+    "strictest_alpha": 0.425,
+    "highest_beta_stratum": "instruction_following",
+    "highest_beta": 0.1071
+  },
+  "efficiency": {
+    "op_point": {
+      "floor": 10,
+      "se_target": 0.12
+    },
+    "n_held_out_traces": 52,
+    "adaptive_reach_scenarios": 13,
+    "random_reach_scenarios": 87,
+    "scenario_savings_x": 6.69
+  },
+  "tier_b": {
+    "b": 50,
+    "se_judge_full_A_median": 0.14556852752497956,
+    "se_judge_full_B_median": 0.0980677760652354,
+    "se_judge_B_minus_A_median": -0.04490989539680011,
+    "se_judge_B_over_A_median": 0.6379770619942575,
+    "within_25pct": false,
+    "tierA_is_conservative_of_record": true,
+    "verdict": "Tier B <= Tier A: refitting the bank each replicate absorbs judge noise into the item parameters; frozen-bank Tier A is the conservative of-record (item params do not inflate SE_judge)."
+  },
+  "spearman_note": "rankings robust to the judge layer (judge error is systematic/correlated, so it does not reshuffle the ordering); absolute pass-rates carry the cohort de-bias factor 1.33x [1.17, 1.57].",
+  "figures": {
+    "05_oos_recovery": "experiments/05_oos_recovery/oos_recovery_ability_f10se12.png",
+    "04_efficiency_vs_random": "experiments/04_efficiency_vs_random/adaptive_vs_random_efficiency_f10se12.png",
+    "08_leaderboard": "experiments/08_leaderboard/leaderboard_f10se12.png",
+    "09_pirt_mae": "experiments/09_pirt_mae/pirt_pred_vs_actual_f10se12.png",
+    "07_se_components": "experiments/07_se_components/se_components_f10se12.png",
+    "10_judge_error": "experiments/10_judge_error/judge_error_debias_f10se12.png"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "benchmark": "biggen",
+  "judge": "gemini-3-flash-preview",
+  "gold_source": "api_judge_pilot\\gold\\biggen_core\\gold_labels.jsonl",
+  "verdicts_source": "api_judge_pilot\\gold\\se_judge\\biggen_gemini3_gold_verdicts_250.jsonl",
+  "n_boot": 2000,
+  "seed": 20260810,
+  "overall": {
+    "n": 250,
+    "gold_pass": 111,
+    "gold_fail": 139,
+    "false_fail": 25,
+    "false_pass": 3,
+    "alpha_false_fail": 0.22522522522522523,
+    "beta_false_pass": 0.02158273381294964,
+    "alpha_false_fail_ci95": [
+      0.1471,
+      0.3131
+    ],
+    "beta_false_pass_ci95": [
+      0.0,
+      0.0496
+    ]
+  },
+  "by_stratum": {
+    "grounding": {
+      "n": 32,
+      "gold_pass": 17,
+      "gold_fail": 15,
+      "false_fail": 3,
+      "false_pass": 0,
+      "alpha_false_fail": 0.17647058823529413,
+      "beta_false_pass": 0.0
+    },
+    "instruction_following": {
+      "n": 35,
+      "gold_pass": 22,
+      "gold_fail": 13,
+      "false_fail": 2,
+      "false_pass": 1,
+      "alpha_false_fail": 0.09090909090909091,
+      "beta_false_pass": 0.07692307692307693
+    },
+    "planning": {
+      "n": 38,
+      "gold_pass": 12,
+      "gold_fail": 26,
+      "false_fail": 4,
+      "false_pass": 0,
+      "alpha_false_fail": 0.3333333333333333,
+      "beta_false_pass": 0.0
+    },
+    "reasoning": {
+      "n": 28,
+      "gold_pass": 11,
+      "gold_fail": 17,
+      "false_fail": 2,
+      "false_pass": 0,
+      "alpha_false_fail": 0.18181818181818182,
+      "beta_false_pass": 0.0
+    },
+    "refinement": {
+      "n": 29,
+      "gold_pass": 14,
+      "gold_fail": 15,
+      "false_fail": 2,
+      "false_pass": 0,
+      "alpha_false_fail": 0.14285714285714285,
+      "beta_false_pass": 0.0
+    },
+    "safety": {
+      "n": 22,
+      "gold_pass": 7,
+      "gold_fail": 15,
+      "false_fail": 2,
+      "false_pass": 1,
+      "alpha_false_fail": 0.2857142857142857,
+      "beta_false_pass": 0.06666666666666667
+    },
+    "theory_of_mind": {
+      "n": 40,
+      "gold_pass": 19,
+      "gold_fail": 21,
+      "false_fail": 8,
+      "false_pass": 0,
+      "alpha_false_fail": 0.42105263157894735,
+      "beta_false_pass": 0.0
+    },
+    "tool_usage": {
+      "n": 26,
+      "gold_pass": 9,
+      "gold_fail": 17,
+      "false_fail": 2,
+      "false_pass": 1,
+      "alpha_false_fail": 0.2222222222222222,
+      "beta_false_pass": 0.058823529411764705
+    }
+  },
+  "by_criticality": {
+    "None": {
+      "n": 250,
+      "gold_pass": 111,
+      "gold_fail": 139,
+      "false_fail": 25,
+      "false_pass": 3,
+      "alpha_false_fail": 0.22522522522522523,
+      "beta_false_pass": 0.02158273381294964
+    }
+  },
+  "notes": "alpha=P(judge=fail|gold=pass) strict error; beta=P(judge=pass|gold=fail) lenient/false-pass. unscorable mapped to fail (production fail-closed). CIs are scenario-clustered bootstraps."
+}
