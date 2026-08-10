@@ -48,6 +48,7 @@ aliases with a pointer to the right name.
 | `socialiqa` | `social_i_qa`, `social_iqa`, `siqa` | `social_i_qa` (via `refs/convert/parquet`) |
 | `naturalqs` | `natural_questions`, `nq`, `nq_open` | `google-research-datasets/nq_open` |
 | `jeopardy` | — | `soldni/jeopardy`, subset `mosaicml_gauntlet` |
+| `mrbench` | — | vendored `diagnostics/mrbench/data/MRBench_V1.json` (not HuggingFace) |
 
 `piqa` and `socialiqa` pin the `refs/convert/parquet` revision because those
 datasets originally shipped Python loading scripts that current `datasets`
@@ -69,10 +70,15 @@ involved, but the eval box needs Hub access and an `HF_HOME` with room.
 | `socialiqa` | validation | ~1,954 | 3 | `accuracy` |
 | `naturalqs` | validation | 3,610 | 1 | `f1` (primary) + `accuracy` |
 | `jeopardy` | train | ~2,117 | 1 | `f1` (primary) + `accuracy` |
+| `mrbench` | all (192 convs) | 192 | 1 | `damr` (primary) + 8 `damr_<Dim>` |
 
-Five of the seven are multiple choice and report a single accuracy. Two are
-generative and report **two** scores, because F1 and exact match answer different
-questions — "how close was the answer" versus "was it right".
+Five of the seven original benchmarks are multiple choice and report a single
+accuracy. Two (`naturalqs`, `jeopardy`) are generative and report **two** scores,
+because F1 and exact match answer different questions — "how close was the answer"
+versus "was it right". `mrbench` is a different animal: a **judged** generative
+task (see its own section below); it scores all 192 conversations regardless of
+`TaskConfig.split` (the task loads the whole vendored JSON), which is why its
+`split` is recorded as `all`.
 
 ### What is excluded, and why
 
@@ -149,6 +155,15 @@ examples. That is a download-size surprise, not a correctness problem.
 | | `accuracy` | `drop_exact_match` | |
 | `jeopardy` | `f1` (primary) | `f1` | generative, SQuAD-style |
 | | `accuracy` | `squad_exact_match` | |
+| `mrbench` | `damr` (primary) | `mrbench` | mean desired-annotation match rate over 8 dims |
+| | `damr_<Dim>` (×8) | `mrbench` | per-dimension DAMR; judge-scored, not vLLM-scored |
+
+`mrbench` reports nine metrics, so like the generative pair it needs an explicit
+`primary_metric` (it declares `damr`), and its wide-CSV columns are qualified:
+`mrbench.damr`, `mrbench.damr_Mistake_Identification`, … `mrbench.damr_Humanlikeness`.
+The DAMR values are precomputed by the task in `score_responses` and read back by
+a placeholder `MRBenchScorer`; the numbers come from an **external judge**, not
+from vLLM log-likelihoods.
 
 All five multiple-choice tasks serialize under the metric name `accuracy`
 regardless of their normalization variant. `LogprobMCAccuracyMetric`,
@@ -204,6 +219,48 @@ runtime, and it multiplies by every checkpoint in the sweep.
 
 `--dry-run` prints both figures, per checkpoint and for the whole sweep, before
 anything spends. Use `--latest N` to cap a trial run.
+
+## MRBench: a judged generative task (cost the vLLM count does not show)
+
+`mrbench` is the odd one out. The registry's cost model counts only **vLLM
+prompts** (`instances × choices`), so `mrbench` shows as just **192** prompts per
+checkpoint — the tutor **generations**. That number is real but incomplete: every
+generation is then scored by an **external LLM judge**, one call per (response ×
+dimension), which the vLLM prompt count cannot see.
+
+Per checkpoint:
+
+- **Generation:** 192 vLLM prompts (one one-sentence tutor turn per conversation).
+- **Judging:** `192 × 8 × k` external judge API calls, where `k` is the
+  self-consistency sample count (**default `k = 1` → 1,536 judge calls**; `k > 1`
+  multiplies this linearly). Reference-guided judging does not change the count.
+
+So a single-checkpoint `mrbench` run is ~**192 generations + ~1,536 judge calls**,
+and both multiply by the number of checkpoints in the sweep. The dollar figure
+depends on the (still unpicked) judge model's token pricing; estimate it with
+`diagnostics/mrbench/cost.py` (`estimate_phase_b_cost`, which computes
+`gen_calls = 192` and `judge_calls = 192 × 8 × k`, parameterised by price so it
+stays judge-agnostic). This is **not** reflected in the sweep's `--dry-run`
+prompt/instance totals — budget for it separately.
+
+### Environment `mrbench` needs (that the other benchmarks do not)
+
+The judge is env-driven and **no model is hardcoded**. To run `mrbench` in a
+sweep the operator must export, in the shell that invokes the driver:
+
+- `OPENAI_API_KEY` (or the `TFY_API_KEY` / `TRUEFOUNDRY_API_KEY` alias) — the
+  gateway key; and
+- `MRBENCH_JUDGE_MODEL` — the exact judge model id (there is no usable default).
+- Optional: a gateway base-URL env, `MRBENCH_JUDGE_SAMPLES` (`k`),
+  `MRBENCH_JUDGE_CONCURRENCY`, `MRBENCH_JUDGE_REFERENCE_GUIDED`.
+
+The skill's `run_eval_sweep.sh` runs `uv run olmo-eval run` in a subshell that
+**inherits the parent environment**, so exporting those variables before invoking
+the sweep is sufficient here — no script change is required for the branch-local
+driver. Unlike the other benchmarks, the eval box also needs **network egress to
+the judge gateway** (not just GPU + HuggingFace Hub access). The separate
+AWS-checkpoint-branch driver needs explicit work for this — see the
+"checkpoint-sweep integration — cross-branch TODO" in `Plan/mrbench/README.md`.
 
 ## The `--limit` trap
 

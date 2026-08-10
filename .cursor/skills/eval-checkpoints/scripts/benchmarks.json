@@ -59,6 +59,22 @@
       "choices": 1,
       "split": "train",
       "metrics": ["f1", "accuracy"]
+    },
+    "mrbench": {
+      "instances": 192,
+      "choices": 1,
+      "split": "all",
+      "metrics": [
+        "damr",
+        "damr_Mistake_Identification",
+        "damr_Mistake_Location",
+        "damr_Revealing_of_the_Answer",
+        "damr_Providing_Guidance",
+        "damr_Actionability",
+        "damr_Coherence",
+        "damr_Tutor_Tone",
+        "damr_Humanlikeness"
+      ]
     }
   },
   "aliases": {

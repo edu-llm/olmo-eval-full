@@ -146,3 +146,12 @@ AdaptiveTesting/Experiments/**/.mplcache/
 
 # Local secrets (never commit)
 .apienv
+
+# MRBench paper reference PDFs — kept locally for attribution/quirk-checking,
+# not committed (a few MB). The dataset itself and its NOTICE are tracked.
+diagnostics/mrbench/data/_paper_refs/
+
+# MRBench judge run outputs — bulky local cache (~10MB judge_cache.jsonl) plus
+# per-run metrics/provenance (results live in S3, not git). The committable
+# validation summary is Plan/mrbench/PHASE_A_VALIDATION.md, which stays tracked.
+diagnostics/mrbench/runs/
