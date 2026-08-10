@@ -89,17 +89,28 @@ single `ability` axis is the shipped instrument.
 
 1. Generate one tutor response per scenario in `bank/scenarios.jsonl` (respgen; the tutor is
    the checkpoint under test served at `--tutor-endpoint`).
-2. Grade each administered criterion with `judge_frozen.yaml` (the shared frozen judge served
-   at `--judge-endpoint`).
+2. Grade each administered criterion with the judge named by `--judge-config`. That file's
+   `adapter` selects both the prompt and the parser that reads its replies, from
+   `adapters.py`: `generic-binary` (the shared text contract, self-hosted Qwen in
+   `judge_frozen.yaml`) or `generic-binary-strict` (the JSON contract the team froze for
+   TutorEval, reproduced in `judge_frontier.yaml`). The pairing is not optional — the text
+   parser reads a JSON reply as unscorable and abstains on every criterion.
 3. Feed graded outcomes + the fitted bank (a/b) into the unidimensional 2PL CAT loop to
    estimate `ability` (theta) with SE; the runner writes `cat_report.json` to `--s3-out`.
 
 ## Caveats
 
 - `low_n` (N=52): abilities are coarse; do not over-interpret small theta differences.
-- Calibration faithfulness: the shipped `common/judge.py` prompt must match the calibrated
-  `judge-validation-v3` (+ evidence gate) for theta to be calibration-faithful. That is a
-  shared-scaffolding concern on `CheckpointFlows`, not this style.
+- Calibration faithfulness: this bank was fitted on a matrix graded under
+  `judge-validation-v3` with an evidence gate, and neither shipped contract is that prompt,
+  so no configuration here produces a calibration-faithful theta today. Every report says
+  which contract graded it and marks the result `UNCALIBRATED`.
+- Choosing `generic-binary-strict` narrows the gap on the evidence gate and widens it on
+  strictness: that judge passes 13.9% of cells against difficulties fitted behind a more
+  lenient one, so theta is biased low by an amount the SE does not carry. The fix is a
+  refit on a matrix graded by whichever contract will run, not a flag. The 92,872-cell
+  Gemini matrix that would support one exists but is not committed; see
+  `eduLLM-Evals/api_judge_pilot/TUTOREVAL_RESULTS_2026-08-09.md` on `frq/tutorbench`.
 
 ## Rerun / swap protocol (larger cohort)
 

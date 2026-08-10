@@ -51,6 +51,17 @@ def _filtered(bank: IRTBank, excluded: set[str]) -> IRTBank:
     return IRTBank(params=kept, dimensions=bank.dimensions)
 
 
+#: Attempts allowed per intended scored criterion. A 4096-window tutor cannot serve about
+#: 16% of TutorEval scenarios, and a judge abstains occasionally, so a run needs headroom
+#: above `max_items`; it does not need the whole bank.
+_ATTEMPTS_PER_ITEM = 4
+
+#: Consecutive unscorable verdicts after which the judge is presumed broken. Well above
+#: any plausible run of genuinely ambiguous replies, far below the cost of finding out the
+#: slow way.
+_ABSTAIN_STREAK_LIMIT = 12
+
+
 def run_session(
     style: Any,
     *,
@@ -61,6 +72,8 @@ def run_session(
     sink: ResultSink,
     se_threshold: float | None,
     max_items: int | None,
+    attempts_per_item: int = _ATTEMPTS_PER_ITEM,
+    abstain_streak_limit: int = _ABSTAIN_STREAK_LIMIT,
 ) -> dict[str, Any]:
     """Run one adaptive session, persisting as it goes. Returns a summary dict."""
     criteria_by_scenario: dict[str, list[str]] = defaultdict(list)
@@ -76,6 +89,16 @@ def run_session(
     skipped_scenarios: list[dict[str, str]] = []
     abstentions: list[dict[str, str]] = []
     stopped_because = "exhausted-bank"
+    attempts = 0
+    abstain_streak = 0
+    last_abstain_reason = ""
+    # Every iteration costs a judge call, and most cost a tutor generation too, so the
+    # budget is on attempts rather than on results. The multiplier leaves room for the
+    # ~16% of scenarios a 4096-window tutor cannot serve and for occasional abstentions,
+    # while still bounding a pathological run to a small multiple of the intended test.
+    attempt_budget = (
+        max_items * attempts_per_item if max_items is not None else len(irt_bank.params)
+    )
 
     def drop_scenario(scenario_id: str, reason: str) -> None:
         """Exclude a scenario and everything that depends on its response."""
@@ -92,7 +115,34 @@ def run_session(
         if max_items is not None and state.step >= max_items:
             stopped_because = "max-items"
             break
+        if attempts >= attempt_budget:
+            # `max_items` counts criteria that were SCORED, so on its own it bounds nothing:
+            # an abstention or a dropped scenario never increments it. A judge that cannot
+            # be reached therefore walks the entire bank, paying for a tutor generation and
+            # a judge call per criterion, and still reports the prior. Measured on the
+            # shipped bank: 1,186 judge calls and 702 generations under `--max-items 5`.
+            stopped_because = f"attempt-budget-exhausted: {attempts} attempts, {state.step} scored"
+            log.error(
+                "stopping: %d attempts made for %d scored criteria (budget %d). "
+                "Nothing is being scored; check the judge.",
+                attempts,
+                state.step,
+                attempt_budget,
+            )
+            break
+        if abstain_streak >= abstain_streak_limit:
+            # A run that cannot score anything is a broken judge, not a bad tutor, and the
+            # sooner it says so the less of the window it spends proving it.
+            stopped_because = f"judge-unusable: {abstain_streak} consecutive unscorable verdicts"
+            log.error(
+                "stopping: %d consecutive criteria came back unscorable; the judge is not "
+                "grading. Last reason: %s",
+                abstain_streak,
+                last_abstain_reason,
+            )
+            break
 
+        attempts += 1
         next_id = style.select_next_item(selectable, state)
         if next_id is None:
             if excluded:
@@ -155,12 +205,17 @@ def run_session(
                 "passed": None if verdict.unscorable_reason else bool(verdict.passed),
                 "unscorable_reason": verdict.unscorable_reason,
                 "rationale": verdict.rationale,
+                # The evidence-gated contracts return the quote the verdict rests on;
+                # without it a disputed judgment cannot be checked without the raw body.
+                "evidence": verdict.evidence,
                 "raw_output": verdict.raw_output,
                 "seconds": round(judge_elapsed, 3),
             },
         )
 
         if verdict.unscorable_reason:
+            abstain_streak += 1
+            last_abstain_reason = verdict.unscorable_reason
             excluded.add(criterion.criterion_id)
             selectable = _filtered(irt_bank, excluded)
             record = {
@@ -174,6 +229,7 @@ def run_session(
             continue
 
         # --- ability update + stopping ----------------------------------------------
+        abstain_streak = 0  # only a scored criterion clears it
         state.administered.append(
             CriterionResponse(
                 criterion_id=criterion.criterion_id, correct=verdict.passed, verdict=verdict
@@ -208,6 +264,23 @@ def run_session(
     rate = (unscorable / attempted) if attempted else 0.0
     state.metadata["stop_reason"] = stopped_because
     state.metadata["bank_size"] = len(irt_bank.params)
+    # The report says whether theta is on the calibrated scale, which is a fact about the
+    # judge that actually graded rather than about this style. Read off the judge so a
+    # config change cannot leave the report describing a contract that did not run.
+    provenance = getattr(judge, "provenance", None)
+    if isinstance(provenance, dict):
+        state.metadata["judge_contract"] = {
+            "adapter": provenance.get("adapter"),
+            "prompt_version": provenance.get("prompt_version"),
+            "evidence_gated": provenance.get("evidence_gated"),
+            "unparseable_policy": provenance.get("unparseable_policy"),
+        }
+    state.metadata["attempts"] = {
+        "made": attempts,
+        "budget": attempt_budget,
+        "scored": state.step,
+        "budget_exhausted": attempts >= attempt_budget,
+    }
     state.metadata["ungradable"] = {
         "count": unscorable,
         "rate": round(rate, 4),
@@ -227,6 +300,8 @@ def run_session(
         "scenarios_skipped": len(skipped_scenarios),
         "criteria_administered": state.step,
         "criteria_abstained": len(abstentions),
+        "attempts_made": attempts,
+        "attempt_budget": attempt_budget,
         # Full lists live in skipped.jsonl / abstentions.jsonl; these are a preview.
         "skipped_sample": skipped_scenarios[:20],
         "abstention_sample": abstentions[:20],

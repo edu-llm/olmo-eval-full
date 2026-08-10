@@ -21,6 +21,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import re
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,23 @@ from ...common.s3_io import is_s3_uri, parse_s3_uri
 log = logging.getLogger("uni_frq.sink")
 
 SUCCESS_MARKER = "_SUCCESS"
+
+
+def _finite(value: Any) -> Any:
+    """Replace non-finite floats with ``None`` so the output is JSON any parser accepts.
+
+    A session that scores nothing reports an infinite standard error, and Python happily
+    writes a bare ``Infinity`` token. That is not JSON: strict parsers reject the file, and
+    ``jq`` silently substitutes 1.8e308, turning "no measurement" into the largest possible
+    finite one. ``null`` says the same thing in a way every reader understands.
+    """
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {key: _finite(item) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [_finite(item) for item in value]
+    return value
 
 
 def slugify(value: str, *, fallback: str = "checkpoint") -> str:
@@ -105,13 +123,13 @@ class ResultSink:
     def append(self, name: str, record: dict[str, Any]) -> None:
         """Append one JSON record to a local NDJSON artifact."""
         with (self.local_dir / _safe_name(name)).open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+            handle.write(json.dumps(_finite(record), ensure_ascii=False) + "\n")
         self._pending.add(name)
 
     def write_json(self, name: str, payload: dict[str, Any]) -> None:
-        """Write (or overwrite) a local JSON artifact."""
+        """Write (or overwrite) a local JSON artifact, in JSON every parser accepts."""
         path = self.local_dir / _safe_name(name)
-        path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        path.write_text(json.dumps(_finite(payload), indent=2), encoding="utf-8")
         self._pending.add(name)
 
     # ---- remote mirror ------------------------------------------------------------
@@ -162,14 +180,39 @@ class ResultSink:
         log.info("synced %d artifact(s) to %s", len(self._pending), self._remote_base)
         self._pending.clear()
 
+    def _clear_marker(self) -> None:
+        """Remove any completion marker, locally and remotely.
+
+        Skipping the write is not enough. A destination that already holds a ``_SUCCESS``
+        from an earlier run keeps it, so a failed re-run into the same prefix -- a platform
+        retry, or the documented shared ``OUT=s3://bucket/frq_cat`` -- ends up with a
+        marker next to a crash manifest and a stale report from the previous attempt.
+        """
+        (self.local_dir / SUCCESS_MARKER).unlink(missing_ok=True)
+        if self._remote_base is None:
+            return
+        bucket, prefix = parse_s3_uri(self._remote_base)
+        key = f"{prefix}/{SUCCESS_MARKER}" if prefix else SUCCESS_MARKER
+        try:
+            self._client().delete_object(Bucket=bucket, Key=key)
+        except Exception as exc:  # noqa: BLE001 - best effort; never mask the real failure
+            log.warning(
+                "could not clear a stale %s at %s (%s); a reader may see this incomplete "
+                "run as complete",
+                SUCCESS_MARKER,
+                self._remote_base,
+                exc,
+            )
+
     def finalize(self, *, ok: bool) -> str:
-        """Flush everything, then write the completion marker. Returns the base URI.
+        """Flush everything, then write or clear the completion marker.
 
         The remote marker goes up before the local one, so a local ``_SUCCESS`` always
-        implies the remote copy is complete too.
+        implies the remote copy is complete too. Returns the base URI.
         """
         self.sync()
         if not ok:
+            self._clear_marker()
             return self.base_uri
         marker = self.local_dir / SUCCESS_MARKER
         marker.write_text("", encoding="utf-8")

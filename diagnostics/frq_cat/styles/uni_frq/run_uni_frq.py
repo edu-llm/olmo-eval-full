@@ -29,6 +29,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 _HERE = Path(__file__).resolve()
 for _up in _HERE.parents:  # make `diagnostics.` importable from any CWD
@@ -112,6 +113,41 @@ def build_parser(defaults: dict) -> argparse.ArgumentParser:
     return p
 
 
+#: Session stop reasons that mean the test was cut short by infrastructure rather than
+#: finished. `session.run_session` produces each of these with a trailing detail.
+_ABORTED_STOP_REASONS = (
+    "tutor-unavailable",
+    "judge-unusable",
+    "attempt-budget-exhausted",
+)
+
+
+def _endpoint_fault(role: str, endpoint: str) -> str:
+    """Return why ``endpoint`` cannot be used, or ``""`` when it looks usable.
+
+    Checked before a model is served, because the shipped spec's placeholder URL passes
+    every other guard: it is non-empty, so the emptiness check lets it through, and httpx
+    raises ``UnsupportedProtocol``, a ``TransportError``, which the judge client correctly
+    classifies as retryable. The run then allocates a GPU, serves the tutor, and retries
+    its way through the bank before reporting the prior it started from.
+    """
+    text = (endpoint or "").strip()
+    if "REPLACE_WITH" in text.upper():
+        return (
+            f"{role} endpoint is still the template placeholder ({text!r}). Set a real "
+            f"/v1 base URL before submitting."
+        )
+    parsed = urlparse(text)
+    if parsed.scheme not in ("http", "https"):
+        return (
+            f"{role} endpoint {text!r} has no http(s) scheme, so every request would fail "
+            f"as an unsupported protocol"
+        )
+    if not parsed.netloc:
+        return f"{role} endpoint {text!r} names no host"
+    return ""
+
+
 def _resolve_judge_config(raw: str) -> Path:
     """Accept an absolute path, a CWD-relative path, or a name inside the style dir."""
     candidate = Path(raw).expanduser()
@@ -127,6 +163,10 @@ def main(argv: list[str] | None = None) -> int:
     """Run the pipeline; returns 0 when at least one criterion was scored."""
     style = UniFrqStyle()
     args = build_parser(style.config).parse_args(argv)
+
+    if args.max_items < 1:
+        log.error("--max-items must be at least 1")
+        return 2
 
     run_id = (
         slugify(args.run_id, fallback="run")
@@ -157,6 +197,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.tutor_endpoint or not judge_endpoint:
         log.error("need --tutor-endpoint and a judge endpoint (--judge-endpoint or config)")
+        return 2
+    bad_endpoint = _endpoint_fault("judge", judge_endpoint) or _endpoint_fault(
+        "tutor", args.tutor_endpoint
+    )
+    if bad_endpoint:
+        log.error("%s", bad_endpoint)
         return 2
 
     judge = ResilientJudge(spec, endpoint=judge_endpoint, api_key_env=api_key_env)
@@ -254,11 +300,25 @@ def main(argv: list[str] | None = None) -> int:
     manifest["outcome"] = {k: v for k, v in summary.items() if k != "timing"}
     sink.write_json("manifest.json", manifest)
 
+    # Scoring something is necessary but not sufficient. A session that stopped because the
+    # tutor died, the judge stopped grading, or the attempt budget ran out did not
+    # administer the test it was asked to; marking it complete tells a collector to treat a
+    # theta from one criterion as a measured checkpoint.
+    stop_reason = str(summary.get("stopped_because", ""))
+    aborted = stop_reason.startswith(_ABORTED_STOP_REASONS)
     scored = report.num_items_administered > 0
-    base = sink.finalize(ok=scored)
+    complete = scored and not aborted
+    base = sink.finalize(ok=complete)
+    if aborted:
+        log.error(
+            "run did not complete (%s); no %s written and %d scored criteria kept",
+            stop_reason,
+            "_SUCCESS",
+            report.num_items_administered,
+        )
     log.info(
         "%s | scored=%d skipped_scenarios=%d abstained=%d -> %s (local: %s)",
-        "DONE" if scored else "NO SCORED CRITERIA",
+        "DONE" if complete else ("INCOMPLETE" if scored else "NO SCORED CRITERIA"),
         report.num_items_administered,
         summary["scenarios_skipped"],
         summary["criteria_abstained"],
@@ -271,7 +331,7 @@ def main(argv: list[str] | None = None) -> int:
             indent=2,
         )
     )
-    return 0 if scored else 1
+    return 0 if complete else 1
 
 
 if __name__ == "__main__":

@@ -44,7 +44,10 @@ GPU_UTIL="${GPU_UTIL:-0.90}"
 
 # ---- judge ------------------------------------------------------------------------
 JUDGE_MODE="${JUDGE_MODE:-api}"                                  # api | local
-JUDGE_CONFIG="${JUDGE_CONFIG:-${STYLE_DIR}/judge_frontier.yaml}"
+# Defaults to the self-hosted judge, which needs no secret and no gateway. The sibling
+# judge_frontier.yaml holds the team's frozen Gemini contract; it needs TFY_API_KEY and a
+# real gateway URL, so defaulting to it would fail a run on a missing secret.
+JUDGE_CONFIG="${JUDGE_CONFIG:-${STYLE_DIR}/judge_frozen.yaml}"
 JUDGE_ENDPOINT="${JUDGE_ENDPOINT:-}"        # api mode: else taken from the judge config
 JUDGE_API_KEY_ENV="${JUDGE_API_KEY_ENV:-}"  # env var NAME holding the key, never the key
 JUDGE_MODEL="${JUDGE_MODEL:-Qwen/Qwen3.5-9B}"   # local mode only

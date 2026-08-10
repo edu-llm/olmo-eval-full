@@ -309,6 +309,38 @@ class UniFrqStyle(FrqCatStyle):
         )
         provenance = self.bank_provenance()
         pinned_max = self._config.get("max_items")
+        contract = state.metadata.get("judge_contract") or {}
+        # The session records what actually graded; the shared client's constant is only
+        # the fallback for a caller that ran no judge at all (a smoke test, a replay).
+        runtime_prompt = str(contract.get("prompt_version") or _RUNTIME_PROMPT_VERSION)
+        matches = runtime_prompt == _CALIBRATION_PROMPT_VERSION
+        judge_prompt = {
+            "runtime": runtime_prompt,
+            "calibration": _CALIBRATION_PROMPT_VERSION,
+            "matches_calibration": matches,
+        }
+        if matches:
+            scoring_note = (
+                "Criteria are graded pass/fail by an LLM judge, so theta is comparable "
+                "only across runs sharing the same judge and prompt."
+            )
+        else:
+            # Naming the direction matters more than the fact: an evidence-gated contract
+            # is stricter than the one the bank was fitted behind, so theta is biased
+            # low rather than merely incomparable, and the SE does not show it.
+            drift = (
+                "it applies an evidence gate the fitted matrix was not graded under, so "
+                "theta is biased low rather than merely shifted"
+                if contract.get("evidence_gated")
+                else "it has no evidence gate"
+            )
+            scoring_note = (
+                f"UNCALIBRATED: the bank was fitted under prompt "
+                f"{_CALIBRATION_PROMPT_VERSION} but this run graded with "
+                f"{runtime_prompt}, and {drift}. Theta is an ordinal score comparable "
+                f"only to other runs using this same contract; it is not on the "
+                f"TutorEval calibrated scale."
+            )
         # Field names mirror the MCQ report (modality / stop_reason / ungradable /
         # selected_item_ids / cat_settings / bank_provenance) so one reader can consume
         # either flow. MCQ-only keys (prompt_style, score_normalization, pirt_accuracy)
@@ -328,24 +360,11 @@ class UniFrqStyle(FrqCatStyle):
                 "grid": {"min": _GRID_MIN, "max": _GRID_MAX, "n": _GRID_N},
             },
             "bank_provenance": provenance,
-            "judge_prompt": {
-                "runtime": _RUNTIME_PROMPT_VERSION,
-                "calibration": _CALIBRATION_PROMPT_VERSION,
-                "matches_calibration": _RUNTIME_PROMPT_VERSION == _CALIBRATION_PROMPT_VERSION,
-            },
-            "scoring_note": (
-                "Criteria are graded pass/fail by an LLM judge, so theta is comparable only "
-                "across runs sharing the same judge and prompt."
-                if _RUNTIME_PROMPT_VERSION == _CALIBRATION_PROMPT_VERSION
-                else (
-                    f"UNCALIBRATED: the bank was fitted under prompt "
-                    f"{_CALIBRATION_PROMPT_VERSION} but this run graded with "
-                    f"{_RUNTIME_PROMPT_VERSION}, which has no evidence gate. Theta is an "
-                    f"ordinal score comparable only to other runs using this same prompt; "
-                    f"it is not on the TutorEval calibrated scale."
-                )
-            ),
+            "judge_prompt": judge_prompt,
+            "scoring_note": scoring_note,
         }
+        if contract:
+            metadata["judge_contract"] = contract
         if "bank_size" in state.metadata:
             metadata["bank_size"] = state.metadata["bank_size"]
         if "ungradable" in state.metadata:

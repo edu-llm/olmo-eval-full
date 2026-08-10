@@ -1,36 +1,57 @@
-# Frontier judge selection for uni_frq. Copy/edit this file and pass it with
-# --judge-config to grade criteria with a hosted frontier model instead of the
-# frozen self-hosted Qwen in judge_frozen.yaml.
+# The frontier judge the team froze for TutorEval, reproduced so this style grades with
+# the same instrument the calibration study selected.
 #
-# WHICH FRONTIER MODEL: set `model_id` below. That field is what the judge client
-# sends as the request's "model", so it is the live switch.
+# PROVENANCE. Selected in eduLLM-Evals/api_judge_pilot on `frq-lab` and run to completion
+# on `frq/tutorbench`: checkpoints/tutoreval_gemini3_v1_2026-08-09/config.json, whose
+# frozen fingerprint is e2e977f54277a24d5889ed7d3b6baef0e84cdee24589bea31562087f0eaf14b6.
+# On a 100-cell gold set it scored MCC 0.703, macro-F1 0.828, a 0% false-pass rate and 0
+# unscorable replies, and the production run graded 92,872 cells at 100% coverage.
 #
-# WHAT IS HONORED, and by whom:
-#   `run_uni_frq` + ResilientJudge (the pipeline this style ships) reads model_id,
-#   temperature, top_p, max_tokens, and — from `metadata` — `endpoint` and
-#   `api_key_env`. It sends `Authorization: Bearer $<api_key_env>`, so a hosted
-#   frontier model works. `--judge-endpoint` / `--judge-api-key-env` override the file.
-#   The SHARED `frq_cat.runner` + ServedJudge still send no auth header and ignore
-#   `metadata` entirely, so a frontier judge only works through `run_uni_frq`.
-#   `provider` is recorded for provenance but nothing routes on it yet.
-#   `revision`, `adapter`, `enable_thinking`, `language_model_only` are parsed into the
-#   JudgeSpec and reported, but are not part of the HTTP request.
+# READ THE SELECTION CAVEATS BEFORE QUOTING THOSE NUMBERS. The gold labels were
+# AI-assisted, a later audit found text-extraction corruption in 49 of the 100 sampled
+# prompts, and the 45% false-fail rate rests on only 20 gold-pass cells. The judge is
+# well evidenced on the thing it was chosen for, not producing false passes, and thinly
+# evidenced on the rest. Its overall pass rate is 13.9%: it is strict by construction.
 #
-# CALIBRATION WARNING: the TutorEval bank was fitted with the frozen Qwen judge.
-# Swapping the judge changes the instrument, so theta produced with a frontier
-# judge is NOT comparable to calibrated theta. Label such runs uncalibrated.
-name: frontier-judge
-model_id: gpt-4o                # <-- WRITE THE FRONTIER MODEL HERE
-revision: ""                    # pin an immutable snapshot/date when the provider offers one
-adapter: generic-binary
+# THETA FROM THIS JUDGE IS STILL UNCALIBRATED, and adopting the contract does not change
+# that. The bank in bank/params.jsonl was fitted on a matrix graded by the self-hosted
+# Qwen judge under prompt judge-validation-v3. Grading with a stricter judge against
+# difficulties fitted behind a more lenient one shifts theta by an amount the standard
+# error does not capture. Every report says so through metadata.judge_prompt. The fix is
+# a refit on the Gemini matrix, not a flag.
+#
+# WHAT IS HONORED, and by whom. `run_uni_frq` + ResilientJudge read model_id, adapter,
+# temperature, top_p, max_tokens and, from `metadata`, `endpoint`, `api_key_env` and
+# `unparseable_policy`. `adapter` now selects both the prompt and the parser, so it is
+# load-bearing rather than provenance. The SHARED `frq_cat.runner` + ServedJudge send no
+# auth header and ignore `metadata`, so a hosted judge only works through `run_uni_frq`.
+#
+# SUBMITTING THIS FROM THE PLATFORM STILL NEEDS A SECRET. No spec in this repository
+# injects one, so `api_key_env` can only be satisfied on a box where you export it.
+name: tutoreval-gemini3-v1
+model_id: gemini-group/gemini-3-flash-preview
+revision: ""                       # the provider exposes no immutable snapshot for -preview
+adapter: generic-binary-strict     # selects the evidence-first JSON prompt AND its parser
 enable_thinking: false
 language_model_only: true
 temperature: 0.0
 top_p: 1.0
-max_tokens: 1024
+# 6144 is the frozen production value and the adapter's floor. The verdict is the LAST
+# field of the JSON object, so a shorter budget truncates it away and the criterion is
+# lost rather than recovered. ResilientJudge refuses to start below the floor.
+max_tokens: 6144
 metadata:
-  provider: openai                      # openai | anthropic | google | litellm | vllm
-  endpoint: https://api.openai.com/v1   # also pass the live URL as --judge-endpoint
-  api_key_env: OPENAI_API_KEY           # env var NAME only; never put a secret in this file
-  calibration: uncalibrated-frontier
-  prompt_version: generic-binary/v1
+  provider: truefoundry
+  # A TrueFoundry OpenAI-compatible gateway. Pass the live URL as --judge-endpoint.
+  endpoint: REPLACE_WITH_THE_TFY_GATEWAY_V1_URL
+  api_key_env: TFY_API_KEY         # env var NAME only; never put a secret in this file
+  frozen_config_fingerprint: e2e977f54277a24d5889ed7d3b6baef0e84cdee24589bea31562087f0eaf14b6
+  # An unreadable reply is dropped rather than scored as a fail. The team's grader
+  # fail-closes because a calibration matrix has to be rectangular; inside an adaptive
+  # session a parse failure is not evidence about the tutor. Set fail_closed to match
+  # their semantics exactly, for instance when regenerating a matrix.
+  unparseable_policy: abstain
+  # What the BANK was fitted under. Kept here so the mismatch is visible in the file
+  # that causes it, not only in the report.
+  calibration_prompt_version: judge-validation-v3
+  calibration: prompt-mismatch-uncalibrated

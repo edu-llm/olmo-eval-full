@@ -1,9 +1,10 @@
 """Judge transport for the uni_frq pipeline (frozen self-hosted or hosted frontier).
 
-The grading *contract* stays single-sourced: this module imports the shared
-``build_messages`` prompt and ``JudgeSpec`` from ``common/judge.py`` rather than forking
-them, so the criterion prompt cannot drift from the calibrated one. Only the pieces the
-shared ``ServedJudge`` gets wrong for a hosted model are replaced:
+This module is transport only. Which prompt is sent and which parser reads the reply is
+the ``adapter`` named in the judge YAML, resolved through :mod:`.adapters`, so a contract
+can never be half-applied: sending the JSON prompt and reading it with the text parser
+abstains on every criterion. Only the pieces the shared ``ServedJudge`` gets wrong for a
+hosted model are replaced:
 
 - it sends no ``Authorization`` header, so any frontier API answers 401;
 - its parser searches for "pass" anywhere, so "does not pass" scores as a PASS;
@@ -28,20 +29,21 @@ import time
 from typing import Any, cast
 
 from ...base import Criterion, JudgeVerdict, Scenario
-from ...common.judge import JudgeSpec, build_messages
+from ...common.judge import JudgeSpec
+from .adapters import get_adapter, parse_pass_fail_text
 
 log = logging.getLogger("uni_frq.judge")
 
-#: A scorable reply must *begin* with the verdict, per the shared prompt's instruction
-#: ("Answer with PASS or FAIL on the first line"). Anything else is an abstention.
-_VERDICT_RE = re.compile(r"^\W*(PASS|FAIL)\b", re.IGNORECASE)
-
-#: The model restating its options ("pass/fail unclear", "PASS or FAIL") has not decided.
-#: Anchored at the start so a decided verdict that merely goes on to use the other word
-#: ("PASS - it does pass and fail to cite") is still scored.
-_ENUMERATION_RE = re.compile(
-    r"^\W*(?:pass|fail)\b\s*(?:/|\||,|\bor\b|\band\b)\s*\b(?:pass|fail)\b", re.IGNORECASE
-)
+#: What to do with a reply no rung of the parser could read.
+#:
+#: ``abstain`` drops the criterion: inside an adaptive session a parse failure is a fact
+#: about the judge, not evidence about the tutor, and scoring it as a fail would feed the
+#: estimator an answer nobody gave. ``fail_closed`` scores it as a fail, which is what the
+#: team's grader does and what a rectangular calibration matrix needs. Selectable so a run
+#: can reproduce either, and recorded in the manifest so the reader knows which happened.
+_ABSTAIN = "abstain"
+_FAIL_CLOSED = "fail_closed"
+_UNPARSEABLE_POLICIES = (_ABSTAIN, _FAIL_CLOSED)
 
 #: Redacted before any body text reaches a log line or a persisted artifact.
 _SECRET_RE = re.compile(r"(sk-[A-Za-z0-9_\-]{6,}|Bearer\s+\S+)", re.IGNORECASE)
@@ -58,26 +60,18 @@ def redact(text: str) -> str:
 
 
 def parse_verdict(raw: object) -> tuple[bool | None, str]:
-    """Parse a judge completion into ``(passed, rationale_or_reason)``.
+    """Parse a ``served-pass-fail`` completion into ``(passed, rationale_or_reason)``.
 
     Returns ``(None, reason)`` when the reply cannot be scored so the caller can record an
-    abstention. Scoring an unparseable reply as FAIL would feed the ability estimator
-    evidence the judge never actually gave.
+    abstention. Kept as the text contract's entry point; the JSON contracts are read by
+    :func:`.adapters.parse_json_verdict`, which ``ResilientJudge`` selects by adapter.
     """
     if not isinstance(raw, str):
         return None, f"non-text judge output: {type(raw).__name__}"
-    text = raw.strip()
-    if not text:
-        return None, "empty judge output"
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    first_line = lines[0]
-    if _ENUMERATION_RE.match(first_line):
-        return None, f"undecided verdict line: {first_line[:120]!r}"
-    match = _VERDICT_RE.match(first_line)
-    if match is None:
-        return None, f"unparseable verdict: {first_line[:120]!r}"
-    passed = match.group(1).upper() == "PASS"
-    return passed, lines[1] if len(lines) > 1 else ""
+    parsed = parse_pass_fail_text(raw)
+    if parsed.passed is None:
+        return None, parsed.reason
+    return parsed.passed, parsed.rationale
 
 
 def extract_content(payload: object) -> str | None:
@@ -134,6 +128,24 @@ class ResilientJudge:
         self.api_key_env = api_key_env
         self.timeout = timeout
         self.max_attempts = max(1, max_attempts)
+        self.adapter = get_adapter(spec.adapter)
+        if spec.max_tokens < self.adapter.min_max_tokens:
+            # Refused here rather than absorbed: under the floor the reply is cut before
+            # the verdict field, every criterion comes back unscorable, and the run burns
+            # its GPU window to report an untouched prior.
+            raise RuntimeError(
+                f"judge adapter {self.adapter.name!r} needs max_tokens >= "
+                f"{self.adapter.min_max_tokens} (its verdict is the last field of a JSON "
+                f"object, so a shorter budget truncates it away); the judge YAML asks for "
+                f"{spec.max_tokens}"
+            )
+        policy = str(spec.metadata.get("unparseable_policy", _ABSTAIN)).strip() or _ABSTAIN
+        if policy not in _UNPARSEABLE_POLICIES:
+            raise RuntimeError(
+                f"judge metadata.unparseable_policy={policy!r} is not one of "
+                f"{', '.join(_UNPARSEABLE_POLICIES)}"
+            )
+        self.unparseable_policy = policy
         self._url = _chat_url(endpoint)
         self._headers = {"Content-Type": "application/json"}
         if api_key_env:
@@ -156,7 +168,10 @@ class ResilientJudge:
             "name": self.spec.name,
             "model_id": self.spec.model_id,
             "revision": self.spec.revision,
-            "adapter": self.spec.adapter,
+            "adapter": self.adapter.name,
+            "prompt_version": self.adapter.prompt_version,
+            "evidence_gated": self.adapter.evidence_gated,
+            "unparseable_policy": self.unparseable_policy,
             "temperature": self.spec.temperature,
             "top_p": self.spec.top_p,
             "max_tokens": self.spec.max_tokens,
@@ -182,14 +197,16 @@ class ResilientJudge:
         """Grade one criterion, retrying transient faults and abstaining when unscorable."""
         import httpx
 
-        payload = {
+        payload: dict[str, Any] = {
             "model": self.spec.model_id,
-            "messages": build_messages(scenario, criterion, response_text),
+            "messages": self.adapter.build_messages(scenario, criterion, response_text),
             "temperature": self.spec.temperature,
             "top_p": self.spec.top_p,
             "max_tokens": self.spec.max_tokens,
             "seed": 42,
         }
+        if self.adapter.response_format is not None:
+            payload["response_format"] = dict(self.adapter.response_format)
         last_reason = "no attempt made"
         with httpx.Client(headers=self._headers, timeout=self.timeout) as client:
             for attempt in range(self.max_attempts):
@@ -212,13 +229,30 @@ class ResilientJudge:
                                 "judge returned a 200 with no usable message content",
                                 redact(resp.text),
                             )
-                        passed, note = parse_verdict(content)
-                        if passed is None:
-                            return self._abstain(criterion, note, content)
+                        parsed = self.adapter.parse(content)
+                        if parsed.passed is None:
+                            if self.unparseable_policy == _FAIL_CLOSED:
+                                # Scored, not dropped: the reason still travels, but in
+                                # metadata, because `unscorable_reason` is what marks a
+                                # verdict as missing data downstream.
+                                log.warning(
+                                    "judge output on %s was unparseable and fail-closed: %s",
+                                    criterion.criterion_id,
+                                    parsed.reason,
+                                )
+                                return JudgeVerdict(
+                                    criterion_id=criterion.criterion_id,
+                                    passed=False,
+                                    rationale=parsed.reason,
+                                    raw_output=content[:2000],
+                                    metadata={"fail_closed_reason": parsed.reason},
+                                )
+                            return self._abstain(criterion, parsed.reason, content)
                         return JudgeVerdict(
                             criterion_id=criterion.criterion_id,
-                            passed=passed,
-                            rationale=note,
+                            passed=parsed.passed,
+                            rationale=parsed.rationale,
+                            evidence=parsed.evidence,
                             raw_output=content[:2000],
                         )
                     last_reason = f"HTTP {resp.status_code}: {redact(resp.text)[:300]}"

@@ -5,11 +5,14 @@
 # The TutorEval unidim bank was calibrated with THIS judge, so keeping it fixed keeps
 # ability estimates comparable across checkpoints. To grade with a different model,
 # change `model_id` and point --judge-endpoint at a server that serves it. To grade
-# with a hosted frontier model instead, use the sibling `judge_frontier.yaml`, which
-# documents the frontier slot and the auth work still required on CheckpointFlows.
+# with the frontier judge the team froze for TutorEval, use the sibling
+# `judge_frontier.yaml`, which reproduces that selection and its caveats.
 name: frozen-judge
 model_id: Qwen/Qwen3.5-9B                              # FILL IN: model served at --judge-endpoint
 revision: c202236235762e1c871ad0ccb60c8ee5ba337b9a
+# The shared common/judge.py text prompt: the verdict word on the first line. Beware that
+# the api_judge_pilot on frq/tutorbench uses this same name for a JSON contract; the two
+# are not interchangeable, and `served-pass-fail` is a spelled-out alias for this one.
 adapter: generic-binary
 enable_thinking: false
 language_model_only: true
