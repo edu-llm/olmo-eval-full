@@ -1,39 +1,42 @@
 {
   "benchmark": "biggen",
   "seed": 20260809,
+  "extended": true,
+  "existing_kept": 100,
+  "new_drawn": 150,
   "population_gradable_cells": 121028,
   "distinct_models": 52,
-  "sample_size": 100,
+  "sample_size": 250,
   "stratify_by": "capability",
-  "capability_population": {
-    "theory_of_mind": 19012,
-    "grounding": 15365,
-    "tool_usage": 12654,
-    "instruction_following": 16861,
-    "planning": 18324,
-    "refinement": 14011,
-    "reasoning": 13889,
-    "safety": 10912
+  "stratum_population": {
+    "instruction_following": 16847,
+    "grounding": 15352,
+    "theory_of_mind": 18996,
+    "reasoning": 13878,
+    "tool_usage": 12644,
+    "refinement": 13999,
+    "safety": 10903,
+    "planning": 18309
   },
-  "capability_allocation": {
-    "theory_of_mind": 16,
-    "grounding": 13,
-    "tool_usage": 10,
-    "instruction_following": 14,
-    "planning": 15,
-    "refinement": 12,
-    "reasoning": 11,
-    "safety": 9
+  "stratum_allocation": {
+    "instruction_following": 21,
+    "grounding": 19,
+    "theory_of_mind": 24,
+    "reasoning": 17,
+    "tool_usage": 16,
+    "refinement": 17,
+    "safety": 13,
+    "planning": 23
   },
-  "capability_sampled": {
-    "grounding": 13,
-    "planning": 15,
-    "theory_of_mind": 16,
-    "instruction_following": 14,
-    "reasoning": 11,
-    "refinement": 12,
-    "tool_usage": 10,
-    "safety": 9
+  "stratum_sampled_new": {
+    "instruction_following": 21,
+    "reasoning": 17,
+    "refinement": 17,
+    "planning": 23,
+    "grounding": 19,
+    "theory_of_mind": 24,
+    "safety": 13,
+    "tool_usage": 16
   },
   "sampling": "stratified proportional (largest-remainder), simple random within stratum",
   "inputs": {

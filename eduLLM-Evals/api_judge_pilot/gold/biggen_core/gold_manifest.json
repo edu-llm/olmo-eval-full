@@ -1,25 +1,25 @@
 {
-  "n": 100,
+  "n": 250,
   "by_provenance": {
-    "ai_concordant_accepted": 75,
-    "ai_concordant_spotchecked": 18,
-    "human_adjudicated": 7
+    "ai_concordant_accepted": 190,
+    "ai_concordant_spotchecked": 43,
+    "human_adjudicated": 17
   },
   "by_label": {
-    "fail": 55,
-    "pass": 45
+    "fail": 139,
+    "pass": 111
   },
-  "by_capability": {
-    "planning": 15,
-    "grounding": 13,
-    "theory_of_mind": 16,
-    "instruction_following": 14,
-    "reasoning": 11,
-    "refinement": 12,
-    "tool_usage": 10,
-    "safety": 9
+  "by_stratum": {
+    "planning": 38,
+    "grounding": 32,
+    "theory_of_mind": 40,
+    "instruction_following": 35,
+    "reasoning": 28,
+    "refinement": 29,
+    "tool_usage": 26,
+    "safety": 22
   },
-  "resolved": 100,
+  "resolved": 250,
   "pending_needs_human": 0,
   "human_adjudicated_ids": [
     "biggen__0011",
@@ -28,6 +28,16 @@
     "biggen__0070",
     "biggen__0073",
     "biggen__0085",
-    "biggen__0087"
+    "biggen__0087",
+    "biggen__0109",
+    "biggen__0128",
+    "biggen__0153",
+    "biggen__0159",
+    "biggen__0185",
+    "biggen__0195",
+    "biggen__0201",
+    "biggen__0222",
+    "biggen__0232",
+    "biggen__0244"
   ]
 }

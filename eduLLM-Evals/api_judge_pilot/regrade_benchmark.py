@@ -34,7 +34,23 @@ ERROR_FINISH = "error"
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    # Iterate on real newlines only. str.splitlines() also breaks on exotic Unicode
+    # line separators (\x0b, \x0c, \x1c-\x1e, \x85, \u2028, \u2029) that base-model
+    # outputs frequently contain, which shreds otherwise-valid JSONL lines. Skip (and
+    # count) any genuinely truncated line so one bad record can't kill a long run.
+    out: list[dict[str, Any]] = []
+    bad = 0
+    with path.open(encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip():
+                continue
+            try:
+                out.append(json.loads(line))
+            except json.JSONDecodeError:
+                bad += 1
+    if bad:
+        print(f"WARN: skipped {bad} unparseable line(s) in {path}", file=sys.stderr)
+    return out
 
 
 def _norm_model_name(file_stem: str) -> str:
@@ -47,6 +63,7 @@ def build_cases(
     rubrics_path: Path,
     scenarios_path: Path,
     model_limit: int | None,
+    response_glob: str = "*.responses.jsonl",
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     rubrics = _load_jsonl(rubrics_path)
     scenarios = {str(s["scenario_id"]): s for s in _load_jsonl(scenarios_path)}
@@ -55,7 +72,9 @@ def build_cases(
     for r in rubrics:
         criteria_by_scenario.setdefault(str(r["scenario_id"]), []).append(r)
 
-    response_files = sorted(responses_dir.glob("*.responses.jsonl"))
+    response_files = sorted(
+        p for p in responses_dir.glob(response_glob) if not p.name.startswith("_")
+    )
     if model_limit is not None:
         response_files = response_files[:model_limit]
 
@@ -190,6 +209,11 @@ async def _amain() -> int:
     parser.add_argument("--max-retries", type=int, default=4)
     parser.add_argument("--timeout", type=float, default=180.0)
     parser.add_argument("--model-limit", type=int, default=1, help="Grade the first N model files.")
+    parser.add_argument(
+        "--response-glob",
+        default="*.responses.jsonl",
+        help="Glob for per-model response files in --responses-dir (files starting with '_' are skipped).",
+    )
     parser.add_argument("--qwen-matrix", type=Path, default=None, help="Optional Qwen matrix for sanity agreement.")
     parser.add_argument(
         "--extrapolate-criteria",
@@ -206,7 +230,9 @@ async def _amain() -> int:
     if not base_url:
         raise SystemExit(f"MODEL_API_BASE not found in {args.env}")
 
-    cases, counts = build_cases(args.responses_dir, args.rubrics, args.scenarios, args.model_limit)
+    cases, counts = build_cases(
+        args.responses_dir, args.rubrics, args.scenarios, args.model_limit, args.response_glob
+    )
     args.out_dir.mkdir(parents=True, exist_ok=True)
     verdicts_path = args.out_dir / "verdicts.jsonl"
     done = _load_done(verdicts_path)
