@@ -1,75 +1,144 @@
 {
-  "generated_at": "2026-08-08T01:05:51.408309+00:00",
-  "status": "STUDY / reporting only - LOCAL; production engine untouched; nothing committed.",
+  "package": "tutoreval_calibration (gemini-3 CANONICAL unidim scale)",
+  "generated_at": "2026-08-11T00:54:44.651087+00:00",
+  "status": "STUDY / reporting only - LOCAL; production engine (tutor_cat, scenario_cat_lib, calibrate_mirt) untouched; nothing committed; calibrated on OBSERVED gemini-3 labels (Rule 0).",
+  "supersedes": "qwen_superseded/ (Qwen-judge of-record, floor 15 / SE_ability 0.22)",
   "benchmark": "TutorEval",
   "scale": "unidimensional (single 'ability' axis)",
+  "judge": "gemini-3-flash-preview",
+  "snapshot_tag": "tutoreval-unidim-gemini3-52models",
   "op_point": {
     "floor_min_scenarios": 15,
-    "se_ability_target": 0.22,
-    "stop": "EAP-posterior dense-grid SD; plateau delta=0.005/W=3; cap 70; MWLE theta at stop",
-    "oos": "k=5, seed 20260729, per-fold refit (ridge 0.01, fit_grid 7, clamp)"
+    "se_ability_target": 0.25,
+    "reach_rule": "SE_ability (EAP posterior SD at stop) <= target ONLY",
+    "stop": "dense 321-node EAP posterior-SD over +/-8; plateau delta=0.005/W=3; cap 70; MWLE theta at stop",
+    "deployed_headline_theta": "op-point MWLE-at-stop @ f15/se0.25 (leaderboard 'theta'; length >= 15)",
+    "oos": "k=5, seed 20260729, per-fold refit (production M2PL MML-EM, 7 GH, ridge 0.01, clamp; within-fold zero-variance filter)",
+    "se_total": "sqrt(SE_ability^2 + SE_param^2 + SE_judge^2)"
   },
+  "curation": {
+    "policy": "MINIMAL Rule-0 (OBSERVED gemini-3 labels; auto zero-variance drop only; NO near-separation / pass-imbalance exclusion)",
+    "n_columns_total": 1786,
+    "n_all_fail_dropped": 542,
+    "n_criteria_fitted": 1244,
+    "n_negatives_clamped_at_consume": 35,
+    "fit_loglik": -18071.209404053767,
+    "fit_iters": 13,
+    "fit_converged": true
+  },
+  "debias_convention": "HYBRID: of-record leaderboard = OBSERVED theta + SE_total error bars (SE_judge dominant) + annotated 1.83x cohort de-bias caveat (posterior CI 1.33-2.97x, NOT applied per-model); SECONDARY = full-bank per-model theta_debiased band (Spearman 0.993, 0 violations); op-point per-model theta_debiased = directional-only for the weak tail (op-point Spearman 0.778).",
   "n_models": 52,
-  "n_weak": 4,
+  "n_weak": 3,
   "weak_models": [
     "BEE-spoke-data/smol_llama-220M-GQA-fineweb_edu",
     "ai-forever/mGPT",
-    "allenai/OLMo-1B-hf",
-    "ibm-granite/granite-3.1-2b-instruct"
+    "allenai/OLMo-1B-hf"
   ],
   "headline_excl_weak": {
-    "recovery_r": 0.95,
-    "recovery_slope": 0.8009,
-    "theta_mae": 0.3329,
+    "n_models": 49,
+    "recovery_r": 0.9543,
+    "recovery_slope": 0.879,
+    "theta_mae": 0.2923,
     "median_length_scenarios": 15.0,
-    "median_se_ability": 0.1774,
-    "median_se_total": 0.2171,
-    "median_se_param": 0.112,
-    "pct_reach_corrected": 97.9,
-    "pirt_pass_rate_mae": 0.0361,
-    "pirt_r": 0.9531
+    "length_mean": 15.14,
+    "length_sd": 0.61,
+    "pct_reach_se_ability": 95.9,
+    "median_se_total": 0.4369,
+    "pirt_pass_rate_mae": 0.0362,
+    "pirt_r": 0.9348
   },
   "all_52": {
-    "recovery_r": 0.9702,
-    "recovery_slope": 0.8131,
-    "theta_mae": 0.3594,
+    "n_models": 52,
+    "recovery_r": 0.9663,
+    "recovery_slope": 0.9158,
+    "theta_mae": 0.3031,
     "median_length_scenarios": 15.0,
-    "median_se_total": 0.2231,
-    "pct_reach_corrected": 92.3
+    "pct_reach_se_ability": 90.4,
+    "median_se_total": 0.4495,
+    "pirt_pass_rate_mae": 0.0351,
+    "pirt_r": 0.9421
   },
-  "reach_definition_corrected": "SE_ability (EAP posterior SD at stop) <= target ONLY",
-  "reach_old_combined_gate": "SE_ability <= target AND SE_total <= 0.30 (SUPERSEDED)",
-  "pct_reach_delta_vs_old": {
-    "all_52": 5.8,
-    "excl_weak": 4.1
-  },
+  "reach_definition": "SE_ability (EAP posterior SD at stop) <= target ONLY",
   "leaderboard": {
+    "convention": "OF-RECORD: observed op-point MWLE-at-stop theta + SE_total (incl SE_judge) error bars + annotated 1.83x cohort de-bias caveat (NOT per-model debiased).",
     "top_headline": {
       "model": "tiiuae/Falcon3-3B-Instruct",
-      "theta": 2.597,
-      "se_total": 0.323
+      "theta": 2.711,
+      "se_total": 0.37
     },
     "bottom_headline": {
       "model": "BEE-spoke-data/smol_llama-220M-openhermes",
-      "theta": -2.984
+      "theta": -3.638,
+      "se_total": 0.663
     }
   },
-  "efficiency": {
-    "op_point": {
-      "floor": 15,
-      "se_target": 0.22
+  "se_judge": {
+    "note": "gemini-3 is strict (alpha~0.45 false-fail, beta=0 false-pass) -> SE_judge is the DOMINANT floor and observed theta is biased DOWN.",
+    "confusion": {
+      "own_stratum": "conceptual_understanding",
+      "own_alpha_mean": 0.46875,
+      "own_alpha_ci95": [0.2388, 0.7061],
+      "overall_alpha_mean": 0.4523809523809524,
+      "overall_alpha_ci95": [0.2510, 0.6623],
+      "beta": 0.0,
+      "beta_pinned_reason": "zero false-pass in 100 gold cells",
+      "pooling": "conceptual_understanding = own alpha (15 gold-PASS >= 8); quantitative_procedural(3) + unknown pool to overall alpha (0.45)"
     },
+    "full_bank": {
+      "se_ability_median": 0.096,
+      "se_param_median": 0.077,
+      "se_judge_median": 0.3578,
+      "se_total_median": 0.3776,
+      "se_judge_var_share_median": 0.8868,
+      "se_judge_dominates_frac": 0.9615
+    },
+    "oppoint_f15se25": {
+      "se_ability_median": 0.204,
+      "se_param_median": 0.1013,
+      "se_judge_median": 0.3813,
+      "se_total_median": 0.4495,
+      "se_judge_var_share_median": 0.6898,
+      "se_judge_dominates_frac": 0.75
+    },
+    "cohort_debias_factor": {
+      "point_1_over_1_minus_alpha": 1.826086956521739,
+      "posterior_median": 1.816675705105089,
+      "posterior_ci95": [1.3349690454838414, 2.966994366386839],
+      "direction": "UP (beta=0 => p_true = p_obs/(1-alpha)); firm; magnitude band wide (20 gold-PASS cells)"
+    },
+    "de_bias_gate": {
+      "full_bank": {"frac_monotone": 1.0, "n_violations": 0, "spearman_obs_vs_debiased": 0.993, "shift_median": 1.4074},
+      "oppoint": {"frac_monotone": 1.0, "n_violations": 0, "spearman_obs_vs_debiased": 0.7784, "shift_median": 1.0432},
+      "gate_passed": true,
+      "recommended_path": "per_model_band (full-bank secondary); observed-theta headline (op-point)"
+    },
+    "tier_b": {
+      "b": 50,
+      "se_judge_full_A_median": 0.3578,
+      "se_judge_full_B_median": 0.159,
+      "tierA_is_conservative_of_record": true,
+      "verdict": "Tier B <= Tier A: refitting absorbs judge noise into item params; frozen-bank Tier A is the conservative of-record."
+    },
+    "precision_lever": "tighten alpha via a judge-FAIL-enriched gold audit (more true-passes gemini wrongly failed), NOT more cells."
+  },
+  "efficiency": {
+    "op_point": {"floor": 15, "se_target": 0.25},
     "n_held_out_traces": 52,
-    "adaptive_reach_scenarios": 10,
-    "random_reach_scenarios": 79,
-    "scenario_savings_x": 7.9
+    "adaptive_reach_scenarios": 7,
+    "random_reach_scenarios": 70,
+    "scenario_savings_x": 10.0
   },
+  "spearman_note": "rankings robust to judge layer (full-bank Spearman 0.993; op-point 0.778 = weak-tail reshuffle only); observed theta / pass-rate carry the cohort de-bias band.",
+  "slope_caveat": "OOS slope ~= 0.879 = mild absolute-scale compression (genuine bank property; CAT MWLE pulls extremes toward centre). Rankings + pass-rate faithful; only absolute-theta units shrunk.",
   "figures": {
-    "05_oos_recovery": "experiments/05_oos_recovery/oos_recovery_ability_f15se22.png",
-    "07_parameter_uncertainty": "experiments/07_parameter_uncertainty/se_ability_vs_total_bars_f15se22.png",
-    "08_leaderboard": "experiments/08_leaderboard/leaderboard_f15se22.png",
-    "09_pirt_mae": "experiments/09_pirt_mae/pirt_pred_vs_actual_f15se22.png",
-    "04_efficiency_vs_random": "experiments/04_efficiency_vs_random/adaptive_vs_random_efficiency_f15se22.png"
+    "04_efficiency_vs_random": "experiments/04_efficiency_vs_random/adaptive_vs_random_efficiency_f15se25.png",
+    "05_oos_recovery": "experiments/05_oos_recovery/oos_recovery_ability_f15se25.png",
+    "06_floor_se_grid": "experiments/06_floor_se_grid/DECISION_TABLE.md",
+    "07_se_components": "experiments/07_se_components/se_components_f15se25.png",
+    "08_leaderboard": "experiments/08_leaderboard/leaderboard_f15se25.png",
+    "09_pirt_mae": "experiments/09_pirt_mae/pirt_pred_vs_actual_f15se25.png",
+    "10_judge_error": "experiments/10_judge_error/judge_error_debias_f15se25.png",
+    "11_debias_band": "experiments/11_debias_band/debias_band_full_bank_f15se25.png"
   },
-  "job_a_corrected_grid_csv": "../oos_per_cell_grid_reach_corrected.csv"
+  "of_record_build_summary": "reports/tutoreval_gemini3_recal/of_record_f15se25/summary.json"
 }

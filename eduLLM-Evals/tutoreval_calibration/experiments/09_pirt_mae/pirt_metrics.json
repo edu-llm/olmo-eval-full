@@ -1,16 +1,18 @@
 {
   "op_point": {
     "floor": 15,
-    "se_target": 0.22
+    "se_target": 0.25
   },
   "headline_excl_weak": {
-    "n": 48,
-    "pass_rate_mae": 0.0361,
-    "r": 0.9531
+    "n": 49,
+    "pass_rate_mae": 0.0362,
+    "r": 0.9348,
+    "ols_slope": 0.8203,
+    "ols_intercept": 0.0427
   },
   "all_52": {
     "n": 52,
-    "pass_rate_mae": 0.0355,
-    "r": 0.9611
+    "pass_rate_mae": 0.0351,
+    "r": 0.9421
   }
 }

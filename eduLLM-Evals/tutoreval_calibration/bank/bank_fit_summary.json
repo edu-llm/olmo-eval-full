@@ -1,30 +1,29 @@
 {
-  "generated_at": "2026-08-08T00:00:00+00:00",
-  "status": "STUDY ONLY - local; production engine untouched; nothing committed.",
-  "benchmark": "TutorEval",
-  "scale": "unidimensional 2PL (single latent 'ability')",
-  "bank_file": "rubrics_qmatrix_final_unidim_fitted.jsonl",
-  "source_bank": "data/TutorEval/rubrics_qmatrix_final_unidim_fitted.jsonl",
-  "exported_by": "staging/tutoreval_calibration/export_tutoreval_fitted_bank.py",
-  "source_calibration_dir": "staging/tutoreval_calibration",
-  "matrix": "runs/judge/TutorEval/response_matrix.csv",
-  "matrix_sha256": "f7830280a40f6bb774116bb6e7a44f9840073c88d7ce8fbd538b357cdcbd4781",
-  "n_items_fit": 1186,
+  "generated_at": "2026-08-10T23:27:14.093092+00:00",
+  "status": "LOCAL / STUDY ONLY -- production engine untouched; nothing committed; calibrated on OBSERVED gemini-3 labels (Rule 0, no pre-correction); STOP after quantify (review checkpoint).",
+  "bank_file": "rubrics_qmatrix_final_unidim_gemini3_fitted.jsonl",
+  "matrix": "api_judge_pilot\\grading_tutoreval\\response_matrix.csv",
+  "matrix_sha256": "68a94f67e7d187561d30d0f7b718bb27c4679a5ce099b484c53ab04271d4690f",
+  "n_items_fit": 1244,
   "n_persons_fit": 52,
-  "q_modeled": { "ability": 1 },
+  "q_modeled": {
+    "ability": 1
+  },
   "fit_config": {
-    "fitter": "calibrate_tutoreval EM re-run == calibrate_mirt.fit_m2pl_em (1 dim)",
     "method": "unidimensional-2pl-mml-em",
     "grid_nodes_per_dim": 7,
     "ridge": 0.01,
-    "negative_policy": "preserved in-file (NOT floored to 0); clamp applied at consume time"
+    "negative_policy": "preserved in-file; clamp at consume"
   },
   "fit_result": {
-    "reproduction_loglik": -17111.056718358384,
-    "manifest_uni_loglik": -17111.056718358384,
-    "reproduction_matches_manifest": true
+    "loglik": -18071.209404053767,
+    "n_iter": 13,
+    "converged": true
   },
-  "flags": ["low_n"],
-  "identifiability_caveat": "N=52 persons < min_persons_identifiable=150; multi-dim loadings and the latent correlation (~0.98) are unstable at this sample size. This is precisely why the canonical TutorEval scale is UNIDIMENSIONAL (the 2-skill prototype was audited and rejected for this reason).",
-  "note": "Unidimensional 2PL baseline re-run of calibrate_tutoreval's EM (same matrix / Q-block / grid / ridge). Item params are recomputed at export time because the calibration script did not persist them. This JSON is a provenance note copied alongside the bank; the authoritative per-item provenance lives inline in each record's irt_params.provenance block."
+  "dropped": {
+    "total": 542,
+    "all_fail": 542,
+    "all_pass": 0,
+    "sparse_lt2": 0
+  }
 }

@@ -1,0 +1,190 @@
+{
+  "phase": 3,
+  "layer": "SE_judge + de-bias",
+  "benchmark": "TutorEval",
+  "judge": "gemini-3-flash-preview",
+  "generated_at": "2026-08-11T00:34:39.166265+00:00",
+  "status": "LOCAL / STUDY ONLY -- engine untouched (tutor_cat, scenario_cat_lib, calibrate_mirt read-only); nothing committed/staged; calibrated on OBSERVED gemini-3 labels (Rule 0). STOP at the SE_judge / de-bias interpretation checkpoint (do NOT proceed to Phase 4).",
+  "op_point": {
+    "floor": 15,
+    "se_ability_target": 0.25,
+    "stop": "dense-EAP posterior SD",
+    "dense_grid_nodes": 321,
+    "dense_range": 8.0,
+    "plateau_delta": 0.005,
+    "plateau_w": 3,
+    "cap": 70,
+    "estimator": "MWLE-at-stop",
+    "order": "frozen deployed adaptive order (observed labels, engine seed 42); stop moves with the resample along that order"
+  },
+  "config": {
+    "b_tier_a": 500,
+    "b_tier_b": 50,
+    "b_band": 100,
+    "seed": 20260810,
+    "fit_grid_gh": 7,
+    "ridge": 0.01,
+    "ref_grid": 61,
+    "ref_range": 6.0,
+    "dense_grid": 321,
+    "n_boot_separam_full": 200,
+    "full_bank_estimator": "full-bank EAP posterior mean (REF_GRID)",
+    "se_param_full": "vectorized observed-info parametric bootstrap (all cells)",
+    "se_param_oppoint": "Phase-1 deployed parametric-bootstrap offset (fixed/model)",
+    "resample": "correlated-within-criterion (one latent uniform/column), single de-bias, per-criterion pi_c, stratum alpha (own vs pooled), beta=0"
+  },
+  "paths": {
+    "bank": "reports\\tutoreval_gemini3_recal\\bank\\rubrics_qmatrix_final_unidim_gemini3_fitted.jsonl",
+    "matrix": "api_judge_pilot\\grading_tutoreval\\response_matrix.csv",
+    "confusion": "api_judge_pilot\\gold\\se_judge\\tutoreval_gemini3_confusion.json",
+    "gold_labels": "api_judge_pilot\\gold\\tutoreval_core\\gold_labels.jsonl",
+    "phase1_leaderboard": "reports\\tutoreval_gemini3_recal\\leaderboard_gemini3_f15se22.csv",
+    "out_dir": "reports\\tutoreval_gemini3_recal\\se_judge"
+  },
+  "bank_load_stats": {
+    "n_negative_cells": 35,
+    "n_negative_items": 35,
+    "negative_policy": "clamp",
+    "n_records_after": 1244
+  },
+  "confusion_model": {
+    "overall": {
+      "n": 100,
+      "gold_pass": 20,
+      "gold_fail": 80,
+      "false_fail": 9,
+      "false_pass": 0,
+      "alpha_false_fail": 0.45,
+      "beta_false_pass": 0.0,
+      "alpha_false_fail_ci95": [
+        0.2,
+        0.7
+      ],
+      "beta_false_pass_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    "alpha_posteriors_beta_from_gold_jeffreys": {
+      "own_stratum": "conceptual_understanding",
+      "own_alpha_a": 7.5,
+      "own_alpha_b": 8.5,
+      "own_alpha_mean": 0.46875,
+      "own_alpha_ci95": [
+        0.2387868479590579,
+        0.7061135851195999
+      ],
+      "own_counts": {
+        "n": 82,
+        "gold_pass": 15,
+        "gold_fail": 67,
+        "false_fail": 7,
+        "false_pass": 0,
+        "alpha_false_fail": 0.4666666666666667,
+        "beta_false_pass": 0.0
+      },
+      "overall_alpha_a": 9.5,
+      "overall_alpha_b": 11.5,
+      "overall_alpha_mean": 0.4523809523809524,
+      "overall_alpha_ci95": [
+        0.2510234431738929,
+        0.6623350415132572
+      ],
+      "beta": 0.0,
+      "beta_pinned_reason": "zero false-pass in 100 gold cells (CI [0,0])",
+      "pooling": "conceptual_understanding=own alpha (15 gold-PASS>=8); quantitative_procedural(3)+missing/unknown pool to overall alpha (0.45)"
+    }
+  },
+  "regimes": {
+    "full_bank": {
+      "n_models": 52,
+      "se_ability_median": 0.09601904392308327,
+      "se_param_median": 0.07698312262210041,
+      "se_judge_median": 0.35779826404136994,
+      "se_judge_mean": 0.3181239118179639,
+      "se_judge_max": 0.5041519441501472,
+      "se_total_median": 0.3776161599985507,
+      "se_total_mean": 0.3520762193455746,
+      "se_judge_var_share_median": 0.8867766141905911,
+      "se_judge_dominates_frac": 0.9615384615384616,
+      "theta_debias_shift_median": 1.4074020588464147,
+      "theta_debias_shift_mean": 1.568361799785356
+    },
+    "oppoint_f15se25": {
+      "n_models": 52,
+      "se_ability_median": 0.20401482855674385,
+      "se_param_median": 0.1013,
+      "se_judge_median": 0.3813343297759463,
+      "se_judge_mean": 0.3858018235482034,
+      "se_judge_max": 1.0379464771528761,
+      "se_total_median": 0.44953013815452986,
+      "se_total_mean": 0.46931455196704125,
+      "se_judge_var_share_median": 0.6897971777667354,
+      "se_judge_dominates_frac": 0.75,
+      "theta_debias_shift_median": 1.0431559081838588,
+      "theta_debias_shift_mean": 1.1739252851710427
+    }
+  },
+  "op_vs_full_se_judge_ratio_median": 1.065780268100616,
+  "de_bias_gate": {
+    "definition": "gate: per-model theta_debiased >= observed theta (>=98% full-bank, >=95% op-point) AND no shrinkage-crossover (top models do not decrease).",
+    "full_bank": {
+      "n": 52,
+      "frac_monotone": 1.0,
+      "n_violations": 0,
+      "shift_min": 0.05578257755834137,
+      "shift_median": 1.4074020588464147,
+      "shift_mean": 1.568361799785356,
+      "shift_max": 5.8423341986962125,
+      "spearman_obs_vs_debiased": 0.992999231622983,
+      "pearson_obs_vs_debiased": 0.8155243883719232
+    },
+    "oppoint": {
+      "n": 52,
+      "frac_monotone": 1.0,
+      "n_violations": 0,
+      "shift_min": 0.008421157739352036,
+      "shift_median": 1.0431559081838588,
+      "shift_mean": 1.1739252851710427,
+      "shift_max": 4.117752525567972,
+      "spearman_obs_vs_debiased": 0.7783659182105352,
+      "pearson_obs_vs_debiased": 0.7993458986705689
+    },
+    "pass_rate_debias_factor": {
+      "point_1_over_1_minus_alpha": 1.826086956521739,
+      "posterior_median": 1.816675705105089,
+      "posterior_ci95": [
+        1.3349690454838414,
+        2.966994366386839
+      ],
+      "ci_corners_from_alpha_ci": [
+        1.25,
+        3.333333333333333
+      ],
+      "note": "beta=0 => de-bias is purely UP: p_true = p_obs/(1-alpha). Direction firm; magnitude band wide (only 20 gold-PASS cells)."
+    },
+    "gate_passed": true,
+    "recommended_path": "per_model_band"
+  },
+  "op_point_deployed": {
+    "mean_scenarios": 15.692307692307692,
+    "mean_criteria": 26.01923076923077,
+    "stop_reason_counts": {
+      "precision": 46,
+      "plateau": 6,
+      "cap": 0,
+      "bank_exhausted": 0
+    },
+    "n_hit_cap": 0
+  },
+  "elapsed_seconds": 763.822187,
+  "tier_b": {
+    "b": 50,
+    "se_judge_full_A_median": 0.35779826404136994,
+    "se_judge_full_B_median": 0.15899309730287092,
+    "se_judge_B_minus_A_median": -0.11919049994488068,
+    "within_25pct": false,
+    "tierA_is_conservative_of_record": true,
+    "verdict": "Tier B <= Tier A: refitting the bank each replicate absorbs judge noise into the item parameters; frozen-bank Tier A is the conservative of-record (item params do not inflate SE_judge)."
+  }
+}

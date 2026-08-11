@@ -1,0 +1,17 @@
+regime,subset,component,n_models,mean,sd,median,max,judge_var_share_median
+full_bank,headline_excl_weak,SE_ability,49,0.0887,0.0508,0.0947,0.3479,0.8891
+full_bank,headline_excl_weak,SE_param,49,0.0764,0.0371,0.0762,0.2261,0.8891
+full_bank,headline_excl_weak,SE_judge,49,0.3068,0.1283,0.3288,0.5016,0.8891
+full_bank,headline_excl_weak,SE_total,49,0.332,0.1342,0.3466,0.651,0.8891
+full_bank,all_52,SE_ability,52,0.1061,0.0858,0.096,0.4036,0.8868
+full_bank,all_52,SE_param,52,0.0858,0.0525,0.077,0.2494,0.8868
+full_bank,all_52,SE_judge,52,0.3181,0.1327,0.3578,0.5042,0.8868
+full_bank,all_52,SE_total,52,0.3521,0.1536,0.3776,0.6884,0.8868
+oppoint_f15se25,headline_excl_weak,SE_ability,49,0.1938,0.0585,0.2032,0.4444,0.6999
+oppoint_f15se25,headline_excl_weak,SE_param,49,0.109,0.0406,0.0985,0.258,0.6999
+oppoint_f15se25,headline_excl_weak,SE_judge,49,0.3735,0.2425,0.3642,1.0379,0.6999
+oppoint_f15se25,headline_excl_weak,SE_total,49,0.4503,0.2236,0.4369,1.0844,0.6999
+oppoint_f15se25,all_52,SE_ability,52,0.2091,0.0841,0.204,0.4836,0.6898
+oppoint_f15se25,all_52,SE_param,52,0.1146,0.0455,0.1013,0.258,0.6898
+oppoint_f15se25,all_52,SE_judge,52,0.3858,0.2428,0.3813,1.0379,0.6898
+oppoint_f15se25,all_52,SE_total,52,0.4693,0.2314,0.4495,1.0844,0.6898

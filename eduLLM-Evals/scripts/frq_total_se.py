@@ -41,6 +41,62 @@ SE_TARGET = 0.30
 COLORS = {"ability": "#4d648d", "total": "#c1666b"}
 
 
+# ---------------------------------------------------------------------------
+# Total-SE quadrature (shared by the FRQ figures above and the judge-error /
+# SE_judge recalibration layers). SE_judge is an additional variance component
+# folded in quadrature alongside the ability (posterior) and parameter
+# (calibration) SEs:  SE_total = sqrt(SE_ability^2 + SE_param^2 + SE_judge^2).
+# ---------------------------------------------------------------------------
+
+
+def se_quadrature(*components) -> np.ndarray:
+    """Combine any number of independent SE components in quadrature.
+
+    Each argument is an array-like of per-model SEs; returns the elementwise
+    sqrt of the summed squares. NaNs in a component propagate (a model missing
+    any component has an undefined total).
+    """
+    total = None
+    for comp in components:
+        arr = np.asarray(comp, dtype=float)
+        total = arr ** 2 if total is None else total + arr ** 2
+    return np.sqrt(total)
+
+
+def regime_stats(df) -> dict:
+    """Summary stats for one SE-decomposition regime (a per-model table).
+
+    Expects columns ``se_ability``, ``se_param``, ``se_judge``, ``se_total`` and
+    (optionally) ``theta``/``theta_debiased``. Reports the medians/means of each
+    component, the SE_judge share of total variance (SE_judge^2 / SE_total^2),
+    the fraction of models where SE_judge dominates that variance, and the
+    de-bias shift (theta_debiased - theta).
+    """
+    sa = np.asarray(df["se_ability"], float)
+    sp = np.asarray(df["se_param"], float)
+    sj = np.asarray(df["se_judge"], float)
+    st = np.asarray(df["se_total"], float)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        var_share = np.where(st > 0, sj ** 2 / st ** 2, np.nan)
+    out = {
+        "n_models": int(len(df)),
+        "se_ability_median": float(np.nanmedian(sa)),
+        "se_param_median": float(np.nanmedian(sp)),
+        "se_judge_median": float(np.nanmedian(sj)),
+        "se_judge_mean": float(np.nanmean(sj)),
+        "se_judge_max": float(np.nanmax(sj)),
+        "se_total_median": float(np.nanmedian(st)),
+        "se_total_mean": float(np.nanmean(st)),
+        "se_judge_var_share_median": float(np.nanmedian(var_share)),
+        "se_judge_dominates_frac": float(np.nanmean((var_share > 0.5).astype(float))),
+    }
+    if "theta" in df.columns and "theta_debiased" in df.columns:
+        shift = np.asarray(df["theta_debiased"], float) - np.asarray(df["theta"], float)
+        out["theta_debias_shift_median"] = float(np.nanmedian(shift))
+        out["theta_debias_shift_mean"] = float(np.nanmean(shift))
+    return out
+
+
 def build_total_se_csv(out_dir: Path) -> pd.DataFrame:
     lb = pd.read_csv(BASE / "leaderboard" / "2_skills" / "cat_per_model.csv",
                      index_col="model")

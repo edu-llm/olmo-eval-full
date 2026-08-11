@@ -146,3 +146,7 @@ AdaptiveTesting/Experiments/**/.mplcache/
 
 # Local secrets (never commit)
 .apienv
+
+# Generated bank cache (repo-root .edullm_gen/, ~130MB): regenerable engine
+# output, not a deliverable. (eduLLM-Evals/.gitignore ignores the nested biggen/.)
+.edullm_gen/

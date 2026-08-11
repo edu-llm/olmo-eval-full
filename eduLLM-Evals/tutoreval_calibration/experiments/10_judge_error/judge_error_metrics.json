@@ -1,0 +1,13 @@
+{
+  "debias_factor_point": 1.826086956521739,
+  "debias_factor_band": [
+    1.3349690454838414,
+    2.966994366386839
+  ],
+  "debias_posterior_median": 1.816675705105089,
+  "own_stratum": "conceptual_understanding",
+  "own_alpha": 0.4688,
+  "overall_alpha": 0.4524,
+  "beta": 0.0,
+  "note": "beta=0 => de-bias is purely UP: p_true = p_obs/(1-alpha)."
+}

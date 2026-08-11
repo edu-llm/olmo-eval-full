@@ -1,0 +1,16 @@
+{
+  "op_point": {
+    "floor": 15,
+    "se_target": 0.22
+  },
+  "headline_excl_weak": {
+    "n": 48,
+    "pass_rate_mae": 0.0361,
+    "r": 0.9531
+  },
+  "all_52": {
+    "n": 52,
+    "pass_rate_mae": 0.0355,
+    "r": 0.9611
+  }
+}

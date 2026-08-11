@@ -1,0 +1,30 @@
+﻿{
+  "n": 100,
+  "by_provenance": {
+    "ai_concordant_accepted": 73,
+    "ai_concordant_spotchecked": 18,
+    "human_adjudicated": 9
+  },
+  "by_label": {
+    "fail": 80,
+    "pass": 20
+  },
+  "by_stratum": {
+    "conceptual_understanding": 82,
+    "quantitative_procedural": 12,
+    "unknown": 6
+  },
+  "resolved": 100,
+  "pending_needs_human": 0,
+  "human_adjudicated_ids": [
+    "tutoreval__0007",
+    "tutoreval__0012",
+    "tutoreval__0032",
+    "tutoreval__0046",
+    "tutoreval__0057",
+    "tutoreval__0068",
+    "tutoreval__0070",
+    "tutoreval__0079",
+    "tutoreval__0099"
+  ]
+}

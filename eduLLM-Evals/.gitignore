@@ -28,6 +28,7 @@ qwen_calibration_supplement_20260729.zip
 # Ad-hoc local data dumps (hundreds of MB; regenerable from runs)
 run_data.jsonl
 run_data (1).csv
+.edullm_gen/biggen/
 
 # Virtual environments
 # ---------------------------------------------------------------------------
@@ -211,12 +212,38 @@ biggen_results_cache.parquet
 # Raw TutorEval judged/grading dump (S3-origin, multi-GB; regenerable, never
 # tracked). This is the raw verdict/response dump, not a deliverable.
 TutorEvalGrade/
+# gemini-3 TutorEval grading dump from Slack: verdicts.jsonl is 109MB (> GitHub's
+# 100MB hard limit). Raw dump, not a deliverable; the built response_matrix goes in
+# its own (committable) dir. Never track the raw verdicts.
+TutorEvalGeminiGrade/
 
 # Superseded local scratch: the of-record deliverables from this study dir have
 # been copied into tutoreval_calibration/; what remains here is regenerable
 # scratch (input matrices, __pycache__, reconcile/refit helpers, duplicate
 # figures). Ignore the whole dir. Placed AFTER the reports/ re-include so it wins.
 reports/eap_oos_grid_tutoreval_unidim/
+
+# gemini-3 recalibration scratch: every deliverable (gemini-3 bank, of-record
+# experiments incl. 10_judge_error/11_debias_band, SE_judge summary + per-model
+# + tierB, leaderboard, decision tables) has been copied into the TRACKED
+# tutoreval_calibration/ package. Ignore the scratch source (duplicate banks,
+# __pycache__, engine dumps). Mirrors reports/biggen_gemini3_recal/ on frq/biggen.
+reports/tutoreval_gemini3_recal/
+
+# gemini-3 TutorEval recal build/study dir (reports/tutoreval_gemini3_recal/). The
+# OF-RECORD deliverables (of-record figure set, curated bank, SE_judge layer, decision
+# table) have been PROMOTED into tutoreval_calibration/ (tracked + pushable). What stays
+# here is either small provenance (kept) or regenerable scratch / duplicated build output
+# (ignored). The global *.png rule + reports/** re-include above would otherwise track the
+# regenerable duplicate figures and MC scratch, so re-exclude them here (this block wins as
+# it is AFTER the reports/ re-include). Keeps the study inputs (bank/, oppoint_grid/,
+# se_judge/{summary.json,per_model_*.csv,tierB_sensitivity.csv,CHECKPOINT.md}, report.json,
+# recalibrate/grid/build scripts) tracked as provenance.
+reports/tutoreval_gemini3_recal/of_record_f15se25/
+reports/tutoreval_gemini3_recal/scratch/
+reports/tutoreval_gemini3_recal/se_judge/scratch/
+reports/tutoreval_gemini3_recal/**/_tmp/
+reports/tutoreval_gemini3_recal/**/*_bank_engine.jsonl
 
 # Cross-branch leftovers carried into this working tree (raw grading dumps + other
 # benches' scratch); none belong on frq/tutoreval. Ignore so an `add -A` can't sweep
@@ -227,3 +254,16 @@ tutorbench_tb33_grading/verdicts_merged/
 reports/eap_oos_grid_tutorbench_2skill/
 reports/eap_stop_grid_tutorbench_2skill/
 reports/eap_unidim_correctness_only_tutorbench/
+# More cross-branch/scratch leftovers surfaced in this working tree. api_judge_pilot/
+# (~176MB) is the shared SE_judge gold/grading pilot source: its TutorEval deliverables
+# (confusion α/β, per-model SE, CHECKPOINT) are already promoted into
+# tutoreval_calibration/se_judge/, so the raw pilot dir is not a frq/tutoreval deliverable.
+# graderValidationStuff/ + _scratch_infobench_verify/ are local verification scratch;
+# TutorModelRun8-9F/ (~90MB) is a raw model-run dump; the biggen/infobench recal report
+# dirs belong on their own branches.
+api_judge_pilot/
+graderValidationStuff/
+_scratch_infobench_verify/
+TutorModelRun8-9F/
+reports/biggen_gemini3_recal/
+reports/infobench_oos_grid_unidim/
