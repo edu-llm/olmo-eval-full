@@ -192,25 +192,33 @@ Suggested compute: `gpu-8xl40s` (7B MoE + OLMo-core→HF conversion).
 
 ## Smoke: stage + steering vector (370M)
 
-Two jobs, submitted in order:
+**Staging is not a platform job.** Batch roles cannot read `edullm-checkpoints`
+(run `run_019fec94-69ac` failed with `AccessDenied`). Copy the checkpoint with
+`sb_aws` (or `./SteeringVectors/stage_checkpoints.sh`) before the GPU smoke:
+
+```bash
+sb_aws s3 sync \
+  s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/step1315/ \
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-smoke/step1315/
+```
 
 | Job | Spec | Compute | What it does |
 |-----|------|---------|--------------|
-| **Stage** | `platform-run-stage-smoke.yaml` | `cpu-32vcpu` | S3 copy `step1315` from `edullm-checkpoints` → `teams/.../steering-smoke/` |
+| **Stage** | `stage_checkpoints.sh` / `sb_aws` (local) | — | S3 sync into `teams/.../steering-smoke/` |
 | **Vector** | `platform-run-vector-smoke.yaml` | `gpu-1xl40s` | OLMo-core→HF, build stereoset vector at layer 6, upload `.pt` + JSON |
 
 Dry-run locally:
 
 ```bash
-python SteeringVectors/stage_checkpoints.py --dry-run --source s3://.../step1315/ --dest s3://.../steering-smoke/step1315/
-python SteeringVectors/generate_steering_vector.py --dry-run --checkpoint s3://.../steering-smoke/step1315/
+python SteeringVectors/generate_steering_vector.py --dry-run \
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-smoke/step1315/
 ```
 
-Submit (push `edullm/**` branch first):
+Submit GPU smoke (after staging):
 
 ```bash
-edullm submit --dataset none --spec SteeringVectors/platform-run-stage-smoke.yaml
-edullm submit --dataset none --compute gpu-1xl40s --spec SteeringVectors/platform-run-vector-smoke.yaml
+edullm submit --dataset none --experiment steering-smoke-vector \
+  --compute gpu-1xl40s --spec SteeringVectors/platform-run-vector-smoke.yaml
 ```
 
 ## Attribution

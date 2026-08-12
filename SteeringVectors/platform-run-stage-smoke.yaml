@@ -1,18 +1,16 @@
-# eduLLM CPU job: stage one OLMo-370M checkpoint for steering smoke tests.
+# DEPRECATED — do not submit this as an eduLLM job.
 #
-# GPU roles cannot read edullm-checkpoints; this copies step1315 into
-# teams/eval-inference/runs/steering-smoke/ before the vector smoke runs.
+# Platform batch roles (CPU and GPU) cannot read s3://edullm-checkpoints/.
+# run_019fec94-69ac failed with AccessDenied on ListObjectsV2 for that bucket.
 #
-# Submit (from repo root, after pushing edullm/** branch):
-#   edullm check  --dataset none --spec SteeringVectors/platform-run-stage-smoke.yaml
-#   edullm submit --dataset none --spec SteeringVectors/platform-run-stage-smoke.yaml
-schema_version: 1
-workload_profile: olmo-eval-check
-suggested_compute: cpu-32vcpu
-command: >-
-  bash -lc 'uv sync --frozen --no-default-groups --extra s3
-  && export PYTHONPATH=SteeringVectors:.
-  && python SteeringVectors/stage_checkpoints.py
-  --source s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/step1315/
-  --dest s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-smoke/step1315/
-  --manifest-out "$EDULLM_OUTPUT_PREFIX/steering-smoke-stage/manifest.json"'
+# Stage checkpoints locally with sb_aws instead:
+#
+#   sb_aws s3 sync \
+#     s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/step1315/ \
+#     s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-smoke/step1315/
+#
+# Or: ./SteeringVectors/stage_checkpoints.sh <source> <dest>
+#
+# Then submit the GPU vector smoke:
+#   edullm submit --dataset none --experiment steering-smoke-vector \
+#     --compute gpu-1xl40s --spec SteeringVectors/platform-run-vector-smoke.yaml
