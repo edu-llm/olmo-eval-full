@@ -65,6 +65,19 @@ if str(_REPO_ROOT) not in sys.path:
 
 MRBENCH_DATA_PATH = _REPO_ROOT / "diagnostics" / "mrbench" / "data" / "MRBench_V1.json"
 
+# Env var that, when truthy, makes ``score_responses`` skip the judge entirely
+# (no diagnostics import, no API, no network) so a run only emits its generations
+# for off-cluster judging. Default OFF => byte-identical to the inline-judge path.
+_GENERATE_ONLY_ENV = "MRBENCH_GENERATE_ONLY"
+# Env var override for the data file, complementing ``-o data_source=``.
+_DATA_SOURCE_ENV = "MRBENCH_DATA_SOURCE"
+
+
+def _env_truthy(value: str | None) -> bool:
+    """Return True for the usual affirmative env-var spellings, False otherwise."""
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 # Authoritative dimension order is ``diagnostics.mrbench.reference.DIMENSIONS``.
 # Imported here so the 8 per-dimension metrics can be declared at registration
 # time. A small hard-coded mirror keeps task *discovery* resilient if the
@@ -187,7 +200,8 @@ class MRBench(Task):
     """MRBench Phase-B tutor-generation task, judged on 8 dimensions -> DAMR."""
 
     # A filesystem path to the vendored MRBench V1 data (not re-downloaded).
-    # Overridable with ``-o data_source=/path/to/MRBench_V1.json``.
+    # Overridable with ``-o data_source=/path/to/MRBench_V1.json`` or the
+    # ``MRBENCH_DATA_SOURCE`` env var; falls back to this checkout path otherwise.
     data_source = str(MRBENCH_DATA_PATH)
     sampling_params = SamplingParams(temperature=0.0, max_tokens=256)
     metrics = _MRBENCH_METRICS
@@ -197,10 +211,34 @@ class MRBench(Task):
     # which additionally needs MRBENCH_JUDGE_MODEL (and optionally a base-URL env).
     required_secrets = ("OPENAI_API_KEY",)
 
-    def _load_conversations(self) -> list[dict[str, Any]]:
-        """Load the MRBench V1 conversation list from the configured path."""
+    def _resolve_data_path(self) -> Path:
+        """Resolve MRBench_V1.json with explicit-override-then-checkout precedence.
+
+        Works both for a source checkout (the file ships beside the ``diagnostics``
+        tree) and an installed wheel (where the ``__file__``-relative path points
+        into site-packages and does not exist): supply an explicit path via
+        ``-o data_source=/abs/MRBench_V1.json`` or the ``MRBENCH_DATA_SOURCE`` env
+        var. The checkout path stays the default fallback and is never hardcoded to
+        a single deployment location.
+        """
         source = self.config.data_source
-        path = Path(source) if isinstance(source, str) else MRBENCH_DATA_PATH
+        if isinstance(source, str) and source and Path(source) != MRBENCH_DATA_PATH:
+            return Path(source)
+        env_override = os.getenv(_DATA_SOURCE_ENV)
+        if env_override:
+            return Path(env_override)
+        return MRBENCH_DATA_PATH
+
+    def _load_conversations(self) -> list[dict[str, Any]]:
+        """Load the MRBench V1 conversation list from the resolved path."""
+        path = self._resolve_data_path()
+        if not path.exists():
+            raise FileNotFoundError(
+                f"MRBench data not found at {path}. Pass an explicit path with "
+                "-o data_source=/abs/path/MRBench_V1.json or set "
+                f"{_DATA_SOURCE_ENV} (required when running from an installed wheel "
+                "where the checkout-relative path is unavailable)."
+            )
         with path.open(encoding="utf-8") as fh:
             conversations = json.load(fh)
         if not isinstance(conversations, list):
@@ -264,6 +302,21 @@ class MRBench(Task):
         """
         self._extract_answers(responses)
         if not responses:
+            return responses
+
+        # OPT-IN, default OFF: generate-only. When set, skip the judge entirely
+        # (no diagnostics import, no API, no network). The runner still writes the
+        # predictions (native_id = conversation_id, final_output = tutor text), so
+        # the generations can be judged off-cluster later (see
+        # diagnostics/mrbench/phase_b_judge.py). Unset => behaviour is identical to
+        # the inline-judge path below.
+        if _env_truthy(os.getenv(_GENERATE_ONLY_ENV)):
+            logger.info(
+                "%s is set: skipping the MRBench judge; %d generations emitted for "
+                "off-cluster judging.",
+                _GENERATE_ONLY_ENV,
+                len(responses),
+            )
             return responses
 
         if _DIAGNOSTICS_IMPORT_ERROR is not None:

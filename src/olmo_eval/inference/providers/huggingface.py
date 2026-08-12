@@ -129,6 +129,24 @@ class HuggingFaceProvider(InferenceProvider):
 
         return kwargs
 
+    def _format_prompt(self, request: LMRequest) -> str:
+        """Format an LMRequest into the text prompt fed to the tokenizer.
+
+        CHAT requests carry their content in ``messages`` (with an empty
+        ``prompt``); render them with the tokenizer's chat template so the model
+        actually sees the conversation. COMPLETION/LOGLIKELIHOOD requests keep
+        using ``prompt`` directly.
+        """
+        if request.request_type == RequestType.CHAT and request.messages:
+            if not hasattr(self.tokenizer, "apply_chat_template"):
+                raise ValueError("CHAT requests require a tokenizer with apply_chat_template")
+            return self.tokenizer.apply_chat_template(
+                list(request.messages),
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+        return request.prompt
+
     def _truncate_at_stop(
         self, tokens: torch.Tensor, stop_sequences: tuple[str, ...] | None
     ) -> tuple[torch.Tensor, str]:
@@ -157,7 +175,7 @@ class HuggingFaceProvider(InferenceProvider):
 
         results = []
         for request in requests:
-            prompt = request.prompt
+            prompt = self._format_prompt(request)
             encoded = self.tokenizer(prompt, return_tensors="pt").to(self.device)
             prompt_len = encoded["input_ids"].shape[1]
             gen_kwargs = self._build_generate_kwargs(params, prompt_len)
@@ -221,7 +239,8 @@ class HuggingFaceProvider(InferenceProvider):
         if request.request_type != RequestType.LOGLIKELIHOOD:
             # Pass the prompt length so an uncapped (max_tokens=None) trace shows the
             # same per-prompt max_new_tokens budget that generate() will use.
-            prompt_len = len(self.tokenizer.encode(request.prompt)) if request.prompt else 0
+            formatted_prompt = self._format_prompt(request)
+            prompt_len = len(self.tokenizer.encode(formatted_prompt)) if formatted_prompt else 0
             trace["provider"] = "HuggingFaceProvider"
             trace["endpoint"] = "transformers.generate"
             trace["generation_kwargs"] = {

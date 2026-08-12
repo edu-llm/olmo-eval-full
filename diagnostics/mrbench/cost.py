@@ -2,8 +2,8 @@
 
 Builds the actual Figure-6 prompt for every (response, dimension) over the real
 MRBench V1 data, measures input size from those prompts, and translates to a
-dollar range using assumed Claude Sonnet pricing. TrueFoundry passes provider
-pricing through, so the underlying Anthropic Sonnet rates are used.
+dollar range using assumed Claude Haiku 4.5 pricing. TrueFoundry passes provider
+pricing through, so the underlying Anthropic Haiku rates are used.
 """
 
 from __future__ import annotations
@@ -41,10 +41,10 @@ _GEN_USER_MATHDIAL = (
     "conversation hisotry):"
 )
 
-# Assumed pricing (USD per million tokens). Anthropic Claude Sonnet 4.x tier.
+# Assumed pricing (USD per million tokens). Anthropic Claude Haiku 4.5 tier.
 # STATED ASSUMPTION — verify against current pricing before spending.
-RATE_INPUT_PER_MTOK = 3.0
-RATE_OUTPUT_PER_MTOK = 15.0
+RATE_INPUT_PER_MTOK = 1.0
+RATE_OUTPUT_PER_MTOK = 5.0
 
 # Output is a one-sentence feedback + "[RESULT] N"; small and bounded.
 DEFAULT_OUTPUT_TOKENS_PER_CALL = 40

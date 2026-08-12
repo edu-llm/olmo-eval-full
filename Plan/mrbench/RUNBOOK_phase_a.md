@@ -4,7 +4,7 @@ Push-button operator guide for validating the LLM judge against MRBench human
 gold. **Nothing here picks a judge model** — you supply one via
 `MRBENCH_JUDGE_MODEL` at run time. Steps run offline until you explicitly pass
 `--live`. Costs quoted are from `diagnostics/mrbench/cost.py` at the assumed
-Claude-Sonnet rates ($3/MTok in, $15/MTok out — verify before spending).
+Claude Haiku 4.5 rates ($1/MTok in, $5/MTok out — verify before spending).
 
 All commands run from the repo root. Flags/env vars below were verified against
 `gold_damr_check.py`, `judge_run.py`, `judge_client.py`, `cost.py`, and
@@ -75,8 +75,8 @@ uv run python -m diagnostics.mrbench.judge_run --samples 0 --phase-b
 
 Look for: the printed prompt matches the paper's Figure 6; the readiness block
 says whether `MRBENCH_JUDGE_MODEL` + a key are set. **Full-run estimate:
-~$30.58** (12,712 judge calls = 1,589 responses × 8 dimensions; band
-$28.03–$33.86).
+~$10.19** (12,712 judge calls = 1,589 responses × 8 dimensions; band
+$9.34–$11.29).
 
 ### (c) Cheap live pilot — eyeball fidelity before spending
 
@@ -84,9 +84,9 @@ $28.03–$33.86).
 (response × dimension). So 8 responses = 64 calls.
 
 ```bash
-# ~$0.15 pilot: 8 responses across all 8 dimensions (64 calls).
+# ~$0.05 pilot: 8 responses across all 8 dimensions (64 calls).
 uv run python -m diagnostics.mrbench.judge_run --live --limit 64
-# (absolute-minimum smoke: --limit 8 = one response's 8 dims, ~$0.02)
+# (absolute-minimum smoke: --limit 8 = one response's 8 dims, ~$0.01)
 ```
 
 Then inspect the cache to confirm Figure-6 fidelity and clean parsing:
@@ -117,8 +117,9 @@ Useful knobs (verified in `judge_run.py`): `--concurrency N` (default 8),
 `--cache PATH` (default `diagnostics/mrbench/runs/judge_cache.jsonl`),
 `--limit N`. `--metrics` computes per-dimension Pearson **AC** (judge vs gold),
 judge-derived DAMR, per-tutor×dimension tables, and diffs vs the paper's
-Prometheus2 / Llama-3.1-8B baselines; `--bootstrap 1000` adds 95% CIs. The
-Sonnet-authored subset is reported separately (self-bias caveat).
+Prometheus2 / Llama-3.1-8B baselines; `--bootstrap 1000` adds 95% CIs. Self-bias
+is **N/A** for the Claude Haiku 4.5 judge — it is not one of the MRBench tutors,
+so there is no self-authored subset to surface separately.
 
 You can also recompute metrics from an existing cache without any network:
 
@@ -135,9 +136,9 @@ From `README.md` (§Phase A acceptance gate — DECIDED):
   paper baselines (Prometheus2 and Llama-3.1-8B) on **≥ 7/8** dimensions.
 - **Weak dimensions** are **caveated, not fatal** (don't fail the whole judge).
 - **Human-likeness** is **reported but excluded** from the gate.
-- **Self-bias:** report AC **both** with and without the judge's own-authored
-  tutor subset; if any per-dimension delta > **0.10**, use the **excluding-self**
-  number for the gate.
+- **Self-bias:** N/A for the Claude Haiku 4.5 judge (not one of the MRBench
+  tutors). The report-both-and-exclude-self rule only applies when the judge model
+  is itself one of the tutors.
 - Thresholds may be relaxed later if warranted.
 
 ---
@@ -187,8 +188,9 @@ uv run olmo-eval run -m <model-under-test> -t mrbench -O <output-dir>
 # optional opt-ins: MRBENCH_JUDGE_SAMPLES=k, MRBENCH_JUDGE_REFERENCE_GUIDED=1
 ```
 
-- **Cost ≈ $4.03 / model** (192 generation calls + 192×8 = 1,536 judge calls at
-  k=1; ~$0.30 generation + ~$3.73 judge).
+- **Cost ≈ $1.55 / model** (192 generation calls + 192×8 = 1,536 judge calls at
+  k=1; ~$0.30 generation at a generic $3/$15 model + ~$1.24 judge at Claude Haiku
+  4.5 $1/$5 rates).
 - **Reports DAMR only** — the primary `damr` aggregate plus 8 `damr_<Dim>`. There
   is **no** AC or macro-F1 in Phase B, because there is no human gold for the
   model under test (those are judge-vs-gold metrics, Phase A only).
@@ -204,12 +206,12 @@ uv run olmo-eval run -m <model-under-test> -t mrbench -O <output-dir>
 - [ ] Base URL correct (default gateway, or override exported).
 - [ ] (a) Gold-DAMR sanity check ran; divergence understood (FAIL vs Table 3 is
       expected/accepted).
-- [ ] (b) Dry-run prompt matches Figure 6; cost estimate reviewed (**~$30.58**
+- [ ] (b) Dry-run prompt matches Figure 6; cost estimate reviewed (**~$10.19**
       full Phase A).
 - [ ] (c) ~$0.15 pilot (`--limit 64`) ran; cache shows `ok=true`,
       `used_fallback=false`, clean `[RESULT] N`.
 - [ ] Assumed pricing re-checked against current provider rates.
-- [ ] Budget approved for the full run (and per-model **~$4** if Phase B follows).
+- [ ] Budget approved for the full run (and per-model **~$1.55** if Phase B follows).
 - [ ] `--concurrency` set appropriately for gateway rate limits.
 - [ ] GO / NO-GO: _______
 

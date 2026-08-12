@@ -1,4 +1,4 @@
-"""CLI for the Milestone-1 Sonnet judge (TrueFoundry gateway).
+"""CLI for the Milestone-1 Claude Haiku 4.5 judge (TrueFoundry gateway).
 
 Safe by default: with no flags it performs a **dry run** — it builds and prints
 the exact Figure-6 prompt for a few responses and prints the full-run cost
@@ -112,7 +112,8 @@ def print_cost(conversations: list[dict], output_tokens: int, judge_samples: int
     print(f"  est. output tokens (total)       : {est.total_output_tokens:,}")
     print(
         f"  assumed rates                    : "
-        f"${est.rate_input_per_mtok}/MTok in, ${est.rate_output_per_mtok}/MTok out (Claude Sonnet)"
+        f"${est.rate_input_per_mtok}/MTok in, ${est.rate_output_per_mtok}/MTok out "
+        "(Claude Haiku 4.5)"
     )
     print(f"  input cost                       : ${est.input_cost:,.2f}")
     print(f"  output cost                      : ${est.output_cost:,.2f}")
@@ -337,8 +338,9 @@ def print_metrics(
             print(dim.ljust(28) + _pct(mf1[dim]).strip().rjust(10))
         print("mean".ljust(28) + _pct(mean_mf1).strip().rjust(10))
 
-    print("\nSelf-bias caveat: Sonnet is one of the judged tutors. Its row above is the")
-    print("Sonnet-authored subset scored by a Sonnet judge; interpret separately.")
+    print("\nSelf-bias caveat: N/A. Claude Haiku 4.5 (the judge) is not one of the 9 MRBench")
+    print("tutors, so no row above is a self-authored subset. The 'Sonnet' row is a judged")
+    print("tutor in the data, unrelated to the judge model.")
     return 0
 
 
@@ -533,7 +535,9 @@ def run_validation() -> int:
 # --------------------------------------------------------------------------- #
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="MRBench Milestone-1 Sonnet judge (TrueFoundry gateway). Safe by default.",
+        description=(
+            "MRBench Milestone-1 Claude Haiku 4.5 judge (TrueFoundry gateway). Safe by default."
+        ),
     )
     parser.add_argument("--data-path", default=None, help="Path to MRBench_V1.json.")
     parser.add_argument("--samples", type=int, default=3, help="Dry-run prompts to print.")
@@ -554,9 +558,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--gen-rate-out", type=float, default=15.0, help="Phase B gen $/MTok output."
     )
-    parser.add_argument("--judge-rate-in", type=float, default=3.0, help="Phase B judge $/MTok in.")
+    parser.add_argument("--judge-rate-in", type=float, default=1.0, help="Phase B judge $/MTok in.")
     parser.add_argument(
-        "--judge-rate-out", type=float, default=15.0, help="Phase B judge $/MTok out."
+        "--judge-rate-out", type=float, default=5.0, help="Phase B judge $/MTok out."
     )
     parser.add_argument(
         "--reference-guided",

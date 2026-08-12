@@ -9,8 +9,9 @@ Three knobs, all read from the environment (never hardcoded):
                 (default ``https://gateway.truefoundry.ai``)
   * API key   : ``OPENAI_API_KEY`` | ``TFY_API_KEY`` | ``TRUEFOUNDRY_API_KEY``
   * model id  : ``MRBENCH_JUDGE_MODEL`` (TrueFoundry ``provider_account/model_name``;
-                the user copies the exact Sonnet 4.6 id from their Playground
-                "Code Snippet" — there is no usable hardcoded default).
+                the user copies their configured judge model id (Claude Haiku 4.5)
+                from their Playground "Code Snippet" — there is no usable hardcoded
+                default).
 
 Nothing here performs a network call at import time. ``openai`` is imported
 lazily inside :func:`make_client` so dry-run / metrics / tests need no live SDK.
@@ -25,7 +26,7 @@ from dataclasses import dataclass
 
 # Placeholder model id. It is intentionally NOT a working model string: the live
 # path refuses to run until the user supplies their real TrueFoundry model id.
-PLACEHOLDER_MODEL = "REPLACE_WITH_TFY_PROVIDER_ACCOUNT/claude-sonnet-4-6"
+PLACEHOLDER_MODEL = "REPLACE_WITH_TFY_PROVIDER_ACCOUNT/claude-haiku-4-5"
 
 DEFAULT_BASE_URL = "https://gateway.truefoundry.ai"
 
@@ -76,7 +77,7 @@ class JudgeConfig:
             missing.append(f"a TrueFoundry API key in one of {list(_API_KEY_ENVS)}")
         if self.model_is_placeholder:
             missing.append(
-                f"the Sonnet 4.6 TrueFoundry model id in {_MODEL_ENV} "
+                f"your configured judge model id (Claude Haiku 4.5) in {_MODEL_ENV} "
                 "(copy from your Playground 'Code Snippet')"
             )
         return missing

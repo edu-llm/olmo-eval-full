@@ -15,6 +15,11 @@ implemented and now exercised end-to-end.) Branch: `frq/mrbench`.
 > **[`RUNBOOK_phase_a.md`](./RUNBOOK_phase_a.md)** — a copy-pasteable,
 > offline→pilot→full gated sequence (with the Phase-B quick reference and the
 > go/no-go cost checklist).
+>
+> **Phase B on eduLLM:** **[`PHASE_B_EDULLM_PLAN.md`](./PHASE_B_EDULLM_PLAN.md)** —
+> the AGENTS.md-compliant plan to run a model-under-test (e.g.
+> `allenai/OLMoE-1B-7B-0125-Instruct`) on the `mrbench` task via `edullm`
+> (generate-on-cluster / judge-locally split; `edullm` blockers documented).
 
 ## Purpose
 
@@ -26,7 +31,7 @@ arithmetic.
 Two phases, run in order:
 
 - **Phase A — validate our judge.** Score MRBench tutor responses with our own
-  judge (Sonnet 4.6, served via the **TrueFoundry AI Gateway**) and measure how
+  judge (Claude Haiku 4.5, served via the **TrueFoundry AI Gateway**) and measure how
   well the judge agrees with the human gold labels. This tells us whether the
   judge is trustworthy before we rely on it for anything new.
 - **Phase B — score a tutor (later).** Only once Phase A shows the judge is
@@ -129,7 +134,7 @@ Follow the paper's **Figure 6** (Appendix E) byte-faithfully: per-dimension
 `Feedback: ... [RESULT] N` where `N ∈ {1, 2, 3}` (mapped to the dimension's
 three-way label via the Figure-6 rubric).
 
-- Judge = **Sonnet 4.6**, **temperature 0**, one call per (response, dimension)
+- Judge = **Claude Haiku 4.5**, **temperature 0**, one call per (response, dimension)
   → **8 calls per response**. Our V1 file yields 1,589 responses → **12,712**
   calls (the paper's 1,596 would be 12,768).
 - **Prompt fidelity.** The exact Figure-6 system text, user template,
@@ -156,13 +161,13 @@ provider-native SDK). Three config knobs, all from env (never hardcoded):
 | Model id | `MRBENCH_JUDGE_MODEL` | placeholder — **user must supply** |
 
 The model id is TrueFoundry's `provider_account/model_name` form (e.g.
-`anthropic-main/claude-sonnet-4-6`); the exact string depends on the user's
+`claude-group/claude-haiku-4-5`); the exact string depends on the user's
 account and must be copied from their **Playground → "Code Snippet"**. There is
 no working hardcoded default — the live path refuses to run on the placeholder.
 
-- **Self-bias caveat:** Sonnet is itself one of the seven tutors in MRBench, so
-  the judge may favour Sonnet's own responses. The Sonnet-authored subset is
-  reported separately.
+- **Self-bias caveat: N/A.** Claude Haiku 4.5 (the judge) is **not** one of the
+  nine MRBench tutors, so there is no self-authored subset to exclude. (The
+  `Sonnet` tutor in the data is unrelated to the judge model.)
 
 ## Milestones
 
@@ -175,7 +180,7 @@ no working hardcoded default — the live path refuses to run on the placeholder
   uv run python -m diagnostics.mrbench.gold_damr_check
   ```
 
-- **M1 — Sonnet judge run.** *Built; not yet run live.* The Figure-6 judge over
+- **M1 — Claude Haiku 4.5 judge run.** *Built; not yet run live.* The Figure-6 judge over
   all responses, persisting per-response, per-dimension judge labels to an
   idempotent JSONL cache (skip-if-done), with concurrency + rate-limit backoff.
   Safe by default: no flags → dry-run (prints sample prompts + cost estimate,
@@ -191,8 +196,8 @@ no working hardcoded default — the live path refuses to run on the placeholder
 - **M2 — AC + judge-DAMR + baseline comparison.** *Implemented; pending M1 data.*
   Per-dimension AC (Pearson judge-vs-gold) overall and per tutor, a judge-derived
   DAMR (reusing the M0 desired-label logic), and per-cell comparison against the
-  paper's Prometheus2 (Table 5) and Llama-3.1-8B (Table 6) baselines, with the
-  Sonnet subset surfaced separately.
+  paper's Prometheus2 (Table 5) and Llama-3.1-8B (Table 6) baselines. (Self-bias
+  is N/A: the Claude Haiku 4.5 judge is not one of the MRBench tutors.)
 
   ```bash
   uv run python -m diagnostics.mrbench.judge_run --metrics    # reads the cache
@@ -233,14 +238,15 @@ this caveat. (Machine-readable copy: `reference.TABLE3_DIVERGENCE`.)
   metrics (Pearson +1/−1/nan, judge-DAMR, parse-failure exclusion) — 12/12 PASS.
 - **Cost estimate (full run):** 12,712 calls; ~7.65M input tokens (measured from
   real prompts, ~2,408 chars/call, 4 chars/token) + ~0.51M output tokens
-  (assumed 40/call). At assumed Claude Sonnet rates **$3 / MTok input, $15 / MTok
-  output** (TrueFoundry passes provider pricing through): **≈ $30.6**, range
-  **$28–$34**. Verify rates against current pricing before spending.
+  (assumed 40/call). At assumed Claude Haiku 4.5 rates **$1 / MTok input, $5 / MTok
+  output** (TrueFoundry passes provider pricing through): **≈ $10.2**, range
+  **$9–$11**. Verify rates against current pricing before spending. (The actual
+  validated live run came in at **≈ $12.10**; see `PHASE_A_VALIDATION.md`.)
 
 To run live we need: the gateway base URL (default is fine for SaaS), a
 **TrueFoundry API key** in `OPENAI_API_KEY`/`TFY_API_KEY`/`TRUEFOUNDRY_API_KEY`,
-and the **Sonnet 4.6 model id** in `MRBENCH_JUDGE_MODEL` (from the Playground
-Code Snippet), plus explicit go-ahead.
+and the **Claude Haiku 4.5 model id** (`claude-group/claude-haiku-4-5`) in
+`MRBENCH_JUDGE_MODEL` (from the Playground Code Snippet), plus explicit go-ahead.
 
 ## Phase A — acceptance criteria (judge validation)
 
@@ -266,10 +272,11 @@ weak baseline.
   reported with a caveat in Phase B rather than driving decisions.
 - **Human-likeness** is special-cased (DECIDED): gold is near-constant (mostly
   "Yes"), so Pearson is unstable/NaN. Report it, but do not let it fail the gate.
-- **Self-bias — DECIDED (report-both):** compute AC both **including and
-  excluding** the judge's own-authored tutor subset (e.g. the Sonnet-authored
-  responses when Sonnet is the judge). If any per-dimension delta > **0.10**, use
-  the **excluding-self** number for the gate.
+- **Self-bias — DECIDED (report-both):** if the judge model is itself one of the
+  MRBench tutors, compute AC both **including and excluding** the judge's
+  own-authored tutor subset; if any per-dimension delta > **0.10**, use the
+  **excluding-self** number for the gate. **N/A for the current judge:** Claude
+  Haiku 4.5 is not one of the nine tutors, so there is no self-authored subset.
 
 *Note:* these thresholds (0.30, 6/8, 7/8, 0.10) are the accepted defaults and
 **may be relaxed later if warranted.** They live nowhere in code yet — applied by
@@ -318,8 +325,9 @@ surfaced via `judge_run.py --phase-b`) counts `192` generation calls + `192 × 8
 1,536` judge calls, sizes generation prompts from the real Figure-2 templates and
 judge prompts from an assumed response length (default = mean V1 response ≈ 174
 chars), and prices generation and judge **independently** (`--gen-rate-*`,
-`--judge-rate-*`). At assumed Sonnet rates ($3/$15 per MTok) it is **≈ $4.0 per
-model under test** (gen ≈ $0.30, judge ≈ $3.73). No live calls to produce this.
+`--judge-rate-*`). At assumed Claude Haiku 4.5 judge rates ($1/$5 per MTok) and a
+generic $3/$15 generation model it is **≈ $1.55 per model under test** (gen ≈
+$0.30, judge ≈ $1.24). No live calls to produce this.
 
 ## Reporting & artifacts
 
@@ -459,10 +467,10 @@ Two buckets: **cheap/safe & paper-faithful** vs **higher-accuracy but off-protoc
 - **[safe, on-protocol]** Keep the byte-faithful Figure-6 zero-shot, per-dimension,
   reference-free, temp-0 single-sample judge as the *primary/comparability* run —
   this is what our harness already does and what maps to Tables 5/6.
-- **[safe, cheap, mostly on-protocol]** Use a **strong modern judge** (Sonnet 4.6):
-  the paper itself invites "more powerful LLMs as critics", so swapping the *model*
-  (not the prompt) is the single most defensible accuracy lever and stays close to
-  protocol. This is our current plan.
+- **[safe, cheap, mostly on-protocol]** Use a **strong modern judge** (Claude
+  Haiku 4.5): the paper itself invites "more powerful LLMs as critics", so swapping
+  the *model* (not the prompt) is the single most defensible accuracy lever and
+  stays close to protocol. This is our current plan.
 - **[cheap add-on, mildly off-protocol]** Add a **reference-guided** variant that
   puts `Ground_Truth_Solution` (present in the V1 schema) into the judge prompt for
   the correctness-linked dimensions (Mistake Id/Location, Guidance, Revealing).

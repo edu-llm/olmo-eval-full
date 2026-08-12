@@ -109,6 +109,25 @@ class GPUPlanner:
 
         total_needed = main_total_gpus + aux_total_gpus
 
+        if self.total_gpus == 0:
+            # CPU-only mode: there are no GPUs to allocate, so main workers (and
+            # any local-inference auxiliary providers) run on CPU with empty GPU
+            # lists. This mirrors the CPU-only path already supported in
+            # validate_inference_workers. Tensor parallelism is meaningless here.
+            if self.main_tensor_parallel > 1:
+                raise RuntimeError("Tensor parallelism requires GPUs, but none are available.")
+            main_allocations = [
+                GPUAllocation(name=f"main-{i}", gpu_ids=[], tensor_parallel_size=1, num_instances=1)
+                for i in range(self.num_main_workers)
+            ]
+            aux_allocations = {
+                name: GPUAllocation(
+                    name=name, gpu_ids=[], tensor_parallel_size=1, num_instances=num_instances
+                )
+                for name, (num_instances, _tp) in aux_requirements.items()
+            }
+            return GPUPlan(main_workers=main_allocations, auxiliary=aux_allocations)
+
         if total_needed > self.total_gpus:
             raise RuntimeError(
                 f"Not enough GPUs. Need {total_needed} "
