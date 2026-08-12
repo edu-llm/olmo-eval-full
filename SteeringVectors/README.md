@@ -229,18 +229,21 @@ See `PLAN_QWEN30B_THINKING.md` and `AUDIT_QWEN30B.md`.
 
 | Step | Spec | Compute | What it does |
 |------|------|---------|--------------|
-| **1. Stage** | `platform-run-stage-qwen-hf.yaml` | `cpu-32vcpu` | Download `Qwen/Qwen3-30B-A3B-Thinking-2507` from Hub → `teams/.../qwen30b-thinking-staged/final/` |
-| **2. Vector smoke** | `platform-run-qwen30b-thinking-smoke.yaml` | `gpu-8xl40s` | Build stereoset steering vector from staged checkpoint |
+| **1. Stage** | `stage_checkpoints.sh` (sb_aws) or `platform-run-stage-qwen-posttraining.yaml` | local / `cpu-32vcpu` | Copy `run_019ff751-32b5/.../checkpoints/` → `teams/eval-inference/runs/qwen30b-thinking-staged/final/` |
+| **2. Vector smoke** | `platform-run-qwen30b-thinking-smoke.yaml` | `gpu-4xl40s` | Build stereoset steering vector from staged checkpoint |
 
-The manifest `checkpoints_qwen30b-thinking.json` already points at the staged URI.
+The manifest `checkpoints_qwen30b-thinking.json` points at the staged URI. Use
+`gpu-4xl40s` (4× L40S): ~60 GiB bf16 weights do not fit on a single 48 GiB L40S;
+`gpu-1xh100` is not provisioned on the platform.
 
 ```bash
-# 1) CPU stage (~60 GiB; allow several hours)
-edullm submit --dataset none --hours 6 --experiment qwen30b-stage-hf \
-  --spec SteeringVectors/platform-run-stage-qwen-hf.yaml
+# 1) Stage (when post-training checkpoints/ is populated)
+./SteeringVectors/stage_checkpoints.sh \
+  s3://sbsandbox-intern-edullm-outputs/teams/post-training/runs/run_019ff751-32b5-705e-b178-44096904a29f/checkpoints/ \
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/
 
 # 2) GPU smoke (after stage completes)
-edullm submit --dataset none --compute gpu-8xl40s --experiment qwen30b-steering-smoke \
+edullm submit --dataset none --compute gpu-4xl40s --experiment qwen30b-steering-smoke \
   --spec SteeringVectors/platform-run-qwen30b-thinking-smoke.yaml
 ```
 
