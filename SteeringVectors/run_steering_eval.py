@@ -243,9 +243,14 @@ def eval_discriminative(
     random_count = 0
     for statement, gold in zip(statements, labels, strict=True):
         text = prompt.format(statement)
-        input_ids = tokenizer.encode(text, return_tensors="pt").to(cfg.device)
+        input_ids = tokenizer.encode(text, return_tensors="pt").to(
+            sc.model_input_device(model, cfg.device)
+        )
         with torch.no_grad():
-            out = model.generate(input_ids, max_new_tokens=2, do_sample=False)
+            out = model.generate(
+                input_ids,
+                **sc.generate_kwargs(model, max_new_tokens=2),
+            )
         decoded = tokenizer.batch_decode(out[:, input_ids.shape[1] : -1])[0].strip().lower()
         if "0" in decoded:
             pred = 0
@@ -279,9 +284,12 @@ def eval_toxigen(cfg: Config, tokenizer, model) -> tuple[dict[str, float], list[
     for prompt in prompts:
         input_ids = tokenizer.encode(
             prompt, return_tensors="pt", truncation=True, max_length=1024
-        ).to(cfg.device)
+        ).to(sc.model_input_device(model, cfg.device))
         with torch.no_grad():
-            out = model.generate(input_ids, max_new_tokens=cfg.max_new_tokens, do_sample=False)
+            out = model.generate(
+                input_ids,
+                **sc.generate_kwargs(model, max_new_tokens=cfg.max_new_tokens),
+            )
         generations.append(tokenizer.batch_decode(out[:, input_ids.shape[1] :])[0].strip())
 
     clf = _toxigen_classifier(cfg.device)
@@ -311,7 +319,7 @@ def _choice_loglik(model, tokenizer, context: str, continuation: str, device) ->
 
     ctx_ids = tokenizer(context, return_tensors="pt").input_ids
     cont_ids = tokenizer(continuation, return_tensors="pt", add_special_tokens=False).input_ids
-    input_ids = torch.cat([ctx_ids, cont_ids], dim=1).to(device)
+    input_ids = torch.cat([ctx_ids, cont_ids], dim=1).to(sc.model_input_device(model, device))
     logits = model(input_ids).logits
     logprobs = torch.log_softmax(logits[:, :-1, :].float(), dim=-1)
     targets = input_ids[:, 1:]
@@ -388,7 +396,9 @@ def eval_ppl(cfg: Config, tokenizer, model) -> float:
     nll = 0.0
     tokens = 0
     for item in data:
-        input_ids = tokenizer(item["text"], return_tensors="pt").input_ids.to(cfg.device)
+        input_ids = tokenizer(item["text"], return_tensors="pt").input_ids.to(
+            sc.model_input_device(model, cfg.device)
+        )
         if input_ids.shape[1] < 2:
             continue
         logits = model(input_ids).logits
@@ -421,7 +431,9 @@ def evaluate_dimension(
 def _prepare_model(cfg: Config, uri: str, tmp: Path, tag: str):
     raw = sc.materialize_checkpoint(uri, tmp / f"{tag}_raw", cfg.aws_region, cfg.s3_endpoint_url)
     ckpt_dir = sc.ensure_hf_checkpoint(raw, tmp / f"{tag}_hf")
-    return sc.load_model(ckpt_dir, cfg.device, cfg.seed)
+    return sc.load_model(
+        ckpt_dir, options=sc.LoadModelOptions(device=cfg.device, seed=cfg.seed)
+    )
 
 
 def run(cfg: Config) -> dict[str, Any]:

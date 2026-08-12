@@ -49,11 +49,21 @@ def _middle_layer_list(model, explicit: list[int] | None) -> list[int]:
 
 
 def _prepare(
-    uri: str, tmp: Path, tag: str, device: str, seed: int, region: str, endpoint: str | None
+    uri: str,
+    tmp: Path,
+    tag: str,
+    device: str,
+    seed: int,
+    region: str,
+    endpoint: str | None,
+    load_options: sc.LoadModelOptions | None = None,
 ):
     raw = sc.materialize_checkpoint(uri, tmp / f"{tag}_raw", region, endpoint)
     hf = sc.ensure_hf_checkpoint(raw, tmp / f"{tag}_hf")
-    return sc.load_model(hf, device, seed)
+    opts = load_options or sc.LoadModelOptions(device=device, seed=seed)
+    opts.device = device
+    opts.seed = seed
+    return sc.load_model(hf, options=opts)
 
 
 def run_probe_phase(
@@ -88,7 +98,9 @@ def run_steering_phase(
 ) -> list[dict[str, Any]]:
     merged: list[dict[str, Any]] = []
     with tempfile.TemporaryDirectory(prefix="steer-layers-") as tmp:
-        _, model = _prepare(plan.final_uri, Path(tmp), "final", device, seed, region, endpoint)
+        _, model = _prepare(
+            plan.final_uri, Path(tmp), "final", device, seed, region, endpoint, plan.load_options
+        )
         layers = plan.steering_layers or _middle_layer_list(model, None)
     for source_name, source_uri in plan.steering_sources.items():
         cfg = SteerConfig(
@@ -121,7 +133,9 @@ def run_general_phase(
 ) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="general-") as tmp:
         tmp_path = Path(tmp)
-        _tok, model = _prepare(plan.final_uri, tmp_path, "final", device, seed, region, endpoint)
+        _tok, model = _prepare(
+            plan.final_uri, tmp_path, "final", device, seed, region, endpoint, plan.load_options
+        )
         baseline = eval_all_general(
             model,
             _tok,
@@ -144,7 +158,9 @@ def run_mi_phase(
             ("chinchilla", plan.chinchilla_uri),
             ("final", plan.final_uri),
         ):
-            loaded[role] = _prepare(uri, tmp_path, role, device, seed, region, endpoint)
+            loaded[role] = _prepare(
+                uri, tmp_path, role, device, seed, region, endpoint, plan.load_options
+            )
         return run_mi_sweep(
             loaded, datasets=TRUSTWORTHESS, device=device, max_statements=plan.max_statements
         )

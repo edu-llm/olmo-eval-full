@@ -221,6 +221,37 @@ edullm submit --dataset none --experiment steering-smoke-vector \
   --compute gpu-1xl40s --spec SteeringVectors/platform-run-vector-smoke.yaml
 ```
 
+## Qwen3-30B-A3B-Thinking (HF checkpoint you provide)
+
+See `PLAN_QWEN30B_THINKING.md` and `AUDIT_QWEN30B.md`.
+
+**Two jobs — run in order:**
+
+| Step | Spec | Compute | What it does |
+|------|------|---------|--------------|
+| **1. Stage** | `platform-run-stage-qwen-hf.yaml` | `cpu-32vcpu` | Download `Qwen/Qwen3-30B-A3B-Thinking-2507` from Hub → `teams/.../qwen30b-thinking-staged/final/` |
+| **2. Vector smoke** | `platform-run-qwen30b-thinking-smoke.yaml` | `gpu-8xl40s` | Build stereoset steering vector from staged checkpoint |
+
+The manifest `checkpoints_qwen30b-thinking.json` already points at the staged URI.
+
+```bash
+# 1) CPU stage (~60 GiB; allow several hours)
+edullm submit --dataset none --hours 6 --experiment qwen30b-stage-hf \
+  --spec SteeringVectors/platform-run-stage-qwen-hf.yaml
+
+# 2) GPU smoke (after stage completes)
+edullm submit --dataset none --compute gpu-8xl40s --experiment qwen30b-steering-smoke \
+  --spec SteeringVectors/platform-run-qwen30b-thinking-smoke.yaml
+```
+
+Audit before GPU submit:
+
+```bash
+python SteeringVectors/audit_qwen_checkpoint.py
+python SteeringVectors/generate_steering_vector.py --dry-run \
+  --manifest SteeringVectors/checkpoints_qwen30b-thinking.json
+```
+
 ## Attribution
 
 Upstream method and datasets: Qian et al., *Towards Tracing Trustworthiness

@@ -1,0 +1,22 @@
+# eduLLM CPU job: download Qwen3-30B-A3B-Thinking from HuggingFace Hub → S3.
+#
+# Stages to the URI in checkpoints_qwen30b-thinking.json so the GPU smoke
+# can read it without Hub access at runtime.
+#
+# Submit first (~60 GiB; olmo-eval-check caps at 1h — raise catalog bound if it times out):
+#   edullm check  --dataset none --hours 1 \
+#     --spec SteeringVectors/platform-run-stage-qwen-hf.yaml
+#   edullm submit --dataset none --hours 1 --experiment qwen30b-stage-hf \
+#     --spec SteeringVectors/platform-run-stage-qwen-hf.yaml
+#
+# Then submit the GPU vector smoke (platform-run-qwen30b-thinking-smoke.yaml).
+schema_version: 1
+workload_profile: olmo-eval-check
+suggested_compute: cpu-32vcpu
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups --extra hf --extra s3
+  && export PYTHONPATH=SteeringVectors:.
+  && python SteeringVectors/stage_hf_checkpoint.py
+  --model-id Qwen/Qwen3-30B-A3B-Thinking-2507
+  --dest s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/
+  --manifest-out "$EDULLM_OUTPUT_PREFIX/qwen30b-stage-hf/manifest.json"'

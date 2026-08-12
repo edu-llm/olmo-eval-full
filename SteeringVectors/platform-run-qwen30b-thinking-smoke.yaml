@@ -1,0 +1,22 @@
+# eduLLM GPU smoke: steering vector from Qwen3-30B-A3B-Thinking (HF checkpoint).
+#
+# Prerequisites: run platform-run-stage-qwen-hf.yaml first (CPU Hub → S3).
+# The manifest checkpoints_qwen30b-thinking.json points at the staged URI.
+#
+# Submit:
+#   edullm submit --dataset none --compute gpu-8xl40s --experiment qwen30b-steering-smoke \
+#     --spec SteeringVectors/platform-run-qwen30b-thinking-smoke.yaml
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-8xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra hf --extra s3 --extra clients
+  && export PYTHONPATH=SteeringVectors:.
+  && export EDULLM_LAUNCH_CHECK=waived
+  && python SteeringVectors/generate_steering_vector.py
+  --manifest SteeringVectors/checkpoints_qwen30b-thinking.json
+  --dataset stereoset --layers 24 --max-statements 200
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
+  --run-name qwen30b-steering-smoke
+  --device cuda:0 --dtype bfloat16 --device-map auto --attn-implementation sdpa'

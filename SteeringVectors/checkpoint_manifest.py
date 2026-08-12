@@ -31,6 +31,8 @@ class ThreeCheckpointPlan:
     ppl_limit: int
     steering_layers: list[int] | None
     steering_alphas: list[float]
+    model_family: str | None = None
+    load_options: sc.LoadModelOptions | None = None
 
     @property
     def probing_uris(self) -> list[str]:
@@ -71,11 +73,64 @@ def _training_schedule(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _hf_schedule_fallback(raw: dict[str, Any], final_uri: str) -> dict[str, Any]:
+    non_emb = int(raw.get("non_embedding_params") or 29_900_000_000)
+    final_step = int(raw.get("final_step") or _step_from_uri(final_uri) or 500_000)
+    return {
+        "tokens_per_step": int(raw.get("tokens_per_step") or 4_194_304),
+        "fixed_steps": [],
+        "final_step": final_step,
+        "non_embedding_params_est": non_emb,
+    }
+
+
+def _resolve_schedule(
+    raw: dict[str, Any],
+    final_uri: str,
+    *,
+    aws_region: str,
+    s3_endpoint: str | None,
+    dry_run: bool,
+) -> dict[str, Any]:
+    if dry_run:
+        return {
+            "tokens_per_step": 4_194_304,
+            "fixed_steps": [10_000, 200_000, 500_000],
+            "final_step": int(raw.get("final_step") or _step_from_uri(final_uri) or 500_000),
+            "non_embedding_params_est": int(raw.get("non_embedding_params") or 29_900_000_000),
+        }
+
+    family = str(raw.get("model_family") or "")
+    if family and not family.startswith("olmo"):
+        return _hf_schedule_fallback(raw, final_uri)
+
+    config = sc.fetch_run_config(final_uri, aws_region, s3_endpoint)
+    if isinstance(config.get("data_loader"), dict):
+        return _training_schedule(config)
+    if raw.get("final_step"):
+        return _hf_schedule_fallback(raw, final_uri)
+    return _training_schedule(config)
+
+
 def _pick_chinchilla_step(
     fixed: list[int], final_step: int, tokens_per_step: int, target_tokens: int
 ) -> int:
     candidates = fixed or [max(1, final_step // 2)]
     return min(candidates, key=lambda s: abs(s * tokens_per_step - target_tokens))
+
+
+def load_manifest_raw(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def manifest_checkpoint_uri(raw: dict[str, Any], role: str = "final") -> str:
+    uri = raw["checkpoints"][role].rstrip("/") + "/"
+    if "REPLACE_WITH_YOUR_STAGED_URI" in uri:
+        raise SystemExit(
+            f"Manifest checkpoint {role!r} is still a placeholder. "
+            f"Edit {raw.get('run_name', 'manifest')} with your staged URI."
+        )
+    return uri
 
 
 def load_manifest(
@@ -85,20 +140,13 @@ def load_manifest(
     s3_endpoint: str | None = None,
     dry_run: bool = False,
 ) -> ThreeCheckpointPlan:
-    raw = json.loads(path.read_text(encoding="utf-8"))
+    raw = load_manifest_raw(path)
     ckpts = raw["checkpoints"]
     final_uri = ckpts["final"].rstrip("/") + "/"
 
-    if dry_run:
-        schedule = {
-            "tokens_per_step": 4_194_304,
-            "fixed_steps": [10_000, 200_000, 500_000],
-            "final_step": int(raw.get("final_step") or _step_from_uri(final_uri) or 500_000),
-            "non_embedding_params_est": 7_000_000_000,
-        }
-    else:
-        config = sc.fetch_run_config(final_uri, aws_region, s3_endpoint)
-        schedule = _training_schedule(config)
+    schedule = _resolve_schedule(
+        raw, final_uri, aws_region=aws_region, s3_endpoint=s3_endpoint, dry_run=dry_run
+    )
 
     tokens_per_step = schedule["tokens_per_step"]
     final_step = raw.get("final_step") or _step_from_uri(final_uri) or schedule["final_step"]
@@ -121,7 +169,7 @@ def load_manifest(
     chinchilla_uri = chin_uri if ckpts.get("chinchilla") else final_uri
 
     return ThreeCheckpointPlan(
-        run_name=str(raw.get("run_name") or "tracingllm-olmoe7b"),
+        run_name=str(raw.get("run_name") or "tracingllm"),
         early_uri=early_uri,
         chinchilla_uri=chinchilla_uri,
         final_uri=final_uri,
@@ -138,6 +186,8 @@ def load_manifest(
         ppl_limit=int(raw.get("ppl_limit") or 200),
         steering_layers=raw.get("steering_layers"),
         steering_alphas=[float(x) for x in raw.get("steering_alphas") or [-4, -2, -1, 1, 2, 4]],
+        model_family=raw.get("model_family"),
+        load_options=sc.load_options_from_manifest(raw),
     )
 
 
@@ -154,4 +204,9 @@ def plan_dict(plan: ThreeCheckpointPlan) -> dict[str, Any]:
         "tokens_per_step": plan.tokens_per_step,
         "steering_sources": plan.steering_sources,
         "steering_target": plan.final_uri,
+        "model_family": plan.model_family,
+        "load": {
+            "dtype": plan.load_options.dtype if plan.load_options else "auto",
+            "device_map": plan.load_options.device_map if plan.load_options else None,
+        },
     }

@@ -1,0 +1,28 @@
+# Qwen3-30B-A3B-Thinking-2507 — three-checkpoint manifest (HF format).
+#
+# Staged by platform-run-stage-qwen-hf.yaml (CPU Hub download). All three roles
+# point at the same URI for single-checkpoint smoke.
+#
+# Reference: Qwen/Qwen3-30B-A3B-Thinking-2507 (48 layers, MoE, thinking-only).
+
+run_name: tracingllm-qwen30b-thinking
+model_family: qwen3_moe_thinking
+reference_model: Qwen/Qwen3-30B-A3B-Thinking-2507
+
+checkpoints:
+  early: s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/
+  chinchilla: s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/
+  final: s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/
+
+early_step: 10000
+chinchilla_step: 200000
+final_step: 500000
+
+load:
+  dtype: bfloat16
+  device_map: auto
+  attn_implementation: sdpa
+  enable_thinking: false
+
+steering_layers: [20, 24, 28]
+max_statements: 500

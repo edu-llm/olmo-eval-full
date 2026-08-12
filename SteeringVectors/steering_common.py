@@ -20,6 +20,7 @@ import json
 import logging
 import os
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +53,80 @@ PROMPT_TEMPLATES = {
 }
 
 log = logging.getLogger("steering_common")
+
+
+@dataclass
+class LoadModelOptions:
+    """How to load a HuggingFace checkpoint for steering."""
+
+    device: str = "cuda:0"
+    seed: int = 1234
+    dtype: str = "auto"
+    device_map: str | None = None
+    attn_implementation: str | None = None
+    model_family: str | None = None
+    enable_thinking: bool | None = None
+
+
+def detect_model_family(config: dict[str, Any] | None) -> str:
+    """Best-effort family tag from ``config.json``."""
+    if not config:
+        return "unknown"
+    text = json.dumps(config).lower()
+    model_type = str(config.get("model_type") or "").lower()
+    architectures = [str(a).lower() for a in config.get("architectures") or []]
+    joined = " ".join(architectures)
+    if "qwen3" in joined or "qwen3" in model_type:
+        if "moe" in joined or "moe" in model_type or config.get("num_experts"):
+            return "qwen3_moe_thinking" if "thinking" in text else "qwen3_moe"
+        return "qwen3"
+    if "olmoe" in joined or "olmoe" in model_type:
+        return "olmoe"
+    if "olmo" in joined or "olmo" in model_type:
+        return "olmo"
+    if "llama" in joined or "mistral" in joined:
+        return "llama"
+    return "unknown"
+
+
+def is_thinking_model(config: dict[str, Any] | None, family: str | None = None) -> bool:
+    family = family or detect_model_family(config)
+    if family == "qwen3_moe_thinking":
+        return True
+    if not config:
+        return False
+    return "thinking" in json.dumps(config).lower()
+
+
+def model_input_device(model, fallback: str = "cuda:0") -> str:
+    """Device for input tensors when the model uses ``device_map``."""
+    device_map = getattr(model, "hf_device_map", None)
+    if device_map:
+        for dev in device_map.values():
+            if dev not in ("disk", "cpu"):
+                return str(dev)
+    try:
+        return str(next(model.parameters()).device)
+    except StopIteration:
+        return fallback
+
+
+def generate_kwargs(
+    model,
+    *,
+    max_new_tokens: int,
+    enable_thinking: bool | None = None,
+) -> dict[str, Any]:
+    """Build ``model.generate`` kwargs, disabling thinking when supported."""
+    kwargs: dict[str, Any] = {"max_new_tokens": max_new_tokens, "do_sample": False}
+    config = getattr(model, "config", None)
+    family = detect_model_family(config.to_dict() if hasattr(config, "to_dict") else None)
+    thinking = enable_thinking
+    if thinking is None and is_thinking_model(None, family):
+        thinking = False
+    if thinking is not None:
+        kwargs["enable_thinking"] = thinking
+    return kwargs
 
 
 # ---------------------------------------------------------------------------
@@ -187,6 +262,42 @@ def copy_s3_prefix(
     return {"source": source_uri, "dest": dest, "objects_copied": copied}
 
 
+def upload_local_directory(
+    local_dir: Path,
+    dest_uri: str,
+    region: str = "us-east-1",
+    endpoint: str | None = None,
+) -> dict[str, Any]:
+    """Upload every file under ``local_dir`` to ``dest_uri``."""
+    bucket, prefix = parse_s3_uri(dest_uri)
+    client = s3_client(region, endpoint)
+    uploaded = 0
+    total_bytes = 0
+    for path in local_dir.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(local_dir).as_posix()
+        key = f"{prefix.rstrip('/')}/{rel}"
+        client.upload_file(str(path), bucket, key)
+        uploaded += 1
+        total_bytes += path.stat().st_size
+    if uploaded == 0:
+        raise SystemExit(f"No files found under {local_dir}")
+    dest = dest_uri if dest_uri.endswith("/") else dest_uri + "/"
+    log.info(
+        "Uploaded %d files (%.2f GiB) from %s to %s",
+        uploaded,
+        total_bytes / (1024**3),
+        local_dir,
+        dest,
+    )
+    return {
+        "dest": dest,
+        "files_uploaded": uploaded,
+        "bytes_uploaded": total_bytes,
+    }
+
+
 def parse_step(uri: str) -> str:
     match = re.search(r"step(\d+)", uri)
     return match.group(1) if match else "unknown"
@@ -238,9 +349,11 @@ def is_olmo_core_checkpoint(local_dir: Path) -> bool:
 
 def is_hf_checkpoint(local_dir: Path) -> bool:
     """An HF-format directory transformers can load directly."""
-    has_weights = any(
-        (local_dir / name).exists()
-        for name in ("model.safetensors", "model.safetensors.index.json", "pytorch_model.bin")
+    has_index = (local_dir / "model.safetensors.index.json").exists()
+    has_weights = (
+        has_index
+        or any((local_dir / name).exists() for name in ("model.safetensors", "pytorch_model.bin"))
+        or any(local_dir.glob("model-*.safetensors"))
     )
     has_tokenizer = any(
         (local_dir / name).exists()
@@ -356,23 +469,65 @@ def load_probing_statements(name: str) -> tuple[list[str], list[int]]:
 # ---------------------------------------------------------------------------
 # Model + activations + steering (live path)
 # ---------------------------------------------------------------------------
-def load_model(local_dir: Path, device: str, seed: int = 1234):
+def load_model(
+    local_dir: Path,
+    device: str = "cuda:0",
+    seed: int = 1234,
+    *,
+    options: LoadModelOptions | None = None,
+):
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer, set_seed
 
-    set_seed(seed)
+    opts = options or LoadModelOptions(device=device, seed=seed)
+    set_seed(opts.seed)
+    config = read_local_config(local_dir)
+    family = opts.model_family or detect_model_family(config)
+    log.info("Loading HF checkpoint from %s (family=%s)", local_dir, family)
+
     tokenizer = AutoTokenizer.from_pretrained(str(local_dir), trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(
-        str(local_dir), trust_remote_code=True, dtype="auto"
-    )
-    model = model.eval().to(device)
+    load_kwargs: dict[str, Any] = {"trust_remote_code": True}
+    if opts.dtype == "auto":
+        load_kwargs["dtype"] = "auto"
+    else:
+        load_kwargs["torch_dtype"] = getattr(torch, opts.dtype)
+    if opts.device_map:
+        load_kwargs["device_map"] = opts.device_map
+    if opts.attn_implementation:
+        load_kwargs["attn_implementation"] = opts.attn_implementation
+
+    model = AutoModelForCausalLM.from_pretrained(str(local_dir), **load_kwargs)
+    model = model.eval().to(opts.device) if not opts.device_map else model.eval()
     torch.set_grad_enabled(False)
     return tokenizer, model
 
 
+def load_options_from_manifest(raw: dict[str, Any], device: str = "cuda:0") -> LoadModelOptions:
+    """Build :class:`LoadModelOptions` from a checkpoint manifest ``load`` block."""
+    load = raw.get("load") or {}
+    enable_thinking = load.get("enable_thinking")
+    if enable_thinking is not None:
+        enable_thinking = bool(enable_thinking)
+    return LoadModelOptions(
+        device=device,
+        dtype=str(load.get("dtype") or "auto"),
+        device_map=load.get("device_map"),
+        attn_implementation=load.get("attn_implementation"),
+        model_family=raw.get("model_family"),
+        enable_thinking=enable_thinking,
+    )
+
+
 def decoder_layers(model) -> Any:
-    """Return the list of decoder blocks (LLaMA / OLMo-style: model.model.layers)."""
-    return model.model.layers
+    """Return decoder blocks for LLaMA / OLMo / Qwen-style HF models."""
+    if hasattr(model, "model") and hasattr(model.model, "layers"):
+        return model.model.layers
+    if hasattr(model, "transformer") and hasattr(model.transformer, "h"):
+        return model.transformer.h
+    raise SystemExit(
+        "Could not locate decoder layers on this model; expected model.model.layers "
+        "or model.transformer.h."
+    )
 
 
 def in_range_layers(model, layers: list[int]) -> list[int]:
@@ -385,10 +540,19 @@ def in_range_layers(model, layers: list[int]) -> list[int]:
     return kept
 
 
-def collect_activations(tokenizer, model, statements: list[str], layers: list[int], device: str):
+def collect_activations(
+    tokenizer,
+    model,
+    statements: list[str],
+    layers: list[int],
+    device: str,
+    *,
+    max_length: int = 1024,
+):
     """Last-token hidden states per layer; reproduces generate_activations.get_acts."""
     import torch
 
+    input_device = model_input_device(model, device)
     captured: dict[int, Any] = {}
 
     def make_hook(layer: int):
@@ -405,8 +569,8 @@ def collect_activations(tokenizer, model, statements: list[str], layers: list[in
     try:
         for statement in statements:
             input_ids = tokenizer.encode(
-                statement, return_tensors="pt", truncation=True, max_length=1024
-            ).to(device)
+                statement, return_tensors="pt", truncation=True, max_length=max_length
+            ).to(input_device)
             model(input_ids)
             for layer in layers:
                 # Move the last-token vector to CPU float32 immediately: keeping the
