@@ -1,7 +1,7 @@
 # Qwen3-30B-A3B-Thinking-2507 — three-checkpoint manifest (HF format).
 #
-# Staged by platform-run-stage-qwen-hf.yaml (CPU Hub download). All three roles
-# point at the same URI for single-checkpoint smoke.
+# Stage from post-training run_019ff751 checkpoints/ via sb_aws (see
+# stage_checkpoints.sh). All three roles point at the same URI for smoke.
 #
 # Reference: Qwen/Qwen3-30B-A3B-Thinking-2507 (48 layers, MoE, thinking-only).
 

@@ -2,7 +2,8 @@
   "run_name": "tracingllm-qwen30b-thinking",
   "model_family": "qwen3_moe_thinking",
   "reference_model": "Qwen/Qwen3-30B-A3B-Thinking-2507",
-  "staged_by": "platform-run-stage-qwen-hf.yaml",
+  "staged_from": "s3://sbsandbox-intern-edullm-outputs/teams/post-training/runs/run_019ff751-32b5-705e-b178-44096904a29f/checkpoints/",
+  "staged_by": "stage_checkpoints.sh (sb_aws) or platform-run-stage-qwen-posttraining.yaml",
   "checkpoints": {
     "early": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/",
     "chinchilla": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/",
