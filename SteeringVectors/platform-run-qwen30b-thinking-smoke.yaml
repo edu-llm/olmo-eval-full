@@ -16,6 +16,7 @@ suggested_compute: gpu-4xl40s
 command: >-
   bash -lc 'uv sync --frozen --no-default-groups
   --extra hf --extra s3 --extra clients
+  && uv pip install torch peft accelerate safetensors
   && export PYTHONPATH=SteeringVectors:.
   && export EDULLM_LAUNCH_CHECK=waived
   && python SteeringVectors/generate_steering_vector.py

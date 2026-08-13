@@ -1,0 +1,21 @@
+# eduLLM GPU job: merge staged LoRA adapters into full HF weights on S3.
+#
+# Converts PEFT exports (not raw DeepSpeed ZeRO shards) into self-contained
+# model*.safetensors trees the steering harness loads without Hub access.
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-4xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups --extra hf --extra s3 --extra clients
+  && uv pip install torch peft accelerate safetensors
+  && export PYTHONPATH=SteeringVectors:.
+  && export EDULLM_LAUNCH_CHECK=waived
+  && python SteeringVectors/merge_peft_to_hf.py
+  --adapter s3://sbsandbox-intern-edullm-outputs/teams/post-training/runs/run_019ff835-05d9-7048-a25b-a3e3d9ae1434/model/qwen3_30b_a3b_pedagogy_rl__1__1786576350_checkpoints/step_20/
+  --dest s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/early/
+  --manifest-out "$EDULLM_OUTPUT_PREFIX/qwen30b-merge-early/manifest.json"
+  && python SteeringVectors/merge_peft_to_hf.py
+  --adapter s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/
+  --dest s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/final/
+  --manifest-out "$EDULLM_OUTPUT_PREFIX/qwen30b-merge-final/manifest.json"
+  && aws s3 sync s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/early/ s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/chinchilla/ --only-show-errors'

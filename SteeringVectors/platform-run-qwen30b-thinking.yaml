@@ -1,13 +1,14 @@
 # eduLLM: full TracingLLM protocol on Qwen3-30B-A3B-Thinking (3 HF checkpoints).
 #
 # Edit checkpoints_qwen30b-thinking.json with staged URIs before submit.
-# Requires gpu-8xl40s (MoE weights spread via device_map=auto).
+# Requires gpu-4xl40s (MoE weights spread via device_map=auto).
 schema_version: 1
 workload_profile: olmo-eval-sweep
-suggested_compute: gpu-8xl40s
+suggested_compute: gpu-4xl40s
 command: >-
   bash -lc 'uv sync --frozen --no-default-groups
   --extra hf --extra s3 --extra clients
+  && uv pip install torch peft accelerate safetensors
   && export PYTHONPATH=SteeringVectors:.
   && export EDULLM_LAUNCH_CHECK=waived
   && python SteeringVectors/run_tracingllm_qwen30b.py

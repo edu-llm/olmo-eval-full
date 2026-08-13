@@ -4,15 +4,15 @@
   "reference_model": "Qwen/Qwen3-30B-A3B-Instruct-2507",
   "staged_from": "s3://sbsandbox-intern-edullm-outputs/teams/post-training/runs/run_019ff835-05d9-7048-a25b-a3e3d9ae1434/model/qwen3_30b_a3b_pedagogy_rl__1__1786576350/",
   "deepspeed_checkpoints": "s3://sbsandbox-intern-edullm-outputs/teams/post-training/runs/run_019ff835-05d9-7048-a25b-a3e3d9ae1434/checkpoints/",
-  "staged_by": "stage_checkpoints.sh (sb_aws)",
+  "merged_by": "platform-run-merge-qwen-peft.yaml",
   "checkpoints": {
-    "early": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/",
-    "chinchilla": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/",
-    "final": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/final/"
+    "early": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/early/",
+    "chinchilla": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/chinchilla/",
+    "final": "s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-thinking-staged/merged/final/"
   },
-  "early_step": 10000,
-  "chinchilla_step": 200000,
-  "final_step": 500000,
+  "early_step": 20,
+  "chinchilla_step": 20,
+  "final_step": 39,
   "chinchilla_multiplier": 20,
   "max_statements": 200,
   "eval_limit": 100,
