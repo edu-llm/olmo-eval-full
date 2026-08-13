@@ -1,0 +1,30 @@
+# eduLLM GPU job: merge the FINAL pedagogy-RL PEFT adapter into full HF weights on S3.
+#
+# Adapter: the final PEFT export under the post-training run (base Qwen3-30B-A3B-Instruct-2507,
+# LoRA r=16 on q/k/v/o_proj). This is a PEFT export (adapter_config.json + adapter_model.safetensors),
+# NOT the DeepSpeed ZeRO checkpoints/ shards, so merge_peft_to_hf.py consumes it directly.
+#
+# device_map=auto shards the ~60 GiB bf16 base across 4x L40S (183 GiB total) for the merge only;
+# the merged tree is a stock HF causal-LM directory the MCQ scorer can then load on a single card.
+#
+# Submitted against repository=olmo-eval-full (this repo's image, built from the pushed edullm/**
+# commit). --spec is read locally; merge_peft_to_hf.py must be at the pinned --commit.
+#
+#   edullm check  --experiment qwen30b-pedagogy-merge-final --dataset none \
+#     --workload olmo-eval-sweep --compute gpu-4xl40s \
+#     --commit <this repo HEAD sha> \
+#     --spec SteeringVectors/platform-run-merge-final.yaml --json
+#   # swap check->submit once clean.
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-4xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups --extra hf --extra s3 --extra clients
+  && uv pip install torch peft accelerate safetensors
+  && export PYTHONPATH=SteeringVectors:.
+  && export EDULLM_LAUNCH_CHECK=waived
+  && python SteeringVectors/merge_peft_to_hf.py
+  --adapter s3://sbsandbox-intern-edullm-outputs/teams/post-training/runs/run_019ff835-05d9-7048-a25b-a3e3d9ae1434/model/qwen3_30b_a3b_pedagogy_rl__1__1786576350/
+  --dest s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/qwen30b-pedagogy-rl/merged/final/
+  --dtype bfloat16 --device-map auto --attn-implementation sdpa
+  --manifest-out "$EDULLM_OUTPUT_PREFIX/merge-final/manifest.json"'

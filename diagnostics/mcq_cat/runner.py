@@ -123,6 +123,27 @@ def build_parser() -> argparse.ArgumentParser:
         "--batch-size", type=int, default=16, help="Scoring batch size (default: 16)."
     )
     parser.add_argument(
+        "--full-bank",
+        action="store_true",
+        help=(
+            "Administer every calibrated item in the bank instead of running adaptive "
+            "CAT. Ignores --se-threshold and --max-items (item selection and the "
+            "stopping rule are not consulted), so observed_accuracy is over the whole "
+            "bank. A full-bank theta is NOT comparable with a capped CAT session's; the "
+            "report records the mode and the full length so the two cannot be confused."
+        ),
+    )
+    parser.add_argument(
+        "--progress-every",
+        type=int,
+        default=100,
+        help=(
+            "In --full-bank mode, refresh cat_report.partial.json at the destination "
+            "each time this many new items have been administered (default: 100), so a "
+            "long run's results are continuously saved and survive an interruption."
+        ),
+    )
+    parser.add_argument(
         "--aws-region", default="us-east-1", help="AWS region for S3 (default: us-east-1)."
     )
     parser.add_argument("--s3-endpoint-url", default=None, help="Optional S3 endpoint URL.")
@@ -169,10 +190,13 @@ def _apply_ability_estimator(style: object, estimator: str) -> bool:
     return False
 
 
-def _write_report(report_dict: dict, args: argparse.Namespace) -> str:
-    """Write the report to the S3 or local destination and return its location."""
+def _write_json(report_dict: dict, args: argparse.Namespace, name: str = "cat_report.json") -> str:
+    """Write ``report_dict`` as ``name`` to the S3 or local destination; return its location.
+
+    Names the file so the same writer serves the final ``cat_report.json`` and the
+    streaming ``cat_report.partial.json`` a full-bank run refreshes as it goes.
+    """
     payload = json.dumps(report_dict, indent=2)
-    name = "cat_report.json"
     if s3_io.is_s3_uri(args.s3_out):
         s3_io.upload_files(
             args.s3_out,
@@ -222,15 +246,17 @@ def run(args: argparse.Namespace) -> int:
         return 2
 
     if args.dry_run:
+        mode = "full_bank" if args.full_bank else "cat"
         log.info(
             "[dry-run] style=%s benchmark=%s checkpoint=%s kind=%s prep=%s dtype=%s "
-            "se_threshold=%.3f max_items=%d estimator=%s -> %s",
+            "mode=%s se_threshold=%.3f max_items=%d estimator=%s -> %s",
             args.cat_style,
             benchmark or "<unset>",
             args.checkpoint,
             args.checkpoint_kind,
             args.checkpoint_prep,
             args.dtype,
+            mode,
             args.se_threshold,
             args.max_items,
             args.ability_estimator,
@@ -288,14 +314,40 @@ def run(args: argparse.Namespace) -> int:
         model = grading.load_grader(request, checkpoint_dir, settings)
 
         try:
-            report = cat_loop.run_cat(
-                style,
-                bank=bank,
-                irt_bank=irt_bank,
-                model=model,
-                se_threshold=args.se_threshold,
-                max_items=args.max_items,
-            )
+            if args.full_bank:
+
+                def _stream_partial(state: cat_loop.CATState, total: int) -> None:
+                    """Persist a running snapshot so a long full-bank run is never lost."""
+                    partial = style.report(state).to_dict()
+                    partial["run"] = {
+                        "cat_style": args.cat_style,
+                        "checkpoint": args.checkpoint,
+                        "mode": "full_bank",
+                        "partial": True,
+                        "progress": {"administered": state.step, "total": total},
+                        "timestamp": datetime.now(UTC).isoformat(),
+                    }
+                    where = _write_json(partial, args, name="cat_report.partial.json")
+                    log.info("Streamed partial report (%d/%d) to %s", state.step, total, where)
+
+                report = cat_loop.run_full_bank(
+                    style,
+                    bank=bank,
+                    irt_bank=irt_bank,
+                    model=model,
+                    batch_size=args.batch_size,
+                    progress_callback=_stream_partial,
+                    progress_every=args.progress_every,
+                )
+            else:
+                report = cat_loop.run_cat(
+                    style,
+                    bank=bank,
+                    irt_bank=irt_bank,
+                    model=model,
+                    se_threshold=args.se_threshold,
+                    max_items=args.max_items,
+                )
         finally:
             # Neither in-process backend defines this, so it is inert today. A served one
             # would own a subprocess, and discovering that after the fact means editing
@@ -308,6 +360,7 @@ def run(args: argparse.Namespace) -> int:
     report_dict["run"] = {
         "cat_style": args.cat_style,
         "checkpoint": args.checkpoint,
+        "mode": "full_bank" if args.full_bank else "cat",
         "checkpoint_kind": args.checkpoint_kind,
         "checkpoint_prep": args.checkpoint_prep,
         # True of both paths as of 2026-08-08, and true of only one before that. While
@@ -331,7 +384,7 @@ def run(args: argparse.Namespace) -> int:
     tokenization = getattr(model, "tokenizer_defaults", None)
     if tokenization is not None:
         report_dict["run"]["tokenization"] = tokenization.as_dict()
-    location = _write_report(report_dict, args)
+    location = _write_json(report_dict, args)
     log.info("Done. Report written to %s", location)
     return 0
 

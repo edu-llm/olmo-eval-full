@@ -884,11 +884,18 @@ class _HFScoringModel:
         self.config = config
         set_seed(config.seed)
 
-        self.tokenizer: Any = AutoTokenizer.from_pretrained(str(checkpoint_dir))
+        # trust_remote_code so architectures whose modeling code ships with the
+        # checkpoint (or requires a custom class the installed transformers does not
+        # carry) load rather than failing at config resolution -- Qwen3 MoE among them.
+        # A merged HF tree from a known base is the input here, not an arbitrary upload.
+        self.tokenizer: Any = AutoTokenizer.from_pretrained(
+            str(checkpoint_dir), trust_remote_code=True
+        )
         self.model: Any = AutoModelForCausalLM.from_pretrained(
             str(checkpoint_dir),
             torch_dtype="auto",
             device_map=config.device_map,
+            trust_remote_code=True,
         )
         self.model.eval()
 
