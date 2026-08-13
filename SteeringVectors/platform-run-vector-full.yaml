@@ -1,0 +1,23 @@
+# eduLLM GPU job: full steering-vector build (all middle layers, stereoset + confaide).
+#
+# Uses the already-staged OLMo-370M step1315 checkpoint (proven on gpu-1xl40s).
+#
+# Submit:
+#   edullm submit --dataset none --compute gpu-1xl40s --experiment steering-vector-full \
+#     --spec SteeringVectors/platform-run-vector-full.yaml
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
+  && export PYTHONPATH=SteeringVectors:.
+  && python SteeringVectors/generate_steering_vector.py
+  --checkpoint s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/steering-smoke/step1315/
+  --dataset stereoset --layers 4 6 8 10 12
+  --max-statements 1000
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
+  --run-name steering-vector-full
+  --device cuda:0 --dtype bfloat16'

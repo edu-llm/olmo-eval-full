@@ -1,0 +1,25 @@
+# eduLLM GPU job: TracingLLM small-scale replication — Stage B (cross-checkpoint steering).
+#
+# Prerequisite: step750 and step1315 staged under replication-staged/ (Stage A uses all 10).
+#
+# Submit after Stage A completes (or in parallel once staging is done):
+#   edullm submit --dataset none --compute gpu-1xl40s --experiment replication-steer \
+#     --spec SteeringVectors/platform-run-replication-steer.yaml
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
+  && export PYTHONPATH=SteeringVectors:.
+  && python SteeringVectors/run_steering_eval.py
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step750/
+  --target s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step1315/
+  --dimensions toxigen truthfulqa confaide
+  --layers 8 --alphas -2 -1 1 2
+  --max-statements 1000 --eval-limit 200 --toxigen-limit 150 --max-new-tokens 64
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
+  --run-name steering-refhq-750to1315
+  --device cuda:0'

@@ -1,0 +1,35 @@
+# eduLLM GPU job: TracingLLM small-scale replication — Stage A (full probing dynamics).
+#
+# Prerequisite: all 10 refhq-5p5b steps staged under replication-staged/ via sb_aws:
+#   sb_aws s3 sync \
+#     s3://edullm-checkpoints/olmo-370m/edullm-370M-refhq-5p5b/checkpoints/ \
+#     s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/
+#
+# Submit:
+#   edullm submit --dataset none --compute gpu-1xl40s --experiment replication-probe \
+#     --spec SteeringVectors/platform-run-replication-probe.yaml
+schema_version: 1
+workload_profile: olmo-eval-sweep
+suggested_compute: gpu-1xl40s
+command: >-
+  bash -lc 'uv sync --frozen --no-default-groups
+  --extra beaker --extra hf --extra s3 --extra clients --extra olmo_core
+  && uv pip install --no-deps "ai2-olmo-core @ git+https://github.com/edu-llm/OLMo-core@edullm/memory-split-135m"
+  && export OLMO_CORE_HF_MAX_POSITION_EMBEDDINGS=2048
+  && export PYTHONPATH=SteeringVectors:.
+  && python SteeringVectors/run_probe_dynamics.py
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step125/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step250/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step375/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step500/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step625/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step750/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step875/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step1000/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step1125/
+  s3://sbsandbox-intern-edullm-outputs/teams/eval-inference/runs/replication-staged/step1315/
+  --datasets truthfulqa toxigen confaide stereoset sst2
+  --max-statements 1000 --test-ratio 0.2
+  --results-s3 "$EDULLM_OUTPUT_PREFIX"
+  --run-name probe-dynamics-refhq
+  --device cuda:0'
