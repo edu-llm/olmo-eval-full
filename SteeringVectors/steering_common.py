@@ -362,6 +362,14 @@ def is_hf_checkpoint(local_dir: Path) -> bool:
     return has_weights and has_tokenizer
 
 
+def is_peft_adapter(local_dir: Path) -> bool:
+    """A PEFT LoRA export (adapter weights + tokenizer, base loaded separately)."""
+    return (local_dir / "adapter_config.json").exists() and (
+        (local_dir / "adapter_model.safetensors").exists()
+        or (local_dir / "adapter_model.bin").exists()
+    )
+
+
 def convert_olmo_core_to_hf(local_dir: Path, out_dir: Path) -> Path:
     """Convert a raw OLMo-core checkpoint into an HF-format directory.
 
@@ -431,7 +439,7 @@ def convert_olmo_core_to_hf(local_dir: Path, out_dir: Path) -> Path:
 
 def ensure_hf_checkpoint(local_dir: Path, out_dir: Path) -> Path:
     """Return an HF-format directory, converting from OLMo-core when needed."""
-    if is_hf_checkpoint(local_dir):
+    if is_hf_checkpoint(local_dir) or is_peft_adapter(local_dir):
         return local_dir
     if is_olmo_core_checkpoint(local_dir):
         log.info("Detected OLMo-core checkpoint at %s; converting to HF", local_dir)
@@ -485,7 +493,6 @@ def load_model(
     family = opts.model_family or detect_model_family(config)
     log.info("Loading HF checkpoint from %s (family=%s)", local_dir, family)
 
-    tokenizer = AutoTokenizer.from_pretrained(str(local_dir), trust_remote_code=True)
     load_kwargs: dict[str, Any] = {"trust_remote_code": True}
     if opts.dtype == "auto":
         load_kwargs["dtype"] = "auto"
@@ -496,7 +503,20 @@ def load_model(
     if opts.attn_implementation:
         load_kwargs["attn_implementation"] = opts.attn_implementation
 
-    model = AutoModelForCausalLM.from_pretrained(str(local_dir), **load_kwargs)
+    if is_peft_adapter(local_dir):
+        from peft import PeftModel
+
+        adapter_cfg = json.loads((local_dir / "adapter_config.json").read_text(encoding="utf-8"))
+        base_id = adapter_cfg.get("base_model_name_or_path")
+        if not base_id:
+            raise SystemExit(f"adapter_config.json at {local_dir} has no base_model_name_or_path")
+        log.info("Loading PEFT adapter from %s on base %s", local_dir, base_id)
+        tokenizer = AutoTokenizer.from_pretrained(str(local_dir), trust_remote_code=True)
+        base = AutoModelForCausalLM.from_pretrained(base_id, **load_kwargs)
+        model = PeftModel.from_pretrained(base, str(local_dir))
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(str(local_dir), trust_remote_code=True)
+        model = AutoModelForCausalLM.from_pretrained(str(local_dir), **load_kwargs)
     model = model.eval().to(opts.device) if not opts.device_map else model.eval()
     torch.set_grad_enabled(False)
     return tokenizer, model
